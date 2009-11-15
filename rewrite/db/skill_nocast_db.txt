@@ -1,0 +1,100 @@
+// Forbidden Skills Database
+//
+// Structure of Database:
+// SkillID,Flag
+//
+// Legend for 'Flag' field (bitmask):
+//  1 = Cannot be used in normal maps
+//  2 = Cannot be used in PvP maps (use this instead of 1 for PK-mode servers)
+//  4 = Cannot be used in GvG maps
+//  8 = Cannot be used in Battleground maps
+//  16 = Cannot be cloned (clones will not copy this skill)
+//  Restricted zones - they're configured by 'restricted <number>' mapflag
+//  32 = Cannot be used in zone 1 maps
+//  64 = Cannot be used in zone 2 maps
+//  128 = Cannot be used in zone 3 maps
+//  256 = Cannot be used in zone 4 maps
+//  512 = Cannot be used in zone 5 maps
+//  1024 = Cannot be used in zone 6 maps
+//  2048 = Cannot be used in zone 7 maps
+//
+// Example:
+// 8,6 = Endure cannot be used in PvP and GvG maps (2+4)
+
+//GVG
+26,4	//AL_TELEPORT
+27,4	//AL_WARP
+87,4	//WZ_ICEWALL
+150,4	//TF_BACKSLIDING
+361,4	//HP_ASSUMPTIO
+362,4	//HP_BASILICA
+395,4	//CG_MOONLIT
+491,4	//CR_CULTIVATION
+691,4	//CASH_ASSUMPTIO
+
+//BATTLEGROUND
+26,8	//AL_TELEPORT
+27,8	//AL_WARP
+87,8	//WZ_ICEWALL
+150,8	//TF_BACKSLIDING
+361,8	//HP_ASSUMPTIO
+362,8	//HP_BASILICA
+395,8	//CG_MOONLIT
+491,8	//CR_CULTIVATION
+411,8	//TK_RUN
+426,8	//High Jump
+427,8	//SG_FEEL
+428,8	//SG_SUN_WARM
+429,8	//SG_MOON_WARM
+430,8	//SG_STAR_WARM
+431,8	//SG_SUN_COMFORT
+432,8	//SG_MOON_COMFORT
+433,8	//SG_STAR_COMFORT
+434,8	//SG_HATE
+435,8	//SG_SUN_ANGER
+436,8	//SG_MOON_ANGER
+437,8	//SG_STAR_ANGER
+438,8	//SG_SUN_BLESS
+439,8	//SG_MOON_BLESS
+440,8	//SG_STAR_BLESS
+691,8;	//CASH_ASSUMPITO
+
+//mixed
+488,3	//CG_HERMODE
+
+//Clone Forbidden/pointless skills
+77,16	//PR_TURNUNDEAD
+79,16	//PR_MAGNUS
+
+//Zone 1 - Aldebaran Turbo Track
+219,32	//Snatch
+26,32	//Teleport
+27,32	//Warp portal
+51,32	//Hiding
+135,32	//Cloaking
+389,32	//Stealth
+35,32	//Cure
+87,32	//Ice Wall
+359,32	//Berserk (Frenzy)
+362,32	//Basilica
+395,32	//Sheltering Bliss
+357,32	//Spear Dynamo (Concentration)
+264,32	//Snap (Body Relocation)
+
+//Zone 2 - Jail
+421,64	//TK_JUMPKICK#Flying Side Kick#
+426,64	//TK_HIGHJUMP#Taekwon Jump#
+
+//Zone 3 - Izlude Battle Arena
+219,128 //Snatch
+26,128	//Teleport
+
+//Zone 4 - WoE:SE
+426,256 //High Jump
+
+//Zone 5 - Sealed Shrine
+12,512	//MG_SAFETYWALL
+26,512	//AL_TELEPORT
+219,512	//Snatch
+361,512	//HP_ASSUMPTIO
+691,512	//CASH_ASSUMPTIO
