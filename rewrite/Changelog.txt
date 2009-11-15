@@ -5,8 +5,8 @@
 // 	- Details.
 //========================================
 
-11/14/2009
-	r12 [LimitLine]
+11/15/2009
+	r13 [LimitLine]
 	* Added rewritten Arch Bishop and Warlock skills to the trunk/rewrite folder.
 	- Things missing: Editted item_db.txt with support for third class bitmasks.
 		Current job system of stable/r13890, which is cleaner and more functional.
