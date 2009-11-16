@@ -6,6 +6,9 @@
 //========================================
 
 11/15/2009
+	r15 [LimitLine]
+	* Fixed Soul Expansion not doing doubled damage when under White Imprison.
+
 	r13 [LimitLine]
 	* Added rewritten Arch Bishop and Warlock skills to the trunk/rewrite folder.
 	- Things missing: Editted item_db.txt with support for third class bitmasks.
