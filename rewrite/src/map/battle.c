@@ -2328,13 +2328,6 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 		case PR_SANCTUARY:
 			ad.dmotion = 0; //No flinch animation.
 			break;
-		case WL_SOULEXPANSION:
-			{
-				struct status_change *tsc = status_get_sc(target);
-				if( tsc && tsc->data[SC_WHITEIMPRISON] )
-					skillratio *= 2;
-			}
-			break;
 	}
 
 	if (!flag.infdef) //No need to do the math for plants
@@ -2481,8 +2474,12 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						skillratio += 100 + 20 * skill_lv;
 						break;
 					case WL_SOULEXPANSION:
-					case WL_CHAINLIGHTNING_ATK:
-						skillratio += 300 + 100 * skill_lv;
+						{
+							struct status_change *tsc = status_get_sc(target);
+							skillratio += 300 + 100 * skill_lv;
+							if( tsc && tsc->data[SC_WHITEIMPRISON] )
+								skillratio *= 2;
+						}
 						break;
 					case WL_FROSTMISTY:
 						skillratio += 100 + 100 * skill_lv;
@@ -2523,6 +2520,9 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 									break;
 							}
 						}
+						break;
+					case WL_CHAINLIGHTNING_ATK:
+						skillratio += 300 + 100 * skill_lv;
 						break;
 					case WL_EARTHSTRAIN:
 						skillratio += 2000 + 100 * skill_lv;
