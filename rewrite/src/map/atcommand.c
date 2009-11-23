@@ -1370,6 +1370,8 @@ int atcommand_jobchange(const int fd, struct map_session_data* sd, const char* c
 		}
 
 		if (!found) {
+			clif_displaymessage(fd, "Please, enter job ID (usage: @job/@jobchange <job name/ID>).");
+			clif_displaymessage(fd, "----- Novice / 1st Class -----");
 			clif_displaymessage(fd, "   0 Novice            1 Swordman          2 Mage              3 Archer");
 			clif_displaymessage(fd, "   4 Acolyte           5 Merchant          6 Thief");
 			clif_displaymessage(fd, "----- 2nd Class -----");
@@ -1429,6 +1431,7 @@ int atcommand_jobchange(const int fd, struct map_session_data* sd, const char* c
 			return -1;
 		}
 	} else {
+		clif_displaymessage(fd, "Please, enter a valid job ID (usage: @job/@jobchange <job name/ID>).");
 		clif_displaymessage(fd, "   0 Novice            1 Swordman          2 Mage              3 Archer");
 		clif_displaymessage(fd, "   4 Acolyte           5 Merchant          6 Thief");
 		clif_displaymessage(fd, "----- 2nd Class -----");
@@ -2796,8 +2799,7 @@ int atcommand_produce(const int fd, struct map_session_data* sd, const char* com
 	if ((item_data = itemdb_searchname(item_name)) == NULL &&
 	    (item_data = itemdb_exists(atoi(item_name))) == NULL)
 	{
-		strcpy(atcmd_output, msg_txt(170)); // The item is not equipable.
-		clif_displaymessage(fd, atcmd_output);
+		clif_displaymessage(fd, msg_txt(170)); //This item is not an equipment.
 		return -1;
 	}
 	item_id = item_data->nameid;
@@ -2899,17 +2901,17 @@ int atcommand_gat(const int fd, struct map_session_data* sd, const char* command
  *------------------------------------------*/
 int atcommand_displaystatus(const int fd, struct map_session_data* sd, const char* command, const char* message)
 {
-	int i, type, flag, tick;
+	int i, type, flag, tick, val1, val2, val3;
 	nullpo_retr(-1, sd);
 	
-	if (!message || !*message || (i = sscanf(message, "%d %d %d", &type, &flag, &tick)) < 1) {
-		clif_displaymessage(fd, "Please, enter a status type/flag (usage: @displaystatus <status type> <flag> <tick>).");
+	if (!message || !*message || (i = sscanf(message, "%d %d %d %d %d %d", &type, &flag, &tick, &val1, &val2, &val3)) < 1) {
+		clif_displaymessage(fd, "Please, enter a status type/flag (usage: @displaystatus <status type> <flag> <tick> <val1> <val2> <val3>).");
 		return -1;
 	}
 	if (i < 2) flag = 1;
 	if (i < 3) tick = 0;
 
-	clif_status_change(&sd->bl, type, 0, 0, 0, flag, tick);
+	clif_status_change(&sd->bl, type, flag, tick, val1, val2, val3);
 
 	return 0;
 }
@@ -6021,62 +6023,17 @@ int atcommand_changegm(const int fd, struct map_session_data* sd, const char* co
  *------------------------------------------*/
 int atcommand_changeleader(const int fd, struct map_session_data* sd, const char* command, const char* message)
 {
-	struct party_data *p;
-	struct map_session_data *pl_sd;
-	int mi, pl_mi;
 	nullpo_retr(-1, sd);
-
-	if (sd->status.party_id == 0 || (p = party_search(sd->status.party_id)) == NULL)
-	{	//Need to be a party leader.
-		clif_displaymessage(fd, msg_txt(282));
-		return -1;
-	}
-	
-	if( map[sd->bl.m].flag.partylock )
-	{
-		clif_displaymessage(fd, "You cannot change party leaders on this map.");
-		return -1;
-	}
-
-	ARR_FIND( 0, MAX_PARTY, mi, p->data[mi].sd == sd );
-	if (mi == MAX_PARTY)
-		return -1; //Shouldn't happen
-
-	if (!p->party.member[mi].leader)
-	{	//Need to be a party leader.
-		clif_displaymessage(fd, msg_txt(282));
-		return -1;
-	}
 	
 	if (strlen(message)==0)
 	{
 		clif_displaymessage(fd, "Command usage: @changeleader <party member name>");
 		return -1;
 	}
-	
-	if((pl_sd=map_nick2sd((char *) message)) == NULL || pl_sd->status.party_id != sd->status.party_id) {
-		clif_displaymessage(fd, msg_txt(283));
-		return -1;
-	}
 
-	for (pl_mi = 0; pl_mi < MAX_PARTY && p->data[pl_mi].sd != pl_sd; pl_mi++);
-	
-	if (pl_mi == MAX_PARTY)
-		return -1; //Shouldn't happen
-
-	//Change leadership.
-	p->party.member[mi].leader = 0;
-	if (p->data[mi].sd->fd)
-		clif_displaymessage(p->data[mi].sd->fd, msg_txt(284));
-	p->party.member[pl_mi].leader = 1;
-	if (p->data[pl_mi].sd->fd)
-		clif_displaymessage(p->data[pl_mi].sd->fd, msg_txt(285));
-
-	intif_party_leaderchange(p->party.party_id,p->party.member[pl_mi].account_id,p->party.member[pl_mi].char_id);
-	//Update info.
-	clif_party_info(p,NULL);
-
-	return 0;
+	if (party_changeleader(sd, map_nick2sd((char *) message)))
+		return 0;
+	return -1;
 }
 
 /*==========================================

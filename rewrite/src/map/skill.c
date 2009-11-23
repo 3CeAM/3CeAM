@@ -145,6 +145,7 @@ int	skill_get_zeny( int id ,int lv )      { skill_get (skill_db[id].zeny[lv-1], 
 int	skill_get_num( int id ,int lv )       { skill_get (skill_db[id].num[lv-1], id, lv); }
 int	skill_get_cast( int id ,int lv )      { skill_get (skill_db[id].cast[lv-1], id, lv); }
 int	skill_get_delay( int id ,int lv )     { skill_get (skill_db[id].delay[lv-1], id, lv); }
+int	skill_get_cooldown( int id ,int lv )  { skill_get (skill_db[id].cooldown[lv-1], id, lv); }
 int	skill_get_walkdelay( int id ,int lv ) { skill_get (skill_db[id].walkdelay[lv-1], id, lv); }
 int	skill_get_time( int id ,int lv )      { skill_get (skill_db[id].upkeep_time[lv-1], id, lv); }
 int	skill_get_time2( int id ,int lv )     { skill_get (skill_db[id].upkeep_time2[lv-1], id, lv); }
@@ -1087,9 +1088,11 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 			if (ud) {
 				rate = skill_delayfix(src, skill, skilllv);
 				if (DIFF_TICK(ud->canact_tick, tick + rate) < 0){
-					ud->canact_tick = tick+rate;
-					if ( battle_config.display_status_timers && sd )
-						clif_status_change(src, SI_ACTIONDELAY, 1, 0, 0, 0, rate);
+					ud->canact_tick = tick+rate;				
+				if( sd && skill_get_cooldown( skill, skilllv ) ) // Skill cooldown. [LimitLine]
+					skill_blockpc_start(sd, skill, skill_get_cooldown(skill, skilllv));
+					if ( battle_config.display_status_timers && sd && skill_get_delay(skill, skilllv))
+						clif_status_change(src, SI_ACTIONDELAY, 1, 0, 0, 1, rate);
 				}
 			}
 		}
@@ -1359,8 +1362,10 @@ int skill_counter_additional_effect (struct block_list* src, struct block_list *
 				rate = skill_delayfix(bl, skillid, skilllv);
 				if (DIFF_TICK(ud->canact_tick, tick + rate) < 0){
 					ud->canact_tick = tick+rate;
-					if ( battle_config.display_status_timers && dstsd )
-						clif_status_change(bl, SI_ACTIONDELAY, 1, 0, 0, 0, rate);
+					if( sd && skill_get_cooldown( skillid, skilllv ) ) // Skill cooldown. [LimitLine]
+						skill_blockpc_start(sd, skillid, skill_get_cooldown(skillid, skilllv));
+					if ( battle_config.display_status_timers && dstsd && skill_get_delay(skillid, skilllv))
+						clif_status_change(bl, SI_ACTIONDELAY, 1, 0, 0, 1, rate);
 				}
 			}
 		}
@@ -3953,8 +3958,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SM_ENDURE:
 		clif_skill_nodamage(src,bl,skillid,skilllv,
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
-		if (sd)
-			skill_blockpc_start (sd, skillid, skill_get_time2(skillid,skilllv));
+		if (sd && skill_get_cooldown(skillid, skilllv))
+			skill_blockpc_start (sd, skillid, skill_get_cooldown(skillid, skilllv));//skill_get_time2(skillid,skilllv));
 		break;
 
 	case AS_ENCHANTPOISON: // Prevent spamming [Valaris]
@@ -5412,7 +5417,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		clif_skill_nodamage(src,bl,skillid,skilllv,
 			sc_start4(bl,type,100,skilllv,skillid,src->id,skill_get_time(skillid,skilllv),1000));
-		if (sd) skill_blockpc_start (sd, skillid, skill_get_time(skillid, skilllv)+3000);
+		if (sd && skill_get_cooldown(skillid, skilllv)) skill_blockpc_start (sd, skillid, skill_get_cooldown(skillid, skilllv)); //skill_get_time(skillid, skilllv)+3000);
 		break;
 
 	case PF_MINDBREAKER:
@@ -5661,7 +5666,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		sc_start(src,SC_SMA,100,skilllv,skill_get_time(SL_SMA,skilllv));
 		break;
 	case SL_HIGH:
-		if (sd && !(dstsd && (dstsd->class_&JOBL_UPPER) && !(dstsd->class_&JOBL_2) && dstsd->status.base_level < 70)) {
+		if (sd && !(dstsd && ((dstsd->class_&JOBL_UPPER || dstsd->class_&JOBL_THIRD_BASE || dstsd->class_&JOBL_THIRD_UPPER)) && !(dstsd->class_&JOBL_2) && dstsd->status.base_level < 70)) {
 			clif_skill_fail(sd,skillid,0,0);
 			break;
 		}
@@ -6422,10 +6427,13 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 		if (ud->walktimer != -1 && ud->skillid != TK_RUN)
 			unit_stop_walking(src,1);
 
+		if( sd && skill_get_cooldown( ud->skillid, ud->skilllv ) ) // Skill cooldown. [LimitLine]
+			skill_blockpc_start(sd, ud->skillid, skill_get_cooldown(ud->skillid, ud->skilllv));
 		if( !sd || sd->skillitem != ud->skillid || skill_get_delay(ud->skillid,ud->skilllv) )
 			ud->canact_tick = tick + skill_delayfix(src, ud->skillid, ud->skilllv); //Tests show wings don't overwrite the delay but skill scrolls do. [Inkfish]
-		if( battle_config.display_status_timers && sd )
-			clif_status_change(src, SI_ACTIONDELAY, 1, 0, 0 ,0 , skill_delayfix(src, ud->skillid, ud->skilllv));
+		if( battle_config.display_status_timers && sd && skill_get_delay(ud->skillid, ud->skilllv))
+			clif_status_change(src, SI_ACTIONDELAY, 1, 0, 0, 1, skill_delayfix(src, ud->skillid, ud->skilllv));
+
 		if( sd )
 		{
 			switch( ud->skillid )
@@ -6637,10 +6645,12 @@ int skill_castend_pos(int tid, unsigned int tick, int id, intptr data)
 		if (ud->walktimer != -1)
 			unit_stop_walking(src,1);
 
+		if( sd && skill_get_cooldown( ud->skillid, ud->skilllv ) ) // Skill cooldown. [LimitLine]
+			skill_blockpc_start(sd, ud->skillid, skill_get_cooldown(ud->skillid, ud->skilllv));
 		if( !sd || sd->skillitem != ud->skillid || skill_get_delay(ud->skillid,ud->skilllv) )
 			ud->canact_tick = tick + skill_delayfix(src, ud->skillid, ud->skilllv);
-		if( battle_config.display_status_timers && sd )
-			clif_status_change(src, SI_ACTIONDELAY, 1, 0, 0, 0, skill_delayfix(src, ud->skillid, ud->skilllv));
+		if( battle_config.display_status_timers && sd && skill_get_delay(ud->skillid, ud->skilllv))
+			clif_status_change(src, SI_ACTIONDELAY, 1, 0, 0, 1, skill_delayfix(src, ud->skillid, ud->skilllv));
 //		if( sd )
 //		{
 //			switch( ud->skillid )
@@ -6912,7 +6922,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		if (unit_movepos(src, x, y, 1, 1)) {
 			clif_skill_poseffect(src,skillid,skilllv,src->x,src->y,tick);
 //			clif_slide(src, src->x, src->y); //Poseffect is the one that makes the char snap on the client...
-			if (sd) skill_blockpc_start (sd, MO_EXTREMITYFIST, 2000);
+			if (sd && skill_get_cooldown(skillid, skilllv)) skill_blockpc_start (sd, MO_EXTREMITYFIST, skill_get_cooldown(skillid, skilllv)); //2000);
 		}
 		break;
 	case NJ_SHADOWJUMP:
@@ -11605,6 +11615,13 @@ int skill_produce_mix (struct map_session_data *sd, int skill_id, int nameid, in
 			case SA_CREATECON: // Elemental Converter Creation
 				make_per = 100000; // should be 100% success rate
 				break;
+			case RK_RUNEMASTERY:
+				make_per = 4 + sd->menuskill_itemused * pc_checkskill(sd,skill_id) * 100;
+				if(battle_config.rune_produce_rate != 100)
+					make_per = make_per * battle_config.rune_produce_rate / 100;
+				qty += rand()%(pc_checkskill(sd,skill_id) > 5)?4:2;
+				sd->menuskill_itemused = sd->menuskill_id = 0;
+				break;
 			default:
 				if (sd->menuskill_id ==	AM_PHARMACY &&
 					sd->menuskill_val > 10 && sd->menuskill_val <= 20)
@@ -11753,6 +11770,10 @@ int skill_produce_mix (struct map_session_data *sd, int skill_id, int nameid, in
 					clif_produceeffect(sd,0,nameid);
 					clif_misceffect(&sd->bl,3);
 					break;
+				case RK_RUNEMASTERY:
+					clif_produceeffect(sd,2,nameid);
+					clif_misceffect(&sd->bl,5);
+					break;
 				default: //Those that don't require a skill?
 					if( skill_produce_db[idx].itemlv > 10 && skill_produce_db[idx].itemlv <= 20)
 					{ //Cooking items.
@@ -11796,6 +11817,10 @@ int skill_produce_mix (struct map_session_data *sd, int skill_id, int nameid, in
 			case BS_ENCHANTEDSTONE:
 				clif_produceeffect(sd,1,nameid);
 				clif_misceffect(&sd->bl,2);
+				break;
+			case RK_RUNEMASTERY:
+				clif_produceeffect(sd,3,nameid);
+				clif_misceffect(&sd->bl,6);
 				break;
 			default:
 				if( skill_produce_db[idx].itemlv > 10 && skill_produce_db[idx].itemlv <= 20 )
@@ -12358,6 +12383,8 @@ int skill_stasis_check(struct block_list *bl, int src_id, int skillid)
  * produce_db.txt
  * create_arrow_db.txt
  * abra_db.txt
+ * skill_cooldown.txt
+ * improvise_db.txt
  *------------------------------------------*/
 
 static bool skill_parse_row_skilldb(char* split[], int columns, int current)
@@ -12487,7 +12514,7 @@ static bool skill_parse_row_requiredb(char* split[], int columns, int current)
 }
 
 static bool skill_parse_row_castdb(char* split[], int columns, int current)
-{// SkillID,CastingTime,AfterCastActDelay,AfterCastWalkDelay,Duration1,Duration2
+{// SkillID,CastingTime,AfterCastActDelay,Cooldown,AfterCastWalkDelay,Duration1,Duration2
 	int i = atoi(split[0]);
 	i = skill_get_index(i);
 	if( !i ) // invalid skill id
@@ -12495,9 +12522,10 @@ static bool skill_parse_row_castdb(char* split[], int columns, int current)
 
 	skill_split_atoi(split[1],skill_db[i].cast);
 	skill_split_atoi(split[2],skill_db[i].delay);
-	skill_split_atoi(split[3],skill_db[i].walkdelay);
-	skill_split_atoi(split[4],skill_db[i].upkeep_time);
-	skill_split_atoi(split[5],skill_db[i].upkeep_time2);
+	skill_split_atoi(split[3],skill_db[i].cooldown);
+	skill_split_atoi(split[4],skill_db[i].walkdelay);
+	skill_split_atoi(split[5],skill_db[i].upkeep_time);
+	skill_split_atoi(split[6],skill_db[i].upkeep_time2);
 
 	return true;
 }
@@ -12644,7 +12672,7 @@ static void skill_readdb(void)
 	safestrncpy(skill_db[0].desc, "Unknown Skill", sizeof(skill_db[0].desc));
 	sv_readdb(db_path, "skill_db.txt"          , ',',  17, 17, MAX_SKILL_DB, skill_parse_row_skilldb);
 	sv_readdb(db_path, "skill_require_db.txt"  , ',',  32, 32, MAX_SKILL_DB, skill_parse_row_requiredb);
-	sv_readdb(db_path, "skill_cast_db.txt"     , ',',   6,  6, MAX_SKILL_DB, skill_parse_row_castdb);
+	sv_readdb(db_path, "skill_cast_db.txt"     , ',',   7,  7, MAX_SKILL_DB, skill_parse_row_castdb);
 	sv_readdb(db_path, "skill_castnodex_db.txt", ',',   2,  3, MAX_SKILL_DB, skill_parse_row_castnodexdb);
 	sv_readdb(db_path, "skill_nocast_db.txt"   , ',',   2,  2, MAX_SKILL_DB, skill_parse_row_nocastdb);
 	sv_readdb(db_path, "skill_unit_db.txt"     , ',',   8,  8, MAX_SKILL_DB, skill_parse_row_unitdb);

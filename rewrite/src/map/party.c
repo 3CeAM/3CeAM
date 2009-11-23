@@ -593,18 +593,68 @@ int party_optionchanged(int party_id,int account_id,int exp,int item,int flag)
 	if( (p=party_search(party_id))==NULL)
 		return 0;
 
-	if(!(flag&0x01) || !(flag&0x10)){
-		if(p->party.exp != exp)
-			p->party.exp=exp;
-		if(p->party.item != item){
-			p->party.item=item;
-			clif_party_member_info(p,sd);
-		}
-		clif_party_option(p,sd,flag);
+	if(!(flag&0x01) && p->party.exp != exp) {
+		p->party.exp=exp;
+		clif_party_option(p,sd,flag); //This packet doesn't updates item info anymore...
+	}
+	if(!(flag&0x10) && p->party.item != item) {
+		p->party.item=item;
+		clif_party_member_info(p,sd);
 	}
 	if(flag&0x01) //Send denied message
 		clif_party_option(p,sd,flag);
 	return 0;
+}
+
+bool party_changeleader(struct map_session_data *sd, struct map_session_data *tsd)
+{
+	struct party_data *p;
+	int mi, tmi;
+
+	if (!sd || !sd->status.party_id)
+		return false;
+
+	if (!tsd || tsd->status.party_id != sd->status.party_id) {
+		clif_displaymessage(sd->fd, msg_txt(283));
+		return false;
+	}
+
+	if( map[sd->bl.m].flag.partylock )
+	{
+		clif_displaymessage(sd->fd, "You cannot change party leaders on this map.");
+		return false;
+	}
+
+	if ((p = party_search(sd->status.party_id)) == NULL)
+		return false;
+
+	ARR_FIND( 0, MAX_PARTY, mi, p->data[mi].sd == sd );
+	if (mi == MAX_PARTY)
+		return false; //Shouldn't happen
+
+	if (!p->party.member[mi].leader)
+	{	//Need to be a party leader.
+		clif_displaymessage(sd->fd, msg_txt(282));
+		return false;
+	}
+
+	ARR_FIND( 0, MAX_PARTY, tmi, p->data[tmi].sd == tsd);
+	if (tmi == MAX_PARTY)
+		return false; //Shouldn't happen
+
+	//Change leadership.
+	p->party.member[mi].leader = 0;
+	if (p->data[mi].sd->fd)
+		clif_displaymessage(p->data[mi].sd->fd, msg_txt(284));
+
+	p->party.member[tmi].leader = 1;
+	if (p->data[tmi].sd->fd)
+		clif_displaymessage(p->data[tmi].sd->fd, msg_txt(285));
+
+	//Update info.
+	intif_party_leaderchange(p->party.party_id,p->party.member[tmi].account_id,p->party.member[tmi].char_id);
+	clif_party_info(p,NULL);
+	return true;
 }
 
 /// Invoked (from char-server) when a party member

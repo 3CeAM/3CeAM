@@ -1911,7 +1911,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				def1 = 0;
 			}
 			if (def1 > 100) def1 = 100;
-			// TODO: This is where defense bypassing rate will be checked. Somewhere... [LimitLine]
 			ATK_RATE2(
 				flag.idef ?100:(flag.pdef ?(int)(flag.pdef *(def1+vit_def)):(100-def1)),
 			 	flag.idef2?100:(flag.pdef2?(int)(flag.pdef2*(def1+vit_def)):(100-def1))
@@ -3503,7 +3502,7 @@ int battle_check_target( struct block_list *src, struct block_list *target,int f
 		else
 			return -1;
 	}
-	else if( flag == BCT_NOONE ) //Why would someone use this? no clue.
+	if( flag == BCT_NOONE ) //Why would someone use this? no clue.
 		return -1;
 	
 	if( t_bl == s_bl )
@@ -3692,6 +3691,7 @@ static const struct _battle_data {
 	{ "player_skillup_limit",               &battle_config.skillup_limit,                   1,      0,      1,              },
 	{ "weapon_produce_rate",                &battle_config.wp_rate,                         100,    0,      INT_MAX,        },
 	{ "potion_produce_rate",                &battle_config.pp_rate,                         100,    0,      INT_MAX,        },
+	{ "rune_produce_rate",                  &battle_config.rune_produce_rate,               100,    0,      INT_MAX,        },
 	{ "monster_active_enable",              &battle_config.monster_active_enable,           1,      0,      1,              },
 	{ "monster_damage_delay_rate",          &battle_config.monster_damage_delay_rate,       100,    0,      INT_MAX,        },
 	{ "monster_loot_type",                  &battle_config.monster_loot_type,               0,      0,      1,              },
@@ -3889,7 +3889,7 @@ static const struct _battle_data {
 	{ "hack_info_GM_level",                 &battle_config.hack_info_GM_level,              60,     0,      100,            },
 	{ "any_warp_GM_min_level",              &battle_config.any_warp_GM_min_level,           20,     0,      100,            },
 	{ "who_display_aid",                    &battle_config.who_display_aid,                 40,     0,      100,            },
-	{ "packet_ver_flag",                    &battle_config.packet_ver_flag,                 0xFFFF, 0x0000, 0xFFFF,         },
+	{ "packet_ver_flag",                    &battle_config.packet_ver_flag,                 0xFFFFFF,0x0000,INT_MAX,        },
 	{ "min_hair_style",                     &battle_config.min_hair_style,                  0,      0,      INT_MAX,        },
 	{ "max_hair_style",                     &battle_config.max_hair_style,                  23,     0,      INT_MAX,        },
 	{ "min_hair_color",                     &battle_config.min_hair_color,                  0,      0,      INT_MAX,        },
