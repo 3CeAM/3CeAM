@@ -80,7 +80,7 @@ struct s_skill_db {
 	char desc[40];
 	int range[MAX_SKILL_LEVEL],hit,inf,element[MAX_SKILL_LEVEL],nk,splash[MAX_SKILL_LEVEL],max;
 	int num[MAX_SKILL_LEVEL];
-	int cast[MAX_SKILL_LEVEL],walkdelay[MAX_SKILL_LEVEL],delay[MAX_SKILL_LEVEL];
+	int cast[MAX_SKILL_LEVEL],walkdelay[MAX_SKILL_LEVEL],delay[MAX_SKILL_LEVEL],cooldown[MAX_SKILL_LEVEL];
 	int upkeep_time[MAX_SKILL_LEVEL],upkeep_time2[MAX_SKILL_LEVEL];
 	int castcancel,cast_def_rate;
 	int inf2,maxcount[MAX_SKILL_LEVEL],skill_type;
@@ -236,6 +236,7 @@ int	skill_get_zeny( int id ,int lv );
 int	skill_get_num( int id ,int lv );
 int	skill_get_cast( int id ,int lv );
 int	skill_get_delay( int id ,int lv );
+int	skill_get_cooldown( int id ,int lv );
 int	skill_get_walkdelay( int id ,int lv );
 int	skill_get_time( int id ,int lv );
 int	skill_get_time2( int id ,int lv );
@@ -1100,12 +1101,14 @@ enum e_skill {
 	CASH_BLESSING,
 	CASH_INCAGI,
 	CASH_ASSUMPTIO,
-	/*
-	ALL_CATCRY = 692,
+	ALL_CATCRY,
 	ALL_PARTYFLEE,
 	ALL_ANGEL_PROTECT,
 	ALL_SUMMERNIGHTDREAM,
-	*/
+
+	ALL_REVERSEORCISH = 697,
+	ALL_WEWISH,
+
 	KN_CHARGEATK = 1001,
 	CR_SHRINK,
 	AS_SONICACCEL,
@@ -1374,6 +1377,10 @@ enum e_skill {
 	SO_CLOUD_KILL,
 	SO_STRIKING,
 	SO_WARMER,
+	SO_VACUUM_EXTREME,
+	SO_VARETYR_SPEAR,
+	SO_ARRULLO,
+	SO_SUMMON_AGNI,
 
 	GN_TRAINING_SWORD = 2474,
 	GN_REMODELING_CART,

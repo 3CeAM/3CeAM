@@ -3560,7 +3560,9 @@ int pc_isUseitem(struct map_session_data *sd,int n)
 		return 0;
 	
 	//Not usable by upper class. [Skotlex]
-	if(!((1<<(sd->class_&JOBL_UPPER?1:(sd->class_&JOBL_BABY?2:(sd->class_&JOBL_THIRD_UPPER)?4:0)))&item->class_upper))
+	if(!(
+		(1<<(sd->class_&JOBL_BABY?2:(sd->class_&JOBL_THIRD_BASE)?3:(sd->class_&JOBL_THIRD_UPPER)?4:(sd->class_&JOBL_UPPER)?1:0))&item->class_upper
+	))
 		return 0;
 
 	//Dead Branch & Bloody Branch & Porings Box
@@ -4270,40 +4272,28 @@ int pc_jobid2mapid(unsigned short b_class)
 		b_class -= JOB_NOVICE_HIGH;
 		class_|= JOBL_UPPER;
 	}
-	else if((b_class >= JOB_RUNE_KNIGHT_T && b_class <= JOB_GUILLOTINE_CROSS_T) ||
-		(b_class >= JOB_ROYAL_GUARD_T && b_class <= JOB_SHADOW_CHASER_T) ||
-		 b_class == JOB_RUNE_KNIGHT_T2 || b_class == JOB_ROYAL_GUARD_T2 ||
-		 b_class == JOB_RANGER_T2 || b_class == JOB_MECHANIC_T2)
-	{
-		if(b_class >= JOB_RUNE_KNIGHT_T && b_class <= JOB_GUILLOTINE_CROSS_T)
-			b_class -= 6;
-		else if(b_class >= JOB_ROYAL_GUARD_T && b_class <= JOB_SHADOW_CHASER_T)
-			b_class -= 7;
-		else if(b_class == JOB_RUNE_KNIGHT_T2 || b_class == JOB_ROYAL_GUARD_T2 ||
-			b_class == JOB_RANGER_T2 || b_class == JOB_MECHANIC_T2)
-			b_class -= 1;
-		class_|= JOBL_THIRD_UPPER;
-	}
-	else if( (b_class >= JOB_RUNE_KNIGHT && b_class <= JOB_GUILLOTINE_CROSS) ||
-		(b_class >= JOB_ROYAL_GUARD && b_class <= JOB_SHADOW_CHASER) ||
-		b_class == JOB_RUNE_KNIGHT2 || b_class == JOB_ROYAL_GUARD2 ||
-		b_class == JOB_RANGER2 || b_class == JOB_MECHANIC2)
-	{
-		class_|= JOBL_THIRD_BASE;
-	}
 
-	if ((b_class >= JOB_RUNE_KNIGHT && b_class <= JOB_GUILLOTINE_CROSS) || b_class == JOB_RUNE_KNIGHT2 || b_class == JOB_RANGER2 || b_class == JOB_MECHANIC2)
-	{
+	if ((b_class >= JOB_RUNE_KNIGHT && b_class <= JOB_GUILLOTINE_CROSS) || 
+		(b_class >= JOB_ROYAL_GUARD && b_class <= JOB_SHADOW_CHASER) || b_class == JOB_RUNE_KNIGHT2 || 
+		b_class == JOB_ROYAL_GUARD2 || b_class == JOB_RANGER2 || b_class == JOB_MECHANIC2)
+		class_|= JOBL_THIRD_BASE;
+
+	else if((b_class >= JOB_RUNE_KNIGHT_T && b_class <= JOB_GUILLOTINE_CROSS_T) || 
+		(b_class >= JOB_ROYAL_GUARD_T && b_class <= JOB_SHADOW_CHASER_T) || b_class == JOB_RUNE_KNIGHT_T2 || 
+		b_class == JOB_ROYAL_GUARD_T2 || b_class == JOB_RANGER_T2 || b_class == JOB_MECHANIC_T2)
+		class_|= JOBL_THIRD_UPPER;
+
+	if ((b_class >= JOB_KNIGHT && b_class <= JOB_KNIGHT2) || 
+		(b_class >= JOB_RUNE_KNIGHT && b_class <= JOB_GUILLOTINE_CROSS_T) || 
+		(b_class >= JOB_RUNE_KNIGHT2 && b_class <= JOB_RUNE_KNIGHT_T2) || 
+		(b_class >= JOB_RANGER2 && b_class <= JOB_MECHANIC_T2))
 		class_|= JOBL_2_1;
-	}
-	else if ((b_class >= JOB_ROYAL_GUARD && b_class <= JOB_SHADOW_CHASER) || b_class == JOB_ROYAL_GUARD2)
-	{
+
+	else if ((b_class >= JOB_CRUSADER && b_class <= JOB_CRUSADER2) || 
+		(b_class >= JOB_ROYAL_GUARD && b_class <= JOB_SHADOW_CHASER_T) || 
+		(b_class >= JOB_ROYAL_GUARD2 && b_class <= JOB_ROYAL_GUARD_T2))
 		class_|= JOBL_2_2;
-	}
-	if (b_class >= JOB_KNIGHT && b_class <= JOB_KNIGHT2)
-		class_|= JOBL_2_1;
-	else if (b_class >= JOB_CRUSADER && b_class <= JOB_CRUSADER2)
-		class_|= JOBL_2_2;
+
 	switch (b_class)
 	{
 		case JOB_NOVICE:
@@ -4319,27 +4309,61 @@ int pc_jobid2mapid(unsigned short b_class)
 		case JOB_KNIGHT2:
 		case JOB_CRUSADER:
 		case JOB_CRUSADER2:
+		case JOB_RUNE_KNIGHT:
+		case JOB_RUNE_KNIGHT2:
+		case JOB_RUNE_KNIGHT_T:
+		case JOB_RUNE_KNIGHT_T2:
+		case JOB_ROYAL_GUARD:
+		case JOB_ROYAL_GUARD2:
+		case JOB_ROYAL_GUARD_T:
+		case JOB_ROYAL_GUARD_T2:
 			class_ |= MAPID_SWORDMAN;
 			break;
 		case JOB_PRIEST:
 		case JOB_MONK:
+		case JOB_ARCH_BISHOP:
+		case JOB_ARCH_BISHOP_T:
+		case JOB_SURA:
+		case JOB_SURA_T:
 			class_ |= MAPID_ACOLYTE;
 			break;
 		case JOB_WIZARD:
 		case JOB_SAGE:
+		case JOB_WARLOCK:
+		case JOB_WARLOCK_T:
+		case JOB_SORCERER:
+		case JOB_SORCERER_T:
 			class_ |= MAPID_MAGE;
 			break;
 		case JOB_BLACKSMITH:
 		case JOB_ALCHEMIST:
+		case JOB_MECHANIC:
+		case JOB_MECHANIC2:
+		case JOB_MECHANIC_T:
+		case JOB_MECHANIC_T2:
+		case JOB_GENETIC:
+		case JOB_GENETIC_T:
 			class_ |= MAPID_MERCHANT;
 			break;
 		case JOB_HUNTER:
 		case JOB_BARD:
 		case JOB_DANCER:
+		case JOB_RANGER:
+		case JOB_RANGER2:
+		case JOB_RANGER_T:
+		case JOB_RANGER_T2:
+		case JOB_MINSTREL:
+		case JOB_WANDERER:
+		case JOB_MINSTREL_T:
+		case JOB_WANDERER_T:
 			class_ |= MAPID_ARCHER;
 			break;
 		case JOB_ASSASSIN:
 		case JOB_ROGUE:
+		case JOB_GUILLOTINE_CROSS:
+		case JOB_GUILLOTINE_CROSS_T:
+		case JOB_SHADOW_CHASER:
+		case JOB_SHADOW_CHASER_T:
 			class_ |= MAPID_THIEF;
 			break;
 			
@@ -4381,91 +4405,6 @@ int pc_jobid2mapid(unsigned short b_class)
 		case JOB_DARK_COLLECTOR:
 			class_ |= JOBL_2_2;
 			class_ |= MAPID_GANGSI;
-			break;
-		case JOB_RUNE_KNIGHT:
-		case JOB_RUNE_KNIGHT2:
-			class_ |= MAPID_SWORDMAN|MAPID_KNIGHT;
-			break;
-		case JOB_RUNE_KNIGHT_T:
-			class_ |= MAPID_SWORDMAN|MAPID_LORD_KNIGHT;
-			break;
-		case JOB_ROYAL_GUARD:
-		case JOB_ROYAL_GUARD2:
-			class_ |= MAPID_SWORDMAN|MAPID_CRUSADER;
-			break;
-		case JOB_ROYAL_GUARD_T:
-		case JOB_ROYAL_GUARD_T2:
-			class_ |= MAPID_SWORDMAN|MAPID_PALADIN;
-			break;
-		case JOB_WARLOCK:
-			class_ |= MAPID_MAGE|MAPID_WIZARD;
-			break;
-		case JOB_WARLOCK_T:
-			class_ |= MAPID_MAGE|MAPID_HIGH_WIZARD;
-			break;
-		case JOB_SORCERER:
-			class_ |= MAPID_MAGE|MAPID_SAGE;
-			break;
-		case JOB_SORCERER_T:
-			class_ |= MAPID_MAGE|MAPID_PROFESSOR;
-			break;
-		case JOB_RANGER:
-		case JOB_RANGER2:
-			class_ |= MAPID_ARCHER|MAPID_HUNTER;
-			break;
-		case JOB_RANGER_T:
-		case JOB_RANGER_T2:
-			class_ |= MAPID_ARCHER|MAPID_SNIPER;
-			break;
-		case JOB_MINSTREL:
-			class_ |= MAPID_ARCHER|MAPID_BARDDANCER;
-			break;
-		case JOB_MINSTREL_T:
-			class_ |= MAPID_ARCHER|MAPID_CLOWNGYPSY;
-			break;
-		case JOB_WANDERER:
-			class_ |= MAPID_ARCHER|MAPID_BARDDANCER;
-			break;
-		case JOB_WANDERER_T:
-			class_ |= MAPID_ARCHER|MAPID_CLOWNGYPSY;
-			break;
-		case JOB_ARCH_BISHOP:
-			class_ |= MAPID_ACOLYTE|MAPID_PRIEST;
-			break;
-		case JOB_ARCH_BISHOP_T:
-			class_ |= MAPID_ACOLYTE|MAPID_HIGH_PRIEST;
-			break;
-		case JOB_SURA:
-			class_ |= MAPID_ACOLYTE|MAPID_MONK;
-			break;
-		case JOB_SURA_T:
-			class_ |= MAPID_ACOLYTE|MAPID_CHAMPION;
-			break;
-		case JOB_MECHANIC:
-		case JOB_MECHANIC2:
-			class_ |= MAPID_MERCHANT|MAPID_BLACKSMITH;
-			break;
-		case JOB_MECHANIC_T:
-		case JOB_MECHANIC_T2:
-			class_ |= MAPID_MERCHANT|MAPID_WHITESMITH;
-			break;
-		case JOB_GENETIC:
-			class_ |= MAPID_MERCHANT|MAPID_ALCHEMIST;
-			break;
-		case JOB_GENETIC_T:
-			class_ |= MAPID_MERCHANT|MAPID_CREATOR;
-			break;
-		case JOB_GUILLOTINE_CROSS:
-			class_ |= MAPID_THIEF|MAPID_ASSASSIN;
-			break;
-		case JOB_GUILLOTINE_CROSS_T:
-			class_ |= MAPID_THIEF|MAPID_ASSASSIN_CROSS;
-			break;
-		case JOB_SHADOW_CHASER:
-			class_ |= MAPID_THIEF|MAPID_ROGUE;
-			break;
-		case JOB_SHADOW_CHASER_T:
-			class_ |= MAPID_THIEF|MAPID_STALKER;
 			break;
 		default:
 			return -1;
@@ -5409,7 +5348,7 @@ int pc_resetstate(struct map_session_data* sd)
 			return 0;
 		}
 		
-		sd->status.status_point = statp[sd->status.base_level] + ( sd->class_&JOBL_UPPER ? 52 : 0 ); // extra 52+48=100 stat points
+		sd->status.status_point = statp[sd->status.base_level] + ( (sd->class_&JOBL_UPPER || sd->class_&JOBL_THIRD_UPPER) ? 52 : 0 ); // extra 52+48=100 stat points
 	}
 	else
 	{ //Use new stat-calculating equation [Skotlex]
@@ -5996,8 +5935,8 @@ int pc_readparam(struct map_session_data* sd,int type)
 	case SP_BASELEVEL:   val = sd->status.base_level; break;
 	case SP_JOBLEVEL:    val = sd->status.job_level; break;
 	case SP_CLASS:       val = sd->status.class_; break;
-	case SP_BASEJOB:     val = pc_mapid2jobid(sd->class_&MAPID_THIRDMASK, sd->status.sex); break; //Base job, extracting upper type.
-	case SP_UPPER:       val = sd->class_&JOBL_BABY?2:(sd->class_&JOBL_THIRD_BASE?3:sd->class_&JOBL_THIRD_UPPER?4:(sd->class_&JOBL_UPPER?1:0)); break;
+	case SP_BASEJOB:     val = pc_mapid2jobid(sd->class_&MAPID_UPPERMASK, sd->status.sex); break; //Base job, extracting upper type.
+	case SP_UPPER:       val = sd->class_&JOBL_UPPER?1:(sd->class_&JOBL_BABY?2:(sd->class_&JOBL_THIRD_BASE?3:(sd->class_&JOBL_THIRD_UPPER?4:0))); break;
 	case SP_BASECLASS:   val = pc_mapid2jobid(sd->class_&MAPID_BASEMASK, sd->status.sex); break; //Extract base class tree. [Skotlex]
 	case SP_SEX:         val = sd->status.sex; break;
 	case SP_WEIGHT:      val = sd->weight; break;
@@ -6311,7 +6250,7 @@ int pc_jobchange(struct map_session_data *sd,int job, int upper)
 		pc_setglobalreg(sd, "CLONE_SKILL", 0);
 		pc_setglobalreg(sd, "CLONE_SKILL_LV", 0);
 	}
-	if ((b_class&&MAPID_UPPERMASK) != (sd->class_&MAPID_UPPERMASK))
+	if ((b_class&&MAPID_THIRDMASK) != (sd->class_&MAPID_THIRDMASK))
 	{ //Things to remove when changing class tree.
 		const int class_ = pc_class2idx(sd->status.class_);
 		short id;

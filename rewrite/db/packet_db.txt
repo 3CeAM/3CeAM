@@ -7,7 +7,9 @@
 
 // Main packet version of the DB to use (default = max available version)
 // Client detection is faster when all clients use this version.
-packet_db_ver: default
+// Version 23 is the latest Sakexe (above versions are for Renewal clients)
+packet_db_ver: 23
+//packet_db_ver: default
 
 
 packet_ver: 5
@@ -1202,52 +1204,21 @@ packet_ver: 22
 0x035f,-1
 0x0389,-1
 
-//2008-08-20aSakexe
-0x040c,-1
-0x040d,-1
-0x040e,-1
-0x040f,-1
-0x0410,-1
-0x0411,-1
-0x0412,-1
-0x0413,-1
-0x0414,-1
-0x0415,-1
-0x0416,-1
-0x0417,-1
-0x0418,-1
-0x0419,-1
-0x041a,-1
-0x041b,-1
-0x041c,-1
-0x041d,-1
-0x041e,-1
-0x041f,-1
-0x0420,-1
-0x0421,-1
-0x0422,-1
-0x0423,-1
-0x0424,-1
-0x0425,-1
-0x0426,-1
-0x0427,-1
-0x0428,-1
-0x0429,-1
-0x042a,-1
-0x042b,-1
-0x042c,-1
-0x042d,-1
-0x042e,-1
-0x042f,-1
-0x0430,-1
-0x0431,-1
-0x0432,-1
-0x0433,-1
-0x0434,-1
-0x0435,-1
-
-//2008-08-27aRagexeRE
+//2008-09-10aSakexe
 packet_ver: 23
+0x0436,19,wanttoconnection,2:6:10:14:18
+0x0437,7,actionrequest,2:6
+0x0438,10,useskilltoid,2:4:6
+0x0439,8,useitem,2:4
+
+//2009-04-08aSakexe
+//0x02a6,-1
+//0x02a7,-1
+0x044a,6
+
+//Renewal Clients
+//2008-08-27aRagexeRE
+packet_ver: 24
 0x0072,22,useskilltoid,9:15:18
 0x007c,44
 0x007e,105,useskilltoposinfo,10:14:18:23:25
@@ -1270,7 +1241,7 @@ packet_ver: 23
 0x02e5,9
 
 //2008-09-10aRagexeRE
-packet_ver: 24
+packet_ver: 25
 0x0436,19,wanttoconnection,2:6:10:14:18
 0x0437,7,actionrequest,2:6
 0x0438,10,useskilltoid,2:4:6
@@ -1283,7 +1254,7 @@ packet_ver: 24
 
 //2008-12-17aRagexeRE
 0x01a2,37
-//0x0440,10
+0x0440,10
 //0x0441,4
 //0x0442,8
 //0x0443,8
@@ -1294,7 +1265,7 @@ packet_ver: 24
 //2009-01-21aRagexeRE
 0x043f,25
 //0x0444,-1
-//0X0445,10
+//0x0445,10
 
 //2009-02-18aRagexeRE
 //0x0446,14
@@ -1302,17 +1273,8 @@ packet_ver: 24
 //2009-02-26cRagexeRE
 //0x0448,-1
 
-//2009-03-25dRagexeRE
-//0x2a6,404
-//0x2a7,404
-
 //2009-04-01aRagexeRE
 //0x0449,4
-
-//2009-04-08aRagexeRE
-//0x02a6,-1
-//0x02a7,-1
-0x044a,6
 
 //2009-05-14aRagexeRE
 //0x044b,2
@@ -1342,9 +1304,6 @@ packet_ver: 24
 //0x07dd,54
 //0x07de,30
 //0x07df,54
-
-//2009-06-17bRagexeRE //Gravity Screw it with this one XD
-//2009-06-17cRagexeRE //And here they fix it XD
 
 //2009-07-01aRagexeRE
 //0x0275,37
@@ -1405,4 +1364,4 @@ packet_ver: 24
 //0x07f9,0
 
 //Add new packets here
-//packet_ver: 25
+//packet_ver: 26

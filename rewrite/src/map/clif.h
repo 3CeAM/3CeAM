@@ -26,40 +26,6 @@ struct guild;
 struct battleground_data;
 struct quest;
 #include <stdarg.h>
-
-// server->client protocol version
-//        0 - pre-?
-//        1 - ?                    - 0x196
-//        2 - ?                    - 0x78, 0x79
-//        3 - ?                    - 0x1c8, 0x1c9, 0x1de
-//        4 - ?                    - 0x1d7, 0x1d8, 0x1d9, 0x1da
-//        5 - 2003-12-18aSakexe+   - 0x1ee, 0x1ef, 0x1f0, ?0x1c4, 0x1c5?
-//        6 - 2004-03-02aSakexe+   - 0x1f4, 0x1f5
-//        7 - 2005-04-11aSakexe+   - 0x229, 0x22a, 0x22b, 0x22c
-// 20070521 - 2007-05-21aSakexe+   - 0x283
-// 20070821 - 2007-08-21aSakexe+   - 0x2c5
-// 20070918 - 2007-09-18aSakexe+   - 0x2d7, 0x2d9, 0x2da
-// 20071106 - 2007-11-06aSakexe+   - 0x78, 0x7c, 0x22c
-// 20081126 - 2008-11-26aSakexe+   - 0x1a2
-// 20080827 - 2008-08-27aRagexeRE+ - First RE Client
-// 20081217 - 2008-12-17aRagexeRE+ - 0x6d (Note: This one still use old Char Info Packet Structure)
-// 20081218 - 2008-12-17bRagexeRE+ - 0x6d (Note: From this one client use new Char Info Packet Structure)
-// 20090603 - 2009-06-03aRagexeRE+ - 0x7d7, 0x7d8, 0x7d9, 0x7da
-// 20090617 - 2009-06-17aRagexeRE+ - 0x7d9
-// 20090922 - 2009-09-22aRagexeRE+ - 0x7e5, 0x7e7, 0x7e8, 0x7e9
-#ifndef PACKETVER
-	#define PACKETVER	20090922
-#endif
-// backward compatible PACKETVER 8 and 9
-#if PACKETVER == 8
-#undef PACKETVER
-#define PACKETVER 20070521
-#endif
-#if PACKETVER == 9
-#undef PACKETVER
-#define PACKETVER 20071106
-#endif
-
 // packet DB
 #define MAX_PACKET_DB		0x800
 #define MAX_PACKET_VER		25
@@ -161,6 +127,7 @@ void clif_refreshlook(struct block_list *bl,int id,int type,int val,enum send_ta
 int clif_arrowequip(struct map_session_data *sd,int val); //self
 int clif_arrow_fail(struct map_session_data *sd,int type); //self
 int clif_arrow_create_list(struct map_session_data *sd);	//self
+int clif_rune_create_list(struct map_session_data *sd, int trigger, int rune_ore); //self
 int clif_spellbook_list(struct map_session_data *sd);	//self
 int clif_statusupack(struct map_session_data *,int,int,int);	// self
 int clif_equipitemack(struct map_session_data *,int,int,int);	// self
@@ -258,7 +225,7 @@ void clif_bladestop(struct block_list* src, int dst_id, int active);
 void clif_changemapcell(int fd, int m, int x, int y, int type, enum send_target target);
 
 int clif_status_load(struct block_list *bl,int type, int flag);
-int clif_status_change(struct block_list *bl,int type,int type2,int type3, int type4,int flag,unsigned int tick);
+int clif_status_change(struct block_list *bl, int type, int flag, unsigned int tick, int val1, int val2, int val3);
 
 int clif_wis_message(int fd, const char* nick, const char* mes, int mes_len);
 int clif_wis_end(int fd,int flag);
@@ -445,7 +412,7 @@ void clif_quest_add(struct map_session_data * sd, struct quest * qd, int index);
 void clif_quest_delete(struct map_session_data * sd, int quest_id);  
 void clif_quest_update_status(struct map_session_data * sd, int quest_id, bool active); 
 void clif_quest_update_objective(struct map_session_data * sd, struct quest * qd, int index); 
-void clif_quest_npc_show_event(struct map_session_data *sd, struct npc_data *nd, short state, short color );
+void clif_quest_show_event(struct map_session_data *sd, struct block_list *bl, short state, short color);
 
 int clif_send(const uint8* buf, int len, struct block_list* bl, enum send_target type);
 int do_final_clif(void);

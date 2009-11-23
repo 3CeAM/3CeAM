@@ -80,7 +80,7 @@ struct mob_db {
 	struct { int nameid,p; } mvpitem[3];
 	struct status_data status;
 	struct view_data vd;
-	short option;
+	int option; // Changed to int to give support to the new options. [pakpil]
 	int summonper[MAX_RANDOMMONSTER];
 	int maxskill;
 	struct mob_skill skill[MAX_MOBSKILL];

@@ -79,7 +79,7 @@
 1549,Pile_Bunker,Pile Bunker,4,10,,3000,450,,1,0,0x04000000,24,2,2,3,99,0,23,{},{},{}
 
 // Mechanic Mado Side Arm Weapons
-2139,Flame_Thrower,Flame Thrower,5,20000,,2000,,5,,0,0x04000000,24,2,32,,99,0,5,{},{},{}
+2139,Flame_Thrower,Flame Thrower,5,20000,,2000,,5,,0,0xFFFFFFFF,24,2,32,,99,0,5,{},{},{}
 2140,Energy_Rune_Guard,Energy Rune Guard,3,10,,10,,,,,,,,,,,,,{},{},{}
 
 //2794,Magic_Stone_Ring,Magic Stone Ring,3,10,,10,,,,,,,,,,,,,{},{},{}
@@ -93,12 +93,12 @@
 2801,Hovering_Booster,Hovering Booster,5,100000,,100,,0,,1,0x04000000,24,2,136,,99,0,0,{ bonus bAgi,1; bonus bAspdRate,2; },{},{}
 2802,Self_Destruct_Device,Self Destruct Device,5,500000,,1000,,0,,1,0x04000000,24,2,136,,99,0,0,{ bonus bMaxHP,100; },{},{}
 2803,Shape_Shift,Shape Shift,5,100000,,500,,0,,1,0x04000000,24,2,136,,99,0,0,{ bonus bInt,3; },{},{}
-2804,Cooling_System,Cooling System,5,100000,,2500,,0,,1,0x04000000,24,2,136,,99,0,0,{ bonus bDex,1; bonus3 bAutoSpellWhenHit,"WZ_FROSTNOVA",3,100;},{},{}
+2804,Cooling_System,Cooling System,5,100000,,2500,,0,,1,0xFFFFFFFF,24,2,136,,99,0,0,{ bonus bDex,1; bonus3 bAutoSpellWhenHit,"WZ_FROSTNOVA",3,100;},{},{}
 2805,Magnetic_Field_Generator,Magnetic Field Generator,5,100000,,6000,,0,,1,0x04000000,24,2,136,,99,0,0,{ bonus bDex,1; bonus3 bAutoSpellWhenHit,"MG_THUNDERSTORM",5,100; },{},{}
 2806,Barrier_Device,Barrier Device,5,150000,,8000,,0,,1,0x04000000,24,2,136,,99,0,0,{ bonus bDex,1; bonus3 bAutoSpellWhenHit,"AL_PNEUMA",1,100;},{},{}
 2807,Repair_Kit,Repair Kit,5,200000,,400,,0,,1,0x04000000,24,2,136,,99,0,0,{ bonus bMaxHP,500; bonus bMaxSP,200; },{},{}
 2808,Optical_Camouflage_Generator,Optical Camouflage Generator,5,10,,1000,,0,,1,0x04000000,24,2,136,,99,0,0,{ bonus bAgi,3; },{},{}
-2809,Advanced_Cooling_System,Advanced Cooling System,5,10,,10,,0,,1,0x04000000,24,2,136,,99,0,0,{ bonus bDex,1; },{},{}
+2809,Advanced_Cooling_System,Advanced Cooling System,5,10,,10,,0,,1,0xFFFFFFFF,24,2,136,,99,0,0,{ bonus bDex,1; },{},{}
 2810,Special_Cooling_System,Special Cooling System,5,10,,10,,0,,1,0x04000000,24,2,136,,99,0,0,{ bonus bDex,1; },{},{}
 
 5516,Hawkeye_1,Hawkeye 1,3,10,,10,,,,,,,,,,,,,{},{},{}

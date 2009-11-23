@@ -18,6 +18,8 @@
 
 #define MAX_PC_BONUS 10
 
+#define MAX_RUNE 20
+
 struct weapon_data {
 	int atkmods[3];
 	// all the variables except atkmods get zero'ed in each call of status_calc_pc
@@ -195,7 +197,7 @@ struct map_session_data {
 	short cook_mastery; // range: [0,1999] [Inkfish]
 	unsigned char blockskill[MAX_SKILL];
 	int cloneskill_id;
-	int menuskill_id, menuskill_val;
+	int menuskill_id, menuskill_val, menuskill_itemused;
 
 	int invincible_timer;
 	unsigned int canlog_tick;
@@ -405,8 +407,8 @@ struct map_session_data {
 };
 
 
-//Update this max as necessary. 54 is the value needed for Super Baby currently
-#define MAX_SKILL_TREE 115
+//Update this max as necessary. Raised from 54 to 72 as the trans version of Mechanic needs it
+#define MAX_SKILL_TREE 72
 //Total number of classes (for data storage)
 #define CLASS_COUNT (JOB_MAX - JOB_NOVICE_HIGH + JOB_MAX_BASIC)
 
