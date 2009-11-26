@@ -464,6 +464,18 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			damage -= damage * 6 * (1+per) / 100;
 		}
 
+		if( (sce = sc->data[SC_HAGALAZ]) && !sc->data[SC_HAGALAZ]->val3 && (damage > 0) )
+		{
+			if( flag&BF_WEAPON )
+			{
+				sce->val2 -= damage;
+				skill_break_equip(src, EQP_WEAPON, 100*sce->val1, BCT_SELF);
+				if( src->type == BL_MOB && !(status_get_status_data(src)->mode&MD_BOSS))
+					sc_start4(src, SC_HAGALAZ, 100, 0, 0, 1, 0, skill_get_time2(RK_STONEHARDSKIN, sce->val1));
+			}
+			if( sce->val2 <= 0 )
+				status_change_end(bl, SC_HAGALAZ, -1);
+		}
 		if((sce=sc->data[SC_REJECTSWORD]) && flag&BF_WEAPON &&
 			// Fixed the condition check [Aalye]
 			(src->type!=BL_PC || (
@@ -491,6 +503,20 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			}
 			if((--sce->val3)<=0 || (sce->val2<=0) || skill_num == AL_HOLYLIGHT)
 				status_change_end(bl, SC_KYRIE, -1);
+		}
+
+		if((sce = sc->data[SC_BERKANA]) && sce->val2 > 0 && damage > 0)
+		{
+			sce->val3 -= damage; // absorb damage
+			damage = 0;
+			d->dmg_lv = ATK_BLOCK;
+			if( sce->val3 < sce->val2*1000 - 1000 ) // check spheres' hp
+			{
+				sce->val2--; // reduce spheres
+				clif_millenniumshield(((TBL_PC*)bl),sce->val2);
+			}
+			if( sce->val2 < 0 )
+				sce->val2 = 0;
 		}
 
 		if (!damage) return 0;
@@ -720,7 +746,7 @@ int battle_addmastery(struct map_session_data *sd,struct block_list *target,int 
 				if(!pc_isriding(sd))
 					damage += (skill * 4);
 				else
-					damage += (skill * 5);
+					damage += (skill * (5 + pc_checkskill(sd,RK_DRAGONTRAINING)));
 			}
 			break;
 		case W_1HAXE:
@@ -1353,6 +1379,14 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				} else
 					ATK_ADD(sstatus->rhw.atk2); //Else use Atk2
 				break;
+			case RK_DRAGONBREATH:
+				wd.damage = (status_get_max_hp(src) * 80 / 1000) + (status_get_max_sp(src) * 180 / 100);
+				if( sd )
+					wd.damage += wd.damage * (5 * pc_checkskill(sd,RK_DRAGONTRAINING)-1) / 100;
+				break;
+			case RK_CRUSHSTRIKE:
+				wd.damage = sstatus->rhw.atk * 10; // Still need official value. [pakpil]
+				break;
 			case HFLI_SBR44:	//[orn]
 				if(src->type == BL_HOM) {
 					wd.damage = ((TBL_HOM*)src)->homunculus.intimacy ;
@@ -1722,6 +1756,39 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					break;
 				case NPC_VAMPIRE_GIFT:
 					skillratio += ((skill_lv-1)%5+1)*100;
+					break;
+				case RK_SONICWAVE:
+					skillratio += (400 + 100 * skill_lv) + (20 * status_get_lv(src) / 4);	// Still need oficial level based damage value. [pakpil]
+					break;
+				case RK_HUNDREDSPEAR:
+					skillratio += (500 + 40 * skill_lv) + (20 * status_get_lv(src) / 4);	// Still need oficial level based damage value [pakpil]
+					if( sd )
+						skillratio += 50 * pc_checkskill(sd,LK_SPIRALPIERCE);
+					break;
+				case RK_WINDCUTTER:
+					skillratio += 100 + 50 * skill_lv;
+					break;
+				case RK_IGNITIONBREAK:
+					if( distance_bl(src, target) <= 1 ) skillratio += 200 + 200 * skill_lv;
+					if( distance_bl(src, target) == 2 ) skillratio += 200 * skill_lv;
+					if( distance_bl(src, target) >= 3 ) skillratio += 100 + 100 * skill_lv;
+					if( sd && sd->base_status.rhw.ele == ELE_FIRE )
+						skillratio +=  skillratio / 2; // if the weapon is endowed with fire elemet this skill deal 1.5 more damage. [pakpil]
+					break;
+				case RK_CRUSHSTRIKE:
+					skillratio += 1400;
+					break;
+				case RK_STORMBLAST: // Still need official value [pakpil]
+					skillratio += 300 + (status_get_lv(src) * 2 / 10);
+					break;
+				case RK_PHANTOMTHRUST: // Set according test in RE. [pakpil]
+					skillratio += 25 * (skill_lv - 1);
+					if( sd )
+					{
+						skillratio += 25 * (pc_checkskill(sd,KN_SPEARMASTERY)-1);
+						if( pc_isriding(sd) )
+							skillratio += 50;
+					}
 					break;
 				case AB_DUPLELIGHT_MELEE:
 					skillratio += 10 * skill_lv;
@@ -2255,6 +2322,12 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 		status_zap(src, hp, 0);
 	}
 
+	if(sc && sc->data[SC_ENCHANTBLADE] && !skill_num && ((flag.rh && sd->weapontype1) || (flag.lh && sd->weapontype2))) // Only regular melee attacks are increased. A weapon must be equiped. [pakpil]
+	{	// Enchant Blade [pakpil]
+		struct Damage md = battle_calc_magic_attack(src, target, RK_ENCHANTBLADE, ((TBL_PC*)src)->status.skill[RK_ENCHANTBLADE].lv, wflag);
+		wd.damage += md.damage;
+		wd.flag += md.flag;
+	}
 	return wd;
 }
 
@@ -2271,6 +2344,8 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 	struct Damage ad;
 	struct status_data *sstatus = status_get_status_data(src);
 	struct status_data *tstatus = status_get_status_data(target);
+	struct status_change *sc = status_get_sc(src);
+	
 	struct {
 		unsigned imdef : 1;
 		unsigned infdef : 1;
@@ -2297,6 +2372,15 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 
 	sd = BL_CAST(BL_PC, src);
 	tsd = BL_CAST(BL_PC, target);
+
+	if( sc && sc->data[SC_ENCHANTBLADE] )
+	{
+		if( src->id == sc->data[SC_ENCHANTBLADE]->val4 )
+			ad.damage = 100 + 20 * sc->data[SC_ENCHANTBLADE]->val1;
+		else
+			ad.damage = sc->data[SC_ENCHANTBLADE]->val2;
+	}
+
 
 	//Initialize variables that will be used afterwards
 	s_ele = skill_get_ele(skill_num, skill_lv);
@@ -3166,6 +3250,24 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		tsc->data[SC_KAAHI]->val4 = add_timer(tick + skill_get_time2(SL_KAAHI,tsc->data[SC_KAAHI]->val1), kaahi_heal_timer, target->id, SC_KAAHI); //Activate heal.
 
 	wd = battle_calc_attack(BF_WEAPON, src, target, 0, 0, flag);	
+
+
+	if(sc)
+	{
+		if( sc->data[SC_THURISAZ] && sc->data[SC_THURISAZ]->val3 > 0 && wd.flag&(BF_WEAPON|BF_SHORT) )
+			{ // As I have noticed, this effect is for 1 hit.
+				int rate = rand()%100;
+				wd.damage *= 3;
+				sc->data[SC_THURISAZ]->val3 = 0;
+				if(rate < 10) // Break your weapon still need official value
+					skill_break_equip(src, EQP_WEAPON, rate, BCT_SELF);
+		}
+	}
+
+	if(tsc && tsc->data[SC_THURISAZ] && wd.flag&(BF_WEAPON|BF_SHORT) )	// short range physical damage.
+	{ // Mark it to amplify target's next attack.
+		tsc->data[SC_THURISAZ]->val3 = 1;
+	}
 
 	if (sd && sd->state.arrow_atk) //Consume arrow.
 		battle_consume_ammo(sd, 0, 0);

@@ -8301,7 +8301,7 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 		if (sd->sc.option&OPTION_FALCON)
 			clif_status_load(&sd->bl, SI_FALCON, 1);
 
-		if (sd->sc.option&OPTION_RIDING)
+		if (sd->sc.option&OPTION_RIDING || sd->sc.option&(OPTION_RIDING_DRAGON))
 			clif_status_load(&sd->bl, SI_RIDING, 1);
 
 		if(sd->status.manner < 0)
@@ -9562,8 +9562,8 @@ void clif_parse_GetItemFromCart(int fd,struct map_session_data *sd)
  *------------------------------------------*/
 void clif_parse_RemoveOption(int fd,struct map_session_data *sd)
 {
-	//Can only remove Cart/Riding/Falcon.
-	pc_setoption(sd,sd->sc.option&~(OPTION_CART|OPTION_RIDING|OPTION_FALCON));
+	//Can only remove Cart/Riding Peco/Falcon/Riding Dragon/Mado.
+	pc_setoption(sd,sd->sc.option&~(OPTION_CART|OPTION_RIDING|OPTION_FALCON|(OPTION_RIDING_DRAGON)|OPTION_MADO));
 }
 
 /*==========================================
@@ -13441,6 +13441,32 @@ void clif_party_show_picker(struct map_session_data * sd, struct item * item_dat
 	//WBUFB(buf,20) = 0;
 	//WBUFB(buf,21) = 0;
 	clif_send(buf, packet_len(0x2b8), &sd->bl, PARTY_SAMEMAP_WOS);
+#endif
+}
+
+void clif_equip_damaged(struct map_session_data *sd, int equip_index)
+{
+#if PACKETVER >= 20070521
+	int fd = sd->fd;
+
+	WFIFOHEAD(fd,packet_len(0x2bb));
+	WFIFOW(fd,0) = 0x2bb;
+	WFIFOW(fd,2) = equip_index;
+	WFIFOL(fd,4) = sd->bl.id;
+	WFIFOSET(fd,packet_len(0x2bb));
+#endif
+}
+
+void clif_millenniumshield(struct map_session_data *sd, short shields )
+{
+#if PACKETVER >= 20081217
+	unsigned char buf[8];
+	int fd = sd->fd;
+
+	WBUFW(buf,0) = 0x440;
+	WBUFL(buf,2) = sd->bl.id;
+	WBUFW(buf,6) = shields;
+	clif_send(buf,packet_len(0x440),&sd->bl,AREA);
 #endif
 }
 

@@ -462,4 +462,7 @@ void clif_party_show_picker(struct map_session_data * sd, struct item * item_dat
 void clif_progressbar(struct map_session_data * sd, unsigned long color, unsigned int second);
 void clif_progressbar_abort(struct map_session_data * sd);
 
+void clif_equip_damaged(struct map_session_data *sd, int equip_index);
+void clif_millenniumshield(struct map_session_data *sd, short shields );
+
 #endif /* _CLIF_H_ */
