@@ -3687,6 +3687,24 @@ int parse_char(int fd)
 			RFIFOSKIP(fd,32);
 		break;
 
+		// captcha code requst
+		// R 07e5 <?>.w <aid>.l
+		case 0x7e5:
+		// captcha code check
+		// R 07e7 <len>.w <aid>.l <code>.b10 <?>.b14
+		case 0x7e7:
+		{
+			if (cmd == 0x7e5) RFIFOSKIP(fd,8); //This is to avoid conflict on the Hack
+			if (cmd == 0x7e7) RFIFOSKIP(fd,32); //This is to avoid conflict on the Hack
+
+			WFIFOHEAD(fd,5);
+			WFIFOW(fd,0) = 0x7e9;
+			WFIFOW(fd,2) = 5;
+			WFIFOB(fd,4) = 1;
+			WFIFOSET(fd,5);
+		}
+		break;
+
 		// login as map-server
 		case 0x2af8:
 			if (RFIFOREST(fd) < 60)

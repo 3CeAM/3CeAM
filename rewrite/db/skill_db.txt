@@ -897,6 +897,152 @@
 2253,6,6,2,3,0x42,5,5,1,no,0,0x80,1,misc,0,	RA_FIRINGTRAP,Firing Trap
 2254,6,6,2,1,0x42,5,5,1,no,0,0x80,1,misc,0,	RA_ICEBOUNDTRAP,Icebound Trap
 
+// Shadow Chaser
+2284,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	SC_FATALMENACE,Fatal Menace
+2285,0,0,0,0,0,0,10,0,no,0,0,0,none,0,	SC_REPRODUCE,Reproduce
+2286,0,0,0,0,0,0,10,0,no,0,0,0,none,0,	SC_AUTOSHADOWSPELL,Auto Shadow Spell
+2287,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		SC_SHADOWFORM,Shadow Form
+2288,0,0,0,0,0,0,10,0,no,0,0,0,none,0,	SC_TRIANGLESHOT,Triangle Shot
+2289,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		SC_BODYPAINT,Body Painting
+2290,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		SC_INVISIBILITY,Invisibility
+2291,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		SC_DEADLYINFECT,Deadly Infect
+2292,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		SC_ENERVATION,Masquerade - Enervation
+2293,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		SC_GROOMY,Masquerade - Gloomy
+2294,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		SC_IGNORANCE,Masquerade - Ignorance
+2295,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		SC_LAZINESS,Masquerade - Laziness
+2296,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		SC_UNLUCKY,Masquerade - Unlucky
+2297,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		SC_WEAKNESS,Masquerade - Weakness
+2298,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	SC_STRIPACCESSARY,Strip Accessory
+2299,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		SC_MANHOLE,Man Hole
+2300,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		SC_DIMENSIONDOOR,Dimension Door
+2301,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		SC_CHAOSPANIC,Chaos Panic
+2302,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		SC_MAELSTROM,Maelstrom
+2303,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		SC_BLOODYLUST,Bloody Lust
+2304,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		SC_FEINTBOMB,Feint Bomb
+
+// Royal Guard
+2307,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_CANNONSPEAR,Cannon Spear
+2308,7,6,1,0,0,0,10,1,no,0,0,0,none,0,		LG_BANISHINGPOINT,Banishing Point
+2309,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_TRAMPLE,Trample
+2310,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_SHIELDPRESS,Shield Press
+2311,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_REFLECTDAMAGE,Reflect Damage
+2312,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_PINPOINTATTACK,Pinpoint Attack
+2313,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_FORCEOFVANGUARD,Force of Vanguard
+2314,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		LG_RAGEBURST,Rage Burst
+2315,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		LG_SHIELDSPELL,Shield Spell
+2316,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_EXEEDBREAK,Exceed Break
+2317,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_OVERBRAND,Over Brand
+2318,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_PRESTIGE,Prestige
+2319,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_BANDING,Banding
+2320,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_MOONSLASHER,Moon Slasher
+2321,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_RAYOFGENESIS,Ray of Genesis
+2322,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_PIETY,Piety
+2323,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_EARTHDRIVE,Earth Drive
+2324,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_HESPERUSLIT,Hesperus Lit
+2325,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_INSPIRATION,Inspiration
+
+// Sura
+2326,0,0,0,0,0,0,10,0,no,0,0,0,none,0,	SR_DRAGONCOMBO,Dragon Combo
+2327,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	SR_SKYNETBLOW,Sky Net Blow
+2328,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	SR_EARTHSHAKER,Earth Shaker
+2329,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	SR_FALLENEMPIRE,Fallen Empire
+2330,0,0,0,0,0,0,10,0,no,0,0,0,none,0,	SR_TIGERCANNON,Tiger Canon
+2331,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		SR_HELLGATE,Hell Gate
+2332,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	SR_RAMPAGEBLASTER,Rampage Blaster
+2333,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	SR_CRESCENTELBOW,Crescent Elbow
+2334,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	SR_CURSEDCIRCLE,Cursed Circle
+2335,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	SR_LIGHTNINGWALK,Lightning Walk
+2336,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		SR_KNUCKLEARROW,Knuckle Arrow
+2337,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	SR_WINDMILL,Windmill
+2338,0,0,0,0,0,0,10,0,no,0,0,0,none,0,	SR_RAISINGDRAGON,Raising Dragon
+2339,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		SR_GENTLETOUCH,Gentle Touch// What is this for? o.O [LimitLine]
+2340,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	SR_ASSIMILATEPOWER,Assimilate Power
+2341,0,0,0,0,0,0,1,0,no,0,0,0,none,0,	SR_POWERVELOCITY,Power Velocity
+2342,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	SR_CRESCENTELBOW_AUTOSPELL,Crescent Elbow Autospell
+2343,0,0,0,0,0,0,10,0,no,0,0,0,none,0,	SR_GATEOFHELL,Gate of Hell
+2344,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	SR_GENTLETOUCH_QUIET,Gentle Touch - Quiet
+2345,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	SR_GENTLETOUCH_CURE,Gentle Touch - Cure
+2346,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	SR_GENTLETOUCH_ENERGYGAIN,Gentle Touch - Energy Drain
+2347,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	SR_GENTLETOUCH_CHANGE,Gentle Touch - Change
+2348,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	SR_GENTLETOUCH_REVITALIZE,Gentle Touch - Revitalize
+
+// Wanderer
+2350,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	WA_SWING_DANCE,Swing Dance
+2351,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	WA_SYMPHONY_OF_LOVER,Symphony of Lovers
+2352,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	WA_MOONLIT_SERENADE,Moonlit Serenade
+
+// Minstrel
+2381,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	MI_RUSH_WINDMILL,Windmill Rush Attack
+2382,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	MI_ECHOSONG,Echo Song
+2383,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	MI_HARMONIZE,Harmonize
+
+// Minstrel/Wanderer
+2412,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		WM_LESSON,Lesson
+2413,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	WM_METALICSOUND,Metallic Sound
+2414,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		WM_REVERBERATION,Reverberation
+2415,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	WM_REVERBERATION_MELEE,Reverberation Melee
+2416,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	WM_REVERBERATION_MAGIC,Reverberation Magic
+2417,0,0,0,0,0,0,1,0,no,0,0,0,none,0,	WM_DOMINION_IMPULSE,Dominion Impulse
+2418,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	WM_SEVERE_RAINSTORM,Severe Rainstorm
+2419,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		WM_POEMOFNETHERWORLD,Poem of The Netherworld
+2420,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	WM_VOICEOFSIREN,Voice of Siren
+2421,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	WM_DEADHILLHERE,Valley of Death
+2422,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		WM_LULLABY_DEEPSLEEP,Deep Sleep Lullaby
+2423,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	WM_SIRCLEOFNATURE,Circle of Nature's Sound
+2424,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	WM_RANDOMIZESPELL,Improvised Song
+2425,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	WM_GLOOMYDAY,Gloomy Day
+2426,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	WM_GREAT_ECHO,Great Echo
+2427,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	WM_SONG_OF_MANA,Song of Mana
+2428,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	WM_DANCE_WITH_WUG,Dance With A Warg
+2429,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	WM_SOUND_OF_DESTRUCTION,Sound of Destruction
+2430,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	WM_SATURDAY_NIGHT_FEVER,Saturday Night Fever
+2431,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	WM_LERADS_DEW,Lerad's Dew
+2432,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	WM_MELODYOFSINK,Melody of Sink
+2433,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	WM_BEYOND_OF_WARCRY,Warcry of Beyond
+2434,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	WM_UNLIMITED_HUMMING_VOICE,Unlimited Humming Voice
+
+// Sorcerer
+2443,0,6,4,3,0,0,5,1,yes,0,0,0,magic,0,				SO_FIREWALK,Fire Walk
+2444,0,6,4,4,0,0,5,1,yes,0,0,0,magic,0,				SO_ELECTRICWALK,Electric Walk
+2445,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,				SO_SPELLFIST,Spell Fist
+2446,9,6,2,2,0,0,5,1,yes,0,0,0,magic,0,				SO_EARTHGRAVE,Earth Grave
+2447,9,6,2,1,0,0,5,1,yes,0,0,0,magic,0,				SO_DIAMONDDUST,Diamond Dust
+2448,9,6,1,5,0,0,5,1,yes,0,0,0,magic,0,				SO_POISON_BUSTER,Poison Buster
+2449,9,8,2,0,0,0,5,-3:-4:-5:-6:-7,yes,0,0,0,magic,0,SO_PSYCHIC_WAVE,Psychic Wave
+2450,9,6,2,5,0,0,5,1,yes,0,0,0,magic,0,				SO_CLOUD_KILL,Cloud Kill
+2451,9,6,16,0,0x1,0,5,1,yes,0,0,0,none,0,			SO_STRIKING,Striking
+2452,9,6,2,0,0,0,5,1,yes,0,0,0,magic,0,				SO_WARMER,Warmer
+2453,9,6,2,0,0,0,5,1,yes,0,0,0,magic,0,				SO_VACUUM_EXTREME,Vacuum Extreme
+2454,9,6,1,4,0x2,3:3:5:5:7,5,1,yes,0,0,0,magic,0,	SO_VARETYR_SPEAR,Varetyr Spear
+2455,9,6,1,0,0x3,3:3:5:5:7,5,1,yes,0,0,0,magic,0,	SO_ARRULLO,Arrullo
+
+// Genetic
+2474,0,0,0,0,0,0,5,0,no,0,0,0,weapon,0,			GN_TRAINING_SWORD,Sword Training
+2475,0,0,0,0,0,0,5,0,no,0,0,0,weapon,0,			GN_REMODELING_CART,Cart Remodeling
+2476,0,6,4,0,0x02,2,5,1,no,0,0,0,weapon,2,		GN_CART_TORNADO,Cart Tornado
+2477,7,6,1,0,0,2,5,0,yes,0,0,0,weapon,0,		GN_CARTCANNON,Cart Cannon
+2478,0,6,4,0,0x1,0,5,1,no,0,0,0,weapon,0,		GN_CARTBOOST,Cart Boost
+2479,6,6,2,0,0x1,0,5,1,yes,0,0x80,0,magic,0,	GN_THORNS_TRAP,Thorn Trap
+2480,9,6,1,0,0x1,0,5,0,no,0,0,3,weapon,0,		GN_BLOOD_SUCKER,Blood Sucker
+2481,9,6,1,0,0,3:5:7:9:11,5,1,yes,0,0,0,magic,0,GN_SPORE_EXPLOSION,Spore Explosion
+2482,0,6,4,0,0x1,0,5,1,yes,0,0,1,weapon,1,		GN_WALLOFTHORN,Wall of Thorns
+2483,9,6,2,0,0,0,10,1,yes,0,0,0,weapon,0,		GN_CRAZYWEED,Crazy Weed
+2484,0,6,1,2,0,0,10,0,no,0,0,0,weapon,0,		GN_CRAZYWEED_ATK,Crazy Weed Attack
+2485,9,6,2,3,0,0,5,1,yes,0,0,0,magic,0,			GN_DEMONIC_FIRE,Demonic Fire
+2486,9,6,2,0,0,0,5,1,yes,0,0,0,weapon,0,		GN_FIRE_EXPANSION,Fire Expansion
+2487,9,6,2,0,0,0,5,1,yes,0,0,0,weapon,0,		GN_FIRE_EXPANSION_SMOKE_POWDER,Fire Expansion Smoke Powder
+2488,9,6,2,0,0,0,5,1,yes,0,0,0,weapon,0,		GN_FIRE_EXPANSION_TEAR_GAS,Fire Expansion Tear Gas
+2489,9,6,2,0,0,0,5,1,yes,0,0,0,weapon,0,		GN_FIRE_EXPANSION_ACID,Fire Expansion Acid
+2490,9,6,2,0,0,0,5,1,yes,0,0,2:3:4:5:6,none,0,	GN_HELLS_PLANT,Hell's Plant
+2491,0,6,1,0,0,0,5,1,no,0,0,0,weapon,0,			GN_HELLS_PLANT_ATK,Hell's Plant Attack
+2492,0,0,0,0,0,0,5,0,no,0,0,0,none,0,			GN_MANDRAGORA,Howling of Mandragora
+2493,0,0,0,0,0,0,1,0,no,0,0,0,none,0,			GN_SLINGITEM,Sling Item
+2494,0,0,0,0,0,0,1,0,no,0,0,0,none,0,			GN_CHANGEMATERIAL,Change Material
+2495,0,0,0,0,0,0,2,0,no,0,0,0,none,0,			GN_MIX_COOKING,Mix Cooking
+2496,0,0,0,0,0,0,2,0,no,0,0,0,none,0,			GN_MAKEBOMB,Create Bomb
+2497,0,0,0,0,0,0,10,0,no,0,0,0,none,0,			GN_S_PHARMACY,Special Pharmacy
+2498,0,0,0,0,0,0,1,0,no,0,0,0,none,0,			GN_SLINGITEM_RANGEMELEEATK,Sling Item Attack
+
 // More 3rd Job Skills
 2515,9,6,16,0,0x1,0,5,1,yes,0,0,0,magic,0,	AB_SECRAMENT,Sacrament
 

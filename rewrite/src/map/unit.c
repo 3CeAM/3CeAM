@@ -767,6 +767,8 @@ int unit_can_move(struct block_list *bl)
 			|| (sc->data[SC_GRAVITATION] && sc->data[SC_GRAVITATION]->val3 == BCT_SELF)
 			|| sc->data[SC_WHITEIMPRISON]
 			|| sc->data[SC_ELECTRICSHOCKER]
+			|| sc->data[SC_THORNSTRAP]
+			|| sc->data[SC_DIAMONDDUST]
 		))
 			return 0;
 	}
@@ -1786,6 +1788,7 @@ int unit_remove_map_(struct block_list *bl, int clrtype, const char* file, int l
 		status_change_end(bl,SC_CHANGE,-1);
 		status_change_end(bl,SC_STOP,-1);
 		status_change_end(bl,SC_ELECTRICSHOCKER,-1);
+		status_change_end(bl,SC_DIAMONDDUST,-1);
 	}
 
 	if (bl->type&BL_CHAR) {

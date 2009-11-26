@@ -1379,8 +1379,7 @@ enum e_skill {
 	SO_WARMER,
 	SO_VACUUM_EXTREME,
 	SO_VARETYR_SPEAR,
-	SO_ARRULLO,
-	SO_SUMMON_AGNI,
+	SO_ARULLO,
 
 	GN_TRAINING_SWORD = 2474,
 	GN_REMODELING_CART,
@@ -1571,9 +1570,9 @@ enum {
 
 	UNT_REVERBERATION = 0xda,
 	UNT_SEVERE_RAINSTORM = 0xdb,
-	UNT_UNKNOWN_01 = 0xdd,
+	UNT_ELECTRICWALK = 0xdd,
 	UNT_BLUENOTE = 0xde,	// This is... an exact version of Reverberation but blue. [LimitLine]
-	UNT_UNKNOWN_02 = 0xdf,
+	UNT_FIREWALK = 0xdf,	// Asssuming fire walk for the time being. [LimitLine]
 	UNT_UNKNOWN_03 = 0xe0,
 	UNT_POISONSMOKE = 0xe1,
 	UNT_NEUTRALBARRIER = 0xe2,
@@ -1583,7 +1582,7 @@ enum {
 	UNT_DEMONIC_FIRE = 0xe7,
 	UNT_DEMONIC_FIRE2 = 0xe8,
 	UNT_DEMONIC_FIRE3 = 0xe9,
-	UNT_CRAZY_WEED = 0xea,
+	UNT_HELLS_PLANT = 0xea,
 
 	UNT_MAX = 0xff //Actually the maximun UNT id's can't exceed 0xFF [pakpil]
 };
