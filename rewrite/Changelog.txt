@@ -6,6 +6,9 @@
 //========================================
 
 11/26/2009
+	r14 [LimitLine]
+	* Restored scripts_main.conf. Sorry =x
+
 	r33 [LimitLine]
 	* Added Sorcerer and Genetic Skills.
 	- Fire Expansion Lv1-4 still being worked on.
