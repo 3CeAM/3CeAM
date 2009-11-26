@@ -5,6 +5,13 @@
 // 	- Details.
 //========================================
 
+11/26/2009
+	r32 [pakpil]
+	* Added all Rune Knight skills rewrited.
+	* Fixed WL_SMUMMON... skills that wasn't showing spheres correctly.
+	* Fixed pc_setoption, pc_setriding and pc_isriding.
+	- Removed #define pc_isriding and added a new function to check if a pc is riding bassed in its class. (test version).
+
 11/15/2009
 	r15 [LimitLine]
 	* Fixed Soul Expansion not doing doubled damage when under White Imprison.

@@ -778,14 +778,14 @@
 
 // Rune Knight
 2001,0,6,16,0,0x1,0,5,1,yes,0,0,0,magic,0,	RK_ENCHANTBLADE,Enchant Blade
-2002,9,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	RK_SONICWAVE,Sonic Wave
+2002,11,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	RK_SONICWAVE,Sonic Wave
 2003,0,6,4,0,0x1,0,10,1,yes,0,0,0,weapon,0,	RK_DEATHBOUND,Death Bound
-2004,4,8,1,0,0,1,10,-10,yes,0,0,0,weapon,0,	RK_HUNDREDSPEAR,Hundred Spear
-2005,1,6,2,4,0x2,3,5,1,yes,0,0,0,weapon,3,	RK_WINDCUTTER,Wind Cutter
-2006,0,6,4,3,0x2,5,5,1,yes,0,0,0,weapon,2,	RK_IGNITIONBREAK,Ignition Break
+2004,4,8,1,0,0,1,10,-5,yes,0,0,0,weapon,0,	RK_HUNDREDSPEAR,Hundred Spear
+2005,1,6,2,4,0x2,2,5,1,yes,0,0,0,weapon,3,	RK_WINDCUTTER,Wind Cutter
+2006,0,6,4,0,0x2,5,0,0,yes,0,0,0,weapon,0,	RK_IGNITIONBREAK,Ignition Break
 2007,0,0,0,0,0,0,5,0,no,0,0,0,weapon,0,		RK_DRAGONTRAINING,Dragon Training
-2008,9,6,2,3,0,0,10,1,yes,0,0,0,weapon,0,	RK_DRAGONBREATH,Dragon Breath
-2009,0,8,4,0,0x1,0,5,3,yes,0,0,0,weapon,0,	RK_DRAGONHOWLING,Dragon Howling
+2008,10,6,2,3,0x2,3:3:3:5:5:5:7:7:9:9,10,1,yes,0,0,0,weapon,0,	RK_DRAGONBREATH,Dragon Breath
+2009,0,8,4,0,0x3,7:9:11:13:15,5,0,yes,0,0,0,weapon,0,	RK_DRAGONHOWLING,Dragon Howling
 2010,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		RK_RUNEMASTERY,Rune Mastery
 2011,0,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	RK_MILLENNIUMSHIELD,Millenium Shield
 2012,3,6,1,-1,0x70,0,1,1,yes,0,0,0,weapon,0,	RK_CRUSHSTRIKE,Crush Strike
@@ -796,7 +796,7 @@
 2017,0,6,4,-1,0x2,7,1,1,no,0,0,0,weapon,4,	RK_STORMBLAST,Storm Blast
 2018,0,6,4,0,0x3,-1,1,1,yes,0,0,0,magic,0,	RK_FIGHTINGSPIRIT,Fighting Spirit
 2019,9,6,4,6,0x1,0,1,1,yes,0,0,0,magic,0,	RK_ABUNDANCE,Abundance
-2020,5:6:7:8:9,6,16,-1,0,0,5,1,yes,0,0,0,weapon,0,	RK_PHANTOMTHRUST,Phantom Thrust
+2020,9,6,1,0,0,0,5,1,yes,0,0,0,weapon,0,	RK_PHANTOMTHRUST,Phantom Thrust
 
 // Guillotine Cross
 2021,-2,6,1,5,0x1,0,5,1,no,0,0,0,weapon,0,	GC_VENOMIMPRESS,Venom Impress

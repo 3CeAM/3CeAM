@@ -318,6 +318,21 @@ typedef enum sc_type {
 	SC_INVINCIBLE, //295
 	SC_INVINCIBLEOFF,
 
+
+	SC_FREEZING = 330,
+	SC_BURNING,
+	SC_FEAR,
+	SC_ENCHANTBLADE = 350,
+	SC_DEATHBOUND,
+	SC_NAUTHIZ,
+	SC_RAIDO,
+	SC_BERKANA,
+	SC_ISA,
+	SC_OTHILA,
+	SC_URUZ,
+	SC_THURISAZ,
+	SC_WYRD,
+	SC_HAGALAZ,
 	SC_EPICLESIS,
 	SC_ORATIO,
 	SC_LAUDAAGNUS,
@@ -331,8 +346,6 @@ typedef enum sc_type {
 	SC_RECOGNIZEDSPELL,
 	SC_MARSHOFABYSS,
 	SC_STASIS,
-	SC_BURNING,
-	SC_FREEZING,
 	SC_CHAINLIGHTNING,
 	SC_SPHERE_1,
 	SC_SPHERE_2,
@@ -669,11 +682,11 @@ enum si_type {
 // 315
 	SI_ENCHANTBLADE = 316,
 	SI_DEATHBOUND = 317,
-	SI_OTHILA = 318,
+	SI_NAUTHIZ = 318,
 	SI_THURISAZ = 319,
 	SI_HAGALAZ = 320,
 	SI_ISA = 321,
-	SI_NAUTHIZ = 322,
+	SI_OTHILA = 322,
 	SI_URUZ = 323,
 	SI_BERKANA = 324,
 	SI_RAIDO = 325,
@@ -787,7 +800,7 @@ enum si_type {
 	SI_HUMMINGVOICE,
 // 455
 	SI_SPELLBOOK_1 = 456,
-	SI_SPELLBOOK_2,
+	SI_SPELLBOOK_2 = 457,
 // 458-460
 	SI_GN_CARTBOOST = 461,
 // 462
@@ -799,7 +812,7 @@ enum si_type {
 };
 
 enum wl_spheres {
-	WLS_FIRE = 84,
+	WLS_FIRE = 0x44,//0X54
 	WLS_WIND,
 	WLS_WATER,
 	WLS_STONE,
@@ -907,19 +920,18 @@ enum {
 	OPTION_XMAS         = 0x00010000,
 	OPTION_TRANSFORM    = 0x00020000,
 	OPTION_SUMMER       = 0x00040000,
-	OPTION_GREEN_DRAGON = 0x00080000, //First release of Dragon Mount color
+	OPTION_GREEN_DRAGON = 0x00080000,
 	OPTION_WUG		    = 0x00100000,
 	OPTION_RIDING_WUG   = 0x00200000,
-	OPTION_MADO_M       = 0x00400000, //Male Mado Option
+	OPTION_MADO	        = 0x00400000,
 	OPTION_BLACK_DRAGON = 0x00800000,
 	OPTION_WHITE_DRAGON = 0x01000000,
 	OPTION_BLUE_DRAGON  = 0x02000000,
 	OPTION_RED_DRAGON   = 0x04000000,
-	OPTION_MADO_F       = 0x08000000, //Female Mado Option
-
 };
 
 #define OPTION_CART (OPTION_CART1|OPTION_CART2|OPTION_CART3|OPTION_CART4|OPTION_CART5)
+#define OPTION_RIDING_DRAGON (OPTION_GREEN_DRAGON|OPTION_BLACK_DRAGON|OPTION_WHITE_DRAGON|OPTION_BLUE_DRAGON|OPTION_RED_DRAGON)
 
 #define OPTION_MASK ~0x40
 
@@ -990,7 +1002,9 @@ struct weapon_atk {
 struct status_data {
 	unsigned int
 		hp, sp,
-		max_hp, max_sp;
+		max_hp, max_sp,
+		mech_hp, mech_sp,
+		mado_hp, mado_sp;
 	unsigned short
 		str, agi, vit, int_, dex, luk,
 		batk,
@@ -1007,6 +1021,7 @@ struct status_data {
 		size, race;
 	signed char
 		def, mdef;
+	int mado_heat;	// Overheat status. [LimitLine]
 	struct weapon_atk rhw, lhw; //Right Hand/Left Hand Weapon.
 };
 
