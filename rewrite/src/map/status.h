@@ -357,6 +357,20 @@ typedef enum sc_type {
 	SC_FEARBREEZE,
 	SC_ELECTRICSHOCKER,
 
+	SC_GN_CARTBOOST,
+	SC_BLOODSUCKER,
+	SC_THORNSTRAP,
+	SC_SMOKEPOWDER,
+	SC_TEARGAS,
+	SC_MANDRAGORA,
+
+	SC_FIREWALK,
+	SC_ELECTRICWALK,
+	SC_DIAMONDDUST,
+	SC_WARMER,
+	SC_STRIKING,
+	SC_DEEPSLEEP,
+
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
 
@@ -780,12 +794,12 @@ enum si_type {
 // 431-433
 	SI_SOMETHINGLIKERED = 434,
 	SI_DEEPSLEEP,
-	SI_SIRCLEOFNATURE, // (Guess!) May as well be Song of Mana. Need to confirm this. [LimitLine]
+	SI_SIRCLEOFNATURE, // May as well be Song of Mana. Need to confirm this. [LimitLine]
 	SI_COLD, // Need to figure out what it is. [LimitLine]
-	SI_SATURDAYNIGHT,	// (Guess!) I don't know, wild guess. [LimitLine]
-	SI_SONGOFMANA, // (Guess!) May as well be Circle of Nature. Need to confirm this. [LimitLine]
+	SI_SATURDAYNIGHT,	// I don't know, wild guess. [LimitLine]
+	SI_SONGOFMANA, // May as well be Circle of Nature. Need to confirm this. [LimitLine]
 // 440
-	SI_DANCEWITHWUG = 441, // (Guess!) I don't know, wild guess. [LimitLine]
+	SI_DANCEWITHWUG = 441, // Guess. [LimitLine]
 	SI_ECHO,
 	SI_WINDMILL,
 	SI_HARMONIZE,

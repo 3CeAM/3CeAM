@@ -6,6 +6,15 @@
 //========================================
 
 11/26/2009
+	r33 [LimitLine]
+	* Added Sorcerer and Genetic Skills.
+	- Fire Expansion Lv1-4 still being worked on.
+	- A few skill formulas and damage increments based on base level are custom. Look inside battle.c to find out which.
+	- Sling Item, Change Material, Special Pharmacy not included.
+	- Cast times and cooldowns are also custom. I'll update those when I get official info about them.
+	* Minor cleanup in skill_db.txt and skill_cast_db.txt
+	- Made all skills not yet implemented passive and removed them from skill_cast_db.
+
 	r32 [pakpil]
 	* Added all Rune Knight skills rewrited.
 	* Fixed WL_SMUMMON... skills that wasn't showing spheres correctly.

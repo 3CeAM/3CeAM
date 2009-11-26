@@ -440,6 +440,21 @@ void initChangeTables(void)
 	set_sc( RA_FEARBREEZE        , SC_FEARBREEZE      , SI_FEARBREEZE      , SCB_NONE );
 	add_sc( RA_ELECTRICSHOCKER   , SC_ELECTRICSHOCKER );
 
+	set_sc( GN_CARTBOOST         , SC_GN_CARTBOOST    , SI_GN_CARTBOOST    , SCB_SPEED|SCB_BATK );
+	add_sc( GN_THORNS_TRAP       , SC_THORNSTRAP );
+	set_sc( GN_BLOOD_SUCKER      , SC_BLOODSUCKER     , SI_BLOODSUCKER     , SCB_NONE );
+	set_sc( GN_WALLOFTHORN       , SC_STOP            , SI_WALLOFTHORN     , SCB_NONE );
+	add_sc( GN_FIRE_EXPANSION_SMOKE_POWDER, SC_SMOKEPOWDER );
+	add_sc( GN_FIRE_EXPANSION_TEAR_GAS, SC_TEARGAS );
+	set_sc( GN_MANDRAGORA        , SC_MANDRAGORA      , SI_BLANK           , SCB_INT );
+
+	add_sc( SO_FIREWALK          , SC_FIREWALK );
+	add_sc( SO_ELECTRICWALK      , SC_ELECTRICWALK );
+	add_sc( SO_WARMER            , SC_WARMER );
+	set_sc( SO_STRIKING          , SC_STRIKING        , SI_BLANK           , SCB_BATK|SCB_CRI );
+	add_sc( SO_VACUUM_EXTREME    , SC_STOP );
+	add_sc( SO_ARULLO            , SC_DEEPSLEEP );
+
 	set_sc( HLIF_AVOID           , SC_AVOID           , SI_BLANK           , SCB_SPEED );
 	set_sc( HLIF_CHANGE          , SC_CHANGE          , SI_BLANK           , SCB_VIT|SCB_INT );
 	set_sc( HFLI_FLEET           , SC_FLEET           , SI_BLANK           , SCB_ASPD|SCB_BATK|SCB_WATK );
@@ -1079,6 +1094,8 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 		//on dead characters, said checks are left to skill.c [Skotlex]
 		if (target && status_isdead(target))
 			return 0;
+		if( (sc = status_get_sc(src)) && sc->data[SC_DIAMONDDUST] )
+			return 0;
 	}
 
 	if (skill_num == PA_PRESSURE && flag && target) {
@@ -1163,7 +1180,8 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 				(sc->data[SC_MARIONETTE2] && skill_num == CG_MARIONETTE) || //Cannot use marionette if you are being buffed by another
 				sc->data[SC_STEELBODY] ||
 				sc->data[SC_BERSERK] ||
-				(sc->data[SC_STASIS] && skill_stasis_check(src, sc->data[SC_STASIS]->val2, skill_num))
+				(sc->data[SC_STASIS] && skill_stasis_check(src, sc->data[SC_STASIS]->val2, skill_num)) ||
+				sc->data[SC_DIAMONDDUST]
 			))
 				return 0;
 
@@ -3383,6 +3401,8 @@ static unsigned short status_calc_int(struct block_list *bl, struct status_chang
 		int_ += ((sc->data[SC_MARIONETTE2]->val4)>>16)&0xFF;
 	if(sc->data[SC_SPIRIT] && sc->data[SC_SPIRIT]->val2 == SL_HIGH && int_ < 50)
 		int_ = 50;
+	if(sc->data[SC_MANDRAGORA])
+		int_ -= 5 + 5 * sc->data[SC_MANDRAGORA]->val1;
 
 	return (unsigned short)cap_value(int_,0,USHRT_MAX);
 }
@@ -3490,6 +3510,10 @@ static unsigned short status_calc_batk(struct block_list *bl, struct status_chan
 		batk += 100;
 	if(sc->data[SC_HAGALAZ] && sc->data[SC_HAGALAZ]->val3)
 		batk -= batk / 100 * 25;
+	if(sc->data[SC_GN_CARTBOOST])
+		batk += sc->data[SC_GN_CARTBOOST]->val1 * 10;
+	if(sc->data[SC_STRIKING])
+		batk += 50 + sc->data[SC_STRIKING]->val1;
 
 	return (unsigned short)cap_value(batk,0,USHRT_MAX);
 }
@@ -3575,6 +3599,8 @@ static signed short status_calc_critical(struct block_list *bl, struct status_ch
 		critical += sc->data[SC_TRUESIGHT]->val2;
 	if(sc->data[SC_CLOAKING])
 		critical += critical;
+	if(sc->data[SC_STRIKING])
+		critical += sc->data[SC_STRIKING]->val1;
 
 	return (short)cap_value(critical,10,SHRT_MAX);
 }
@@ -3903,6 +3929,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				val = max( val, 10 * sc->data[SC_AVOID]->val1 );
 			if( sc->data[SC_INVINCIBLE] && !sc->data[SC_INVINCIBLEOFF] )
 				val = max( val, 75 );
+			if( sc->data[SC_GN_CARTBOOST] )
+				val = max( val, sc->data[SC_GN_CARTBOOST]->val2 );
 
 			//FIXME: official items use a single bonus for this [ultramage]
 			if( sc->data[SC_SPEEDUP0] ) // temporary item-based speedup
@@ -6146,6 +6174,33 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 				val4 = 1;
 			tick = 1000;
 			break;
+		case SC_GN_CARTBOOST:
+			if( val1 < 3 )
+				val2 = 50;
+			else if( val1 < 5 )
+				val2 = 75;
+			else
+				val2 = 100;
+			break;
+		case SC_FIREWALK:
+		case SC_ELECTRICWALK:
+			val2 = 6 + 2 * val1;
+			tick = 0;
+			break;
+		case SC_WARMER:
+			val4 = tick / 3000;
+			if( val4 < 1 )
+				val4 = 1;
+			tick = 3000;
+			status_change_end(bl, SC_FREEZE, -1);
+			status_change_end(bl, SC_FREEZING, -1);
+			break;
+		case SC_BLOODSUCKER:
+			val4 = tick / 1000;
+			if( val4 < 1 )
+				val4 = 1;
+			tick = 1000;
+			break;
 
 		default:
 			if( calc_flag == SCB_NONE && StatusSkillChangeTable[type] == 0 && StatusIconChangeTable[type] == 0 )
@@ -6192,6 +6247,8 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_ANKLE:
 		case SC_SPIDERWEB:
 		case SC_ELECTRICSHOCKER:
+		case SC_THORNSTRAP:
+		case SC_DIAMONDDUST:
 			unit_stop_walking(bl,1);
 		break;
 		case SC_HIDING:
@@ -7451,7 +7508,7 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		if( --(sce->val4) >= 0 )
 		{
 			struct block_list *src = map_id2bl(sce->val2);
-			if( !src || (src && status_isdead(src)) )
+			if( !src || (src && status_isdead(src)) || (src && src->m != bl->m) )
 				break;
 			map_freeblock_lock();
 			skill_attack(skill_get_type(WL_CHAINLIGHTNING_ATK), src, src, bl,
@@ -7491,6 +7548,42 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		{
 			status_charge(bl, 0, status->max_sp / 100 * sce->val1 );
 			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
+
+	case SC_WARMER:
+		if( --(sce->val4) >= 0 )
+		{
+			status_heal(bl, 100 * sce->val1, 0, 2);
+			sc_timer_next(3000 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
+
+	case SC_BLOODSUCKER:
+		if( --(sce->val4) >= 0 )
+		{
+			struct block_list *src = map_id2bl(sce->val2);
+			int damage;
+			if( !src || (src && status_isdead(src) || (src && src->m != bl->m) ) || (src && distance_bl(src, bl) >= 12) )
+				break;
+			map_freeblock_lock();
+			damage = skill_attack(skill_get_type(GN_BLOOD_SUCKER), src, src, bl, GN_BLOOD_SUCKER, sce->val1, tick, 0);
+			map_freeblock_unlock();
+			status_heal(src, damage, 0, 0);
+			clif_skill_nodamage(src, bl, GN_BLOOD_SUCKER, 0, 1);
+			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
+
+	case SC_FIREWALK:
+	case SC_ELECTRICWALK:
+		if( --(sce->val2) >= 0 )
+		{
+			skill_unitsetting(bl, type == SC_FIREWALK ? SO_FIREWALK : SO_ELECTRICWALK, sce->val1, bl->x, bl->y, 0);
+			sc_timer_next(250 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}
 		break;

@@ -260,7 +260,7 @@ int battle_attr_fix(struct block_list *src, struct block_list *target, int damag
 		if( tsc->data[SC_SPIDERWEB]->val2 == 0 )
 			status_change_end(target,SC_SPIDERWEB,-1);
 	}
-	if( tsc )
+	if( tsc && tsc->count )
 	{
 		if( tsc->data[SC_ORATIO] && atk_elem == ELE_HOLY )
 			ratio += tsc->data[SC_ORATIO]->val1 * 2;
@@ -268,6 +268,21 @@ int battle_attr_fix(struct block_list *src, struct block_list *target, int damag
 			damage = 0;
 		else
 			status_change_end(target, SC_WHITEIMPRISON, -1);
+		if( atk_elem == ELE_FIRE && tsc->data[SC_THORNSTRAP] )
+			status_change_end(target, SC_THORNSTRAP, -1);
+	}
+	if( target->type == BL_SKILL )
+	{
+		struct skill_unit *unit = (struct skill_unit*)target;
+		if( atk_elem == ELE_FIRE && unit && unit->group->skill_id == GN_WALLOFTHORN )
+		{
+			struct block_list *src = map_id2bl(unit->val2);
+			if( src )
+			{
+				skill_unitsetting(src, MG_FIREWALL, unit->group->skill_lv, target->x, target->y, 0);
+				return 0;
+			}
+		}
 	}
 	return damage*ratio/100;
 }
@@ -735,6 +750,8 @@ int battle_addmastery(struct map_session_data *sd,struct block_list *target,int 
 		case W_1HSWORD:
 			if((skill = pc_checkskill(sd,SM_SWORD)) > 0)
 				damage += (skill * 4);
+			if((skill = pc_checkskill(sd,GN_TRAINING_SWORD)) > 0)
+				damage += skill * 5;
 			break;
 		case W_2HSWORD:
 			if((skill = pc_checkskill(sd,SM_TWOHAND)) > 0)
@@ -1300,11 +1317,20 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				if(sd && pc_checkskill(sd,AS_SONICACCEL)>0)
 					hitrate += hitrate * 50 / 100;
 				break;
+			case MC_CARTREVOLUTION:
+			case GN_CART_TORNADO:
+			case GN_CARTCANNON:
+				if( sd && pc_checkskill(sd, GN_REMODELING_CART) );
+					hitrate += hitrate * 4;
+				break;
 		}
 
 		// Weaponry Research hidden bonus
 		if (sd && (skill = pc_checkskill(sd,BS_WEAPONRESEARCH)) > 0)
 			hitrate += hitrate * ( 2 * skill ) / 100;
+
+		if( sd && (sd->status.weapon == W_1HSWORD || sd->status.weapon == W_DAGGER) && pc_checkskill(sd, GN_TRAINING_SWORD) )
+			hitrate += 3 * skill_lv;
 
 		hitrate = cap_value(hitrate, battle_config.min_hitrate, battle_config.max_hitrate); 
 
@@ -1812,6 +1838,22 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					skillratio = 100 * skill_lv - 100;
 					if( sd )
 						skillratio += 40 * pc_checkskill(sd, RA_RESEARCHTRAP);
+					break;
+				case GN_CART_TORNADO:
+					skillratio += 50 * skill_lv;
+					if( sd )
+						skillratio += pc_checkskill(sd, GN_REMODELING_CART) * 60;	// Need official value. [LimitLine]
+					break;
+				case GN_CARTCANNON:
+					skillratio += 250 + 50 * skill_lv + status_get_int(src) * 2;	// Need official value. [LimitLine]
+					if( sd )
+						skillratio += pc_checkskill(sd, GN_REMODELING_CART) * 60;	// Need official value. [LimitLine]
+					break;
+				case GN_THORNS_TRAP:
+					skillratio += 10 * skill_lv;	// Taken from pakpil's version. Where did he get this from? [LimitLine]
+					break;
+				case GN_CRAZYWEED_ATK:
+					skillratio += 400 + 100 * skill_lv;
 					break;
 			}
 
@@ -2605,6 +2647,8 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						}
 						break;
 					case WL_CHAINLIGHTNING_ATK:
+					case SO_FIREWALK:		// Need official formula. [LimitLine]
+					case SO_ELECTRICWALK:	// Need official formula. [LimitLine]
 						skillratio += 300 + 100 * skill_lv;
 						break;
 					case WL_EARTHSTRAIN:
@@ -2621,6 +2665,35 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					case WL_SUMMON_ATK_WIND:
 					case WL_SUMMON_ATK_GROUND:
 						skillratio += 50 * skill_lv - 50;
+						break;
+					case SO_EARTHGRAVE:	// Need official formula. [LimitLine]
+					case SO_DIAMONDDUST:	// Need official formula. [LimitLine]
+					case SO_POISON_BUSTER:	// Need official formula. [LimitLine]
+						skillratio += 300 + 100 * skill_lv;
+						break;
+					case SO_PSYCHIC_WAVE:
+					case SO_VARETYR_SPEAR:	// Need official formula. [LimitLine]
+						// Skill desc suggests that the damage increases with your Base Level, and the current formula
+						// applies to a lv 150 character. Need official Level bonus increment. [LimitLine]
+						skillratio += 600 + 100 * skill_lv;
+						break;
+					case SO_CLOUD_KILL:
+						skillratio = 50 * skill_lv;	// Need official formula. [LimitLine]
+						break;
+					case GN_SPORE_EXPLOSION:			// Need official value. [LimitLine]
+						skillratio += 400 + 100 * skill_lv;
+						break;
+					case GN_DEMONIC_FIRE:
+						if( skill_lv > 20)
+						{	// Fire expansion Lv.2
+							skillratio += 110 + 20 * (skill_lv - 20) + status_get_int(src) * 3;	// Need official INT bonus. [LimitLine]
+						}
+						else if( skill_lv > 10 )
+						{	// Fire expansion Lv.1
+							skillratio += 110 + 20 * (skill_lv - 10) / 2;
+						}
+						else
+							skillratio += 110 + 20 * skill_lv;
 						break;
 				}
 
@@ -3472,7 +3545,7 @@ int battle_check_target( struct block_list *src, struct block_list *target,int f
 					default:
 						return 0;
 				}
-			} else if (su->group->skill_id==WZ_ICEWALL)
+			} else if (su->group->skill_id==WZ_ICEWALL || su->group->skill_id == GN_WALLOFTHORN)
 			{
 				state |= BCT_ENEMY;
 				strip_enemy = 0;
