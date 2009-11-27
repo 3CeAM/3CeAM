@@ -3665,28 +3665,6 @@ int parse_char(int fd)
 			RFIFOSKIP(fd,34);
 		break;
 
-		// captcha code request (not implemented)
-		// R 07e5 <?>.w <aid>.l
-		case 0x7e5:
-			WFIFOHEAD(fd,5);
-			WFIFOW(fd,0) = 0x7e9;
-			WFIFOW(fd,2) = 5;
-			WFIFOB(fd,4) = 1;
-			WFIFOSET(fd,5);
-			RFIFOSKIP(fd,8);
-			break;
-
-		// captcha code check (not implemented)
-		// R 07e7 <len>.w <aid>.l <code>.b10 <?>.b14
-		case 0x7e7:
-			WFIFOHEAD(fd,5);
-			WFIFOW(fd,0) = 0x7e9;
-			WFIFOW(fd,2) = 5;
-			WFIFOB(fd,4) = 1;
-			WFIFOSET(fd,5);
-			RFIFOSKIP(fd,32);
-		break;
-
 		// captcha code requst
 		// R 07e5 <?>.w <aid>.l
 		case 0x7e5:
