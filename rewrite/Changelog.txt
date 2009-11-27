@@ -6,6 +6,10 @@
 //========================================
 
 11/26/2009
+	r36 [LimitLine]
+	* Updated Sorcerer cast times, cooldowns and aftercast delays according to http://forums.irowiki.org/showpost.php?p=559786&postcount=437 .
+	* Next, I'll update their behaviors and other things I left out.
+
 	r35 [LimitLine]
 	* Fixed an error when compiling char-server in TXT mode.
 	* Fixed hitrate bonus for Cart Remodeling, thanks to Spiritual_Kid.
