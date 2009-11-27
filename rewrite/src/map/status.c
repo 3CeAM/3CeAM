@@ -3513,7 +3513,7 @@ static unsigned short status_calc_batk(struct block_list *bl, struct status_chan
 	if(sc->data[SC_GN_CARTBOOST])
 		batk += sc->data[SC_GN_CARTBOOST]->val1 * 10;
 	if(sc->data[SC_STRIKING])
-		batk += 50 + sc->data[SC_STRIKING]->val1;
+		batk += 50 * sc->data[SC_STRIKING]->val1;
 
 	return (unsigned short)cap_value(batk,0,USHRT_MAX);
 }

@@ -6,7 +6,14 @@
 //========================================
 
 11/26/2009
-	r14 [LimitLine]
+	r35 [LimitLine]
+	* Fixed an error when compiling char-server in TXT mode.
+	* Fixed hitrate bonus for Cart Remodeling, thanks to Spiritual_Kid.
+	- http://www.eathena.ws/board/index.php?s=&showtopic=233391&view=findpost&p=1280383
+	* Fixed Striking's weapon damage bonus, once again thanks to Spiritual_Kid.
+	- http://www.eathena.ws/board/index.php?s=&showtopic=233391&view=findpost&p=1280383
+
+	r34 [LimitLine]
 	* Restored scripts_main.conf. Sorry =x
 
 	r33 [LimitLine]
