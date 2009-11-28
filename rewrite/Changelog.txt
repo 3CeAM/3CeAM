@@ -5,6 +5,12 @@
 // 	- Details.
 //========================================
 
+11/28/2009
+	r39 [Jobbie]
+	* Added GN_REMODELING_CART cart weight bonus which is missed during implementation on r33.
+	* Follow up implementation for GN_TRAINING_SWORD for its bonus hitrate. Follow up r33.
+	* Switch packet_db to default and mmo.h to RagRE compatible so that RagexeRE client will be allowed.
+
 11/26/2009
 	r36 [LimitLine]
 	* Updated Sorcerer cast times, cooldowns and aftercast delays according to http://forums.irowiki.org/showpost.php?p=559786&postcount=437 .

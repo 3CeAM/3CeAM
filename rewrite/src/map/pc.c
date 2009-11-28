@@ -3702,7 +3702,7 @@ int pc_cart_additem(struct map_session_data *sd,struct item *item_data,int amoun
 		return 1;
 	}
 
-	if( (w = data->weight*amount) + sd->cart_weight > battle_config.max_cart_weight )
+	if( (w = data->weight*amount) + sd->cart_weight > battle_config.max_cart_weight + (pc_checkskill(sd,GN_REMODELING_CART)*5000) )
 		return 1;
 
 	i = MAX_CART;
@@ -5225,6 +5225,8 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 
 		clif_skillup(sd,skill_num);
 		clif_updatestatus(sd,SP_SKILLPOINT);
+		if( skill_num == GN_REMODELING_CART )
+			clif_updatestatus(sd,SP_CARTINFO);
 		clif_skillinfoblock(sd);
 	}
 

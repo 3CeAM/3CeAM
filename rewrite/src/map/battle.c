@@ -1329,8 +1329,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 		if (sd && (skill = pc_checkskill(sd,BS_WEAPONRESEARCH)) > 0)
 			hitrate += hitrate * ( 2 * skill ) / 100;
 
-		if( sd && (sd->status.weapon == W_1HSWORD || sd->status.weapon == W_DAGGER) && pc_checkskill(sd, GN_TRAINING_SWORD) )
-			hitrate += 3 * skill_lv;
+		if( sd && (sd->status.weapon == W_1HSWORD || sd->status.weapon == W_DAGGER) && 
+			(skill = pc_checkskill(sd, GN_TRAINING_SWORD))>0 )
+			hitrate += 3 * skill;
 
 		hitrate = cap_value(hitrate, battle_config.min_hitrate, battle_config.max_hitrate); 
 
