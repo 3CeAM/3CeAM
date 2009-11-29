@@ -1835,11 +1835,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 						default: break;
 					}
 					break;
-				case RA_CLUSTERBOMB:
-					skillratio = 100 * skill_lv - 100;
-					if( sd )
-						skillratio += 40 * pc_checkskill(sd, RA_RESEARCHTRAP);
-					break;
 				case GN_CART_TORNADO:
 					skillratio += 50 * skill_lv;
 					if( sd )
@@ -2974,6 +2969,19 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 	case NPC_EVILLAND:
 		md.damage = skill_calc_heal(src,target,skill_num,skill_lv,false);
 		break;
+	case RA_CLUSTERBOMB:
+		//iRO wiki damage formula.
+		md.damage = 5*sstatus->int_ + (2*sstatus->batk + sstatus->lhw.atk + sstatus->rhw.atk)*(skill_lv+2);
+		if( sd )
+			md.damage += (sd->status.base_level * 2 + ( (sd->status.base_level/50) + 3)*sstatus->dex+300)*skill_lv + pc_checkskill(sd,RA_RESEARCHTRAP);
+		break;
+	case RA_FIRINGTRAP:
+ 	case RA_ICEBOUNDTRAP:
+		//iRO wiki damage formula.
+		md.damage = 5*sstatus->int_ + sstatus->batk + sstatus->lhw.atk + sstatus->rhw.atk;
+		if( sd )
+			md.damage += (sd->status.base_level * 2 + ( (sd->status.base_level/50) + 3)*sstatus->dex+300)*skill_lv + pc_checkskill(sd,RA_RESEARCHTRAP);
+ 		break;
 	}
 
 	if (nk&NK_SPLASHSPLIT){ // Divide ATK among targets
@@ -3540,6 +3548,7 @@ int battle_check_target( struct block_list *src, struct block_list *target,int f
 					case WZ_SIGHTBLASTER:
 					case SM_MAGNUM:
 					case MS_MAGNUM:
+					case RA_DETONATOR:
 						state |= BCT_ENEMY;
 						strip_enemy = 0;
 						break;

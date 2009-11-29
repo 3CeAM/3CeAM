@@ -5,6 +5,15 @@
 // 	- Details.
 //========================================
 
+11/29/2009
+	r40 [Jobbie]
+	* Added Ranger Trap only related skills.
+	- Changes:
+		* Icebound and Firing Trap deals neutral damage to enemy based on official info.
+		* Clusterbomb is a MiSC type of attack same to Icebound and Firing Trap.
+		* Applied Clusterbomb, Firing, Icebound damage formula based of official info from iROwiki.
+	* Added a commented missed OPT_BURNING display icon implementation. 
+
 11/28/2009
 	r39 [Jobbie]
 	* Added GN_REMODELING_CART cart weight bonus which is missed during implementation on r33.
