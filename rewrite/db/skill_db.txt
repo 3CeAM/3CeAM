@@ -879,8 +879,8 @@
 2235,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		RA_RANGERMAIN,Ranger Main
 2236,9,8,1,0,0,0,10,1,yes,0,0,0,weapon,0,	RA_AIMEDBOLT,Aimed Bolt
 2237,6,6,2,0,0x3,3,1,1,no,0,0,0,none,0,		RA_DETONATOR,Detonator
-2238,6,6,2,0,0x3,5,5,1,no,0,0x80,3,misc,0,	RA_ELECTRICSHOCKER,Electric Shocker
-2239,6,6,2,3,0x42,7,5,1,no,0,0x80,3,weapon,0,	RA_CLUSTERBOMB,Cluster Bomb
+2238,3,6,2,0,0x3,5,5,1,no,0,0x80,3,misc,0,	RA_ELECTRICSHOCKER,Electric Shocker
+2239,3,6,2,0,0x42,7,5,1,no,0,0x80,3,misc,0,	RA_CLUSTERBOMB,Cluster Bomb
 2240,0,6,4,0,0,0,1,0,no,0,0,0,none,0,		RA_WUGMASTERY,Warg Mastery
 2241,0,6,4,0,0,0,3,0,no,0,0,0,none,0,		RA_WUGRIDER,Warg Rider
 2242,0,6,4,0,0x1,0,1,1,yes,0,0,0,misc,0,	RA_WUGDASH,Warg Dash
@@ -890,12 +890,12 @@
 2246,0,6,4,0,0x2,7:9:11:13:15,5,0,no,0,0,0,weapon,0,		RA_SENSITIVEKEEN,Sensitive Keen
 2247,0,6,4,0,0x1,0,5,0,no,0,0,0,weapon,0,	RA_CAMOUFLAGE,Camouflage
 2248,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		RA_RESEARCHTRAP,Research Trap
-2249,6,6,2,3,0x40,5,1,1,no,0,0x80,1,misc,0,	RA_MAGENTATRAP,Magenta Trap
-2250,6,6,2,1,0x40,5,1,1,no,0,0x80,1,misc,0,	RA_COBALTTRAP,Cobalt Trap
-2251,6,6,2,2,0x40,5,1,1,no,0,0x80,1,misc,0,	RA_MAIZETRAP,Maize Trap
-2252,6,6,2,4,0x40,5,1,1,no,0,0x80,1,misc,0,	RA_VERDURETRAP,Verdure Trap
-2253,6,6,2,3,0x42,5,5,1,no,0,0x80,1,misc,0,	RA_FIRINGTRAP,Firing Trap
-2254,6,6,2,1,0x42,5,5,1,no,0,0x80,1,misc,0,	RA_ICEBOUNDTRAP,Icebound Trap
+2249,3,6,2,3,0x40,5,1,1,no,0,0x80,1,misc,0,	RA_MAGENTATRAP,Magenta Trap
+2250,3,6,2,1,0x40,5,1,1,no,0,0x80,1,misc,0,	RA_COBALTTRAP,Cobalt Trap
+2251,3,6,2,2,0x40,5,1,1,no,0,0x80,1,misc,0,	RA_MAIZETRAP,Maize Trap
+2252,3,6,2,4,0x40,5,1,1,no,0,0x80,1,misc,0,	RA_VERDURETRAP,Verdure Trap
+2253,3,6,2,0,0x42,5,5,1,no,0,0x80,1,misc,0,	RA_FIRINGTRAP,Firing Trap
+2254,3,6,2,0,0x42,5,5,1,no,0,0x80,1,misc,0,	RA_ICEBOUNDTRAP,Icebound Trap
 
 // Shadow Chaser
 2284,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	SC_FATALMENACE,Fatal Menace

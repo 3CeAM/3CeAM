@@ -15,6 +15,7 @@
 #define ITEMID_BLUE_GEMSTONE 717
 #define itemid_isgemstone(id) ( (id) >= ITEMID_YELLOW_GEMSTONE && (id) <= ITEMID_BLUE_GEMSTONE )
 #define ITEMID_TRAP 1065
+#define ITEMID_TRAP_ALLOY 7940
 #define ITEMID_STONE 7049
 #define ITEMID_SKULL_ 7420
 

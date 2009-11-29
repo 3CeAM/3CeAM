@@ -438,7 +438,12 @@ void initChangeTables(void)
 	set_sc( WL_MARSHOFABYSS      , SC_MARSHOFABYSS    , SI_MARSHOFABYSS    , SCB_SPEED|SCB_FLEE|SCB_DEF|SCB_DEF2 );
 
 	set_sc( RA_FEARBREEZE        , SC_FEARBREEZE      , SI_FEARBREEZE      , SCB_NONE );
+	add_sc( RA_MAGENTATRAP       , SC_ELEMENTALCHANGE );
+	add_sc( RA_COBALTTRAP        , SC_ELEMENTALCHANGE );
+	add_sc( RA_MAIZETRAP         , SC_ELEMENTALCHANGE );
 	add_sc( RA_ELECTRICSHOCKER   , SC_ELECTRICSHOCKER );
+	add_sc( RA_FIRINGTRAP        , SC_BURNING         );
+	add_sc( RA_ICEBOUNDTRAP      , SC_FREEZING        );
 
 	set_sc( GN_CARTBOOST         , SC_GN_CARTBOOST    , SI_GN_CARTBOOST    , SCB_SPEED|SCB_BATK );
 	add_sc( GN_THORNS_TRAP       , SC_THORNSTRAP );
@@ -6272,6 +6277,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_FREEZE: sc->opt1 = OPT1_FREEZE;    break;
 		case SC_STUN:   sc->opt1 = OPT1_STUN;      break;
 		case SC_SLEEP:  sc->opt1 = OPT1_SLEEP;     break;
+		//case SC_BURNING:  sc->opt1 = OPT1_BURNING;   break; is this necessary to be added? seems when burning is successful no OPT displayed. [Jobbie]
 		//OPT2
 		case SC_POISON:       sc->opt2 |= OPT2_POISON;       break;
 		case SC_CURSE:        sc->opt2 |= OPT2_CURSE;        break;
