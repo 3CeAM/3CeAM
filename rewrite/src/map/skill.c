@@ -1652,11 +1652,13 @@ int skill_blown(struct block_list* src, struct block_list* target, int count, in
 
 	if( target->type == BL_PC )
 	{
-		if( map_getcell(target->m, target->x, target->y, CELL_CHKNPC) )
-			npc_touch_areanpc((TBL_PC*)target, target->m, target->x, target->y); //Invoke area NPC
-
-		if( ((TBL_PC*)target)->ontouch.npc_id )
-			npc_touchnext_areanpc(((TBL_PC*)target),false);
+		TBL_PC *sd = (TBL_PC*)target;
+		if( sd->touching_id )
+			npc_touchnext_areanpc(sd,false);
+		if( map_getcell(target->m,target->x,target->y,CELL_CHKNPC) )
+			npc_touch_areanpc(sd,target->m,target->x,target->y);
+		else
+			sd->areanpc_id=0;
 	}
 
 	return count; //Return amount of knocked back cells.
@@ -6057,6 +6059,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				src,skillid,skilllv,tick, flag|BCT_ENEMY|SD_PREAMBLE|1,
 				skill_castend_nodamage_id);
 		}
+		break;
+	case ALL_WEWISH:
+		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		break;
 	case RK_ENCHANTBLADE:
 		clif_skill_nodamage(src,bl,skillid,skilllv,

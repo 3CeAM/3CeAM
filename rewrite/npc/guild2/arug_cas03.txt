@@ -2711,7 +2711,7 @@ OnStartArena:
 
 OnTimer10000:
 	donpcevent "Manager#aru03_02::Onchange";
-	mapannounce "arug_cas03","Rebuild this stonghold's Guardian Stones and Fortress Gates to secure your guild's new aquisition!",bc_map,"0x00FF00",FW_NORMAL,20,0,40;
+	mapannounce "arug_cas03","Rebuild this stronghold's Guardian Stones and Fortress Gates to secure your guild's new aquisition!",bc_map,"0x00FF00",FW_NORMAL,20,0,40;
 	end;
 }
 
@@ -2915,4 +2915,4 @@ OnRecvCastleAr03:
 	end;
 }
 
-aru_gld,74,174,0	duplicate(Ar03_Flag)	Horn#flag_Ar03_2	722,{
+aru_gld,74,174,0	duplicate(Ar03_Flag)	Horn#flag_Ar03_2	722

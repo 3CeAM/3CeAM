@@ -688,6 +688,7 @@ int status_charge(struct block_list* bl, int hp, int sp)
 //If flag&1, damage is passive and does not triggers cancelling status changes.
 //If flag&2, fail if target does not has enough to substract.
 //If flag&4, if killed, mob must not give exp/loot.
+//If flag&8, sp loss on dead target.
 int status_damage(struct block_list *src,struct block_list *target,int hp, int sp, int walkdelay, int flag)
 {
 	struct status_data *status;
@@ -713,9 +714,11 @@ int status_damage(struct block_list *src,struct block_list *target,int hp, int s
 		return skill_unit_ondamaged((struct skill_unit *)target, src, hp, gettick());
 
 	status = status_get_status_data(target);
+	if( status == &dummy_status )
+		return 0;
 
-	if( status == &dummy_status || (!status->hp && hp) )
-		return 0; //Invalid targets: no damage or dead
+	if( !status->hp )
+		flag |= 8;
 
 // Let through. battle.c/skill.c have the whole logic of when it's possible or
 // not to hurt someone (and this check breaks pet catching) [Skotlex]
@@ -723,15 +726,10 @@ int status_damage(struct block_list *src,struct block_list *target,int hp, int s
 //		return 0; //Cannot damage a bl not on a map, except when "charging" hp/sp
 
 	sc = status_get_sc(target);
-
 	if( battle_config.invincible_nodamage && src && sc && sc->data[SC_INVINCIBLE] && !sc->data[SC_INVINCIBLEOFF] )
-	{
-		if( !sp )
-			return 0;
 		hp = 1;
-	}
 
-	if( hp && !(flag&1) ) {
+	if( hp && !(flag&(1|8)) ) {
 		if( sc ) {
 			struct status_change_entry *sce;
 			if( (sce = sc->data[SC_DEVOTION]) && src && battle_getcurrentskill(src) != PA_PRESSURE )
@@ -811,8 +809,8 @@ int status_damage(struct block_list *src,struct block_list *target,int hp, int s
 		case BL_MER: mercenary_damage((TBL_MER*)target,src,hp,sp); break;
 	}
 
-	if (status->hp)
-  	{	//Still lives!
+	if( status->hp || flag&8 )
+  	{	//Still lives or has been dead before this damage.
 		if (walkdelay)
 			unit_set_walkdelay(target, gettick(), walkdelay, 0);
 		return hp+sp;
@@ -1452,6 +1450,9 @@ int status_calc_mob_(struct mob_data* md, bool first)
 	if (md->guardian_data && md->guardian_data->guardup_lv)
 		flag|=4;
 
+	if (md->class_ == MOBID_EMPERIUM)
+		flag|=4;
+
 	if (battle_config.slaves_inherit_speed && md->master_id)
 		flag|=8;
 
@@ -1563,15 +1564,30 @@ int status_calc_mob_(struct mob_data* md, bool first)
 		if (!gc)
 			ShowError("status_calc_mob: No castle set at map %s\n", map[md->bl.m].name);
 		else {
-			status->max_hp += 2000 * gc->defense;
-			status->max_sp += 200 * gc->defense;
-			status->hp = status->max_hp;
-			status->sp = status->max_sp;
+			if(gc->castle_id > 23) {
+				if(md->class_ == MOBID_EMPERIUM) {
+					status->max_hp += 1000 * gc->defense;
+					status->max_sp += 200 * gc->defense;
+					status->hp = status->max_hp;
+					status->sp = status->max_sp;
+					status->def += (gc->defense+2)/3;
+					status->mdef += (gc->defense+2)/3;
+				}
+			}else{
+				status->max_hp += 1000 * gc->defense;
+				status->max_sp += 200 * gc->defense;
+				status->hp = status->max_hp;
+				status->sp = status->max_sp;
+				status->def += (gc->defense+2)/3;
+				status->mdef += (gc->defense+2)/3;
+			}
 		}
-		status->batk += status->batk * 10*md->guardian_data->guardup_lv/100;
-		status->rhw.atk += status->rhw.atk * 10*md->guardian_data->guardup_lv/100;
-		status->rhw.atk2 += status->rhw.atk2 * 10*md->guardian_data->guardup_lv/100;
-		status->aspd_rate -= 100*md->guardian_data->guardup_lv;
+		if(md->class_ != MOBID_EMPERIUM) {
+			status->batk += status->batk * 10*md->guardian_data->guardup_lv/100;
+			status->rhw.atk += status->rhw.atk * 10*md->guardian_data->guardup_lv/100;
+			status->rhw.atk2 += status->rhw.atk2 * 10*md->guardian_data->guardup_lv/100;
+			status->aspd_rate -= 100*md->guardian_data->guardup_lv;
+		}
 	}
 
 	if( first ) //Initial battle status
@@ -1920,7 +1936,6 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		if(first && sd->inventory_data[index]->equip_script)
 	  	{	//Execute equip-script on login
 			run_script(sd->inventory_data[index]->equip_script,0,sd->bl.id,0);
-			sd->state.script_parsed |= sd->status.inventory[index].equip;
 			if (!calculating)
 				return 1;
 		}
@@ -6379,12 +6394,15 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		//OPTION
 		case SC_HIDING:
 			sc->option |= OPTION_HIDE;
+			opt_flag = 2;
 			break;
 		case SC_CLOAKING:
 			sc->option |= OPTION_CLOAK;
+			opt_flag = 2;
 			break;
 		case SC_CHASEWALK:
 			sc->option |= OPTION_CHASEWALK|OPTION_CLOAK;
+			opt_flag = 2;
 			break;
 		case SC_SIGHT:
 			sc->option |= OPTION_SIGHT;
@@ -6484,7 +6502,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			break;
 	}
 
-	if( sd && sd->ontouch.npc_id )
+	if( opt_flag&2 && sd && sd->touching_id )
 		npc_touchnext_areanpc(sd,false);
 
 	return 1;
