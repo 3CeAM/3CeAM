@@ -6,7 +6,10 @@
 //========================================
 
 12/13/2009
-	r52 [Jobbie]
+	r54 [Jobbie]
+	* Quick fixed while merging with latest eA update something messed up.
+	
+	r53 [Jobbie]
 	* Merge eAthena Updates upto r14198
 
 11/29/2009
