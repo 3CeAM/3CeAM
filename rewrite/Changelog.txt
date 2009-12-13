@@ -5,6 +5,10 @@
 // 	- Details.
 //========================================
 
+12/13/2009
+	r52 [Jobbie]
+	* Merge eAthena Updates upto r14198
+
 11/29/2009
 	r40 [Jobbie]
 	* Added Ranger Trap only related skills.

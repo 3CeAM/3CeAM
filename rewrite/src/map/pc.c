@@ -1638,7 +1638,7 @@ static int pc_bonus_item_drop(struct s_add_drop *drop, const short max, short id
 	return 1;
 }
 
-int pc_addautobonus(struct s_autobonus *bonus,char max,struct script_code *script,short rate,unsigned int dur,short flag,struct script_code *other_script,unsigned short pos,bool onskill)
+int pc_addautobonus(struct s_autobonus *bonus,char max,const char *script,short rate,unsigned int dur,short flag,const char *other_script,unsigned short pos,bool onskill)
 {
 	int i;
 
@@ -1669,8 +1669,8 @@ int pc_addautobonus(struct s_autobonus *bonus,char max,struct script_code *scrip
 	bonus[i].active = INVALID_TIMER;
 	bonus[i].atk_type = flag;
 	bonus[i].pos = pos;
-	bonus[i].bonus_script = script;
-	bonus[i].other_script = other_script;
+	bonus[i].bonus_script = aStrdup(script);
+	bonus[i].other_script = other_script?aStrdup(other_script):NULL;
 	return 1;
 }
 
@@ -1681,31 +1681,30 @@ int pc_delautobonus(struct map_session_data* sd, struct s_autobonus *autobonus,c
 
 	for( i = 0; i < max; i++ )
 	{
-		if( autobonus[i].active != INVALID_TIMER && !(restore && sd->state.autobonus&autobonus[i].pos) )
-		{ // Logout / Unequipped an item with an activated bonus
-			delete_timer(autobonus[i].active,pc_endautobonus);
-			autobonus[i].active = INVALID_TIMER;
-		}
-
-		if( restore && sd->state.autobonus&autobonus[i].pos )
+		if( autobonus[i].active != INVALID_TIMER )
 		{
-			if( autobonus[i].active != INVALID_TIMER && autobonus[i].bonus_script )
-				run_script(autobonus[i].bonus_script,0,sd->bl.id,0);
-			continue;
+			if( restore && sd->state.autobonus&autobonus[i].pos )
+			{
+				if( autobonus[i].bonus_script )
+				{
+					int j;
+					ARR_FIND( 0, EQI_MAX-1, j, sd->equip_index[j] >= 0 && sd->status.inventory[sd->equip_index[j]].equip == autobonus[i].pos );
+					if( j < EQI_MAX-1 )
+						script_run_autobonus(autobonus[i].bonus_script,sd->bl.id,sd->equip_index[j]);
+				}
+				continue;
+			}
+			else
+			{ // Logout / Unequipped an item with an activated bonus
+				delete_timer(autobonus[i].active,pc_endautobonus);
+				autobonus[i].active = INVALID_TIMER;
+			}
 		}
 
-		if( sd->state.autocast )
-			continue;
-
-		if( autobonus[i].pos&sd->state.script_parsed && restore )
-			continue;
-
-		if( autobonus[i].bonus_script )
-			script_free_code(autobonus[i].bonus_script);
-		if( autobonus[i].other_script )
-			script_free_code(autobonus[i].other_script);
-		autobonus[i].rate = autobonus[i].atk_type = autobonus[i].duration = autobonus[i].pos = 0;
+		if( autobonus[i].bonus_script ) aFree(autobonus[i].bonus_script);
+		if( autobonus[i].other_script ) aFree(autobonus[i].other_script);
 		autobonus[i].bonus_script = autobonus[i].other_script = NULL;
+		autobonus[i].rate = autobonus[i].atk_type = autobonus[i].duration = autobonus[i].pos = 0;
 		autobonus[i].active = INVALID_TIMER;
 	}
 
@@ -1719,9 +1718,10 @@ int pc_exeautobonus(struct map_session_data *sd,struct s_autobonus *autobonus)
 
 	if( autobonus->other_script )
 	{
-		sd->state.autocast = 1;
-		run_script(autobonus->other_script,0,sd->bl.id,0);
-		sd->state.autocast = 0;
+		int j;
+		ARR_FIND( 0, EQI_MAX-1, j, sd->equip_index[j] >= 0 && sd->status.inventory[sd->equip_index[j]].equip == autobonus->pos );
+		if( j < EQI_MAX-1 )
+			script_run_autobonus(autobonus->other_script,sd->bl.id,sd->equip_index[j]);
 	}
 
 	autobonus->active = add_timer(gettick()+autobonus->duration, pc_endautobonus, sd->bl.id, (intptr)autobonus);
@@ -5689,15 +5689,6 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 			duel_reject(sd->duel_invite, sd);
 	}
 
-	pc_setdead(sd);
-	//Reset menu skills/item skills
-	if (sd->skillitem)
-		sd->skillitem = sd->skillitemlv = 0;
-	if (sd->menuskill_id)
-		sd->menuskill_id = sd->menuskill_val = 0;
-	//Reset ticks.
-	sd->hp_loss.tick = sd->sp_loss.tick = sd->hp_regen.tick = sd->sp_regen.tick = 0;
-
 	pc_setglobalreg(sd,"PC_DIE_COUNTER",sd->die_counter+1);
 	pc_setglobalreg(sd,"killerrid",src?src->id:0);
 	if( sd->state.bg_id )
@@ -5706,8 +5697,16 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 		if( (bg = bg_team_search(sd->state.bg_id)) != NULL && bg->die_event[0] )
 			npc_event(sd, bg->die_event, 0);
 	}
-
 	npc_script_event(sd,NPCE_DIE);
+
+	pc_setdead(sd);
+	//Reset menu skills/item skills
+	if (sd->skillitem)
+		sd->skillitem = sd->skillitemlv = 0;
+	if (sd->menuskill_id)
+		sd->menuskill_id = sd->menuskill_val = 0;
+	//Reset ticks.
+	sd->hp_loss.tick = sd->sp_loss.tick = sd->hp_regen.tick = sd->sp_regen.tick = 0;
 
 	if ( sd && sd->spiritball )
 		pc_delspiritball(sd,sd->spiritball,0);
@@ -7372,7 +7371,6 @@ int pc_equipitem(struct map_session_data *sd,int n,int req_pos)
  * 0 - only unequip
  * 1 - calculate status after unequipping
  * 2 - force unequip
- * 4 - ignore autobonus flags
  *------------------------------------------*/
 int pc_unequipitem(struct map_session_data *sd,int n,int flag)
 {
@@ -7445,13 +7443,8 @@ int pc_unequipitem(struct map_session_data *sd,int n,int flag)
 			status_change_end(&sd->bl, SC_ARMOR_RESIST, -1);
 	}
 
-	if( !(flag&4) )
-	{
-		if( sd->state.script_parsed&sd->status.inventory[n].equip )
-			sd->state.script_parsed &= ~sd->status.inventory[n].equip;
-		if( sd->state.autobonus&sd->status.inventory[n].equip )
-			sd->state.autobonus &= ~sd->status.inventory[n].equip; //Check for activated autobonus [Inkfish]
-	}
+	if( sd->state.autobonus&sd->status.inventory[n].equip )
+		sd->state.autobonus &= ~sd->status.inventory[n].equip; //Check for activated autobonus [Inkfish]
 
 	sd->status.inventory[n].equip=0;
 
@@ -7738,6 +7731,9 @@ struct map_session_data *pc_get_child (struct map_session_data *sd)
 void pc_bleeding (struct map_session_data *sd, unsigned int diff_tick)
 {
 	int hp = 0, sp = 0;
+
+	if( pc_isdead(sd) )
+		return;
 
 	if (sd->hp_loss.value) {
 		sd->hp_loss.tick += diff_tick;

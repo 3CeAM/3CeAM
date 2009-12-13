@@ -3,6 +3,24 @@ Date	Added
 AS OF SVN REV. 5091, WE ARE NOW USING TRUNK.  ALL UNTESTED BUGFIXES/FEATURES GO INTO TRUNK.
 IF YOU HAVE A WORKING AND TESTED BUGFIX PUT IT INTO STABLE AS WELL AS TRUNK.
 
+2009/12/03
+	* Prevented online user count from going negative. (bugreport:3913) [Paradox924X]
+2009/12/02
+	* Rev. 14183 Semi-revert of 14182, moved ALL_WEWISH up under SA_GRAVITY instead, as I hadn't noticed it does exactly what the new case did. [L0ne_W0lf]
+	* Rev. 14182 Added skill ALL_WEWISH. This skill in older clients plays a song, however in current clients it does not. The effect (AL_ANGELUS) still shows. [L0ne_W0lf]
+2009/11/26
+	* Moved log_sql_init() call up in map-server-init to after after map_sql_init() call to prevent unnecessary processing before a potential quit. [Paradox924X]
+	* NPC event code cleanups. [Inkfish]
+	- removed the 'OnMyMobDead' dead code. It's never supported though documented.
+	- removed the 'feature' that events only trigger when the player is in the OnTouch area IF it's specified. 
+		It's never documented and breaks official scripts.
+	- some cleanups and bug fixes to OnTouch_.
+	* Fixed warping in OnPCDieEvent revives people with 0 hp.
+2009/11/25
+	* Fixed strnpcinfo(1) returning blank strings when NPC names did not have a hidden portion of the display name. (bugreport:3758) [Paradox924X]
+2009/11/23
+	* Fixed player keeps bleeding when dead. [Inkfish]
+	- If battle_config.invincible_nodamage is true, reflected damage to targets in invincible status is now 1.
 2009/11/22
 	* Added 'ipban_cleanup_interval' option which determines how often expired IP bans are cleaned from the database. (bugreport:3734) [Paradox924X]
 	* Modified ipban_check() to only include ipbans that haven't already expired. (bugreport:3734) [Paradox924X]

@@ -673,9 +673,9 @@ int battle_calc_gvg_damage(struct block_list *src,struct block_list *bl,int dama
 	case NJ_ZENYNAGE:
 		break;
 	default:
-		if (md && md->guardian_data) {
+		/*if (md && md->guardian_data) {
 			damage -= damage * (md->guardian_data->castle->defense/100) * battle_config.castle_defense_rate/100;
-		}
+		}*/
 		if (flag & BF_SKILL) { //Skills get a different reduction than non-skills. [Skotlex]
 			if (flag&BF_WEAPON)
 				damage = damage * battle_config.gvg_weapon_damage_rate/100;

@@ -3463,7 +3463,7 @@ void do_final(void)
 	mapit_free(iter);
 	
 	for( i = 0; i < MAX_INSTANCE; i++ )
-		if( instance[i].state != INSTANCE_FREE ) instance_destroy(i);
+		instance_destroy(i);
 
 	id_db->foreach(id_db,cleanup_db_sub);
 	chrif_char_reset_offline();
@@ -3687,6 +3687,8 @@ int do_init(int argc, char *argv[])
 
 #ifndef TXT_ONLY
 	map_sql_init();
+	if (log_config.sql_logs)
+		log_sql_init();
 #endif /* not TXT_ONLY */
 
 	mapindex_init();
@@ -3721,10 +3723,6 @@ int do_init(int argc, char *argv[])
 	do_init_npc();
 	do_init_unit();
 	do_init_battleground();
-#ifndef TXT_ONLY /* mail system [Valaris] */
-	if (log_config.sql_logs)
-		log_sql_init();
-#endif /* not TXT_ONLY */
 
 	npc_event_do_oninit();	// npcのOnInitイベント?行
 
