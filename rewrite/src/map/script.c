@@ -6750,8 +6750,6 @@ BUILDIN_FUNC(autobonus3)
 	
 	if( sd->state.autobonus&sd->status.inventory[current_equip_item_index].equip )
 		return 0;
-	if( sd->state.script_parsed&sd->status.inventory[current_equip_item_index].equip )
-		return 0;
 
 	rate = script_getnum(st,3);
 	dur = script_getnum(st,4);
