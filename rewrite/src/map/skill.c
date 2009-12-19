@@ -265,22 +265,28 @@ int skill_get_range2 (struct block_list *bl, int id, int lv)
 		if (bl->type == BL_PC)
 			range = skill_get_range(NJ_SHADOWJUMP,pc_checkskill((TBL_PC*)bl,NJ_SHADOWJUMP));
 		break;
-	case WL_WHITEIMPRISON:
-	case WL_SOULEXPANSION:
-	case WL_FROSTMISTY:
-	case WL_JACKFROST:
-	case WL_MARSHOFABYSS:
-	case WL_SIENNAEXECRATE:
-	case WL_DRAINLIFE:
-	case WL_CRIMSONROCK:
-	case WL_HELLINFERNO:
-	case WL_COMET:
-	case WL_CHAINLIGHTNING:
-	case WL_EARTHSTRAIN:
-	case WL_TETRAVORTEX:
-	case WL_RELEASE:
+	case WL_WHITEIMPRISON:		case WL_CRIMSONROCK:
+	case WL_SOULEXPANSION:		case WL_HELLINFERNO:
+	case WL_FROSTMISTY:			case WL_COMET:
+	case WL_JACKFROST:			case WL_CHAINLIGHTNING:
+	case WL_MARSHOFABYSS:		case WL_EARTHSTRAIN:
+	case WL_SIENNAEXECRATE:		case WL_TETRAVORTEX:
+	case WL_DRAINLIFE:			case WL_RELEASE:
 		if( bl->type == BL_PC )
 			range += pc_checkskill((TBL_PC*)bl, WL_RADIUS);
+		break;
+	//Added to allow increasing traps range
+	case HT_LANDMINE:		case RA_ELECTRICSHOCKER:
+	case HT_ANKLESNARE:		case RA_CLUSTERBOMB:
+	case HT_SHOCKWAVE:		case RA_MAGENTATRAP:
+	case HT_SANDMAN:		case RA_COBALTTRAP:
+	case HT_FLASHER:		case RA_MAIZETRAP:
+	case HT_FREEZINGTRAP:	case RA_VERDURETRAP:
+	case HT_BLASTMINE:		case RA_FIRINGTRAP:
+	case HT_CLAYMORETRAP:	case RA_ICEBOUNDTRAP:
+	case HT_TALKIEBOX:
+		if( bl->type == BL_PC )
+			range += (1 + pc_checkskill((TBL_PC*)bl, RA_RESEARCHTRAP))/2;
 		break;
 	}
 
@@ -1611,8 +1617,9 @@ int skill_blown(struct block_list* src, struct block_list* target, int count, in
 			break;
 		case BL_SKILL:
 			su = (struct skill_unit *)target;
-			if( su->group->unit_id == UNT_ANKLESNARE )
-				return 0; // ankle snare cannot be knocked back
+			if( su->group->unit_id == UNT_ANKLESNARE || su->group->unit_id == UNT_ELECTRICSHOCKER
+				|| su->group->unit_id == UNT_CLUSTERBOMB )
+				return 0; // ankle snare, electricshocker, clusterbomb cannot be knocked back
 			break;
 	}
 
@@ -2938,6 +2945,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case WL_SOULEXPANSION:
 	case WL_FROSTMISTY:
 	case WL_CRIMSONROCK:
+	case RA_WUGDASH:
 	case RA_ARROWSTORM:
 	case SO_VARETYR_SPEAR:
 	case GN_CART_TORNADO:
@@ -6447,6 +6455,19 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 
+	case RA_WUGDASH:
+		if( tsce )
+		{
+			clif_skill_nodamage(src,bl,skillid,skilllv,status_change_end(bl, type, -1));
+			map_freeblock_unlock();
+			return 0;
+		}
+		if( sd && pc_isriding(sd) ){
+			clif_skill_nodamage(src,bl,skillid,skilllv,sc_start4(bl,type,100,skilllv,unit_getdir(bl),0,0,1));
+			clif_walkok(sd);
+		}
+		break;
+
 	case SO_ARULLO:
 		if( flag & 1 )
 			sc_start2(bl, type, 100, skilllv, 1, skill_get_time(skillid, skilllv));
@@ -6696,7 +6717,7 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 		if (ud->state.running && ud->skillid == TK_JUMPKICK)
 			flag = 1;
 
-		if (ud->walktimer != -1 && ud->skillid != TK_RUN)
+		if (ud->walktimer != -1 && ud->skillid != TK_RUN && ud->skillid != RA_WUGDASH)
 			unit_stop_walking(src,1);
 
 		if( sd && skill_get_cooldown( ud->skillid, ud->skilllv ) ) // Skill cooldown. [LimitLine]

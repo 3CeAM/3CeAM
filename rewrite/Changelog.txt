@@ -5,6 +5,12 @@
 // 	- Details.
 //========================================
 
+12/19/2009
+	r60 [Jobbie]
+	* Added RA_WUGDASH and RA_RESEARCHTRAP skill.
+	* Fixed electric shocker and cluster bomb their unit must not affected by arrow shower.
+	* Fixed usable skills while riding a warg.
+
 12/13/2009
 	r54 [Jobbie]
 	* Quick fixed while merging with latest eA update something messed up.

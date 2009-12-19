@@ -2662,6 +2662,9 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					case WL_SUMMON_ATK_GROUND:
 						skillratio += 50 * skill_lv - 50;
 						break;
+					case RA_WUGDASH:
+						skillratio += 500;//Damage based from iROwiki info. [Jobbie]
+						break;
 					case SO_EARTHGRAVE:	// Need official formula. [LimitLine]
 					case SO_DIAMONDDUST:	// Need official formula. [LimitLine]
 					case SO_POISON_BUSTER:	// Need official formula. [LimitLine]

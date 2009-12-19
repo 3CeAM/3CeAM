@@ -438,6 +438,7 @@ void initChangeTables(void)
 	set_sc( WL_MARSHOFABYSS      , SC_MARSHOFABYSS    , SI_MARSHOFABYSS    , SCB_SPEED|SCB_FLEE|SCB_DEF|SCB_DEF2 );
 
 	set_sc( RA_FEARBREEZE        , SC_FEARBREEZE      , SI_FEARBREEZE      , SCB_NONE );
+	set_sc( RA_WUGDASH           , SC_WUGDASH         , SI_WUGDASH		   , SCB_SPEED );
 	add_sc( RA_MAGENTATRAP       , SC_ELEMENTALCHANGE );
 	add_sc( RA_COBALTTRAP        , SC_ELEMENTALCHANGE );
 	add_sc( RA_MAIZETRAP         , SC_ELEMENTALCHANGE );
@@ -1218,6 +1219,21 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 		}
 		if (sc->option&OPTION_CHASEWALK && skill_num != ST_CHASEWALK)
 			return 0;
+		if (sc->option&OPTION_RIDING_WUG)//Only usable skill while riding warg.
+			switch( skill_num )
+			{
+				case HT_ANKLESNARE:		case HT_SHOCKWAVE:
+				case HT_SANDMAN:		case HT_FLASHER:			
+				case HT_FREEZINGTRAP:	case HT_BLASTMINE:			
+				case HT_CLAYMORETRAP:	case HT_TALKIEBOX:			
+				case RA_DETONATOR:		case RA_CLUSTERBOMB:			
+				case RA_FIRINGTRAP:		case RA_ICEBOUNDTRAP:			
+				case RA_WUGDASH:		case RA_WUGSTRIKE:			
+				case RA_WUGRIDER:
+					break;
+				default:
+					return 0;
+			}
 	}
 	if (target == NULL || target == src) //No further checking needed.
 		return 1;
@@ -2141,6 +2157,8 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		status->int_ += (skill+1)/2; // +1 INT / 2 lv
 	if((skill=pc_checkskill(sd,AC_OWL))>0)
 		status->dex += skill;
+	if((skill=pc_checkskill(sd,RA_RESEARCHTRAP))>0)
+		status->int_ += skill;
 
 	// Bonuses from cards and equipment as well as base stat, remember to avoid overflows.
 	i = status->str + sd->status.str + sd->param_bonus[0] + sd->param_equip[0];
@@ -2207,6 +2225,8 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		status->max_sp += status->max_sp * skill/100;
 	if((skill=pc_checkskill(sd,HW_SOULDRAIN))>0)
 		status->max_sp += status->max_sp * 2*skill/100;
+	if((skill=pc_checkskill(sd,RA_RESEARCHTRAP))>0)
+		status->max_sp += 200 + 20*skill;
 
 	// Apply relative modifiers from equipment
 	if(sd->sprate < 0)
@@ -3949,6 +3969,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				val = max( val, 10 * sc->data[SC_AVOID]->val1 );
 			if( sc->data[SC_INVINCIBLE] && !sc->data[SC_INVINCIBLEOFF] )
 				val = max( val, 75 );
+			if( sc->data[SC_WUGDASH] )
+				val = max( val, 15 );
 			if( sc->data[SC_GN_CARTBOOST] )
 				val = max( val, sc->data[SC_GN_CARTBOOST]->val2 );
 
@@ -4098,7 +4120,7 @@ static unsigned short status_calc_dmotion(struct block_list *bl, struct status_c
 		return 0;
 	if( sc->data[SC_CONCENTRATION] )
 		return 0;
-	if( sc->data[SC_RUN] )
+	if( sc->data[SC_RUN] || sc->data[SC_WUGDASH] )
 		return 0;
 
 	return (unsigned short)cap_value(dmotion,0,USHRT_MAX);
@@ -5873,6 +5895,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val2 = 11-val1; //Chance to consume: 11-skilllv%
 			break;
 		case SC_RUN:
+		case SC_WUGDASH:
 			val4 = gettick(); //Store time at which you started running.
 			tick = -1;
 			break;
@@ -6500,6 +6523,13 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_MERC_SPUP:
 			status_percent_heal(bl, 0, 100); // Recover Full SP
 			break;
+		case SC_WUGDASH:
+			{
+				struct unit_data *ud = unit_bl2ud(bl);
+				if( ud )
+					ud->state.running = unit_wugdash(bl, sd);
+			}
+			break;
 	}
 
 	if( opt_flag&2 && sd && sd->touching_id )
@@ -6920,6 +6950,16 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 				sd->rsb_used = 0;
 				for( i = 0; i < 10; i ++ )
 					sd->rsb_id[i] = 0;
+			}
+			break;
+		case SC_WUGDASH:
+			{
+				struct unit_data *ud = unit_bl2ud(bl);
+				if (ud) {
+					ud->state.running = 0;
+					if (ud->walktimer != -1)
+						unit_stop_walking(bl,1);
+				}
 			}
 			break;
 		}
