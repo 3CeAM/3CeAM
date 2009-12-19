@@ -6,6 +6,12 @@
 //========================================
 
 12/19/2009
+	r61 [Jobbie]
+	* Implemented renewal cast time settings to enable fixed and variable cast time.
+	* Renovatio's cast time is not affected by dex.
+	* Sacrament( fixed cast time reduced ) and Freezing( fixed cast time increased ) are now functional.
+	* Fixed the AfterCastDelay? which is not showing the paw icon and did not trigger after cast delay of skill.
+
 	r60 [Jobbie]
 	* Added RA_WUGDASH and RA_RESEARCHTRAP skill.
 	* Fixed electric shocker and cluster bomb their unit must not affected by arrow shower.

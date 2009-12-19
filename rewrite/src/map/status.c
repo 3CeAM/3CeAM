@@ -4727,6 +4727,7 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 	case SC_STONE:
 	case SC_QUAGMIRE:
 	case SC_SUITON:
+	case SC_SECRAMENT:
 		return 0;
 	}
 	
@@ -6172,6 +6173,9 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 				val4 = 1;
 			tick = 5000;
 			break;
+		case SC_SECRAMENT:
+			val2 = 10 * val1;
+			break;
 		case SC_WHITEIMPRISON:
 			status_change_end(bl, SC_BURNING, -1);
 			status_change_end(bl, SC_FREEZING, -1);
@@ -6182,6 +6186,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val4 = val1 * (val2 + val3);
 			break;
 		case SC_FREEZING:
+			val2 = 50; //+50% to fixed cast time
 			status_change_end(bl, SC_BURNING, -1);
 			break;
 		case SC_CHAINLIGHTNING:
