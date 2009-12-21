@@ -5,7 +5,10 @@
 // 	- Details.
 //========================================
 
-12/20/2009
+12/21/2009
+	r66 [Jobbie]
+	* Fixed an issue in battle_attr_fix causing map-server to crash.
+
 	r64 [pakpil]
 	* Initialized Shadow Chaser's skills implementation. Started with SC_TRIANGLESHOT.
 
