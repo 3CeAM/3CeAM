@@ -2025,6 +2025,13 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 			skill_counter_additional_effect(dsrc,bl,skillid,skilllv,dmg.flag,tick);
 	}
 
+	// Apply knock back chance in SC_TRIANGLESHOT skill.
+	if(skillid == SC_TRIANGLESHOT)
+	{
+		if( rand()%100 > (1 + skilllv))
+			dmg.blewcount = 0;
+	}
+
 	//Only knockback if it's still alive, otherwise a "ghost" is left behind. [Skotlex]
 	//Reflected spells do not bounce back (bl == dsrc since it only happens for direct skills)
 	if (dmg.blewcount > 0 && bl!=dsrc && !status_isdead(bl))
@@ -2036,6 +2043,7 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 			case WZ_STORMGUST: direction = rand()%8;        break; // randomly
 			case PR_SANCTUARY: direction = unit_getdir(bl); break; // backwards
 			case WL_CRIMSONROCK: direction = rand()%8;		break; // randomly
+			case SC_TRIANGLESHOT:  direction = unit_getdir(bl);	break; // backwards
 		}
 		skill_blown(dsrc,bl,dmg.blewcount,direction,0);
 	}
@@ -2737,6 +2745,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case RK_STORMBLAST:
 	case AB_DUPLELIGHT_MELEE:
 	case RA_AIMEDBOLT:
+	case SC_TRIANGLESHOT:
 	case GN_CRAZYWEED_ATK:
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;

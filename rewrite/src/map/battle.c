@@ -1835,6 +1835,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 						default: break;
 					}
 					break;
+				case SC_TRIANGLESHOT:
+					skillratio += 270 + 30 * skill_lv;
+					break;
 				case GN_CART_TORNADO:
 					skillratio += 50 * skill_lv;
 					if( sd )

@@ -5,6 +5,10 @@
 // 	- Details.
 //========================================
 
+12/20/2009
+	r64 [pakpil]
+	* Initialized Shadow Chaser's skills implementation. Started with SC_TRIANGLESHOT.
+
 12/19/2009
 	r61 [Jobbie]
 	* Implemented renewal cast time settings to enable fixed and variable cast time.
