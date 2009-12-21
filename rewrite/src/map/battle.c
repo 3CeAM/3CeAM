@@ -271,7 +271,7 @@ int battle_attr_fix(struct block_list *src, struct block_list *target, int damag
 		if( atk_elem == ELE_FIRE && tsc->data[SC_THORNSTRAP] )
 			status_change_end(target, SC_THORNSTRAP, -1);
 	}
-	if( target->type == BL_SKILL )
+	if( target && target->type == BL_SKILL )
 	{
 		struct skill_unit *unit = (struct skill_unit*)target;
 		if( atk_elem == ELE_FIRE && unit && unit->group->skill_id == GN_WALLOFTHORN )
