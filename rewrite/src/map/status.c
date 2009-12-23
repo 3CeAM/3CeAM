@@ -7575,12 +7575,14 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		if( --(sce->val4) >= 0 )
 		{
 			int damage = status_get_max_hp(bl) / 100 * 3;
+			bool flag;
 			if( status )
 				damage =  battle_attr_fix(bl, bl, damage, ELE_FIRE, status->def_ele, status->ele_lv);
 			map_freeblock_lock();
 			status_fix_damage(bl, bl, damage, clif_damage(bl, bl, tick, 0, 0, damage, 0, 0, 0));
+			flag = !sc->data[type];
 			map_freeblock_unlock();
-			if( !sc->data[type] )// Target still lives. [LimitLine]
+			if( !flag )// Target still lives. [LimitLine]
 				sc_timer_next(2000 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}
