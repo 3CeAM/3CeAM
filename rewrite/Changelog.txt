@@ -5,6 +5,12 @@
 // 	- Details.
 //========================================
 
+12/23/2009
+	r68 [pakpil]
+	* Fixed Burning status:
+	- Map-server crash when someone dies with Burning.
+	- Burning didn't show its sc icon propertly.
+
 12/21/2009
 	r66 [Jobbie]
 	* Fixed an issue in battle_attr_fix causing map-server to crash.

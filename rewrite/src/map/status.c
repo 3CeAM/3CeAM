@@ -6320,7 +6320,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_FREEZE: sc->opt1 = OPT1_FREEZE;    break;
 		case SC_STUN:   sc->opt1 = OPT1_STUN;      break;
 		case SC_SLEEP:  sc->opt1 = OPT1_SLEEP;     break;
-		//case SC_BURNING:  sc->opt1 = OPT1_BURNING;   break; is this necessary to be added? seems when burning is successful no OPT displayed. [Jobbie]
+		case SC_BURNING:  sc->opt1 = OPT1_BURNING;   break; // Burning need this to be showed correctly. [pakpil]
 		//OPT2
 		case SC_POISON:       sc->opt2 |= OPT2_POISON;       break;
 		case SC_CURSE:        sc->opt2 |= OPT2_CURSE;        break;
@@ -6975,6 +6975,7 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 	case SC_FREEZE:
 	case SC_STUN:
 	case SC_SLEEP:
+	case SC_BURNING:
 		sc->opt1 = 0;
 		break;
 
@@ -7562,12 +7563,14 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		if( --(sce->val4) >= 0 )
 		{
 			int damage = status_get_max_hp(bl) / 100 * 3;
+			bool flag;
 			if( status )
 				damage =  battle_attr_fix(bl, bl, damage, ELE_FIRE, status->def_ele, status->ele_lv);
 			map_freeblock_lock();
 			status_fix_damage(bl, bl, damage, clif_damage(bl, bl, tick, 0, 0, damage, 0, 0, 0));
+			flag = !sc->data[type];
 			map_freeblock_unlock();
-			if( sc->data[SC_BURNING] )	// Target still lives. [LimitLine]
+			if( !flag )	// Target still lives. [LimitLine]
 				sc_timer_next(2000 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}
