@@ -6,6 +6,9 @@
 //========================================
 
 12/23/2009
+	r72 [Jobbie]
+	* Fixed burning causing map-error. Sorry I messed up the code. (followed up r70)	
+
 	r71 [Jobbie]
 	* Quick cleanuped. Did not notice there is a remain of code from scratch. (followed up r70)
 
