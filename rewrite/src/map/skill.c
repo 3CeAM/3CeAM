@@ -239,9 +239,9 @@ int skill_get_range2 (struct block_list *bl, int id, int lv)
 	{
 	case AC_SHOWER:			case MA_SHOWER:
 	case AC_DOUBLE:			case MA_DOUBLE:
-	case HT_BLITZBEAT:
-	case AC_CHARGEARROW:
-	case MA_CHARGEARROW:
+	case HT_BLITZBEAT:		case RA_ARROWSTORM:
+	case AC_CHARGEARROW:	case RA_AIMEDBOLT:
+	case MA_CHARGEARROW:	case RA_WUGBITE:
 	case SN_FALCONASSAULT:
 	case SN_SHARPSHOOTING:
 	case MA_SHARPSHOOTING:
@@ -277,14 +277,14 @@ int skill_get_range2 (struct block_list *bl, int id, int lv)
 			range += pc_checkskill((TBL_PC*)bl, WL_RADIUS);
 		break;
 	//Added to allow increasing traps range
-	case HT_LANDMINE:		case RA_ELECTRICSHOCKER:
-	case HT_ANKLESNARE:		case RA_CLUSTERBOMB:
-	case HT_SHOCKWAVE:		case RA_MAGENTATRAP:
-	case HT_SANDMAN:		case RA_COBALTTRAP:
-	case HT_FLASHER:		case RA_MAIZETRAP:
-	case HT_FREEZINGTRAP:	case RA_VERDURETRAP:
-	case HT_BLASTMINE:		case RA_FIRINGTRAP:
-	case HT_CLAYMORETRAP:	case RA_ICEBOUNDTRAP:
+	case HT_LANDMINE:		case RA_CLUSTERBOMB:
+	case HT_ANKLESNARE:		case RA_MAGENTATRAP:
+	case HT_SHOCKWAVE:		case RA_COBALTTRAP:
+	case HT_SANDMAN:		case RA_MAIZETRAP:
+	case HT_FLASHER:		case RA_VERDURETRAP:
+	case HT_FREEZINGTRAP:	case RA_FIRINGTRAP:
+	case HT_BLASTMINE:		case RA_ICEBOUNDTRAP:
+	case HT_CLAYMORETRAP:	
 	case HT_TALKIEBOX:
 		if( bl->type == BL_PC )
 			range += (1 + pc_checkskill((TBL_PC*)bl, RA_RESEARCHTRAP))/2;
@@ -1005,8 +1005,10 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl, SC_BURNING, 100, skilllv, skill_get_time2(skillid, skilllv));
 		break;
 
-	case RA_ELECTRICSHOCKER:
-		sc_start(bl, SC_ELECTRICSHOCKER, 100, skilllv, skill_get_time2(skillid,skilllv));
+	case RA_WUGBITE:
+		sc_start(bl, SC_BITE, 100, skilllv, skill_get_time(skillid, skilllv));
+		if( bl->type == BL_PC )//Only 10 sec duration to players.
+			sc_start(bl, SC_BITE, 100, skilllv, skill_get_time2(skillid, skilllv));
 		break;
 	case RA_FIRINGTRAP:
 		sc_start(bl, SC_BURNING, (10*skilllv+40), skilllv, skill_get_time2(skillid, skilllv));
@@ -2745,6 +2747,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case RK_STORMBLAST:
 	case AB_DUPLELIGHT_MELEE:
 	case RA_AIMEDBOLT:
+	case RA_WUGBITE:
 	case SC_TRIANGLESHOT:
 	case GN_CRAZYWEED_ATK:
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
@@ -3424,6 +3427,20 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 				return 0;
 			}
 			clif_skill_nodamage(src, bl, skillid, 0, j);
+		}
+		break;
+
+	case RA_WUGSTRIKE:
+		if( sd )
+		{
+			if( pc_isriding(sd) ){
+				if( unit_movepos(src, bl->x, bl->y, 1, 1) ){
+					skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
+					clif_slide(src,bl->x,bl->y);
+				}
+			}else{
+				skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
+			}
 		}
 		break;
 
@@ -6465,6 +6482,30 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 
+	case RA_WUGMASTERY:
+		if( sd ){
+			if( !pc_iswarg(sd) )
+				pc_setoption(sd,sd->sc.option|OPTION_WUG);
+			else
+				pc_setoption(sd,sd->sc.option&~OPTION_WUG);
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		}
+		break;
+
+	case RA_WUGRIDER:
+		if( sd ){
+			if( pc_isriding(sd) ){
+				pc_setriding(sd,0);
+				pc_setoption(sd,sd->sc.option|OPTION_WUG);
+			}
+			else if( pc_iswarg(sd) ){
+				pc_setriding(sd,1);
+				pc_setoption(sd,sd->sc.option&~OPTION_WUG);
+			}
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		}
+		break;
+
 	case RA_WUGDASH:
 		if( tsce )
 		{
@@ -8576,6 +8617,8 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			if(sg->val2 == 0 && tsc)
 			{
 				int sec = skill_get_time2(sg->skill_id,sg->skill_lv);
+				if(status_get_mode(bl)&MD_BOSS)
+					break;
 				if (status_change_start(bl,type,10000,sg->skill_lv,sg->group_id,0,0,sec, 20))
 				{
 					const struct TimerData* td = tsc->data[type]?get_timer(tsc->data[type]->timer):NULL;
@@ -8630,6 +8673,28 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			clif_changetraplook(&src->bl, sg->unit_id==UNT_FIRINGTRAP?UNT_DUMMYSKILL:UNT_USED_TRAPS);
 			src->range = -1;
 			sg->limit=DIFF_TICK(tick,sg->tick)+1500;
+			break;
+
+		case UNT_MAGENTATRAP:
+		case UNT_COBALTTRAP:
+		case UNT_MAIZETRAP:
+		case UNT_VERDURETRAP:
+			{
+				if(status_get_mode(bl)&MD_BOSS)
+					break;
+				switch( sg->skill_id )
+				{
+					case RA_MAGENTATRAP:
+					case RA_COBALTTRAP:
+					case RA_MAIZETRAP:
+					case RA_VERDURETRAP:
+						sc_start2(bl, type, 10000, sg->skill_lv, skill_get_ele(sg->skill_id,sg->skill_lv), 
+							skill_get_time2(sg->skill_id, sg->skill_lv));
+						skill_delunit(src);
+						break;
+				}
+				return 1;
+			}
 			break;
 
 		case UNT_LULLABY:
@@ -8813,7 +8878,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 					clif_skill_nodamage(&src->bl, bl, AL_HEAL, hp, 1);
 				if( tstatus->sp != tstatus->max_sp )
 					clif_skill_nodamage(&src->bl, bl, MG_SRECOVERY, sp, 1);
-				sc_start(bl, SC_EPICLESIS, 100, sg->skill_lv, skill_get_time2(sg->skill_id, sg->skill_lv));
+				sc_start(bl, SC_EPICLESIS, 100, sg->skill_lv, skill_get_time(sg->skill_id, sg->skill_lv));
 			}
 			else if( battle_check_target(ss, bl, BCT_ENEMY) > 0 && battle_check_undead(tstatus->race, tstatus->def_ele) )
 				skill_castend_damage_id(&src->bl, bl, sg->skill_id, sg->skill_lv, 0, 0);
@@ -8831,28 +8896,6 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 				sc_start(bl, SC_STRIPWEAPON, rate,sg->skill_lv, skill_get_time2(sg->skill_id, sg->skill_lv));
 				sc_start(bl, SC_STRIPHELM, rate, sg->skill_lv, skill_get_time2(sg->skill_id, sg->skill_lv));
 				skill_attack(skill_get_type(sg->skill_id), ss, &src->bl, bl, sg->skill_id, sg->skill_lv, tick, 0);
-			}
-			break;
-
-		case UNT_MAGENTATRAP:
-		case UNT_COBALTTRAP:
-		case UNT_MAIZETRAP:
-		case UNT_VERDURETRAP:
-			{
-				if(status_get_mode(bl)&MD_BOSS)
-					break;
-				switch( sg->skill_id )
-				{
-					case RA_MAGENTATRAP:
-					case RA_COBALTTRAP:
-					case RA_MAIZETRAP:
-					case RA_VERDURETRAP:
-						sc_start2(bl, type, 10000, sg->skill_lv, skill_get_ele(sg->skill_id,sg->skill_lv), 
-							skill_get_time2(sg->skill_id, sg->skill_lv));
-						skill_delunit(src);
-						break;
-				}
-				return 1;
 			}
 			break;
 
@@ -9817,6 +9860,31 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			break;
 		clif_skill_fail(sd,skill,0,0);
 		return 0;
+	case ST_WUG:
+		if(skill == RA_SENSITIVEKEEN){
+			if(!pc_iswarg(sd)) {
+				clif_skill_fail(sd,skill,0x17,0);
+				return 0;
+			}
+		}else if(!pc_iswarg(sd)) {
+			clif_skill_fail(sd,skill,0,0);
+			return 0;
+		}
+		break;
+	case ST_RIDINGWUG:
+		if(skill == RA_WUGRIDER){
+			if(!pc_isriding(sd) && !pc_iswarg(sd)) {
+				clif_skill_fail(sd,skill,0x17,0);
+				return 0;
+			}
+		}
+		else if(skill == RA_WUGSTRIKE){
+			if(!pc_isriding(sd) && !pc_iswarg(sd)){
+				clif_skill_fail(sd,skill,0,0);
+				return 0;
+			}
+		}
+		break;
 	}
 
 	if(require.mhp > 0 && get_percentage(status->hp, status->max_hp) > require.mhp) {
@@ -13108,6 +13176,8 @@ static bool skill_parse_row_requiredb(char* split[], int columns, int current)
 	else if( strcmpi(split[10],"recover_weight_rate")==0 ) skill_db[i].state = ST_RECOV_WEIGHT_RATE;
 	else if( strcmpi(split[10],"move_enable")==0 ) skill_db[i].state = ST_MOVE_ENABLE;
 	else if( strcmpi(split[10],"water")==0 ) skill_db[i].state = ST_WATER;
+	else if( strcmpi(split[10],"warg")==0 ) skill_db[i].state = ST_WUG;
+	else if( strcmpi(split[10],"ridingwarg")==0 ) skill_db[i].state = ST_RIDINGWUG;
 	else skill_db[i].state = ST_NONE;
 
 	skill_split_atoi(split[11],skill_db[i].spiritball);

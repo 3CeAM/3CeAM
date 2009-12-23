@@ -438,11 +438,12 @@ void initChangeTables(void)
 	set_sc( WL_MARSHOFABYSS      , SC_MARSHOFABYSS    , SI_MARSHOFABYSS    , SCB_SPEED|SCB_FLEE|SCB_DEF|SCB_DEF2 );
 
 	set_sc( RA_FEARBREEZE        , SC_FEARBREEZE      , SI_FEARBREEZE      , SCB_NONE );
+	add_sc( RA_ELECTRICSHOCKER   , SC_ELECTRICSHOCKER );
 	set_sc( RA_WUGDASH           , SC_WUGDASH         , SI_WUGDASH		   , SCB_SPEED );
 	add_sc( RA_MAGENTATRAP       , SC_ELEMENTALCHANGE );
 	add_sc( RA_COBALTTRAP        , SC_ELEMENTALCHANGE );
 	add_sc( RA_MAIZETRAP         , SC_ELEMENTALCHANGE );
-	add_sc( RA_ELECTRICSHOCKER   , SC_ELECTRICSHOCKER );
+	add_sc( RA_VERDURETRAP       , SC_ELEMENTALCHANGE );
 	add_sc( RA_FIRINGTRAP        , SC_BURNING         );
 	add_sc( RA_ICEBOUNDTRAP      , SC_FREEZING        );
 
@@ -3884,7 +3885,12 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				val = 25;
 			else
 			if( sd && pc_isriding(sd) )
-				val = 25;
+			{
+				if( sd->sc.option&OPTION_RIDING_WUG )
+					val = 10*pc_checkskill(sd,RA_WUGRIDER);
+				else
+					val = 25;
+			}
 
 			speed_rate -= val;
 		}
@@ -4769,11 +4775,16 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 		sc_def = 3 +(status->str + status->int_)/2;
 		break;
 	case SC_ANKLE:
-	//case SC_ELECTRICSHOCKER:	// Does it also apply for electric shocker? [LimitLine]
 		if(status->mode&MD_BOSS) // Lasts 5 times less on bosses
 			tick /= 5;
 		sc_def = status->agi / 2;
 		break;
+	/*	Need to be corrected if its the proper calculation to reduce duration every 10 agi of mob.
+		As for now its commented out until further correction of value. [Jobbie]
+	case SC_ELECTRICSHOCKER:
+	case SC_BITE:
+		if(!sd) tick -= status->agi / 10;
+		break;*/
 	case SC_MAGICMIRROR:
 	case SC_ARMORCHANGE:
 		if (sd) //Duration greatly reduced for players.
@@ -5204,6 +5215,9 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	case SC_CHANGEUNDEAD:
 		status_change_end(bl,SC_BLESSING,-1);
 		status_change_end(bl,SC_INCREASEAGI,-1);
+		break;	
+	case SC_ELECTRICSHOCKER:
+		status_change_end(bl,SC_ELECTRICSHOCKER2,-1);
 		break;
 	}
 
@@ -6295,6 +6309,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_ANKLE:
 		case SC_SPIDERWEB:
 		case SC_ELECTRICSHOCKER:
+		case SC_BITE:
 		case SC_THORNSTRAP:
 		case SC_DIAMONDDUST:
 			unit_stop_walking(bl,1);
@@ -7563,14 +7578,12 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		if( --(sce->val4) >= 0 )
 		{
 			int damage = status_get_max_hp(bl) / 100 * 3;
-			bool flag;
 			if( status )
 				damage =  battle_attr_fix(bl, bl, damage, ELE_FIRE, status->def_ele, status->ele_lv);
 			map_freeblock_lock();
 			status_fix_damage(bl, bl, damage, clif_damage(bl, bl, tick, 0, 0, damage, 0, 0, 0));
-			flag = !sc->data[type];
 			map_freeblock_unlock();
-			if( !flag )	// Target still lives. [LimitLine]
+			if( !sc->data[type] )// Target still lives. [LimitLine]
 				sc_timer_next(2000 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}
@@ -7792,6 +7805,7 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC_STRIPSHIELD:
 			case SC_STRIPARMOR:
 			case SC_STRIPHELM:
+			case SC_BITE:
 				if (!(type&2))
 					continue;
 				break;

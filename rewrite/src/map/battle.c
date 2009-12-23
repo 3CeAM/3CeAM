@@ -294,9 +294,9 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 {
 	struct map_session_data *sd = NULL;
 	struct map_session_data *tsd = NULL;
-	struct status_change *sc;
+	struct status_change *sc, *tsc;
 	struct status_change_entry *sce;
-	struct status_data *status;
+	//struct status_data *status;
 	int div_ = d->div_, flag = d->flag;
 
 	nullpo_retr(0, bl);
@@ -322,18 +322,13 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 	}
 
 	sc = status_get_sc(bl);
+	tsc = status_get_sc(src);
 
 	if( sc && sc->data[SC_INVINCIBLE] && !sc->data[SC_INVINCIBLEOFF] )
 		return 1;
 
 	if (skill_num == PA_PRESSURE)
 		return damage; //This skill bypass everything else.
-
-	if( sd && (tsd = map_id2sd(bl->id)) && (status = status_get_status_data(src)) )
-	{
-		if( (skill_num == pc_checkskill(tsd, RA_RANGERMAIN)) > 0 && ( status->race == RC_BRUTE || status->race == RC_PLANT || status->race == RC_FISH ) )
-			damage -= 5 * skill_num;
-	}
 
 	if( sc && sc->count )
 	{
@@ -505,6 +500,15 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			clif_skill_nodamage(bl,bl,ST_REJECTSWORD,sce->val1,1);
 			if(--(sce->val3)<=0)
 				status_change_end(bl, SC_REJECTSWORD, -1);
+		}
+
+		//Finally added to remove the status of immobile when aimedbolt is used. [Jobbie]
+		if( skill_num == RA_AIMEDBOLT && !(tsc && (tsc->data[SC_BITE] ||
+			tsc->data[SC_ANKLE] || tsc->data[SC_ELECTRICSHOCKER])) )
+		{
+				status_change_end(bl, SC_BITE, -1);
+				status_change_end(bl, SC_ANKLE, -1);
+				status_change_end(bl, SC_ELECTRICSHOCKER, -1);
 		}
 
 		//Finally Kyrie because it may, or not, reduce damage to 0.
@@ -739,6 +743,9 @@ int battle_addmastery(struct map_session_data *sd,struct block_list *target,int 
 
 	if( (skill = pc_checkskill(sd, RA_RANGERMAIN)) > 0 && (status->race == RC_BRUTE || status->race == RC_PLANT || status->race == RC_FISH) )
 		damage += skill * 5;
+
+	if( (skill = pc_checkskill(sd,RA_TOOTHOFWUG)) > 0 && (sd && (sd->sc.option&OPTION_WUG || sd->sc.option&OPTION_RIDING_WUG)) )
+		damage += skill * 6;
 
 	if(type == 0)
 		weapon = sd->weapontype1;
@@ -1095,9 +1102,15 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				if (!sd) wd.flag=(wd.flag&~(BF_RANGEMASK|BF_WEAPONMASK))|BF_LONG|BF_MISC;
 				break;
 
-			case RA_AIMEDBOLT:
-				wd.div_ = unit_can_move(target)?-1:-(tstatus->size + 1);
-				break;
+			case RA_AIMEDBOLT: //Ankle Snare, Electric Shocker, Warg Bite effect count as snared.
+				if( !(tsc && (tsc->data[SC_BITE] ||
+					tsc->data[SC_ANKLE] || tsc->data[SC_ELECTRICSHOCKER] )) )
+				{
+					wd.div_ = 1; // 1 hit if status is not immobile.
+				}else{
+					wd.div_= ( wd.div_>0?tstatus->size+2:-(tstatus->size+1) );
+				}
+ 				break;
 		}
 	} else //Range for normal attacks.
 		wd.flag |= flag.arrow?BF_LONG:BF_SHORT;
@@ -1824,16 +1837,22 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					skillratio += 100 + 50 * skill_lv;
 					break;
 				case RA_AIMEDBOLT:
-					if( unit_can_move(target) )
-						skillratio = skillratio * 2 + skillratio / 5 * skill_lv;
-					else
-					switch( tstatus->size )
-					{
-						case 1: skillratio = skillratio * 8 + skillratio / 10 * 8 * skill_lv; break;
-						case 2: skillratio = skillratio * 18 + skillratio / 10 * 18 * skill_lv; break;
-						case 3: skillratio = skillratio * 32 + skillratio / 10 * 32 * skill_lv; break;
-						default: break;
-					}
+					//Note: Multiple hits are already calculated into damage values. [Jobbie]
+					skillratio += 100 + 20 * skill_lv;
+					if( tsc && (tsc->data[SC_BITE] || tsc->data[SC_ANKLE] || 
+						tsc->data[SC_ELECTRICSHOCKER]) )
+						switch(tstatus->size)
+						{
+							case 0: skillratio = skillratio*2; break;
+							case 1: skillratio = skillratio*3; break;
+							case 2: skillratio = skillratio*4; break;
+						}
+					break;
+				case RA_WUGSTRIKE:
+					skillratio = 120 * skill_lv - 100;
+					break;
+				case RA_WUGBITE:
+					skillratio += 50 * skill_lv;
 					break;
 				case SC_TRIANGLESHOT:
 					skillratio += 270 + 30 * skill_lv;
@@ -2008,6 +2027,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				if((battle_check_undead(sstatus->race,sstatus->def_ele) || sstatus->race==RC_DEMON) && //This bonus already doesnt work vs players
 					src->type == BL_MOB && (skill=pc_checkskill(tsd,AL_DP)) > 0)
 					vit_def += skill*(int)(3 +(tsd->status.base_level+1)*0.04);   // submitted by orn
+				if( src->type == BL_MOB && (skill=pc_checkskill(tsd,RA_RANGERMAIN))>0 && 
+					(sstatus->race == RC_BRUTE || sstatus->race == RC_FISH || sstatus->race == RC_PLANT) )
+					vit_def += skill*5;
 			} else { //Mob-Pet vit-eq
 				//VIT + rnd(0,[VIT/20]^2-1)
 				vit_def = (def2/20)*(def2/20);

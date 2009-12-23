@@ -835,6 +835,7 @@ int unit_can_move(struct block_list *bl)
 			|| (sc->data[SC_GRAVITATION] && sc->data[SC_GRAVITATION]->val3 == BCT_SELF)
 			|| sc->data[SC_WHITEIMPRISON]
 			|| sc->data[SC_ELECTRICSHOCKER]
+			|| sc->data[SC_BITE]
 			|| sc->data[SC_THORNSTRAP]
 			|| sc->data[SC_DIAMONDDUST]
 		))
@@ -1036,8 +1037,15 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 				return 0;
 			}
 			break;
+		case RA_WUGMASTERY:
+			if(pc_isfalcon(sd))
+			{
+				clif_skill_fail(sd,skill_num,0x17,0);
+				return 0;
+			}
+			break;
 		case RA_WUGDASH:
-			if(!(pc_isriding(sd)))
+			if(!pc_isriding(sd))
 			{
 				clif_skill_fail(sd,skill_num,0,0);
 				return 0;
@@ -1879,6 +1887,7 @@ int unit_remove_map_(struct block_list *bl, int clrtype, const char* file, int l
 		status_change_end(bl,SC_CHANGE,-1);
 		status_change_end(bl,SC_STOP,-1);
 		status_change_end(bl,SC_ELECTRICSHOCKER,-1);
+		status_change_end(bl,SC_BITE,-1);
 		status_change_end(bl,SC_WUGDASH,-1);
 		status_change_end(bl,SC_DIAMONDDUST,-1);
 	}
