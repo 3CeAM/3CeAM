@@ -5215,9 +5215,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	case SC_CHANGEUNDEAD:
 		status_change_end(bl,SC_BLESSING,-1);
 		status_change_end(bl,SC_INCREASEAGI,-1);
-		break;	
-	case SC_ELECTRICSHOCKER:
-		status_change_end(bl,SC_ELECTRICSHOCKER2,-1);
 		break;
 	}
 
