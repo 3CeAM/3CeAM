@@ -356,6 +356,7 @@ typedef enum sc_type {
 
 	SC_FEARBREEZE,
 	SC_ELECTRICSHOCKER,
+	SC_BITE,
 	SC_WUGDASH,
 
 	SC__ENERVATION,
