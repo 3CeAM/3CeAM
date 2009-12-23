@@ -6,12 +6,15 @@
 //========================================
 
 12/23/2009
-	r69 [Jobbie]
+	r71 [Jobbie]
+	* Quick cleanuped. Did not notice there is a remain of code from scratch. (followed up r70)
+
+	r70 [Jobbie]
 	* Added the rest of Rangers skills. Does not include Camouflage, Sensitivekeen and Fearbreeze.
 	* Removed Electric Shocker from Researchtrap list to increase range. Should not affect boss monster.
 	* Fixed Epiclesis not giving properly the MaxHP bonus.
 
-	r68 [pakpil]
+	r69 [pakpil]
 	* Fixed Burning status:
 	- Map-server crash when someone dies with Burning.
 	- Burning didn't show its sc icon propertly.
