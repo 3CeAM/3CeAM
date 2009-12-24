@@ -431,6 +431,26 @@ int map_moveblock(struct block_list *bl, int x1, int y1, unsigned int tick)
 #endif
 
 	if (bl->type&BL_CHAR) {
+		if( sc && sc->data[SC__SHADOWFORM] )
+		{
+			struct map_session_data *s_sd = map_id2sd(sc->data[SC__SHADOWFORM]->val2);
+			if( !check_distance_bl(bl,&s_sd->bl,skill_get_range(SC_SHADOWFORM,sc->data[SC__SHADOWFORM]->val1)) )
+			{
+				status_change_end(bl,SC__SHADOWFORM,-1);
+				if( s_sd )
+					s_sd->shadowform_id = 0;
+			}
+		}
+		if( ((TBL_PC*)bl)->shadowform_id > 0 )
+		{
+			struct block_list *s_bl = map_id2bl(((TBL_PC*)bl)->shadowform_id);
+			if( !check_distance_bl(bl,s_bl,skill_get_range(SC_SHADOWFORM,1)) ) // Asume lvl 1.
+			{
+				((TBL_PC*)bl)->shadowform_id = 0;
+				if( s_bl )
+					status_change_end(s_bl,SC__SHADOWFORM,-1);
+			}
+		}
 		skill_unit_move(bl,tick,3);
 		if (sc) {
 			if (sc->count) {
@@ -1736,6 +1756,8 @@ int map_quit(struct map_session_data *sd)
 				status_change_end(&sd->bl,SC_KAAHI,-1);
 			if(sd->sc.data[SC_SPIRIT])
 				status_change_end(&sd->bl,SC_SPIRIT,-1);
+			if(sd->sc.data[SC__REPRODUCE])
+				status_change_end(&sd->bl,SC__REPRODUCE,-1);
 		}
 	}
 	

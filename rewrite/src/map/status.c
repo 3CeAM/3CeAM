@@ -447,6 +447,8 @@ void initChangeTables(void)
 	add_sc( RA_FIRINGTRAP        , SC_BURNING         );
 	add_sc( RA_ICEBOUNDTRAP      , SC_FREEZING        );
 
+	set_sc( SC_SHADOWFORM        , SC__SHADOWFORM        , SI_SHADOWFORM        , SCB_NONE );
+
 	set_sc( GN_CARTBOOST         , SC_GN_CARTBOOST    , SI_GN_CARTBOOST    , SCB_SPEED|SCB_BATK );
 	add_sc( GN_THORNS_TRAP       , SC_THORNSTRAP );
 	set_sc( GN_BLOOD_SUCKER      , SC_BLOODSUCKER     , SI_BLOODSUCKER     , SCB_NONE );
@@ -6233,6 +6235,11 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 				val4 = 1;
 			tick = 1000;
 			break;
+		case SC__SHADOWFORM:
+			val4 = tick / 1000;
+			val_flag |= 1|2|4;
+			tick = 1000;
+			break;
 		case SC_GN_CARTBOOST:
 			if( val1 < 3 )
 				val2 = 50;
@@ -7631,6 +7638,16 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		if( --(sce->val4) >= 0 )
 		{
 			status_charge(bl, 0, status->max_sp / 100 * sce->val1 );
+			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
+
+	case SC__SHADOWFORM:
+		if( --(sce->val4) >= 0 )
+		{
+			if( !status_charge(bl, 0, sce->val1 - (sce->val1 - 1)) )
+				break;
 			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}

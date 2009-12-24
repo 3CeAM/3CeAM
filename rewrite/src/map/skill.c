@@ -1936,6 +1936,24 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 		}
 	}
 
+	
+	if( sc && sc->data[SC__SHADOWFORM] && damage > 0 )
+	{
+		struct block_list *s_bl = map_id2bl(sc->data[SC__SHADOWFORM]->val2);
+		if( s_bl && !status_isdead(s_bl) )
+		{
+			clif_damage(s_bl,s_bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,dmg.type,dmg.damage2);
+			status_fix_damage(NULL, s_bl, damage, 0);
+			sc->data[SC__SHADOWFORM]->val3--;
+			if( sc->data[SC__SHADOWFORM]->val3 <= 0 || status_isdead(s_bl) )
+			{
+				status_change_end(bl, SC__SHADOWFORM, -1);
+				if( tsd )
+					tsd->shadowform_id = 0;
+			}
+		}
+	}
+
 	//Display damage.
 	switch( skillid )
 	{
@@ -6522,6 +6540,22 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 
+	case SC_SHADOWFORM:
+		if( sd && bl->type == BL_PC && src != bl ) // Only work with other chars.
+		{
+			// Still need confirm how many Chasers can link to the same target.
+			if( ((TBL_PC*)bl)->shadowform_id > 0 )
+			{
+				clif_skill_fail(sd, skillid, 0, 0);
+				return 0;
+			}
+			if( clif_skill_nodamage(src, bl, skillid, skilllv,
+				sc_start4(src, type, 100, skilllv, bl->id, 5, 0, skill_get_time(skillid, skilllv))))
+				((TBL_PC*)bl)->shadowform_id = src->id;
+		}
+		break;
+
+
 	case SO_ARULLO:
 		if( flag & 1 )
 			sc_start2(bl, type, 100, skilllv, 1, skill_get_time(skillid, skilllv));
@@ -6724,7 +6758,7 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 					break;
 			}
 			else
-			if (inf && battle_check_target(src, target, inf) <= 0)
+			if ( ud->skillid != SC_SHADOWFORM && inf && battle_check_target(src, target, inf) <= 0)
 				break;
 
 			if(inf&BCT_ENEMY && (sc = status_get_sc(target)) &&
@@ -9458,6 +9492,9 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		clif_skill_fail(sd,skill,9,0);
 		return 0;
 	}
+
+	if( sc && sc->data[SC__SHADOWFORM] )
+		return 0;
 
 	switch( skill )
 	{ // Turn off check.
