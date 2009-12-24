@@ -3394,6 +3394,24 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		}
 	}
 
+
+	if( tsc && tsc->data[SC__SHADOWFORM] && damage > 0 )
+	{
+		struct block_list *s_bl = map_id2bl(tsc->data[SC__SHADOWFORM]->val2);
+		if( s_bl && !status_isdead(s_bl) )
+		{
+			clif_damage(s_bl, s_bl, tick, wd.amotion, wd.dmotion, wd.damage, wd.div_ , wd.type, wd.damage2);
+			status_fix_damage(NULL, s_bl, damage, 0);
+			tsc->data[SC__SHADOWFORM]->val3--;
+			if( tsc->data[SC__SHADOWFORM]->val3 <= 0 || status_isdead(s_bl) )
+			{
+				status_change_end(target, SC__SHADOWFORM, -1);
+				if( tsd )
+					tsd->shadowform_id = 0;
+			}
+		}
+	}
+
 	wd.dmotion = clif_damage(src, target, tick, wd.amotion, wd.dmotion, wd.damage, wd.div_ , wd.type, wd.damage2);
 
 	if (sd && sd->splash_range > 0 && damage > 0)

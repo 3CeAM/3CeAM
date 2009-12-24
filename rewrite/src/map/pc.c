@@ -3619,7 +3619,8 @@ int pc_useitem(struct map_session_data *sd,int n)
 		sd->sc.data[SC_TRICKDEAD] ||
 		sd->sc.data[SC_HIDING] ||
 		(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOITEM) ||
-		sd->sc.data[SC_DIAMONDDUST]
+		sd->sc.data[SC_DIAMONDDUST] ||
+		sd->sc.data[SC__SHADOWFORM]
 	))
 		return 0;
 
@@ -5659,6 +5660,19 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 		struct map_session_data *devsd = map_id2sd(sd->devotion[k]);
 		if (devsd) status_change_end(&devsd->bl,SC_DEVOTION,-1);
 		sd->devotion[k] = 0;
+	}
+	
+	if( sd->shadowform_id )
+	{
+		struct map_session_data *s_sd = map_id2sd(sd->shadowform_id);
+		if( s_sd ) status_change_end(&s_sd->bl,SC__SHADOWFORM,-1);
+		sd->shadowform_id = 0;
+	}
+
+	if( sd->sc.count && sd->sc.data[SC__SHADOWFORM] )
+	{
+		struct map_session_data *s_sd = map_id2sd(sd->shadowform_id);
+		if( s_sd ) s_sd->shadowform_id = 0 ;
 	}
 
 	if(sd->status.pet_id > 0 && sd->pd)

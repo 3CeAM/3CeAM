@@ -6,6 +6,10 @@
 //========================================
 
 12/24/2009
+	r74 [pakpil]
+	* First implementation of SC_SHADOWFORM skill.
+
+12/24/2009
 	r73 [Jobbie]
 	* When mounted with warg and used warg strike in WoE maps it will fail.
 	* Fixed a typo in GN_CARTCANNON.
