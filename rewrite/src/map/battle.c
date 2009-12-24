@@ -1333,7 +1333,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 			case MC_CARTREVOLUTION:
 			case GN_CART_TORNADO:
 			case GN_CARTCANNON:
-				if( sd && pc_checkskill(sd, GN_REMODELING_CART) );
+				if( sd && pc_checkskill(sd, GN_REMODELING_CART) )
 					hitrate += pc_checkskill(sd, GN_REMODELING_CART) * 4;
 				break;
 		}

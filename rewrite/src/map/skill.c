@@ -3431,17 +3431,20 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		break;
 
 	case RA_WUGSTRIKE:
-		if( sd )
-		{
-			if( pc_isriding(sd) ){
-				if( unit_movepos(src, bl->x, bl->y, 1, 1) ){
-					skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
-					clif_slide(src,bl->x,bl->y);
-				}
-			}else{
-				skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
+		if( sd && pc_isriding(sd) ){
+			if( map_flag_gvg(bl->m) || map[bl->m].flag.battleground )
+			{ // Cannot be used in woe. [Jobbie]
+				clif_skill_fail(sd,skillid,0x17,0);
+				return 0;
 			}
-		}
+			if( unit_movepos(src, bl->x, bl->y, 1, 1) ){
+				map_freeblock_lock();
+				skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
+				clif_slide(src,bl->x,bl->y);
+				map_freeblock_unlock();
+			}
+		}else
+			skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
 	case SO_POISON_BUSTER:
