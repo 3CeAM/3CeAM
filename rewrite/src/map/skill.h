@@ -1552,12 +1552,11 @@ enum {
 	UNT_EARTHSTRAIN = 0xcb,
 	UNT_MANHOLE = 0xcc,
 	UNT_DIMENSIONDOOR = 0xcd,
-	UNT_BLOODYLUST = 0xce, // Need to confirm this.
-	UNT_CHAOSPANIC = 0xcf,  // Need to confirm this.
-
+	UNT_CHAOSPANIC = 0xce,
+	UNT_MAELSTORM = 0xcf,
+	UNT_BLOODYLUST = 0xd0,
 	UNT_FEINTBOMB = 0xd1,
-	//New Trap Unit for Ranger. [Jobbie] 
-	//(Thanks to Rikter)
+	//New Trap Unit for Ranger. [Jobbie]
 	UNT_MAGENTATRAP = 0xd2,
 	UNT_COBALTTRAP,
 	UNT_MAIZETRAP,
@@ -1566,16 +1565,17 @@ enum {
 	UNT_ICEBOUNDTRAP,
 	UNT_ELECTRICSHOCKER,
 	UNT_CLUSTERBOMB,
-
 	UNT_REVERBERATION = 0xda,
 	UNT_SEVERE_RAINSTORM = 0xdb,
+	UNT_FIREWALK = 0xdc,
 	UNT_ELECTRICWALK = 0xdd,
-	UNT_BLUENOTE = 0xde,	// This is... an exact version of Reverberation but blue. [LimitLine]
-	UNT_FIREWALK = 0xdf,	// Asssuming fire walk for the time being. [LimitLine]
-	UNT_UNKNOWN_03 = 0xe0,
+	UNT_NETHERWORLD = 0xde,
+	//0xdf,
+	UNT_CLOUDKILL = 0xe0,
 	UNT_POISONSMOKE = 0xe1,
 	UNT_NEUTRALBARRIER = 0xe2,
 	UNT_STEALTHFIELD = 0xe3,
+	UNT_WARMER = 0xe4,
 	UNT_THORNS_TRAP = 0xe5,
 	UNT_WALLOFTHORN = 0xe6,
 	UNT_DEMONIC_FIRE = 0xe7,

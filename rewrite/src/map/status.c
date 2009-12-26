@@ -413,13 +413,13 @@ void initChangeTables(void)
 	add_sc( RK_DRAGONBREATH      , SC_BURNING         );
 	set_sc( RK_MILLENNIUMSHIELD  , SC_BERKANA         , SI_BERKANA         , SCB_NONE );
 	set_sc( RK_CRUSHSTRIKE       , SC_RAIDO           , SI_RAIDO           , SCB_NONE );
-	set_sc( RK_REFRESH           , SC_NAUTHIZ      , SI_NAUTHIZ         , SCB_NONE );
-	set_sc( RK_GIANTGROWTH       , SC_THURISAZ     , SI_THURISAZ        , SCB_STR );
-	set_sc( RK_STONEHARDSKIN     , SC_HAGALAZ      , SI_HAGALAZ         , SCB_NONE );
-	set_sc( RK_VITALITYACTIVATION       , SC_ISA      , SI_ISA          , SCB_REGEN );
-	set_sc( RK_STORMBLAST        , SC_WYRD            , SI_WYRD         , SCB_NONE );
-	set_sc( RK_FIGHTINGSPIRIT    , SC_OTHILA          , SI_OTHILA       , SCB_WATK|SCB_ASPD );
-	set_sc( RK_ABUNDANCE         , SC_URUZ     , SI_URUZ         , SCB_NONE );
+	set_sc( RK_REFRESH           , SC_NAUTHIZ         , SI_NAUTHIZ         , SCB_NONE );
+	set_sc( RK_GIANTGROWTH       , SC_THURISAZ        , SI_TURISUSS        , SCB_STR );
+	set_sc( RK_STONEHARDSKIN     , SC_HAGALAZ         , SI_HAGALAZ         , SCB_NONE );
+	set_sc( RK_VITALITYACTIVATION       , SC_ISA      , SI_ISHA             , SCB_REGEN );
+	set_sc( RK_STORMBLAST        , SC_WYRD            , SI_WYRD            , SCB_NONE );
+	set_sc( RK_FIGHTINGSPIRIT    , SC_OTHILA          , SI_EISIR           , SCB_WATK|SCB_ASPD );
+	set_sc( RK_ABUNDANCE         , SC_URUZ            , SI_URUZ            , SCB_NONE );
 
 	add_sc( AB_CLEMENTIA         , SC_BLESSING );
 	add_sc( AB_CANTO             , SC_INCREASEAGI );
@@ -439,7 +439,7 @@ void initChangeTables(void)
 
 	set_sc( RA_FEARBREEZE        , SC_FEARBREEZE      , SI_FEARBREEZE      , SCB_NONE );
 	add_sc( RA_ELECTRICSHOCKER   , SC_ELECTRICSHOCKER );
-	set_sc( RA_WUGDASH           , SC_WUGDASH         , SI_WUGDASH		   , SCB_SPEED );
+	set_sc( RA_WUGDASH           , SC_WUGDASH         , SI_WOLFDASH		   , SCB_SPEED );
 	add_sc( RA_MAGENTATRAP       , SC_ELEMENTALCHANGE );
 	add_sc( RA_COBALTTRAP        , SC_ELEMENTALCHANGE );
 	add_sc( RA_MAIZETRAP         , SC_ELEMENTALCHANGE );
@@ -447,20 +447,20 @@ void initChangeTables(void)
 	add_sc( RA_FIRINGTRAP        , SC_BURNING         );
 	add_sc( RA_ICEBOUNDTRAP      , SC_FREEZING        );
 
-	set_sc( SC_SHADOWFORM        , SC__SHADOWFORM        , SI_SHADOWFORM        , SCB_NONE );
+	set_sc( SC_SHADOWFORM        , SC__SHADOWFORM     , SI_SHADOWFORM      , SCB_NONE );
 
-	set_sc( GN_CARTBOOST         , SC_GN_CARTBOOST    , SI_GN_CARTBOOST    , SCB_SPEED|SCB_BATK );
+	set_sc( GN_CARTBOOST         , SC_GN_CARTBOOST    , SI_CARTSBOOST      , SCB_SPEED|SCB_BATK );
 	add_sc( GN_THORNS_TRAP       , SC_THORNSTRAP );
 	set_sc( GN_BLOOD_SUCKER      , SC_BLOODSUCKER     , SI_BLOODSUCKER     , SCB_NONE );
-	set_sc( GN_WALLOFTHORN       , SC_STOP            , SI_WALLOFTHORN     , SCB_NONE );
-	add_sc( GN_FIRE_EXPANSION_SMOKE_POWDER, SC_SMOKEPOWDER );
-	add_sc( GN_FIRE_EXPANSION_TEAR_GAS, SC_TEARGAS );
+	set_sc( GN_WALLOFTHORN       , SC_STOP            , SI_BLANK     , SCB_NONE );
+	add_sc( GN_FIRE_EXPANSION_SMOKE_POWDER            , SC_SMOKEPOWDER );
+	add_sc( GN_FIRE_EXPANSION_TEAR_GAS                , SC_TEARGAS );
 	set_sc( GN_MANDRAGORA        , SC_MANDRAGORA      , SI_BLANK           , SCB_INT );
 
 	add_sc( SO_FIREWALK          , SC_FIREWALK );
 	add_sc( SO_ELECTRICWALK      , SC_ELECTRICWALK );
-	add_sc( SO_WARMER            , SC_WARMER );
-	set_sc( SO_STRIKING          , SC_STRIKING        , SI_BLANK           , SCB_BATK|SCB_CRI );
+	set_sc( SO_WARMER            , SC_WARMER          , SI_WARMER          , SCB_NONE );
+	set_sc( SO_STRIKING          , SC_STRIKING        , SI_STRIKING        , SCB_BATK|SCB_CRI );
 	add_sc( SO_VACUUM_EXTREME    , SC_STOP );
 	add_sc( SO_ARULLO            , SC_DEEPSLEEP );
 
@@ -1187,6 +1187,7 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 				(sc->data[SC_MARIONETTE2] && skill_num == CG_MARIONETTE) || //Cannot use marionette if you are being buffed by another
 				sc->data[SC_STEELBODY] ||
 				sc->data[SC_BERSERK] ||
+				sc->data[SC_WHITEIMPRISON] ||
 				(sc->data[SC_STASIS] && skill_stasis_check(src, sc->data[SC_STASIS]->val2, skill_num)) ||
 				sc->data[SC_DIAMONDDUST]
 			))

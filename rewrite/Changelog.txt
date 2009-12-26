@@ -5,6 +5,16 @@
 // 	- Details.
 //========================================
 
+12/26/2009
+	r78 [Jobbie]
+	* Added and Confirmed some official UNT_* of new skills.
+	* Added and Updated some SI_*'s that is used by skills and named it to its official value name.
+	* Updated some skills to use its official SI's.
+	* Fixed Comet to use 0x1de packet to display its effect rather than to use special effect.
+	* Fixed White Imprison.
+	- When status is active you cannot use items or skills.
+    	- Cannot target non-enemy unit.
+
 12/24/2009
 	r74 [pakpil]
 	* First implementation of SC_SHADOWFORM skill.
