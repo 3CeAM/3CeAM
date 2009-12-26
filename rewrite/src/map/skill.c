@@ -7657,6 +7657,7 @@ int skill_castend_map (struct map_session_data *sd, short skill_num, const char 
 		sd->sc.data[SC_BERSERK] ||
 		sd->sc.data[SC_BASILICA] ||
 		sd->sc.data[SC_MARIONETTE] ||
+		sd->sc.data[SC_WHITEIMPRISON] ||
 		(sd->sc.data[SC_STASIS] && skill_stasis_check(&sd->bl, sd->sc.data[SC_STASIS]->val2, skill_num)) ||
 		sd->sc.data[SC_DIAMONDDUST]
 	 )) {
@@ -8594,7 +8595,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 						tsc->comet_x = src->bl.x;
 						tsc->comet_y = src->bl.y;
 					}
-					clif_specialeffect(bl, 92, AREA);	// We need it, since the client shows no effect by itself. [LimitLine]
+					clif_skill_damage(bl,bl,sg->tick, status_get_amotion(bl), 0, -30000, 1, sg->skill_id, sg->skill_lv, 6);
 					skill_attack(skill_get_type(sg->skill_id), ss, &src->bl, bl, sg->skill_id, sg->skill_lv, tick, 0);
 					break;
 

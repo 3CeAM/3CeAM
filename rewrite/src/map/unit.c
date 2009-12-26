@@ -1139,6 +1139,10 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 		if( sd && pc_checkskill(sd,TK_HIGHJUMP) )
 			casttime *= 2;
 	break;
+	case WL_WHITEIMPRISON:
+		if( battle_check_target(src,target,BCT_SELF|BCT_ENEMY)<0 )
+			return 0;
+	break;
 	case RA_WUGDASH:
 		if (sc && sc->data[SC_WUGDASH])
 			casttime = 0;
