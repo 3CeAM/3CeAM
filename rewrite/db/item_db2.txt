@@ -80,7 +80,7 @@
 
 // Mechanic Mado Side Arm Weapons
 2139,Flame_Thrower,Flame Thrower,5,20000,,2000,,5,,0,0xFFFFFFFF,24,2,32,,99,0,5,{},{},{}
-2140,Energy_Rune_Guard,Energy Rune Guard,3,10,,10,,,,,,,,,,,,,{},{},{}
+//2140,Energy_Rune_Guard,Energy Rune Guard,3,10,,10,,,,,,,,,,,,,{},{},{}
 
 //2794,Magic_Stone_Ring,Magic Stone Ring,3,10,,10,,,,,,,,,,,,,{},{},{}
 //2795,Immature_Apple_Ring,Immature Apple Ring,3,10,,10,,,,,,,,,,,,,{},{},{}
