@@ -5,6 +5,14 @@
 // 	- Details.
 //========================================
 
+12/28/2009
+	r79 [pakpil]
+	* Added the new official skillup control. Seems to be working as intended.
+	- Added new packet 0x7e2 that shows a message from msgstringtable.txt and pass an integer as value.
+		[NOTE: Take care with this packet, if you select a message with %s instead %d clients'll crash.]
+	- Added new function to send packet 0x291 that shows a message from msgstringtable.txt.
+	- Fixed all functions that use packet 0x291.
+
 12/26/2009
 	r78 [Jobbie]
 	* Added and Confirmed some official UNT_* of new skills.
