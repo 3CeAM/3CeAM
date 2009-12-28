@@ -6,7 +6,10 @@
 //========================================
 
 12/28/2009
-	r79 [pakpil]
+	r83 [Jobbie]
+	* Merge eAthena Updates upto r14215
+
+	r82 [pakpil]
 	* Added the new official skillup control. Seems to be working as intended.
 	- Added new packet 0x7e2 that shows a message from msgstringtable.txt and pass an integer as value.
 		[NOTE: Take care with this packet, if you select a message with %s instead %d clients'll crash.]
