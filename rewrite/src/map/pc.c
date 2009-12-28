@@ -1137,11 +1137,10 @@ int pc_calc_skilltree(struct map_session_data *sd)
 	int c=0;
 
 	nullpo_retr(0, sd);
-	i = pc_calc_skilltree_normalize_job(sd);
-	c = pc_mapid2jobid(i, sd->status.sex);
+	c = pc_mapid2jobid(sd->class_, sd->status.sex);
 	if( c == -1 )
 	{ //Unable to normalize job??
-		ShowError("pc_calc_skilltree: Unable to normalize job %d for character %s (%d:%d)\n", i, sd->status.name, sd->status.account_id, sd->status.char_id);
+		ShowError("pc_calc_skilltree: Unable to normalize job %d for character %s (%d:%d)\n", sd->class_, sd->status.name, sd->status.account_id, sd->status.char_id);
 		return 1;
 	}
 	c = pc_class2idx(c);
@@ -1292,6 +1291,10 @@ static void pc_check_skilltree(struct map_session_data *sd, int skill)
 		return;
 	}
 	c = pc_class2idx(c);
+
+	for(i = 0; i < MAX_SKILL; i++)
+		sd->status.skill[i].id = 0;
+
 	do {
 		flag = 0;
 		for( i = 0; i < MAX_SKILL_TREE && (id=skill_tree[c][i].id)>0; i++ )
@@ -1362,26 +1365,27 @@ int pc_calc_skilltree_normalize_job(struct map_session_data *sd)
 	int skill_point;
 	int c = sd->class_;
 	
-	if (!battle_config.skillup_limit)
+	if( !battle_config.skillup_limit )
 		return c;
 	
 	skill_point = pc_calc_skillpoint(sd);
-	if(pc_checkskill(sd, NV_BASIC) < 9) //Consider Novice Tree when you don't have NV_BASIC maxed.
+	if( pc_checkskill(sd, NV_BASIC) < 9 ) //Consider Novice Tree when you don't have NV_BASIC maxed.
 		c = MAPID_NOVICE;
 	else
 	//Do not send S. Novices to first class (Novice)
-	if ((sd->class_&JOBL_2) && (sd->class_&MAPID_UPPERMASK) != MAPID_SUPER_NOVICE &&
+	if( (sd->class_&JOBL_2) && (sd->class_&MAPID_UPPERMASK) != MAPID_SUPER_NOVICE &&
 		sd->status.skill_point >= sd->status.job_level &&
-		((sd->change_level[0] > 0)?(skill_point < sd->change_level[0]+8):(skill_point < 58))) {
+		skill_point < (sd->change_level[0] > 0 ? sd->change_level[0]+8 : 50) +8 )
+	{
 		//Send it to first class.
 		c &= MAPID_BASEMASK;
 		if( (sd->class_&MAPID_THIRDMASK) >= MAPID_RUNE_KNIGHT )
 			c &= MAPID_THIRDMASK;
 	}
 	else
-	if ((sd->class_&MAPID_THIRDMASK) >= MAPID_RUNE_KNIGHT &&
+	if( (sd->class_&MAPID_THIRDMASK) >= MAPID_RUNE_KNIGHT &&
 		sd->status.skill_point >= sd->status.job_level &&
-		((sd->change_level[1] > 0)?(skill_point < sd->change_level[0]+sd->change_level[1]+7):(skill_point < ((sd->class_&JOBL_THIRD_UPPER)?126:107))))
+		skill_point < (sd->change_level[1] > 0 ? sd->change_level[0] + sd->change_level[1] : (sd->class_&JOBL_THIRD_UPPER) ? 121 : 106) + 7 )
 	{
 			// Send it to 2nd class
 		c ^= (sd->class_&JOBL_THIRD_UPPER)?JOBL_THIRD_UPPER:JOBL_THIRD_BASE;
@@ -5194,6 +5198,7 @@ int pc_statusup2(struct map_session_data* sd, int type, int val)
  *------------------------------------------*/
 int pc_skillup(struct map_session_data *sd,int skill_num)
 {
+	int skill_point, i;
 	nullpo_retr(0, sd);
 
 	if( skill_num >= GD_SKILLBASE && skill_num < GD_SKILLBASE+MAX_GUILDSKILL )
@@ -5211,6 +5216,27 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 	if( skill_num < 0 || skill_num >= MAX_SKILL )
 		return 0;
 
+	skill_point = pc_calc_skillpoint(sd);
+	
+	if( (sd->class_&JOBL_2) && (sd->class_&MAPID_UPPERMASK) != MAPID_SUPER_NOVICE &&
+		sd->status.skill_point >= sd->status.job_level && skill_num >= KN_SPEARMASTERY &&
+		((sd->change_level[0] > 0 && skill_point < sd->change_level[0]+8) || skill_point < 58))
+	{
+		i = (sd->change_level[0] > 0 ? sd->change_level[0]+8:58) - skill_point;		
+		clif_msgtable_num(sd->fd,1566,i);
+		return 0;
+	}
+	else if( (sd->class_&MAPID_THIRDMASK) >= MAPID_RUNE_KNIGHT &&
+		sd->status.skill_point >= sd->status.job_level &&
+		skill_point < (sd->change_level[1] > 0 ? sd->change_level[0] + sd->change_level[1] + 7 : (sd->class_&JOBL_THIRD_UPPER) ? 126 : 107) )
+	{
+		i = (sd->change_level[1] > 0 ? sd->change_level[0] + sd->change_level[1] + 7 : (sd->class_&JOBL_THIRD_UPPER) ? 126 : 107) - skill_point;
+		clif_msgtable_num(sd->fd,1567, i);
+		return 0;
+	}
+
+	pc_check_skilltree(sd,1);
+
 	if( sd->status.skill_point > 0 &&
 		sd->status.skill[skill_num].id &&
 		sd->status.skill[skill_num].flag == 0 && //Don't allow raising while you have granted skills. [Skotlex]
@@ -5223,7 +5249,7 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 		else if( sd->status.skill_point == 0 && (sd->class_&MAPID_UPPERMASK) == MAPID_TAEKWON && sd->status.base_level >= 90 && pc_famerank(sd->status.char_id, MAPID_TAEKWON) )
 			pc_calc_skilltree(sd); // Required to grant all TK Ranger skills.
 		else
-			pc_check_skilltree(sd, skill_num); // Check if a new skill can Lvlup
+			pc_check_skilltree(sd, 0); // Check if a new skill can Lvlup
 
 		clif_skillup(sd,skill_num);
 		clif_updatestatus(sd,SP_SKILLPOINT);

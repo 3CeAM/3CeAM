@@ -161,6 +161,44 @@ uint16 clif_getport(void)
 	return map_port;
 }
 
+// msgstringtable.txt
+// This message must be normalized
+// using "unsigned char msg[a][b]"
+// so that it can be displayed correctly.
+void clif_msgtable(int fd, int line)
+{
+	int a,b;
+
+	b = line / 255;
+	a = line - ( b * 255 ) - b;
+
+	WFIFOHEAD(fd, packet_len(0x291));
+	WFIFOW(fd, 0) = 0x291;
+	WFIFOB(fd, 2) = a;
+    WFIFOB(fd, 3) = b;
+	WFIFOSET(fd, packet_len(0x291));
+}
+
+// msgstringtable.txt
+// This message must be normalized
+// using "unsigned char msg[a][b]"
+// so that it can be displayed correctly.
+void clif_msgtable_num(int fd, int line, int num)
+{
+#if PACKETVER >= 20090805
+	int a,b;
+	b = line / 255;
+	a = line - ( b * 255 ) - b;
+
+	WFIFOHEAD(fd, packet_len(0x7e2));
+	WFIFOW(fd, 0) = 0x7e2;
+	WFIFOB(fd, 2) = a;
+    WFIFOB(fd, 3) = b;
+	WFIFOL(fd, 4) = num;
+	WFIFOSET(fd, packet_len(0x7e2));
+#endif
+}
+
 /*==========================================
  * clif_send‚ÅAREA*Žw’èŽž—p
  *------------------------------------------*/
@@ -7857,19 +7895,10 @@ void clif_viewequip_ack(struct map_session_data* sd, struct map_session_data* ts
 
 /*==========================================
  * View player equip request denied
- * R 0291 <message>.W
- * TODO: this looks like a general-purpose packet to print msgstringtable entries.
  *------------------------------------------*/
 void clif_viewequip_fail(struct map_session_data* sd)
 {
-	int fd;
-	nullpo_retv(sd);
-	fd = sd->fd;
-
-	WFIFOHEAD(fd, packet_len(0x291));
-	WFIFOW(fd, 0) = 0x291;
-	WFIFOW(fd, 2) = 0x54d;	// This controls which message is displayed. 0x54d is the correct one. Maybe it's used for something else too?
-	WFIFOSET(fd, packet_len(0x291));
+	clif_msgtable(sd->fd, 1357);
 }
 
 /// Validates one global/guild/party/whisper message packet and tries to recognize its components.
@@ -13103,17 +13132,14 @@ void clif_parse_mercenary_action(int fd, struct map_session_data* sd)
 
 /*------------------------------------------
  * Mercenary Message
- * 0 = Mercenary soldier's duty hour is over.
- * 1 = Your mercenary soldier has been killed.
- * 2 = Your mercenary soldier has been fired.
- * 3 = Your mercenary soldier has ran away.
+ * 1266 = Mercenary soldier's duty hour is over.
+ * 1267 = Your mercenary soldier has been killed.
+ * 1268 = Your mercenary soldier has been fired.
+ * 1269 = Your mercenary soldier has ran away.
  *------------------------------------------*/
 void clif_mercenary_message(int fd, int message)
 {
-	WFIFOHEAD(fd,4);
-	WFIFOW(fd,0) = 0x0291;
-	WFIFOW(fd,2) = 1266 + message;
-	WFIFOSET(fd,4);
+	clif_msgtable(fd, 1266 + message);
 }
 
 /*------------------------------------------
@@ -13872,7 +13898,7 @@ static int packetdb_readdb(void)
 	    6,  2, -1,  4,  4,  4,  4,  8,  8,268,  6,  8,  6, 54, 30, 54,
 #endif
 	    0,  0,  8,  0,  0,  8,  8, 32, -1,  5,  0,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 25,  0,  0,  0,  0,
 	};
 	struct {
 		void (*func)(int, struct map_session_data *);
