@@ -790,6 +790,8 @@ int pc_isequip(struct map_session_data *sd,int n)
 			return 0;
 		if(item->equip & EQP_HELM && sd->sc.data[SC_STRIPHELM])
 			return 0;
+		if(item->equip & EQP_ACC && sd->sc.data[SC__STRIPACCESSORY])
+			return 0;
 
 		if (sd->sc.data[SC_SPIRIT] && sd->sc.data[SC_SPIRIT]->val2 == SL_SUPERNOVICE) {
 			//Spirit of Super Novice equip bonuses. [Skotlex]
