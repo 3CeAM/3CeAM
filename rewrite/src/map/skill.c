@@ -1458,9 +1458,9 @@ int skill_counter_additional_effect (struct block_list* src, struct block_list *
 --------------------------------------------------------------------------*/
 int skill_break_equip (struct block_list *bl, unsigned short where, int rate, int flag)
 {
-	const int where_list[4]     = {EQP_WEAPON, EQP_ARMOR, EQP_SHIELD, EQP_HELM};
-	const enum sc_type scatk[4] = {SC_STRIPWEAPON, SC_STRIPARMOR, SC_STRIPSHIELD, SC_STRIPHELM};
-	const enum sc_type scdef[4] = {SC_CP_WEAPON, SC_CP_ARMOR, SC_CP_SHIELD, SC_CP_HELM};
+	const int where_list[5]     = {EQP_WEAPON, EQP_ARMOR, EQP_SHIELD, EQP_HELM, EQP_ACC};
+	const enum sc_type scatk[5] = {SC_STRIPWEAPON, SC_STRIPARMOR, SC_STRIPSHIELD, SC_STRIPHELM, SC__STRIPACCESSORY};
+	const enum sc_type scdef[5] = {SC_CP_WEAPON, SC_CP_ARMOR, SC_CP_SHIELD, SC_CP_HELM, 0};
 	struct status_change *sc = status_get_sc(bl);
 	int i,j;
 	TBL_PC *sd;
@@ -1532,6 +1532,10 @@ int skill_break_equip (struct block_list *bl, unsigned short where, int rate, in
 					break;
 				case EQI_GARMENT:
 					flag = (where&EQP_GARMENT);
+ 					break;
+				case EQI_ACC_L:
+				case EQI_ACC_R:
+					flag = (where&EQP_ACC);
 					break;
 				default:
 					continue;
@@ -1553,9 +1557,9 @@ int skill_break_equip (struct block_list *bl, unsigned short where, int rate, in
 int skill_strip_equip(struct block_list *bl, unsigned short where, int rate, int lv, int time)
 {
 	struct status_change *sc;
-	const int pos[4]             = {EQP_WEAPON, EQP_SHIELD, EQP_ARMOR, EQP_HELM};
-	const enum sc_type sc_atk[4] = {SC_STRIPWEAPON, SC_STRIPSHIELD, SC_STRIPARMOR, SC_STRIPHELM};
-	const enum sc_type sc_def[4] = {SC_CP_WEAPON, SC_CP_SHIELD, SC_CP_ARMOR, SC_CP_HELM};
+	const int pos[5]             = {EQP_WEAPON, EQP_SHIELD, EQP_ARMOR, EQP_HELM, EQP_ACC};
+	const enum sc_type sc_atk[5] = {SC_STRIPWEAPON, SC_STRIPSHIELD, SC_STRIPARMOR, SC_STRIPHELM, SC__STRIPACCESSORY};
+	const enum sc_type sc_def[5] = {SC_CP_WEAPON, SC_CP_SHIELD, SC_CP_ARMOR, SC_CP_HELM, 0};
 	int i;
 
 	if (rand()%100 >= rate)
@@ -4903,6 +4907,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case RG_STRIPARMOR:
 	case RG_STRIPHELM:
 	case ST_FULLSTRIP:
+	case SC_STRIPACCESSARY:
 	{
 		unsigned short location = 0;
 		int d = 0;
@@ -4910,6 +4915,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		//Rate in percent
 		if ( skillid == ST_FULLSTRIP ) {
 			i = 5 + 2*skilllv + (sstatus->dex - tstatus->dex)/5;
+		}
+		else if( skillid == SC_STRIPACCESSARY ){
+			i = 10 * 5 * skilllv + (sstatus->dex - tstatus->dex)/5; // It's an estimated rate [pakpil]
 		} else {
 			i = 5 + 5*skilllv + (sstatus->dex - tstatus->dex)/5;
 		}
@@ -4934,6 +4942,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			break;
 		case ST_FULLSTRIP:
 			location = EQP_WEAPON|EQP_SHIELD|EQP_ARMOR|EQP_HELM;
+			break;
+		case SC_STRIPACCESSARY:
+			location = EQP_ACC;
 			break;
 		}
 
@@ -5141,7 +5152,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_READYSTORM:  case SC_READYDOWN:   case SC_READYTURN:
 				case SC_READYCOUNTER:case SC_DODGE:       case SC_WARM:
 				case SC_SPEEDUP1:    case SC_AUTOTRADE:   case SC_CRITICALWOUND:
-				case SC_JEXPBOOST:   case SC_ELECTRICSHOCKER:
+				case SC_JEXPBOOST:   case SC_ELECTRICSHOCKER: case SC__STRIPACCESSORY:
 					continue;
 				case SC_ASSUMPTIO:
 					if( bl->type == BL_MOB )
@@ -6339,7 +6350,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 					case SC_READYSTORM:  case SC_READYDOWN:   case SC_READYTURN:
 					case SC_READYCOUNTER:case SC_DODGE:       case SC_WARM:
 					case SC_SPEEDUP1:    case SC_AUTOTRADE:   case SC_CRITICALWOUND:
-					case SC_JEXPBOOST:   case SC_ELECTRICSHOCKER:
+					case SC_JEXPBOOST:   case SC_ELECTRICSHOCKER: case SC__STRIPACCESSORY:
 						continue;
 					case SC_ASSUMPTIO:
 						if( bl->type == BL_MOB )
