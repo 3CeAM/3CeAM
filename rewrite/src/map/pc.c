@@ -1292,9 +1292,6 @@ static void pc_check_skilltree(struct map_session_data *sd, int skill)
 	}
 	c = pc_class2idx(c);
 
-	for(i = 0; i < MAX_SKILL; i++)
-		sd->status.skill[i].id = 0;
-
 	do {
 		flag = 0;
 		for( i = 0; i < MAX_SKILL_TREE && (id=skill_tree[c][i].id)>0; i++ )
@@ -1375,7 +1372,7 @@ int pc_calc_skilltree_normalize_job(struct map_session_data *sd)
 	//Do not send S. Novices to first class (Novice)
 	if( (sd->class_&JOBL_2) && (sd->class_&MAPID_UPPERMASK) != MAPID_SUPER_NOVICE &&
 		sd->status.skill_point >= sd->status.job_level &&
-		skill_point < (sd->change_level[0] > 0 ? sd->change_level[0]+8 : 50) +8 )
+		((sd->change_level[0] > 0 && skill_point < sd->change_level[0]+8) || skill_point < 58))
 	{
 		//Send it to first class.
 		c &= MAPID_BASEMASK;
@@ -1385,7 +1382,7 @@ int pc_calc_skilltree_normalize_job(struct map_session_data *sd)
 	else
 	if( (sd->class_&MAPID_THIRDMASK) >= MAPID_RUNE_KNIGHT &&
 		sd->status.skill_point >= sd->status.job_level &&
-		skill_point < (sd->change_level[1] > 0 ? sd->change_level[0] + sd->change_level[1] : (sd->class_&JOBL_THIRD_UPPER) ? 121 : 106) + 7 )
+		((sd->change_level[1] > 0 && skill_point < (sd->change_level[0] + sd->change_level[1] + 7)) || skill_point < (sd->class_&JOBL_THIRD_UPPER) ? 127 : 107) )
 	{
 			// Send it to 2nd class
 		c ^= (sd->class_&JOBL_THIRD_UPPER)?JOBL_THIRD_UPPER:JOBL_THIRD_BASE;
@@ -5215,9 +5212,9 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 
 	if( skill_num < 0 || skill_num >= MAX_SKILL )
 		return 0;
-
-	skill_point = pc_calc_skillpoint(sd);
 	
+	skill_point = pc_calc_skillpoint(sd);
+
 	if( (sd->class_&JOBL_2) && (sd->class_&MAPID_UPPERMASK) != MAPID_SUPER_NOVICE &&
 		sd->status.skill_point >= sd->status.job_level && skill_num >= KN_SPEARMASTERY &&
 		((sd->change_level[0] > 0 && skill_point < sd->change_level[0]+8) || skill_point < 58))
@@ -5227,15 +5224,22 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 		return 0;
 	}
 	else if( (sd->class_&MAPID_THIRDMASK) >= MAPID_RUNE_KNIGHT &&
-		sd->status.skill_point >= sd->status.job_level &&
-		skill_point < (sd->change_level[1] > 0 ? sd->change_level[0] + sd->change_level[1] + 7 : (sd->class_&JOBL_THIRD_UPPER) ? 126 : 107) )
+		sd->status.skill_point >= sd->status.job_level )
 	{
-		i = (sd->change_level[1] > 0 ? sd->change_level[0] + sd->change_level[1] + 7 : (sd->class_&JOBL_THIRD_UPPER) ? 126 : 107) - skill_point;
-		clif_msgtable_num(sd->fd,1567, i);
-		return 0;
+		if( ((sd->change_level[0] > 0 && skill_point < sd->change_level[0]+8) || skill_point < 58) && skill_num >= KN_SPEARMASTERY)
+		{
+			i = (sd->change_level[0] > 0 ? sd->change_level[0]+8:58) - skill_point;		
+			clif_msgtable_num(sd->fd,1566,i);
+			return 0;
+		}
+		if( skill_point < (sd->change_level[1] > 0 ? sd->change_level[0] + sd->change_level[1] + 7 : (sd->class_&JOBL_THIRD_UPPER) ? 127 : 107) &&
+			skill_num >= RK_ENCHANTBLADE && skill_num <= SR_RIDEINLIGHTNING )
+		{
+			i = (sd->change_level[1] > 0 ? sd->change_level[0] + sd->change_level[1] + 7 : (sd->class_&JOBL_THIRD_UPPER) ? 127 : 107) - skill_point;
+			clif_msgtable_num(sd->fd,1567, i);
+			return 0;
+		}
 	}
-
-	pc_check_skilltree(sd,1);
 
 	if( sd->status.skill_point > 0 &&
 		sd->status.skill[skill_num].id &&
@@ -5255,9 +5259,10 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 		clif_updatestatus(sd,SP_SKILLPOINT);
 		if( skill_num == GN_REMODELING_CART )
 			clif_updatestatus(sd,SP_CARTINFO);
+		//FIXME: The server have to send clif_skillup() with all skills
+		//available to the current job tab instead clif_skillinfoblock. [pakpil]
 		clif_skillinfoblock(sd);
 	}
-
 	return 0;
 }
 

@@ -2129,10 +2129,10 @@ int unit_free(struct block_list *bl, int clrtype)
 				sd->regstr_num = 0;
 			}
 			if( sd->st && sd->st->state != RUN )
-+			{// free attached scripts that are waiting
-+				script_free_state(sd->st);
-+				sd->st = NULL;
-+				sd->npc_id = 0;
+			{// free attached scripts that are waiting
+				script_free_state(sd->st);
+				sd->st = NULL;
+				sd->npc_id = 0;
 			}
 			break;
 		}

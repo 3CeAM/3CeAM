@@ -29,9 +29,10 @@
 // 20090603 - 2009-06-03aRagexeRE+ - 0x7d7, 0x7d8, 0x7d9, 0x7da
 // 20090617 - 2009-06-17aRagexeRE+ - 0x7d9
 // 20090922 - 2009-09-22aRagexeRE+ - 0x7e5, 0x7e7, 0x7e8, 0x7e9
+// 20091103 - 2009-11-03aRagexeRE+ - 0x7fb
 #ifndef PACKETVER
 	//#define PACKETVER	20081126
-	#define PACKETVER 20090922
+	#define PACKETVER 20091103
 #endif
 // backward compatible PACKETVER 8 and 9
 #if PACKETVER == 8
