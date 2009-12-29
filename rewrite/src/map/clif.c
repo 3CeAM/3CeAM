@@ -4240,7 +4240,13 @@ int clif_skillcasting(struct block_list* bl,
 	int src_id,int dst_id,int dst_x,int dst_y,int skill_num,int pl, int casttime)
 {
 	unsigned char buf[32];
-	WBUFW(buf,0) = 0x13e;
+	int cmd = 0x13e;
+
+#if PACKETVER >= 20091103
+	cmd = 0x7fb;
+#endif
+
+	WBUFW(buf,0) = cmd;
 	WBUFL(buf,2) = src_id;
 	WBUFL(buf,6) = dst_id;
 	WBUFW(buf,10) = dst_x;
@@ -4248,12 +4254,15 @@ int clif_skillcasting(struct block_list* bl,
 	WBUFW(buf,14) = skill_num;
 	WBUFL(buf,16) = pl<0?0:pl; //Avoid sending negatives as element [Skotlex]
 	WBUFL(buf,20) = casttime;
+#if PACKETVER >= 20091103
+	WBUFB(buf,24) = 0; // flag?
+#endif
 	if (disguised(bl)) {
-		clif_send(buf,packet_len(0x13e), bl, AREA_WOS);
+		clif_send(buf,packet_len(cmd), bl, AREA_WOS);
 		WBUFL(buf,2) = -src_id;
-		clif_send(buf,packet_len(0x13e), bl, SELF);
+		clif_send(buf,packet_len(cmd), bl, SELF);
 	} else
-		clif_send(buf,packet_len(0x13e), bl, AREA);
+		clif_send(buf,packet_len(cmd), bl, AREA);
 
 	return 0;
 }
@@ -13910,6 +13919,8 @@ static int packetdb_readdb(void)
 #endif
 	    0,  0,  8,  0,  0,  8,  8, 32, -1,  5,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 25,  0,  0,  0,  0,
+	  //#0x0800
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	};
 	struct {
 		void (*func)(int, struct map_session_data *);

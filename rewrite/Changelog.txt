@@ -5,6 +5,11 @@
 // 	- Details.
 //========================================
 
+12/29/2009
+	r84 [pakpil]
+	* Fixed the skillup control from my last commit. Sorry.
+	* Added the new clif_skillcasting packet with the info recompilled from RE server.
+
 12/28/2009
 	r83 [Jobbie]
 	* Merge eAthena Updates upto r14215
