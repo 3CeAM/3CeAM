@@ -3624,6 +3624,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 		(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOITEM) ||
 		sd->sc.data[SC_WHITEIMPRISON] ||
 		sd->sc.data[SC__SHADOWFORM] ||
+		sd->sc.data[SC__INVISIBILITY] ||
 		sd->sc.data[SC_DIAMONDDUST]
 	))
 		return 0;
@@ -6689,6 +6690,9 @@ int pc_setcart(struct map_session_data *sd,int type)
  *------------------------------------------*/
 int pc_setfalcon(TBL_PC* sd, int flag)
 {
+	if( sd->sc.count && sd->sc.data[SC__GROOMY] )
+		return 0;
+
 	if( flag ){
 		if( pc_checkskill(sd,HT_FALCON)>0 )	// ファルコンマスタリ?スキル所持
 			pc_setoption(sd,sd->sc.option|OPTION_FALCON);
@@ -6705,6 +6709,9 @@ int pc_setfalcon(TBL_PC* sd, int flag)
 int pc_setriding(TBL_PC* sd, int flag)
 {
 	int class_, option=0, skillnum=0;
+
+	if( sd->sc.count && sd->sc.data[SC__GROOMY] )
+		return 0;
 	
 	class_ = pc_mapid2jobid(sd->class_&MAPID_THIRDMASK, sd->status.sex);
 	

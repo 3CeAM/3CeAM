@@ -303,7 +303,7 @@ int unit_walktoxy( struct block_list *bl, short x, short y, int flag)
 	ud->to_y = y;
 	
 	sc = status_get_sc(bl);
-	if (sc && sc->data[SC_CONFUSION]) //Randomize the target position
+	if (sc && (sc->data[SC_CONFUSION] || sc->data[SC_CHAOS]) ) //Randomize the target position
 		map_random_dir(bl, &ud->to_x, &ud->to_y);
 
 	if(ud->walktimer != -1) {
@@ -371,7 +371,7 @@ int unit_walktobl(struct block_list *bl, struct block_list *tbl, int range, int 
 	ud->state.attack_continue = flag&2?1:0; //Chase to attack.
 
 	sc = status_get_sc(bl);
-	if (sc && sc->data[SC_CONFUSION]) //Randomize the target position
+	if (sc && (sc->data[SC_CONFUSION] || sc->data[SC_CHAOS]) ) //Randomize the target position
 		map_random_dir(bl, &ud->to_x, &ud->to_y);
 
 	if(ud->walktimer != -1) {
@@ -838,6 +838,7 @@ int unit_can_move(struct block_list *bl)
 			|| sc->data[SC_BITE]
 			|| sc->data[SC_THORNSTRAP]
 			|| sc->data[SC_DIAMONDDUST]
+			|| sc->data[SC__MANHOLE]
 		))
 			return 0;
 	}
@@ -1894,6 +1895,7 @@ int unit_remove_map_(struct block_list *bl, int clrtype, const char* file, int l
 		status_change_end(bl,SC_BITE,-1);
 		status_change_end(bl,SC_WUGDASH,-1);
 		status_change_end(bl,SC_DIAMONDDUST,-1);
+		status_change_end(bl,SC__MANHOLE,-1);
 	}
 
 	if (bl->type&BL_CHAR) {

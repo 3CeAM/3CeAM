@@ -2390,7 +2390,14 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 		struct Damage md = battle_calc_magic_attack(src, target, RK_ENCHANTBLADE, ((TBL_PC*)src)->status.skill[RK_ENCHANTBLADE].lv, wflag);
 		wd.damage += md.damage;
 		wd.flag += md.flag;
+	}	
+
+	if( (sc && sc->data[SC__DEADLYINFECT]) || (tsc && tsc->data[SC__DEADLYINFECT]) )
+	{
+		if( rand()%100 < 50 ) // Estimated value
+			status_change_spread(src, target);
 	}
+
 	return wd;
 }
 
@@ -3285,6 +3292,9 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 	if (sc && sc->data[SC_CLOAKING] && !(sc->data[SC_CLOAKING]->val4&2))
 		status_change_end(src,SC_CLOAKING,-1);
 
+	if( sc && sc->data[SC__INVISIBILITY] )
+		status_change_end(src,SC__INVISIBILITY,-1); // Still need confirm this [pakpil]
+
 	if( tsc && tsc->data[SC_AUTOCOUNTER] && status_check_skilluse(target, src, KN_AUTOCOUNTER, 1) )
 	{
 		int dir = map_calc_dir(target,src->x,src->y);
@@ -4041,7 +4051,7 @@ static const struct _battle_data {
 	{ "produce_item_name_input",            &battle_config.produce_item_name_input,         0x1|0x2, 0,     0x9F,           },
 	{ "display_skill_fail",                 &battle_config.display_skill_fail,              2,      0,      1|2|4|8,        },
 	{ "chat_warpportal",                    &battle_config.chat_warpportal,                 0,      0,      1,              },
-	{ "mob_warp",                           &battle_config.mob_warp,                        0,      0,      1|2|4,          },
+	{ "mob_warp",                           &battle_config.mob_warp,                        0,      0,      1|2|4|8,          },
 	{ "dead_branch_active",                 &battle_config.dead_branch_active,              1,      0,      1,              },
 	{ "vending_max_value",                  &battle_config.vending_max_value,               10000000, 1,    MAX_ZENY,       },
 	{ "vending_over_max",                   &battle_config.vending_over_max,                1,      0,      1,              },
