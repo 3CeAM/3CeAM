@@ -6154,6 +6154,9 @@ int clif_sendegg(struct map_session_data *sd)
 		clif_displaymessage(fd, "Pets are not allowed in Guild Wars.");
 		return 0;
 	}
+	if( sd->sc.count && sd->sc.data[SC__GROOMY] )
+		return 0;
+
 	WFIFOHEAD(fd, MAX_INVENTORY * 2 + 4);
 	WFIFOW(fd,0)=0x1a6;
 	if(sd->status.pet_id <= 0) {
@@ -8594,7 +8597,7 @@ void clif_parse_QuitGame(int fd, struct map_session_data *sd)
 	WFIFOW(fd,0) = 0x18b;
 
 	/*	Rovert's prevent logout option fixed [Valaris]	*/
-	if( !sd->sc.data[SC_CLOAKING] && !sd->sc.data[SC_HIDING] && !sd->sc.data[SC_CHASEWALK] &&
+	if( !sd->sc.data[SC_CLOAKING] && !sd->sc.data[SC_HIDING] && !sd->sc.data[SC_CHASEWALK] && !sd->sc.data[SC__INVISIBILITY] &&
 		(!battle_config.prevent_logout || DIFF_TICK(gettick(), sd->canlog_tick) > battle_config.prevent_logout) )
 	{
 		set_eof(fd);
@@ -8837,6 +8840,8 @@ void clif_parse_HowManyConnections(int fd, struct map_session_data *sd)
 
 void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, int target_id, unsigned int tick)
 {
+	struct status_change *tsc = status_get_sc(map_id2bl(target_id));
+
 	if (pc_isdead(sd)) {
 		clif_clearunit_area(&sd->bl, 1);
 		return;
@@ -8872,6 +8877,9 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 			return;
 
 		if( sd->sc.data[SC__SHADOWFORM] )
+			return;
+
+		if( (sd->sc.count && sd->sc.data[SC__MANHOLE]) || (tsc && tsc->data[SC__MANHOLE]) )
 			return;
 
 		if (!battle_config.sdelay_attack_enable && pc_checkskill(sd, SA_FREECAST) <= 0) {
@@ -8946,7 +8954,7 @@ void clif_parse_Restart(int fd, struct map_session_data *sd)
 		break;
 	case 0x01:
 		/*	Rovert's Prevent logout option - Fixed [Valaris]	*/
-		if( !sd->sc.data[SC_CLOAKING] && !sd->sc.data[SC_HIDING] && !sd->sc.data[SC_CHASEWALK] &&
+		if( !sd->sc.data[SC_CLOAKING] && !sd->sc.data[SC_HIDING] && !sd->sc.data[SC_CHASEWALK] && !sd->sc.data[SC__INVISIBILITY] &&
 			(!battle_config.prevent_logout || DIFF_TICK(gettick(), sd->canlog_tick) > battle_config.prevent_logout) )
 		{	//Send to char-server for character selection.
 			chrif_charselectreq(sd, session[fd]->client_addr);

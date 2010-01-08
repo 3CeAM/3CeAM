@@ -5,6 +5,11 @@
 // 	- Details.
 //========================================
 
+01/08/2010
+	r94 [pakpil]
+	* Added some Shadow Chaser's skill: SC_BODYPAINT, SC_INVISIBILITY, SC_DEADLYINFECT, SC_ENERVATION, SC_GROOMY,
+	  SC_IGNORANCE, SC_LAZINESS, SC_UNLUCKY, SC_WEAKNESS, SC_STRIPACCESSARY, SC_MANHOLE, SC_SIMENSIONDOOR and SC_CHAOSPANIC.
+
 12/29/2009
 	r85 [pakpil]
 	* Added SC_STRIPACCESSARY.
