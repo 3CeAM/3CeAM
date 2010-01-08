@@ -4211,6 +4211,55 @@ int clif_skillinfoblock(struct map_session_data *sd)
 	return 1;
 }
 
+int clif_addskill(struct map_session_data *sd, int skill )
+{
+	int fd, id;
+
+	nullpo_retr(0, sd);
+
+	fd = sd->fd;
+	if (!fd) return 0;
+
+	if( (id = sd->status.skill[skill].id) <= 0 )
+		return 0;
+
+	WFIFOHEAD(fd, packet_len(0x111));
+	WFIFOW(fd,0) = 0x111;
+	WFIFOW(fd,2) = skill;
+	WFIFOW(fd,4) = sd->status.skill[skill].lv;
+	WFIFOW(fd,6) = 0;
+	WFIFOW(fd,8) = skill_get_inf(id);
+	WFIFOW(fd,10) = skill_get_sp(id,sd->status.skill[skill].lv);
+	WFIFOW(fd,12)= skill_get_range2(&sd->bl, id,sd->status.skill[skill].lv);
+	safestrncpy((char*)WFIFOP(fd,14), skill_get_name(id), NAME_LENGTH);
+	if( sd->status.skill[skill].flag == 0 )
+		WFIFOB(fd,38) = (sd->status.skill[skill].lv < skill_tree_get_max(id, sd->status.class_))? 1:0;
+	else
+		WFIFOB(fd,38) = 0;
+	WFIFOSET(fd,packet_len(0x111));
+
+	return 1;
+}
+
+int clif_skillinfo_delete(struct map_session_data *sd, int skill)
+{
+	int fd;
+
+#if PACKETVER >= 20081217
+	nullpo_retr(0, sd);
+
+	fd = sd->fd;
+
+	if( !fd ) return 0;
+
+	WFIFOHEAD(fd,packet_len(0x441));
+	WFIFOW(fd,0) = 0x441;
+	WFIFOW(fd,2) = skill;
+	WFIFOSET(fd,packet_len(0x441));
+#endif
+	return 1;
+}
+
 /*==========================================
  * ƒXƒLƒ‹Š„‚èU‚è’Ê’m
  *------------------------------------------*/
@@ -4833,7 +4882,7 @@ int clif_status_change(struct block_list *bl, int type, int flag, unsigned int t
 		type == SI_TENSIONRELAX || type == SI_LANDENDOW || type == SI_AUTOBERSERK ||
 		type == SI_BUMP || type == SI_READYSTORM || type == SI_READYDOWN ||
 		type == SI_READYTURN || type == SI_READYCOUNTER || type == SI_DODGE ||
-		type == SI_DEVIL || type == SI_NIGHT || type == SI_INTRAVISION)
+		type == SI_DEVIL || type == SI_NIGHT || type == SI_INTRAVISION  || type == SI_REPRODUCE)
 		tick=0;
 
 	if( battle_config.display_status_timers && tick>0 )
@@ -13849,7 +13898,7 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  8,  0, 25,
 	//#0x0440
-	    8,  0,  0,  0,  0,  0, 14,  0,  0,  0,  6,  0,  0,  0,  0,  0,
+	    8,  4,  0,  0,  0,  0, 14,  0,  0,  0,  6,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,

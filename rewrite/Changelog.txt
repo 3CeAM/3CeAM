@@ -6,8 +6,16 @@
 //========================================
 
 01/08/2010
+	r95 [pakpil]
+	* Added Shadow Chaser's skills: SC_REPRODUCE, SC_BLOODYLUST.
+	* Minor fix in RK_GIANTGROWTH.
+	* Added two packets: 
+	- clif_addskill to add a skill to the skill info window
+	- clif_skillinfo_delete to remove a skill frome the skill info window.
+
+01/08/2010
 	r94 [pakpil]
-	* Added some Shadow Chaser's skill: SC_BODYPAINT, SC_INVISIBILITY, SC_DEADLYINFECT, SC_ENERVATION, SC_GROOMY,
+	* Added some Shadow Chaser's skills: SC_BODYPAINT, SC_INVISIBILITY, SC_DEADLYINFECT, SC_ENERVATION, SC_GROOMY,
 	  SC_IGNORANCE, SC_LAZINESS, SC_UNLUCKY, SC_WEAKNESS, SC_STRIPACCESSARY, SC_MANHOLE, SC_SIMENSIONDOOR and SC_CHAOSPANIC.
 
 12/29/2009
