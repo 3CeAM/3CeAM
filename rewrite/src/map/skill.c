@@ -2005,6 +2005,7 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 		{
 			int lv = skilllv;
 			if (tsd->cloneskill_id && tsd->status.skill[tsd->cloneskill_id].flag == 13){
+				clif_skillinfo_delete(tsd,tsd->cloneskill_id);
 				tsd->status.skill[tsd->cloneskill_id].id = 0;
 				tsd->status.skill[tsd->cloneskill_id].lv = 0;
 				tsd->status.skill[tsd->cloneskill_id].flag = 0;
@@ -2019,9 +2020,27 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 			tsd->status.skill[skillid].flag = 13;//cloneskill flag
 			pc_setglobalreg(tsd, "CLONE_SKILL", skillid);
 			pc_setglobalreg(tsd, "CLONE_SKILL_LV", lv);
-			clif_skillinfoblock(tsd);
+			//clif_skillinfoblock(tsd);
+			clif_addskill(tsd,skillid);
 		}
 	}
+	if(damage > 0 && dmg.flag&BF_SKILL && sc && sc->data[SC__REPRODUCE] && can_copy(tsd,skillid,bl) )
+	{
+		if (tsd->reproduceskill_id && tsd->status.skill[tsd->reproduceskill_id].flag == 13)
+		{ // Delete previous reproduced skill.
+			clif_skillinfo_delete(tsd,tsd->reproduceskill_id);
+			tsd->status.skill[tsd->reproduceskill_id].id = 0;
+			tsd->status.skill[tsd->reproduceskill_id].lv = 0;
+			tsd->status.skill[tsd->reproduceskill_id].flag = 0;
+		}
+
+		tsd->reproduceskill_id = skillid;
+		tsd->status.skill[skillid].id = skillid;
+		tsd->status.skill[skillid].lv = skilllv; // I have noticed that the level is the level used. [pakpil]
+		tsd->status.skill[skillid].flag = 13;//cloneskill flag
+		clif_addskill(tsd,skillid);
+	}
+
 	if( skillid != WZ_SIGHTRASHER &&
 		skillid != WZ_SIGHTBLASTER &&
 		skillid != AC_SHOWER && skillid != MA_SHOWER &&
@@ -6555,6 +6574,23 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 
+	case SC_REPRODUCE:
+		if( tsc && tsc->data[SC__REPRODUCE] )
+		{
+			int id;
+
+			if( sd->reproduceskill_id && sd->status.skill[sd->reproduceskill_id].id != 0)
+			{
+				pc_setglobalreg(sd, "REPRODUCE_SKILL",sd->status.skill[sd->reproduceskill_id].id);
+				pc_setglobalreg(sd, "REPRODUCE_SKILL_LV", sd->status.skill[sd->reproduceskill_id].lv);
+			}
+			status_change_end(bl,type,-1);
+		}
+		else
+			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
+		clif_skill_nodamage(src,bl,skillid,0,1);			
+		break;
+
 	case SC_SHADOWFORM:
 		if( sd && bl->type == BL_PC && src != bl ) // Only work with other chars.
 		{
@@ -7311,6 +7347,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case SC_MANHOLE:
 	case SC_DIMENSIONDOOR:
 	case SC_CHAOSPANIC:
+	case SC_BLOODYLUST:
 	case SO_EARTHGRAVE:
 	case SO_DIAMONDDUST:
 	case SO_PSYCHIC_WAVE:
@@ -9052,6 +9089,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			break;
 
 		case UNT_CHAOSPANIC:
+		case UNT_BLOODYLUST:
 			sc_start(bl, type, 100, sg->skill_lv,
 				skill_get_time2(sg->skill_id, sg->skill_lv));
 			break;

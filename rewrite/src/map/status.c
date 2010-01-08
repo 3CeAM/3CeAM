@@ -447,7 +447,7 @@ void initChangeTables(void)
 	add_sc( RA_FIRINGTRAP        , SC_BURNING         );
 	add_sc( RA_ICEBOUNDTRAP      , SC_FREEZING        );
 
-	add_sc( SC_REPRODUCE         , SC__REPRODUCE      );
+	set_sc( SC_REPRODUCE         , SC__REPRODUCE         , SI_REPRODUCE         , SCB_NONE );
 	set_sc( SC_SHADOWFORM        , SC__SHADOWFORM        , SI_SHADOWFORM        , SCB_NONE );
 	set_sc( SC_BODYPAINT         , SC__BODYPAINT         , SI_BODYPAINTING      , SCB_ASPD );
 	set_sc( SC_INVISIBILITY      , SC__INVISIBILITY      , SI_INVISIBILITY      , SCB_ASPD );
@@ -461,6 +461,7 @@ void initChangeTables(void)
 	set_sc( SC_STRIPACCESSARY    , SC__STRIPACCESSORY    , SI_STRIPACCESSORY    , SCB_DEX|SCB_INT|SCB_LUK );
 	set_sc( SC_MANHOLE           , SC__MANHOLE           , SI_MANHOLE           , SCB_NONE );
 	add_sc( SC_CHAOSPANIC        , SC_CHAOS );
+	set_sc( SC_BLOODYLUST        , SC__BLOODYLUST        , SI_BLANK             , SCB_BATK|SCB_WATK|SCB_DEF );
 
 	set_sc( GN_CARTBOOST         , SC_GN_CARTBOOST    , SI_CARTSBOOST      , SCB_SPEED|SCB_BATK );
 	add_sc( GN_THORNS_TRAP       , SC_THORNSTRAP );
@@ -775,6 +776,7 @@ int status_damage(struct block_list *src,struct block_list *target,int hp, int s
 			status_change_end(target,SC_HIDING,-1);
 			status_change_end(target,SC_CLOAKING,-1);
 			status_change_end(target,SC_CHASEWALK,-1);
+			status_change_end(target,SC__INVISIBILITY,-1);
 			if ((sce=sc->data[SC_ENDURE]) && !sce->val4) {
 				//Endure count is only reduced by non-players on non-gvg maps.
 				//val4 signals infinite endure. [Skotlex]
@@ -3593,6 +3595,8 @@ static unsigned short status_calc_batk(struct block_list *bl, struct status_chan
 		batk += 50 * sc->data[SC_STRIKING]->val1;
 	if(sc->data[SC__ENERVATION])
 		batk -= batk * 25 / 100;
+	if(sc->data[SC__BLOODYLUST])
+		batk += batk * 32 / 100; // Still need official value [pakpil]
 
 	return (unsigned short)cap_value(batk,0,USHRT_MAX);
 }
@@ -3640,6 +3644,8 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += sc->data[SC_MERC_ATKUP]->val2;
 	if(sc->data[SC_OTHILA])
 		watk += sc->data[SC_OTHILA]->val1;
+	if(sc->data[SC__BLOODYLUST])
+		watk += watk * 32 / 100; // Still need official value [pakpil]
 
 	return (unsigned short)cap_value(watk,0,USHRT_MAX);
 }
@@ -3827,6 +3833,9 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 		def -= def / 10 * 3;
 	if( sc->data[SC_MARSHOFABYSS] )	// Need official formula. [LimitLine]
 		def -= def / 100 * sc->data[SC_MARSHOFABYSS]->val4;
+	if( sc->data[SC__BLOODYLUST] )
+		def -= def * 55 / 100; // Still need official value [pakpil]
+
 
 	return (signed char)cap_value(def,CHAR_MIN,CHAR_MAX);
 }

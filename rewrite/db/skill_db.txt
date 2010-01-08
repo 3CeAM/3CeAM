@@ -901,7 +901,7 @@
 
 // Shadow Chaser
 2284,0,0,0,0,0,0,5,0,no,0,0,0,none,0,	SC_FATALMENACE,Fatal Menace
-2285,0,0,0,0,0,0,10,0,no,0,0,0,none,0,	SC_REPRODUCE,Reproduce
+2285,0,6,4,0,0x1,0,10,1,no,0,0,0,none,0,	SC_REPRODUCE,Reproduce
 2286,0,0,0,0,0,0,10,0,no,0,0,0,none,0,	SC_AUTOSHADOWSPELL,Auto Shadow Spell
 2287,5,6,1,0,0x1,0,5,1,yes,0,0,0,none,0,		SC_SHADOWFORM,Shadow Form
 2288,7:7:7:9:9:9:9:11:11:11,8,1,-1,0,0,10,-3,yes,0,0,0,weapon,4,		SC_TRIANGLESHOT,Triangle Shot
@@ -919,7 +919,7 @@
 2300,7,6,2,0,0,0,3,1,no,0,0,1,misc,0,		SC_DIMENSIONDOOR,Dimension Door
 2301,9,6,2,0,0,0,3,1,no,0,0,0,misc,0,		SC_CHAOSPANIC,Chaos Panic
 2302,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		SC_MAELSTROM,Maelstrom
-2303,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		SC_BLOODYLUST,Bloody Lust
+2303,9,6,2,0,0,0,3,1,no,0,0,0,misc,0,		SC_BLOODYLUST,Bloody Lust
 2304,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		SC_FEINTBOMB,Feint Bomb
 
 // Royal Guard
