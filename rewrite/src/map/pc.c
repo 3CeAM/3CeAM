@@ -2994,7 +2994,7 @@ int pc_skill(TBL_PC* sd, int id, int level, int flag)
 			sd->status.skill[id].id = 0;
 		if( !skill_get_inf(id) ) //Only recalculate for passive skills.
 			status_calc_pc(sd, 0);
-		clif_skillinfoblock(sd);
+		(level) ? clif_addskill(sd,id) : clif_skillinfo_delete(sd,id);
 	break;
 	case 2: //Add skill bonus on top of what you had.
 		if( sd->status.skill[id].id == id ){
