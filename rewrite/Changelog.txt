@@ -5,6 +5,10 @@
 // 	- Details.
 //========================================
 
+01/08/2011
+	r96 [pakpil]
+	* Added skill SC_AUTOSHADOWSPELL.
+
 01/08/2010
 	r95 [pakpil]
 	* Added Shadow Chaser's skills: SC_REPRODUCE, SC_BLOODYLUST.
