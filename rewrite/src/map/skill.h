@@ -335,6 +335,7 @@ int skill_produce_mix( struct map_session_data *sd, int skill_id, int nameid, in
 
 int skill_arrow_create( struct map_session_data *sd,int nameid);
 int skill_spellbook( struct map_session_data *sd, int nameid);	// Warlock Spellbooks. [LimitLine]
+int skill_select_menu( struct map_session_data *sd, int flag, int skill_id); // Shadow Cheser Auto Shadow Spell [pakpil]
 
 int skill_stasis_check(struct block_list *bl, int src_id, int skillid);	// Stasis skill usage check. [LimitLine]
 

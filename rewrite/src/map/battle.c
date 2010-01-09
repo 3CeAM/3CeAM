@@ -2390,7 +2390,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 		struct Damage md = battle_calc_magic_attack(src, target, RK_ENCHANTBLADE, ((TBL_PC*)src)->status.skill[RK_ENCHANTBLADE].lv, wflag);
 		wd.damage += md.damage;
 		wd.flag += md.flag;
-	}	
+	}
 
 	if( (sc && sc->data[SC__DEADLYINFECT]) || (tsc && tsc->data[SC__DEADLYINFECT]) )
 	{
@@ -3457,6 +3457,35 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			}
 		}
 	}
+	if( sc && sc->data[SC__AUTOSHADOWSPELL] && wd.flag&BF_SHORT )
+	{
+		if( sd )
+		{
+			int r_skill, r_lv;
+			if( (r_skill = sd->status.skill[sc->data[SC__AUTOSHADOWSPELL]->val1].id) != 0 && r_skill <= NJ_ISSEN )
+			{
+				if( rand()%1000 >= sc->data[SC__AUTOSHADOWSPELL]->val3 )
+				{
+					r_lv = sd->status.skill[sc->data[SC__AUTOSHADOWSPELL]->val1].lv;
+					switch ( skill_get_casttype(r_skill) )
+					{
+						case CAST_GROUND:
+							skill_castend_pos2(src, target->x, target->y, r_skill, r_lv, tick, flag);
+							break;
+						case CAST_NODAMAGE:
+							skill_castend_nodamage_id(src, target, r_skill, r_lv, tick, flag);
+							break;
+						case CAST_DAMAGE:
+							skill_castend_damage_id(src, target, r_skill, r_lv, tick, flag);
+							break;
+					}
+				}
+			}
+		}
+	}
+
+
+
 	if (sd) {
 		if (wd.flag & BF_WEAPON && src != target && damage > 0) {
 			if (battle_config.left_cardfix_to_right)

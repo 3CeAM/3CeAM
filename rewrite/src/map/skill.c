@@ -6577,8 +6577,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SC_REPRODUCE:
 		if( tsc && tsc->data[SC__REPRODUCE] )
 		{
-			int id;
-
 			if( sd->reproduceskill_id && sd->status.skill[sd->reproduceskill_id].id != 0)
 			{
 				pc_setglobalreg(sd, "REPRODUCE_SKILL",sd->status.skill[sd->reproduceskill_id].id);
@@ -6589,6 +6587,23 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		else
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
 		clif_skill_nodamage(src,bl,skillid,0,1);			
+		break;
+
+	case SC_AUTOSHADOWSPELL:
+		if( sd )
+		{
+			if( sd->reproduceskill_id || sd->cloneskill_id )
+			{
+				clif_skill_select_request(sd);
+				sc_start(bl,SC_STOP,100,skilllv,9999);
+				clif_skill_nodamage(src,bl,skillid,1,1);
+			}
+			else
+			{
+				clif_skill_fail(sd,skillid,0x15,0);
+				return 0;
+			}
+		}
 		break;
 
 	case SC_SHADOWFORM:
@@ -12835,6 +12850,28 @@ int skill_spellbook (struct map_session_data *sd, int nameid)
 	}
 	if( i == 10 )
 		clif_skill_fail(sd, WL_READING_SB, 0, 0);	// No slots left.
+
+	return 0;
+}
+
+int skill_select_menu( struct map_session_data *sd, int flag, int skill_id)
+{
+	int id, lv;
+
+	nullpo_retr(0,sd);
+
+	if( (id = sd->status.skill[skill_id].id) == 0 || sd->status.skill[skill_id].flag != 13 || skill_id > NJ_ISSEN )
+	{
+		clif_skill_fail(sd,SC_AUTOSHADOWSPELL,0x15,0);
+		return 0;
+	}
+
+	status_change_end(&sd->bl,SC_STOP,-1);
+
+	if( (lv = sd->status.skill[skill_id].lv) == 0 )
+		lv = pc_checkskill(sd,SC_AUTOSHADOWSPELL);
+
+	sc_start4(&sd->bl,SC__AUTOSHADOWSPELL,100,id,lv,(32 - 2 * lv)*10,0,skill_get_time(SC_AUTOSHADOWSPELL,lv));
 
 	return 0;
 }

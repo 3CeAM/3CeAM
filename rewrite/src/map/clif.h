@@ -129,6 +129,7 @@ int clif_arrow_fail(struct map_session_data *sd,int type); //self
 int clif_arrow_create_list(struct map_session_data *sd);	//self
 int clif_rune_create_list(struct map_session_data *sd, int trigger, int rune_ore); //self
 int clif_spellbook_list(struct map_session_data *sd);	//self
+int clif_skill_select_request( struct map_session_data *sd ); //self
 int clif_statusupack(struct map_session_data *,int,int,int);	// self
 int clif_equipitemack(struct map_session_data *,int,int,int);	// self
 int clif_unequipitemack(struct map_session_data *,int,int,int);	// self

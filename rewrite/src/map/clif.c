@@ -2916,6 +2916,38 @@ int clif_spellbook_list(struct map_session_data *sd)
 	return 1;
 }
 
+int clif_skill_select_request( struct map_session_data *sd )
+{
+	int fd, i, c;
+
+#if PACKETVER >= 20081210
+	nullpo_retr(0,sd);
+
+	fd = sd->fd;
+
+	if( !fd ) return 0;
+
+	WFIFOHEAD(fd, 2 * 6 + 4);
+	WFIFOW(fd,0) = 0x442;
+	for( i = 0, c = 0; i < MAX_SKILL; i++)
+	{
+		if( sd->status.skill[i].flag >= 13 && skill_id <= NJ_ISSEN)
+		{
+			// Can't auto cast both Extended class and 3rd class skills.
+			WFIFOW(fd,8+c*2) = sd->reproduceskill_id;
+			c++;
+		}
+	}
+	sd->menuskill_id = SC_AUTOSHADOWSPELL;
+	sd->menuskill_val = c;
+	WFIFOW(fd,2) = 4+c*6;
+	WFIFOL(fd,4) = c;
+	WFIFOSET(fd,WFIFOW(fd,2));
+#endif
+
+	return 1;
+}
+
 /*==========================================
  *
  *------------------------------------------*/
@@ -10049,6 +10081,23 @@ void clif_parse_ProduceMix(int fd,struct map_session_data *sd)
 	sd->menuskill_val = sd->menuskill_id = sd->menuskill_itemused = 0;
 }
 /*==========================================
+ * To SC_AUTOSHADOWSPELL
+ *------------------------------------------*/
+void clif_parse_SkillSelectMenu(int fd, struct map_session_data *sd)
+{
+	if( sd->menuskill_id != SC_AUTOSHADOWSPELL )
+		return;
+
+	if( pc_istrading(sd) )
+	{
+		clif_skill_fail(sd,sd->ud.skillid,0x15,0);
+		sd->menuskill_val = sd->menuskill_id = 0;
+		return;
+	}
+	skill_select_menu(sd,RFIFOL(fd,2),RFIFOW(fd,6));
+	sd->menuskill_val = sd->menuskill_id = 0;
+}
+/*==========================================
  *
  *------------------------------------------*/
 void clif_parse_Cooking(int fd,struct map_session_data *sd)
@@ -13898,7 +13947,7 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  8,  0, 25,
 	//#0x0440
-	    8,  4,  0,  0,  0,  0, 14,  0,  0,  0,  6,  0,  0,  0,  0,  0,
+	    8,  4, -1,  0,  0,  0, 14,  0,  0,  0,  6,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -14158,6 +14207,7 @@ static int packetdb_readdb(void)
 		{clif_parse_BattleChat,"battlechat"},
 		{clif_parse_mercenary_action,"mermenu"},
 		{clif_parse_progressbar,"progressbar"},
+		{clif_parse_SkillSelectMenu,"skillselectmenu"},
 		{NULL,NULL}
 	};
 

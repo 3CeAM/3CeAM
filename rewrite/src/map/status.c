@@ -448,6 +448,7 @@ void initChangeTables(void)
 	add_sc( RA_ICEBOUNDTRAP      , SC_FREEZING        );
 
 	set_sc( SC_REPRODUCE         , SC__REPRODUCE         , SI_REPRODUCE         , SCB_NONE );
+	set_sc( SC_AUTOSHADOWSPELL   , SC__AUTOSHADOWSPELL   , SI_AUTOSHADOWSPELL   , SCB_NONE );
 	set_sc( SC_SHADOWFORM        , SC__SHADOWFORM        , SI_SHADOWFORM        , SCB_NONE );
 	set_sc( SC_BODYPAINT         , SC__BODYPAINT         , SI_BODYPAINTING      , SCB_ASPD );
 	set_sc( SC_INVISIBILITY      , SC__INVISIBILITY      , SI_INVISIBILITY      , SCB_ASPD );
