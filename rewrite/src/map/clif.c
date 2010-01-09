@@ -2931,7 +2931,7 @@ int clif_skill_select_request( struct map_session_data *sd )
 	WFIFOW(fd,0) = 0x442;
 	for( i = 0, c = 0; i < MAX_SKILL; i++)
 	{
-		if( sd->status.skill[i].flag >= 13 && skill_id <= NJ_ISSEN)
+		if( sd->status.skill[i].flag >= 13 && sd->status.skill[i].id <= NJ_ISSEN)
 		{
 			// Can't auto cast both Extended class and 3rd class skills.
 			WFIFOW(fd,8+c*2) = sd->reproduceskill_id;
@@ -4288,6 +4288,8 @@ int clif_skillinfo_delete(struct map_session_data *sd, int skill)
 	WFIFOW(fd,0) = 0x441;
 	WFIFOW(fd,2) = skill;
 	WFIFOSET(fd,packet_len(0x441));
+#else
+	clif_skillinfoblock(sd);
 #endif
 	return 1;
 }
