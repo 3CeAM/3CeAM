@@ -4481,8 +4481,8 @@
 13024,Sword_Breaker_C,Refined Swordbreaker,4,,,0,105,,1,0,0x028F5EEE,31,2,2,4,1,0,1,{ bonus bBreakWeaponRate,500; },{},{}
 13025,Mail_Breaker_C,Refined Mailbreaker,4,,,0,105,,1,0,0x028F5EEE,31,2,2,4,1,0,1,{ bonus bBreakArmorRate,500; },{},{}
 13026,Moonlight_Sword_C,Refined Moonlight Dagger,4,,,0,85,,1,0,0x028F5EEE,31,2,2,4,1,0,1,{ bonus bMaxSPrate,10; bonus bSPDrainValue,3; },{},{}
-13027,Scalpel,Mes,4,20,,500,120,,1,3,0x028F5EEE,2,2,2,4,55,1,1,{ bonus2 bAddEff,Eff_Bleeding,500; },{},{}
-13028,Tooth_Blade,Tooth Blade,4,20,,700,130,,1,1,0x028F5EEE,2,2,2,4,55,1,1,{ if(getrefine() >= 9){ bonus3 bAutoSpell,"NPC_SLOWCAST",2,70; } else bonus3 bAutoSpell,"NPC_SLOWCAST",1,50; },{},{}
+13027,Scalpel,Mes,4,20,,500,120,,1,3,0x028F5EEE,26,2,2,4,55,1,1,{ bonus2 bAddEff,Eff_Bleeding,500; },{},{}
+13028,Tooth_Blade,Tooth Blade,4,20,,700,130,,1,1,0x028F5EEE,26,2,2,4,55,1,1,{ if(getrefine() >= 9){ bonus3 bAutoSpell,"NPC_SLOWCAST",2,70; } else bonus3 bAutoSpell,"NPC_SLOWCAST",1,50; },{},{}
 13029,Prinsence_Knife,Prinsense Knife,4,20,,0,120,,1,0,0xFE9F7EEF,31,2,2,1,1,1,1,{ bonus2 bAddRace,RC_Boss,50; bonus2 bAddRace,RC_NonBoss,50; },{},{}
 13030,Dragon_Killer_,Dragon Killer,4,20,,900,110,,1,2,0x008F5EEF,31,2,2,4,60,1,1,{ bonus bIgnoreDefRace,RC_Dragon; bonus2 bExpAddRace,RC_Dragon,10; },{},{}
 13031,Sword_Breaker_,Swordbreaker,4,20,,1000,70,,1,3,0x028F5EEE,31,2,2,4,36,1,1,{ bonus bBreakWeaponRate,500; },{},{}
@@ -4516,7 +4516,7 @@
 //13109,Wasteland_Outlaw_C
 13110,Krieger_Pistol1,Glorious Revolver,4,0,,0,80,,7,0,0x01000000,31,2,34,4,80,1,17,{ bonus2 bAddRace,RC_DemiHuman,55; bonus2 bIgnoreDefRate,RC_DemiHuman,20; bonus bUnbreakableWeapon,0; if(getrefine() > 5) bonus2 bIgnoreDefRate,RC_DemiHuman,5; if(getrefine() > 8) { bonus4 bAutoSpellOnSkill,"GS_RAPIDSHOWER","GS_GLITTERING",1,1000; bonus2 bSkillAtk,"GS_RAPIDSHOWER",getrefine()*2; } },{},{}
 //13111,Sharpshooter_Revolver
-13150,Branch,Branch,4,3000,,500,50,,9,3,0x01000000,7,2,34,1,1,1,18,{},{},{}
+13150,Branch,Branch,4,3000,,500,50,,9,3,0x01000000,31,2,34,1,1,1,18,{},{},{}
 13151,The_Cyclone,Cyclone,4,17500,,700,120,,9,1,0x01000000,31,2,34,2,24,1,18,{ bonus bHit,10; bonus bCritical,10; },{},{}
 13152,The_Cyclone_,Cyclone,4,17500,,700,120,,9,2,0x01000000,31,2,34,2,24,1,18,{ bonus bHit,10; bonus bCritical,10; },{},{}
 13153,Dusk,Dusk,4,23500,,750,150,,9,1,0x01000000,31,2,34,2,56,1,18,{ bonus bHit,10; bonus bCritical,10; },{},{}
@@ -4589,9 +4589,9 @@
 13409,Immaterial_Sword_C,Refined Immaterial Sword,4,,,0,160,,1,0,0x000654E2,31,2,2,4,40,1,2,{ bonus bAtkEle,Ele_Ghost; bonus2 bSPVanishRate,45,30; bonus bSPDrainValue,-1; bonus bUnbreakableWeapon,0; },{},{}
 13410,BF_Sword1,Valorous Gladiator Blade,4,0,,0,115,,1,0,0x000654E3,31,2,2,3,80,1,2,{ bonus bStr,1; bonus bDex,1; bonus2 bAddRace,RC_DemiHuman,75; bonus2 bIgnoreDefRate,RC_DemiHuman,20; bonus bUnbreakableWeapon,0; },{},{}
 13411,BF_Sword2,Brave Gladiator Blade,4,0,,0,115,,1,0,0x000654E3,31,2,2,3,80,1,2,{ bonus bStr,1; bonus bDex,1; bonus2 bAddRace,RC_DemiHuman,75; bonus bMatkRate,10; bonus bUnbreakableWeapon,0; },{},{}
-13412,Twin_Edge_B,Twin Edge of Naght Sieger,4,0,,1500,150,,1,3,0x000654E2,2,2,2,4,75,1,2,{ bonus bAtkEle,Ele_Water; skill "MG_FROSTDIVER",5; autobonus "{ bonus bIgnoreDefRace,RC_NonBoss; }",50,5000; },{},{}
-13413,Twin_Edge_R,Twin Edge of Naght Sieger,4,0,,1500,160,,1,3,0x000654E2,2,2,2,4,75,1,2,{ bonus bAtkEle,Ele_Fire; skill "WZ_METEOR",3; autobonus "{ bonus bIgnoreDefRace,RC_NonBoss; }",50,5000; },{},{}
-13414,Elemental_Sword,Elemental Sword,4,20,,1200,105,,1,3,0x000654E2,2,2,2,3,70,1,2,{ bonus bStr,2; bonus bInt,4; bonus bDex,1; bonus bMatkRate,5; bonus2 bAddEle,Ele_Neutral,10; bonus3 bAutoSpell,"MG_COLDBOLT",3,50; bonus4 bAutoSpellOnSkill,"MG_COLDBOLT","MG_FIREBOLT",3,1000; bonus4 bAutoSpellOnSkill,"MG_FIREBOLT","MG_LIGHTNINGBOLT",3,10000; bonus4 bAutoSpellOnSkill,"MG_LIGHTNINGBOLT","WZ_EARTHSPIKE",3,10000; },{},{}
+13412,Twin_Edge_B,Twin Edge of Naght Sieger,4,0,,1500,150,,1,3,0x000654E2,26,2,2,4,75,1,2,{ bonus bAtkEle,Ele_Water; skill "MG_FROSTDIVER",5; autobonus "{ bonus bIgnoreDefRace,RC_NonBoss; }",50,5000; },{},{}
+13413,Twin_Edge_R,Twin Edge of Naght Sieger,4,0,,1500,160,,1,3,0x000654E2,26,2,2,4,75,1,2,{ bonus bAtkEle,Ele_Fire; skill "WZ_METEOR",3; autobonus "{ bonus bIgnoreDefRace,RC_NonBoss; }",50,5000; },{},{}
+13414,Elemental_Sword,Elemental Sword,4,20,,1200,105,,1,3,0x000654E2,26,2,2,3,70,1,2,{ bonus bStr,2; bonus bInt,4; bonus bDex,1; bonus bMatkRate,5; bonus2 bAddEle,Ele_Neutral,10; bonus3 bAutoSpell,"MG_COLDBOLT",3,50; bonus4 bAutoSpellOnSkill,"MG_COLDBOLT","MG_FIREBOLT",3,1000; bonus4 bAutoSpellOnSkill,"MG_FIREBOLT","MG_LIGHTNINGBOLT",3,10000; bonus4 bAutoSpellOnSkill,"MG_LIGHTNINGBOLT","WZ_EARTHSPIKE",3,10000; },{},{}
 13415,N_Falchion,Novice Falchion,4,1,,0,59,,1,0,0x000654E3,31,2,2,1,1,0,2,{},{},{}
 13416,Krieger_Onehand_Sword1,Glorious Flamberge,4,0,,0,130,,1,0,0x000654E3,31,2,2,4,80,1,2,{ bonus2 bAddRace,RC_DemiHuman,75; bonus2 bIgnoreDefRate,RC_DemiHuman,20; bonus bUnbreakableWeapon,0; if(getrefine() > 5) { bonus2 bAddRace,RC_DemiHuman,(getrefine()-4)*(getrefine()-4); bonus2 bIgnoreDefRate,RC_DemiHuman,5; } if(getrefine() > 6) bonus bAspdRate,5; if(getrefine() > 8) { bonus bAspdRate,5; bonus4 bAutoSpellOnSkill,"MS_BASH","NPC_CRITICALWOUND",2,200; } },{},{}
 13417,Krieger_Onehand_Sword2,Glorious Rapier,4,0,,0,130,,1,0,0x000654E3,31,2,2,4,80,1,2,{ bonus bInt,getrefine()-5; bonus bMatkRate,10; bonus bUnbreakableWeapon,0; if(getrefine() > 5) bonus bUseSPrate,-10; if(getrefine() > 8) bonus bInt,5; },{},{}

@@ -340,6 +340,8 @@ extern struct Battle_Config
 	int gm_cant_party_min_lv;
 	int gm_can_party; // [SketchyPhoenix]
 
+	int pc_camouflage_check_type;
+
 // eAthena additions
 	int night_at_start; // added by [Yor]
 	int day_duration; // added by [Yor]
@@ -479,6 +481,9 @@ extern struct Battle_Config
 	int bg_magic_damage_rate;
 	int bg_misc_damage_rate;
 	int bg_flee_penalty;
+
+	// Casting Time Renewal Settings
+	int renewal_cast_enable;
 } battle_config;
 
 void do_init_battle(void);
