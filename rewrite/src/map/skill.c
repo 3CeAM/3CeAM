@@ -3001,8 +3001,8 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case WL_SOULEXPANSION:
 	case WL_FROSTMISTY:
 	case WL_CRIMSONROCK:
-	case RA_WUGDASH:
 	case RA_ARROWSTORM:
+	case RA_WUGDASH:
 	case SO_VARETYR_SPEAR:
 	case GN_CART_TORNADO:
 		if( flag&1 )
@@ -6574,6 +6574,13 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 
+	case RA_CAMOUFLAGE:
+		i = sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
+		if( i ) clif_skill_nodamage(src,bl,skillid,-1,i);
+		else if( sd )
+			clif_skill_fail(sd,skillid,0,0);
+		break;
+
 	case SC_REPRODUCE:
 		if( tsc && tsc->data[SC__REPRODUCE] )
 		{
@@ -6967,12 +6974,16 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 				src->type, src->id, ud->skillid, ud->skilllv, target->id);
 
 		map_freeblock_lock();
+
+		sc = status_get_sc(src);
+		if( sc && sc->data[SC_CAMOUFLAGE] )
+			status_change_end(src,SC_CAMOUFLAGE,-1);
+
 		if (skill_get_casttype(ud->skillid) == CAST_NODAMAGE)
 			skill_castend_nodamage_id(src,target,ud->skillid,ud->skilllv,tick,flag);
 		else
 			skill_castend_damage_id(src,target,ud->skillid,ud->skilllv,tick,flag);
 
-		sc = status_get_sc(src);
 		if(sc && sc->count) {
 		  	if(sc->data[SC_MAGICPOWER] &&
 				ud->skillid != HW_MAGICPOWER && ud->skillid != WZ_WATERBALL)
@@ -7220,6 +7231,9 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	sc = status_get_sc(src);
 	type = status_skill2sc(skillid);
 	sce = (sc && type != -1)?sc->data[type]:NULL;
+
+	if( sc && sc->data[SC_CAMOUFLAGE] )
+		status_change_end(src,SC_CAMOUFLAGE,-1);
 
 	switch (skillid) { //Skill effect.
 		case WZ_METEOR:
@@ -10246,6 +10260,8 @@ int skill_check_condition_castend(struct map_session_data* sd, short skill, shor
 				clif_skill_fail(sd,skill,7,0);// red gemstone required
 			else if( require.itemid[i] == ITEMID_BLUE_GEMSTONE )
 				clif_skill_fail(sd,skill,8,0);// blue gemstone required
+			else if( require.itemid[i] == ITEMID_TRAP_ALLOY )
+				clif_skill_fail(sd,skill,3,0);// you dont have enough ingredient
 			else
 				clif_skill_fail(sd,skill,0,0);
 			return 0;
@@ -10496,7 +10512,7 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
  *----------------------------------------------*/
 int skill_castfix(struct block_list *bl, int skill_id, int skill_lv)
 {
-	int variable_time, fixed_time, final_time, fixed_reduction = 0;
+	int variable_time, fixed_time = 0, final_time;//, fixed_reduction = 0;
 	double scale = 0;
 	struct map_session_data *sd;
 	struct status_change *sc;
@@ -10505,12 +10521,28 @@ int skill_castfix(struct block_list *bl, int skill_id, int skill_lv)
 	sd = BL_CAST(BL_PC, bl);
 	sc = status_get_sc(bl);
 
-	variable_time = skill_get_cast(skill_id, skill_lv) * 80/100;// 80% of casttime is variable
-	fixed_time = skill_get_cast(skill_id, skill_lv) * 20/100;// 20% of casttime is fixed
+	if( !battle_config.renewal_cast_enable )// config to disable renewal cast settings.
+	{
+		variable_time = skill_get_cast(skill_id, skill_lv);
 
-	// calculate variable cast time reduced by dex and int
-	if( !(skill_get_castnodex(skill_id, skill_lv)&1) )
-		scale = cap_value((status_get_dex(bl)*2 + status_get_int(bl))*10000, INT_MIN, INT_MAX);
+		// calculate base cast time (reduced by dex)
+		if( !(skill_get_castnodex(skill_id, skill_lv)&1) )
+		{
+			scale = battle_config.castrate_dex_scale - status_get_dex(bl);
+			if( scale > 0 )	// not instant cast
+				variable_time = variable_time * (int)scale / battle_config.castrate_dex_scale;
+			else return 0;	// instant cast
+		}
+	}
+	else
+	{
+		variable_time = skill_get_cast(skill_id, skill_lv) * 80/100;// 80% of casttime is variable
+		fixed_time = skill_get_cast(skill_id, skill_lv) * 20/100;// 20% of casttime is fixed
+
+		// calculate variable cast time reduced by dex and int
+		if( !(skill_get_castnodex(skill_id, skill_lv)&1) )
+			scale = cap_value((status_get_dex(bl)*2 + status_get_int(bl))*10000, INT_MIN, INT_MAX);
+	}
 
 	// calculate variable cast time reduced by item/card/skills bonuses
 	if( !(skill_get_castnodex(skill_id, skill_lv)&4) && sd )
@@ -10549,9 +10581,14 @@ int skill_castfix(struct block_list *bl, int skill_id, int skill_lv)
 			fixed_time += fixed_time * sc->data[SC__LAZINESS]->val2 / 100;
 	}
 
-	final_time = (100 - (int)sqrt(scale/530.)) * variable_time / 100;
-	if( final_time < 0 ) final_time = 0;
-	final_time += fixed_time;  
+	if( !battle_config.renewal_cast_enable )
+		final_time = variable_time;
+	else
+	{
+		final_time = (100 - (int)sqrt(scale/530.)) * variable_time / 100;
+		if( final_time < 0 ) final_time = 0;
+		final_time += fixed_time;
+	}
 
 	// config cast time multiplier
 	if (battle_config.cast_rate != 100)
@@ -11520,6 +11557,38 @@ bool skill_check_cloaking(struct block_list *bl, struct status_change_entry *sce
 	return wall;
 }
 
+bool skill_check_camouflage(struct block_list *bl, struct status_change_entry *sce)
+{
+	static int dx[] = { 0, 1, 0, -1, -1,  1, 1, -1};
+	static int dy[] = {-1, 0, 1,  0, -1, -1, 1,  1};
+	bool wall = true;
+	int i;
+
+	if( bl->type == BL_PC && battle_config.pc_camouflage_check_type&1 )
+	{	//Check for walls.
+		ARR_FIND( 0, 8, i, map_getcell(bl->m, bl->x+dx[i], bl->y+dy[i], CELL_CHKNOPASS) != 0 );
+		if( i == 8 )
+			wall = false;
+	}
+		
+	if( sce )
+	{
+		if( !wall )
+		{
+			if( sce->val1 < 3 ) //End camouflage.
+				status_change_end(bl, SC_CAMOUFLAGE, -1);
+			else
+			if( sce->val3&1 )
+			{	//Remove wall bonus
+				sce->val3&=~1;
+				status_calc_bl(bl,SCB_SPEED);
+			}
+		}
+	}
+
+	return wall;
+}
+
 /*==========================================
  *
  *------------------------------------------*/
@@ -11931,6 +12000,7 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 			break;
 
 			case UNT_ANKLESNARE:
+			case UNT_ELECTRICSHOCKER:
 				if( group->val2 > 0 ) {
 					// Used Trap don't returns back to item
 					skill_delunit(unit);
@@ -11944,26 +12014,6 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 			case UNT_FREEZINGTRAP:
 			case UNT_CLAYMORETRAP:
 			case UNT_TALKIEBOX:
-			{
-				struct block_list* src;
-				if( unit->val1 > 0 && (src = map_id2bl(group->src_id)) != NULL && src->type == BL_PC )
-				{ // revert unit back into a trap
-					struct item item_tmp;
-					memset(&item_tmp,0,sizeof(item_tmp));
-					item_tmp.nameid = ITEMID_TRAP;
-					item_tmp.identify = 1;
-					map_addflooritem(&item_tmp,1,bl->m,bl->x,bl->y,0,0,0,0);
-				}
-				skill_delunit(unit);
-			}
-			break;
-
-			case UNT_ELECTRICSHOCKER:
-				if( group->val2 > 0 ) {
-					// Used Trap don't returns back to item
-					skill_delunit(unit);
-					break;
-				}
 			case UNT_MAGENTATRAP:
 			case UNT_COBALTTRAP:
 			case UNT_MAIZETRAP:
@@ -11977,7 +12027,7 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 				{ // revert unit back into a trap
 					struct item item_tmp;
 					memset(&item_tmp,0,sizeof(item_tmp));
-					item_tmp.nameid = ITEMID_TRAP_ALLOY;
+					item_tmp.nameid = ( group->unit_id >= UNT_MAGENTATRAP && group->unit_id <= UNT_CLUSTERBOMB ) ? ITEMID_TRAP_ALLOY:ITEMID_TRAP;
 					item_tmp.identify = 1;
 					map_addflooritem(&item_tmp,1,bl->m,bl->x,bl->y,0,0,0,0);
 				}

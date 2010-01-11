@@ -831,6 +831,8 @@ int unit_can_move(struct block_list *bl)
 			|| sc->data[SC_CLOSECONFINE2]
 			|| (sc->data[SC_CLOAKING] && //Need wall at level 1-2
 				sc->data[SC_CLOAKING]->val1 < 3 && !(sc->data[SC_CLOAKING]->val4&1))
+			|| (sc->data[SC_CAMOUFLAGE] &&
+				sc->data[SC_CAMOUFLAGE]->val1 < 3 && !(sc->data[SC_CAMOUFLAGE]->val3&1))
 			|| sc->data[SC_MADNESSCANCEL]
 			|| (sc->data[SC_GRAVITATION] && sc->data[SC_GRAVITATION]->val3 == BCT_SELF)
 			|| sc->data[SC_WHITEIMPRISON]
@@ -1894,6 +1896,7 @@ int unit_remove_map_(struct block_list *bl, int clrtype, const char* file, int l
 		status_change_end(bl,SC_ELECTRICSHOCKER,-1);
 		status_change_end(bl,SC_BITE,-1);
 		status_change_end(bl,SC_WUGDASH,-1);
+		status_change_end(bl,SC_CAMOUFLAGE,-1);
 		status_change_end(bl,SC_DIAMONDDUST,-1);
 		status_change_end(bl,SC__MANHOLE,-1);
 	}

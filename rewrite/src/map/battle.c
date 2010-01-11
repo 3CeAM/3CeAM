@@ -3005,18 +3005,15 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		md.damage = skill_calc_heal(src,target,skill_num,skill_lv,false);
 		break;
 	case RA_CLUSTERBOMB:
-		//iRO wiki damage formula.
-		md.damage = 5*sstatus->int_ + (2*sstatus->batk + sstatus->lhw.atk + sstatus->rhw.atk)*(skill_lv+2);
-		if( sd )
-			md.damage += (sd->status.base_level * 2 + ( (sd->status.base_level/50) + 3)*sstatus->dex+300)*skill_lv + pc_checkskill(sd,RA_RESEARCHTRAP);
-		break;
 	case RA_FIRINGTRAP:
  	case RA_ICEBOUNDTRAP:
-		//iRO wiki damage formula.
-		md.damage = 5*sstatus->int_ + sstatus->batk + sstatus->lhw.atk + sstatus->rhw.atk;
-		if( sd )
-			md.damage += (sd->status.base_level * 2 + ( (sd->status.base_level/50) + 3)*sstatus->dex+300)*skill_lv + pc_checkskill(sd,RA_RESEARCHTRAP);
- 		break;
+		{
+			struct Damage wd = battle_calc_attack(BF_WEAPON, src, target, 0, 0, mflag);
+			if( sd )
+				md.damage = (sd->status.base_level*2 + ((sd->status.base_level/50) + 3)*sstatus->dex + 300)*skill_lv + sstatus->int_*5 + pc_checkskill(sd,RA_RESEARCHTRAP);
+			md.damage += ( wd.damage + wd.damage2 ) * ( skill_num == RA_CLUSTERBOMB ) ? (skill_lv+2) : 1;
+		}
+		break;
 	}
 
 	if (nk&NK_SPLASHSPLIT){ // Divide ATK among targets
@@ -3094,7 +3091,7 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 
 	if(md.damage < 0)
 		md.damage = 0;
-	else if(md.damage && tstatus->mode&MD_PLANT)
+	else if(md.damage && tstatus->mode&MD_PLANT && skill_num != RA_CLUSTERBOMB)
 		md.damage = 1;
 
 	if(!(nk&NK_NO_ELEFIX))
@@ -3291,6 +3288,9 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 
 	if (sc && sc->data[SC_CLOAKING] && !(sc->data[SC_CLOAKING]->val4&2))
 		status_change_end(src,SC_CLOAKING,-1);
+
+	if (sc && sc->data[SC_CAMOUFLAGE] && !(sc->data[SC_CAMOUFLAGE]->val3&2))
+		status_change_end(src,SC_CAMOUFLAGE,-1);
 
 	if( sc && sc->data[SC__INVISIBILITY] )
 		status_change_end(src,SC__INVISIBILITY,-1); // Still need confirm this [pakpil]
@@ -4060,6 +4060,7 @@ static const struct _battle_data {
 	{ "skill_nofootset",                    &battle_config.skill_nofootset,                 BL_PC,  BL_NUL, BL_ALL,         },
 	{ "player_cloak_check_type",            &battle_config.pc_cloak_check_type,             1,      0,      1|2|4,          },
 	{ "monster_cloak_check_type",           &battle_config.monster_cloak_check_type,        4,      0,      1|2|4,          },
+	{ "player_camouflage_check_type",       &battle_config.pc_camouflage_check_type,        1,      0,      1|2|4,          },
 	{ "sense_type",                         &battle_config.estimation_type,                 1|2,    0,      1|2,            },
 	{ "gvg_eliminate_time",                 &battle_config.gvg_eliminate_time,              7000,   0,      INT_MAX,        },
 	{ "gvg_short_attack_damage_rate",       &battle_config.gvg_short_damage_rate,           80,     0,      INT_MAX,        },
@@ -4273,6 +4274,8 @@ static const struct _battle_data {
 	{ "bg_magic_attack_damage_rate",        &battle_config.bg_magic_damage_rate,            60,     0,      INT_MAX,        },
 	{ "bg_misc_attack_damage_rate",         &battle_config.bg_misc_damage_rate,             60,     0,      INT_MAX,        },
 	{ "bg_flee_penalty",                    &battle_config.bg_flee_penalty,                 20,     0,      INT_MAX,        },
+// Casting Time Renewal Settings
+	{ "renewal_cast_enable",                &battle_config.renewal_cast_enable,              1,     0,            1,        },
 };
 
 
