@@ -1579,7 +1579,7 @@ enum {
 	UNT_ELECTRICWALK = 0xdd,
 	UNT_NETHERWORLD = 0xde,
 	//0xdf,
-	UNT_CLOUDKILL = 0xe0,
+	UNT_CLOUD_KILL = 0xe0,
 	UNT_POISONSMOKE = 0xe1,
 	UNT_NEUTRALBARRIER = 0xe2,
 	UNT_STEALTHFIELD = 0xe3,
@@ -1590,6 +1590,7 @@ enum {
 	UNT_DEMONIC_FIRE2 = 0xe8,
 	UNT_DEMONIC_FIRE3 = 0xe9,
 	UNT_HELLS_PLANT = 0xea,
+	UNT_VACUUM_EXTREME = 0xeb,
 
 	UNT_MAX = 0xff //Actually the maximun UNT id's can't exceed 0xFF [pakpil]
 };
