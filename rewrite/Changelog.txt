@@ -6,6 +6,13 @@
 //========================================
 
 01/15/2010
+	r107 [LimitLine]
+	* Added chance to change enemy's element to Poison with Cloud Kill.
+	* Fixed Cloud Kill not dealing damage.
+	* Changed Vacuum Extreme's unit ID to the correct one.
+	* Changed Warmer's unit ID to the correct one.
+	* Other minor changes.
+
 	r106 [LimitLine]
 	* Now spells used trough Reading Spellbooks will consume the correct amount of Preserve points (before: every skill consumed only one, regardless).
 	- You can change the number of preserve points a skill takes up in db/spellbook_db.txt

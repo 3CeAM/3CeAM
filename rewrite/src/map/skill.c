@@ -1034,6 +1034,8 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 
 	case SO_CLOUD_KILL:
 		sc_start(bl, SC_POISON, 10 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));	// Need official rate. [LimitLine]
+		if( tstatus && tstatus->mode & ~MB_BOSS )	// Boss monsters should be immune to elemental change trough Cloud Kill. Confirm this. [LimitLine]
+			sc_start2(bl, SC_ELEMENTALCHANGE, 10 + 10 * skilllv, skilllv, 5, skill_get_time2(skillid, skilllv));	// Need official rate. [LimitLine]
 		break;
 
 	case GN_CART_TORNADO:
@@ -8746,13 +8748,6 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 					skill_attack(skill_get_type(sg->skill_id), ss, &src->bl, bl, sg->skill_id, sg->skill_lv, tick, 0);
 					break;
 
-				case SO_WARMER:
-					if( tsc && tsc->data[SC_WARMER] )
-						break;
-				case SO_VACUUM_EXTREME:
-					sc_start(bl, status_skill2sc(sg->skill_id), 100, sg->skill_lv, skill_get_time2(sg->skill_id, sg->skill_lv));
-					break;
-
 				case GN_CRAZYWEED:
 					skill_castend_damage_id(ss, bl, GN_CRAZYWEED_ATK, sg->skill_lv, tick, SD_LEVEL|SD_ANIMATION);
 					break;
@@ -9187,7 +9182,18 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 
 		case UNT_FIREWALK:
 		case UNT_ELECTRICWALK:
+		case UNT_CLOUD_KILL:
 			skill_attack(skill_get_type(sg->skill_id), ss, &src->bl, bl, sg->skill_id, sg->skill_lv, tick, 0);
+			break;
+
+		case UNT_WARMER:
+			if( tsc && tsc->data[SC_WARMER] )
+				break;
+			sc_start(bl, SC_WARMER, 100, sg->skill_lv, skill_get_time2(sg->skill_id, sg->skill_lv));
+			break;
+
+		case UNT_VACUUM_EXTREME:
+			sc_start(bl, SC_STOP, 100, sg->skill_lv, skill_get_time2(sg->skill_id, sg->skill_lv));
 			break;
 
 	}

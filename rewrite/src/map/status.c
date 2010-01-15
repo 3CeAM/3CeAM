@@ -475,9 +475,9 @@ void initChangeTables(void)
 
 	add_sc( SO_FIREWALK          , SC_FIREWALK );
 	add_sc( SO_ELECTRICWALK      , SC_ELECTRICWALK );
+	add_sc( SO_CLOUD_KILL        , SC_ELEMENTALCHANGE , /*SI_CLOUDKILL*/SI_BLANK       , SCB_NONE );
 	set_sc( SO_WARMER            , SC_WARMER          , SI_WARMER          , SCB_NONE );
 	set_sc( SO_STRIKING          , SC_STRIKING        , SI_STRIKING        , SCB_BATK|SCB_CRI );
-	add_sc( SO_VACUUM_EXTREME    , SC_STOP );
 	add_sc( SO_ARULLO            , SC_DEEPSLEEP );
 
 	set_sc( HLIF_AVOID           , SC_AVOID           , SI_BLANK           , SCB_SPEED );
