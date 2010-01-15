@@ -6,7 +6,12 @@
 //========================================
 
 01/15/2010
-	r101 [LimitLine]
+	r106 [LimitLine]
+	* Now spells used trough Reading Spellbooks will consume the correct amount of Preserve points (before: every skill consumed only one, regardless).
+	- You can change the number of preserve points a skill takes up in db/spellbook_db.txt
+	* Fixed my last changelog entries. Sorry.
+
+	r105 [LimitLine]
 	* Fixed Chain Lightning hitting allies.
 	* Fixed Freezing duration trough Frost Misty.
 	* Fixed Demonic Fire hitting everyone.

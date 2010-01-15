@@ -60,6 +60,7 @@ struct s_skill_db skill_db[MAX_SKILL_DB];
 struct s_skill_produce_db skill_produce_db[MAX_SKILL_PRODUCE_DB];
 struct s_skill_arrow_db skill_arrow_db[MAX_SKILL_ARROW_DB];
 struct s_skill_abra_db skill_abra_db[MAX_SKILL_ABRA_DB];
+struct s_skill_spellbook_db skill_spellbook_db[MAX_SKILL_SPELLBOOK_DB];
 
 struct s_skill_unit_layout skill_unit_layout[MAX_SKILL_UNIT_LAYOUT];
 int firewall_unit_pos;
@@ -3408,7 +3409,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case WL_RELEASE:
 		if( sd && sd->rsb_used )
 		{	// Warlock spellbooks.
-			int i = 0;
+			int i;
 			for( i = 0; i < 10; i ++ )
 			{
 				if( sd->rsb_id[i] )
@@ -3429,8 +3430,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 								pc_checkskill(sd, sd->rsb_id[i]), 0, 0);
 							break;
 					}
-					//sd->rsb_used -= skill_get_preserve_points(sd->rsb_id[i]);
-					sd->rsb_used --;
+					sd->rsb_used -= skill_spellbook_db[sd->rsb_id[i]].points;
 					sd->rsb_id[i] = 0;
 					break;
 				}
@@ -12846,7 +12846,7 @@ int skill_arrow_create (struct map_session_data *sd, int nameid)
 // Warlock Spellbooks. [LimitLine]
 int skill_spellbook (struct map_session_data *sd, int nameid)
 {
-	int i = 0, skill = 0, preserve = 0, max_preserve = 4 + 4 * pc_checkskill(sd, WL_FREEZE_SP);
+	int i = 0, skill = 0, max_preserve = 4 + 4 * pc_checkskill(sd, WL_FREEZE_SP);
 
 	nullpo_retr(0, sd);
 
@@ -12855,29 +12855,29 @@ int skill_spellbook (struct map_session_data *sd, int nameid)
 
 	switch( nameid )
 	{
-		case SB_FIREBOLT: skill = MG_FIREBOLT; preserve = 7; break;
-		case SB_COLDBOLT: skill = MG_COLDBOLT; preserve = 7; break;
-		case SB_LIGHTNINGBOLT: skill = MG_LIGHTNINGBOLT; preserve = 7; break;
-		case SB_STORMGUST: skill = WZ_STORMGUST; preserve = 10; break;
-		case SB_LORDOFVERMILLION: skill = WZ_VERMILION; preserve = 10; break;
-		case SB_METEORSTORM: skill = WZ_METEOR; preserve = 10; break;
-		case SB_COMET: skill = WL_COMET; preserve = 22; break;
-		case SB_TETRAVORTEX: skill = WL_TETRAVORTEX; preserve = 22; break;
-		case SB_THUNDERSTORM: skill = MG_THUNDERSTORM; preserve = 9; break;
-		case SB_JUPITELTHUNDER: skill = WZ_JUPITEL; preserve = 9; break;
-		case SB_WATERBALL: skill = WZ_WATERBALL; preserve = 9; break;
-		case SB_HEAVENSDRIVE: skill = WZ_HEAVENDRIVE; preserve = 9; break;
-		case SB_EARTHSPIKE: skill = WZ_EARTHSPIKE; preserve = 8; break;
-		case SB_EARTHSTRAIN: skill = WL_EARTHSTRAIN; preserve = 12; break;
-		case SB_CHAINLIGHTNING: skill = WL_CHAINLIGHTNING; preserve = 12; break;
-		case SB_CRIMSONROCK: skill = WL_CRIMSONROCK; preserve = 12; break;
-		case SB_DRAINLIFE: skill = WL_DRAINLIFE; preserve = 8; break;
+		case SB_FIREBOLT: skill = MG_FIREBOLT; break;
+		case SB_COLDBOLT: skill = MG_COLDBOLT; break;
+		case SB_LIGHTNINGBOLT: skill = MG_LIGHTNINGBOLT; break;
+		case SB_STORMGUST: skill = WZ_STORMGUST; break;
+		case SB_LORDOFVERMILLION: skill = WZ_VERMILION; break;
+		case SB_METEORSTORM: skill = WZ_METEOR; break;
+		case SB_COMET: skill = WL_COMET; break;
+		case SB_TETRAVORTEX: skill = WL_TETRAVORTEX; break;
+		case SB_THUNDERSTORM: skill = MG_THUNDERSTORM; break;
+		case SB_JUPITELTHUNDER: skill = WZ_JUPITEL; break;
+		case SB_WATERBALL: skill = WZ_WATERBALL; break;
+		case SB_HEAVENSDRIVE: skill = WZ_HEAVENDRIVE; break;
+		case SB_EARTHSPIKE: skill = WZ_EARTHSPIKE; break;
+		case SB_EARTHSTRAIN: skill = WL_EARTHSTRAIN; break;
+		case SB_CHAINLIGHTNING: skill = WL_CHAINLIGHTNING; break;
+		case SB_CRIMSONROCK: skill = WL_CRIMSONROCK; break;
+		case SB_DRAINLIFE: skill = WL_DRAINLIFE; break;
 		default:
 			clif_skill_fail(sd, WL_READING_SB, 0, 0);
 			return 0;
 	}
 
-	if( sd->rsb_used + preserve > max_preserve )
+	if( sd->rsb_used + skill_spellbook_db[skill].points > max_preserve )
 	{	// Not enough points.
 		clif_skill_fail(sd, WL_READING_SB, 0, 0);
 		return 0;
@@ -12895,7 +12895,7 @@ int skill_spellbook (struct map_session_data *sd, int nameid)
 	{
 		if( !sd->rsb_id[i] )
 		{	// Preserve skill.
-			sd->rsb_used += /*preserve*/1;
+			sd->rsb_used += skill_spellbook_db[skill].points;
 			sd->rsb_id[i] = skill;
 			sc_start(&sd->bl, SC_FREEZINGSPELL, 100, 1, 0);
 			break;
@@ -13374,6 +13374,7 @@ int skill_stasis_check(struct block_list *bl, int src_id, int skillid)
  * abra_db.txt
  * skill_cooldown.txt
  * improvise_db.txt
+ * spellbook_db.txt
  *------------------------------------------*/
 
 static bool skill_parse_row_skilldb(char* split[], int columns, int current)
@@ -13649,6 +13650,34 @@ static bool skill_parse_row_abradb(char* split[], int columns, int current)
 	return true;
 }
 
+static bool skill_parse_row_spellbookdb(char* split[], int columns, int current)
+{// SkillID,PreservePoints]
+
+	int i = atoi(split[0]);
+	int j = atoi(split[1]);
+
+	if( !skill_get_index(i) || !skill_get_max(i) )
+	{
+		ShowError("spellbook_db: Invalid skill ID %d\n", i);
+		return false;
+	}
+	if ( !skill_get_inf(i) )
+	{
+		ShowError("spellbook_db: Passive skills cannot be memorized (%d/%s)\n", i, skill_get_name(i));
+		return false;
+	}
+	if( j < 1 )
+	{
+		ShowError("spellbook_db: PreservePoints have to be 1 or above! (%d/%s)\n", i, skill_get_name(i));
+		return false;
+	}
+
+	skill_spellbook_db[i].points = j;
+
+	return true;
+
+}
+
 static void skill_readdb(void)
 {
 	// init skill db structures
@@ -13671,6 +13700,7 @@ static void skill_readdb(void)
 	sv_readdb(db_path, "produce_db.txt"        , ',',   4,  4+2*MAX_PRODUCE_RESOURCE, MAX_SKILL_PRODUCE_DB, skill_parse_row_producedb);
 	sv_readdb(db_path, "create_arrow_db.txt"   , ',', 1+2,  1+2*MAX_ARROW_RESOURCE, MAX_SKILL_ARROW_DB, skill_parse_row_createarrowdb);
 	sv_readdb(db_path, "abra_db.txt"           , ',',   4,  4, MAX_SKILL_ABRA_DB, skill_parse_row_abradb);
+	sv_readdb(db_path, "spellbook_db.txt"      , ',',   2,  2, MAX_SKILL_SPELLBOOK_DB, skill_parse_row_spellbookdb);
 }
 
 void skill_reload (void)
