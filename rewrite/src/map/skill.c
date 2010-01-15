@@ -3364,7 +3364,10 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 				bl_list[i] = map_id2bl(map_pickrandominrange(skill_area_sub, bl_list[i - 1], 3, 1, bl_list[i - 1]->id,
 					BL_CHAR|BL_SKILL, src, skillid, skilllv, 0, flag|BCT_ENEMY|1, skill_castend_damage_id));
 			for( i = 0; i < skilllv + 4; i ++ )
-				skill_addtimerskill(src, gettick() + i * 500, bl_list[i] ? bl_list[i]->id : 0, 0, 0, skillid, skilllv, 0, 0);
+			{
+				if( !bl_list[i] || (bl_list[i] && battle_check_target(src, bl_list[i], BCT_ENEMY) > 0) )
+					skill_addtimerskill(src, gettick() + i * 500, bl_list[i] ? bl_list[i]->id : 0, 0, 0, skillid, skilllv, 0, 0);
+			}
 		}
 		break;
 

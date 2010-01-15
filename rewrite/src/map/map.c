@@ -1213,17 +1213,15 @@ int map_foreachinmap(int (*func)(struct block_list*,va_list), int m, int type,..
 
 /*==========================================
  * Adapted from foreachinrange [LimitLine]
- * Used to pick 'max' random targets.
- * Unlike other map_foreach functions, this one
- * will return the ID of the last bl processed
- * (currently needed by Chain Lightning).
- * max = max number of bl's it'll pick.
- * ignore_id = if set, it'll ignore the given bl id.
+ * Use it to pick 'max' random targets.
+ * Unlike other map_foreach* functions, this
+ * will return the ID of the last bl processed.
+ * max = max number of bl's it'll operate on.
+ * ignore_id = if set, the bl with the given ID will be ignored.
  *------------------------------------------*/
 int map_pickrandominrange(int (*func)(struct block_list*,va_list), struct block_list* center, int range, int max, int ignore_id, int type, ...)
 {
 	int bx,by,m;
-	int returnCount =0;	//total sum of returned values of func() [Skotlex]
 	struct block_list *bl;
 	int blockcount=bl_list_count,i;
 	int x0,x1,y0,y1;
@@ -1235,37 +1233,42 @@ int map_pickrandominrange(int (*func)(struct block_list*,va_list), struct block_
 	x1 = min(center->x+range, map[m].xs-1);
 	y1 = min(center->y+range, map[m].ys-1);
 	
-	if (type&~BL_MOB)
-		for (by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++) {
-			for(bx = x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx++) {
-				for( bl = map[m].block[bx+by*map[m].bxs] ; bl != NULL ; bl = bl->next )
+	if( type & ~BL_MOB )
+		for( by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by ++ )
+		{
+			for( bx = x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx ++ )
+			{
+				for( bl = map[m].block[bx+by*map[m].bxs]; bl != NULL ; bl = bl->next )
 				{
-					if( bl->type&type
-						&& bl->x>=x0 && bl->x<=x1 && bl->y>=y0 && bl->y<=y1
+					if( bl->type & type
+						&& bl->x >= x0 && bl->x <= x1 && bl->y >= y0 && bl->y <= y1
 #ifdef CIRCULAR_AREA
 						&& check_distance_bl(center, bl, range)
 #endif
-					  	&& bl_list_count<BL_LIST_MAX)
-						bl_list[bl_list_count++]=bl;
-				}
-			}
-		}
-	if(type&BL_MOB)
-		for(by=y0/BLOCK_SIZE;by<=y1/BLOCK_SIZE;by++){
-			for(bx=x0/BLOCK_SIZE;bx<=x1/BLOCK_SIZE;bx++){
-				for( bl = map[m].block_mob[bx+by*map[m].bxs] ; bl != NULL ; bl = bl->next )
-				{
-					if( bl->x>=x0 && bl->x<=x1 && bl->y>=y0 && bl->y<=y1
-#ifdef CIRCULAR_AREA
-						&& check_distance_bl(center, bl, range)
-#endif
-						&& bl_list_count<BL_LIST_MAX)
-						bl_list[bl_list_count++]=bl;
+					  	&& bl_list_count < BL_LIST_MAX )
+						bl_list[bl_list_count ++] = bl;
 				}
 			}
 		}
 
-	if(bl_list_count>=BL_LIST_MAX)
+	if( type & BL_MOB )
+		for( by=y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by ++ )
+		{
+			for( bx = x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx ++ )
+			{
+				for( bl = map[m].block_mob[bx+by*map[m].bxs]; bl != NULL; bl = bl->next )
+				{
+					if( bl->x >= x0 && bl->x <= x1 && bl->y >= y0 && bl->y <= y1
+#ifdef CIRCULAR_AREA
+						&& check_distance_bl(center, bl, range)
+#endif
+						&& bl_list_count < BL_LIST_MAX )
+						bl_list[bl_list_count ++] = bl;
+				}
+			}
+		}
+
+	if( bl_list_count >= BL_LIST_MAX )
 		ShowWarning("map_pickrandominrange: block count too many!\n");
 
 	for( i = 0; i < 2 * bl_list_count; i++ )
@@ -1290,7 +1293,7 @@ int map_pickrandominrange(int (*func)(struct block_list*,va_list), struct block_
 		{
 			va_list ap;
 			va_start(ap, type);
-			returnCount += func(bl_list[i], ap);
+			func(bl_list[i], ap);
 			va_end(ap);
 			count ++;
 		}
@@ -1298,10 +1301,11 @@ int map_pickrandominrange(int (*func)(struct block_list*,va_list), struct block_
 			break;	// Limit the number of targets processed. [LimitLine]
 	}
 
-	map_freeblock_unlock();	// ‰ð•ú‚ð‹–‰Â‚·‚é
+	map_freeblock_unlock();
 
 	bl_list_count = blockcount;
-	return bl_list[i]->id;	// Return last target hit's ID for Chain Lightning. [LimitLine]
+	return bl_list[i]?bl_list[i]->id:0;	// Return last target hit's ID for Chain Lightning. [LimitLine]
+
 }
 
 /// Generates a new flooritem object id from the interval [MIN_FLOORITEM, MAX_FLOORITEM).
