@@ -5,6 +5,12 @@
 // 	- Details.
 //========================================
 
+01/15/2010
+	r101 [LimitLine]
+	* Fixed Chain Lightning hitting allies.
+	* Fixed Freezing duration trough Frost Misty.
+	* Fixed Demonic Fire hitting everyone.
+
 01/11/2010
 	r100 [Jobbie]
 	* Added RA_CAMOUFLAGE skill.
