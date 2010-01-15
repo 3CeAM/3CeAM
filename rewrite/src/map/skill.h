@@ -18,6 +18,7 @@ struct status_change_entry;
 #define MAX_SKILL_ARROW_DB		150
 #define MAX_ARROW_RESOURCE		5
 #define MAX_SKILL_ABRA_DB		350
+#define MAX_SKILL_SPELLBOOK_DB	MAX_SKILL
 
 #define MAX_SKILL_LEVEL 100
 
@@ -206,6 +207,11 @@ struct s_skill_abra_db {
 	int per;
 };
 extern struct s_skill_abra_db skill_abra_db[MAX_SKILL_ABRA_DB];
+
+struct s_skill_spellbook_db {
+	int points;
+};
+extern struct s_skill_spellbook_db skill_spellbook_db[MAX_SKILL_SPELLBOOK_DB];
 
 extern int enchant_eff[5];
 extern int deluge_eff[5];
