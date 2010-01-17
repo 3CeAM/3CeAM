@@ -3790,7 +3790,7 @@ static signed short status_calc_flee2(struct block_list *bl, struct status_chang
 	if(sc->data[SC_WHISTLE])
 		flee2 += sc->data[SC_WHISTLE]->val3*10;
 	if(sc->data[SC__UNLUCKY])
-		flee2 += flee2 * sc->data[SC__UNLUCKY]->val3 / 100;
+		flee2 -= flee2 * sc->data[SC__UNLUCKY]->val3 / 100;
 
 	return (short)cap_value(flee2,10,SHRT_MAX);
 }
@@ -4182,7 +4182,7 @@ static short status_calc_aspd_rate(struct block_list *bl, struct status_change *
 	if( sc->data[SC__INVISIBILITY] )
 		aspd_rate += aspd_rate * sc->data[SC__INVISIBILITY]->val2 / 100;
 	if( sc->data[SC__GROOMY] )
-		aspd_rate += aspd_rate * sc->data[SC__GROOMY]->val3 / 100;
+		aspd_rate += aspd_rate * sc->data[SC__GROOMY]->val2 / 100;
 
 	return (short)cap_value(aspd_rate,0,SHRT_MAX);
 }
@@ -4776,7 +4776,7 @@ void status_change_init(struct block_list *bl)
 //the flag values are the same as in status_change_start.
 int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int tick, int flag)
 {
-	int sc_def, tick_def = 0;
+	int sc_def = 0, tick_def = 0;
 	struct status_data* status;
 	struct status_change* sc;
 	struct map_session_data *sd;
@@ -4861,11 +4861,6 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 	case SC_BITE:
 		if(!sd) tick -= status->agi / 10;
 		break;*/
-	case SC_MAGICMIRROR:
-	case SC_ARMORCHANGE:
-		if (sd) //Duration greatly reduced for players.
-			tick /= 15;
-		//No defense against it (buff).
 	case SC__ENERVATION:
 	case SC__GROOMY:
 	case SC__IGNORANCE:
@@ -4876,6 +4871,11 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 		if( sd )
 			sc_def += sd->status.base_level / 20;
 		break;
+	case SC_MAGICMIRROR:
+	case SC_ARMORCHANGE:
+		if (sd) //Duration greatly reduced for players.
+			tick /= 15;
+		//No defense against it (buff).
 	default:
 		//Effect that cannot be reduced? Likely a buff.
 		if (!(rand()%10000 < rate))
@@ -6379,8 +6379,8 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 				pc_delspiritball(sd,sd->spiritball,0);
 			break;
 		case SC__GROOMY:
-			val2 = 5 * val1;
-			val3 = 10 + 2 * val1;
+			val2 = 20 + 10 * val1; //ASPD. Need to confirm if Movement Speed reduction is the same. [Jobbie]
+			val3 = 20 * val1; //HIT
 			val_flag |= 1|2|4;			
 			if( sd )
 			{
@@ -6409,7 +6409,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			}
 			break;
 		case SC__WEAKNESS:
-			val2 = 2 * val1;
+			val2 = 10 * val1;
 			val_flag |= 1|2;
 			skill_strip_equip(bl,EQP_WEAPON|EQP_SHIELD,100,val1,tick);
 			break;
