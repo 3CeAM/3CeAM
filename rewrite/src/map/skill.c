@@ -1034,7 +1034,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 
 	case SO_CLOUD_KILL:
 		sc_start(bl, SC_POISON, 10 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));	// Need official rate. [LimitLine]
-		if( tstatus && tstatus->mode & ~MB_BOSS )	// Boss monsters should be immune to elemental change trough Cloud Kill. Confirm this. [LimitLine]
+		if( tstatus->mode&MD_BOSS )	// Boss monsters should be immune to elemental change trough Cloud Kill. Confirm this. [LimitLine]
 			sc_start2(bl, SC_ELEMENTALCHANGE, 10 + 10 * skilllv, skilllv, 5, skill_get_time2(skillid, skilllv));	// Need official rate. [LimitLine]
 		break;
 
