@@ -6663,9 +6663,13 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SC_WEAKNESS:
 		if( tsc && tsc->data[type] )
 		{
-			if( sd )
-				clif_skill_fail(sd,skillid,0,0);
-			return 0;
+			if( sd ) clif_skill_fail(sd,skillid,0,0);
+			break;
+		}
+		if( skillid == SC_WEAKNESS && (tsc && tsc->data[SC_CP_WEAPON]) )
+		{
+			clif_skill_fail(sd,skillid,0,0);
+			break;
 		}
 		clif_skill_nodamage(src,bl,skillid,0,
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));

@@ -6,6 +6,11 @@
 //========================================
 
 01/17/2010
+	r117 [Jobbie]
+	* Fixed Groomy, Weakness, Unlucky status regarding its calculation.
+	* Fixed Weakness should not strip weapon if the player is under chemical protection.
+	* An initialization of "0" to sc_def to avoid warning message in some case.
+
 	r116 [Jobbie]
 	* Fixed an issue which other client from 20091118 doesn't show cast bar.
 	* Fixed the define client version in mmo.h which causes client crash when someone pm'ed you.
