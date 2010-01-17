@@ -32,7 +32,7 @@
 // 20091103 - 2009-11-03aRagexeRE+ - 0x7fb
 #ifndef PACKETVER
 	//#define PACKETVER	20081126
-	#define PACKETVER 20091103
+	#define PACKETVER 20091104
 #endif
 // backward compatible PACKETVER 8 and 9
 #if PACKETVER == 8

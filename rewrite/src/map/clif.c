@@ -4325,7 +4325,7 @@ int clif_skillcasting(struct block_list* bl,
 	unsigned char buf[32];
 	int cmd = 0x13e;
 
-#if PACKETVER >= 20091103
+#if PACKETVER >= 20091118
 	cmd = 0x7fb;
 #endif
 
@@ -4337,7 +4337,7 @@ int clif_skillcasting(struct block_list* bl,
 	WBUFW(buf,14) = skill_num;
 	WBUFL(buf,16) = pl<0?0:pl; //Avoid sending negatives as element [Skotlex]
 	WBUFL(buf,20) = casttime;
-#if PACKETVER >= 20091103
+#if PACKETVER >= 20091118
 	WBUFB(buf,24) = 0; // flag?
 #endif
 	if (disguised(bl)) {
