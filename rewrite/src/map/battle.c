@@ -3404,20 +3404,19 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		}
 	}
 
-
 	if( tsc && tsc->data[SC__SHADOWFORM] && damage > 0 )
 	{
 		struct block_list *s_bl = map_id2bl(tsc->data[SC__SHADOWFORM]->val2);
 		if( s_bl && !status_isdead(s_bl) )
 		{
-			clif_damage(s_bl, s_bl, tick, wd.amotion, wd.dmotion, wd.damage, wd.div_ , wd.type, wd.damage2);
+			clif_damage(s_bl, s_bl, tick, wd.amotion, wd.dmotion, damage, wd.div_ , wd.type, wd.damage2);
 			status_fix_damage(NULL, s_bl, damage, 0);
 			tsc->data[SC__SHADOWFORM]->val3--;
 			if( tsc->data[SC__SHADOWFORM]->val3 <= 0 || status_isdead(s_bl) )
 			{
 				status_change_end(target, SC__SHADOWFORM, -1);
-				if( tsd )
-					tsd->shadowform_id = 0;
+				if( s_bl->type == BL_PC )
+					((TBL_PC*)s_bl)->shadowform_id = 0;
 			}
 		}
 	}
@@ -3464,7 +3463,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			int r_skill, r_lv;
 			if( (r_skill = sd->status.skill[sc->data[SC__AUTOSHADOWSPELL]->val1].id) != 0 && r_skill <= NJ_ISSEN )
 			{
-				if( rand()%1000 >= sc->data[SC__AUTOSHADOWSPELL]->val3 )
+				if( rand()%1000 < sc->data[SC__AUTOSHADOWSPELL]->val3 )
 				{
 					r_lv = sd->status.skill[sc->data[SC__AUTOSHADOWSPELL]->val1].lv;
 					switch ( skill_get_casttype(r_skill) )
@@ -3483,8 +3482,6 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			}
 		}
 	}
-
-
 
 	if (sd) {
 		if (wd.flag & BF_WEAPON && src != target && damage > 0) {

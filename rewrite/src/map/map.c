@@ -434,19 +434,30 @@ int map_moveblock(struct block_list *bl, int x1, int y1, unsigned int tick)
 		if( sc && sc->data[SC__SHADOWFORM] )
 		{
 			struct map_session_data *s_sd = map_id2sd(sc->data[SC__SHADOWFORM]->val2);
-			if( s_sd && !check_distance_bl(bl,&s_sd->bl,skill_get_range(SC_SHADOWFORM,sc->data[SC__SHADOWFORM]->val1)) )
-			{
-				status_change_end(bl,SC__SHADOWFORM,-1);
-				s_sd->shadowform_id = 0;
+			if( s_sd )
+			{ 
+				if( !check_distance_bl(bl,&s_sd->bl,skill_get_range(SC_SHADOWFORM,sc->data[SC__SHADOWFORM]->val1)) )
+				{
+					status_change_end(bl,SC__SHADOWFORM,-1);
+					s_sd->shadowform_id = 0;
+				}
 			}
 		}
-		if( ((TBL_PC*)bl)->shadowform_id > 0 )
+		if( bl->type == BL_PC )
 		{
-			struct block_list *s_bl = map_id2bl(((TBL_PC*)bl)->shadowform_id);
-			if( s_bl && !check_distance_bl(bl,s_bl,skill_get_range(SC_SHADOWFORM,1)) ) // Asume lvl 1.
+			if( ((TBL_PC*)bl)->shadowform_id > 0 )
 			{
-				((TBL_PC*)bl)->shadowform_id = 0;
-				status_change_end(s_bl,SC__SHADOWFORM,-1);
+				struct block_list *s_bl = map_id2bl(((TBL_PC*)bl)->shadowform_id);
+				if( s_bl )
+				{
+					if( s_bl->m != bl->m || !check_distance_bl(bl,s_bl,skill_get_range(SC_SHADOWFORM,1)) ) // Asume lvl 1.
+					{
+						((TBL_PC*)bl)->shadowform_id = 0;
+						status_change_end(s_bl,SC__SHADOWFORM,-1);
+					}
+				}
+				else
+					((TBL_PC *)bl)->shadowform_id = 0;
 			}
 		}
 		skill_unit_move(bl,tick,3);

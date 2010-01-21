@@ -380,6 +380,10 @@ int can_copy (struct map_session_data *sd, int skillid, struct block_list* bl)
 	if ((skillid == AL_INCAGI || skillid == AL_BLESSING || skillid == CASH_BLESSING || skillid == CASH_INCAGI))
 		return 0;
 
+	// Couldn't preserve 3rd Class skills except only when using Reproduce skill. [Jobbie]
+	if ( sd && !(sd->sc.data[SC__REPRODUCE]) && (skillid >= RK_ENCHANTBLADE && skillid <= SR_RIDEINLIGHTNING))
+		return 0;
+
 	return 1;
 }
 
@@ -570,7 +574,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 						(sd->addeff[i].flag&ATF_MAGIC && attack_type&BF_MAGIC) ||
 						(sd->addeff[i].flag&ATF_MISC && attack_type&BF_MISC) ) ;
 					else
-						continue; 
+						continue;
 				}
 
 				if( (sd->addeff[i].flag&(ATF_LONG|ATF_SHORT)) != (ATF_LONG|ATF_SHORT) )
@@ -1956,8 +1960,8 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 			if( sc->data[SC__SHADOWFORM]->val3 <= 0 || status_isdead(s_bl) )
 			{
 				status_change_end(bl, SC__SHADOWFORM, -1);
-				if( tsd )
-					tsd->shadowform_id = 0;
+				if( s_bl->type == BL_PC )
+					((TBL_PC*)s_bl)->shadowform_id = 0;
 			}
 		}
 	}
@@ -2023,7 +2027,6 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 			tsd->status.skill[skillid].flag = 13;//cloneskill flag
 			pc_setglobalreg(tsd, "CLONE_SKILL", skillid);
 			pc_setglobalreg(tsd, "CLONE_SKILL_LV", lv);
-			//clif_skillinfoblock(tsd);
 			clif_addskill(tsd,skillid);
 		}
 	}
