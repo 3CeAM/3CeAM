@@ -6,6 +6,15 @@
 //========================================
 
 01/21/2010
+	r131 [Rytech]
+	*Full checkup and updates to trunk branch
+	-Corrected job MAP ID's in the const.txt
+	-Updated the item_db2, mob_db2, job_db2, skill_require_db, skill_tree with all data from the stable branch
+	-Updated the skill_cast_db, skill_db by adding missing lines and cleaning up
+	-Readded Gangsi, Death Knight, and Dark Collector job mask support for items
+	-Add a skill tag to skill.h
+
+01/21/2010
 	r130 [pakpil]
 	* Fixed some mistake in SC_SHADOWFORM.
 	* Minor typo fixed.

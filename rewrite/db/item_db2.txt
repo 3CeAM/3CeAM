@@ -76,10 +76,10 @@
 16003,Kalga_Mace,Kalga Mace,4,10,,1500,175,,1,2,0x0004C580,24,2,2,3,100,1,8,{},{},{}
 
 // Mechanic Mado Weapons
-1549,Pile_Bunker,Pile Bunker,4,10,,3000,450,,1,0,0x04000000,24,2,2,3,99,0,23,{},{},{}
+1549,Pile_Bunker,Pile Bunker,4,10,,3000,450,,1,0,0x00000400,24,2,2,3,99,0,23,{},{},{}
 
 // Mechanic Mado Side Arm Weapons
-2139,Flame_Thrower,Flame Thrower,5,20000,,2000,,5,,0,0xFFFFFFFF,24,2,32,,99,0,5,{},{},{}
+2139,Flame_Thrower,Flame Thrower,5,20000,,2000,,5,,0,0x00000400,24,2,32,,99,0,5,{},{},{}
 //2140,Energy_Rune_Guard,Energy Rune Guard,3,10,,10,,,,,,,,,,,,,{},{},{}
 
 //2794,Magic_Stone_Ring,Magic Stone Ring,3,10,,10,,,,,,,,,,,,,{},{},{}
@@ -89,17 +89,17 @@
 //2798,Test_Item_1,Test Item 1,3,10,,10,,,,,,,,,,,,,{},{},{}
 
 // Mechanic Mado Accessorys
-2800,Acceleration_Gear,Acceleration Gear,5,100000,,100,,0,,1,0x04000000,24,2,136,,99,0,0,{ bonus bAgi,2; bonus bSpeedRate,5; },{},{}
-2801,Hovering_Booster,Hovering Booster,5,100000,,100,,0,,1,0x04000000,24,2,136,,99,0,0,{ bonus bAgi,1; bonus bAspdRate,2; },{},{}
-2802,Self_Destruct_Device,Self Destruct Device,5,500000,,1000,,0,,1,0x04000000,24,2,136,,99,0,0,{ bonus bMaxHP,100; },{},{}
-2803,Shape_Shift,Shape Shift,5,100000,,500,,0,,1,0x04000000,24,2,136,,99,0,0,{ bonus bInt,3; },{},{}
-2804,Cooling_System,Cooling System,5,100000,,2500,,0,,1,0xFFFFFFFF,24,2,136,,99,0,0,{ bonus bDex,1; bonus3 bAutoSpellWhenHit,"WZ_FROSTNOVA",3,100;},{},{}
-2805,Magnetic_Field_Generator,Magnetic Field Generator,5,100000,,6000,,0,,1,0x04000000,24,2,136,,99,0,0,{ bonus bDex,1; bonus3 bAutoSpellWhenHit,"MG_THUNDERSTORM",5,100; },{},{}
-2806,Barrier_Device,Barrier Device,5,150000,,8000,,0,,1,0x04000000,24,2,136,,99,0,0,{ bonus bDex,1; bonus3 bAutoSpellWhenHit,"AL_PNEUMA",1,100;},{},{}
-2807,Repair_Kit,Repair Kit,5,200000,,400,,0,,1,0x04000000,24,2,136,,99,0,0,{ bonus bMaxHP,500; bonus bMaxSP,200; },{},{}
-2808,Optical_Camouflage_Generator,Optical Camouflage Generator,5,10,,1000,,0,,1,0x04000000,24,2,136,,99,0,0,{ bonus bAgi,3; },{},{}
-2809,Advanced_Cooling_System,Advanced Cooling System,5,10,,10,,0,,1,0xFFFFFFFF,24,2,136,,99,0,0,{ bonus bDex,1; },{},{}
-2810,Special_Cooling_System,Special Cooling System,5,10,,10,,0,,1,0x04000000,24,2,136,,99,0,0,{ bonus bDex,1; },{},{}
+2800,Acceleration_Gear,Acceleration Gear,5,100000,,100,,0,,1,0x00000400,24,2,136,,99,0,0,{ bonus bAgi,2; bonus bSpeedRate,5; },{},{}
+2801,Hovering_Booster,Hovering Booster,5,100000,,100,,0,,1,0x00000400,24,2,136,,99,0,0,{ bonus bAgi,1; bonus bAspdRate,2; },{},{}
+2802,Self_Destruct_Device,Self Destruct Device,5,500000,,1000,,0,,1,0x00000400,24,2,136,,99,0,0,{ bonus bMaxHP,100; },{},{}
+2803,Shape_Shift,Shape Shift,5,100000,,500,,0,,1,0x00000400,24,2,136,,99,0,0,{ bonus bInt,3; },{},{}
+2804,Cooling_System,Cooling System,5,100000,,2500,,0,,1,0x00000400,24,2,136,,99,0,0,{ bonus bDex,1; bonus3 bAutoSpellWhenHit,"WZ_FROSTNOVA",3,100;},{},{}
+2805,Magnetic_Field_Generator,Magnetic Field Generator,5,100000,,6000,,0,,1,0x00000400,24,2,136,,99,0,0,{ bonus bDex,1; bonus3 bAutoSpellWhenHit,"MG_THUNDERSTORM",5,100; },{},{}
+2806,Barrier_Device,Barrier Device,5,150000,,8000,,0,,1,0x00000400,24,2,136,,99,0,0,{ bonus bDex,1; bonus3 bAutoSpellWhenHit,"AL_PNEUMA",1,100;},{},{}
+2807,Repair_Kit,Repair Kit,5,200000,,400,,0,,1,0x00000400,24,2,136,,99,0,0,{ bonus bMaxHP,500; bonus bMaxSP,200; },{},{}
+2808,Optical_Camouflage_Generator,Optical Camouflage Generator,5,10,,1000,,0,,1,0x00000400,24,2,136,,99,0,0,{ bonus bAgi,3; },{},{}
+2809,Advanced_Cooling_System,Advanced Cooling System,5,10,,10,,0,,1,0x00000400,24,2,136,,99,0,0,{ bonus bDex,1; },{},{}
+2810,Special_Cooling_System,Special Cooling System,5,10,,10,,0,,1,0x00000400,24,2,136,,99,0,0,{ bonus bDex,1; },{},{}
 
 5516,Hawkeye_1,Hawkeye 1,3,10,,10,,,,,,,,,,,,,{},{},{}
 5517,Hawkeye_2,Hawkeye 2,3,10,,10,,,,,,,,,,,,,{},{},{}
@@ -191,19 +191,19 @@
 6265,Pineapple,Pineapple,3,10,,10,,,,,,,,,,,,,{},{},{}
 
 // 3-2 Jobs Quest Items ???
-//6266,Test_Item_27,Test Item 27,3,10,,10,,,,,,,,,,,,,{},{},{}
-//6267,Test_Item_28,Test Item 28,3,10,,10,,,,,,,,,,,,,{},{},{}
-//6268,Test_Item_29,Test Item 29,3,10,,10,,,,,,,,,,,,,{},{},{}
-//6269,Test_Item_30,Test Item 30,3,10,,10,,,,,,,,,,,,,{},{},{}
-//6270,Test_Item_31,Test Item 31,3,10,,10,,,,,,,,,,,,,{},{},{}
-//6271,Test_Item_32,Test Item 32,3,10,,10,,,,,,,,,,,,,{},{},{}
-//6272,Test_Item_33,Test Item 33,3,10,,10,,,,,,,,,,,,,{},{},{}
-//6273,Test_Item_34,Test Item 34,3,10,,10,,,,,,,,,,,,,{},{},{}
-//6274,Test_Item_35,Test Item 35,3,10,,10,,,,,,,,,,,,,{},{},{}
-//6275,Test_Item_36,Test Item 36,3,10,,10,,,,,,,,,,,,,{},{},{}
-//6276,Test_Item_37,Test Item 37,3,10,,10,,,,,,,,,,,,,{},{},{}
-//6277,Test_Item_38,Test Item 38,3,10,,10,,,,,,,,,,,,,{},{},{}
-//6278,Test_Item_39,Test Item 39,3,10,,10,,,,,,,,,,,,,{},{},{}
+//6266,Test_Item_2,Test Item 2,3,10,,10,,,,,,,,,,,,,{},{},{}
+//6267,Test_Item_3,Test Item 3,3,10,,10,,,,,,,,,,,,,{},{},{}
+//6268,Test_Item_4,Test Item 4,3,10,,10,,,,,,,,,,,,,{},{},{}
+//6269,Test_Item_5,Test Item 5,3,10,,10,,,,,,,,,,,,,{},{},{}
+//6270,Test_Item_6,Test Item 6,3,10,,10,,,,,,,,,,,,,{},{},{}
+//6271,Test_Item_7,Test Item 7,3,10,,10,,,,,,,,,,,,,{},{},{}
+//6272,Test_Item_8,Test Item 8,3,10,,10,,,,,,,,,,,,,{},{},{}
+//6273,Test_Item_9,Test Item 9,3,10,,10,,,,,,,,,,,,,{},{},{}
+//6274,Test_Item_10,Test Item 10,3,10,,10,,,,,,,,,,,,,{},{},{}
+//6275,Test_Item_11,Test Item 11,3,10,,10,,,,,,,,,,,,,{},{},{}
+//6276,Test_Item_12,Test Item 12,3,10,,10,,,,,,,,,,,,,{},{},{}
+//6277,Test_Item_13,Test Item 13,3,10,,10,,,,,,,,,,,,,{},{},{}
+//6278,Test_Item_14,Test Item 14,3,10,,10,,,,,,,,,,,,,{},{},{}
 
 // Genetic Guide's And Manurals
 6279,Apple_Bomb_Guidebook,Apple Bomb Guidebook,3,10,,10,,,,,,,,,,,,,{},{},{}
@@ -302,15 +302,15 @@
 12724,Poison_Fatigue,Venom Bleed,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ sc_start SC_VENOMBLEED,15000,0; },{},{}
 
 // Rune Knight's Rune Stones
-12725,Runstone_Nosiege,Nauthiz Rune,11,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ if(Class == Job_Rune_Knight || Class == Job_Rune_Knight_T) itemskill "RK_REFRESH",1; end; },{},{}
-12726,Runstone_Rhydo,Raido Rune,11,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ if(Class == Job_Rune_Knight || Class == Job_Rune_Knight_T) itemskill "RK_CRUSHSTRIKE",1;  end; },{},{}
-12727,Runstone_Verkana,Berkana Rune,11,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ if(Class == Job_Rune_Knight || Class == Job_Rune_Knight_T) itemskill "RK_MILLENNIUMSHIELD",1;  end; },{},{}
-12728,Runstone_Isia,Isa Rune,11,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ if(Class == Job_Rune_Knight || Class == Job_Rune_Knight_T) itemskill "RK_VITALITYACTIVATION",1;  end; },{},{}
-12729,Runstone_Asir,Othila Rune,11,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ if(Class == Job_Rune_Knight || Class == Job_Rune_Knight_T) itemskill "RK_FIGHTINGSPIRIT",1;  end; },{},{}
-12730,Runstone_Urj,Uruz Rune,11,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ if(Class == Job_Rune_Knight || Class == Job_Rune_Knight_T) itemskill "RK_ABUNDANCE",1;  end; },{},{}
-12731,Runstone_Turisus,Thurisaz Rune,11,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ if(Class == Job_Rune_Knight || Class == Job_Rune_Knight_T) itemskill "RK_GIANTGROWTH",1;  end; },{},{}
-12732,Runstone_Pertz,Wyrd Rune,11,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ if(Class == Job_Rune_Knight || Class == Job_Rune_Knight_T) itemskill "RK_STORMBLAST",1;  end; },{},{}
-12733,Runstone_Hagalas,Hagalaz Rune,11,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ if(Class == Job_Rune_Knight || Class == Job_Rune_Knight_T) itemskill "RK_STONEHARDSKIN",1;  end; },{},{}
+12725,Runstone_Nosiege,Nauthiz Rune,11,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ if(Class == Job_Rune_Knight || Class == Job_Rune_Knight_T) itemskill "RK_REFRESH",1; },{},{}
+12726,Runstone_Rhydo,Raido Rune,11,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ if(Class == Job_Rune_Knight || Class == Job_Rune_Knight_T) itemskill "RK_CRUSHSTRIKE",1; },{},{}
+12727,Runstone_Verkana,Berkana Rune,11,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ if(Class == Job_Rune_Knight || Class == Job_Rune_Knight_T) itemskill "RK_MILLENNIUMSHIELD",1; },{},{}
+12728,Runstone_Isia,Isa Rune,11,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ if(Class == Job_Rune_Knight || Class == Job_Rune_Knight_T) itemskill "RK_VITALITYACTIVATION",1; },{},{}
+12729,Runstone_Asir,Othila Rune,11,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ if(Class == Job_Rune_Knight || Class == Job_Rune_Knight_T) itemskill "RK_FIGHTINGSPIRIT",1; },{},{}
+12730,Runstone_Urj,Uruz Rune,11,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ if(Class == Job_Rune_Knight || Class == Job_Rune_Knight_T) itemskill "RK_ABUNDANCE",1; },{},{}
+12731,Runstone_Turisus,Thurisaz Rune,11,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ if(Class == Job_Rune_Knight || Class == Job_Rune_Knight_T) itemskill "RK_GIANTGROWTH",1; },{},{}
+12732,Runstone_Pertz,Wyrd Rune,11,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ if(Class == Job_Rune_Knight || Class == Job_Rune_Knight_T) itemskill "RK_STORMBLAST",1; },{},{}
+12733,Runstone_Hagalas,Hagalaz Rune,11,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ if(Class == Job_Rune_Knight || Class == Job_Rune_Knight_T) itemskill "RK_STONEHARDSKIN",1; },{},{}
 
 // Rune Knight Rune Ores
 12734,Runstone_Quality,Luxurious Rune,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ makerune 24,1; },{},{}
@@ -368,8 +368,70 @@
 //16265,High_Density_Kalunium(10),
 
 // Mechanic Mado Gear Cannonball Ammo
-18000,Cannon_Ball,Cannon Ball,10,100,,10,100,,,,0x04000000,24,2,32768,,1,,3,{},{},{}
-18001,Holy_Cannon_Ball,Holy Cannon Ball,10,200,,10,120,,,,0x04000000,24,2,32768,,1,,3,{ bonus bAtkEle,Ele_Holy; },{},{}
-18002,Dark_Cannon_Ball,Dark Cannon Ball,10,200,,10,120,,,,0x04000000,24,2,32768,,1,,3,{ bonus bAtkEle,Ele_Dark; },{},{}
-18003,Soul_Cannon_Ball,Soul Cannon Ball,10,200,,10,120,,,,0x04000000,24,2,32768,,1,,3,{ bonus bAtkEle,Ele_Ghost; },{},{}
-18004,Iron_Cannon_Ball,Iron Cannon Ball,10,500,,10,250,,,,0x04000000,24,2,32768,,1,,3,{},{},{}
+18000,Cannon_Ball,Cannon Ball,10,100,,10,100,,,,0x00000400,24,2,32768,,1,,3,{},{},{}
+18001,Holy_Cannon_Ball,Holy Cannon Ball,10,200,,10,120,,,,0x00000400,24,2,32768,,1,,3,{ bonus bAtkEle,Ele_Holy; },{},{}
+18002,Dark_Cannon_Ball,Dark Cannon Ball,10,200,,10,120,,,,0x00000400,24,2,32768,,1,,3,{ bonus bAtkEle,Ele_Dark; },{},{}
+18003,Soul_Cannon_Ball,Soul Cannon Ball,10,200,,10,120,,,,0x00000400,24,2,32768,,1,,3,{ bonus bAtkEle,Ele_Ghost; },{},{}
+18004,Iron_Cannon_Ball,Iron Cannon Ball,10,500,,10,250,,,,0x00000400,24,2,32768,,1,,3,{},{},{}
+
+// New Weapons In Work And Testing
+1196,Chrome_Metal_Two-Hand_Sword,Chrome Metal Two-Hand Sword,4,10,,400,280,,1,0,0x00004080,24,2,34,3,110,1,3,{},{},{}
+1433,Imperial_Spear,Imperial Spear,4,10,,1800,180,,3,1,0x00004000,24,2,2,3,102,1,2,{},{},{}
+1654,Mental_Stick,Mental Stick,4,10,,500,40,,1,1,0x00010000,24,2,2,3,102,1,10,{},{},{}
+1830,Great_King's_Dance,Great King's Dance,4,10,,500,142,,1,1,0x00008000,24,2,2,3,102,1,12,{},{},{}
+1930,Green_Whistle,Green Whistle,4,10,,800,170,,1,1,0x00080000,24,1,2,3,102,1,13,{},{},{}
+1984,Stem_Whip,Stem Whip,4,10,,800,170,,2,1,0x00080000,24,0,2,3,102,1,14,{},{},{}
+1985,Rose_Vine,Rose Vine,4,10,,1000,100,,2,0,0x00080000,24,0,2,4,110,1,14,{},{},{}
+2153,Imperial_Guard,Imperial Guard,5,10,,2500,,12,,1,0x00004000,24,2,32,,102,1,3,{},{},{}
+13061,Black_Wing,Black Wing,4,10,,600,142,,1,1,0x00020000,24,2,2,3,102,1,1,{},{},{}
+13062,Ancient_Dagger,Ancient Dagger,4,10,,600,107,,1,0,0x000F5E80,24,2,2,4,120,1,1,{},{},{}
+13431,Chrome_Metal_Sword,Chrome Metal Sword,4,10,,2200,180,,1,0,0x00004080,24,2,2,3,110,1,2,{},{},{}
+16010,Red_Ether_Bag,Red Ether Bag,4,10,,1000,15,,1,1,0x00040000,24,2,2,3,102,1,8,{},{},{}
+18103,Mystic_Bow,Mystic Bow,4,10,,1700,75,,5,0,0x00080800,24,2,34,3,105,1,11,{},{},{}
+
+// New Test Items
+2463,Test_Item_23,Test Item 23,3,10,,10,,,,,,,,,,,,,{},{},{}
+2465,Test_Item_24,Test Item 24,3,10,,10,,,,,,,,,,,,,{},{},{}
+2564,Test_Item_25,Test Item 25,3,10,,10,,,,,,,,,,,,,{},{},{}
+2843,Test_Item_26,Test Item 26,3,10,,10,,,,,,,,,,,,,{},{},{}
+2844,Test_Item_27,Test Item 27,3,10,,10,,,,,,,,,,,,,{},{},{}
+2853,Test_Item_28,Test Item 28,3,10,,10,,,,,,,,,,,,,{},{},{}
+2854,Test_Item_29,Test Item 29,3,10,,10,,,,,,,,,,,,,{},{},{}
+4760,Test_Item_30,Test Item 30,3,10,,10,,,,,,,,,,,,,{},{},{}
+4761,Test_Item_31,Test Item 31,3,10,,10,,,,,,,,,,,,,{},{},{}
+4762,Test_Item_32,Test Item 32,3,10,,10,,,,,,,,,,,,,{},{},{}
+4763,Test_Item_33,Test Item 33,3,10,,10,,,,,,,,,,,,,{},{},{}
+4764,Test_Item_34,Test Item 34,3,10,,10,,,,,,,,,,,,,{},{},{}
+4765,Test_Item_35,Test Item 35,3,10,,10,,,,,,,,,,,,,{},{},{}
+4766,Test_Item_36,Test Item 36,3,10,,10,,,,,,,,,,,,,{},{},{}
+4767,Test_Item_37,Test Item 37,3,10,,10,,,,,,,,,,,,,{},{},{}
+5742,Test_Item_38,Test Item 38,3,10,,10,,,,,,,,,,,,,{},{},{}
+6304,Test_Item_39,Test Item 39,3,10,,10,,,,,,,,,,,,,{},{},{}
+6305,Test_Item_40,Test Item 40,3,10,,10,,,,,,,,,,,,,{},{},{}
+6306,Test_Item_41,Test Item 41,3,10,,10,,,,,,,,,,,,,{},{},{}
+6307,Test_Item_42,Test Item 42,3,10,,10,,,,,,,,,,,,,{},{},{}
+6308,Test_Item_43,Test Item 43,3,10,,10,,,,,,,,,,,,,{},{},{}
+6319,Test_Item_44,Test Item 44,3,10,,10,,,,,,,,,,,,,{},{},{}
+6321,Test_Item_45,Test Item 45,3,10,,10,,,,,,,,,,,,,{},{},{}
+6322,Test_Item_46,Test Item 46,3,10,,10,,,,,,,,,,,,,{},{},{}
+6323,Test_Item_47,Test Item 47,3,10,,10,,,,,,,,,,,,,{},{},{}
+6324,Test_Item_48,Test Item 48,3,10,,10,,,,,,,,,,,,,{},{},{}
+6325,Test_Item_49,Test Item 49,3,10,,10,,,,,,,,,,,,,{},{},{}
+6326,Test_Item_50,Test Item 50,3,10,,10,,,,,,,,,,,,,{},{},{}
+6328,Test_Item_51,Test Item 51,3,10,,10,,,,,,,,,,,,,{},{},{}
+6329,Test_Item_52,Test Item 52,3,10,,10,,,,,,,,,,,,,{},{},{}
+6330,Test_Item_53,Test Item 53,3,10,,10,,,,,,,,,,,,,{},{},{}
+6331,Test_Item_54,Test Item 54,3,10,,10,,,,,,,,,,,,,{},{},{}
+6332,Test_Item_55,Test Item 55,3,10,,10,,,,,,,,,,,,,{},{},{}
+6333,Test_Item_56,Test Item 56,3,10,,10,,,,,,,,,,,,,{},{},{}
+6334,Test_Item_57,Test Item 57,3,10,,10,,,,,,,,,,,,,{},{},{}
+6335,Test_Item_58,Test Item 58,3,10,,10,,,,,,,,,,,,,{},{},{}
+6336,Test_Item_59,Test Item 59,3,10,,10,,,,,,,,,,,,,{},{},{}
+6337,Test_Item_60,Test Item 60,3,10,,10,,,,,,,,,,,,,{},{},{}
+6338,Test_Item_61,Test Item 61,3,10,,10,,,,,,,,,,,,,{},{},{}
+6339,Test_Item_62,Test Item 62,3,10,,10,,,,,,,,,,,,,{},{},{}
+6340,Test_Item_63,Test Item 63,3,10,,10,,,,,,,,,,,,,{},{},{}
+6341,Test_Item_64,Test Item 64,3,10,,10,,,,,,,,,,,,,{},{},{}
+6342,Test_Item_65,Test Item 65,3,10,,10,,,,,,,,,,,,,{},{},{}
+6343,Test_Item_66,Test Item 66,3,10,,10,,,,,,,,,,,,,{},{},{}
+12492,Test_Item_67,Test Item 67,3,10,,10,,,,,,,,,,,,,{},{},{}
