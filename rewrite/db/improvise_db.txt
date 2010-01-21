@@ -1,0 +1,32 @@
+// Improvise DB.
+// Database for  skills that can be summoned trough Randomize Spell/Improvised Song (Minstrel/Wanderer Skill).
+// Format: SkillID
+
+// Mage Skills
+10// Sight
+11// Napalm Beat
+12// Safety Wall
+13// Soul Strike
+14// Cold Bolt
+15// Frost Diver
+16// Stone Curse
+17// Fire Ball
+18// Fire Wall
+19// Fire Bolt
+20// Lightning Bolt
+21// Thunderstorm
+
+// Wizard Skills
+80// Fire Pillar
+81// Sightrasher
+83// Meteor Storm
+84// Jupitel Thunder
+85// Lord of Vermilion
+86// Water Ball
+87// Ice Wall
+88// Frost Nova
+89// Storm Gust
+90// Earth Spike
+91// Heaven's Drive
+92// Quagmire
+93// Sense
