@@ -5,6 +5,10 @@
 // 	- Details.
 //========================================
 
+01/21/2010
+	r128 [pakpil]
+	* Fixed SC_AUTOSHADOWSPELL. bug report 54.
+
 01/17/2010
 	r117 [Jobbie]
 	* Fixed Groomy, Weakness, Unlucky status regarding its calculation.
