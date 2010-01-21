@@ -4044,6 +4044,20 @@ int pc_setpos(struct map_session_data* sd, unsigned short mapindex, int x, int y
 					delete_timer(sce->timer, status_change_timer);
 				sce->timer = add_timer(gettick() + skill_get_time(SG_KNOWLEDGE, sce->val1), status_change_timer, sd->bl.id, SC_KNOWLEDGE);
 			}
+			if (sd->sc.data[SC__SHADOWFORM])
+			{
+				struct map_session_data *s_sd = map_id2sd(sd->sc.data[SC__SHADOWFORM]->val2);
+				if( s_sd )
+					s_sd->shadowform_id = 0;					
+				status_change_end(&sd->bl,SC__SHADOWFORM,-1);
+			}
+		}
+		if (sd->shadowform_id)
+		{
+			struct block_list *s_bl = map_id2bl(sd->shadowform_id);
+			if( s_bl )
+				status_change_end(s_bl,SC__SHADOWFORM,-1);
+			sd->shadowform_id = 0;
 		}
 		if (battle_config.clear_unit_onwarp&BL_PC)
 			skill_clear_unitgroup(&sd->bl);
@@ -5710,14 +5724,14 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 	
 	if( sd->shadowform_id )
 	{
-		struct map_session_data *s_sd = map_id2sd(sd->shadowform_id);
-		if( s_sd ) status_change_end(&s_sd->bl,SC__SHADOWFORM,-1);
+		struct block_list *s_bl = map_id2bl(sd->shadowform_id);
+		if( s_bl ) status_change_end(s_bl,SC__SHADOWFORM,-1);
 		sd->shadowform_id = 0;
 	}
 
 	if( sd->sc.count && sd->sc.data[SC__SHADOWFORM] )
 	{
-		struct map_session_data *s_sd = map_id2sd(sd->shadowform_id);
+		struct map_session_data *s_sd = map_id2sd(sd->sc.data[SC__SHADOWFORM]->val2);
 		if( s_sd ) s_sd->shadowform_id = 0 ;
 	}
 
@@ -6741,7 +6755,8 @@ int pc_setriding(TBL_PC* sd, int flag)
 	switch( class_ )
 	{
 		case JOB_KNIGHT: case JOB_KNIGHT2: case JOB_CRUSADER: case JOB_CRUSADER2:
-		case JOB_LORD_KNIGHT: case JOB_PALADIN: case JOB_ROYAL_GUARD: case JOB_ROYAL_GUARD2: 
+		case JOB_LORD_KNIGHT: case JOB_PALADIN:  case JOB_BABY_KNIGHT: case JOB_BABY_KNIGHT2:
+		case JOB_BABY_CRUSADER: case JOB_BABY_CRUSADER2: case JOB_ROYAL_GUARD: case JOB_ROYAL_GUARD2: 
 		case JOB_ROYAL_GUARD_T: case JOB_ROYAL_GUARD_T2:
 			option = OPTION_RIDING;
 			skillnum = KN_RIDING;

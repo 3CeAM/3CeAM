@@ -1389,12 +1389,12 @@ int atcommand_jobchange(const int fd, struct map_session_data* sd, const char* c
 			clif_displaymessage(fd, "4021 Gypsy");
 			clif_displaymessage(fd, "----- 3rd Class (Regular to 3rd) -----");
 			clif_displaymessage(fd, "4054 Rune Knight    4055 Warlock        4056 Ranger         4057 Arch Bishop");
-			clif_displaymessage(fd, "4058 Mechanic       4059 Guillotine Cross 4066 Royal GUard  4067 Sorcerer");
+			clif_displaymessage(fd, "4058 Mechanic       4059 Guillotine Cross 4066 Royal Guard  4067 Sorcerer");
 			clif_displaymessage(fd, "4068 Minstrel       4069 Wanderer       4070 Sura           4071 Genetic");
 			clif_displaymessage(fd, "4072 Shadow Chaser");
 			clif_displaymessage(fd, "----- 3rd Class (Transcendent to 3rd) -----");
 			clif_displaymessage(fd, "4060 Rune Knight    4061 Warlock        4062 Ranger         4063 Arch Bishop");
-			clif_displaymessage(fd, "4064 Mechanic       4065 Guillotine Cross 4073 Royal GUard  4074 Sorcerer");
+			clif_displaymessage(fd, "4064 Mechanic       4065 Guillotine Cross 4073 Royal Guard  4074 Sorcerer");
 			clif_displaymessage(fd, "4075 Minstrel       4076 Wanderer       4077 Sura           4078 Genetic");
 			clif_displaymessage(fd, "4079 Shadow Chaser");
 			clif_displaymessage(fd, "----- Expanded Class -----");
@@ -1449,12 +1449,12 @@ int atcommand_jobchange(const int fd, struct map_session_data* sd, const char* c
 		clif_displaymessage(fd, "4021 Gypsy");
 		clif_displaymessage(fd, "----- 3rd Class (Regular to 3rd) -----");
 		clif_displaymessage(fd, "4054 Rune Knight    4055 Warlock        4056 Ranger         4057 Arch Bishop");
-		clif_displaymessage(fd, "4058 Mechanic       4059 Guillotine Cross 4066 Royal GUard  4067 Sorcerer");
+		clif_displaymessage(fd, "4058 Mechanic       4059 Guillotine Cross 4066 Royal Guard  4067 Sorcerer");
 		clif_displaymessage(fd, "4068 Minstrel       4069 Wanderer       4070 Sura           4071 Genetic");
 		clif_displaymessage(fd, "4072 Shadow Chaser");
 		clif_displaymessage(fd, "----- 3rd Class (Transcendent to 3rd) -----");
 		clif_displaymessage(fd, "4060 Rune Knight    4061 Warlock        4062 Ranger         4063 Arch Bishop");
-		clif_displaymessage(fd, "4064 Mechanic       4065 Guillotine Cross 4073 Royal GUard  4074 Sorcerer");
+		clif_displaymessage(fd, "4064 Mechanic       4065 Guillotine Cross 4073 Royal Guard  4074 Sorcerer");
 		clif_displaymessage(fd, "4075 Minstrel       4076 Wanderer       4077 Sura           4078 Genetic");
 		clif_displaymessage(fd, "4079 Shadow Chaser");
 		clif_displaymessage(fd, "----- Expanded Class -----");
@@ -4555,7 +4555,8 @@ int atcommand_mount(const int fd, struct map_session_data* sd, const char* comma
 	switch( class_ )
 	{
 		case JOB_KNIGHT: case JOB_KNIGHT2: case JOB_CRUSADER: case JOB_CRUSADER2:
-		case JOB_LORD_KNIGHT: case JOB_PALADIN:
+		case JOB_LORD_KNIGHT: case JOB_PALADIN: case JOB_BABY_KNIGHT: case JOB_BABY_KNIGHT2:
+		case JOB_BABY_CRUSADER: case JOB_BABY_CRUSADER2:
 			msg[0] = 102; msg[1] = 214; msg[2] = 213; msg[3] = 212;
 			option = OPTION_RIDING;
 			skillnum = KN_RIDING;
