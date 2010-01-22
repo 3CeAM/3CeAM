@@ -6703,7 +6703,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			clif_skill_fail(sd,skillid,0,0);
 		break;
 
-	case SO_ARULLO:
+	case SO_ARRULLO:
 		if( flag & 1 )
 			sc_start2(bl, type, 100, skilllv, 1, skill_get_time(skillid, skilllv));
 		else
