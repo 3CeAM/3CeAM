@@ -6,6 +6,14 @@
 //========================================
 
 01/21/2010
+	r133 [Rytech]
+	*Added 6 new Sorcerer skills as place holders
+	-They will remain disabled until the data is fully added to clients
+	*Updated SP requirements for Sorcerer skills
+	*Changed Genetics Fire Expansion's Smoke Powder, Tear Gas, and Acid Multi ID skills from 5 to 1.
+	-Reading the skill desc's showed me that they will have the same effect no matter what and arnt affected by anything
+
+01/21/2010
 	r132 [pakpil]
 	* Added some missing lines.
 	* Added WM_SEVERE_RAINSTORM skill working as intended.
