@@ -6,6 +6,10 @@
 //========================================
 
 01/21/2010
+	r134 [Rytech]
+	*Fixed typos for ARRULLO. Was typed as ARULLO accidently.
+
+01/21/2010
 	r133 [Rytech]
 	*Added 6 new Sorcerer skills as place holders
 	-They will remain disabled until the data is fully added to clients
