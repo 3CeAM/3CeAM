@@ -1018,6 +1018,13 @@
 2453,9,6,2,0,0,0,5,1,yes,0,0,0,magic,0,		SO_VACUUM_EXTREME,Vacuum Extreme
 2454,9,6,1,4,0x2,3:3:5:5:7,5,1,yes,0,0,0,magic,0,	SO_VARETYR_SPEAR,Varetyr Spear
 2455,9,6,1,0,0x3,3:3:5:5:7,5,1,yes,0,0,0,magic,0,	SO_ARRULLO,Arrullo
+//2456,0,0,0,0,0,0,??,0,no,0,0,0,none,0,	SO_EL_CONTROL,
+//2457,0,0,0,0,0,0,??,0,no,0,0,0,none,0,	SO_SUMMON_AGNI,
+//2458,0,0,0,0,0,0,??,0,no,0,0,0,none,0,	SO_SUMMON_AQUA,
+//2459,0,0,0,0,0,0,??,0,no,0,0,0,none,0,	SO_SUMMON_VENTUS,
+//2460,0,0,0,0,0,0,??,0,no,0,0,0,none,0,	SO_SUMMON_TERA,
+
+//2472,0,0,0,0,0,0,??,0,no,0,0,0,none,0,	SO_ENDMARK,
 
 // Genetic
 2474,0,0,0,0,0,0,5,0,no,0,0,0,weapon,0,		GN_TRAINING_SWORD,Sword Training
@@ -1033,9 +1040,9 @@
 2484,0,6,1,2,0,0,10,0,no,0,0,0,weapon,0,	GN_CRAZYWEED_ATK,Crazy Weed Attack
 2485,9,6,2,3,0,0,5,1,yes,0,0,0,magic,0,		GN_DEMONIC_FIRE,Demonic Fire
 2486,9,6,2,0,0,0,5,1,yes,0,0,0,weapon,0,	GN_FIRE_EXPANSION,Fire Expansion
-2487,9,6,2,0,0,0,5,1,yes,0,0,0,weapon,0,	GN_FIRE_EXPANSION_SMOKE_POWDER,Fire Expansion Smoke Powder
-2488,9,6,2,0,0,0,5,1,yes,0,0,0,weapon,0,	GN_FIRE_EXPANSION_TEAR_GAS,Fire Expansion Tear Gas
-2489,9,6,2,0,0,0,5,1,yes,0,0,0,weapon,0,	GN_FIRE_EXPANSION_ACID,Fire Expansion Acid
+2487,9,6,2,0,0,0,1,1,yes,0,0,0,weapon,0,	GN_FIRE_EXPANSION_SMOKE_POWDER,Fire Expansion Smoke Powder
+2488,9,6,2,0,0,0,1,1,yes,0,0,0,weapon,0,	GN_FIRE_EXPANSION_TEAR_GAS,Fire Expansion Tear Gas
+2489,9,6,2,0,0,0,1,1,yes,0,0,0,weapon,0,	GN_FIRE_EXPANSION_ACID,Fire Expansion Acid
 2490,9,6,2,0,0,0,5,1,yes,0,0,2:3:4:5:6,none,0,	GN_HELLS_PLANT,Hell's Plant
 2491,0,6,1,0,0,0,5,1,no,0,0,0,weapon,0,		GN_HELLS_PLANT_ATK,Hell's Plant Attack
 2492,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		GN_MANDRAGORA,Howling of Mandragora
