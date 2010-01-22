@@ -3636,7 +3636,8 @@ int pc_useitem(struct map_session_data *sd,int n)
 		sd->sc.data[SC_WHITEIMPRISON] ||
 		sd->sc.data[SC__SHADOWFORM] ||
 		sd->sc.data[SC__INVISIBILITY] ||
-		sd->sc.data[SC_DIAMONDDUST]
+		sd->sc.data[SC_DIAMONDDUST] ||
+		sd->sc.data[SC_DEEPSLEEP]
 	))
 		return 0;
 

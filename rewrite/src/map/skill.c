@@ -451,6 +451,13 @@ int skillnotok (int skillid, struct map_session_data *sd)
 				return 1;
 			}
 			break;
+		case WM_LULLABY_DEEPSLEEP:
+			if( !map_flag_vs(m) )
+			{
+				clif_skill_teleportmessage(sd,2); // This skill uses this msg instead of skill fails.
+				return 1;
+			}
+			break;
 		case GD_EMERGENCYCALL:
 			if (
 				!(battle_config.emergency_call&((agit_flag || agit2_flag)?2:1)) ||
@@ -3525,6 +3532,11 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 			clif_skill_nodamage(src, bl, skillid, 0, 1);
 			skill_addtimerskill(src, gettick() + skill_get_time(skillid, skilllv) - 1000, bl->id, 0, 0, skillid, skilllv, 0, 0);
 		}
+		break;
+
+	case WM_LULLABY_DEEPSLEEP:
+		if( rand()%100 < 88 + 2 * skilllv )
+			sc_start(bl,status_skill2sc(skillid),100,skilllv,skill_get_time(skillid,skilllv));
 		break;
 
 	case 0:
@@ -7655,6 +7667,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case RK_WINDCUTTER:
 		clif_skill_damage(src,src,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
 	case RK_DRAGONBREATH:
+	case WM_LULLABY_DEEPSLEEP:
 		i = skill_get_splash(skillid,skilllv);
 		map_foreachinarea(skill_area_sub,src->m,x-i,y-i,x+i,y+i,BL_CHAR,
 			src,skillid,skilllv,tick,flag|BCT_ENEMY|1,

@@ -9028,6 +9028,9 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 		if( (sd->sc.count && sd->sc.data[SC__MANHOLE]) || (tsc && tsc->data[SC__MANHOLE]) )
 			return;
 
+		if( sd->sc.data[SC_DEEPSLEEP] ) // Can't attack
+			return;
+
 		if (!battle_config.sdelay_attack_enable && pc_checkskill(sd, SA_FREECAST) <= 0) {
 			if (DIFF_TICK(tick, sd->ud.canact_tick) < 0) {
 				clif_skill_fail(sd, 1, 4, 0);

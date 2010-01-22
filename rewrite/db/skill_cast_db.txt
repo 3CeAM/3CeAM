@@ -1341,6 +1341,8 @@
 //==== Wanderer/Minstrel skills ============
 //-- WM_SEVERE_RAINSTORM
 2418,500,3000,5000,0,900:1500:2100:2500:3000,0
+//-- WM_LULLABY_DEEPSLEEP
+2422,1500,1000,10000,0,10000,0
 
 //==== Genetic skills ======================
 //-- GN_CART_TORNADO

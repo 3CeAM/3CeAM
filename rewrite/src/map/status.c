@@ -465,6 +465,8 @@ void initChangeTables(void)
 	add_sc( SC_CHAOSPANIC        , SC_CHAOS );
 	set_sc( SC_BLOODYLUST        , SC__BLOODYLUST        , SI_BLANK             , SCB_BATK|SCB_WATK|SCB_DEF );
 
+	set_sc( WM_LULLABY_DEEPSLEEP , SC_DEEPSLEEP          , SI_DEEPSLEEP         , SCB_NONE );
+
 	set_sc( GN_CARTBOOST         , SC_GN_CARTBOOST    , SI_CARTSBOOST      , SCB_SPEED|SCB_BATK );
 	add_sc( GN_THORNS_TRAP       , SC_THORNSTRAP );
 	set_sc( GN_BLOOD_SUCKER      , SC_BLOODSUCKER     , SI_BLOODSUCKER     , SCB_NONE );
@@ -478,7 +480,7 @@ void initChangeTables(void)
 	set_sc( SO_CLOUD_KILL        , SC_ELEMENTALCHANGE , /*SI_CLOUDKILL*/SI_BLANK       , SCB_NONE );
 	set_sc( SO_WARMER            , SC_WARMER          , SI_WARMER          , SCB_NONE );
 	set_sc( SO_STRIKING          , SC_STRIKING        , SI_STRIKING        , SCB_BATK|SCB_CRI );
-	add_sc( SO_ARRULLO            , SC_DEEPSLEEP );
+	set_sc( SO_ARRULLO            , SC_DEEPSLEEP      , SI_DEEPSLEEP         , SCB_NONE );
 
 	set_sc( HLIF_AVOID           , SC_AVOID           , SI_BLANK           , SCB_SPEED );
 	set_sc( HLIF_CHANGE          , SC_CHANGE          , SI_BLANK           , SCB_VIT|SCB_INT );
@@ -4826,6 +4828,7 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 		sc_def = 3 +status->vit;
 		break;
 	case SC_SLEEP:
+	case SC_DEEPSLEEP: // Need official value [pakpil]
 		sc_def = 3 +status->int_;
 		break;
 	case SC_DECREASEAGI:
@@ -6446,6 +6449,10 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 				val4 = 1;
 			tick = 1000;
 			break;
+		case SC_DEEPSLEEP:
+			val4 = tick / 2000;
+			tick = 2000;
+			break;
 
 		default:
 			if( calc_flag == SCB_NONE && StatusSkillChangeTable[type] == 0 && StatusIconChangeTable[type] == 0 )
@@ -6477,6 +6484,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_STUN:
 		case SC_SLEEP:
 		case SC_STONE:
+		case SC_DEEPSLEEP:
 			if (sd && pc_issit(sd)) //Avoid sprite sync problems.
 				pc_setstand(sd);
 		case SC_TRICKDEAD:
@@ -7902,6 +7910,15 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		}
 		break;
 
+	case SC_DEEPSLEEP:
+		if( --(sce->val4) >= 0 )
+		{ // Recovers 1% HP/SP every 2 seconds.
+			status_heal(bl, status->max_hp * 1 / 100, status->max_sp * 1 / 100, 2);
+			sc_timer_next(2000 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
+
 	}
 
 	// default for all non-handled control paths is to end the status
@@ -8082,8 +8099,6 @@ int status_change_spread( struct block_list *src, struct block_list *bl )
 		{				
 			//Debuffs that can be spreaded.
 			// NOTE: We'll add/delte SCs when we are able to confirm it.
-			case SC_STUN:
-			case SC_SLEEP:
 			case SC_POISON:
 			case SC_CURSE:
 			case SC_SILENCE:
