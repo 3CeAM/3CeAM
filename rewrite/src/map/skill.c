@@ -1074,6 +1074,8 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 			rate = battle_config.equip_natural_break_rate;
 			if( sc )
 			{
+				if(sc->data[SC_THURISAZ])
+					rate += 10;
 				if(sc->data[SC_OVERTHRUST])
 					rate += 10;
 				if(sc->data[SC_MAXOVERTHRUST])
@@ -1158,8 +1160,8 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 					ud->canact_tick = tick+rate;				
 				if( sd && skill_get_cooldown( skill, skilllv ) ) // Skill cooldown. [LimitLine]
 					skill_blockpc_start(sd, skill, skill_get_cooldown(skill, skilllv));
-					if ( battle_config.display_status_timers && sd && skill_get_delay(skill, skilllv))
-						clif_status_change(src, SI_ACTIONDELAY, 1, rate, 0, 0, 1);
+				if ( battle_config.display_status_timers && sd && skill_get_delay(skill, skilllv))
+					clif_status_change(src, SI_ACTIONDELAY, 1, rate, 0, 0, 1);
 				}
 			}
 		}
@@ -3009,6 +3011,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case WL_CRIMSONROCK:
 	case RA_ARROWSTORM:
 	case RA_WUGDASH:
+	case WM_SEVERE_RAINSTORM:
 	case SO_VARETYR_SPEAR:
 	case GN_CART_TORNADO:
 		if( flag&1 )
@@ -4128,7 +4131,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case AB_DUPLELIGHT:
 	case AB_SECRAMENT:
 	case RA_FEARBREEZE:
-	case SC_INVISIBILITY:
 	case SC_DEADLYINFECT:
 	case SO_STRIKING:
 	case GN_CARTBOOST:
@@ -4624,6 +4626,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			clif_walkok(sd); // So aegis has to resend the walk ok.
 		break;
 	case AS_CLOAKING:
+	case SC_INVISIBILITY:
 		if (tsce)
 		{
 			i = status_change_end(bl, type, -1);
@@ -7389,6 +7392,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case SC_DIMENSIONDOOR:
 	case SC_CHAOSPANIC:
 	case SC_BLOODYLUST:
+	case WM_SEVERE_RAINSTORM:
 	case SO_EARTHGRAVE:
 	case SO_DIAMONDDUST:
 	case SO_PSYCHIC_WAVE:
@@ -9122,10 +9126,16 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 				unit_warp(bl,-1,-1,-1,3);
 			break;
 
-		case UNT_CHAOSPANIC:
 		case UNT_BLOODYLUST:
+			if( sg->src_id == bl->id )
+				break; //Does not affect the caster.
+		case UNT_CHAOSPANIC:
 			sc_start(bl, type, 100, sg->skill_lv,
 				skill_get_time2(sg->skill_id, sg->skill_lv));
+			break;
+
+		case UNT_SEVERE_RAINSTORM:
+			skill_castend_damage_id(ss, bl, sg->skill_id, sg->skill_lv, tick, 0);
 			break;
 
 		case UNT_THORNS_TRAP:
@@ -10016,20 +10026,21 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			}
 		}
 		break;
-		
+	
 	case AB_ADORAMUS:
 	case WL_COMET:
 		if( skill_check_pc_partner(sd, skill, &lv, 1, 0) )
 			sd->special_state.no_gemstone = 1;
 		break;
-	/* NOTE: Uncomment when this sc is available. [pakpil]
+ 	/*NOTE: Uncomment when this sc is available. [pakpil]
 	case SC_MANHOLE:
 	case SC_DIMENSIONDOOR:
 		if( sc && sc->data[SC_MAGNETICFIELD] )
 		{
 			clif_skill_fail(sd,skill,0,0);
 			return 0;
-		}*/
+		}
+		break;*/
 	}
 
 	switch(require.state) {
@@ -11501,7 +11512,7 @@ static int skill_trap_splash (struct block_list *bl, va_list ap)
 		case UNT_CLUSTERBOMB:
 			if(skill_attack(BF_MISC,ss,bl,bl,sg->skill_id,sg->skill_lv,tick,sg->val1))
 				clif_skill_damage(bl,bl,tick,0,0,-30000,1,sg->skill_id,sg->skill_lv,5);
-			break;		
+			break;
 		case UNT_ELECTRICSHOCKER:
 			clif_skill_damage(src,bl,tick,0,0,-30000,1,sg->skill_id,sg->skill_lv,5);
 			break;
@@ -11518,7 +11529,7 @@ static int skill_trap_splash (struct block_list *bl, va_list ap)
 int skill_enchant_elemental_end (struct block_list *bl, int type)
 {
 	struct status_change *sc;
-	const enum sc_type scs[] = { SC_ENCPOISON, SC_ASPERSIO, SC_FIREWEAPON, SC_WATERWEAPON, SC_WINDWEAPON, SC_EARTHWEAPON, SC_SHADOWWEAPON, SC_GHOSTWEAPON, SC_ENCHANTARMS };
+	const enum sc_type scs[] = { SC_ENCPOISON, SC_ASPERSIO, SC_FIREWEAPON, SC_WATERWEAPON, SC_WINDWEAPON, SC_EARTHWEAPON, SC_SHADOWWEAPON, SC_GHOSTWEAPON, SC_ENCHANTARMS, SC__INVISIBILITY };
 	int i;
 	nullpo_retr(0, bl);
 	nullpo_retr(0, sc= status_get_sc(bl));

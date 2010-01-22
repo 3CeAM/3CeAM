@@ -2385,8 +2385,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 		status_zap(src, hp, 0);
 	}
 
-	if(sc && sc->data[SC_ENCHANTBLADE] && !skill_num && ((flag.rh && sd->weapontype1) || (flag.lh && sd->weapontype2))) // Only regular melee attacks are increased. A weapon must be equiped. [pakpil]
-	{	// Enchant Blade [pakpil]
+	if(sc && sc->data[SC_ENCHANTBLADE] && !skill_num && (sd && (flag.rh && sd->weapontype1) || (flag.lh && sd->weapontype2))) // Only regular melee attacks are increased. A weapon must be equiped. [pakpil]
+	{	// Magic damage from Enchant Blade
 		struct Damage md = battle_calc_magic_attack(src, target, RK_ENCHANTBLADE, ((TBL_PC*)src)->status.skill[RK_ENCHANTBLADE].lv, wflag);
 		wd.damage += md.damage;
 		wd.flag += md.flag;
@@ -2696,6 +2696,9 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						break;
 					case RA_WUGDASH:
 						skillratio += 500;//Damage based from iROwiki info. [Jobbie]
+						break;
+					case WM_SEVERE_RAINSTORM:
+						skillratio += 50 * skill_lv;
 						break;
 					case SO_EARTHGRAVE:	// Need official formula. [LimitLine]
 					case SO_DIAMONDDUST:	// Need official formula. [LimitLine]
@@ -3161,6 +3164,10 @@ int battle_calc_return_damage(struct block_list* bl, int damage, int flag)
 			rdamage += damage * sc->data[SC_REFLECTSHIELD]->val2 / 100;
 			if (rdamage < 1) rdamage = 1;
 		}
+		if( sc && sc->data[SC_DEATHBOUND] && damage > 0 )
+		{
+			rdamage = damage * sc->data[SC_DEATHBOUND]->val2 / 100; // Amplify damage.
+		}
 	} else {
 		if (sd && sd->long_weapon_damage_return)
 		{
@@ -3369,18 +3376,17 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 	if(tsc && tsc->data[SC_KAAHI] && tsc->data[SC_KAAHI]->val4 == -1)
 		tsc->data[SC_KAAHI]->val4 = add_timer(tick + skill_get_time2(SL_KAAHI,tsc->data[SC_KAAHI]->val1), kaahi_heal_timer, target->id, SC_KAAHI); //Activate heal.
 
-	wd = battle_calc_attack(BF_WEAPON, src, target, 0, 0, flag);	
-
+	wd = battle_calc_attack(BF_WEAPON, src, target, 0, 0, flag);
 
 	if(sc)
 	{
 		if( sc->data[SC_THURISAZ] && sc->data[SC_THURISAZ]->val3 > 0 && wd.flag&(BF_WEAPON|BF_SHORT) )
-			{ // As I have noticed, this effect is for 1 hit.
-				int rate = rand()%100;
-				wd.damage *= 3;
-				sc->data[SC_THURISAZ]->val3 = 0;
-				if(rate < 10) // Break your weapon still need official value
-					skill_break_equip(src, EQP_WEAPON, rate, BCT_SELF);
+		{ // As I have noticed, this effect is for 1 hit.
+			int rate = rand()%100;
+			wd.damage *= 3;
+			sc->data[SC_THURISAZ]->val3 = 0;
+			if(rate < 10) // Break your weapon still need official value
+				skill_break_equip(src, EQP_WEAPON, rate, BCT_SELF);
 		}
 	}
 
@@ -3398,6 +3404,12 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		rdamage = battle_calc_return_damage(target, damage, wd.flag);
 		if( rdamage > 0 )
 		{
+			if( tsc && tsc->data[SC_DEATHBOUND] )
+			{
+				clif_skill_damage(src,src,tick, status_get_amotion(src),0,-30000,1,RK_DEATHBOUND,tsc->data[SC_DEATHBOUND]->val1,6);
+				damage = rdamage / 2;
+				wd.damage = damage;
+			}
 			rdelay = clif_damage(src, src, tick, wd.amotion, sstatus->dmotion, rdamage, 1, 4, 0);
 			//Use Reflect Shield to signal this kind of skill trigger. [Skotlex]
 			skill_additional_effect(target,src,CR_REFLECTSHIELD,1,BF_WEAPON|BF_SHORT|BF_NORMAL,ATK_DEF,tick);

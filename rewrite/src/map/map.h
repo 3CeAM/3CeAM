@@ -376,7 +376,6 @@ enum _look {
 	LOOK_CLOTHES_COLOR,
 	LOOK_SHIELD,
 	LOOK_SHOES,
-	LOOK_ACCESSORY	// For some reason this was added. Dunno what for, though. [LimitLine]
 };
 
 // used by map_setcell()

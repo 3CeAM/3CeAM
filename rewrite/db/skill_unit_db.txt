@@ -111,6 +111,7 @@
 2300,0xcd,   ,  0, 1,1000,all,   0x006	//SC_DIMENSIONDOOR
 2301,0xce,   ,  0, 5,1000,all,   0x00E	//SC_CHAOSPANIC
 2303,0xd0,   ,  0, 3,1000,all,   0x00E	//SC_BLOODYLUST
+2418,0xdb,   ,  0,11, 300,enemy, 0x800	//WM_SEVERE_RAINSTORM
 2443,0xdc,   ,  0, 1,1000,enemy, 0x008	//SO_FIREWALK
 2444,0xdd,   ,  0, 1,1000,enemy, 0x008	//SO_ELECTRICWALK
 2446,0x86,   ,  0, 7:7:7:9:9,1000,enemy,0x000	//SO_EARTHGRAVE
