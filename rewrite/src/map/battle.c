@@ -432,6 +432,11 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			if( skill_num != ASC_BREAKER || !(flag&BF_WEAPON) )
 				status_change_end( bl,SC_AETERNA,-1 ); //Shouldn't end until Breaker's non-weapon part connects.
 		}
+		if( sc->data[SC_DEEPSLEEP] )
+		{
+			damage += damage / 2; // 1.5 times more damage while in Deep Sleep.
+			status_change_end(bl,SC_DEEPSLEEP,-1);
+		}
 
 		//Finally damage reductions....
 		if( sc->data[SC_ASSUMPTIO] )

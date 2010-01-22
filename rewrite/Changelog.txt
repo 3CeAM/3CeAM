@@ -5,6 +5,13 @@
 // 	- Details.
 //========================================
 
+01/22/2010
+	r135 [pakpil]
+	* Added WM_LULLABY_DEEPSLEEP skill working as intended.
+	* Minor fix in SO_ARRULLO to show the status propertly.
+	* Minor fix in SC_DEADLYINFECT. Removed 2 SC that can't be spreaded.
+
+
 01/21/2010
 	r134 [Rytech]
 	*Fixed typos for ARRULLO. Was typed as ARULLO accidently.
