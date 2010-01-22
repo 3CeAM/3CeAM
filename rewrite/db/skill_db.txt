@@ -35,6 +35,7 @@
 //    0x0400- usable only on party-members (and enemies if skill is offensive)
 //    0x0800- usable only on guild-mates (and enemies if skill is offensive)
 //    0x1000- disable usage on enemies (for non-offensive skills).
+//    0x2000- chorus skill
 // 13 maxcount: max amount of skill instances to place on the ground when
 //    player_land_skill_limit/monster_land_skill_limit is enabled. For skills
 //    that attack using a path, this is the path length to be used.
@@ -985,7 +986,7 @@
 2415,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		WM_REVERBERATION_MELEE,Reverberation Melee
 2416,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		WM_REVERBERATION_MAGIC,Reverberation Magic
 2417,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		WM_DOMINION_IMPULSE,Dominion Impulse
-2418,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		WM_SEVERE_RAINSTORM,Severe Rainstorm
+2418,8,6,2,0,0,0,5,1,yes,0,0,0,weapon,0,	WM_SEVERE_RAINSTORM,Severe Rainstorm
 2419,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		WM_POEMOFNETHERWORLD,Poem of The Netherworld
 2420,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		WM_VOICEOFSIREN,Voice of Siren
 2421,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		WM_DEADHILLHERE,Valley of Death

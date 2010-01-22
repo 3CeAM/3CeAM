@@ -1908,11 +1908,20 @@ int clif_delitem(struct map_session_data *sd,int n,int amount)
 	nullpo_retr(0, sd);
 
 	fd=sd->fd;
+#if PACKETVER >= 20091117
+	WFIFOHEAD(fd, packet_len(0x7fa));
+	WFIFOW(fd,0)=0x7fa;
+	WFIFOW(fd,2)=0; // Unknown data
+	WFIFOW(fd,4)=n+2;
+	WFIFOW(fd,6)=amount;
+	WFIFOSET(fd,packet_len(0x7fa));
+#else
 	WFIFOHEAD(fd, packet_len(0xaf));
 	WFIFOW(fd,0)=0xaf;
 	WFIFOW(fd,2)=n+2;
 	WFIFOW(fd,4)=amount;
 	WFIFOSET(fd,packet_len(0xaf));
+#endif
 
 	return 0;
 }
@@ -3805,13 +3814,44 @@ static int clif_calc_walkdelay(struct block_list *bl,int delay, int type, int da
  * type=0a critical hit
  * type=0b lucky dodge
  *------------------------------------------*/
+
+/*==========================================
+ * Sends a 'damage' packet (src performs action on dst)
+ * R 008a <src ID>.l <dst ID>.l <server tick>.l <src speed>.l <dst speed>.l <damage>.w <div>.w <type>.B <damage2>.w
+ * R 02e1 <src ID>.l <dst ID>.l <server tick>.l <src speed>.l <dst speed>.l <damage>.l <div>.w <type>.B <damage2>.l [pakpil]
+ * packet sended by src->type:
+ * 	- BL_PC 	=	0x008a
+ *	- BL_MOB	=	0x02e1
+ *	- BL_PET	=	0x02e1¿?
+ *	- BL_HOM	=	0x02e1¿?
+ *	- BL_MER	=	0x02e1¿?
+ * type=00 damage [param1: total damage, param2: div, param3: assassin dual-wield damage]
+ * type=01 pick up item
+ * type=02 sit down
+ * type=03 stand up
+ * type=04 reflected/absorbed damage?
+ * type=08 double attack
+ * type=09 don't display flinch animation (endure)
+ * type=0a critical hit
+ * type=0b lucky dodge
+ *------------------------------------------*/
 int clif_damage(struct block_list* src, struct block_list* dst, unsigned int tick, int sdelay, int ddelay, int damage, int div, int type, int damage2)
 {
 	unsigned char buf[256];
 	struct status_change *sc;
+	int i = 0, cmd = 0x8a;
 
 	nullpo_retr(0, src);
 	nullpo_retr(0, dst);
+
+#if PACKETVER >= 20071113
+	if( src->type == BL_MOB )
+	{
+		cmd = 0x2e1;
+		i = 2;
+	}
+#endif
+
 
 	type = clif_calc_delay(type,div,damage+damage2,ddelay);
 	sc = status_get_sc(dst);
@@ -3822,35 +3862,55 @@ int clif_damage(struct block_list* src, struct block_list* dst, unsigned int tic
 		}
 	}
 
-	WBUFW(buf,0)=0x8a;
-	WBUFL(buf,2)=src->id;
-	WBUFL(buf,6)=dst->id;
-	WBUFL(buf,10)=tick;
-	WBUFL(buf,14)=sdelay;
-	WBUFL(buf,18)=ddelay;
-	if (battle_config.hide_woe_damage && map_flag_gvg(src->m)) {
-		WBUFW(buf,22)=damage?div:0;
-		WBUFW(buf,27)=damage2?div:0;
-	} else {
-		WBUFW(buf,22)=min(damage, SHRT_MAX);
-		WBUFW(buf,27)=damage2;
-	}
-	WBUFW(buf,24)=div;
-	WBUFB(buf,26)=type;
-	if(disguised(dst)) {
-		clif_send(buf,packet_len(0x8a),dst,AREA_WOS);
-		WBUFL(buf,6) = -dst->id;
-		clif_send(buf,packet_len(0x8a),dst,SELF);
-	} else
-		clif_send(buf,packet_len(0x8a),dst,AREA);
+	WBUFW(buf,0) = cmd;
 
-	if(disguised(src)) {
+	WBUFL(buf,2) = src->id;
+	WBUFL(buf,6) = dst->id;
+	WBUFL(buf,10) = tick;
+	WBUFL(buf,14) = sdelay;
+	WBUFL(buf,18) = ddelay;
+
+	if( battle_config.hide_woe_damage && map_flag_gvg(src->m) )
+	{
+#if PACKETVER < 20071113
+		WBUFW(buf,22) = damage?div:0;
+		WBUFW(buf,i + 27) = damage2?div:0;
+#else
+		WBUFL(buf,22) = damage?div:0;
+		WBUFL(buf,i + 27) = damage2?div:0;
+#endif
+	}
+	else
+	{
+#if PACKETVER < 20071113
+		WBUFW(buf,22) = min(damage, SHRT_MAX);
+		WBUFW(buf,i + 27) = damage2;
+#else
+		WBUFL(buf,22) = min(damage, SHRT_MAX);
+		WBUFL(buf,i+ 27) = damage2;
+#endif
+	}
+	WBUFW(buf,i + 24) = div;
+	WBUFB(buf,i + 26) = type;
+
+	if( disguised(dst) )
+	{
+		clif_send(buf,packet_len(cmd),dst,AREA_WOS);
+
+		WBUFL(buf,6) = -dst->id;
+		clif_send(buf,packet_len(cmd),dst,SELF);
+	}
+	else
+		clif_send(buf,packet_len(cmd),dst,AREA);
+
+	if( disguised(src) )
+	{
 		WBUFL(buf,2) = -src->id;
-		if (disguised(dst))
+		if( disguised(dst) )
 			WBUFL(buf,6) = dst->id;
-		if(damage > 0) WBUFW(buf,22) = -1;
-		if(damage2 > 0) WBUFW(buf,27) = -1;
-		clif_send(buf,packet_len(0x8a),src,SELF);
+		if( damage > 0 ) WBUFW(buf,22) = -1;
+		if( damage2 > 0 ) WBUFW(buf,27) = -1;
+		clif_send(buf,packet_len(cmd),src,SELF);
 	}
 	//Return adjusted can't walk delay for further processing.
 	return clif_calc_walkdelay(dst,ddelay,type,damage+damage2,div);
@@ -4919,7 +4979,7 @@ int clif_status_change(struct block_list *bl, int type, int flag, unsigned int t
 		type == SI_TENSIONRELAX || type == SI_LANDENDOW || type == SI_AUTOBERSERK ||
 		type == SI_BUMP || type == SI_READYSTORM || type == SI_READYDOWN ||
 		type == SI_READYTURN || type == SI_READYCOUNTER || type == SI_DODGE ||
-		type == SI_DEVIL || type == SI_NIGHT || type == SI_INTRAVISION  || type == SI_REPRODUCE)
+		type == SI_DEVIL || type == SI_NIGHT || type == SI_INTRAVISION || type == SI_REPRODUCE)
 		tick=0;
 
 	if( battle_config.display_status_timers && tick>0 )
@@ -10085,6 +10145,7 @@ void clif_parse_ProduceMix(int fd,struct map_session_data *sd)
 	skill_produce_mix(sd,0,RFIFOW(fd,2),RFIFOW(fd,4),RFIFOW(fd,6),RFIFOW(fd,8), 1);
 	sd->menuskill_val = sd->menuskill_id = sd->menuskill_itemused = 0;
 }
+
 /*==========================================
  * To SC_AUTOSHADOWSPELL
  *------------------------------------------*/
@@ -13629,7 +13690,6 @@ void clif_millenniumshield(struct map_session_data *sd, short shields )
 {
 #if PACKETVER >= 20081217
 	unsigned char buf[8];
-	int fd = sd->fd;
 
 	WBUFW(buf,0) = 0x440;
 	WBUFL(buf,2) = sd->bl.id;
@@ -14029,7 +14089,7 @@ static int packetdb_readdb(void)
 	    6,  2, -1,  4,  4,  4,  4,  8,  8,268,  6,  8,  6, 54, 30, 54,
 #endif
 	    0,  0,  8,  0,  0,  8,  8, 32, -1,  5,  0,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 25,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  8, 25,  0,  0,  0,  0,
 	  //#0x0800
 		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	};

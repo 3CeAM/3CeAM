@@ -1429,7 +1429,7 @@ packet_ver: 25
 //0x07f9,-1
 
 //2009-11-17aRagexeRE
-//0x07fa,8
+0x07fa,8
 
 //2009-11-18cRagexeRE
 0x07fb,25

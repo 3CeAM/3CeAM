@@ -1208,7 +1208,8 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 				sc->data[SC_WHITEIMPRISON] ||
 				(sc->data[SC_STASIS] && skill_stasis_check(src, sc->data[SC_STASIS]->val2, skill_num)) ||
 				sc->data[SC__INVISIBILITY] ||
-				sc->data[SC_DIAMONDDUST]
+				sc->data[SC_DIAMONDDUST] ||
+				sc->data[SC__IGNORANCE] // Target afflicted with this debuff cannot use skills or magic.
 			))
 				return 0;
 
@@ -2439,7 +2440,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	if(pc_isriding(sd) && pc_checkskill(sd,KN_RIDING)>0 && !(sd->class_&JOBL_THIRD))
 		sd->max_weight += 10000;
 	if(pc_isriding(sd) && (skill=pc_checkskill(sd,RK_DRAGONTRAINING))>0)
-		sd->max_weight += 500 + 200 * skill;
+		sd->max_weight += sd->max_weight * (30 + skill) / 100;
 	if(sd->sc.option&OPTION_MADO)
 		sd->max_weight += 20000;
 	if(sc->data[SC_KNOWLEDGE])
@@ -6012,7 +6013,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 						sd->state.combo = 2;
 						clif_skillinfoblock(sd);
 					}
-					break;		
+					break;
 			}
 			if (ud && !val3) 
 			{
@@ -7904,7 +7905,7 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 	}
 
 	// default for all non-handled control paths is to end the status
-	return status_change_end( bl,type,tid );	
+	return status_change_end( bl,type,tid );
 #undef sc_timer_next
 }
 

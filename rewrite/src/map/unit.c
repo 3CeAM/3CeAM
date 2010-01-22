@@ -1220,6 +1220,11 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 		if (!src->prev) return 0; //Warped away!
 	}
 
+	if( sc && sc->data[SC__MANHOLE] )
+	{
+		status_change_end(src,SC__MANHOLE,-1);
+		if (!src->prev) return 0; //Warped away!
+	}
 	if( casttime > 0 )
 	{
 		ud->skilltimer = add_timer( tick+casttime, skill_castend_id, src->id, 0 );
@@ -1326,6 +1331,12 @@ int unit_skilluse_pos2( struct block_list *src, short skill_x, short skill_y, sh
 	if (sc && sc->data[SC_CLOAKING] && !(sc->data[SC_CLOAKING]->val4&4))
 	{
 		status_change_end(src,SC_CLOAKING,-1);
+		if (!src->prev) return 0; //Warped away!
+	}
+
+	if( sc && sc->data[SC__MANHOLE] )
+	{
+		status_change_end(src,SC__MANHOLE,-1);
 		if (!src->prev) return 0; //Warped away!
 	}
 
@@ -1898,6 +1909,7 @@ int unit_remove_map_(struct block_list *bl, int clrtype, const char* file, int l
 		status_change_end(bl,SC_WUGDASH,-1);
 		status_change_end(bl,SC_CAMOUFLAGE,-1);
 		status_change_end(bl,SC_DIAMONDDUST,-1);
+		status_change_end(bl,SC__SHADOWFORM,-1);
 		status_change_end(bl,SC__MANHOLE,-1);
 	}
 

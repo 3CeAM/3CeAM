@@ -6,6 +6,15 @@
 //========================================
 
 01/21/2010
+	r132 [pakpil]
+	* Added some missing lines.
+	* Added WM_SEVERE_RAINSTORM skill working as intended.
+	* Added the new clif_delitem packet. Take care with your PACKETVER
+	* Merged the new clif_damage packet from stable.
+	* Re-fixed SC_BLOODYLUST that does not affect the caster.
+	* Minor fix in SC_INVISIVILITY.
+
+01/21/2010
 	r131 [Rytech]
 	*Full checkup and updates to trunk branch
 	-Corrected job MAP ID's in the const.txt
