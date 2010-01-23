@@ -6,11 +6,27 @@
 //========================================
 
 01/23/2010
+	r142 [Jobbie]
+	* ArchBishop Update:
+	- Fixed damage calculation of Adoramus and Judex. Judex should have a sub hits of 3.
+	- Redone Clementia, Canto, Praefatio, and Coloceo Heal to display only skill name above the head.
+	- Ancilla and Epiclesis used now its official fail message.
+	* Ranger Update:
+	- Added RA_SENSITIVEKEEN skill.
+	- Fixed Camouflage not displaying skill name above the head.
+	- Fixed Electricshocker and Wugbite status which should be reduced by 1sec every 10 agi.
+	- Fixed when mounting a warg item skills cannot be used.
+	- Aimedbolt and Arrowstorm can be used without a bow.
+	* Cleaned up some whitespace.
+	* Fixed some map_freeblock error caused by some skills.
+
+	r141 [Rytech]
+	* Fixed max level to allow up to level 1000 for trunk.
+
 	r140 [pakpil]
 	* Fixed SC_GROOMY that wasn't removed mounts.
 	* Fixed SC_MANHOLE that was allowing attack while was under this sc.
 
-01/23/2010
 	r138 [pakpil]
 	* Added WM_REVERBERATION and WM_DOMINION_IMPULSE skills.
 	* Minor fix in SC_AUTOSHADOWSPELL that cause you can't move if you haven't copied skills.
