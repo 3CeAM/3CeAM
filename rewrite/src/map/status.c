@@ -4871,9 +4871,7 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 	case SC__LAZINESS:
 	case SC__WEAKNESS:
 	case SC__UNLUCKY:
-		sc_def = (status->agi / 4) + (status->luk / 10);
-		if( sd )
-			sc_def += sd->status.base_level / 20;
+		sc_def = (status->agi / 4) + (status->luk / 10) + (status_get_lv(bl) / 20) ;
 		break;
 	case SC_MAGICMIRROR:
 	case SC_ARMORCHANGE:
@@ -6393,7 +6391,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val_flag |= 1|2|4;			
 			if( sd )
 			{
-				if( pc_isriding(sd) ) pc_setriding(sd, sd->sc.option&~OPTION_RIDING|(OPTION_RIDING_DRAGON)|OPTION_RIDING_WUG );
+				if( pc_isriding(sd) ) pc_setriding(sd, 0);
 				if( pc_iswarg(sd) ) pc_setoption(sd, sd->sc.option&~OPTION_WUG);
 				if( pc_isfalcon(sd) ) pc_setoption(sd, sd->sc.option&~OPTION_FALCON);
 				if( sd->status.pet_id > 0 ) pet_menu(sd, 3);
