@@ -9959,6 +9959,9 @@ void clif_parse_UseSkillToId(int fd, struct map_session_data *sd)
 	if( sd->sc.data[SC_BASILICA] && (skillnum != HP_BASILICA || sd->sc.data[SC_BASILICA]->val4 != sd->bl.id) )
 		return; // On basilica only caster can use Basilica again to stop it.
 
+	if( sd->sc.data[SC__MANHOLE] )
+		return;
+
 	if( sd->menuskill_id )
 	{
 		if( sd->menuskill_id == SA_TAMINGMONSTER )
@@ -10048,6 +10051,9 @@ void clif_parse_UseSkillToPosSub(int fd, struct map_session_data *sd, short skil
 
 	if( sd->sc.data[SC_BASILICA] && (skillnum != HP_BASILICA || sd->sc.data[SC_BASILICA]->val4 != sd->bl.id) )
 		return; // On basilica only caster can use Basilica again to stop it.
+	
+	if( sd->sc.data[SC__MANHOLE] )
+		return;
 
 	if( sd->menuskill_id )
 	{
@@ -10118,6 +10124,9 @@ void clif_parse_UseSkillMap(int fd, struct map_session_data* sd)
 	mapindex_getmapname((char*)RFIFOP(fd,4), map_name);
 
 	if(skill_num != sd->menuskill_id) 
+		return;
+
+	if( sd->sc.data[SC__MANHOLE] )
 		return;
 
 	if( pc_cant_act(sd) )

@@ -5,6 +5,17 @@
 // 	- Details.
 //========================================
 
+01/23/2010
+	r140 [pakpil]
+	* Fixed SC_GROOMY that wasn't removed mounts.
+	* Fixed SC_MANHOLE that was allowing attack while was under this sc.
+
+01/23/2010
+	r138 [pakpil]
+	* Added WM_REVERBERATION and WM_DOMINION_IMPULSE skills.
+	* Minor fix in SC_AUTOSHADOWSPELL that cause you can't move if you haven't copied skills.
+	* Minor fix in the new clif_skillcasting packet.
+
 01/22/2010
 	r135 [pakpil]
 	* Added WM_LULLABY_DEEPSLEEP skill working as intended.
