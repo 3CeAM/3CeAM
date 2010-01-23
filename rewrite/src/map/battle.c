@@ -1857,6 +1857,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					skillratio = 120 * skill_lv - 100;
 					break;
 				case RA_WUGBITE:
+				case RA_SENSITIVEKEEN:
 					skillratio += 50 * skill_lv;
 					break;
 				case SC_TRIANGLESHOT:
@@ -2623,10 +2624,12 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						skillratio += 100 +100*skill_lv +100*(skill_lv/2);
 						break;
 					case AB_JUDEX:
-						skillratio += 180 + 20 * skill_lv;
+						skillratio += 180 + 20 * skill_lv + (status_get_lv(src)/100);
+						if( skill_lv == 5 )
+							skillratio += 300 + (status_get_lv(src)/100);
 						break;
 					case AB_ADORAMUS:
-						skillratio += 100 + 100 * skill_lv;
+						skillratio += 100 + 100 * skill_lv + (status_get_lv(src)/100);
 						break;
 					case AB_DUPLELIGHT_MAGIC:
 						skillratio += 100 + 20 * skill_lv;
@@ -3648,6 +3651,7 @@ int battle_check_target( struct block_list *src, struct block_list *target,int f
 					case SM_MAGNUM:
 					case MS_MAGNUM:
 					case RA_DETONATOR:
+					case RA_SENSITIVEKEEN:
 						state |= BCT_ENEMY;
 						strip_enemy = 0;
 						break;

@@ -1258,7 +1258,7 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 		}
 		if (sc->option&OPTION_CHASEWALK && skill_num != ST_CHASEWALK)
 			return 0;
-		if (sc->option&OPTION_RIDING_WUG)//Only usable skill while riding warg.
+		if (sc->option&OPTION_RIDING_WUG && ((TBL_PC*)src)->skillitem != skill_num)//Only usable skill while riding warg.
 			switch( skill_num )
 			{
 				case HT_ANKLESNARE:		case HT_SHOCKWAVE:
@@ -4859,12 +4859,14 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 			tick /= 5;
 		sc_def = status->agi / 2;
 		break;
-	/*	Need to be corrected if its the proper calculation to reduce duration every 10 agi of mob.
-		As for now its commented out until further correction of value. [Jobbie]
 	case SC_ELECTRICSHOCKER:
 	case SC_BITE:
-		if(!sd) tick -= status->agi / 10;
-		break;*/
+		if( bl->type == BL_MOB ){
+			tick -= 1000 * (status->agi/10);
+		}
+		if(sd && type != SC_ELECTRICSHOCKER)
+			tick >>= 1; //Only 10 seconds should be on players.
+		break;
 	case SC__ENERVATION:
 	case SC__GROOMY:
 	case SC__IGNORANCE:
