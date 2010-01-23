@@ -2950,14 +2950,18 @@ int clif_skill_select_request( struct map_session_data *sd )
 			c++;
 		}
 	}
-	sd->menuskill_id = SC_AUTOSHADOWSPELL;
-	sd->menuskill_val = c;
 	WFIFOW(fd,2) = 8+c*2;
 	WFIFOL(fd,4) = c;
 	WFIFOSET(fd,WFIFOW(fd,2));
+	if( c > 0 )
+	{
+		sd->menuskill_id = SC_AUTOSHADOWSPELL;
+		sd->menuskill_val = c;
+		return 1;
+	}
 #endif
 
-	return 1;
+	return 0;
 }
 
 /*==========================================
@@ -4389,7 +4393,8 @@ int clif_skillcasting(struct block_list* bl,
 	int cmd = 0x13e;
 
 #if PACKETVER >= 20091118
-	cmd = 0x7fb;
+	if( bl->type == BL_PC ) // Seems to be used with chars only. [pakpil]
+		cmd = 0x7fb;
 #endif
 
 	WBUFW(buf,0) = cmd;
@@ -4401,7 +4406,8 @@ int clif_skillcasting(struct block_list* bl,
 	WBUFL(buf,16) = pl<0?0:pl; //Avoid sending negatives as element [Skotlex]
 	WBUFL(buf,20) = casttime;
 #if PACKETVER >= 20091118
-	WBUFB(buf,24) = 0; // flag?
+	if( bl->type == BL_PC )
+		WBUFB(buf,24) = 0; // flag?
 #endif
 	if (disguised(bl)) {
 		clif_send(buf,packet_len(cmd), bl, AREA_WOS);
@@ -10159,7 +10165,7 @@ void clif_parse_SkillSelectMenu(int fd, struct map_session_data *sd)
 
 	if( pc_istrading(sd) )
 	{
-		clif_skill_fail(sd,sd->ud.skillid,0x15,0);
+		clif_skill_fail(sd,sd->ud.skillid,0,0);
 		sd->menuskill_val = sd->menuskill_id = 0;
 		return;
 	}
