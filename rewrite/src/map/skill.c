@@ -1642,8 +1642,8 @@ int skill_blown(struct block_list* src, struct block_list* target, int count, in
 		case BL_SKILL:
 			su = (struct skill_unit *)target;
 			if( su->group->unit_id == UNT_ANKLESNARE || su->group->unit_id == UNT_ELECTRICSHOCKER
-				|| su->group->unit_id == UNT_CLUSTERBOMB )
-				return 0; // ankle snare, electricshocker, clusterbomb cannot be knocked back
+				|| su->group->unit_id == UNT_CLUSTERBOMB || su->group->unit_id == UNT_REVERBERATION )
+				return 0; // ankle snare, electricshocker, clusterbomb, reverberation cannot be knocked back
 			break;
 	}
 
@@ -2000,6 +2000,10 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 			dmg.dmotion = clif_skill_damage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -1, 5); // needs -1 as skill level
 		else // the central target doesn't display an animation
 			dmg.dmotion = clif_skill_damage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, 5); // needs -2(!) as skill level
+		break;
+	case WM_REVERBERATION_MELEE:
+	case WM_REVERBERATION_MAGIC:
+		dmg.dmotion = clif_skill_damage(src, bl, tick, 330, 288, damage, 1, skillid, -2, 6);
 		break;
 
 	default:
@@ -2570,6 +2574,10 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 				case WL_EARTHSTRAIN:
 					skill_unitsetting(src, skl->skill_id, skl->skill_lv, skl->x, skl->y, skl->flag);
 					break;
+				case WM_REVERBERATION_MELEE:
+				case WM_REVERBERATION_MAGIC:
+					skill_attack(skill_get_type(skl->skill_id),src, src, target, skl->skill_id, skl->skill_lv, 0, SD_LEVEL);
+					break;
 				case GN_SPORE_EXPLOSION:
 					map_foreachinrange(skill_area_sub, target, skill_get_splash(skl->skill_id, skl->skill_lv), BL_CHAR,
 						src, skl->skill_id, skl->skill_lv, 0, skl->flag|1|BCT_ENEMY, skill_castend_damage_id);
@@ -2662,6 +2670,20 @@ static int skill_reveal_trap (struct block_list *bl, va_list ap)
 		//clif_changetraplook(bl, su->group->unit_id);
 		clif_skill_setunit(su);
 		return 1;
+	}
+	return 0;
+}
+
+static int skill_ative_reverberation( struct block_list *bl, va_list ap)
+{
+	struct skill_unit *su = (TBL_SKILL*)bl;
+	if( bl->type != BL_SKILL )
+		return 0;
+	if( su->alive && su->group && su->group->skill_id == WM_REVERBERATION )
+	{
+		clif_changetraplook(bl, UNT_USED_TRAPS);
+		su->limit=DIFF_TICK(gettick(),su->group->tick)+1500;
+		su->group->unit_id = UNT_USED_TRAPS;
 	}
 	return 0;
 }
@@ -3018,6 +3040,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case WL_CRIMSONROCK:
 	case RA_ARROWSTORM:
 	case RA_WUGDASH:
+	case WM_REVERBERATION:
 	case WM_SEVERE_RAINSTORM:
 	case SO_VARETYR_SPEAR:
 	case GN_CART_TORNADO:
@@ -3032,6 +3055,13 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 			if( skill_area_temp[1] != bl->id && !(skill_get_inf2(skillid)&INF2_NPC_SKILL) )
 				sflag |= SD_ANIMATION; // original target gets no animation (as well as all NPC skills)
 
+			if( skillid == WM_REVERBERATION )
+			{
+				skill_addtimerskill(src, tick + 200, bl->id, src->x, src->y, WM_REVERBERATION_MELEE, skilllv,BF_WEAPON,flag);
+				skill_addtimerskill(src, tick + 800, bl->id, src->x, src->y, WM_REVERBERATION_MELEE, skilllv,BF_WEAPON,flag);
+				skill_addtimerskill(src, tick + 1200, bl->id, src->x, src->y, WM_REVERBERATION_MAGIC, skilllv,BF_MAGIC,flag);
+				break;
+			}
 			heal = skill_attack(skill_get_type(skillid), src, src, bl, skillid, skilllv, tick, sflag);
 			if( skillid == NPC_VAMPIRE_GIFT && heal > 0 )
 			{
@@ -3692,6 +3722,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				if (tsc->data[SC_BERSERK])
 					heal = 0; //Needed so that it actually displays 0 when healing.
 			}
+			if( dstsd && dstsd->sc.option&OPTION_MADO )
+				heal = 0;
+
 			heal_get_jobexp = status_heal(bl,heal,0,0);
 			clif_skill_nodamage (src, bl, skillid, heal, 1);
 
@@ -6622,7 +6655,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SC_AUTOSHADOWSPELL:
 		if( sd )
 		{
-			if( sd->reproduceskill_id || sd->cloneskill_id )
+			if( sd->status.skill[sd->reproduceskill_id].id || sd->status.skill[sd->cloneskill_id].id )
 			{
 				clif_skill_select_request(sd);
 				sc_start(bl,SC_STOP,100,skilllv,9999);
@@ -7404,6 +7437,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case SC_DIMENSIONDOOR:
 	case SC_CHAOSPANIC:
 	case SC_BLOODYLUST:
+	case WM_REVERBERATION:
 	case WM_SEVERE_RAINSTORM:
 	case SO_EARTHGRAVE:
 	case SO_DIAMONDDUST:
@@ -7717,6 +7751,12 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		i = skill_get_splash(skillid, skilllv);
 		map_foreachinarea(skill_detonator,src->m,x-i,y-i,x+i,y+i,BL_SKILL,src);
 		clif_skill_damage(src,src,tick,status_get_amotion(src),0,-30000,1,skillid,skilllv,6);
+		break;
+
+	case WM_DOMINION_IMPULSE:
+		i = skill_get_splash(skillid, skilllv);
+		map_foreachinarea( skill_ative_reverberation,
+			src->m, x-i, y-i, x+i,y+i,BL_SKILL);
 		break;
 
 	case GN_WALLOFTHORN:
@@ -8264,6 +8304,9 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 
 		break;
 		}
+	case WM_REVERBERATION:
+		interval = limit;
+		break;
 	}
 
 	nullpo_retr(NULL, group=skill_initunitgroup(src,layout->count,skillid,skilllv,skill_get_unit_id(skillid,flag&1)+subunt, limit, interval));
@@ -9147,6 +9190,14 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 				skill_get_time2(sg->skill_id, sg->skill_lv));
 			break;
 
+		case UNT_REVERBERATION:
+			sg->limit = DIFF_TICK(gettick(),sg->tick) + 1500;
+			sg->val2 = 1;
+			clif_changetraplook(&src->bl,UNT_USED_TRAPS);
+			skill_castend_damage_id(ss,&sg->unit->bl, sg->skill_id, sg->skill_lv, tick, SD_LEVEL|BCT_ENEMY);
+			sg->unit_id = UNT_USED_TRAPS;
+			break;
+
 		case UNT_SEVERE_RAINSTORM:
 			skill_castend_damage_id(ss, bl, sg->skill_id, sg->skill_lv, tick, 0);
 			break;
@@ -9458,6 +9509,11 @@ int skill_unit_ondamaged (struct skill_unit *src, struct block_list *bl, int dam
 	case UNT_BLASTMINE:
 	case UNT_CLAYMORETRAP:
 		skill_blown(bl, &src->bl, 2, -1, 0);
+		break;
+	case UNT_REVERBERATION:
+		damage = 1;
+		clif_damage(bl,&src->bl,tick,0,0,1,1,6,0);
+		skill_delunit(src);
 		break;
 	case UNT_WALLOFTHORN:
 		src->val1 -= damage;
@@ -12105,6 +12161,17 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 			}
 			break;
 
+			case UNT_REVERBERATION:
+			{ 
+				struct block_list *ss = map_id2bl(group->src_id);
+				clif_changetraplook(bl,UNT_USED_TRAPS);
+				skill_castend_damage_id(ss, &group->unit->bl, group->skill_id, group->skill_lv, tick, 0);
+				group->limit=DIFF_TICK(tick,group->tick)+1500;
+				unit->limit=DIFF_TICK(tick,group->tick)+1500;
+				group->unit_id = UNT_USED_TRAPS;
+			}
+			break;
+
 			default:
 				skill_delunit(unit);
 		}
@@ -12950,13 +13017,13 @@ int skill_select_menu( struct map_session_data *sd, int flag, int skill_id)
 
 	nullpo_retr(0,sd);
 
+	status_change_end(&sd->bl,SC_STOP,-1);
+
 	if( (id = sd->status.skill[skill_id].id) == 0 || sd->status.skill[skill_id].flag != 13 || skill_id > NJ_ISSEN )
 	{
-		clif_skill_fail(sd,SC_AUTOSHADOWSPELL,0x15,0);
+		clif_skill_fail(sd,SC_AUTOSHADOWSPELL,0,0);
 		return 0;
 	}
-
-	status_change_end(&sd->bl,SC_STOP,-1);
 
 	if( (lv = sd->status.skill[skill_id].lv) == 0 )
 		lv = pc_checkskill(sd,SC_AUTOSHADOWSPELL);
