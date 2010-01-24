@@ -10545,10 +10545,8 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 		if( itemid_isgemstone(req.itemid[i]) && skill != HW_GANBANTEIN )
 		{
 			if( sd->special_state.no_gemstone )
-			{	//Make it substract 1 gem rather than skipping the cost.
-				if( --req.amount[i] < 1 )
-					req.itemid[i] = 0;
-			}
+			//Make it substract 1 gem rather than skipping the cost.
+				req.amount[i] = req.itemid[i] = 0;
 			if(sc && sc->data[SC_INTOABYSS])
 			{
 				if( skill != SA_ABRACADABRA )

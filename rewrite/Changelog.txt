@@ -6,6 +6,12 @@
 //========================================
 
 01/24/2010
+	r144 [Jobbie]
+	* Aimedbold and ArrowStorm should carry the weapon element.
+	* Fixed no gemstone state when using Mistress card.
+	* Fixed Enchant Blade should not target enemy.
+	* Fixed White Imprison should not target non-enemy.
+
 	r143 [pakpil]
 	* Fixed WL_FROSTMISTY and WL_JACKFROST that aren't working propertly.
 	- Bug report 81.
