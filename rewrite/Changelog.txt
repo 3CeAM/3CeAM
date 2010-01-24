@@ -5,6 +5,11 @@
 // 	- Details.
 //========================================
 
+01/24/2010
+	r143 [pakpil]
+	* Fixed WL_FROSTMISTY and WL_JACKFROST that aren't working propertly.
+	- Bug report 81.
+
 01/23/2010
 	r142 [Jobbie]
 	* ArchBishop Update:
