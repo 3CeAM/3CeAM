@@ -482,6 +482,8 @@ extern struct Battle_Config
 	int bg_misc_damage_rate;
 	int bg_flee_penalty;
 
+	int warg_can_falcon;
+
 	// Casting Time Renewal Settings
 	int renewal_cast_enable;
 } battle_config;

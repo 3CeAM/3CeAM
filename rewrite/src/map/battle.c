@@ -747,10 +747,13 @@ int battle_addmastery(struct map_session_data *sd,struct block_list *target,int 
 	}
 
 	if( (skill = pc_checkskill(sd, RA_RANGERMAIN)) > 0 && (status->race == RC_BRUTE || status->race == RC_PLANT || status->race == RC_FISH) )
-		damage += skill * 5;
+		damage += (skill * 5);
 
 	if( (skill = pc_checkskill(sd,RA_TOOTHOFWUG)) > 0 && (sd && (sd->sc.option&OPTION_WUG || sd->sc.option&OPTION_RIDING_WUG)) )
 		damage += skill * 6;
+	
+	if( pc_isriding(sd, OPTION_MADO) )
+		damage += 40 * pc_checkskill(sd, NC_MADOLICENCE);
 
 	if(type == 0)
 		weapon = sd->weapontype1;
@@ -772,8 +775,8 @@ int battle_addmastery(struct map_session_data *sd,struct block_list *target,int 
 		case W_1HSPEAR:
 		case W_2HSPEAR:
 			if((skill = pc_checkskill(sd,KN_SPEARMASTERY)) > 0) {
-				if(!pc_isriding(sd))
-					damage += (skill * 4);
+				if(!pc_isriding(sd, OPTION_RIDING|OPTION_RIDING_DRAGON))
+					damage += (skill * (4 + pc_checkskill(sd,RK_DRAGONTRAINING)));
 				else
 					damage += (skill * (5 + pc_checkskill(sd,RK_DRAGONTRAINING)));
 			}
@@ -1831,7 +1834,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					if( sd )
 					{
 						skillratio += 25 * (pc_checkskill(sd,KN_SPEARMASTERY)-1);
-						if( pc_isriding(sd) )
+						if( pc_isriding(sd, OPTION_RIDING_DRAGON) )
 							skillratio += 50;
 					}
 					break;
@@ -4294,6 +4297,7 @@ static const struct _battle_data {
 	{ "bg_flee_penalty",                    &battle_config.bg_flee_penalty,                 20,     0,      INT_MAX,        },
 // Casting Time Renewal Settings
 	{ "renewal_cast_enable",                &battle_config.renewal_cast_enable,              1,     0,            1,        },
+	{ "warg_can_falcon",                    &battle_config.warg_can_falcon,                  0,     0,            1,        },
 };
 
 

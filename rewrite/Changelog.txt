@@ -6,6 +6,13 @@
 //========================================
 
 01/24/2010
+	r145 [pakpil]
+	* Merged pc_isriding function from stable.
+	* Minor fix in clif_addskill that was cause some problems with SC_REPRODUCE and RG_PLAGIARISM.
+	* Fixed mounting dragons that was causing uses dragons skills without dragon.
+	* Merged "warg_can_falcon" from trunk.
+
+01/24/2010
 	r144 [Jobbie]
 	* Aimedbold and ArrowStorm should carry the weapon element.
 	* Fixed no gemstone state when using Mistress card.

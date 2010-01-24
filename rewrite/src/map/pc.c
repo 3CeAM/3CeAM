@@ -5736,6 +5736,10 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 		if( s_sd ) s_sd->shadowform_id = 0 ;
 	}
 
+	// Every time you die you lose your Magic Gear. [pakpil]
+	if( pc_isriding(sd, OPTION_MADO) )
+		pc_setriding(sd, 0);
+
 	if(sd->status.pet_id > 0 && sd->pd)
 	{
 		struct pet_data *pd = sd->pd;
@@ -6390,7 +6394,7 @@ int pc_jobchange(struct map_session_data *sd,int job, int upper)
 		}
 	}
 	
-	if( sd->sc.option&OPTION_MADO ) // You can mount mado even without NC_MADOLICENCE.
+	if( sd->sc.option&OPTION_MADO )
 		pc_setoption(sd,sd->sc.option&~OPTION_MADO);
 	
 	sd->status.class_ = job;
@@ -6623,35 +6627,14 @@ int pc_setoption(struct map_session_data *sd,int type)
 		clif_status_load(&sd->bl,SI_WOLFMOUNT,0);
 		status_calc_pc(sd,0); //Mounting/Umounting affects walk and attack speeds.
 	}
-
+	// Some info from iRO-Wiki says that MADO are a mount not another class. The HP/SP dealed by damage are the owner ones. [pakpil]
 	if (type&OPTION_MADO && !(p_type&OPTION_MADO) && ((sd->class_&MAPID_BASEMASK) == MAPID_MERCHANT) && (sd->class_&JOBL_THIRD) && sd->class_&JOBL_2_1)
 	{	//We are going to mount. [LimitLine]
-		status->mech_hp = status->hp;
-		status->mech_sp = status->sp;
-		status->hp = status->mado_hp?status->mado_hp:1;
-		status->sp = status->mado_sp?status->mado_sp:1;
-		if( status->mado_heat <= 0 )
-			status->mado_heat = 30 + ( 2 + 8 * pc_checkskill(sd, NC_MAINFRAME) );	// Assuming regular overheat
-																					// limit is 30 + Mainframe bonus.
-		clif_updatestatus(sd, SP_HP);
-		clif_updatestatus(sd, SP_SP);
-		pc_jobchange(sd, sd->class_&JOBL_THIRD_UPPER?JOB_MECHANIC_T2:JOB_MECHANIC2, sd->class_&JOBL_THIRD_UPPER?JOBL_THIRD_UPPER:JOBL_THIRD_BASE);
+		status_calc_pc(sd,0);
 	}
 	else if (!(type&OPTION_MADO) && p_type&OPTION_MADO && ((sd->class_&MAPID_BASEMASK) == MAPID_MERCHANT) && (sd->class_&JOBL_THIRD) && sd->class_&JOBL_2_1)
 	{	//We are going to dismount.
-		status->mado_hp = status->hp;
-		status->mado_sp = status->sp;
-		status->hp = status->mech_hp?status->mech_hp:1;
-		status->sp = status->mech_sp?status->mech_sp:1;
-	/*	sd->status.mado_hp = sd->status.hp;
-		sd->status.mado_sp = sd->status.sp;
-		sd->status.hp = sd->status.mech_hp?sd->status.mech_hp:1;
-		sd->status.sp = sd->status.mech_sp?sd->status.mech_sp:1;*/
-		clif_updatestatus(sd, SP_HP);
-		clif_updatestatus(sd, SP_SP);
-		/*if( sd->sc.data[SC_SHAPESHIFT] )
-			status_change_end( &sd->bl, SC_SHAPESHIFT, -1);*/
-		pc_jobchange(sd, sd->class_&JOBL_THIRD_UPPER?JOB_MECHANIC_T:JOB_MECHANIC, sd->class_&JOBL_THIRD_UPPER?JOBL_THIRD_UPPER:JOBL_THIRD_BASE);
+		status_calc_pc(sd,0);
 	}
 
 	if (type&OPTION_FLYING && !(p_type&OPTION_FLYING))
@@ -6725,11 +6708,35 @@ int pc_setfalcon(TBL_PC* sd, int flag)
 	if( sd->sc.count && sd->sc.data[SC__GROOMY] )
 		return 0;
 
-	if( flag ){
-		if( pc_checkskill(sd,HT_FALCON)>0 )	// ƒtƒ@ƒ‹ƒRƒ“ƒ}ƒXƒ^ƒŠ?ƒXƒLƒ‹ŠŽ
+	if( flag )
+	{ // You cannot get falcon while riding warg or while you have warg.
+		if( pc_checkskill(sd,HT_FALCON)>0 && !(sd->sc.option&OPTION_RIDING_WUG || sd->sc.option&OPTION_WUG) )	// ƒtƒ@ƒ‹ƒRƒ“ƒ}ƒXƒ^ƒŠ?ƒXƒLƒ‹ŠŽ
 			pc_setoption(sd,sd->sc.option|OPTION_FALCON);
-	} else if( pc_isfalcon(sd) ){
+	}
+	else if( pc_isfalcon(sd) )
+	{
 		pc_setoption(sd,sd->sc.option&~OPTION_FALCON); // remove falcon
+	}
+
+	return 0;
+}
+
+/*==========================================
+ *
+ *------------------------------------------*/
+int pc_setwarg(TBL_PC* sd, int flag)
+{
+
+	if( sd->sc.count && sd->sc.data[SC__GROOMY] )
+		return 0;
+
+	if( flag ){
+		if( (pc_checkskill(sd,RA_WUGMASTERY)>0) && !(pc_isfalcon(sd)) && (!pc_iswarg(sd) || battle_config.warg_can_falcon) && !(pc_isriding(sd, OPTION_RIDING_WUG)) )
+			pc_setoption(sd,sd->sc.option|OPTION_WUG);
+	} else if( pc_isriding(sd, OPTION_RIDING_WUG) ) {
+		pc_setoption(sd,sd->sc.option&~OPTION_RIDING_WUG);
+	} else if( pc_iswarg(sd) ){
+		pc_setoption(sd,sd->sc.option&~OPTION_WUG); // remove warg
 	}
 
 	return 0;
@@ -6763,7 +6770,7 @@ int pc_setriding(TBL_PC* sd, int flag)
 			skillnum = KN_RIDING;
 			break;
 		case JOB_RUNE_KNIGHT: case JOB_RUNE_KNIGHT2: case JOB_RUNE_KNIGHT_T:  case JOB_RUNE_KNIGHT_T2:
-			option = (pc_isriding(sd))?OPTION_RIDING_DRAGON:((flag==2)?OPTION_BLACK_DRAGON:(flag==3)?OPTION_WHITE_DRAGON:(flag==4)?OPTION_BLUE_DRAGON:(flag==5)?OPTION_RED_DRAGON:OPTION_GREEN_DRAGON);
+			option = (pc_isriding(sd, OPTION_RIDING_DRAGON))?OPTION_RIDING_DRAGON:((flag==2)?OPTION_BLACK_DRAGON:(flag==3)?OPTION_WHITE_DRAGON:(flag==4)?OPTION_BLUE_DRAGON:(flag==5)?OPTION_RED_DRAGON:OPTION_GREEN_DRAGON);
 			skillnum = RK_DRAGONTRAINING;
 			break;
 		case JOB_RANGER: case JOB_RANGER2: case JOB_RANGER_T: case JOB_RANGER_T2:
@@ -6782,7 +6789,7 @@ int pc_setriding(TBL_PC* sd, int flag)
 		if( pc_checkskill(sd,skillnum) > 0 ) // Check if you have the necessary skill to mount.
 			pc_setoption(sd, sd->sc.option|option);
 	}
-	else if( pc_isriding(sd) )
+	else if( pc_isriding(sd, OPTION_RIDING|(OPTION_RIDING_DRAGON)|OPTION_RIDING_WUG|OPTION_MADO) )
 	{
 		pc_setoption(sd, sd->sc.option&~option);
 	}
@@ -6793,7 +6800,7 @@ int pc_setriding(TBL_PC* sd, int flag)
 /*========================================
  * Check if a char is mounted or not.
  -----------------------------------------*/
-bool pc_isriding( struct map_session_data *sd )
+bool pc_isriding( struct map_session_data *sd, int flag )
 {
 	int class_;
 	bool isriding = false;
@@ -6811,19 +6818,19 @@ bool pc_isriding( struct map_session_data *sd )
 		case JOB_KNIGHT: case JOB_KNIGHT2: case JOB_CRUSADER: case JOB_CRUSADER2:
 		case JOB_LORD_KNIGHT: case JOB_LORD_KNIGHT2: case JOB_PALADIN: case JOB_PALADIN2:
 		case JOB_ROYAL_GUARD: case JOB_ROYAL_GUARD2: case JOB_ROYAL_GUARD_T: case JOB_ROYAL_GUARD_T2:
-			if( sd->sc.option&OPTION_RIDING )
+			if( sd->sc.option&OPTION_RIDING && (flag&OPTION_RIDING) )
 				isriding = true;
 			break;
 		case JOB_RUNE_KNIGHT: case JOB_RUNE_KNIGHT2: case JOB_RUNE_KNIGHT_T:  case JOB_RUNE_KNIGHT_T2:
-			if( sd->sc.option&(OPTION_RIDING_DRAGON) )
+			if( sd->sc.option&(OPTION_RIDING_DRAGON) && (flag&(OPTION_RIDING_DRAGON)) )
 				isriding = true;
 			break;
 		case JOB_RANGER: case JOB_RANGER2: case JOB_RANGER_T: case JOB_RANGER_T2:
-			if( sd->sc.option&OPTION_RIDING_WUG )
+			if( sd->sc.option&OPTION_RIDING_WUG  && (flag&OPTION_RIDING_WUG))
 				isriding = true;
 			break;
 		case JOB_MECHANIC: case JOB_MECHANIC2: case JOB_MECHANIC_T: case JOB_MECHANIC_T2:
-			if( sd->sc.option&OPTION_MADO )
+			if( sd->sc.option&OPTION_MADO  && (flag&OPTION_MADO) )
 				isriding = true;
 			break;
 	}

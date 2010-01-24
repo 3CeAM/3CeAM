@@ -3510,7 +3510,6 @@ int script_reload()
 	return 0;
 }
 
-
 //-----------------------------------------------------------------------------
 // buildin functions
 //
@@ -7131,7 +7130,7 @@ BUILDIN_FUNC(checkriding)
 	if( sd == NULL )
 		return 0;// no player attached, report source
 
-	if( pc_isriding(sd) )
+	if( pc_isriding(sd, OPTION_RIDING|(OPTION_RIDING_DRAGON)|OPTION_RIDING_WUG|OPTION_MADO) )
 		script_pushint(st, 1);
 	else
 		script_pushint(st, 0);
@@ -7158,6 +7157,49 @@ BUILDIN_FUNC(setriding)
 	pc_setriding(sd, flag);
 
 	return 0;
+}
+
+/// Returns if the player has a warg. 
+/// 
+/// checkwarg() -> <bool> 
+/// 
+/// @author Diablo 
+BUILDIN_FUNC(checkwarg) 
+{ 
+	TBL_PC* sd; 
+
+	sd = script_rid2sd(st); 
+	if( sd == NULL ) 
+		return 0;// no player attached, report source 
+ 
+	if( pc_iswarg(sd) ) 
+		script_pushint(st, 1); 
+	else 
+		script_pushint(st, 0); 
+
+	return 0; 
+}
+
+/// Sets if the player has a warg or not. 
+/// <flag> defaults to 1 
+/// 
+/// setwarg <flag>; 
+/// setwarg; 
+BUILDIN_FUNC(setwarg) 
+{ 
+	int flag = 1; 
+	TBL_PC* sd; 
+
+	sd = script_rid2sd(st); 
+	if( sd == NULL ) 
+		return 0;// no player attached, report source 
+
+	if( script_hasdata(st,2) ) 
+		flag = script_getnum(st,2); 
+
+	pc_setwarg(sd, flag); 
+
+	return 0; 
 }
 
 /// Sets the save point of the player.
@@ -14403,6 +14445,8 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(checkfalcon,""),
 	BUILDIN_DEF(setriding,"?"),
 	BUILDIN_DEF(checkriding,""),
+	BUILDIN_DEF(setwarg,"?"),
+	BUILDIN_DEF(checkwarg,""),
 	BUILDIN_DEF2(savepoint,"save","sii"),
 	BUILDIN_DEF(savepoint,"sii"),
 	BUILDIN_DEF(gettimetick,"i"),

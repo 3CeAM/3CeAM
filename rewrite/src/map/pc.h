@@ -652,8 +652,9 @@ int pc_jobchange(struct map_session_data *,int, int);
 int pc_setoption(struct map_session_data *,int);
 int pc_setcart(struct map_session_data* sd, int type);
 int pc_setfalcon(struct map_session_data* sd, int flag);
+int pc_setwarg(struct map_session_data* sd, int flag);
 int pc_setriding(struct map_session_data* sd, int flag);
-bool pc_isriding( struct map_session_data *sd );
+bool pc_isriding( struct map_session_data *sd, int flag );
 int pc_changelook(struct map_session_data *,int,int);
 int pc_equiplookall(struct map_session_data *sd);
 
