@@ -2817,6 +2817,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case AB_DUPLELIGHT_MELEE:
 	case RA_AIMEDBOLT:
 	case RA_WUGBITE:
+	case WL_FROSTMISTY:
 	case SC_TRIANGLESHOT:
 	case GN_CRAZYWEED_ATK:
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
@@ -3025,7 +3026,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case RK_IGNITIONBREAK:
 	case AB_JUDEX:
 	case WL_SOULEXPANSION:
-	case WL_FROSTMISTY:
 	case WL_CRIMSONROCK:
 	case RA_ARROWSTORM:
 	case RA_WUGDASH:
@@ -3199,7 +3199,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case AB_HIGHNESSHEAL:
 	case AB_DUPLELIGHT_MAGIC:
 	case WL_HELLINFERNO:
-	case WL_JACKFROST:
 		skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
@@ -3545,6 +3544,16 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 				}
 				skill_delunit(su);
 			}
+		}
+		break;
+
+	case WL_JACKFROST:
+		{
+			struct status_change *tsc = status_get_sc(bl);
+			if( bl->id == skill_area_temp[1] )
+				break;
+			if( tsc && tsc->data[SC_FREEZING] )
+				skill_attack(skill_get_type(skillid), src, src, bl, skillid, skilllv, tick, flag);
 		}
 		break;
 
@@ -4477,7 +4486,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case ASC_METEORASSAULT:
 	case GS_SPREADATTACK:
 	case NPC_EARTHQUAKE:
-	case WL_FROSTMISTY:
 	case GN_CART_TORNADO:
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 	case NPC_VAMPIRE_GIFT:
@@ -6503,17 +6511,12 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 
+	case WL_FROSTMISTY:
 	case WL_JACKFROST:
-		if( flag & 1 )
-		{
-			if( tsc && tsc->data[SC_FREEZING] )
-				skill_castend_damage_id(src, bl, skillid, skilllv, tick, flag);
-		}
-		else
-		{
-			map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid, skilllv), BL_CHAR,
-				src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
-			clif_skill_nodamage(src, bl, skillid, skilllv, 1);
+		{			
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+			skill_area_temp[1] = bl->id;
+			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), splash_target(src), src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_damage_id);
 		}
 		break;
 
