@@ -6629,12 +6629,15 @@ int pc_setoption(struct map_session_data *sd,int type)
 	}
 	// Some info from iRO-Wiki says that MADO are a mount not another class. The HP/SP dealed by damage are the owner ones. [pakpil]
 	if (type&OPTION_MADO && !(p_type&OPTION_MADO) && ((sd->class_&MAPID_BASEMASK) == MAPID_MERCHANT) && (sd->class_&JOBL_THIRD) && sd->class_&JOBL_2_1)
-	{	//We are going to mount. [LimitLine]
-		status_calc_pc(sd,0);
+	{
+		if( pc_checkskill(sd, NC_MADOLICENCE) < 5 )
+			status_calc_pc(sd, 0); // Apply speed penalty.
 	}
+
 	else if (!(type&OPTION_MADO) && p_type&OPTION_MADO && ((sd->class_&MAPID_BASEMASK) == MAPID_MERCHANT) && (sd->class_&JOBL_THIRD) && sd->class_&JOBL_2_1)
-	{	//We are going to dismount.
-		status_calc_pc(sd,0);
+	{
+		if( pc_checkskill(sd, NC_MADOLICENCE) < 5 )
+			status_calc_pc(sd, 0); // Remove speed penalty.
 	}
 
 	if (type&OPTION_FLYING && !(p_type&OPTION_FLYING))

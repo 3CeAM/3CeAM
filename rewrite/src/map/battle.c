@@ -749,6 +749,9 @@ int battle_addmastery(struct map_session_data *sd,struct block_list *target,int 
 	if( (skill = pc_checkskill(sd, RA_RANGERMAIN)) > 0 && (status->race == RC_BRUTE || status->race == RC_PLANT || status->race == RC_FISH) )
 		damage += (skill * 5);
 
+	if((skill = pc_checkskill(sd,NC_RESEARCHFE)) > 0 && (status->def_ele == ELE_FIRE || status->def_ele == ELE_EARTH) )
+		damage += (skill * 10);
+
 	if( (skill = pc_checkskill(sd,RA_TOOTHOFWUG)) > 0 && (sd && (sd->sc.option&OPTION_WUG || sd->sc.option&OPTION_RIDING_WUG)) )
 		damage += skill * 6;
 	
@@ -785,6 +788,8 @@ int battle_addmastery(struct map_session_data *sd,struct block_list *target,int 
 		case W_2HAXE:
 			if((skill = pc_checkskill(sd,AM_AXEMASTERY)) > 0)
 				damage += (skill * 3);
+			if((skill = pc_checkskill(sd,NC_TRAININGAXE)) > 0)
+				damage += (skill * 5);
 			break;
 		case W_MACE:
 		case W_2HMACE:
@@ -1435,6 +1440,23 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 			case RK_CRUSHSTRIKE:
 				wd.damage = sstatus->rhw.atk * 10; // Still need official value. [pakpil]
 				break;
+			case NC_SELFDESTRUCTION:
+				//TODO: There is no exact formula yet but damage relies on casters current hp and sp. [Jobbie]
+				wd.damage = sstatus->hp + sstatus->sp;
+				break;
+			case NC_AXEBOOMERANG:
+				//TODO: Need to get official value of weight % as addition to skill damage. [Jobbie]
+				if (sd) {
+					short index = sd->equip_index[EQI_HAND_R];
+					if (index >= 0 &&
+						sd->inventory_data[index] &&
+						sd->inventory_data[index]->type == IT_WEAPON)
+						wd.damage = sd->inventory_data[index]->weight/5;
+				} else
+					wd.damage = sstatus->rhw.atk2*2;
+				i=100+(40*(skill_lv-1));
+				ATK_ADDRATE(i);
+				break;
 			case HFLI_SBR44:	//[orn]
 				if(src->type == BL_HOM) {
 					wd.damage = ((TBL_HOM*)src)->homunculus.intimacy ;
@@ -1863,6 +1885,36 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				case RA_SENSITIVEKEEN:
 					skillratio += 50 * skill_lv;
 					break;
+				case NC_BOOSTKNUCKLE:
+					skillratio += (100 + 100 * skill_lv) + sstatus->dex;
+					break;
+				case NC_PILEBUNKER:
+					skillratio += (200 + 100 * skill_lv) + sstatus->str;
+					break;
+				case NC_VULCANARM:
+					skillratio += (70 * skill_lv - 100) + sstatus->dex;
+					break;
+				case NC_FLAMELAUNCHER:
+				case NC_COLDSLOWER:
+					skillratio += 200 + 300 * skill_lv;
+					break;
+				case NC_ARMSCANNON:
+					switch(tstatus->size)
+						{
+							case 0: skillratio += 100+500*skill_lv; break;//small
+							case 1: skillratio += 100+400*skill_lv; break;//medium
+							case 2: skillratio += 100+300*skill_lv; break;//large
+						}
+					break;
+				case NC_AXEBOOMERANG:
+					skillratio += 60 + 40 * skill_lv;
+					break;
+				case NC_POWERSWING:
+					skillratio += 80 + 20 * skill_lv + (sstatus->str + sstatus->dex);
+					break;
+				case NC_AXETORNADO:
+					skillratio += (100 + 100 * skill_lv) + sstatus->vit;
+					break;
 				case SC_TRIANGLESHOT:
 					skillratio += 270 + 30 * skill_lv;
 					break;
@@ -1941,6 +1993,19 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				if(sc && sc->data[SC_SPIRIT] &&
 					sc->data[SC_SPIRIT]->val2 == SL_CRUSADER)
 					ATK_ADDRATE(100);
+				break;
+			case NC_BOOSTKNUCKLE:
+			case NC_PILEBUNKER:
+			case NC_VULCANARM:
+			case NC_FLAMELAUNCHER:
+			case NC_COLDSLOWER:
+			case NC_ARMSCANNON:
+			case NC_AXEBOOMERANG:
+			case NC_POWERSWING:
+			case NC_AXETORNADO:
+				ATK_ADDRATE(status_get_lv(src)/6);//Should led up to 1.25 times the normal damage if Blevel is 150. [Jobbie]
+				if( skill_num == NC_AXETORNADO && ((sstatus->rhw.atk) == ELE_WIND || (sstatus->lhw.ele) == ELE_WIND) )
+					ATK_ADDRATE(50);
 				break;
 		}
 		

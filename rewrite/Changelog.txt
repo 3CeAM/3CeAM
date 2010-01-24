@@ -6,13 +6,20 @@
 //========================================
 
 01/24/2010
+	r146 [Jobbie]
+	* Added Mechanic Skills working as intended.
+	- NC_MADOLICENCE, NC_BOOSTKNUCKLE, NC_PILEBUNKER, NC_VULCANARM, NC_FLAMELAUNCHER, NC_COLDSLOWER
+	- NC_ARMSCANNON, NC_ACCELERATION, NC_SELFDESTRUCTION, NC_INFRAREDSCAN, NC_REPAIR, NC_TRAININGAXE,
+	- NC_RESEARCHFE, NC_AXEBOOMERANG, NC_POWERSWING, NC_AXETORNADO.
+	* Minor fix to additional movement speed on when mounting animals.
+	* Minor fix to Adoramus which don't have duration when abnormal status affects.
+
 	r145 [pakpil]
 	* Merged pc_isriding function from stable.
 	* Minor fix in clif_addskill that was cause some problems with SC_REPRODUCE and RG_PLAGIARISM.
 	* Fixed mounting dragons that was causing uses dragons skills without dragon.
 	* Merged "warg_can_falcon" from trunk.
 
-01/24/2010
 	r144 [Jobbie]
 	* Aimedbold and ArrowStorm should carry the weapon element.
 	* Fixed no gemstone state when using Mistress card.

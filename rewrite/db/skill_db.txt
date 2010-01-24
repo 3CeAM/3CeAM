@@ -900,6 +900,37 @@
 2253,3,6,2,0,0x42,5,5,1,no,0,0x80,1,misc,0,	RA_FIRINGTRAP,Firing Trap
 2254,3,6,2,0,0x42,5,5,1,no,0,0x80,1,misc,0,	RA_ICEBOUNDTRAP,Icebound Trap
 
+// Mechanic
+2255,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		NC_MADOLICENCE,Mado License
+2256,11,6,1,0,0,0,5,1,no,0,0,0,weapon,0,	NC_BOOSTKNUCKLE,Boost Knuckle
+2257,4,6,1,0,0,0,3,1,no,0,0,0,weapon,0,		NC_PILEBUNKER,Pile Bunker // Need official range.
+2258,13,8,1,0,0,0,3,1,no,0,0,0,weapon,0,	NC_VULCANARM,Vulcan Arm
+2259,5,6,1,3,0x2,3,3,1,no,0,0,0,weapon,0,	NC_FLAMELAUNCHER,Flame Launcher
+2260,7,6,2,1,0x2,5:7:9,3,1,no,0,0,0,weapon,0,	NC_COLDSLOWER,Cold Slower
+2261,7,8,1,0,0x42,7:5:3,3,1,no,0,0,0,weapon,0,	NC_ARMSCANNON,Arm Cannon
+2262,0,6,4,0,0x1,0,3,1,yes,0,0,0,none,0,	NC_ACCELERATION,Acceleration
+//2263,0,6,4,0,0x1,0,1,1,yes,0,0,0,none,0,	NC_HOVERING,Hovering
+//2264,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		NC_F_SIDESLIDE,Front-Side Slide
+//2265,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		NC_B_SIDESLIDE,Back-Side Slide
+//2266,0,0,0,0,0,0,4,0,no,0,0,0,none,0,		NC_MAINFRAME,Mainframe Restructure
+2267,0,6,4,0,0x3,5:7:9,3,1,no,0,0,0,weapon,5,	NC_SELFDESTRUCTION,Self Destruction
+//2268,0,6,4,0,0x1,0,4,0,no,0,0,0,none,0,		NC_SHAPESHIFT,Shape Shift
+//2269,0,6,4,0,0x1,0,1,1,yes,0,0,0,weapon,0,	NC_EMERGENCYCOOL,Emergency Cool
+2270,0,6,4,0,0x2,15,1,1,no,0,0,0,weapon,0,	NC_INFRAREDSCAN,Infrared Scan
+//2271,9,6,1,0,0x1,0,3,1,no,0,0,0,none,0,		NC_ANALYZE,Analyze
+//2272,0,6,4,0,0x1,0,3,1,yes,0,0,0,weapon,0,	NC_MAGNETICFIELD,Magnetic Field
+//2273,0,6,4,0,0x1,0,3,1,yes,0,0,0,weapon,0,	NC_NEUTRALBARRIER,Neutral Barrier
+//2274,0,6,4,0,0x1,0,3,1,yes,0,0,0,weapon,0,	NC_STEALTHFIELD,Stealth Field
+2275,5,6,16,0,0x21,0,5,1,yes,0,0,0,magic,0,	NC_REPAIR,Repair
+2276,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		NC_TRAININGAXE,Axe Training
+2277,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		NC_RESEARCHFE,Research Fire/Earth
+2278,4:5:6:7:8,6,1,-1,0,0,5,1,no,0,0,0,weapon,3,	NC_AXEBOOMERANG,Axe Boomerang
+2279,4,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	NC_POWERSWING,Power Swing
+2280,0,8,4,0,0x2,3,5,-3,yes,0,0,0,weapon,0,	NC_AXETORNADO,Axe Tornado
+//2281,4,6,2,0,0x1,0,5,1,no,0,0,2,none,0,		NC_SILVERSNIPER,FAW - Silver Sniper
+//2282,4,6,2,0,0x1,0,5,1,no,0,0,2,none,0,		NC_MAGICDECOY,FAW - Magic Decoy
+//2283,4,6,1,0,0x1,0,1,1,no,0,0,0,none,0,		NC_DISJOINT,FAW Removal
+
 // Shadow Chaser
 2284,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		SC_FATALMENACE,Fatal Menace
 2285,0,6,4,0,0x1,0,10,1,no,0,0,0,none,0,	SC_REPRODUCE,Reproduce
