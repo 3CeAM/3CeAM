@@ -448,6 +448,9 @@ void initChangeTables(void)
 	add_sc( RA_FIRINGTRAP        , SC_BURNING         );
 	add_sc( RA_ICEBOUNDTRAP      , SC_FREEZING        );
 
+	set_sc( NC_ACCELERATION      , SC_ACCELERATION     , SI_ACCELERATION    , SCB_SPEED );
+	set_sc( NC_INFRAREDSCAN      , SC_INFRAREDSCAN     , SI_INFRAREDSCAN    , SCB_FLEE );
+
 	set_sc( SC_REPRODUCE         , SC__REPRODUCE         , SI_REPRODUCE         , SCB_NONE );
 	set_sc( SC_AUTOSHADOWSPELL   , SC__AUTOSHADOWSPELL   , SI_AUTOSHADOWSPELL   , SCB_NONE );
 	set_sc( SC_SHADOWFORM        , SC__SHADOWFORM        , SI_SHADOWFORM        , SCB_NONE );
@@ -2361,6 +2364,11 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 			status->rhw.range += skill;
 		}
 	}
+	if(sd->status.weapon == W_1HAXE && sd->status.weapon == W_2HAXE)
+	{
+		if((skill=pc_checkskill(sd,NC_TRAININGAXE))>0)
+			sd->hit_rate += 2*skill;
+	}
 
 // ----- FLEE CALCULATION -----
 
@@ -2504,6 +2512,10 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		sd->magic_addele[ELE_DARK] += skill;
 		sd->subrace[RC_DEMON] += skill;
 		sd->subele[ELE_DARK] += skill;
+	}
+	if((skill=pc_checkskill(sd,NC_RESEARCHFE))>0){
+		sd->subele[ELE_FIRE] += skill*10;
+		sd->subele[ELE_EARTH] += skill*10;
 	}
 
 	if(sc->count){
@@ -3777,6 +3789,8 @@ static signed short status_calc_flee(struct block_list *bl, struct status_change
 		flee += sc->data[SC_MERC_FLEEUP]->val2;
 	if( sc->data[SC_MARSHOFABYSS] )	// Need official formula. [LimitLine]
 		flee -= flee / 100 * sc->data[SC_MARSHOFABYSS]->val4;
+	if(sc->data[SC_INFRAREDSCAN])
+		flee -= flee * 30 / 100;
 	if( sc->data[SC__LAZINESS] )
 		flee -= flee * sc->data[SC__LAZINESS]->val3 / 100;
 
@@ -3947,13 +3961,20 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 			if( sc->data[SC_FUSION] )
 				val = 25;
 			else
-			if( sd && pc_isriding(sd,OPTION_RIDING|OPTION_RIDING_DRAGON|OPTION_RIDING_WUG) )
+			if( sd && pc_isriding(sd, OPTION_RIDING) )
 			{
-				if( sd->sc.option&OPTION_RIDING_WUG )
-					val = 10*pc_checkskill(sd,RA_WUGRIDER);
-				else
-					val = 25;
+				if( sd->class_&JOBL_THIRD ) val = 25;
+				else val = 25;
 			}
+			else
+			if( sd && pc_isriding(sd, OPTION_RIDING_DRAGON) )
+				val = 25;
+			else
+			if( sd && pc_isriding(sd,OPTION_RIDING_WUG) )
+				val = 10 * pc_checkskill(sd, RA_WUGRIDER);
+			else
+			if( sc->data[SC_ACCELERATION] )
+				val = 25;
 
 			speed_rate -= val;
 		}
@@ -4072,6 +4093,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 			speed = max(speed, 200);
 		if( sc->data[SC_WALKSPEED] && sc->data[SC_WALKSPEED]->val1 > 0 ) // ChangeSpeed
 			speed = speed * 100 / sc->data[SC_WALKSPEED]->val1;
+		if( sd && pc_isriding(sd, OPTION_MADO) )
+			speed += speed * (50 - 10 * pc_checkskill(sd, NC_MADOLICENCE)) / 100;
 	}
 
 	return (short)cap_value(speed,10,USHRT_MAX);
@@ -5247,6 +5270,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		break;
 	case SC_INCREASEAGI:
 		status_change_end(bl,SC_DECREASEAGI,-1);
+		status_change_end(bl,SC_ACCELERATION,-1);
 		break;
 	case SC_QUAGMIRE:
 		status_change_end(bl,SC_CONCENTRATE,-1);
@@ -5329,6 +5353,9 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	//NPC_CHANGEUNDEAD will debuff Blessing and Agi Up
 	case SC_CHANGEUNDEAD:
 		status_change_end(bl,SC_BLESSING,-1);
+		status_change_end(bl,SC_INCREASEAGI,-1);
+		break;
+	case SC_ACCELERATION:
 		status_change_end(bl,SC_INCREASEAGI,-1);
 		break;
 	}

@@ -1019,10 +1019,22 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 			skill_castend_damage_id(src, bl, RA_WUGBITE, sd ? pc_checkskill(sd, RA_WUGBITE):skilllv, tick, 1);
 		break;
 	case RA_FIRINGTRAP:
-		sc_start(bl, SC_BURNING, (10*skilllv+40), skilllv, skill_get_time2(skillid, skilllv));
+		sc_start(bl, SC_BURNING, 10 * skilllv + 40, skilllv, skill_get_time2(skillid, skilllv));
 		break;
 	case RA_ICEBOUNDTRAP:
-		sc_start(bl, SC_FREEZING, (10*skilllv+40), skilllv, skill_get_time2(skillid, skilllv));
+		sc_start(bl, SC_FREEZING, 10 * skilllv + 40, skilllv, skill_get_time2(skillid, skilllv));
+		break;
+	case NC_FLAMELAUNCHER:
+		sc_start(bl, SC_BURNING, 50 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
+		break;
+	case NC_COLDSLOWER:
+		sc_start(bl, SC_FREEZING, 20 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
+		sc_start(bl, SC_FREEZING, 10 * skilllv, skilllv, skill_get_time(skillid, skilllv));
+		break;
+	case NC_POWERSWING:
+		if( rand()%100 < 15 ) //Assumed chance of stun status and axe boomerang skill.
+			skill_castend_damage_id(src, bl, NC_AXEBOOMERANG, pc_checkskill(sd, NC_AXEBOOMERANG), tick, 1);
+		sc_start(bl, SC_STUN, 5*skilllv, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case SO_EARTHGRAVE:
 		sc_start(bl, SC_BLEEDING, 10 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));	// Need official rate. [LimitLine]
@@ -2817,7 +2829,11 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case AB_DUPLELIGHT_MELEE:
 	case RA_AIMEDBOLT:
 	case RA_WUGBITE:
-	case WL_FROSTMISTY:
+	case NC_BOOSTKNUCKLE:
+	case NC_VULCANARM:
+	case NC_COLDSLOWER:
+	case NC_AXEBOOMERANG:
+	case NC_POWERSWING:
 	case SC_TRIANGLESHOT:
 	case GN_CRAZYWEED_ATK:
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
@@ -3029,6 +3045,10 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case WL_CRIMSONROCK:
 	case RA_ARROWSTORM:
 	case RA_WUGDASH:
+	case NC_FLAMELAUNCHER:
+	case NC_ARMSCANNON:
+	case NC_SELFDESTRUCTION:
+	case NC_AXETORNADO:
 	case WM_REVERBERATION:
 	case WM_SEVERE_RAINSTORM:
 	case SO_VARETYR_SPEAR:
@@ -3199,6 +3219,8 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case AB_HIGHNESSHEAL:
 	case AB_DUPLELIGHT_MAGIC:
 	case WL_HELLINFERNO:
+	case WL_FROSTMISTY:
+	case NC_REPAIR:
 		skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
@@ -3555,6 +3577,31 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 			if( tsc && tsc->data[SC_FREEZING] )
 				skill_attack(skill_get_type(skillid), src, src, bl, skillid, skilllv, tick, flag);
 		}
+		break;
+
+	case NC_PILEBUNKER:
+		if( rand()%100 < 5 + 15*skilllv )
+		{ //Deactivatable Skills: Kyrie Eleison, Assumptio, Mental Strength, Auto Guard, Millennium Shield
+			status_change_end(bl, SC_KYRIE, -1);
+			status_change_end(bl, SC_ASSUMPTIO, -1);
+			status_change_end(bl, SC_STEELBODY, -1);
+			status_change_end(bl, SC_AUTOGUARD, -1);
+			status_change_end(bl, SC_BERKANA, -1);
+		}
+		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
+		break;
+
+	case NC_INFRAREDSCAN:
+		if( flag&1 )
+		{ //TODO: Need a confirmation if the other type of hidden status is included to be scanned. [Jobbie]
+			if( rand()%100 < 50 )
+				sc_start(bl, SC_INFRAREDSCAN, 10000, skilllv, skill_get_time(skillid, skilllv));
+			status_change_end(bl, SC_HIDING, -1);
+			status_change_end(bl, SC_CLOAKING, -1);
+		}
+		else
+			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), splash_target(src), src, skillid, skilllv, tick, flag|BCT_ENEMY|SD_SPLASH|1, skill_castend_damage_id);
+		clif_skill_damage(src,src,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
 		break;
 
 	case SO_POISON_BUSTER:
@@ -4195,6 +4242,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case AB_DUPLELIGHT:
 	case AB_SECRAMENT:
 	case RA_FEARBREEZE:
+	case NC_ACCELERATION:
 	case SC_DEADLYINFECT:
 	case SO_STRIKING:
 	case GN_CARTBOOST:
@@ -4486,6 +4534,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case ASC_METEORASSAULT:
 	case GS_SPREADATTACK:
 	case NPC_EARTHQUAKE:
+	case NC_FLAMELAUNCHER:
+	case NC_ARMSCANNON:
+	case NC_AXETORNADO:
+	case NC_INFRAREDSCAN:
 	case GN_CART_TORNADO:
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 	case NPC_VAMPIRE_GIFT:
@@ -6655,6 +6707,27 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			clif_skill_fail(sd,skillid,0,0);
 		break;
 
+	case NC_SELFDESTRUCTION:
+		if( sd )
+		{
+			pc_setoption(sd,  sd->sc.option&~OPTION_MADO);
+			status_zap(src, 0 , sd->status.sp);
+			clif_skill_nodamage(src, bl, skillid, skilllv, 1);
+			skill_castend_damage_id(src, src, skillid, skilllv, tick, flag);
+		}
+		break;
+
+	case NC_REPAIR:
+		{
+			int heal = dstsd->status.max_hp*(3+3*skilllv)/100;
+			if( !dstsd )
+				break;
+			status_heal(src, heal, 0, 2);
+			clif_skill_damage(src,src,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
+			clif_skill_nodamage(src, bl, skillid, heal, 1);
+		}
+		break;
+
 	case SC_REPRODUCE:
 		if( tsc && tsc->data[SC__REPRODUCE] )
 		{
@@ -7717,6 +7790,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 
 	case RK_WINDCUTTER:
 		clif_skill_damage(src,src,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
+	case NC_COLDSLOWER:
 	case RK_DRAGONBREATH:
 	case RA_SENSITIVEKEEN:
 	case WM_LULLABY_DEEPSLEEP:
@@ -10240,6 +10314,12 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 				clif_skill_fail(sd,skill,0,0);
 				return 0;
 			}
+		}
+		break;
+	case ST_MADO:
+		if(!pc_isriding(sd,OPTION_MADO)) {
+			clif_skill_fail(sd,skill,0,0);
+			return 0;
 		}
 		break;
 	}
@@ -13624,6 +13704,7 @@ static bool skill_parse_row_requiredb(char* split[], int columns, int current)
 	else if( strcmpi(split[10],"dragon")==0 ) skill_db[i].state = ST_RIDINGDRAGON;
 	else if( strcmpi(split[10],"warg")==0 ) skill_db[i].state = ST_WUG;
 	else if( strcmpi(split[10],"ridingwarg")==0 ) skill_db[i].state = ST_RIDINGWUG;
+	else if( strcmpi(split[10],"mado")==0 ) skill_db[i].state = ST_MADO;
 	else skill_db[i].state = ST_NONE;
 
 	skill_split_atoi(split[11],skill_db[i].spiritball);
