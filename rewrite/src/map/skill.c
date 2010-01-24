@@ -3509,7 +3509,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		break;
 
 	case RA_WUGSTRIKE:
-		if( sd && pc_isriding(sd) ){
+		if( sd && pc_isriding(sd, OPTION_RIDING_WUG) ){
 			if( map_flag_gvg(bl->m) || map[bl->m].flag.battleground )
 			{ // Cannot be used in woe. [Jobbie]
 				clif_skill_fail(sd,skillid,0x17,0);
@@ -6613,7 +6613,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 	case RA_WUGRIDER:
 		if( sd ){
-			if( pc_isriding(sd) ){
+			if( pc_isriding(sd, OPTION_RIDING_WUG) ){
 				pc_setriding(sd,0);
 				pc_setoption(sd,sd->sc.option|OPTION_WUG);
 			}
@@ -6632,7 +6632,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			map_freeblock_unlock();
 			return 0;
 		}
-		if( sd && pc_isriding(sd) ){
+		if( sd && pc_isriding(sd, OPTION_RIDING_WUG) ){
 			clif_skill_nodamage(src,bl,skillid,skilllv,sc_start4(bl,type,100,skilllv,unit_getdir(bl),0,0,1));
 			clif_walkok(sd);
 		}
@@ -10149,7 +10149,13 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		}
 		break;
 	case ST_RIDING:
-		if(!pc_isriding(sd)) {
+		if(!pc_isriding(sd,OPTION_RIDING|OPTION_RIDING_DRAGON)) {// Necessary to check some 2nd job skills that need it.
+			clif_skill_fail(sd,skill,0,0);
+			return 0;
+		}
+		break;
+	case ST_RIDINGDRAGON:
+		if(!pc_isriding(sd,OPTION_RIDING_DRAGON)) {
 			clif_skill_fail(sd,skill,0,0);
 			return 0;
 		}
@@ -10224,13 +10230,13 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		break;
 	case ST_RIDINGWUG:
 		if(skill == RA_WUGRIDER){
-			if(!pc_isriding(sd) && !pc_iswarg(sd)) {
+			if(!pc_isriding(sd,OPTION_RIDING_WUG) && !pc_iswarg(sd)) {
 				clif_skill_fail(sd,skill,0x17,0);
 				return 0;
 			}
 		}
 		else if(skill == RA_WUGSTRIKE){
-			if(!pc_isriding(sd) && !pc_iswarg(sd)){
+			if(!pc_isriding(sd,OPTION_RIDING_WUG) && !pc_iswarg(sd)){
 				clif_skill_fail(sd,skill,0,0);
 				return 0;
 			}
@@ -13615,6 +13621,7 @@ static bool skill_parse_row_requiredb(char* split[], int columns, int current)
 	else if( strcmpi(split[10],"recover_weight_rate")==0 ) skill_db[i].state = ST_RECOV_WEIGHT_RATE;
 	else if( strcmpi(split[10],"move_enable")==0 ) skill_db[i].state = ST_MOVE_ENABLE;
 	else if( strcmpi(split[10],"water")==0 ) skill_db[i].state = ST_WATER;
+	else if( strcmpi(split[10],"dragon")==0 ) skill_db[i].state = ST_RIDINGDRAGON;
 	else if( strcmpi(split[10],"warg")==0 ) skill_db[i].state = ST_WUG;
 	else if( strcmpi(split[10],"ridingwarg")==0 ) skill_db[i].state = ST_RIDINGWUG;
 	else skill_db[i].state = ST_NONE;

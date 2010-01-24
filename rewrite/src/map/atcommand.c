@@ -4549,36 +4549,44 @@ int atcommand_mount(const int fd, struct map_session_data* sd, const char* comma
 		ShowError("atcommand_mount: Invalid class %d for player %s (%d:%d).\n", sd->status.class_, sd->status.name, sd->status.account_id, sd->status.char_id);
 		return -1;
 	}
-	if( pc_isriding(sd) )
-		riding_flag = 1;
 
 	switch( class_ )
 	{
 		case JOB_KNIGHT: case JOB_KNIGHT2: case JOB_CRUSADER: case JOB_CRUSADER2:
 		case JOB_LORD_KNIGHT: case JOB_PALADIN: case JOB_BABY_KNIGHT: case JOB_BABY_KNIGHT2:
 		case JOB_BABY_CRUSADER: case JOB_BABY_CRUSADER2:
+			if( pc_isriding(sd, OPTION_RIDING) && !(sd->class_&JOBL_THIRD))
+				riding_flag = 1;
 			msg[0] = 102; msg[1] = 214; msg[2] = 213; msg[3] = 212;
 			option = OPTION_RIDING;
 			skillnum = KN_RIDING;
 			break;
 		case JOB_RUNE_KNIGHT: case JOB_RUNE_KNIGHT2: case JOB_RUNE_KNIGHT_T:  case JOB_RUNE_KNIGHT_T2:
+			if( pc_isriding(sd, OPTION_RIDING_DRAGON) )
+				riding_flag = 1;
 			msg[0] = 700; msg[1] = 702; msg[2] = 701; msg[3] = 703;
-			option = (pc_isriding(sd))?OPTION_RIDING_DRAGON:((val==2)?OPTION_BLACK_DRAGON:(val==3)?OPTION_WHITE_DRAGON:(val==4)?OPTION_BLUE_DRAGON:(val==5)?OPTION_RED_DRAGON:OPTION_GREEN_DRAGON);
+			option = (pc_isriding(sd, OPTION_RIDING_DRAGON))?OPTION_RIDING_DRAGON:((val==2)?OPTION_BLACK_DRAGON:(val==3)?OPTION_WHITE_DRAGON:(val==4)?OPTION_BLUE_DRAGON:(val==5)?OPTION_RED_DRAGON:OPTION_GREEN_DRAGON);
 			skillnum = RK_DRAGONTRAINING;
 			break;
 		case JOB_RANGER: case JOB_RANGER2: case JOB_RANGER_T: case JOB_RANGER_T2:
 			if( pc_iswarg(sd) )
 				pc_setoption(sd, sd->sc.option&~OPTION_WUG);
+			if( pc_isriding(sd, OPTION_RIDING_WUG) )
+				riding_flag = 1;
 			msg[0] = 704; msg[1] = 706; msg[2] = 705; msg[3] = 707;
 			option = OPTION_RIDING_WUG;
 			skillnum = RA_WUGRIDER;
 			break;
 		case JOB_MECHANIC: case JOB_MECHANIC2: case JOB_MECHANIC_T: case JOB_MECHANIC_T2:
+			if( pc_isriding(sd, OPTION_MADO) )
+				riding_flag = 1;
 			msg[0] = 710; msg[1] = 712; msg[2] = 711; msg[3] = 713;
 			option = OPTION_MADO;
 			skillnum = NC_MADOLICENCE;
 			break;
 		case JOB_ROYAL_GUARD: case JOB_ROYAL_GUARD2: case JOB_ROYAL_GUARD_T: case JOB_ROYAL_GUARD_T2:
+			if( pc_isriding(sd, OPTION_RIDING) && (sd->class_&JOBL_THIRD))
+				riding_flag = 1;
 			msg[0] = 714; msg[1] = 716; msg[2] = 715; msg[3] = 717;
 			option = OPTION_RIDING;
 			skillnum = KN_RIDING;
@@ -5298,7 +5306,7 @@ int atcommand_disguise(const int fd, struct map_session_data* sd, const char* co
 		return -1;
 	}
 
-	if(pc_isriding(sd))
+	if( pc_isriding(sd, OPTION_RIDING|OPTION_RIDING_DRAGON|OPTION_RIDING_WUG|OPTION_MADO) )
 	{
 		//FIXME: wrong message [ultramage]
 		//clif_displaymessage(fd, msg_txt(227)); // Character cannot wear disguise while riding a PecoPeco.

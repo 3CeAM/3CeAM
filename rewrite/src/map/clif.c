@@ -4325,9 +4325,9 @@ int clif_addskill(struct map_session_data *sd, int skill )
 	WFIFOHEAD(fd, packet_len(0x111));
 	WFIFOW(fd,0) = 0x111;
 	WFIFOW(fd,2) = skill;
-	WFIFOW(fd,4) = sd->status.skill[skill].lv;
+	WFIFOW(fd,4) = skill_get_inf(id);
 	WFIFOW(fd,6) = 0;
-	WFIFOW(fd,8) = skill_get_inf(id);
+	WFIFOW(fd,8) = sd->status.skill[skill].lv;
 	WFIFOW(fd,10) = skill_get_sp(id,sd->status.skill[skill].lv);
 	WFIFOW(fd,12)= skill_get_range2(&sd->bl, id,sd->status.skill[skill].lv);
 	safestrncpy((char*)WFIFOP(fd,14), skill_get_name(id), NAME_LENGTH);
