@@ -6,6 +6,9 @@
 //========================================
 
 01/24/2010
+	r147 [Jobbie]
+	* Minor fix on NC_REPAIR requirements.
+
 	r146 [Jobbie]
 	* Added Mechanic Skills working as intended.
 	- NC_MADOLICENCE, NC_BOOSTKNUCKLE, NC_PILEBUNKER, NC_VULCANARM, NC_FLAMELAUNCHER, NC_COLDSLOWER
