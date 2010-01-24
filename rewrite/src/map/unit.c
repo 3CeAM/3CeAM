@@ -1041,6 +1041,13 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 				return 0;
 			}
 			break;
+		case WL_WHITEIMPRISON:
+			if( battle_check_target(src,target,BCT_SELF|BCT_ENEMY)<0 )
+			{
+				clif_skill_fail(sd,skill_num,0xb,0);
+				return 0;
+			}
+			break;
 		case RA_WUGMASTERY:
 			if(pc_isfalcon(sd))
 			{
@@ -1143,8 +1150,8 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 		if( sd && pc_checkskill(sd,TK_HIGHJUMP) )
 			casttime *= 2;
 	break;
-	case WL_WHITEIMPRISON:
-		if( battle_check_target(src,target,BCT_SELF|BCT_ENEMY)<0 )
+	case RK_ENCHANTBLADE:
+		if( battle_check_target(src,target,BCT_ENEMY)>0 )
 			return 0;
 	break;
 	case RA_WUGDASH:
