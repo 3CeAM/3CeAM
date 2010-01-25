@@ -909,7 +909,7 @@
 2260,7,6,2,1,0x2,5:7:9,3,1,no,0,0,0,weapon,0,	NC_COLDSLOWER,Cold Slower
 2261,7,8,1,0,0x42,7:5:3,3,1,no,0,0,0,weapon,0,	NC_ARMSCANNON,Arm Cannon
 2262,0,6,4,0,0x1,0,3,1,yes,0,0,0,none,0,	NC_ACCELERATION,Acceleration
-//2263,0,6,4,0,0x1,0,1,1,yes,0,0,0,none,0,	NC_HOVERING,Hovering
+2263,0,6,4,0,0x1,0,1,1,yes,0,0,0,none,0,	NC_HOVERING,Hovering
 //2264,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		NC_F_SIDESLIDE,Front-Side Slide
 //2265,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		NC_B_SIDESLIDE,Back-Side Slide
 //2266,0,0,0,0,0,0,4,0,no,0,0,0,none,0,		NC_MAINFRAME,Mainframe Restructure
@@ -917,7 +917,7 @@
 //2268,0,6,4,0,0x1,0,4,0,no,0,0,0,none,0,		NC_SHAPESHIFT,Shape Shift
 //2269,0,6,4,0,0x1,0,1,1,yes,0,0,0,weapon,0,	NC_EMERGENCYCOOL,Emergency Cool
 2270,0,6,4,0,0x2,15,1,1,no,0,0,0,weapon,0,	NC_INFRAREDSCAN,Infrared Scan
-//2271,9,6,1,0,0x1,0,3,1,no,0,0,0,none,0,		NC_ANALYZE,Analyze
+2271,9,6,1,0,0x1,0,3,1,no,0,0,0,none,0,		NC_ANALYZE,Analyze
 //2272,0,6,4,0,0x1,0,3,1,yes,0,0,0,weapon,0,	NC_MAGNETICFIELD,Magnetic Field
 //2273,0,6,4,0,0x1,0,3,1,yes,0,0,0,weapon,0,	NC_NEUTRALBARRIER,Neutral Barrier
 //2274,0,6,4,0,0x1,0,3,1,yes,0,0,0,weapon,0,	NC_STEALTHFIELD,Stealth Field

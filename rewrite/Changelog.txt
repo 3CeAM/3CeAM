@@ -5,6 +5,10 @@
 // 	- Details.
 //========================================
 
+01/25/2010
+	r149 [Jobbie]
+	* Added Mechanic Skills NC_HOVERING and NC_ANALYZE working as intended.
+
 01/24/2010
 	r147 [Jobbie]
 	* Minor fix on NC_REPAIR requirements.
