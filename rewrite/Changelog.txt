@@ -6,6 +6,11 @@
 //========================================
 
 01/25/2010
+	r152 [pakpil]
+	* Added SC_MAELSTROM skill.
+	* Fixed SC_MANHOLE that was allow skill attacks to targets under this status. Bug report 70.
+
+01/25/2010
 	r150 [pakpil]
 	* Added SC_FATALMENACE skill working as intended.
 	* Minor fix in SC_BLOODYLUST skill.

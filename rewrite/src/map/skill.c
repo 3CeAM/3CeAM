@@ -2231,7 +2231,8 @@ static int skill_check_unit_range_sub (struct block_list *bl, va_list ap)
 	{
 		case MG_SAFETYWALL:
 		case AL_PNEUMA:
-			if(g_skillid != MG_SAFETYWALL && g_skillid != AL_PNEUMA)
+		case SC_MAELSTROM:
+			if(g_skillid != MG_SAFETYWALL && g_skillid != AL_PNEUMA && g_skillid != SC_MAELSTROM)
 				return 0;
 			break;
 		case AL_WARP:
@@ -7579,6 +7580,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case SC_DIMENSIONDOOR:
 	case SC_CHAOSPANIC:
 	case SC_BLOODYLUST:
+	case SC_MAELSTROM:
 	case WM_REVERBERATION:
 	case WM_SEVERE_RAINSTORM:
 	case SO_EARTHGRAVE:
@@ -8646,6 +8648,7 @@ static int skill_unit_onplace (struct skill_unit *src, struct block_list *bl, un
 		break;
 
 	case UNT_PNEUMA:
+	case UNT_MAELSTROM:
 		if (!sce)
 			sc_start4(bl,type,100,sg->skill_lv,sg->group_id,0,0,sg->limit);
 		break;
@@ -9460,6 +9463,7 @@ int skill_unit_onout (struct skill_unit *src, struct block_list *bl, unsigned in
 	switch(sg->unit_id){
 	case UNT_SAFETYWALL:
 	case UNT_PNEUMA:
+	case UNT_MAELSTROM:
 		if (sce)
 			status_change_end(bl,type,-1);
 		break;
@@ -9541,6 +9545,7 @@ static int skill_unit_onleft (int skill_id, struct block_list *bl, unsigned int 
 		case HW_GRAVITATION:
 		case NJ_SUITON:
 		case SO_WARMER:
+		case SC_MAELSTROM:
 			if (sce)
 				status_change_end(bl, type, -1);
 			break;
