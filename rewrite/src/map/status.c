@@ -469,6 +469,7 @@ void initChangeTables(void)
 	set_sc( SC_MANHOLE           , SC__MANHOLE           , SI_MANHOLE           , SCB_NONE );
 	add_sc( SC_CHAOSPANIC        , SC_CHAOS );
 	set_sc( SC_BLOODYLUST        , SC__BLOODYLUST        , SI_BLANK             , SCB_BATK|SCB_WATK|SCB_DEF );
+	add_sc( SC_MAELSTROM         , SC__MAELSTROM );
 
 	set_sc( WM_LULLABY_DEEPSLEEP , SC_DEEPSLEEP          , SI_DEEPSLEEP         , SCB_NONE );
 
@@ -8079,6 +8080,7 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC_MATKFOOD:
 			case SC_ELECTRICSHOCKER:
 			case SC__MANHOLE:
+			case SC__MAELSTROM:
 				continue;
 				
 			//Debuffs that can be removed.

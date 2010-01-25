@@ -1570,7 +1570,7 @@ enum {
 	UNT_MANHOLE = 0xcc,
 	UNT_DIMENSIONDOOR = 0xcd,
 	UNT_CHAOSPANIC = 0xce,
-	UNT_MAELSTORM = 0xcf,
+	UNT_MAELSTROM = 0xcf,
 	UNT_BLOODYLUST = 0xd0,
 	UNT_FEINTBOMB = 0xd1,
 	//New Trap Unit for Ranger. [Jobbie]
