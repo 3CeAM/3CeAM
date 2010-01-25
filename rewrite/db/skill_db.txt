@@ -932,7 +932,7 @@
 //2283,4,6,1,0,0x1,0,1,1,no,0,0,0,none,0,		NC_DISJOINT,FAW Removal
 
 // Shadow Chaser
-2284,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		SC_FATALMENACE,Fatal Menace
+2284,4,6,1,0,0x2,2,5,1,no,0,0,0,weapon,0,		SC_FATALMENACE,Fatal Menace
 2285,0,6,4,0,0x1,0,10,1,no,0,0,0,none,0,	SC_REPRODUCE,Reproduce
 2286,0,6,4,0,0x1,0,10,1,no,0,0,0,none,0,	SC_AUTOSHADOWSPELL,Auto Shadow Spell
 2287,5,6,1,0,0x1,0,5,1,yes,0,0,0,none,0,	SC_SHADOWFORM,Shadow Form

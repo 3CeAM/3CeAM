@@ -1323,6 +1323,8 @@
 
 
 //===== Shadow Chaser ======================
+//-- SC_FATALMENACE
+2284,0,0,2000,0,0,0
 //-- SC_REPRODUCE
 2285,0,0,0,0,60000,0
 //-- SC_AUTOSHADOWSPELL
