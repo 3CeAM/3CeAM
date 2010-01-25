@@ -6,6 +6,11 @@
 //========================================
 
 01/25/2010
+	r150 [pakpil]
+	* Added SC_FATALMENACE skill working as intended.
+	* Minor fix in SC_BLOODYLUST skill.
+
+01/25/2010
 	r149 [Jobbie]
 	* Added Mechanic Skills NC_HOVERING and NC_ANALYZE working as intended.
 
