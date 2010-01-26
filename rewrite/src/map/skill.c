@@ -8647,7 +8647,11 @@ static int skill_unit_onplace (struct skill_unit *src, struct block_list *bl, un
 			sc_start4(bl,type,100,sg->skill_lv,sg->group_id,sg->group_id,0,sg->limit);
 		break;
 
+	case UNT_BLOODYLUST:
+		if( sg->src_id == bl->id )
+			break; //Does not affect the caster.
 	case UNT_PNEUMA:
+	case UNT_CHAOSPANIC:
 	case UNT_MAELSTROM:
 		if (!sce)
 			sc_start4(bl,type,100,sg->skill_lv,sg->group_id,0,0,sg->limit);
@@ -9331,14 +9335,6 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 				unit_warp(bl,-1,-1,-1,3);
 			break;
 
-		case UNT_BLOODYLUST:
-			if( sg->src_id == bl->id )
-				break; //Does not affect the caster.
-		case UNT_CHAOSPANIC:
-			sc_start(bl, type, 100, sg->skill_lv,
-				skill_get_time2(sg->skill_id, sg->skill_lv));
-			break;
-
 		case UNT_REVERBERATION:
 			sg->limit = DIFF_TICK(gettick(),sg->tick) + 1500;
 			sg->val2 = 1;
@@ -9463,7 +9459,6 @@ int skill_unit_onout (struct skill_unit *src, struct block_list *bl, unsigned in
 	switch(sg->unit_id){
 	case UNT_SAFETYWALL:
 	case UNT_PNEUMA:
-	case UNT_MAELSTROM:
 		if (sce)
 			status_change_end(bl,type,-1);
 		break;
@@ -9546,6 +9541,7 @@ static int skill_unit_onleft (int skill_id, struct block_list *bl, unsigned int 
 		case NJ_SUITON:
 		case SO_WARMER:
 		case SC_MAELSTROM:
+		case SC_BLOODYLUST:
 			if (sce)
 				status_change_end(bl, type, -1);
 			break;

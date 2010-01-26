@@ -5,6 +5,14 @@
 // 	- Details.
 //========================================
 
+01/26/2010
+	r154 [pakpil]
+	* Added missing code in r152.
+	* Fix in SC_BLOODYLUST, SC_MAELSTROM and SC_CHAOSPANIC to adjust these skills to the official behavior.
+		- SC_BLOODYLUST has its own SI and its effect disappears when you left the skill range. No status icon.
+		- SC_CHAOSPANIC uses OPT2_SIGNUMCRUCIS.
+		- SC_MAELSTROM don't shows the skill name when absorb magics.
+
 01/25/2010
 	r152 [pakpil]
 	* Added SC_MAELSTROM skill.
