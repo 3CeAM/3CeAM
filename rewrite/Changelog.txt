@@ -6,6 +6,10 @@
 //========================================
 
 01/26/2010
+	r156 [pakpil]
+	* Fixed pc_skillup that wasn't working propertly with all extended class.
+
+01/26/2010
 	r154 [pakpil]
 	* Added missing code in r152.
 	* Fix in SC_BLOODYLUST, SC_MAELSTROM and SC_CHAOSPANIC to adjust these skills to the official behavior.
