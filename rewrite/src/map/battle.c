@@ -361,7 +361,6 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 		{
 			int sp = damage * 20 / 100; // Steel need official value.
 			status_heal(bl,0,sp,3);
-			clif_skill_nodamage(bl,bl,SC_MAELSTROM,1,1);
 			d->dmg_lv = ATK_BLOCK;
 			return 0;
 		}

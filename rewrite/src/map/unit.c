@@ -936,7 +936,7 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 		sc = NULL; //Unneeded
 
 	//temp: used to signal combo-skills right now.
-	temp =	( target_id == src->id && 
+	temp =	( target_id == src->id &&
 				( 
 					( !(skill_get_inf(skill_num)&INF_SELF_SKILL) && sd && sd->state.combo ) || 
 					( skill_get_inf(skill_num)&INF_SELF_SKILL && skill_get_inf2(skill_num)&INF2_NO_TARGET_SELF ) 
