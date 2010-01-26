@@ -5245,7 +5245,8 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 	skill_point = pc_calc_skillpoint(sd);
 
 	if( (sd->class_&JOBL_2) && (sd->class_&MAPID_UPPERMASK) != MAPID_SUPER_NOVICE &&
-		sd->status.skill_point >= sd->status.job_level && skill_num >= KN_SPEARMASTERY &&
+		sd->status.skill_point >= sd->status.job_level && ((skill_num >= KN_SPEARMASTERY && skill_num < TK_RUN ) ||
+		(skill_num > TK_HIGHJUMP && skill_num < GS_GLITTERING) || skill_num > MB_B_EQUIP) && // Ignore all 1st job skills from extended class.
 		((sd->change_level[0] > 0 && skill_point < sd->change_level[0]+8) || skill_point < 58))
 	{
 		i = (sd->change_level[0] > 0 ? sd->change_level[0]+8:58) - skill_point;		
