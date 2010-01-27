@@ -2865,6 +2865,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case NC_BOOSTKNUCKLE:
 	case NC_VULCANARM:
 	case NC_COLDSLOWER:
+	case NC_ARMSCANNON:
 	case NC_AXEBOOMERANG:
 	case NC_POWERSWING:
 	case SC_TRIANGLESHOT:
@@ -3079,7 +3080,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case RA_ARROWSTORM:
 	case RA_WUGDASH:
 	case NC_FLAMELAUNCHER:
-	case NC_ARMSCANNON:
 	case NC_SELFDESTRUCTION:
 	case NC_AXETORNADO:
 	case WM_REVERBERATION:
@@ -4582,7 +4582,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case GS_SPREADATTACK:
 	case NPC_EARTHQUAKE:
 	case NC_FLAMELAUNCHER:
-	case NC_ARMSCANNON:
 	case NC_AXETORNADO:
 	case NC_INFRAREDSCAN:
 	case GN_CART_TORNADO:
@@ -6765,19 +6764,22 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case NC_ANALYZE:
-		clif_skill_damage(src,src,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
-		clif_skill_nodamage(src,bl,skillid,skilllv,
+		clif_skill_damage(src, bl, tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
+		clif_skill_nodamage(src, bl, skillid, skilllv,
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
 		break;
 
 	case NC_REPAIR:
 		{
-			int heal = dstsd->status.max_hp*(3+3*skilllv)/100;
+			int heal = sd->status.max_hp*(3+3*skilllv)/100;
 			if( !dstsd )
 				break;
-			status_heal(src, heal, 0, 2);
-			clif_skill_damage(src,src,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
-			clif_skill_nodamage(src, bl, skillid, heal, 1);
+			if( dstsd && pc_isriding(dstsd,OPTION_MADO) )
+				status_heal(bl, heal, 0, 2);
+			else
+				status_heal(src, heal, 0, 2);
+			clif_skill_damage(src, src, tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
+			clif_skill_nodamage(src, bl, skillid, skilllv, heal);
 		}
 		break;
 
@@ -7845,6 +7847,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case RK_WINDCUTTER:
 		clif_skill_damage(src,src,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
 	case NC_COLDSLOWER:
+	case NC_ARMSCANNON:
 	case RK_DRAGONBREATH:
 	case RA_SENSITIVEKEEN:
 	case WM_LULLABY_DEEPSLEEP:
@@ -10241,8 +10244,7 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 				return 0;
 			}
 		}
-		break;
-	
+		break;	
 	case AB_ADORAMUS:
 	case WL_COMET:
 		if( skill_check_pc_partner(sd, skill, &lv, 1, 0) )

@@ -6,10 +6,14 @@
 //========================================
 
 01/26/2010
+	r159 [Jobbie]
+	* Minor fix to Arms Cannon to behave same on official. Should be ground target skills.
+	* Minor fix on Repair skill which cannot heal another targets mado.
+	* Minor fix to Analyze skill the animation should be on the target not on the caster.
+
 	r156 [pakpil]
 	* Fixed pc_skillup that wasn't working propertly with all extended class.
 
-01/26/2010
 	r154 [pakpil]
 	* Added missing code in r152.
 	* Fix in SC_BLOODYLUST, SC_MAELSTROM and SC_CHAOSPANIC to adjust these skills to the official behavior.
