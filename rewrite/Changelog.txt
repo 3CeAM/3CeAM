@@ -6,6 +6,10 @@
 //========================================
 
 01/28/2010
+	r164 [pakpil]
+	* Fixed a mistake in r162. Sorry 8)
+
+01/28/2010
 	r163 [pakpil]
 	* Minor fix in my last commit.
 
