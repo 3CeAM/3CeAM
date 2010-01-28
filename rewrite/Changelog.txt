@@ -5,6 +5,13 @@
 // 	- Details.
 //========================================
 
+01/28/2010
+	r160 [Jobbie]
+	* Updated some behavior of Sorcerer skills according to latest update information in iRO wiki.
+	* Remove SC_DIAMONDUST and replaced with SC_CRYSTALIZE to fit the information which is used as the new status for Diamon Dust.
+	* Cloudkill now used its own status icon.
+	* Fixed when riding warg you can use basic attack
+
 01/26/2010
 	r159 [Jobbie]
 	* Minor fix to Arms Cannon to behave same on official. Should be ground target skills.

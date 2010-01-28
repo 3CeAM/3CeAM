@@ -8509,6 +8509,9 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 		if (sd->sc.option&OPTION_RIDING || sd->sc.option&(OPTION_RIDING_DRAGON))
 			clif_status_load(&sd->bl, SI_RIDING, 1);
 
+		if (sd->sc.option&OPTION_RIDING_WUG)
+			clif_status_load(&sd->bl, SI_WOLFMOUNT, 1);
+
 		if(sd->status.manner < 0)
 			sc_start(&sd->bl,SC_NOCHAT,100,0,0);
 
@@ -9023,10 +9026,13 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 		if( sd->sc.option&(OPTION_WEDDING|OPTION_XMAS|OPTION_SUMMER) )
 			return;
 
+		if( sd->sc.option&OPTION_RIDING_WUG && sd->weapontype1 )
+			return;
+
 		if( sd->sc.data[SC_BASILICA] )
 			return;
 
-		if( sd->sc.data[SC_DIAMONDDUST] )
+		if( sd->sc.data[SC_CRYSTALIZE] )
 			return;
 
 		if( sd->sc.data[SC__SHADOWFORM] )

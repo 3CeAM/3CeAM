@@ -2762,8 +2762,6 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						}
 						break;
 					case WL_CHAINLIGHTNING_ATK:
-					case SO_FIREWALK:		// Need official formula. [LimitLine]
-					case SO_ELECTRICWALK:	// Need official formula. [LimitLine]
 						skillratio += 300 + 100 * skill_lv;
 						break;
 					case WL_EARTHSTRAIN:
@@ -2786,6 +2784,10 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						break;
 					case WM_SEVERE_RAINSTORM:
 						skillratio += 50 * skill_lv;
+						break;
+					case SO_FIREWALK:
+					case SO_ELECTRICWALK:
+						skillratio += 200 * ( status_get_lv(src)/100 ) * 3;
 						break;
 					case SO_EARTHGRAVE:	// Need official formula. [LimitLine]
 					case SO_DIAMONDDUST:	// Need official formula. [LimitLine]

@@ -483,10 +483,10 @@ void initChangeTables(void)
 
 	add_sc( SO_FIREWALK          , SC_FIREWALK );
 	add_sc( SO_ELECTRICWALK      , SC_ELECTRICWALK );
-	set_sc( SO_CLOUD_KILL        , SC_ELEMENTALCHANGE , /*SI_CLOUDKILL*/SI_BLANK       , SCB_NONE );
+	set_sc( SO_CLOUD_KILL        , SC_ELEMENTALCHANGE , SI_CLOUDKILL       , SCB_NONE );
 	set_sc( SO_WARMER            , SC_WARMER          , SI_WARMER          , SCB_NONE );
 	set_sc( SO_STRIKING          , SC_STRIKING        , SI_STRIKING        , SCB_BATK|SCB_CRI );
-	set_sc( SO_ARRULLO            , SC_DEEPSLEEP      , SI_DEEPSLEEP         , SCB_NONE );
+	set_sc( SO_ARRULLO           , SC_DEEPSLEEP       , SI_DEEPSLEEP       , SCB_NONE );
 
 	set_sc( HLIF_AVOID           , SC_AVOID           , SI_BLANK           , SCB_SPEED );
 	set_sc( HLIF_CHANGE          , SC_CHANGE          , SI_BLANK           , SCB_VIT|SCB_INT );
@@ -1127,7 +1127,7 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 		//on dead characters, said checks are left to skill.c [Skotlex]
 		if (target && status_isdead(target))
 			return 0;
-		if( (sc = status_get_sc(src)) && sc->data[SC_DIAMONDDUST] )
+		if( (sc = status_get_sc(src)) && sc->data[SC_CRYSTALIZE] )
 			return 0;
 	}
 
@@ -1216,7 +1216,7 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 				sc->data[SC_WHITEIMPRISON] ||
 				(sc->data[SC_STASIS] && skill_stasis_check(src, sc->data[SC_STASIS]->val2, skill_num)) ||
 				sc->data[SC__INVISIBILITY] ||
-				sc->data[SC_DIAMONDDUST] ||
+				sc->data[SC_CRYSTALIZE] ||
 				sc->data[SC__IGNORANCE] // Target afflicted with this debuff cannot use skills or magic.
 			))
 				return 0;
@@ -4911,6 +4911,9 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 	case SC__UNLUCKY:
 		sc_def = (status->agi / 4) + (status->luk / 10) + (status_get_lv(bl) / 20) ;
 		break;
+	case SC_CRYSTALIZE:
+		tick -= (1000 * (status->vit/10)) + (status_get_lv(bl)/50);
+		break;
 	case SC_MAGICMIRROR:
 	case SC_ARMORCHANGE:
 		if (sd) //Duration greatly reduced for players.
@@ -6391,6 +6394,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			tick = 10000;
 			break;
 		case SC_ELECTRICSHOCKER:
+		case SC_CRYSTALIZE:
 			val4 = tick / 1000;
 			if( val4 < 1 )
 				val4 = 1;
@@ -6485,6 +6489,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			tick = 3000;
 			status_change_end(bl, SC_FREEZE, -1);
 			status_change_end(bl, SC_FREEZING, -1);
+			status_change_end(bl, SC_CRYSTALIZE, -1);
 			break;
 		case SC_BLOODSUCKER:
 			val4 = tick / 1000;
@@ -6545,9 +6550,9 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_ELECTRICSHOCKER:
 		case SC_BITE:
 		case SC_THORNSTRAP:
-		case SC_DIAMONDDUST:
 		case SC__MANHOLE:
 		case SC_CHAOS:
+		case SC_CRYSTALIZE:
 			unit_stop_walking(bl,1);
 		break;
 		case SC_HIDING:
@@ -7921,7 +7926,7 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 	case SC_WARMER:
 		if( --(sce->val4) >= 0 )
 		{
-			status_heal(bl, 100 * sce->val1, 0, 2);
+			status_heal(bl, 130 * sce->val1, 0, 2);
 			sc_timer_next(3000 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}
@@ -7959,6 +7964,15 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		{ // Recovers 1% HP/SP every 2 seconds.
 			status_heal(bl, status->max_hp * 1 / 100, status->max_sp * 1 / 100, 2);
 			sc_timer_next(2000 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
+
+	case SC_CRYSTALIZE:
+		if( --(sce->val4) >= 0 )
+		{ // Drains 2% of HP and 1% of SP every seconds.
+			status_charge(bl, status->max_hp * 2 / 100, status->max_sp * 1 / 100);
+			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}
 		break;

@@ -1043,7 +1043,7 @@
 2447,9,6,2,1,0,0,5,1,yes,0,0,0,magic,0,		SO_DIAMONDDUST,Diamond Dust
 2448,9,6,1,5,0,0,5,1,yes,0,0,0,magic,0,		SO_POISON_BUSTER,Poison Buster
 2449,9,8,2,0,0,0,5,-3:-4:-5:-6:-7,yes,0,0,0,magic,0,	SO_PSYCHIC_WAVE,Psychic Wave
-2450,9,6,2,5,0,0,5,1,yes,0,0,0,magic,0,		SO_CLOUD_KILL,Cloud Kill
+2450,9,6,2,0,0,0,5,1,yes,0,0,0,magic,0,		SO_CLOUD_KILL,Cloud Kill
 2451,9,6,16,0,0x1,0,5,1,yes,0,0,0,none,0,	SO_STRIKING,Striking
 2452,9,6,2,0,0,0,5,1,yes,0,0,0,magic,0,		SO_WARMER,Warmer
 2453,9,6,2,0,0,0,5,1,yes,0,0,0,magic,0,		SO_VACUUM_EXTREME,Vacuum Extreme
