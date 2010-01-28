@@ -5,6 +5,15 @@
 // 	- Details.
 //========================================
 
+01/228/2010
+	r165 [Rytech]
+	*Added in the ID's for the 3rd job exclusive headgears.
+	-Ive given them temporary names like RK_Headgear to easly identify each headgear and will later be given official names.
+	-Its safe to call up the items through the @item command, but make sure you have a 2010-1-26 client when doing so.
+	-These headgears are not ready for player use as their not fully configed.
+	-Their currently equiptable by any job, but will be set to their actural exclusive jobs soon.
+	-I have NO IDEA what the view ID's for these headgears could be. I never had to do headgears before. If anyone knows them, please message me.
+
 01/28/2010
 	r164 [pakpil]
 	* Fixed a mistake in r162. Sorry 8)
