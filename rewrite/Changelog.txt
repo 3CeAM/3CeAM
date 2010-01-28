@@ -6,6 +6,12 @@
 //========================================
 
 01/28/2010
+	r162 [pakpil]
+	* Fixed SC_SHADOWFORM that was causing crash servers. Bug report 100.
+	* Fixed WM_SEVERE_RAINSTORM, adjusted to the official behavior.
+	- It uses WM_SEVERE_RAINSTORM_MELLE to deal the damage and WM_SEVERE_RAINSTORM to set the skill unit.
+
+01/28/2010
 	r160 [Jobbie]
 	* Updated some behavior of Sorcerer skills according to latest update information in iRO wiki.
 	* Remove SC_DIAMONDUST and replaced with SC_CRYSTALIZE to fit the information which is used as the new status for Diamon Dust.

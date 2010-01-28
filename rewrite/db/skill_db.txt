@@ -1086,7 +1086,7 @@
 
 // More 3rd Job Skills
 2515,9,6,16,0,0x1,0,5,1,yes,0,0,0,magic,0,	AB_SECRAMENT,Sacrament
-2516,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		WM_SEVERE_RAINSTORM_MELEE,Severe Rainstorm Melee
+2516,0,0,1,-1,0x2,11,5,0,no,0,0,0,weapon,0,		WM_SEVERE_RAINSTORM_MELEE,Severe Rainstorm Melee
 2517,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		SR_HOWLINGOFLION,Howling of Lion
 2518,3,6,2,-1,0x2,5:5:7:9:9,5,1,no,0,0,0,weapon,0,	SR_RIDEINLIGHTNING,Ride In Lightening
 
