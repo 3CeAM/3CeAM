@@ -1041,16 +1041,11 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl, SC_BLEEDING, 10 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));	// Need official rate. [LimitLine]
 		break;
 	case SO_DIAMONDDUST:
-		sc_start(bl, SC_DIAMONDDUST, 10 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
+		sc_start(bl, SC_CRYSTALIZE, 10 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
 		break;
 	case SO_PSYCHIC_WAVE:	// Need official rate. [LimitLine]
-	case SO_VARETYR_SPEAR:	// Need official rate. [LimitLine]
-		sc_start(bl, SC_STUN, 10 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
-		break;
-	case SO_CLOUD_KILL:
-		sc_start(bl, SC_POISON, 10 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));	// Need official rate. [LimitLine]
-		if( tstatus->mode&MD_BOSS )	// Boss monsters should be immune to elemental change trough Cloud Kill. Confirm this. [LimitLine]
-			sc_start2(bl, SC_ELEMENTALCHANGE, 10 + 10 * skilllv, skilllv, 5, skill_get_time2(skillid, skilllv));	// Need official rate. [LimitLine]
+	case SO_VARETYR_SPEAR:
+		sc_start(bl, SC_STUN, (skillid == SO_VARETYR_SPEAR)? 20 : 100, skilllv, skill_get_time2(skillid, skilllv));
 		break;
 	case GN_CART_TORNADO:
 		sc_start(bl, SC_STUN, 1000000, skilllv, skill_get_time2(skillid, skilllv));	// Need official rate. [LimitLine]
@@ -6895,7 +6890,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 	case SO_ARRULLO:
 		if( flag & 1 )
-			sc_start2(bl, type, 100, skilllv, 1, skill_get_time(skillid, skilllv));
+			sc_start2(bl, type, 80, skilllv, 1, skill_get_time(skillid, skilllv));
 		else
 		{
 			clif_skill_nodamage(src, bl, skillid, 0, 1);
@@ -8019,7 +8014,7 @@ int skill_castend_map (struct map_session_data *sd, short skill_num, const char 
 		sd->sc.data[SC_MARIONETTE] ||
 		sd->sc.data[SC_WHITEIMPRISON] ||
 		(sd->sc.data[SC_STASIS] && skill_stasis_check(&sd->bl, sd->sc.data[SC_STASIS]->val2, skill_num)) ||
-		sd->sc.data[SC_DIAMONDDUST] ||
+		sd->sc.data[SC_CRYSTALIZE] ||
 		sd->sc.data[SC__MANHOLE]
 	 )) {
 		skill_failed(sd);
@@ -9422,7 +9417,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			break;
 
 		case UNT_VACUUM_EXTREME:
-			sc_start(bl, SC_STOP, 100, sg->skill_lv, skill_get_time2(sg->skill_id, sg->skill_lv));
+			sc_start(bl, SC_STOP, 100, sg->skill_lv, skill_get_time(sg->skill_id, sg->skill_lv));
 			break;
 
 	}

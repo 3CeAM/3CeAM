@@ -390,12 +390,13 @@ typedef enum sc_type {
 	SC_TEARGAS,
 	SC_MANDRAGORA,
 
+	SC_DEEPSLEEP,
+	
 	SC_FIREWALK,
 	SC_ELECTRICWALK,
-	SC_DIAMONDDUST,
 	SC_WARMER,
 	SC_STRIKING,
-	SC_DEEPSLEEP,
+	SC_CRYSTALIZE,
 
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
@@ -831,7 +832,7 @@ enum si_type {
 	SI_COLDSLOWER = 437,
 	SI_GLOOMYDAY = 438,
 	SI_SONGOFMANA = 439,
-// 440
+	SI_CLOUDKILL = 440,
 	SI_DANCEWITHWUG = 441,
 	SI_RUSHWINDMILL = 442,
 	SI_ECHOSONG = 443,
