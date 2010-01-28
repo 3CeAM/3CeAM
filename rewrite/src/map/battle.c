@@ -3523,14 +3523,17 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		}
 		else
 		{
-			clif_damage(s_bl, s_bl, tick, wd.amotion, wd.dmotion, damage, wd.div_ , wd.type, wd.damage2);
-			if( (--tsc->data[SC__SHADOWFORM]->val3) <= 0 )
+			if( (--tsc->data[SC__SHADOWFORM]->val3) < 0 )
 			{ // If you have exceded max hits supported, remove the sc in both.
 				status_change_end(target, SC__SHADOWFORM, -1);
 				if( s_bl->type == BL_PC )
 					((TBL_PC*)s_bl)->shadowform_id = 0;
 			}
-			status_fix_damage(NULL, s_bl, damage, 0);
+			else
+			{
+				clif_damage(s_bl, s_bl, tick, wd.amotion, wd.dmotion, damage, wd.div_ , wd.type, wd.damage2);
+				status_fix_damage(NULL, s_bl, damage, 0);
+			}
 		}
 	}
 
