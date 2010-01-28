@@ -389,6 +389,23 @@
 16010,Red_Ether_Bag,Red Ether Bag,4,10,,1000,15,,1,1,0x00040000,24,2,2,3,102,1,8,{},{},{}
 18103,Mystic_Bow,Mystic Bow,4,10,,1700,75,,5,0,0x00080800,24,2,34,3,105,1,11,{},{},{}
 
+// New 3rd Job Exclusive Headgears In Work And Testing
+5746,RK_Headgear,RK Headgear,5,10,,100,,0,,0,0xFFFFFFFF,31,2,512,,0,0,12,{},{},{}
+5747,AB_Headgear,AB Headgear,5,10,,100,,0,,0,0xFFFFFFFF,31,2,512,,0,0,12,{},{},{}
+5748,RA_Headgear,RA Headgear,5,10,,100,,0,,0,0xFFFFFFFF,31,2,512,,0,0,12,{},{},{}
+5749,NC_Headgear_M,NC Headgear M,5,10,,100,,0,,0,0xFFFFFFFF,31,2,512,,0,0,12,{},{},{}
+5750,SC_Headgear,SC Headgear,5,10,,100,,0,,0,0xFFFFFFFF,31,2,512,,0,0,12,{},{},{}
+5751,MI_Headgear,MI Headgear,5,10,,100,,0,,0,0xFFFFFFFF,31,2,512,,0,0,12,{},{},{}
+5752,GN_Headgear,GN Headgear,5,10,,100,,0,,0,0xFFFFFFFF,31,2,512,,0,0,12,{},{},{}
+5753,WL_Headgear,WL Headgear,5,10,,100,,0,,0,0xFFFFFFFF,31,2,512,,0,0,12,{},{},{}
+5754,SR_Headgear,SR Headgear,5,10,,100,,0,,0,0xFFFFFFFF,31,2,512,,0,0,12,{},{},{}
+5755,GC_Headgear,GC Headgear,5,10,,100,,0,,0,0xFFFFFFFF,31,2,512,,0,0,12,{},{},{}
+5756,SO_Headgear,SO Headgear,5,10,,100,,0,,0,0xFFFFFFFF,31,2,512,,0,0,12,{},{},{}
+5757,RG_Headgear,RG Headgear,5,10,,100,,0,,0,0xFFFFFFFF,31,2,512,,0,0,12,{},{},{}
+5758,WA_Headgear,WA Headgear,5,10,,100,,0,,0,0xFFFFFFFF,31,2,512,,0,0,12,{},{},{}
+//5759,,,5,10,,100,,0,,0,0xFFFFFFFF,31,2,512,,0,0,12,{},{},{}// This ID was skiped. But why???
+5760,NC_Headgear_F,NC Headgear F,5,10,,100,,0,,0,0xFFFFFFFF,31,2,512,,0,0,12,{},{},{}
+
 // New Test Items
 2463,Test_Item_23,Test Item 23,3,10,,10,,,,,,,,,,,,,{},{},{}
 2465,Test_Item_24,Test Item 24,3,10,,10,,,,,,,,,,,,,{},{},{}
@@ -435,3 +452,4 @@
 6342,Test_Item_65,Test Item 65,3,10,,10,,,,,,,,,,,,,{},{},{}
 6343,Test_Item_66,Test Item 66,3,10,,10,,,,,,,,,,,,,{},{},{}
 12492,Test_Item_67,Test Item 67,3,10,,10,,,,,,,,,,,,,{},{},{}
+12539,Test_Item_68,Test Item 68,3,10,,10,,,,,,,,,,,,,{},{},{}
