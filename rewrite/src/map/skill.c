@@ -1958,17 +1958,27 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 	if( sc && sc->data[SC__SHADOWFORM] && damage > 0 )
 	{
 		struct block_list *s_bl = map_id2bl(sc->data[SC__SHADOWFORM]->val2);
-		if( s_bl && !status_isdead(s_bl) )
+		
+		if( !s_bl )
+		{
+				status_change_end(bl, SC__SHADOWFORM, -1);
+		}
+		else if( status_isdead(s_bl) )
+		{
+				status_change_end(bl, SC__SHADOWFORM, -1);
+				if( s_bl->type == BL_PC )
+					((TBL_PC*)s_bl)->shadowform_id = 0;
+		}
+		else
 		{
 			clif_damage(s_bl,s_bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,dmg.type,dmg.damage2);
-			status_fix_damage(NULL, s_bl, damage, 0);
-			sc->data[SC__SHADOWFORM]->val3--;
-			if( sc->data[SC__SHADOWFORM]->val3 <= 0 || status_isdead(s_bl) )
+			if( (--sc->data[SC__SHADOWFORM]->val3) <= 0 )
 			{
 				status_change_end(bl, SC__SHADOWFORM, -1);
 				if( s_bl->type == BL_PC )
 					((TBL_PC*)s_bl)->shadowform_id = 0;
 			}
+			status_fix_damage(NULL, s_bl, damage, 0);
 		}
 	}
 
@@ -1998,6 +2008,7 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 		else // the central target doesn't display an animation
 			dmg.dmotion = clif_skill_damage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, 5); // needs -2(!) as skill level
 		break;
+	case WM_SEVERE_RAINSTORM_MELEE:
 	case WM_REVERBERATION_MELEE:
 	case WM_REVERBERATION_MAGIC:
 		dmg.dmotion = clif_skill_damage(src, bl, tick, 330, 288, damage, 1, skillid, -2, 6);
@@ -3078,7 +3089,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case NC_SELFDESTRUCTION:
 	case NC_AXETORNADO:
 	case WM_REVERBERATION:
-	case WM_SEVERE_RAINSTORM:
+	case WM_SEVERE_RAINSTORM_MELEE:
 	case SO_VARETYR_SPEAR:
 	case GN_CART_TORNADO:
 		if( flag&1 )
@@ -9342,7 +9353,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			break;
 
 		case UNT_SEVERE_RAINSTORM:
-			skill_castend_damage_id(ss, bl, sg->skill_id, sg->skill_lv, tick, 0);
+			map_foreachinrange(skill_trap_splash,&src->bl, skill_get_splash(WM_SEVERE_RAINSTORM_MELEE, sg->skill_lv), sg->bl_flag, &src->bl,tick);
 			break;
 
 		case UNT_THORNS_TRAP:
@@ -11742,6 +11753,9 @@ static int skill_trap_splash (struct block_list *bl, va_list ap)
 			break;
 		case UNT_ELECTRICSHOCKER:
 			clif_skill_damage(src,bl,tick,0,0,-30000,1,sg->skill_id,sg->skill_lv,5);
+			break;
+		case UNT_SEVERE_RAINSTORM:
+			skill_attack(BF_WEAPON,ss,ss,bl,WM_SEVERE_RAINSTORM_MELEE,sg->skill_lv,tick,0);
 			break;
 		default:
 			skill_attack(skill_get_type(sg->skill_id),ss,src,bl,sg->skill_id,sg->skill_lv,tick,0);

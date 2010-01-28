@@ -1929,6 +1929,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				case SC_TRIANGLESHOT:
 					skillratio += 270 + 30 * skill_lv;
 					break;
+				case WM_SEVERE_RAINSTORM_MELEE:
+					skillratio = 50 * skill_lv;
+					break;
 				case GN_CART_TORNADO:
 					skillratio += 50 * skill_lv;
 					if( sd )
@@ -3508,17 +3511,26 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 	if( tsc && tsc->data[SC__SHADOWFORM] && damage > 0 )
 	{
 		struct block_list *s_bl = map_id2bl(tsc->data[SC__SHADOWFORM]->val2);
-		if( s_bl && !status_isdead(s_bl) )
+		if( !s_bl )
+		{ // If the shadow form target is not present remove the sc.
+			status_change_end(target, SC__SHADOWFORM, -1);
+		}
+		else if( status_isdead(s_bl) )
+		{ // If the shadow form target is dead remove the sc in both.
+			status_change_end(target, SC__SHADOWFORM, -1);
+			if( s_bl->type == BL_PC )
+				((TBL_PC*)s_bl)->shadowform_id = 0;
+		}
+		else
 		{
 			clif_damage(s_bl, s_bl, tick, wd.amotion, wd.dmotion, damage, wd.div_ , wd.type, wd.damage2);
-			status_fix_damage(NULL, s_bl, damage, 0);
-			tsc->data[SC__SHADOWFORM]->val3--;
-			if( tsc->data[SC__SHADOWFORM]->val3 <= 0 || status_isdead(s_bl) )
-			{
+			if( (--tsc->data[SC__SHADOWFORM]->val3) <= 0 )
+			{ // If you have exceded max hits supported, remove the sc in both.
 				status_change_end(target, SC__SHADOWFORM, -1);
 				if( s_bl->type == BL_PC )
 					((TBL_PC*)s_bl)->shadowform_id = 0;
 			}
+			status_fix_damage(NULL, s_bl, damage, 0);
 		}
 	}
 
