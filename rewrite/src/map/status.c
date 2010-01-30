@@ -471,6 +471,12 @@ void initChangeTables(void)
 	set_sc( SC_BLOODYLUST        , SC__BLOODYLUST        , SI_BLOODYLUST        , SCB_BATK|SCB_WATK|SCB_DEF );
 	add_sc( SC_MAELSTROM         , SC__MAELSTROM );
 
+	set_sc( WA_SWING_DANCE       , SC_SWINGDANCE         , SI_SWINGDANCE        , SCB_SPEED|SCB_ASPD );
+	set_sc( WA_SYMPHONY_OF_LOVER , SC_SYMPHONYOFLOVER    , SI_SYMPHONYOFLOVERS  , SCB_MDEF2 );
+	set_sc( WA_MOONLIT_SERENADE  , SC_MOONLITSERENADE    , SI_MOONLITSERENADE   , SCB_MATK );
+	set_sc( MI_RUSH_WINDMILL     , SC_RUSHWINDMILL       , SI_RUSHWINDMILL      , SCB_BATK  );
+	set_sc( MI_ECHOSONG          , SC_ECHOSONG           , SI_ECHOSONG          , SCB_DEF2  );
+	set_sc( MI_HARMONIZE         , SC_HARMONIZE          , SI_HARMONIZE         , SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK );
 	set_sc( WM_LULLABY_DEEPSLEEP , SC_DEEPSLEEP          , SI_DEEPSLEEP         , SCB_NONE );
 
 	set_sc( GN_CARTBOOST         , SC_GN_CARTBOOST    , SI_CARTSBOOST      , SCB_SPEED|SCB_BATK );
@@ -1184,7 +1190,12 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 
 		if (sc->data[SC_DANCING] && flag!=2)
 		{
-			if(sc->data[SC_LONGING])
+			if( src->type == BL_PC && skill_num >= WA_SWING_DANCE && skill_num <= WM_UNLIMITED_HUMMING_VOICE )
+			{ // Lvl 5 Lesson or higher allow you use 3rd job skills while dancing.v
+				if( pc_checkskill((TBL_PC*)src,WM_LESSON) < 5 )
+					return 0;
+			}
+			else if(sc->data[SC_LONGING])
 			{	//Allow everything except dancing/re-dancing. [Skotlex]
 				if (skill_num == BD_ENCORE ||
 					skill_get_inf2(skill_num)&(INF2_SONG_DANCE|INF2_ENSEMBLE_SKILL)
@@ -2206,6 +2217,8 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		status->dex += skill;
 	if((skill=pc_checkskill(sd,RA_RESEARCHTRAP))>0)
 		status->int_ += skill;
+	if((skill=pc_checkskill(sd,WM_LESSON))>0)
+		status->max_sp += 30 * skill;
 
 	// Bonuses from cards and equipment as well as base stat, remember to avoid overflows.
 	i = status->str + sd->status.str + sd->param_bonus[0] + sd->param_equip[0];
@@ -2745,6 +2758,8 @@ void status_calc_regen(struct block_list *bl, struct status_data *status, struct
 			val += skill*3 + skill*status->max_sp/500;
 		if( (skill=pc_checkskill(sd,NJ_NINPOU)) > 0 )
 			val += skill*3 + skill*status->max_sp/500;
+		if( (skill=pc_checkskill(sd,WM_LESSON)) > 0 )
+			val += 3 + 3 * skill;
 		sregen->sp = cap_value(val, 0, SHRT_MAX);
 
 		// Skill-related recovery (only when sit)
@@ -3392,6 +3407,8 @@ static unsigned short status_calc_str(struct block_list *bl, struct status_chang
 		str = 50;
 	if(sc->data[SC_THURISAZ])
 		str += 30;
+	if(sc->data[SC_HARMONIZE])
+		str += sc->data[SC_HARMONIZE]->val2;
 
 	return (unsigned short)cap_value(str,0,USHRT_MAX);
 }
@@ -3429,6 +3446,8 @@ static unsigned short status_calc_agi(struct block_list *bl, struct status_chang
 		agi += ((sc->data[SC_MARIONETTE2]->val3)>>8)&0xFF;
 	if(sc->data[SC_SPIRIT] && sc->data[SC_SPIRIT]->val2 == SL_HIGH && agi < 50)
 		agi = 50;
+	if(sc->data[SC_HARMONIZE])
+		agi += sc->data[SC_HARMONIZE]->val2;
 
 	return (unsigned short)cap_value(agi,0,USHRT_MAX);
 }
@@ -3460,6 +3479,8 @@ static unsigned short status_calc_vit(struct block_list *bl, struct status_chang
 		vit = 50;
 	if(sc->data[SC_LAUDAAGNUS])
 		vit += 4 + sc->data[SC_LAUDAAGNUS]->val1;
+	if(sc->data[SC_HARMONIZE])
+		vit += sc->data[SC_HARMONIZE]->val2;
 
 	return (unsigned short)cap_value(vit,0,USHRT_MAX);
 }
@@ -3501,6 +3522,8 @@ static unsigned short status_calc_int(struct block_list *bl, struct status_chang
 		int_ -= 5 + 5 * sc->data[SC_MANDRAGORA]->val1;
 	if(bl->type == BL_MOB && sc->data[SC__STRIPACCESSORY])
 		int_ -= int_ * sc->data[SC__STRIPACCESSORY]->val2 / 100;
+	if(sc->data[SC_HARMONIZE])
+		int_ += sc->data[SC_HARMONIZE]->val2;
 
 	return (unsigned short)cap_value(int_,0,USHRT_MAX);
 }
@@ -3543,6 +3566,8 @@ static unsigned short status_calc_dex(struct block_list *bl, struct status_chang
 		dex  = 50;
 	if(bl->type == BL_MOB && sc->data[SC__STRIPACCESSORY])
 		dex -= dex * sc->data[SC__STRIPACCESSORY]->val2 / 100;
+	if(sc->data[SC_HARMONIZE])
+		dex += sc->data[SC_HARMONIZE]->val2;
 
 	return (unsigned short)cap_value(dex,0,USHRT_MAX);
 }
@@ -3574,6 +3599,8 @@ static unsigned short status_calc_luk(struct block_list *bl, struct status_chang
 		luk += 4 + sc->data[SC_LAUDARAMUS]->val1;
 	if(bl->type == BL_MOB && sc->data[SC__STRIPACCESSORY])
 		luk -= luk * sc->data[SC__STRIPACCESSORY]->val2 / 100;
+	if(sc->data[SC_HARMONIZE])
+		luk += sc->data[SC_HARMONIZE]->val2;
 
 	return (unsigned short)cap_value(luk,0,USHRT_MAX);
 }
@@ -3620,6 +3647,8 @@ static unsigned short status_calc_batk(struct block_list *bl, struct status_chan
 		batk -= batk * 25 / 100;
 	if(sc->data[SC__BLOODYLUST])
 		batk += batk * 32 / 100; // Still need official value [pakpil]
+	if(sc->data[SC_RUSHWINDMILL])
+		batk += batk * sc->data[SC_RUSHWINDMILL]->val2/100;
 
 	return (unsigned short)cap_value(batk,0,USHRT_MAX);
 }
@@ -3688,6 +3717,8 @@ static unsigned short status_calc_matk(struct block_list *bl, struct status_chan
 		matk += matk * sc->data[SC_MINDBREAKER]->val2/100;
 	if(sc->data[SC_INCMATKRATE])
 		matk += matk * sc->data[SC_INCMATKRATE]->val1/100;
+	if(sc->data[SC_MOONLITSERENADE])
+		matk += matk * sc->data[SC_MOONLITSERENADE]->val2/100;
 
 	return (unsigned short)cap_value(matk,0,USHRT_MAX);
 }
@@ -3901,6 +3932,8 @@ static signed short status_calc_def2(struct block_list *bl, struct status_change
 		def2 -= def2 / 100 * sc->data[SC_MARSHOFABYSS]->val4;
 	if(sc->data[SC_ANALYZE])
 		def2 -= def2 * ( 14 * sc->data[SC_ANALYZE]->val1 ) / 100;
+	if( sc->data[SC_ECHOSONG] )
+		def2 += def2 * sc->data[SC_ECHOSONG]->val2/100;
 
 	return (short)cap_value(def2,1,SHRT_MAX);
 }
@@ -3945,6 +3978,8 @@ static signed short status_calc_mdef2(struct block_list *bl, struct status_chang
 		mdef2 -= mdef2 * sc->data[SC_MINDBREAKER]->val3/100;
 	if(sc->data[SC_ANALYZE])
 		mdef2 -= mdef2 * ( 14 * sc->data[SC_ANALYZE]->val1 ) / 100;
+	if(sc->data[SC_SYMPHONYOFLOVER])
+		mdef2 += mdef2 * sc->data[SC_SYMPHONYOFLOVER]->val2 / 100;
 
 	return (short)cap_value(mdef2,1,SHRT_MAX);
 }
@@ -4080,6 +4115,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				val = max( val, 10 );
 			if( sc->data[SC_GN_CARTBOOST] )
 				val = max( val, sc->data[SC_GN_CARTBOOST]->val2 );
+			if( sc->data[SC_SWINGDANCE] )
+				val = max( val, sc->data[SC_SWINGDANCE]->val2 );
 
 			//FIXME: official items use a single bonus for this [ultramage]
 			if( sc->data[SC_SPEEDUP0] ) // temporary item-based speedup
@@ -4222,6 +4259,8 @@ static short status_calc_aspd_rate(struct block_list *bl, struct status_change *
 		aspd_rate += aspd_rate * sc->data[SC__INVISIBILITY]->val2 / 100;
 	if( sc->data[SC__GROOMY] )
 		aspd_rate += aspd_rate * sc->data[SC__GROOMY]->val2 / 100;
+	if( sc->data[SC_SWINGDANCE] )
+		aspd_rate -= aspd_rate * sc->data[SC_SWINGDANCE]->val2 / 100;
 
 	return (short)cap_value(aspd_rate,0,SHRT_MAX);
 }
@@ -4849,6 +4888,7 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 	case SC_QUAGMIRE:
 	case SC_SUITON:
 	case SC_SECRAMENT:
+	case SC_SWINGDANCE:
 		return 0;
 	}
 	
@@ -4996,7 +5036,10 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
  	if (flag&2)
 		return tick;
 
-	tick -= tick*tick_def/100;
+	if( type == SC_BITE || type == SC_ELECTRICSHOCKER )
+		tick -= tick_def;
+	else
+		tick -= tick*tick_def/100;
 	// Changed to 5 seconds according to recent tests [Playtester]
 	if ((type == SC_ANKLE /*|| type == SC_ELECTRICSHOCKER*/) && tick < 5000)	// Does it also apply for electric shocker? [LimitLine]
 		tick = 5000;
@@ -6454,7 +6497,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			{
 				enum sc_type rsc[3] = { SC_POISON, SC_SILENCE, SC_BLIND };
 				short s = rsc[rand()%3];
-				ShowDebug("s = %d\n",s);
 				val2 = 10 * val1;
 				val3 = 20 * val1;
 				val_flag |= 1|2|4;
@@ -6496,6 +6538,24 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			if( val4 < 1 )
 				val4 = 1;
 			tick = 1000;
+			break;
+		case SC_SWINGDANCE:
+			val2 = 4 * val1;
+			break;
+		case SC_SYMPHONYOFLOVER:
+			val2 = 20 * val1;
+			break;			
+		case SC_MOONLITSERENADE:
+			val2 = 10 * val1;
+			break;
+		case SC_RUSHWINDMILL:
+			val2 = 10 * val1;
+			break;
+		case SC_ECHOSONG:
+			val2 = 20 * val1;
+			break;
+		case SC_HARMONIZE:
+			val2 = 3 + 2 * val1;
 			break;
 		case SC_DEEPSLEEP:
 			val4 = tick / 2000;

@@ -1929,6 +1929,11 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				case SC_TRIANGLESHOT:
 					skillratio += 270 + 30 * skill_lv;
 					break;
+				case WM_METALICSOUND:
+					skillratio += 450 + (50 * skill_lv);
+					if( sd )
+						skillratio += pc_checkskill(sd,WM_LESSON);
+					break;
 				case WM_SEVERE_RAINSTORM_MELEE:
 					skillratio = 50 * skill_lv;
 					break;
@@ -4139,8 +4144,8 @@ static const struct _battle_data {
 	{ "arrow_decrement",                    &battle_config.arrow_decrement,                 1,      0,      2,              },
 	{ "max_aspd",                           &battle_config.max_aspd,                        199,    100,    199,            },
 	{ "max_walk_speed",                     &battle_config.max_walk_speed,                  300,    100,    100*DEFAULT_WALK_SPEED, },
-	{ "max_lv",                             &battle_config.max_lv,                          99,     0,      127,            },
-	{ "aura_lv",                            &battle_config.aura_lv,                         99,     0,      INT_MAX,        },
+	{ "max_lv",                             &battle_config.max_lv,                          150,     0,      150,            },
+	{ "aura_lv",                            &battle_config.aura_lv,                         150,     0,      INT_MAX,        },
 	{ "max_hp",                             &battle_config.max_hp,                          32500,  100,    1000000000,     },
 	{ "max_sp",                             &battle_config.max_sp,                          32500,  100,    1000000000,     },
 	{ "max_cart_weight",                    &battle_config.max_cart_weight,                 8000,   100,    1000000,        },

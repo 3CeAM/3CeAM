@@ -802,8 +802,10 @@ static int clif_set_unit_idle(struct block_list* bl, unsigned char* buffer, bool
 		WBUFW(buf,0) = spawn?0x79:0x78;
 #elif PACKETVER < 7
 		WBUFW(buf,0) = spawn?0x1d9:0x1d8;
-#else
+#elif PACKETVER < 20080102
 		WBUFW(buf,0) = spawn?0x22b:0x22a;
+#else
+		WBUFW(buf,0) = spawn?0x2ed:0x2ee;
 #endif
 
 #if PACKETVER >= 20071106
@@ -890,6 +892,9 @@ static int clif_set_unit_idle(struct block_list* bl, unsigned char* buffer, bool
 	WBUFB(buf,50) = (sd)? 5 : 0;
 	if (spawn) {
 		WBUFW(buf,51) = clif_setlevel(status_get_lv(bl));
+#if PACKETVER >= 20080102
+		WBUFW(buf,53) = (sd)?sd->state.user_font:0;
+#endif
 	} else {
 		WBUFB(buf,51) = vd->dead_sit;
 		WBUFW(buf,52) = clif_setlevel(status_get_lv(bl));

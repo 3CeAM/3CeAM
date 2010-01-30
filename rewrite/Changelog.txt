@@ -5,6 +5,13 @@
 // 	- Details.
 //========================================
 
+01/30/2010
+	r166 [pakpil]
+	* Fixed max_lv and aura_lv in battle_confing that was caussing problems with 3rd jobs auras. Bug report 99.
+	* Added WA_SWING_DANCE, WA_SYMPHONY_OF_LOVER, WA_MOONLIT_SERENADE, MI_RUSH_WINDMILL, MI_ECHOSONG, MI_HARMONIZE and WM_METALICSOUND skills.
+	* Added support to packets 0x2ed and 0x2ee that was the lastest spawn/standing packet before the last change.	
+	* Minor fix in SC_BITE and SC_ELECTRICSHOKCKER that reduce tick directly instead by percentage.
+
 01/228/2010
 	r165 [Rytech]
 	*Added in the ID's for the 3rd job exclusive headgears.
