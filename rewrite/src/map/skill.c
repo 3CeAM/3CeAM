@@ -244,8 +244,6 @@ int skill_get_range2 (struct block_list *bl, int id, int lv)
 	case AC_CHARGEARROW:	case RA_AIMEDBOLT:
 	case MA_CHARGEARROW:	case RA_WUGBITE:
 	case SN_FALCONASSAULT:
-	case SN_SHARPSHOOTING:
-	case MA_SHARPSHOOTING:
 	case HT_POWER:
 		if( bl->type == BL_PC )
 			range += pc_checkskill((TBL_PC*)bl, AC_VULTURE);
@@ -2044,17 +2042,19 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 				tsd->status.skill[tsd->cloneskill_id].id = 0;
 				tsd->status.skill[tsd->cloneskill_id].lv = 0;
 				tsd->status.skill[tsd->cloneskill_id].flag = 0;
+				clif_skillinfo_delete(tsd,tsd->cloneskill_id);
 			}
 
 			if ((type = pc_checkskill(tsd,RG_PLAGIARISM)) < lv)
 				lv = type;
 
 			tsd->cloneskill_id = skillid;
+			pc_setglobalreg(tsd, "CLONE_SKILL", skillid);
+			pc_setglobalreg(tsd, "CLONE_SKILL_LV", lv);
+
 			tsd->status.skill[skillid].id = skillid;
 			tsd->status.skill[skillid].lv = lv;
 			tsd->status.skill[skillid].flag = 13;//cloneskill flag
-			pc_setglobalreg(tsd, "CLONE_SKILL", skillid);
-			pc_setglobalreg(tsd, "CLONE_SKILL_LV", lv);
 			clif_addskill(tsd,skillid);
 		}
 	}
@@ -2100,7 +2100,7 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 		if( !status_isdead(bl) )
 			skill_additional_effect(src,bl,skillid,skilllv,dmg.flag,dmg.dmg_lv,tick);
 		if( damage > 0 ) //Counter status effects [Skotlex]
-			skill_counter_additional_effect(dsrc,bl,skillid,skilllv,dmg.flag,tick);
+			skill_counter_additional_effect(src,bl,skillid,skilllv,dmg.flag,tick);
 	}
 
 	// Apply knock back chance in SC_TRIANGLESHOT skill.
@@ -2527,7 +2527,7 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 			break;
 		if(skl->target_id) {
 			target = map_id2bl(skl->target_id);
-			if( (skl->skill_id == RG_INTIMIDATE || skl->skill_id == SC_FATALMENACE) && (!target || target->prev == NULL) )
+			if( (skl->skill_id == RG_INTIMIDATE || skl->skill_id == SC_FATALMENACE) && (!target || target->prev == NULL || !check_distance_bl(src,target,AREA_SIZE)) )
 				target = src; //Required since it has to warp.
 			if(target == NULL)
 				break;
