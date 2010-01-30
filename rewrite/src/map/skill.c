@@ -1037,6 +1037,10 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 			skill_castend_damage_id(src, bl, NC_AXEBOOMERANG, pc_checkskill(sd, NC_AXEBOOMERANG), tick, 1);
 		sc_start(bl, SC_STUN, 5*skilllv, skilllv, skill_get_time(skillid, skilllv));
 		break;
+	case WM_METALICSOUND:
+		if( rand()%100 < 20 + 5 * skilllv )
+			sc_start(bl, SC_CHAOS, 100, skilllv, skill_get_time(skillid,skilllv));
+		break;
 	case SO_EARTHGRAVE:
 		sc_start(bl, SC_BLEEDING, 10 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));	// Need official rate. [LimitLine]
 		break;
@@ -2878,6 +2882,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case NC_AXEBOOMERANG:
 	case NC_POWERSWING:
 	case SC_TRIANGLESHOT:
+	case WM_METALICSOUND:
 	case GN_CRAZYWEED_ATK:
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
@@ -4300,6 +4305,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case NC_ACCELERATION:
 	case NC_HOVERING:
 	case SC_DEADLYINFECT:
+	case MI_HARMONIZE:
 	case SO_STRIKING:
 	case GN_CARTBOOST:
 		clif_skill_nodamage(src,bl,skillid,skilllv,
@@ -4693,6 +4699,11 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case CASH_BLESSING:
 	case CASH_INCAGI:
 	case CASH_ASSUMPTIO:
+	case WA_SWING_DANCE:
+	case WA_SYMPHONY_OF_LOVER:
+	case WA_MOONLIT_SERENADE:
+	case MI_RUSH_WINDMILL:
+	case MI_ECHOSONG:
 		if( sd == NULL || sd->status.party_id == 0 || (flag & 1) )
 			clif_skill_nodamage(bl, bl, skillid, skilllv, sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
 		else if( sd )
@@ -8022,7 +8033,7 @@ int skill_castend_map (struct map_session_data *sd, short skill_num, const char 
 		sd->sc.data[SC_ROKISWEIL] ||
 		sd->sc.data[SC_AUTOCOUNTER] ||
 		sd->sc.data[SC_STEELBODY] ||
-		sd->sc.data[SC_DANCING] ||
+		(sd->sc.data[SC_DANCING] && skill_num < RK_ENCHANTBLADE && !pc_checkskill(sd, WM_LESSON)) ||
 		sd->sc.data[SC_BERSERK] ||
 		sd->sc.data[SC_BASILICA] ||
 		sd->sc.data[SC_MARIONETTE] ||
@@ -9670,9 +9681,8 @@ int skill_unit_ondamaged (struct skill_unit *src, struct block_list *bl, int dam
 		skill_blown(bl, &src->bl, 2, -1, 0);
 		break;
 	case UNT_REVERBERATION:
-		damage = 1;
-		clif_damage(bl,&src->bl,tick,0,0,1,1,6,0);
-		skill_delunit(src);
+		src->val1 = 1;
+		src->limit = DIFF_TICK(tick, src->group->tick) + 800;
 		break;
 	case UNT_WALLOFTHORN:
 		src->val1 -= damage;
@@ -12339,6 +12349,11 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 			case UNT_REVERBERATION:
 			{ 
 				struct block_list *ss = map_id2bl(group->src_id);
+				if(unit->val1 != 1) // If it was deactivated.
+				{
+					skill_delunit(unit);
+					break;
+				}
 				clif_changetraplook(bl,UNT_USED_TRAPS);
 				skill_castend_damage_id(ss, &group->unit->bl, group->skill_id, group->skill_lv, tick, 0);
 				group->limit=DIFF_TICK(tick,group->tick)+1500;
