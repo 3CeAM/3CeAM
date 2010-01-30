@@ -6,6 +6,9 @@
 //========================================
 
 01/30/2010
+	r167 [Jobbie]
+	* Merge eAthena Updates upto r14328(excluding those stable updates).
+
 	r166 [pakpil]
 	* Fixed max_lv and aura_lv in battle_confing that was caussing problems with 3rd jobs auras. Bug report 99.
 	* Added WA_SWING_DANCE, WA_SYMPHONY_OF_LOVER, WA_MOONLIT_SERENADE, MI_RUSH_WINDMILL, MI_ECHOSONG, MI_HARMONIZE and WM_METALICSOUND skills.
