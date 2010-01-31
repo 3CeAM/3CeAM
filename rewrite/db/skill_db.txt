@@ -1012,12 +1012,12 @@
 
 // Minstrel/Wanderer
 2412,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		WM_LESSON,Lesson
-2413,9,6,1,0,0,0,5,1,no,0,0,0,weapon,0,		WM_METALICSOUND,Metallic Sound
-2414,9,6,2,0,0x1,3,5,1,no,0,0,3,misc,0,		WM_REVERBERATION,Reverberation
-2415,0,0,0,0,0,0,5,1,no,0,0,0,weapon,0,		WM_REVERBERATION_MELEE,Reverberation Melee
-2416,0,0,0,0,0,0,5,1,no,0,0,0,magic,0,		WM_REVERBERATION_MAGIC,Reverberation Magic
+2413,9,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,		WM_METALICSOUND,Metallic Sound
+2414,9,6,2,-1,0x1,3,5,1,no,0,0,3,misc,0,		WM_REVERBERATION,Reverberation
+2415,0,0,0,-1,0,0,5,1,no,0,0,0,weapon,0,		WM_REVERBERATION_MELEE,Reverberation Melee
+2416,0,0,0,-1,0,0,5,1,no,0,0,0,magic,0,			WM_REVERBERATION_MAGIC,Reverberation Magic
 2417,11,6,2,0,0x3,11,1,1,no,0,0,0,misc,0,		WM_DOMINION_IMPULSE,Dominion Impulse
-2418,8,6,2,0,0x1,0,5,1,yes,0,0,0,weapon,0,	WM_SEVERE_RAINSTORM,Severe Rainstorm
+2418,8,6,2,-1,0x1,0,5,1,yes,0,0,0,weapon,0,	WM_SEVERE_RAINSTORM,Severe Rainstorm
 2419,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		WM_POEMOFNETHERWORLD,Poem of The Netherworld
 2420,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		WM_VOICEOFSIREN,Voice of Siren
 2421,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		WM_DEADHILLHERE,Valley of Death

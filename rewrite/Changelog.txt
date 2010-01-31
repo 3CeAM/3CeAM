@@ -5,6 +5,12 @@
 // 	- Details.
 //========================================
 
+01/31/2010
+	r168 [Jobbie]
+	* Minor fix on eAthena merge. follow up r167
+	* Minor fix on Reverberation which calculation to damage not added in battle.c
+	* Reverberation, Metallic Sound and Severe Rainstorm should take weapons element.
+
 01/30/2010
 	r167 [Jobbie]
 	* Merge eAthena Updates upto r14328(excluding those stable updates).
