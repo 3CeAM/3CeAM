@@ -2038,7 +2038,6 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 		{
 			int lv = skilllv;
 			if (tsd->cloneskill_id && tsd->status.skill[tsd->cloneskill_id].flag == 13){
-				clif_skillinfo_delete(tsd,tsd->cloneskill_id);
 				tsd->status.skill[tsd->cloneskill_id].id = 0;
 				tsd->status.skill[tsd->cloneskill_id].lv = 0;
 				tsd->status.skill[tsd->cloneskill_id].flag = 0;
@@ -4595,12 +4594,18 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 	case ASC_METEORASSAULT:
 	case GS_SPREADATTACK:
-	case NPC_EARTHQUAKE:
+		skill_area_temp[1] = 0;
+		clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), splash_target(src), 
+			src, skillid, skilllv, tick, flag|BCT_ENEMY|SD_SPLASH|1, skill_castend_damage_id);
+		break;
+
 	case NC_FLAMELAUNCHER:
 	case NC_AXETORNADO:
 	case NC_INFRAREDSCAN:
 	case GN_CART_TORNADO:
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
+	case NPC_EARTHQUAKE:
 	case NPC_VAMPIRE_GIFT:
 	case NPC_HELLJUDGEMENT:
 	case NPC_PULSESTRIKE:
