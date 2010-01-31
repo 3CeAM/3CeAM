@@ -13755,6 +13755,29 @@ void clif_millenniumshield(struct map_session_data *sd, short shields )
 #endif
 }
 
+// Display gain exp
+// flag = 1 -> base_exp
+// flag = 2 -> job_exp
+int clif_displayexp(struct map_session_data *sd, int exp, short flag)
+{
+#if PACKETVER >= 20091027
+	int fd;
+
+	nullpo_retr(0, sd);
+
+	fd = sd->fd;
+
+	WFIFOHEAD(fd, packet_len(0x7f6));
+	WFIFOW(fd,0) = 0x7f6;
+	WFIFOL(fd,2) = sd->bl.id;
+	WFIFOL(fd,6) = exp;
+	WFIFOW(fd,10) = flag;
+	WFIFOW(fd,12) = (exp > 0)?0:1;
+	WFIFOSET(fd,packet_len(0x7f6));
+#endif
+	return 0;
+}
+
 /*==========================================
  * パケットデバッグ
  *------------------------------------------*/
@@ -14146,9 +14169,9 @@ static int packetdb_readdb(void)
 	    6,  2, -1,  4,  4,  4,  4,  8,  8,268,  6,  8,  6, 54, 30, 54,
 #endif
 	    0,  0,  8,  0,  0,  8,  8, 32, -1,  5,  0,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  8, 25,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0, 14,  0,  0,  0,  8, 25,  0,  0,  0,  0,
 	  //#0x0800
-		0, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 14,  0,
 	};
 	struct {
 		void (*func)(int, struct map_session_data *);
