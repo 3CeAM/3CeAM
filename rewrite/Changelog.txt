@@ -6,6 +6,13 @@
 //========================================
 
 01/31/2010
+	r170 [pakpil]
+	* Fixed WA_SWING_DANCE, WA_SYMPHONY_OF_LOVER, WA_MOONLIT_SERENADE, MI_RUSH_WINDMILL, MI_ECHOSONG, MI_HARMONIZE that are not stackable.
+	* Fixed WA_SYPMPHONY_OF_LOVER that affect Mdef instead Mdef2.
+	* Fexed WA_SWINGDANCE that have a different value to ASPD and SPEED.
+	* Added new packet that show exp you gain/lost in  the official server.
+
+01/31/2010
 	r168 [Jobbie]
 	* Minor fix on eAthena merge. follow up r167
 	* Minor fix on Reverberation which calculation to damage not added in battle.c
