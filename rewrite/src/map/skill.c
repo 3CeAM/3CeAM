@@ -2013,6 +2013,9 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 		else // the central target doesn't display an animation
 			dmg.dmotion = clif_skill_damage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, 5); // needs -2(!) as skill level
 		break;
+	case SC_FEINTBOMB:
+		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,1,skillid,skilllv,5);
+		break;
 	case WM_SEVERE_RAINSTORM_MELEE:
 	case WM_REVERBERATION_MELEE:
 	case WM_REVERBERATION_MAGIC:
@@ -2628,6 +2631,26 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 						}
 					}
 					break;
+				case SC_FEINTBOMB:
+					{
+						short x = 0, y = 0;
+						switch( unit_getdir(src) )
+						{
+							case 0: y -= 6; break;
+							case 1: x += 3; y -= 3; break;
+							case 2: x += 6; break;
+							case 3: x -= 3; y += 3; break;
+							case 4: y += 6; break;
+							case 5: x -= 3; y += 3; break;
+							case 6: x -= 6; break;
+							case 7: x -= 3; y -= 3; break;
+							default: break;
+						}
+						if( unit_movepos(src, src->x+x, src->y+y, 1, 0))
+							clif_slide(src,src->x+x,src->y+y);
+					}
+					break;
+
 				default:
 					skill_attack(skl->type,src,src,target,skl->skill_id,skl->skill_lv,tick,skl->flag);
 					break;
@@ -2881,6 +2904,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case NC_AXEBOOMERANG:
 	case NC_POWERSWING:
 	case SC_TRIANGLESHOT:
+	case SC_FEINTBOMB:
 	case WM_METALICSOUND:
 	case GN_CRAZYWEED_ATK:
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
@@ -7966,6 +7990,12 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		map_foreachinarea(skill_detonator,src->m,x-i,y-i,x+i,y+i,BL_SKILL,src);
 		clif_skill_damage(src,src,tick,status_get_amotion(src),0,-30000,1,skillid,skilllv,6);
 		break;
+	
+	case SC_FEINTBOMB:
+		skill_unitsetting(src,skillid,skilllv,x,y,0);			
+		clif_skill_nodamage(src,src,skillid,skilllv,1);
+		skill_addtimerskill(src,tick+1000,src->id,src->x,src->y,skillid,skilllv,BF_MISC,flag|BCT_ENEMY|SD_SPLASH|1);
+		break;
 
 	case WM_DOMINION_IMPULSE:
 		i = skill_get_splash(skillid, skilllv);
@@ -8518,6 +8548,10 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 
 		break;
 		}
+		break;
+	case SC_FEINTBOMB:
+		limit = skill_get_time2(skillid,skilllv);
+		break;
 	case WM_REVERBERATION:
 		interval = limit;
 		break;
@@ -12388,6 +12422,15 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 					if (sd && !map[sd->bl.m].flag.nowarp)
 						pc_setpos(sd,map_id2index(unit->bl.m),unit->bl.x,unit->bl.y,3);
 				}
+				skill_delunit(unit);
+			}
+			break;
+
+			case UNT_FEINTBOMB:
+			{
+				struct block_list *src =  map_id2bl(group->src_id);
+				if( src )
+					map_foreachinrange(skill_area_sub, &unit->bl, skill_get_splash(group->skill_id, group->skill_lv), splash_target(src), src, SC_FEINTBOMB, group->skill_lv, tick, BCT_ENEMY|1, skill_castend_damage_id);
 				skill_delunit(unit);
 			}
 			break;

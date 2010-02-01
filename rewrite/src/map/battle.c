@@ -1929,6 +1929,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				case SC_TRIANGLESHOT:
 					skillratio += 270 + 30 * skill_lv;
 					break;
+				case SC_FEINTBOMB:
+					skillratio += 100 + 100 * skill_lv;
+					break;
 				case WM_METALICSOUND:
 					skillratio += 450 + (50 * skill_lv);
 					if( sd )

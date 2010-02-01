@@ -112,7 +112,8 @@
 2301,0xce,   ,  0, 5,  -1,all,   0x00E	//SC_CHAOSPANIC
 2302,0xcf,   ,  0, 5,  -1,all,   0x002	//SC_MAELSTROM
 2303,0xd0,   ,  0, 5,  -1,all,   0x018	//SC_BLOODYLUST
-2414,0xda,   ,  0, 2,1000,enemy,0x018	//WM_REVERBERATION
+2304,0xd1,   ,  0, 4,2000,enemy, 0x000	//SC_FEINTBOMB
+2414,0xda,   ,  0, 2,1000,enemy, 0x018	//WM_REVERBERATION
 2418,0xdb,   ,  0,11, 300,enemy, 0x800	//WM_SEVERE_RAINSTORM
 2443,0xdc,   ,  0, 1,1000,enemy, 0x008	//SO_FIREWALK
 2444,0xdd,   ,  0, 1,1000,enemy, 0x008	//SO_ELECTRICWALK
