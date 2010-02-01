@@ -6,6 +6,14 @@
 //========================================
 
 02/01/2010
+	r173 [Rytech]
+	*Added completed set of exclusive 3rd job headgears.
+	-Note: I need the name of the skill that damage is boosted for the Guillotine Cross.
+	-Note 2: I didnt see any bonus to increase just ranged damage, so I just added a % increase.
+	-No worry since jobs like Minstreal and Wanderer will use only bow, instruments, and wips.
+	-ID 5759 exists in the client, but the item has not been released. So its disabled for now.
+
+02/01/2010
 	r172 [pakpil]
 	* Added recoded SC_FEINTBOMB.
 
