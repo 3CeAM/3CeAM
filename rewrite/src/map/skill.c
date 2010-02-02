@@ -12966,11 +12966,14 @@ int skill_produce_mix (struct map_session_data *sd, int skill_id, int nameid, in
 				make_per = 100000; // should be 100% success rate
 				break;
 			case RK_RUNEMASTERY:
-				make_per = 4 + sd->menuskill_itemused * pc_checkskill(sd,skill_id) * 100;
-				if(battle_config.rune_produce_rate != 100)
-					make_per = make_per * battle_config.rune_produce_rate / 100;
-				qty += rand()%(pc_checkskill(sd,skill_id) > 5)?4:2;
-				sd->menuskill_itemused = sd->menuskill_id = 0;
+				{ 
+					int skill_lv = pc_checkskill(sd,skill_id);
+					make_per = 5 * (sd->menuskill_itemused + skill_lv) * 100;
+					if(battle_config.rune_produce_rate != 100)
+						make_per = make_per * battle_config.rune_produce_rate / 100;
+					qty = 1 + rand()%((skill_lv > 5)?3:2);
+					sd->menuskill_itemused = sd->menuskill_id = 0;
+				}
 				break;
 			default:
 				if (sd->menuskill_id ==	AM_PHARMACY &&

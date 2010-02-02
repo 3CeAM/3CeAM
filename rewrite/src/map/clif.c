@@ -2948,7 +2948,8 @@ int clif_skill_select_request( struct map_session_data *sd )
 	WFIFOW(fd,0) = 0x442;
 	for( i = 0, c = 0; i < MAX_SKILL; i++)
 	{
-		if( sd->status.skill[i].flag == 13 && sd->status.skill[i].id > 0 && sd->status.skill[i].id <= NJ_ISSEN)
+		if( sd->status.skill[i].flag == 13 && sd->status.skill[i].id > 0 && sd->status.skill[i].id <= NJ_ISSEN &&
+			skill_get_type(sd->status.skill[i].id) == BF_MAGIC )
 		{
 			// Can't auto cast both Extended class and 3rd class skills.
 			WFIFOW(fd,8+c*2) = sd->status.skill[i].id;

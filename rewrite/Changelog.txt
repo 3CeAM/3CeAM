@@ -5,6 +5,11 @@
 // 	- Details.
 //========================================
 
+02/02/2010
+	r175 [pakpil]
+	* Fixed RK_RUNEMASTERY that was crashing map_server at level lowdest than 10 while crafting.
+	* Fixed SC_AUTOSHADOWSPELL that shouldn't spell physical skills. Bug report 131.
+
 02/01/2010
 	r174 [Rytech]
 	*Filled in the missing spot for the Guillotine Cross exclusive headgear.
