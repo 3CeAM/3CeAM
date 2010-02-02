@@ -6,6 +6,11 @@
 //========================================
 
 02/01/2010
+	r174 [Rytech]
+	*Filled in the missing spot for the Guillotine Cross exclusive headgear.
+	-It appears to be Phantom Menace that gets the %10 increase. Thanks Executor.
+
+02/01/2010
 	r173 [Rytech]
 	*Added completed set of exclusive 3rd job headgears.
 	-Note: I need the name of the skill that damage is boosted for the Guillotine Cross.
