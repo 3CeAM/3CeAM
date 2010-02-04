@@ -1049,13 +1049,13 @@
 2453,9,6,2,0,0,0,5,1,yes,0,0,0,magic,0,		SO_VACUUM_EXTREME,Vacuum Extreme
 2454,9,6,1,4,0x2,3:3:5:5:7,5,1,yes,0,0,0,magic,0,	SO_VARETYR_SPEAR,Varetyr Spear
 2455,9,6,1,0,0x3,3:3:5:5:7,5,1,yes,0,0,0,magic,0,	SO_ARRULLO,Arrullo
-//2456,0,0,0,0,0,0,??,0,no,0,0,0,none,0,	SO_EL_CONTROL,
-//2457,0,0,0,0,0,0,??,0,no,0,0,0,none,0,	SO_SUMMON_AGNI,
-//2458,0,0,0,0,0,0,??,0,no,0,0,0,none,0,	SO_SUMMON_AQUA,
-//2459,0,0,0,0,0,0,??,0,no,0,0,0,none,0,	SO_SUMMON_VENTUS,
-//2460,0,0,0,0,0,0,??,0,no,0,0,0,none,0,	SO_SUMMON_TERA,
+2456,0,0,0,0,0,0,3,0,no,0,0,0,none,0,	SO_EL_CONTROL,Ordinance Control
+2457,0,0,0,0,0,0,3,0,no,0,0,0,none,0,	SO_SUMMON_AGNI,Summon Agni
+2458,0,0,0,0,0,0,3,0,no,0,0,0,none,0,	SO_SUMMON_AQUA,Summon Aqua
+2459,0,0,0,0,0,0,3,0,no,0,0,0,none,0,	SO_SUMMON_VENTUS,Summon Ventus
+2460,0,0,0,0,0,0,3,0,no,0,0,0,none,0,	SO_SUMMON_TERA,Summon Tera
 
-//2472,0,0,0,0,0,0,??,0,no,0,0,0,none,0,	SO_ENDMARK,
+2472,0,0,0,0,0,0,1,0,no,0,0,0,none,0,	SO_ENDMARK,Ending Mark
 
 // Genetic
 2474,0,0,0,0,0,0,5,0,no,0,0,0,weapon,0,		GN_TRAINING_SWORD,Sword Training
