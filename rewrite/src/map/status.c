@@ -4252,7 +4252,7 @@ static short status_calc_aspd_rate(struct block_list *bl, struct status_change *
 	if( sc->data[SC_FREEZING] )
 		aspd_rate += 300;
 	if( sc->data[SC_OTHILA] && sc->data[SC_OTHILA]->val2 )
-		aspd_rate -= aspd_rate * sc->data[SC_OTHILA]->val2 / 100;
+		aspd_rate -= (aspd_rate * sc->data[SC_OTHILA]->val2 / 100) + sc->data[SC_OTHILA]->val3;
 	if( sc->data[SC__BODYPAINT] )
 		aspd_rate += aspd_rate * 25 / 100;
 	if( sc->data[SC__INVISIBILITY] )

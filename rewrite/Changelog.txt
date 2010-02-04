@@ -5,6 +5,14 @@
 // 	- Details.
 //========================================
 
+02/04/2010
+	r176 [pakpil]
+	* Fixed RK_RUNEMASTERY.
+	- Fixed the max amount of each rune you can carry.
+	- Fixed the ASPD bonus while using Fighting Spirit that should add +4 ASPD if you have Rune Mastery at level 10.
+	* Fixed SC_FEINTBOMB. This skill have been adjusted to the official behavior.
+	* Fixed WM_REVERBERATION. It can be destroyed by attacking it with ranged skills or magic. It takes 1 damage from everything.
+
 02/02/2010
 	r175 [pakpil]
 	* Fixed RK_RUNEMASTERY that was crashing map_server at level lowdest than 10 while crafting.

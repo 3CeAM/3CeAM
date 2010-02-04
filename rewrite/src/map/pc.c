@@ -3293,6 +3293,11 @@ int pc_additem(struct map_session_data *sd,struct item *item_data,int amount)
 			{
 				if( amount > MAX_AMOUNT - sd->status.inventory[i].amount )
 					return 5;
+				if( itemdb_is_rune(sd->status.inventory[i].nameid) && amount > MAX_RUNE - sd->status.inventory[i].amount )
+				{
+					clif_msgtable(sd->fd,1418);
+					return 1;
+				}
 				sd->status.inventory[i].amount += amount;
 				clif_additem(sd,i,amount,0);
 				break;
