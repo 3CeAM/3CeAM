@@ -5,6 +5,13 @@
 // 	- Details.
 //========================================
 
+02/03/2010
+	r176 [Rytech]
+	*Added skill max level, SP requirements, and names for Sorcerer's summon skills.
+	-I also enabled the 6 skills as their's enough support for them to appear.
+	-Latest clients do support these tags, but no official icons has been released yet. So take caution for now.
+	-Im now ready for its official release. =D
+
 02/04/2010
 	r176 [pakpil]
 	* Fixed RK_RUNEMASTERY.
