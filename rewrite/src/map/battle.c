@@ -1375,6 +1375,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 			flag.hit = 1;
 	}	//End hit/miss calculation
 
+	if( target->type == BL_SKILL && ((TBL_SKILL*)target)->group->unit_id == UNT_REVERBERATION )
+		flag.infdef = 1;
+
 	if (flag.hit && !flag.infdef) //No need to do the math for plants
 	{	//Hitting attack
 

@@ -2631,25 +2631,6 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 						}
 					}
 					break;
-				case SC_FEINTBOMB:
-					{
-						short x = 0, y = 0;
-						switch( unit_getdir(src) )
-						{
-							case 0: y -= 6; break;
-							case 1: x += 3; y -= 3; break;
-							case 2: x += 6; break;
-							case 3: x -= 3; y += 3; break;
-							case 4: y += 6; break;
-							case 5: x -= 3; y += 3; break;
-							case 6: x -= 6; break;
-							case 7: x -= 3; y -= 3; break;
-							default: break;
-						}
-						if( unit_movepos(src, src->x+x, src->y+y, 1, 0))
-							clif_slide(src,src->x+x,src->y+y);
-					}
-					break;
 
 				default:
 					skill_attack(skl->type,src,src,target,skl->skill_id,skl->skill_lv,tick,skl->flag);
@@ -6447,7 +6428,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				i = party_foreachsamemap(skill_area_sub,sd,skill_get_splash(skillid,skilllv),src,skillid,skilllv,tick,BCT_PARTY,skill_area_sub_count);
 				if( i > 1 )
 					atk += atk * (i-1);
-				sc_start2(bl,type,100,atk,aspd,skill_get_time(skillid,skilllv));
+				sc_start4(bl,type,100,atk,aspd,4*(pc_checkskill(sd,RK_RUNEMASTERY) == 10),0,skill_get_time(skillid,skilllv));
 				party_foreachsamemap(skill_area_sub,sd,skill_get_splash(skillid,skilllv),
 					src,skillid,skilllv,tick,flag|BCT_PARTY|1,skill_castend_nodamage_id);
 			}
@@ -7991,10 +7972,26 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		clif_skill_damage(src,src,tick,status_get_amotion(src),0,-30000,1,skillid,skilllv,6);
 		break;
 	
-	case SC_FEINTBOMB:
-		skill_unitsetting(src,skillid,skilllv,x,y,0);			
-		clif_skill_nodamage(src,src,skillid,skilllv,1);
-		skill_addtimerskill(src,tick+1000,src->id,src->x,src->y,skillid,skilllv,BF_MISC,flag|BCT_ENEMY|SD_SPLASH|1);
+	case SC_FEINTBOMB:	
+		{
+			short x = src->x, y = src->y;
+			skill_unitsetting(src,skillid,skilllv,x,y,0);			
+			clif_skill_nodamage(src,src,skillid,skilllv,1);
+			switch( unit_getdir(src) )
+			{
+				case 0: y -= 6; break;
+				case 1: x += 3; y -= 3; break;
+				case 2: x += 6; break;
+				case 3: x -= 3; y += 3; break;
+				case 4: y += 6; break;
+				case 5: x -= 3; y += 3; break;
+				case 6: x -= 6; break;
+				case 7: x -= 3; y -= 3; break;
+				default: break;
+			}
+			if( unit_movepos(src, x, y, 1, 1))
+			clif_slide(src,x,y);
+		}
 		break;
 
 	case WM_DOMINION_IMPULSE:
@@ -8549,9 +8546,7 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 		break;
 		}
 		break;
-	case SC_FEINTBOMB:
-		limit = skill_get_time2(skillid,skilllv);
-		break;
+
 	case WM_REVERBERATION:
 		interval = limit;
 		break;
@@ -9440,7 +9435,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 
 		case UNT_REVERBERATION:
 			sg->limit = DIFF_TICK(gettick(),sg->tick) + 1500;
-			sg->val2 = 1;
+			sg->val1 = 0;
 			clif_changetraplook(&src->bl,UNT_USED_TRAPS);
 			skill_castend_damage_id(ss,&sg->unit->bl, sg->skill_id, sg->skill_lv, tick, SD_LEVEL|BCT_ENEMY);
 			sg->unit_id = UNT_USED_TRAPS;
@@ -9761,8 +9756,7 @@ int skill_unit_ondamaged (struct skill_unit *src, struct block_list *bl, int dam
 		skill_blown(bl, &src->bl, 2, -1, 0);
 		break;
 	case UNT_REVERBERATION:
-		src->val1 = 1;
-		src->limit = DIFF_TICK(tick, src->group->tick) + 800;
+		src->val1 = 0;
 		break;
 	case UNT_WALLOFTHORN:
 		src->val1 -= damage;
@@ -12426,19 +12420,10 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 			}
 			break;
 
-			case UNT_FEINTBOMB:
-			{
-				struct block_list *src =  map_id2bl(group->src_id);
-				if( src )
-					map_foreachinrange(skill_area_sub, &unit->bl, skill_get_splash(group->skill_id, group->skill_lv), splash_target(src), src, SC_FEINTBOMB, group->skill_lv, tick, BCT_ENEMY|1, skill_castend_damage_id);
-				skill_delunit(unit);
-			}
-			break;
-
 			case UNT_REVERBERATION:
 			{ 
 				struct block_list *ss = map_id2bl(group->src_id);
-				if(unit->val1 != 1) // If it was deactivated.
+				if(unit->val1 <= 0) // If it was deactivated.
 				{
 					skill_delunit(unit);
 					break;
@@ -12448,6 +12433,15 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 				group->limit=DIFF_TICK(tick,group->tick)+1500;
 				unit->limit=DIFF_TICK(tick,group->tick)+1500;
 				group->unit_id = UNT_USED_TRAPS;
+			}
+			break;
+
+			case UNT_FEINTBOMB:
+			{
+				struct block_list *src =  map_id2bl(group->src_id);
+				if( src )
+					map_foreachinrange(skill_area_sub, &group->unit->bl, unit->range, splash_target(src), src, SC_FEINTBOMB, group->skill_lv, tick, BCT_ENEMY|1, skill_castend_damage_id);
+				skill_delunit(unit);
 			}
 			break;
 
@@ -12475,6 +12469,7 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 			case UNT_ANKLESNARE:
 			case UNT_ELECTRICSHOCKER:
 			case UNT_CLUSTERBOMB:
+			case UNT_REVERBERATION:
 				if( unit->val1 <= 0 ) {
 					if( (group->unit_id == UNT_ANKLESNARE || group->unit_id == UNT_ELECTRICSHOCKER) && group->val2 > 0 )
 						skill_delunit(unit);
@@ -12825,7 +12820,7 @@ int skill_can_produce_mix (struct map_session_data *sd, int nameid, int trigger,
 int skill_produce_mix (struct map_session_data *sd, int skill_id, int nameid, int slot1, int slot2, int slot3, int qty)
 {
 	int slot[3];
-	int i,sc,ele,idx,equip,wlv,make_per,flag;
+	int i,sc,ele,idx,equip,wlv,make_per,flag,skill_lv,temp_qty;
 	int num = -1; // exclude the recipe
 	struct status_data *status;
 
@@ -12838,6 +12833,7 @@ int skill_produce_mix (struct map_session_data *sd, int skill_id, int nameid, in
 
 	if (qty < 1)
 		qty = 1;
+	temp_qty = qty;
 
 	if (!skill_id) //A skill can be specified for some override cases.
 		skill_id = skill_produce_db[idx].req_skill;
@@ -12861,6 +12857,25 @@ int skill_produce_mix (struct map_session_data *sd, int skill_id, int nameid, in
 			static const int ele_table[4]={3,1,4,2};
 			pc_delitem(sd,j,1,1);
 			ele=ele_table[slot[i]-994];
+		}
+	}
+
+	if( skill_id == RK_RUNEMASTERY )
+	{
+		skill_lv = pc_checkskill(sd,skill_id);
+		if( skill_lv == 10 ) temp_qty = 1 + rand()%3;
+		else if( skill_lv > 5 ) temp_qty = 1 + rand()%2;
+		else temp_qty = 1;
+		for( i = 0; i < MAX_INVENTORY; i++ )
+		{
+			if( sd->status.inventory[i].nameid == nameid )
+			{
+				if( temp_qty > MAX_RUNE - sd->status.inventory[i].amount )
+				{
+					clif_msgtable(sd->fd,1563);
+					return 0;
+				}
+			}
 		}
 	}
 
@@ -12967,11 +12982,11 @@ int skill_produce_mix (struct map_session_data *sd, int skill_id, int nameid, in
 				break;
 			case RK_RUNEMASTERY:
 				{ 
-					int skill_lv = pc_checkskill(sd,skill_id);
+					skill_lv = pc_checkskill(sd,skill_id);
 					make_per = 5 * (sd->menuskill_itemused + skill_lv) * 100;
 					if(battle_config.rune_produce_rate != 100)
 						make_per = make_per * battle_config.rune_produce_rate / 100;
-					qty = 1 + rand()%((skill_lv > 5)?3:2);
+					qty = temp_qty;
 					sd->menuskill_itemused = sd->menuskill_id = 0;
 				}
 				break;
