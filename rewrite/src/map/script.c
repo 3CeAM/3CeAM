@@ -7484,8 +7484,7 @@ BUILDIN_FUNC(getexp)
 	base = (int) cap_value(base * bonus, 0, INT_MAX);
 	job = (int) cap_value(job * bonus, 0, INT_MAX);
 
-	pc_gainexp(sd, NULL, base, job);
-
+	pc_gainexp(sd, NULL, base, job, 1);
 	return 0;
 }
 

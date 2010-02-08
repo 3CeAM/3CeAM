@@ -4978,7 +4978,7 @@ static void pc_calcexp(struct map_session_data *sd, unsigned int *base_exp, unsi
 /*==========================================
  * ??’lŽæ“¾
  *------------------------------------------*/
-int pc_gainexp(struct map_session_data *sd, struct block_list *src, unsigned int base_exp,unsigned int job_exp)
+int pc_gainexp(struct map_session_data *sd, struct block_list *src, unsigned int base_exp,unsigned int job_exp, short type)
 {
 #if PACKETVER < 20091027
 	char output[256];
@@ -5031,6 +5031,9 @@ int pc_gainexp(struct map_session_data *sd, struct block_list *src, unsigned int
 		else
 			sd->status.base_exp += base_exp;
 		pc_checkbaselevelup(sd);
+#if PACKETVER >= 20091027
+		clif_displayexp(sd,job_exp,1,true,type);
+#endif
 		clif_updatestatus(sd,SP_BASEEXP);
 	}
 
@@ -5041,21 +5044,20 @@ int pc_gainexp(struct map_session_data *sd, struct block_list *src, unsigned int
 		else
 			sd->status.job_exp += job_exp;
 		pc_checkjoblevelup(sd);
+#if PACKETVER >= 20091027
+		clif_displayexp(sd,job_exp,2,true,type);
+#endif
 		clif_updatestatus(sd,SP_JOBEXP);
 	}
 
-	if(sd->state.showexp){
 #if PACKETVER < 20091027
+	if(sd->state.showexp){
 		sprintf(output,
 			"Experience Gained Base:%u (%.2f%%) Job:%u (%.2f%%)",base_exp,nextbp*(float)100,job_exp,nextjp*(float)100);
 		clif_disp_onlyself(sd,output,strlen(output));
-#else
-		if( base_exp )
-			clif_displayexp(sd,base_exp,1);
-		if( job_exp )
-			clif_displayexp(sd,job_exp,2);
-#endif
+
 	}
+#endif
 
 	return 1;
 }
@@ -5922,6 +5924,7 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 	{
 		unsigned int base_penalty =0;
 		if (battle_config.death_penalty_base > 0) {
+			int exp;
 			switch (battle_config.death_penalty_type) {
 				case 1:
 					base_penalty = (unsigned int) ((double)pc_nextbaseexp(sd) * (double)battle_config.death_penalty_base/10000);
@@ -5933,7 +5936,11 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 			if(base_penalty) {
 			  	if (battle_config.pk_mode && src && src->type==BL_PC)
 					base_penalty*=2;
-				sd->status.base_exp -= min(sd->status.base_exp, base_penalty);
+				exp = min(sd->status.base_exp, base_penalty);
+#if PACKETVER >= 20091027
+				clif_displayexp(sd, exp, 1, false, 0);
+#endif
+				sd->status.base_exp -= exp;
 				clif_updatestatus(sd,SP_BASEEXP);
 			}
 		}
@@ -5949,9 +5956,14 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 				break;
 			}
 			if(base_penalty) {
+				int exp;
 			  	if (battle_config.pk_mode && src && src->type==BL_PC)
 					base_penalty*=2;
-				sd->status.job_exp -= min(sd->status.job_exp, base_penalty);
+					exp = min(sd->status.job_exp, base_penalty);
+#if PACKETVER >= 20091027
+				clif_displayexp(sd, exp, 2, false, 0);
+#endif
+				sd->status.job_exp -= exp;
 				clif_updatestatus(sd,SP_JOBEXP);
 			}
 		}
