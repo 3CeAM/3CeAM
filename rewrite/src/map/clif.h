@@ -471,6 +471,6 @@ void clif_progressbar_abort(struct map_session_data * sd);
 void clif_equip_damaged(struct map_session_data *sd, int equip_index);
 void clif_millenniumshield(struct map_session_data *sd, short shields );
 
-int clif_displayexp(struct map_session_data *sd, int exp, short flag);
+int clif_displayexp(struct map_session_data *sd, int exp, short type, bool gain, short flag);
 
 #endif /* _CLIF_H_ */

@@ -5,6 +5,11 @@
 // 	- Details.
 //========================================
 
+02/08/2010
+	r184 [pakpil]
+	* Fixed clif_displayexp packet. This should show won and lost experience.
+	* Fixed clif_vendinglist. Should use 0x800 packet instead 0x801.
+
 02/03/2010
 	r176 [Rytech]
 	*Added skill max level, SP requirements, and names for Sorcerer's summon skills.
