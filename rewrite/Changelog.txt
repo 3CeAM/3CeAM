@@ -6,6 +6,10 @@
 //========================================
 
 02/09/2010
+	r186 [pakpil]
+	* Fixed vending.
+
+02/09/2010
 	r185 [pakpil]
 	* Added WM_POEMOFNETHERWORLDS skill.
 	* Fixed WM_SEVERE_RAINSTORM skill. Should be working as intended.
