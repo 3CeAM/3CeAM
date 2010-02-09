@@ -898,6 +898,9 @@ static int clif_set_unit_idle(struct block_list* bl, unsigned char* buffer, bool
 	} else {
 		WBUFB(buf,51) = vd->dead_sit;
 		WBUFW(buf,52) = clif_setlevel(status_get_lv(bl));
+#if PACKETVER >= 20080102
+		WBUFW(buf,54) = (sd)?sd->state.user_font:0;
+#endif
 	}
 	return packet_len(WBUFW(buffer,0));
 }
