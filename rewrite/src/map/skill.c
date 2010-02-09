@@ -2013,13 +2013,13 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 		else // the central target doesn't display an animation
 			dmg.dmotion = clif_skill_damage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, 5); // needs -2(!) as skill level
 		break;
+	case WM_SEVERE_RAINSTORM_MELEE:
 	case SC_FEINTBOMB:
 		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,1,skillid,skilllv,5);
 		break;
-	case WM_SEVERE_RAINSTORM_MELEE:
 	case WM_REVERBERATION_MELEE:
 	case WM_REVERBERATION_MAGIC:
-		dmg.dmotion = clif_skill_damage(src, bl, tick, 330, 288, damage, 1, skillid, -2, 6);
+		dmg.dmotion = clif_skill_damage(src, bl, tick, dmg.amotion, dmg.dmotion, damage, 1, skillid, -2, 6);
 		break;
 
 	default:
@@ -2888,6 +2888,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case SC_FEINTBOMB:
 	case WM_METALICSOUND:
 	case GN_CRAZYWEED_ATK:
+	case WM_SEVERE_RAINSTORM_MELEE:
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
@@ -3101,7 +3102,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case NC_SELFDESTRUCTION:
 	case NC_AXETORNADO:
 	case WM_REVERBERATION:
-	case WM_SEVERE_RAINSTORM_MELEE:
 	case SO_VARETYR_SPEAR:
 	case GN_CART_TORNADO:
 		if( flag&1 )
@@ -9442,7 +9442,16 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			break;
 
 		case UNT_SEVERE_RAINSTORM:
-			map_foreachinrange(skill_trap_splash,&src->bl, skill_get_splash(WM_SEVERE_RAINSTORM_MELEE, sg->skill_lv), sg->bl_flag, &src->bl,tick);
+			if( battle_check_target(&src->bl, bl, BCT_ENEMY) )
+				skill_attack(BF_WEAPON,ss,&src->bl,bl,WM_SEVERE_RAINSTORM_MELEE,sg->skill_lv,tick,0);
+			break;
+
+		case UNT_NETHERWORLD:
+			if( status_get_mode(bl) != MD_BOSS )
+			{
+				if( !(tsc && tsc->data[SC_STOP]) )
+					sc_start(bl, SC_STOP, 100, sg->skill_lv, skill_get_time2(sg->skill_id,sg->skill_lv));
+			}
 			break;
 
 		case UNT_THORNS_TRAP:

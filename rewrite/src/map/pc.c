@@ -6396,13 +6396,13 @@ int pc_jobchange(struct map_session_data *sd,int job, int upper)
 	if (b_class&JOBL_2) {
 		if (!(sd->class_&JOBL_2))
 			sd->change_level[0] = sd->status.job_level;
-		else if (!sd->change_level)
+		else if (!sd->change_level[0])
 			sd->change_level[0] = 40; //Assume 40?
 		pc_setglobalreg (sd, "jobchange_level", sd->change_level[0]);
 
 		if (!(sd->class_&JOBL_THIRD))
 			sd->change_level[1] = sd->status.job_level;
-		else if (!sd->change_level)
+		else if (!sd->change_level[1])
 			sd->change_level[1] = (sd->class_&JOBL_THIRD_UPPER)?70:50; // Assume 50 to Base 3rd jobs and 70 to Trans 3rd jobs
 		pc_setglobalreg(sd, "jobchange_level2", sd->change_level[1]);
 	}

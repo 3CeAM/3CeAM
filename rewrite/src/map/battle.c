@@ -1945,7 +1945,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 						skillratio += 200 + 100 * pc_checkskill(sd, WM_REVERBERATION);
 					break;
 				case WM_SEVERE_RAINSTORM_MELEE:
-					skillratio = 50 * skill_lv;
+					skillratio = 50 + 50 * skill_lv;
 					break;
 				case GN_CART_TORNADO:
 					skillratio += 50 * skill_lv;

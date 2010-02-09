@@ -5,6 +5,14 @@
 // 	- Details.
 //========================================
 
+02/09/2010
+	r185 [pakpil]
+	* Added WM_POEMOFNETHERWORLDS skill.
+	* Fixed WM_SEVERE_RAINSTORM skill. Should be working as intended.
+	* Fixed standing packet.
+	* Fixed a mistake in pc_jobchange.
+	* Fixed DeepSleep status def according with some test in kRO-RE.
+
 02/08/2010
 	r184 [pakpil]
 	* Fixed clif_displayexp packet. This should show won and lost experience.
