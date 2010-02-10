@@ -389,29 +389,46 @@
 16010,Red_Ether_Bag,Red Ether Bag,4,10,,1000,15,,1,1,0x00040000,24,2,2,3,102,1,8,{},{},{}
 18103,Mystic_Bow,Mystic Bow,4,10,,1700,75,,5,0,0x00080800,24,2,34,3,105,1,11,{},{},{}
 
-// New 3rd Job Exclusive Headgears In Work And Testing
-5746,Rune_Circlet,Rune Circlet,5,20,,100,,4,,1,0x00000080,24,2,256,,100,1,623,{ bonus bStr,1; bonus bInt,1; bonus bMdef,5; bonus2 bSkillAtk,RK_SONICWAVE,20; bonus2 bSkillAtk,RK_WINDCUTTER,20; },{},{}
-5747,Mitra,Mitra,5,20,,100,,4,,1,0x00000100,24,2,256,,100,1,624,{ bonus bVit,1; bonus bInt,1; bonus bMdef,5; bonus bHealPower,5; bonus2 bSkillAtk,AB_JUDEX,20; bonus2 bSkillAtk,AB_ADORAMUS,20; },{},{}
-5748,Sniper_Goggles,Sniper Goggles,5,20,,100,,4,,1,0x00000800,24,2,768,,100,1,625,{ bonus bAgi,1; bonus bDex,1; bonus bMdef,5; if(readparam(bAgi)>=120){ bonus bAspd,1; }; bonus2 bSkillAtk,RA_ARROWSTORM,20; bonus2 bSkillAtk,RA_AIMEDBOLT,20; },{},{}
-5749,Driver_Band_M,Driver Band,5,20,,100,,4,,1,0x00000400,24,1,256,,100,1,626,{ bonus bStr,1; bonus bDex,1; bonus bMdef,5; if(readparam(bDex)>=120){ bonus bLuk,3; }; bonus2 bSkillAtk,NC_AXEBOOMERANG,10; bonus2 bSkillAtk,NC_AXETORNADO,10; },{},{}
-5750,Shadow_Peafowl,Shadow Peafowl,5,20,,100,,4,,1,0x00020000,24,2,256,,100,1,627,{ bonus bAgi,1; bonus bInt,1; bonus bMdef,1; bonus2 bSkillAtk,SC_FATALMENACE,20; bonus2 bSkillAtk,SC_TRIANGLESHOT,20; },{},{}
+// 3rd Job Exclusive Headgears V1 (When First Released. Supports Skill Damage Bonuses)
+//5746,Rune_Circlet,Rune Circlet,5,20,,100,,4,,1,0x00000080,24,2,256,,100,1,623,{ bonus bStr,1; bonus bInt,1; bonus bMdef,5; bonus2 bSkillAtk,RK_SONICWAVE,20; bonus2 bSkillAtk,RK_WINDCUTTER,20; },{},{}
+//5747,Mitra,Mitra,5,20,,100,,4,,1,0x00000100,24,2,256,,100,1,624,{ bonus bVit,1; bonus bInt,1; bonus bMdef,5; bonus bHealPower,5; bonus2 bSkillAtk,AB_JUDEX,20; bonus2 bSkillAtk,AB_ADORAMUS,20; },{},{}
+//5748,Sniper_Goggles,Sniper Goggles,5,20,,100,,4,,1,0x00000800,24,2,768,,100,1,625,{ bonus bAgi,1; bonus bDex,1; bonus bMdef,5; if(readparam(bAgi)>=120){ bonus bAspd,1; }; bonus2 bSkillAtk,RA_ARROWSTORM,20; bonus2 bSkillAtk,RA_AIMEDBOLT,20; },{},{}
+//5749,Driver_Band_M,Driver Band,5,20,,100,,4,,1,0x00000400,24,1,256,,100,1,626,{ bonus bStr,1; bonus bDex,1; bonus bMdef,5; if(readparam(bDex)>=120){ bonus bLuk,3; }; bonus2 bSkillAtk,NC_AXEBOOMERANG,10; bonus2 bSkillAtk,NC_AXETORNADO,10; },{},{}
+//5750,Shadow_Peafowl,Shadow Peafowl,5,20,,100,,4,,1,0x00020000,24,2,256,,100,1,627,{ bonus bAgi,1; bonus bInt,1; bonus bMdef,1; bonus2 bSkillAtk,SC_FATALMENACE,20; bonus2 bSkillAtk,SC_TRIANGLESHOT,20; },{},{}
+//5751,Minstrel_Song_Hat,Minstrel Song Hat,5,20,,100,,4,,1,0x00080000,24,1,256,,100,1,628,{ bonus bInt,1; bonus bLuk,1; bonus bMdef,5; bonus bAtkRate,5; bonus bUseSPrate,-10; },{},{}
+//5752,Midas_Whispers,Midas Whispers,5,20,,100,,4,,1,0x00040000,24,2,256,,100,1,629,{ bonus bStr,1; bonus bDex,1; bonus bMdef,5; bonus2 bSkillAtk,GN_SPORE_EXPLOSION,20; bonus2 bSkillAtk,GN_DEMONIC_FIRE,20; },{},{}
+//5753,Magic_Stone_Hat,Magic Stone Hat,5,20,,100,,4,,1,0x00000200,24,2,256,,100,1,630,{ bonus bInt,1; bonus bDex,1; bonus bMdef,5; bonus2 bSkillAtk,WL_SOULEXPANSION,20; bonus2 bSkillAtk,WL_CRIMSONROCK,20; },{},{}
+//5754,Burning_Spirit,Burning Spirit,5,20,,100,,4,,1,0x00008000,24,2,256,,100,1,631,{ bonus bStr,1; bonus bVit,1; bonus bMdef,5; bonus2 bSkillAtk,SR_SKYNETBLOW,20; bonus2 bSkillAtk,SR_FALLENEMPIRE,20; },{},{}
+//5755,Enforcer_of_Silence,Enforcer of Silence,5,20,,100,,4,,0,0x00001000,24,2,513,,100,1,632,{ bonus bAgi,1; bonus bMdef,5; if(readparam(bAgi)>=120){ bonus bHit,5; bonus bCritical,5; }; bonus2 bSkillAtk,GC_PHANTOMMENACE,10; },{},{}
+//5756,Wispers_of_Wind,Wispers of Wind,5,20,,100,,4,,1,0x00010000,24,2,256,,100,1,633,{ bonus bInt,1; bonus bDex,1; bonus bMdef,5; if(readparam(bAgi)>=120){ bonus bHit,5; bonus bAspd,1; }; bonus2 bSkillAtk,SO_SPELLFIST,8; bonus2 bSkillAtk,SO_PSYCHIC_WAVE,8; },{},{}
+//5757,Shu-zan_Dip_Helmet,Shu-zan Dip Helmet,5,20,,100,,6,,1,0x00004000,24,2,768,,100,1,634,{ bonus bVit,2; bonus bInt,1; bonus bMdef,5; if(readparam(bInt)>=120){ bonus bMatkRate,3; }; bonus2 bSkillAtk,LG_CANNONSPEAR,20; bonus2 bSkillAtk,LG_RAYOFGENESIS,20; },{},{}
+//5758,Resting_Swan,Resting Swan,5,20,,100,,4,,1,0x00080000,24,0,256,,100,1,635,{ bonus bInt,1; bonus bLuk,1; bonus bMdef,5; bonus bAtkRate,5; bonus bUseSPrate,-10; },{},{}
+//5759,Noah's Hat,Noah's Hat,5,20,,100,,0,,0,0xFFFFFFFF,31,2,256,,100,1,636,{},{},{}// This ID was skiped. But why???
+//5760,Driver_Band_F,Driver Band,5,20,,100,,4,,1,0x00000400,24,0,256,,100,1,637,{ bonus bStr,1; bonus bDex,1; bonus bMdef,5; if(readparam(bDex)>=120){ bonus bLuk,3; }; bonus2 bSkillAtk,NC_AXEBOOMERANG,10; bonus2 bSkillAtk,NC_AXETORNADO,10; },{},{}
+
+// 3rd Job Exclusive Headgears V2 (Ballanced A Week After Released)
+5746,Rune_Circlet,Rune Circlet,5,20,,100,,4,,1,0x00000080,24,2,256,,100,1,623,{ bonus bStr,1; bonus bInt,1; bonus bMdef,5; if(readparam(bStr)>=120){ bonus bAtk,10; bonus bMatkRate,5; }; },{},{}
+5747,Mitra,Mitra,5,20,,100,,4,,1,0x00000100,24,2,256,,100,1,624,{ bonus bVit,1; bonus bInt,1; bonus bMdef,5; bonus bHealPower,5; if(readparam(bInt)>=120){ bonus bMatkRate,10; }; },{},{}
+5748,Sniper_Goggles,Sniper Goggles,5,20,,100,,4,,1,0x00000800,24,2,768,,100,1,625,{ bonus bAgi,1; bonus bDex,1; bonus bMdef,5; if(readparam(bAgi)>=120){ bonus bAtkRate,4; bonus bAspd,1; }; },{},{}
+5749,Driver_Band_M,Driver Band,5,20,,100,,4,,1,0x00000400,24,1,256,,100,1,626,{ bonus bStr,1; bonus bDex,1; bonus bMdef,5; if(readparam(bStr)>=120){ bonus bAtk,10; bonus bCritical,3; }; },{},{}
+5750,Shadow_Crown,Shadow Crown,5,20,,100,,4,,1,0x00020000,24,2,256,,100,1,627,{ bonus bAgi,1; bonus bInt,1; bonus bMdef,1; if(readparam(bAgi)>=120){ bonus bAtk,10; bonus bFlee,3; }; },{},{}
 5751,Minstrel_Song_Hat,Minstrel Song Hat,5,20,,100,,4,,1,0x00080000,24,1,256,,100,1,628,{ bonus bInt,1; bonus bLuk,1; bonus bMdef,5; bonus bAtkRate,5; bonus bUseSPrate,-10; },{},{}
-5752,Midas_Whispers,Midas Whispers,5,20,,100,,4,,1,0x00040000,24,2,256,,100,1,629,{ bonus bStr,1; bonus bDex,1; bonus bMdef,5; bonus2 bSkillAtk,GN_SPORE_EXPLOSION,20; bonus2 bSkillAtk,GN_DEMONIC_FIRE,20; },{},{}
-5753,Magic_Stone_Hat,Magic Stone Hat,5,20,,100,,4,,1,0x00000200,24,2,256,,100,1,630,{ bonus bInt,1; bonus bDex,1; bonus bMdef,5; bonus2 bSkillAtk,WL_SOULEXPANSION,20; bonus2 bSkillAtk,WL_CRIMSONROCK,20; },{},{}
-5754,Burning_Spirit,Burning Spirit,5,20,,100,,4,,1,0x00008000,24,2,256,,100,1,631,{ bonus bStr,1; bonus bVit,1; bonus bMdef,5; bonus2 bSkillAtk,SR_SKYNETBLOW,20; bonus2 bSkillAtk,SR_FALLENEMPIRE,20; },{},{}
-5755,Enforcer_of_Silence,Enforcer of Silence,5,20,,100,,4,,0,0x00001000,24,2,513,,100,1,632,{ bonus bAgi,1; bonus bMdef,5; if(readparam(bAgi)>=120){ bonus bHit,5; bonus bCritical,5; }; bonus2 bSkillAtk,GC_PHANTOMMENACE,10; },{},{}
-5756,Wispers_of_Wind,Wispers of Wind,5,20,,100,,4,,1,0x00010000,24,2,256,,100,1,633,{ bonus bInt,1; bonus bDex,1; bonus bMdef,5; if(readparam(bAgi)>=120){ bonus bHit,5; bonus bAspd,1; }; bonus2 bSkillAtk,SO_SPELLFIST,8; bonus2 bSkillAtk,SO_PSYCHIC_WAVE,8; },{},{}
-5757,Shu-zan_Dip_Helmet,Shu-zan Dip Helmet,5,20,,100,,6,,1,0x00004000,24,2,768,,100,1,634,{ bonus bVit,2; bonus bInt,1; bonus bMdef,5; if(readparam(bInt)>=120){ bonus bMatkRate,3; }; bonus2 bSkillAtk,LG_CANNONSPEAR,20; bonus2 bSkillAtk,LG_RAYOFGENESIS,20; },{},{}
+5752,Midas_Whispers,Midas Whispers,5,20,,100,,4,,1,0x00040000,24,2,256,,100,1,629,{ bonus bStr,1; bonus bDex,1; bonus bMdef,5; if(readparam(bStr)>=120){ bonus bAtk,5; bonus bAspd,1; }; },{},{}
+5753,Magic_Stone_Hat,Magic Stone Hat,5,20,,100,,4,,1,0x00000200,24,2,256,,100,1,630,{ bonus bInt,1; bonus bDex,1; bonus bMdef,5; if(readparam(bDex)>=120){ bonus bMatkRate,10; bonus bCastrate,-2; }; },{},{}
+5754,Burning_Spirit,Burning Spirit,5,20,,100,,4,,1,0x00008000,24,2,256,,100,1,631,{ bonus bStr,1; bonus bVit,1; bonus bMdef,5; if(readparam(bStr)>=120){ bonus bAtk,10; bonus bHit,3; }; },{},{}
+5755,Silent_Enforcer,Silent Enforcer,5,20,,100,,2,,0,0x00001000,24,2,513,,100,1,632,{ bonus bAgi,1; bonus bMdef,5; if(readparam(bAgi)>=120){ bonus bAtk,10; bonus bFlee2,5; }; },{},{}
+5756,Wispers_of_Wind,Wispers of Wind,5,20,,100,,4,,1,0x00010000,24,2,256,,100,1,633,{ bonus bInt,1; bonus bDex,1; bonus bMdef,5; if(readparam(bInt)>=120){ bonus bMatkRate,10; bonus bFlee,3; }; },{},{}
+5757,Reissue_Schmitz_Helm,Reissue Schmitz Helm,5,20,,100,,6,,1,0x00004000,24,2,768,,100,1,634,{ bonus bVit,2; bonus bInt,1; bonus bMdef,5; if(readparam(bInt)>=120){ bonus bMatkRate,10; bonus bDef,5; }; },{},{}
 5758,Resting_Swan,Resting Swan,5,20,,100,,4,,1,0x00080000,24,0,256,,100,1,635,{ bonus bInt,1; bonus bLuk,1; bonus bMdef,5; bonus bAtkRate,5; bonus bUseSPrate,-10; },{},{}
 //5759,Noah's Hat,Noah's Hat,5,20,,100,,0,,0,0xFFFFFFFF,31,2,256,,100,1,636,{},{},{}// This ID was skiped. But why???
-5760,Driver_Band_F,Driver Band,5,20,,100,,4,,1,0x00000400,24,0,256,,100,1,637,{ bonus bStr,1; bonus bDex,1; bonus bMdef,5; if(readparam(bDex)>=120){ bonus bLuk,3; }; bonus2 bSkillAtk,NC_AXEBOOMERANG,10; bonus2 bSkillAtk,NC_AXETORNADO,10; },{},{}
+5760,Driver_Band_F,Driver Band,5,20,,100,,4,,1,0x00000400,24,0,256,,100,1,637,{ bonus bStr,1; bonus bDex,1; bonus bMdef,5; if(readparam(bStr)>=120){ bonus bAtk,10; bonus bCritical,3; }; },{},{}
 
 // New Test Items
 2463,Test_Item_23,Test Item 23,3,10,,10,,,,,,,,,,,,,{},{},{}
 2465,Test_Item_24,Test Item 24,3,10,,10,,,,,,,,,,,,,{},{},{}
 2564,Test_Item_25,Test Item 25,3,10,,10,,,,,,,,,,,,,{},{},{}
 2843,Test_Item_26,Test Item 26,3,10,,10,,,,,,,,,,,,,{},{},{}
-2844,Test_Item_27,Test Item 27,3,10,,10,,,,,,,,,,,,,{},{},{}
+2844,Light_of_El_Dicastes,Light of El Dicastes,5,20,,100,,0,,0,0xFFFFFFFF,31,2,136,,80,0,0,{ skill "RETURN_TO_ELDICASTES",1; },{},{}
 2853,Test_Item_28,Test Item 28,3,10,,10,,,,,,,,,,,,,{},{},{}
 2854,Test_Item_29,Test Item 29,3,10,,10,,,,,,,,,,,,,{},{},{}
 4760,Test_Item_30,Test Item 30,3,10,,10,,,,,,,,,,,,,{},{},{}

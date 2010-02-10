@@ -1055,7 +1055,7 @@
 2459,0,0,0,0,0,0,3,0,no,0,0,0,none,0,	SO_SUMMON_VENTUS,Summon Ventus
 2460,0,0,0,0,0,0,3,0,no,0,0,0,none,0,	SO_SUMMON_TERA,Summon Tera
 
-2472,0,0,0,0,0,0,1,0,no,0,0,0,none,0,	SO_ENDMARK,Ending Mark
+2472,0,0,0,0,0,0,1,0,no,0,0,0,none,0,	SO_ENDMARK,End Mark
 
 // Genetic
 2474,0,0,0,0,0,0,5,0,no,0,0,0,weapon,0,		GN_TRAINING_SWORD,Sword Training
