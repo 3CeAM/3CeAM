@@ -6,6 +6,13 @@
 //========================================
 
 02/10/2010
+	r188 [pakpil]
+	* Fixed clif_displayexp that was displaying same exp on Base Exp and Job Exp won. Bug report 149.
+	* Fixed SC_INVISIBILITY duration.
+	* Fixed SC_REPRODUCE and SC_AUTOSHADOWSPELL that should set the reprodue skill level as current SC_REPRODUCE level.
+	* Added all new official standing/spawn and walking packets (0x7f7, 0x7f8 and 0x7f9). Take care with your PACKETVER.
+
+02/10/2010
 	r187 [Rytech]
 	*Added the reballanced headgears to the item_db2.
 	- 2 versions now exist. V1 is the one used when the headgears when released and contain the skill bonuses.

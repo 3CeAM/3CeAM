@@ -5032,7 +5032,7 @@ int pc_gainexp(struct map_session_data *sd, struct block_list *src, unsigned int
 			sd->status.base_exp += base_exp;
 		pc_checkbaselevelup(sd);
 #if PACKETVER >= 20091027
-		clif_displayexp(sd,job_exp,1,true,type);
+		clif_displayexp(sd,base_exp,1,true,type);
 #endif
 		clif_updatestatus(sd,SP_BASEEXP);
 	}
