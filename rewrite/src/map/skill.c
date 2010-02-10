@@ -2072,7 +2072,7 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 
 		tsd->reproduceskill_id = skillid;
 		tsd->status.skill[skillid].id = skillid;
-		tsd->status.skill[skillid].lv = skilllv; // I have noticed that the level is the level used. [pakpil]
+		tsd->status.skill[skillid].lv = pc_checkskill(tsd,SC_REPRODUCE); // I have noticed that the level is the level used. [pakpil]
 		tsd->status.skill[skillid].flag = 13;//cloneskill flag
 		clif_addskill(tsd,skillid);
 	}

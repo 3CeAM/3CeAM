@@ -793,22 +793,44 @@ static int clif_set_unit_idle(struct block_list* bl, unsigned char* buffer, bool
 #if PACKETVER >= 7
 	unsigned short offset = 0;
 #endif
+#if PACKETVER >= 20091103
+	short len = (spawn ? 60 : 61) + NAME_LENGTH;
+#endif
+
 	sd = BL_CAST(BL_PC, bl);
 
+#if PACKETVER < 20091103
 	if(type)
 		WBUFW(buf,0) = spawn?0x7c:0x78;
 	else
+#endif
+
 #if PACKETVER < 4
 		WBUFW(buf,0) = spawn?0x79:0x78;
 #elif PACKETVER < 7
 		WBUFW(buf,0) = spawn?0x1d9:0x1d8;
 #elif PACKETVER < 20080102
 		WBUFW(buf,0) = spawn?0x22b:0x22a;
-#else
+#elif PACKETVER < 20091103
 		WBUFW(buf,0) = spawn?0x2ed:0x2ee;
+#else
+	WBUFW(buf, 0) = spawn ? 0x7f8 : 0x7f9;
+	WBUFW(buf, 2) = len;
+	switch( bl->type )
+	{
+		case BL_PC: WBUFB(buf, 4) = 0; break;
+		case BL_MOB: WBUFB(buf, 4) = 5; break;
+		case BL_PET: WBUFB(buf, 4) = 7; break;
+		case BL_HOM: WBUFB(buf, 4) = 8; break;
+		case BL_MER: WBUFB(buf, 4) = 9; break;
+		case BL_NPC: WBUFB(buf, 4) = 6; break;
+		default: WBUFB(buf, 4) = 0; break;
+	}
+	offset += 3;
+	buf = WBUFP(buffer, offset);
 #endif
 
-#if PACKETVER >= 20071106
+#if PACKETVER >= 20071106 && PACKETVER < 20091103
 	if (type) {
 		// shift payload 1 byte to the right for mob packets
 		WBUFB(buf,2) = 0; // padding?
@@ -821,6 +843,7 @@ static int clif_set_unit_idle(struct block_list* bl, unsigned char* buffer, bool
 	WBUFW(buf, 6) = status_get_speed(bl);
 	WBUFW(buf, 8) = (sc)? sc->opt1 : 0;
 	WBUFW(buf,10) = (sc)? sc->opt2 : 0;
+#if PACKETVER < 20091103
 	if (type&&spawn) { //uses an older and different packet structure
 		WBUFW(buf,12) = (sc)? sc->option : 0;
 		WBUFW(buf,14) = vd->hair_style;
@@ -829,14 +852,20 @@ static int clif_set_unit_idle(struct block_list* bl, unsigned char* buffer, bool
 		WBUFW(buf,20) = vd->class_; //Pet armor (ignored by client)
 		WBUFW(buf,22) = vd->shield;
 	} else {
-#if PACKETVER >= 7
+#endif
+#if PACKETVER >= 7 && PACKETVER < 20091103
 		if (!type) {
 			WBUFL(buf,12) = (sc)? sc->option : 0;
 			offset+=2;
 			buf = WBUFP(buffer,offset); //Shift 2 bytes to the right for the rest of fields
 		} else
-#endif
+#elif PACKETVER < 7
 			WBUFW(buf,12) = (sc)? sc->option : 0;
+#else
+		WBUFL(buf,12) = (sc) ? sc->option : 0;
+		offset+=2;
+		buf = WBUFP(buffer,offset);
+#endif
 		WBUFW(buf,14) = vd->class_;
 		WBUFW(buf,16) = vd->hair_style;
 		WBUFW(buf,18) = vd->weapon;
@@ -847,7 +876,9 @@ static int clif_set_unit_idle(struct block_list* bl, unsigned char* buffer, bool
 		WBUFW(buf,20) = vd->shield;
 		WBUFW(buf,22) = vd->head_bottom;
 #endif
+#if PACKETVER >= 7 && PACKETVER < 20091103
 	}
+#endif
 	WBUFW(buf,24) = vd->head_top;
 	WBUFW(buf,26) = vd->head_mid;
 
@@ -860,31 +891,40 @@ static int clif_set_unit_idle(struct block_list* bl, unsigned char* buffer, bool
 	WBUFW(buf,28) = vd->hair_color;
 	WBUFW(buf,30) = vd->cloth_color;
 	WBUFW(buf,32) = (sd)? sd->head_dir : 0;
+#if PACKETVER < 20091103
 	if (type&&spawn) { //End of packet 0x7c
 		WBUFB(buf,34) = (sd)?sd->status.karma:0; // karma
 		WBUFB(buf,35) = vd->sex;
 		WBUFPOS(buf,36,bl->x,bl->y,unit_getdir(bl));
 		WBUFB(buf,39) = 0;
-#if PACKETVER >= 20071106
+#endif
+#if PACKETVER >= 20071106 && PACKETVER < 20091103
 		WBUFB(buf,40) = 0;
 #endif
-#if PACKETVER > 20081217
+#if PACKETVER > 20081217 && PACKETVER < 20091103
 		WBUFB(buf,41) = 0;
 		WBUFB(buf,42) = 0;
 #endif
+#if PACKETVER < 20091103
 		return packet_len(0x7c);
 	}
+#endif
 	WBUFL(buf,34) = status_get_guild_id(bl);
 	WBUFW(buf,38) = status_get_emblem_id(bl);
 	WBUFW(buf,40) = (sd)? sd->status.manner : 0;
-#if PACKETVER >= 7
+#if PACKETVER >= 7 && PACKETVER < 20091103
 	if (!type) {
 		WBUFL(buf,42) = (sc)? sc->opt3 : 0;
 		offset+=2;
 		buf = WBUFP(buffer,offset); //Shift additional 2 bytes...
 	} else
-#endif
+#elif PACKETVER < 7
 		WBUFW(buf,42) = (sc)? sc->opt3 : 0;
+#else
+	WBUFL(buf,42) = (sc) ? sc->opt3 : 0;
+	offset+=2;
+	buf = WBUFP(buffer,offset);
+#endif
 	WBUFB(buf,44) = (sd)? sd->status.karma : 0;
 	WBUFB(buf,45) = vd->sex;
 	WBUFPOS(buf,46,bl->x,bl->y,unit_getdir(bl));
@@ -893,16 +933,21 @@ static int clif_set_unit_idle(struct block_list* bl, unsigned char* buffer, bool
 	if (spawn) {
 		WBUFW(buf,51) = clif_setlevel(status_get_lv(bl));
 #if PACKETVER >= 20080102
-		WBUFW(buf,53) = (sd)?sd->state.user_font:0;
+		WBUFW(buf,53) = (sd) ? sd->state.user_font : 0;
 #endif
 	} else {
 		WBUFB(buf,51) = vd->dead_sit;
 		WBUFW(buf,52) = clif_setlevel(status_get_lv(bl));
 #if PACKETVER >= 20080102
-		WBUFW(buf,54) = (sd)?sd->state.user_font:0;
+		WBUFW(buf,54) = (sd) ? sd->state.user_font : 0;
 #endif
 	}
+#if PACKETVER >= 20091103
+	safestrncpy((char*)WBUFP(buf,(spawn)?55:56), status_get_name(bl), NAME_LENGTH);
+	return len;
+#else
 	return packet_len(WBUFW(buffer,0));
+#endif
 }
 
 /*==========================================
@@ -917,6 +962,9 @@ static int clif_set_unit_walking(struct block_list* bl, struct unit_data* ud, un
 #if PACKETVER >= 7
 	unsigned short offset = 0;
 #endif
+#if PACKETVER >= 20091103
+	short len = 68;
+#endif
 
 	sd = BL_CAST(BL_PC, bl);
 
@@ -924,11 +972,28 @@ static int clif_set_unit_walking(struct block_list* bl, struct unit_data* ud, un
 	WBUFW(buf, 0) = 0x7b;
 #elif PACKETVER < 7
 	WBUFW(buf, 0) = 0x1da;
-#else
+#elif PACKETVER < 20080102
 	WBUFW(buf, 0) = 0x22c;
+#elif PACKETVER < 20091103
+	WBUFW(buf, 0) = 0x2ec;
+#else
+	WBUFW(buf, 0) = 0x7f7;
+	WBUFW(buf, 2) = len;
+	switch( bl->type )
+	{
+		case BL_PC: WBUFB(buf, 4) = 0; break;
+		case BL_MOB: WBUFB(buf, 4) = 5; break;
+		case BL_PET: WBUFB(buf, 4) = 7; break;
+		case BL_HOM: WBUFB(buf, 4) = 8; break;
+		case BL_MER: WBUFB(buf, 4) = 9; break;
+		case BL_NPC: WBUFB(buf, 4) = 6; break;
+		default: WBUFB(buf, 4) = 0; break;
+	}
+	offset += 3;
+	buf = WBUFP(buffer, offset);
 #endif
 
-#if PACKETVER >= 20071106
+#if PACKETVER >= 20071106 && PACKETVER < 20091103
 	WBUFB(buf, 2) = 0; // padding?
 	offset++;
 	buf = WBUFP(buf,offset);
@@ -977,8 +1042,15 @@ static int clif_set_unit_walking(struct block_list* bl, struct unit_data* ud, un
 	WBUFB(buf,56) = (sd)? 5 : 0;
 	WBUFB(buf,57) = (sd)? 5 : 0;
 	WBUFW(buf,58) = clif_setlevel(status_get_lv(bl));
-
+#if PACKETVER >= 20081012
+	WBUFW(buf,60) = (sd) ? sd->state.user_font : 0;
+#endif
+#if PACKETVER >= 20091103
+	safestrncpy((char*)WBUFP(buf,62), status_get_name(bl), NAME_LENGTH);
+	return len;
+#else
 	return packet_len(WBUFW(buffer,0));
+#endif
 }
 
 //Modifies the buffer for disguise characters and sends it to self.

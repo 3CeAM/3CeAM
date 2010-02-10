@@ -733,7 +733,7 @@ packet_ver: 17
 0x0113,33,useskilltopos,12:15:18:31
 0x0116,12,dropitem,3:10
 0x0190,24,actionrequest,11:23
-0x0216,0
+0x0216,-1
 0x023d,-1
 0x023e,4
 
@@ -810,7 +810,7 @@ packet_ver: 19
 0x0240,-1
 0x0248,-1,mailsend,2:4:28:68
 0x0255,5
-0x0256,0
+0x0256,-1
 0x0257,8
 
 //2005-09-12bSakexe
@@ -933,8 +933,8 @@ packet_ver: 20
 0x029d,-1
 0x029e,11
 0x029f,3,mermenu,0
-0x02a0,0
-0x02a1,0
+0x02a0,-1
+0x02a1,-1
 0x02a2,8
 
 //2007-01-08aSakexe
@@ -961,8 +961,8 @@ packet_ver: 21
 
 //2007-01-29aSakexe
 0x029b,72
-0x02a3,0
-0x02a4,0
+0x02a3,-1
+0x02a4,-1
 0x02a5,8
 
 // 2007-02-05aSakexe
@@ -1082,8 +1082,8 @@ packet_ver: 22
 0x02ef,8
 
 //2008-03-18aSakexe
-0x02bf,0
-0x02c0,0
+0x02bf,-1
+0x02c0,-1
 0x02f0,10
 0x02f1,2,progressbar,0
 0x02f2,2
@@ -1424,9 +1424,9 @@ packet_ver: 25
 0x07f6,14
 
 //2009-11-03aRagexeRE
-//0x07f7,-1
-//0x07f8,-1
-//0x07f9,-1
+0x07f7,-1
+0x07f8,-1
+0x07f9,-1
 
 //2009-11-17aRagexeRE
 0x07fa,8
