@@ -5,6 +5,14 @@
 // 	- Details.
 //========================================
 
+02/10/2010
+	r187 [Rytech]
+	*Added the reballanced headgears to the item_db2.
+	- 2 versions now exist. V1 is the one used when the headgears when released and contain the skill bonuses.
+	- V2 is the version with all the latest ballances.
+	- V1 of the headgears are all disabled by defult and V2 is all enabled.
+	- Should I just remove the old ones?
+
 02/09/2010
 	r186 [pakpil]
 	* Fixed vending.

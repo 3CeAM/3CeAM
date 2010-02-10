@@ -4,20 +4,20 @@
 // SkillID,PreservePoints
 //============================================================
 //
-14,7
-19,7
-20,7
-21,9
-83,10
-84,9
-85,10
-86,9
-89,10
-90,8
-91,9
-2210,8
-2211,12
-2213,22
-2214,12
-2216,12
-2217,22
+14,7	//Cold Bolt
+19,7	//Fire Bolt
+20,7	//Lightning Bolt
+21,9	//Thunder Storm
+83,10	//Meteor Storm
+84,9	//Jupitel Thunder
+85,10	//Lord of Vermillion
+86,9	//Water Ball
+89,10	//Storm Gust
+90,8	//Earth Spike
+91,9	//Heaven's Drive
+2210,8	//Drain Life
+2211,12	//Crimson Rock
+2213,22	//Comet
+2214,12	//Chain Lightning
+2216,12	//Earth Strain
+2217,22	//Tetra Vortex
