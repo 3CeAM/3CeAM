@@ -2072,7 +2072,7 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 
 		tsd->reproduceskill_id = skillid;
 		tsd->status.skill[skillid].id = skillid;
-		tsd->status.skill[skillid].lv = pc_checkskill(tsd,SC_REPRODUCE); // I have noticed that the level is the level used. [pakpil]
+		tsd->status.skill[skillid].lv = min(skilllv,pc_checkskill(tsd,SC_REPRODUCE)); // I have noticed that the level is the level used. [pakpil]
 		tsd->status.skill[skillid].flag = 13;//cloneskill flag
 		clif_addskill(tsd,skillid);
 	}
@@ -10899,6 +10899,11 @@ int skill_castfix(struct block_list *bl, int skill_id, int skill_lv)
 	{
 		variable_time = skill_get_cast(skill_id, skill_lv) * 80/100;// 80% of casttime is variable
 		fixed_time = skill_get_cast(skill_id, skill_lv) * 20/100;// 20% of casttime is fixed
+		if( skill_id == MG_FIREBOLT || skill_id == MG_COLDBOLT || skill_id == MG_LIGHTNINGBOLT )
+		{	// 50% reduction on Bolts.
+			variable_time >>= 2;
+			fixed_time >>= 2;
+		}
 
 		// calculate variable cast time reduced by dex and int
 		if( !(skill_get_castnodex(skill_id, skill_lv)&1) )

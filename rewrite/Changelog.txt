@@ -6,6 +6,12 @@
 //========================================
 
 02/11/2010
+	r192 [pakpil]
+	* Fixed a mistake in SC_REPRODUCE.
+	* Added 50% casting time reduction on Bolts in renewal.
+	* Fixed a mistake in AB_ANCILLA.
+
+02/11/2010
 	r191 [pakpil]
 	* Updated SCs in const.txt
 
