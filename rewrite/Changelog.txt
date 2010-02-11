@@ -5,6 +5,13 @@
 // 	- Details.
 //========================================
 
+02/11/2010
+	r189 [pakpil]
+	* Fixed SC_INVISIBILITY:
+		- Fixed its duration.
+		- Shouldn't lose the state when the SC hits.
+		- Fixed ASPD lost, was too high. Still need the official value.
+
 02/10/2010
 	r188 [pakpil]
 	* Fixed clif_displayexp that was displaying same exp on Base Exp and Job Exp won. Bug report 149.
