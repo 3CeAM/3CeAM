@@ -6,6 +6,10 @@
 //========================================
 
 02/11/2010
+	r191 [pakpil]
+	* Updated SCs in const.txt
+
+02/11/2010
 	r189 [pakpil]
 	* Fixed SC_INVISIBILITY:
 		- Fixed its duration.
