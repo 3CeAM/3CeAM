@@ -3410,9 +3410,6 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 	if (sc && sc->data[SC_CAMOUFLAGE] && !(sc->data[SC_CAMOUFLAGE]->val3&2))
 		status_change_end(src,SC_CAMOUFLAGE,-1);
 
-	if( sc && sc->data[SC__INVISIBILITY] )
-		status_change_end(src,SC__INVISIBILITY,-1); // Still need confirm this [pakpil]
-
 	if( tsc && tsc->data[SC_AUTOCOUNTER] && status_check_skilluse(target, src, KN_AUTOCOUNTER, 1) )
 	{
 		int dir = map_calc_dir(target,src->x,src->y);

@@ -6465,7 +6465,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 				val2 = 20;
 			break;
 		case SC__INVISIBILITY:
-			val2 = 30 * val1; // Still need official value [pakpil]
+			val2 = 3 * val1; // Still need official value [pakpil]
 			val4 = tick / 1000;
 			tick = 1000;
 			val_flag |= 1|2;
