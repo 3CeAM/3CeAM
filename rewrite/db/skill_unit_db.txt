@@ -99,17 +99,17 @@
 2213,0x86,   ,  0,15,1000,enemy, 0x000	//WL_COMET
 2214,0x86,   ,  0, 5, 100,enemy, 0x080	//WL_CHAINLIGHTNING
 2216,0xcb,   , -1, 1:1:2:2:3,1000,enemy, 0x018	//WL_EARTHSTRAIN
-2238,0xd8,   ,  0, 1,1000,enemy, 0x002	//RA_ELECTRICSHOCKER
-2239,0xd9,   ,  0, 1,1000,enemy, 0x006	//RA_CLUSTERBOMB
-2249,0xd2,   ,  0, 1,1000,enemy, 0x022	//RA_MAGENTATRAP
-2250,0xd3,   ,  0, 1,1000,enemy, 0x022	//RA_COBALTTRAP
-2251,0xd4,   ,  0, 1,1000,enemy, 0x022	//RA_MAIZETRAP
-2252,0xd5,   ,  0, 1,1000,enemy, 0x022	//RA_VERDURETRAP
-2253,0xd6,   ,  0, 1,1000,enemy, 0x002	//RA_FIRINGTRAP
-2254,0xd7,   ,  0, 1,1000,enemy, 0x002	//RA_ICEBOUNDTRAP
+2238,0xd8,   ,  0, 2,1000,enemy, 0x002	//RA_ELECTRICSHOCKER
+2239,0xd9,   ,  0, 3,1000,enemy, 0x006	//RA_CLUSTERBOMB
+2249,0xd2,   ,  0, 2,1000,enemy, 0x022	//RA_MAGENTATRAP
+2250,0xd3,   ,  0, 2,1000,enemy, 0x022	//RA_COBALTTRAP
+2251,0xd4,   ,  0, 2,1000,enemy, 0x022	//RA_MAIZETRAP
+2252,0xd5,   ,  0, 2,1000,enemy, 0x022	//RA_VERDURETRAP
+2253,0xd6,   ,  0, 2,1000,enemy, 0x002	//RA_FIRINGTRAP
+2254,0xd7,   ,  0, 2,1000,enemy, 0x002	//RA_ICEBOUNDTRAP
 2299,0xcc,   ,  0, 1,1000,all,   0x006	//SC_MANHOLE
 2300,0xcd,   ,  0, 1,1000,all,   0x006	//SC_DIMENSIONDOOR
-2301,0xce,   ,  0, 5,  -1,all,   0x00E	//SC_CHAOSPANIC
+2301,0xce,   ,  0, 5,  -1,enemy,  0x00E	//SC_CHAOSPANIC
 2302,0xcf,   ,  0, 5,  -1,all,   0x002	//SC_MAELSTROM
 2303,0xd0,   ,  0, 5,  -1,all,   0x018	//SC_BLOODYLUST
 2304,0xd1,   ,  0, 4,  -1,enemy, 0x000	//SC_FEINTBOMB

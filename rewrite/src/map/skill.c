@@ -6780,8 +6780,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case NC_SELFDESTRUCTION:
 		if( sd )
 		{
-			pc_setoption(sd,  sd->sc.option&~OPTION_MADO);
-			status_zap(src, 0 , sd->status.sp);
+			pc_setoption(sd, sd->sc.option&~OPTION_MADO);
+			status_zap(src, 0, sd->status.sp);
 			clif_skill_nodamage(src, bl, skillid, skilllv, 1);
 			skill_castend_damage_id(src, src, skillid, skilllv, tick, flag);
 		}
@@ -7958,7 +7958,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 						x += type;
 						break;
 					default:
-						if( sd ) clif_skill_fail(sd, skillid, 0, 0);
+						if( sd ) clif_skill_fail(sd, skillid, 0x12, 0);
 						break;
 				}
 				skill_addtimerskill(src, gettick() + 250 * i, src->id, x, y, skillid, skilllv, 0, 0);
@@ -10352,6 +10352,20 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		if( skill_check_pc_partner(sd, skill, &lv, 1, 0) )
 			sd->special_state.no_gemstone = 1;
 		break;
+	case RA_WUGMASTERY:
+		if((pc_isfalcon(sd) && !battle_config.warg_can_falcon) || sd->sc.data[SC__GROOMY])
+		{
+			clif_skill_fail(sd,skill,0x17,0);
+			return 0;
+		}
+		break;
+	case RA_WUGDASH:
+		if(!pc_isriding(sd, OPTION_RIDING_WUG))
+		{
+			clif_skill_fail(sd,skill,0,0);
+			return 0;
+		}
+		break;
  	/*NOTE: Uncomment when this sc is available. [pakpil]
 	case SC_MANHOLE:
 	case SC_DIMENSIONDOOR:
@@ -10899,15 +10913,23 @@ int skill_castfix(struct block_list *bl, int skill_id, int skill_lv)
 	{
 		variable_time = skill_get_cast(skill_id, skill_lv) * 80/100;// 80% of casttime is variable
 		fixed_time = skill_get_cast(skill_id, skill_lv) * 20/100;// 20% of casttime is fixed
-		if( skill_id == MG_FIREBOLT || skill_id == MG_COLDBOLT || skill_id == MG_LIGHTNINGBOLT )
-		{	// 50% reduction on Bolts.
-			variable_time >>= 2;
-			fixed_time >>= 2;
-		}
 
 		// calculate variable cast time reduced by dex and int
 		if( !(skill_get_castnodex(skill_id, skill_lv)&1) )
 			scale = cap_value((status_get_dex(bl)*2 + status_get_int(bl))*10000, INT_MIN, INT_MAX);
+		
+		//Place here for skills that has a full variable and fixed cast time. [Jobbie]
+		switch( skill_id )
+		{
+			case MG_ENERGYCOAT:
+			case HW_GANBANTEIN:
+			case HW_GRAVITATION:
+				{
+					variable_time = 0;
+					fixed_time = skill_get_cast(skill_id, skill_lv);
+				}
+				break;
+		}
 	}
 
 	// calculate variable cast time reduced by item/card/skills bonuses

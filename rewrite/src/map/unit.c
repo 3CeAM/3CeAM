@@ -1053,20 +1053,6 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 				return 0;
 			}
 			break;
-		case RA_WUGMASTERY:
-			if(pc_isfalcon(sd))
-			{
-				clif_skill_fail(sd,skill_num,0x17,0);
-				return 0;
-			}
-			break;
-		case RA_WUGDASH:
-			if(!pc_isriding(sd, OPTION_RIDING_WUG))
-			{
-				clif_skill_fail(sd,skill_num,0,0);
-				return 0;
-			}
-			break;
 		}
 		if (!skill_check_condition_castbegin(sd, skill_num, skill_lv))
 			return 0;
