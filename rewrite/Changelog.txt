@@ -6,6 +6,9 @@
 //========================================
 
 02/14/2010
+	r194 [Jobbie]
+	* Fixed the success chance of auto casting Spear Boomerang when using Hundred Spear.
+
 	r193 [Jobbie]
 	* Added the missing configuration for renewal cast setting and camouflage setting in skill.conf.
 	* Fixed some mechanic items.
