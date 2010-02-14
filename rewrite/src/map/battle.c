@@ -764,7 +764,7 @@ int battle_addmastery(struct map_session_data *sd,struct block_list *target,int 
 		damage += skill * 6;
 	
 	if( pc_isriding(sd, OPTION_MADO) )
-		damage += 40 * pc_checkskill(sd, NC_MADOLICENCE);
+		damage += 20 + 20 * pc_checkskill(sd, NC_MADOLICENCE);
 
 	if(type == 0)
 		weapon = sd->weapontype1;

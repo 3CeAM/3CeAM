@@ -3565,6 +3565,9 @@ int pc_isUseitem(struct map_session_data *sd,int n)
 	if( nameid >= 12153 && nameid <= 12182 && sd->md != NULL )
 		return 0; // Mercenary Scrolls
 
+	if( pc_isriding(sd, OPTION_RIDING_WUG) && ((nameid >= 686 && nameid <= 700) || (nameid >= 12215 && nameid <= 12220) || (nameid >= 12000 && nameid <= 12003)) )
+		return 0; // Magic Scrolls cannot be used while riding a Warg. [Jobbie]
+
 	//added item_noequip.txt items check by Maya&[Lupus]
 	if (
 		(map[sd->bl.m].flag.pvp && item->flag.no_equip&1) || // PVP
@@ -4980,9 +4983,7 @@ static void pc_calcexp(struct map_session_data *sd, unsigned int *base_exp, unsi
  *------------------------------------------*/
 int pc_gainexp(struct map_session_data *sd, struct block_list *src, unsigned int base_exp,unsigned int job_exp, short type)
 {
-#if PACKETVER < 20091027
 	char output[256];
-#endif
 	float nextbp=0, nextjp=0;
 	unsigned int nextb=0, nextj=0;
 	nullpo_retr(0, sd);
@@ -5050,14 +5051,12 @@ int pc_gainexp(struct map_session_data *sd, struct block_list *src, unsigned int
 		clif_updatestatus(sd,SP_JOBEXP);
 	}
 
-#if PACKETVER < 20091027
 	if(sd->state.showexp){
 		sprintf(output,
 			"Experience Gained Base:%u (%.2f%%) Job:%u (%.2f%%)",base_exp,nextbp*(float)100,job_exp,nextjp*(float)100);
 		clif_disp_onlyself(sd,output,strlen(output));
 
 	}
-#endif
 
 	return 1;
 }

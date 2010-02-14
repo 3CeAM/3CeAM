@@ -5,17 +5,30 @@
 // 	- Details.
 //========================================
 
+02/14/2010
+	r193 [Jobbie]
+	* Added the missing configuration for renewal cast setting and camouflage setting in skill.conf.
+	* Fixed some mechanic items.
+	* Disable Guillotine Cross skills in skill_db so there will no confuseness why its not working. To be recoded soon.
+	* Fixed Aimedbolt not properly dealing the total damage when enemy is in immobile status.
+	* Fixed Ranger Traps activation area.
+	* Fixed Mado License bonus damage calculation.
+	* When mounted into a warg you cannot use magic scrolls.
+	* Cleaned up some defines in pc_gainexp.
+	* Moved Warg Mastery and Warg Dash fail message into skill_check_condition_castbegin
+	* Removed Warg Dash movement speed calculation while dashing as it uses your current movement speed.
+	* Removed the 50% cast time reduction of Bolts seems its not really 50% as its reduction in renewal.
+	* Added a setting which you can place the skill that has a full variable and fixed cast time. 
+
 02/11/2010
 	r192 [pakpil]
 	* Fixed a mistake in SC_REPRODUCE.
 	* Added 50% casting time reduction on Bolts in renewal.
 	* Fixed a mistake in AB_ANCILLA.
 
-02/11/2010
 	r191 [pakpil]
 	* Updated SCs in const.txt
 
-02/11/2010
 	r189 [pakpil]
 	* Fixed SC_INVISIBILITY:
 		- Fixed its duration.
