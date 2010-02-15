@@ -5,6 +5,21 @@
 // 	- Details.
 //========================================
 
+02/15/2010
+	r195 [Jobbie]
+	* Sorcerer Skills Update.
+		- Striking now will drain sp during its duration and uses Endow skill as its bonus ATK.
+		- Fixed the duration and re-use delay of Warmer.
+		- Warmer should affect all not only allies.
+		- Updated certain skills to its proper damage calculation as of the present info.
+	* Earth Strain Update.
+		- Adjusted its stripping rate to official and its stripping behavior.
+		- Adjusted its area of effect as of official info.
+	* Added RETURN_TO_ELDICASTES skill.
+	* Fixed burning status which makes you paralyze during its duration.
+	* Earth Grave and Arrow Storm should affect hidden targets.
+	* Fixed when mounted and equipped with weapon a client error appears.
+
 02/14/2010
 	r194 [Jobbie]
 	* Fixed the success chance of auto casting Spear Boomerang when using Hundred Spear.

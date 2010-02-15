@@ -1036,24 +1036,24 @@
 2434,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		WM_UNLIMITED_HUMMING_VOICE,Unlimited Humming Voice
 
 // Sorcerer
-2443,0,6,4,3,0,0,5,1,yes,0,0,0,magic,0,		SO_FIREWALK,Fire Walk
-2444,0,6,4,4,0,0,5,1,yes,0,0,0,magic,0,		SO_ELECTRICWALK,Electric Walk
-//2445,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,	SO_SPELLFIST,Spell Fist
-2446,9,6,2,2,0,0,5,1,yes,0,0,0,magic,0,		SO_EARTHGRAVE,Earth Grave
-2447,9,6,2,1,0,0,5,1,yes,0,0,0,magic,0,		SO_DIAMONDDUST,Diamond Dust
-2448,9,6,1,5,0,0,5,1,yes,0,0,0,magic,0,		SO_POISON_BUSTER,Poison Buster
+2443,0,6,4,3,0,0,5,-1,yes,0,0,0,magic,0,		SO_FIREWALK,Fire Walk
+2444,0,6,4,4,0,0,5,-1,yes,0,0,0,magic,0,		SO_ELECTRICWALK,Electric Walk
+//2445,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		SO_SPELLFIST,Spell Fist
+2446,9,6,2,2,0,0,5,-1,yes,0,0,0,magic,0,		SO_EARTHGRAVE,Earth Grave
+2447,9,6,2,1,0,0,5,-1,yes,0,0,0,magic,0,		SO_DIAMONDDUST,Diamond Dust
+2448,9,6,1,5,0,0,5,-1,yes,0,0,0,magic,0,		SO_POISON_BUSTER,Poison Buster
 2449,9,8,2,0,0,0,5,-3:-4:-5:-6:-7,yes,0,0,0,magic,0,	SO_PSYCHIC_WAVE,Psychic Wave
-2450,9,6,2,0,0,0,5,1,yes,0,0,0,magic,0,		SO_CLOUD_KILL,Cloud Kill
-2451,9,6,16,0,0x1,0,5,1,yes,0,0,0,none,0,	SO_STRIKING,Striking
-2452,9,6,2,0,0,0,5,1,yes,0,0,0,magic,0,		SO_WARMER,Warmer
-2453,9,6,2,0,0,0,5,1,yes,0,0,0,magic,0,		SO_VACUUM_EXTREME,Vacuum Extreme
+2450,9,6,2,0,0x1,0,5,1,yes,0,0,0,magic,0,		SO_CLOUD_KILL,Cloud Kill
+2451,9,6,16,0,0x1,0,5,1,yes,0,0,0,none,0,		SO_STRIKING,Striking
+2452,9,6,2,0,0,0,5,1,yes,0,0,0,magic,0,			SO_WARMER,Warmer
+2453,9,6,2,0,0,0,5,1,yes,0,0,0,magic,0,			SO_VACUUM_EXTREME,Vacuum Extreme
 2454,9,6,1,4,0x2,3:3:5:5:7,5,1,yes,0,0,0,magic,0,	SO_VARETYR_SPEAR,Varetyr Spear
 2455,9,6,1,0,0x3,3:3:5:5:7,5,1,yes,0,0,0,magic,0,	SO_ARRULLO,Arrullo
-2456,0,0,0,0,0,0,3,0,no,0,0,0,none,0,	SO_EL_CONTROL,Ordinance Control
-2457,0,0,0,0,0,0,3,0,no,0,0,0,none,0,	SO_SUMMON_AGNI,Summon Agni
-2458,0,0,0,0,0,0,3,0,no,0,0,0,none,0,	SO_SUMMON_AQUA,Summon Aqua
-2459,0,0,0,0,0,0,3,0,no,0,0,0,none,0,	SO_SUMMON_VENTUS,Summon Ventus
-2460,0,0,0,0,0,0,3,0,no,0,0,0,none,0,	SO_SUMMON_TERA,Summon Tera
+2456,0,0,0,0,0,0,3,0,no,0,0,0,none,0,			SO_EL_CONTROL,Ordinance Control
+2457,0,0,0,0,0,0,3,0,no,0,0,0,none,0,			SO_SUMMON_AGNI,Summon Agni
+2458,0,0,0,0,0,0,3,0,no,0,0,0,none,0,			SO_SUMMON_AQUA,Summon Aqua
+2459,0,0,0,0,0,0,3,0,no,0,0,0,none,0,			SO_SUMMON_VENTUS,Summon Ventus
+2460,0,0,0,0,0,0,3,0,no,0,0,0,none,0,			SO_SUMMON_TERA,Summon Tera
 
 2472,0,0,0,0,0,0,1,0,no,0,0,0,none,0,	SO_ENDMARK,End Mark
 
@@ -1091,7 +1091,7 @@
 2518,3,6,2,-1,0x2,5:5:7:9:9,5,1,no,0,0,0,weapon,0,	SR_RIDEINLIGHTNING,Ride In Lightening
 
 2533,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		ALL_ODINS_RECALL,Odin's Recall
-2534,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		RETURN_TO_ELDICASTES,Return To Eldicastes
+2534,0,0,4,0,0x1,0,1,0,yes,0,0,0,none,0,	RETURN_TO_ELDICASTES,Return To Eldicastes
 
 // Homunculus Skills.
 8001,9,6,4,0,0x1,0,5,1,no,0,0,0,magic,0,         HLIF_HEAL,Healing Touch
