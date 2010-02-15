@@ -1156,7 +1156,7 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 
 	if(sc && sc->count)
 	{
-		if(sc->opt1 >0)
+		if(sc->opt1 >0 && sc->opt1 != OPT1_BURNING)
 		{	//Stuned/Frozen/etc
 			if (flag != 1) //Can't cast, casted stuff can't damage. 
 				return 0;
@@ -3643,7 +3643,7 @@ static unsigned short status_calc_batk(struct block_list *bl, struct status_chan
 	if(sc->data[SC_GN_CARTBOOST])
 		batk += sc->data[SC_GN_CARTBOOST]->val1 * 10;
 	if(sc->data[SC_STRIKING])
-		batk += 50 * sc->data[SC_STRIKING]->val1;
+		batk += sc->data[SC_STRIKING]->val2;
 	if(sc->data[SC__ENERVATION])
 		batk -= batk * 25 / 100;
 	if(sc->data[SC__BLOODYLUST])
@@ -3740,7 +3740,7 @@ static signed short status_calc_critical(struct block_list *bl, struct status_ch
 	if(sc->data[SC_CLOAKING])
 		critical += critical;
 	if(sc->data[SC_STRIKING])
-		critical += sc->data[SC_STRIKING]->val1;
+		critical += 1 * sc->data[SC_STRIKING]->val1;
 	if(sc->data[SC__UNLUCKY])
 		critical -= critical * sc->data[SC__UNLUCKY]->val2 / 100;
 
@@ -6526,12 +6526,16 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			break;
 		case SC_WARMER:
 			val4 = tick / 3000;
-			if( val4 < 1 )
-				val4 = 1;
 			tick = 3000;
 			status_change_end(bl, SC_FREEZE, -1);
 			status_change_end(bl, SC_FREEZING, -1);
 			status_change_end(bl, SC_CRYSTALIZE, -1);
+			break;
+		case SC_STRIKING:
+			if( sd )
+				val2 = pc_checkskill(sd, SA_FLAMELAUNCHER|SA_FROSTWEAPON|SA_LIGHTNINGLOADER|SA_SEISMICWEAPON);
+			val4 = tick / 1000;
+			tick = 1000;
 			break;
 		case SC_BLOODSUCKER:
 			val4 = tick / 1000;
@@ -7989,6 +7993,16 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		{
 			status_heal(bl, 130 * sce->val1, 0, 2);
 			sc_timer_next(3000 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
+
+	case SC_STRIKING:
+		if( --(sce->val4) >= 0 )
+		{
+			if( !status_charge(bl,0,20*sce->val1/100) )
+				break;
+			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}
 		break;

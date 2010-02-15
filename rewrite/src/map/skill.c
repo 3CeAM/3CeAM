@@ -419,6 +419,7 @@ int skillnotok (int skillid, struct map_session_data *sd)
 
 	switch (skillid) {
 		case AL_WARP:
+		case RETURN_TO_ELDICASTES:
 			if(map[m].flag.nowarp) {
 				clif_skill_teleportmessage(sd,0);
 				return 1;
@@ -7002,6 +7003,22 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
 		}
 		break;
+	case RETURN_TO_ELDICASTES:
+		if( sd )
+		{
+			short x = 198, y = 187; // Destiny position.
+			unsigned short mapindex;
+
+			mapindex  = mapindex_name2id(MAP_ERISCASTLE);
+
+			if(!mapindex)
+			{ //Given map not found?
+				clif_skill_fail(sd,skillid,0,0);
+				return 0;
+			}
+			pc_setpos(sd, mapindex, x, y, 3);
+		}
+		break;
 
 	default:
 		ShowWarning("skill_castend_nodamage_id: Unknown skill used:%d\n",skillid);
@@ -8097,7 +8114,7 @@ int skill_castend_map (struct map_session_data *sd, short skill_num, const char 
 		return 0;
 	}
 
-	if(sd->sc.opt1 || sd->sc.option&OPTION_HIDE ) {
+	if( (sd->sc.opt1 && sd->sc.opt1 != OPT1_BURNING) || sd->sc.option&OPTION_HIDE ) {
 		skill_failed(sd);
 		return 0;
 	}
@@ -8709,8 +8726,8 @@ static int skill_unit_onplace (struct skill_unit *src, struct block_list *bl, un
 
 	sc = status_get_sc(bl);
 
-	if (sc && sc->option&OPTION_HIDE && sg->skill_id != WZ_HEAVENDRIVE && sg->skill_id != WL_EARTHSTRAIN)
-		return 0; //Hidden characters are immune to AoE skills except Heaven's Drive and Earth Strain. [Skotlex]
+	if (sc && sc->option&OPTION_HIDE && sg->skill_id != WZ_HEAVENDRIVE && sg->skill_id != WL_EARTHSTRAIN && sg->skill_id != RA_ARROWSTORM && sg->skill_id != SO_EARTHGRAVE )
+		return 0; //Hidden characters are immune to AoE skills except Heaven's Drive and Earth Strain. [Skotlex], Include Arrow Storm and Earth Grave. [Jobbie]
 	
 	type = status_skill2sc(sg->skill_id);
 	sce = (sc && type != -1)?sc->data[type]:NULL;
@@ -9384,15 +9401,24 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 
 		case UNT_EARTHSTRAIN:
 			{
-				int rate = 0;
-				struct status_data *status = status_get_status_data(ss);
-				if( (status=status_get_status_data(ss)) && (tstatus=status_get_status_data(bl))
-					 && (sd=map_id2sd(ss->id)) && (tsd=map_id2sd(bl->id)) )
-					// Made up formula, completely custom. Doddler states that the user and the oponent's level and dex
-					// influence on the strip rate. [LimitLine]
-					rate = 30 + (120 - status_get_dex(bl) + status_get_dex(ss) + 150 - status_get_lv(bl) + status_get_lv(ss) / 10);
-				sc_start(bl, SC_STRIPWEAPON, rate,sg->skill_lv, skill_get_time2(sg->skill_id, sg->skill_lv));
-				sc_start(bl, SC_STRIPHELM, rate, sg->skill_lv, skill_get_time2(sg->skill_id, sg->skill_lv));
+				unsigned short location = 0;
+				int rate;
+				/*As the info said strip chance is increased by the caster's BLv
+				  and strip chance is decreased by the target's Dex
+				  Overall Formula: Success chance * (Blvl/100) * (1-Dex/200). [Jobbie]*/
+				switch( sg->skill_lv )
+				{
+					case 1: rate = 6*status_get_lv(ss)/100; break; //4% chance
+					case 2: rate = 14*status_get_lv(ss)/100; break; //14% chance
+					case 3: rate = 24*status_get_lv(ss)/100; break; //24% chance
+					case 4: rate = 36*status_get_lv(ss)/100; break; //36% chance
+					case 5: rate = 50*status_get_lv(ss)/100; break; //50% chance
+				}
+				rate = rate * (1-tstatus->dex/200); //Strip Chance * (1-TargetsDex/200);
+				location = EQP_SHIELD|EQP_ARMOR|EQP_ACC;
+				
+				if( rate = skill_strip_equip(bl, location, rate, sg->skill_lv, skill_get_time2(sg->skill_id,sg->skill_lv)) )
+					clif_skill_nodamage(&src->bl,bl,sg->skill_id,sg->skill_lv,rate);
 				skill_attack(skill_get_type(sg->skill_id), ss, &src->bl, bl, sg->skill_id, sg->skill_lv, tick, 0);
 			}
 			break;
@@ -9808,7 +9834,7 @@ static int skill_check_condition_char_sub (struct block_list *bl, va_list ap)
 	if(pc_isdead(tsd))
 		return 0;
 
-	if (tsd->sc.data[SC_SILENCE] || tsd->sc.opt1)
+	if (tsd->sc.data[SC_SILENCE] || (tsd->sc.opt1 && tsd->sc.opt1 != OPT1_BURNING) )
 		return 0;
 
 	switch(skillid)
