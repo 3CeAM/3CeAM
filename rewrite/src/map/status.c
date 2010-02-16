@@ -478,7 +478,18 @@ void initChangeTables(void)
 	set_sc( MI_ECHOSONG          , SC_ECHOSONG           , SI_ECHOSONG          , SCB_DEF2  );
 	set_sc( MI_HARMONIZE         , SC_HARMONIZE          , SI_HARMONIZE         , SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK );
 	add_sc( WM_POEMOFNETHERWORLD , SC_STOP );
+	set_sc( WM_VOICEOFSIREN      , SC_VOICEOFSIREN       , SI_VOICEOFSIREN      , SCB_NONE );
 	set_sc( WM_LULLABY_DEEPSLEEP , SC_DEEPSLEEP          , SI_DEEPSLEEP         , SCB_NONE );
+	set_sc( WM_SIRCLEOFNATURE    , SC_SIRCLEOFNATURE     , SI_SIRCLEOFNATURE    , SCB_NONE );
+	set_sc( WM_GLOOMYDAY         , SC_GLOOMYDAY          , SI_GLOOMYDAY         , SCB_FLEE|SCB_ASPD );
+	set_sc( WM_SONG_OF_MANA      , SC_SONGOFMANA         , SI_SONGOFMANA        , SCB_NONE );
+	set_sc( WM_DANCE_WITH_WUG    , SC_DANCEWITHWUG       , SI_DANCEWITHWUG      , SCB_ASPD );
+	set_sc( WM_SATURDAY_NIGHT_FEVER, SC_BERSERK          , SI_SATURDAYNIGHTFEVER           , SCB_DEF|SCB_DEF2|SCB_MDEF|SCB_MDEF2|SCB_FLEE|SCB_SPEED|SCB_ASPD|SCB_MAXHP|SCB_REGEN );
+	set_sc( WM_LERADS_DEW        , SC_LERADSDEW          , SI_LERADSDEW         , SCB_MAXHP );
+	set_sc( WM_MELODYOFSINK      , SC_MELODYOFSINK       , SI_MELODYOFSINK      , SCB_MATK|SCB_DEF2 );
+	set_sc( WM_BEYOND_OF_WARCRY  , SC_BEYONDOFWARCRY     , SI_WARCRYOFBEYOND    , SCB_BATK|SCB_MATK );
+	set_sc( WM_UNLIMITED_HUMMING_VOICE , SC_UNLIMITEDHUMMINGVOICE, SI_UNLIMITEDHUMMINGVOICE , SCB_NONE );
+
 
 	set_sc( GN_CARTBOOST         , SC_GN_CARTBOOST    , SI_CARTSBOOST      , SCB_SPEED|SCB_BATK );
 	add_sc( GN_THORNS_TRAP       , SC_THORNSTRAP );
@@ -590,6 +601,8 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_SPHERE_3] = SI_SPHERE_3;
 	StatusIconChangeTable[SC_SPHERE_4] = SI_SPHERE_4;
 	StatusIconChangeTable[SC_SPHERE_5] = SI_SPHERE_5;
+
+	StatusIconChangeTable[SC_GLOOMYDAY_SK] = SI_GLOOMYDAY;
 
 	//Other SC which are not necessarily associated to skills.
 	StatusChangeFlagTable[SC_ASPDPOTION0] = SCB_ASPD;
@@ -3650,6 +3663,10 @@ static unsigned short status_calc_batk(struct block_list *bl, struct status_chan
 		batk += batk * 32 / 100; // Still need official value [pakpil]
 	if(sc->data[SC_RUSHWINDMILL])
 		batk += batk * sc->data[SC_RUSHWINDMILL]->val2/100;
+	if(sc->data[SC_MELODYOFSINK])
+		batk -= batk * sc->data[SC_MELODYOFSINK]->val3/100;
+	if(sc->data[SC_BEYONDOFWARCRY])
+		batk += batk * sc->data[SC_BEYONDOFWARCRY]->val3/100;
 
 	return (unsigned short)cap_value(batk,0,USHRT_MAX);
 }
@@ -3720,6 +3737,10 @@ static unsigned short status_calc_matk(struct block_list *bl, struct status_chan
 		matk += matk * sc->data[SC_INCMATKRATE]->val1/100;
 	if(sc->data[SC_MOONLITSERENADE])
 		matk += matk * sc->data[SC_MOONLITSERENADE]->val2/100;
+	if(sc->data[SC_MELODYOFSINK])
+		matk += matk * sc->data[SC_MELODYOFSINK]->val3/100;
+	if(sc->data[SC_BEYONDOFWARCRY])
+		matk -= matk * sc->data[SC_BEYONDOFWARCRY]->val3/100;
 
 	return (unsigned short)cap_value(matk,0,USHRT_MAX);
 }
@@ -3828,6 +3849,8 @@ static signed short status_calc_flee(struct block_list *bl, struct status_change
 		flee -= flee * 30 / 100;
 	if( sc->data[SC__LAZINESS] )
 		flee -= flee * sc->data[SC__LAZINESS]->val3 / 100;
+	if( sc->data[SC_GLOOMYDAY] )
+		flee -= flee * sc->data[SC_GLOOMYDAY]->val2 / 100;
 
 	return (short)cap_value(flee,1,SHRT_MAX);
 }
@@ -4260,6 +4283,10 @@ static short status_calc_aspd_rate(struct block_list *bl, struct status_change *
 		aspd_rate += aspd_rate * sc->data[SC__GROOMY]->val2 / 100;
 	if( sc->data[SC_SWINGDANCE] )
 		aspd_rate -= aspd_rate * sc->data[SC_SWINGDANCE]->val2 / 100;
+	if( sc->data[SC_DANCEWITHWUG] )
+		aspd_rate -= aspd_rate * sc->data[SC_DANCEWITHWUG]->val3 / 100;	
+	if( sc->data[SC_GLOOMYDAY] )
+		aspd_rate += aspd_rate * sc->data[SC_GLOOMYDAY]->val3 / 100;
 
 	return (short)cap_value(aspd_rate,0,SHRT_MAX);
 }
@@ -4302,6 +4329,8 @@ static unsigned int status_calc_maxhp(struct block_list *bl, struct status_chang
 		maxhp += maxhp / 100 * 5 * sc->data[SC_EPICLESIS]->val1;
 	if(sc->data[SC__WEAKNESS])
 		maxhp -= maxhp * sc->data[SC__WEAKNESS]->val2 / 100;
+	if(sc->data[SC_LERADSDEW])
+		maxhp += maxhp * sc->data[SC_LERADSDEW]->val3 / 100;
 
 	return cap_value(maxhp,1,UINT_MAX);
 }
@@ -5417,6 +5446,46 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	case SC_ACCELERATION:
 		status_change_end(bl,SC_INCREASEAGI,-1);
 		break;
+	case SC_SWINGDANCE:
+	case SC_SYMPHONYOFLOVER:
+	case SC_MOONLITSERENADE:
+	case SC_RUSHWINDMILL:
+	case SC_ECHOSONG:
+	case SC_HARMONIZE:
+	case SC_VOICEOFSIREN:
+	case SC_SIRCLEOFNATURE:
+	case SC_GLOOMYDAY_SK:
+	case SC_GLOOMYDAY:
+		if( sc->data[type] ) // Don't remove same sc.
+			break;
+		status_change_end(bl,SC_SWINGDANCE,-1);
+		status_change_end(bl,SC_SYMPHONYOFLOVER,-1);
+		status_change_end(bl,SC_MOONLITSERENADE,-1);
+		status_change_end(bl,SC_RUSHWINDMILL,-1);
+		status_change_end(bl,SC_ECHOSONG,-1);
+		status_change_end(bl,SC_HARMONIZE,-1);
+		status_change_end(bl,SC_VOICEOFSIREN,-1);
+		status_change_end(bl,SC_SIRCLEOFNATURE,-1);
+		status_change_end(bl,SC_GLOOMYDAY_SK,-1);
+		status_change_end(bl,SC_GLOOMYDAY,-1);
+		if( type != MI_HARMONIZE ) // Harmonize isn't stackable with other 3rd class dances and Chorus skills.
+			break;
+	case SC_SONGOFMANA:
+	case SC_DANCEWITHWUG:
+	case SC_LERADSDEW:
+	case SC_MELODYOFSINK:
+	case SC_BEYONDOFWARCRY:
+	case SC_UNLIMITEDHUMMINGVOICE:
+		if( sc->data[type] ) // Don't remove same sc.
+			break;
+		status_change_end(bl,SC_HARMONIZE,-1);
+		status_change_end(bl,SC_SONGOFMANA,-1);
+		status_change_end(bl,SC_DANCEWITHWUG,-1);
+		status_change_end(bl,SC_LERADSDEW,-1);
+		status_change_end(bl,SC_MELODYOFSINK,-1);
+		status_change_end(bl,SC_BEYONDOFWARCRY,-1);
+		status_change_end(bl,SC_UNLIMITEDHUMMINGVOICE,-1);
+		break;
 	}
 
 	//Check for overlapping fails
@@ -5509,6 +5578,9 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 				break;
 			case SC_JOINTBEAT:
 				val2 |= sce->val2; // stackable ailments
+			case SC_LERADSDEW:
+				if( sc && sc->data[SC_BERSERK] )
+					return 0;
 			default:
 				if(sce->val1 > val1)
 					return 1; //Return true to not mess up skill animations. [Skotlex]
@@ -6562,9 +6634,48 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_HARMONIZE:
 			val2 = 3 + 2 * val1;
 			break;
+		case SC_VOICEOFSIREN:
+			val4 = tick / 2000;
+			tick = 2000;
+			break;
 		case SC_DEEPSLEEP:
 			val4 = tick / 2000;
 			tick = 2000;
+			break;
+		case SC_SIRCLEOFNATURE:
+			val2 = 1 + val1; //SP consume
+			val3 = 40 * val1;	//HP recovery
+			val4 = tick / 1000;
+			tick = 1000;
+			break;
+		case SC_SONGOFMANA:
+			val3 = 10 + (2 * val2);
+			val4 = tick/3000;
+			tick = 3000;
+			break;
+		case SC_GLOOMYDAY:
+			val2 = 3 + 2 * val1; // Flee reduction.
+			val3 = 3 * val1; // ASPD reduction.
+			break;
+		case SC_DANCEWITHWUG:
+			val3 = (5 * val1) + (1 * val2); //Still need official value.
+			break;
+		case SC_LERADSDEW:
+			val3 = (5 * val1) + (1 * val2);
+			break;
+		case SC_MELODYOFSINK:
+			val3 = (5 * val1) + (1 * val2);
+			break;
+		case SC_BEYONDOFWARCRY:
+			val3 = (5 * val1) + (1 * val2);
+			break;
+		case SC_UNLIMITEDHUMMINGVOICE:
+			{
+				struct unit_data *ud = unit_bl2ud(bl);
+				if( ud == NULL ) return 0;
+				ud->state.skillcastcancel = 0;
+				val3 = 15 - (2 * val2);
+			}
 			break;
 
 		default:
@@ -6625,6 +6736,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_CHASEWALK:
 		case SC_WEIGHT90:
 		case SC_CAMOUFLAGE:
+		case SC_VOICEOFSIREN:
 			unit_stop_attack(bl);
 		break;
 		case SC_SILENCE:
@@ -7201,6 +7313,15 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 				status_change_end(bl, SC_ENDURE, -1);
 			}
 			sc_start4(bl, SC_REGENERATION, 100, 10,0,0,(RGN_HP|RGN_SP), skill_get_time(LK_BERSERK, sce->val1));
+			if( sc->data[SC_SATURDAYNIGHTFEVER] && sc->data[SC_SATURDAYNIGHTFEVER]->val2 == 0 )
+			{
+				if( sd && !pc_issit(sd) )
+				{
+					pc_setsit(sd);
+					clif_sitting(bl);
+					sc->data[SC_SATURDAYNIGHTFEVER]->val2 = 1;
+				}
+			}
 			break;
 		case SC_GOSPEL:
 			if (sce->val3) { //Clear the group.
@@ -7297,6 +7418,13 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 				if( !s_sd )
 					break;
 				s_sd->shadowform_id = 0;
+			}
+			break;
+		case SC_SATURDAYNIGHTFEVER:
+			if( sd && pc_issit(sd) )
+			{
+				pc_setstand(sd);
+				clif_standing(bl);
 			}
 			break;
 		}
@@ -8034,6 +8162,15 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		}
 		break;
 
+	case SC_VOICEOFSIREN:
+		if( --(sce->val4) >= 0 )
+		{
+			clif_emotion(bl,3);
+			sc_timer_next(2000 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
+
 	case SC_DEEPSLEEP:
 		if( --(sce->val4) >= 0 )
 		{ // Recovers 1% HP/SP every 2 seconds.
@@ -8043,6 +8180,25 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		}
 		break;
 
+	case SC_SIRCLEOFNATURE:
+		if( --(sce->val4) >= 0 )
+		{
+			if( !status_charge(bl,0,sce->val2) )
+				break;
+			status_heal(bl, sce->val3, 0, 3);
+			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
+
+	case SC_SONGOFMANA:
+		if( --(sce->val4) >= 0 )
+		{
+			status_heal(bl,0,sce->val3,3);
+			sc_timer_next(3000 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
 	case SC_CRYSTALIZE:
 		if( --(sce->val4) >= 0 )
 		{ // Drains 2% of HP and 1% of SP every seconds.
