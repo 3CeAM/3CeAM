@@ -5,6 +5,14 @@
 // 	- Details.
 //========================================
 
+02/16/2010
+	r196 [pakpil]
+	* Added some Wanderer/Minstrel skills: WM_VOICEOFSIREN, WM_DEADHILLHERE, WM_SIRCLEOFNATURE, WM_GREAT_ECHO,
+		WM_SONG_OF_MANA, WM_DANCE_WITH_WUG, WM_SOUND_OF_DESTRUCTION, WM_SATURDAY_NIGHT_FEVER,
+		WM_LERADS_DEW, WM_MELODYOFSINK, WM_BEYOND_OF_WARCRY, WM_UNLIMITED_HUMMING_VOICE.
+	* Reverted clean up on some defines in pc_gainexp. Take care with these, if you remove it the exp gained will be
+	  shown twice when "display_exp" is "yes". This option should be changed or removed.
+
 02/15/2010
 	r195 [Jobbie]
 	* Sorcerer Skills Update.

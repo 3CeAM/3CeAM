@@ -1016,6 +1016,15 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 	tstatus = status_get_status_data(target);
 	//直前のスキル状況の記録
 	if(sd) {
+		if( skill_get_inf2(skill_num)&INF2_CHORUS_SKILL )
+		{
+			if( skill_check_pc_partner(sd,skill_num,&skill_lv,skill_get_splash(skill_num,skill_lv),0) < 1 )
+			{
+				clif_skill_fail(sd,skill_num, 0x11, 0);
+				return 0;
+			}
+		}
+		else
 		switch(skill_num){
 		case SA_CASTCANCEL:
 			if(ud->skillid != skill_num){

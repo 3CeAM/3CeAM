@@ -4983,7 +4983,9 @@ static void pc_calcexp(struct map_session_data *sd, unsigned int *base_exp, unsi
  *------------------------------------------*/
 int pc_gainexp(struct map_session_data *sd, struct block_list *src, unsigned int base_exp,unsigned int job_exp, short type)
 {
+#if PACKETVER < 20091027
 	char output[256];
+#endif
 	float nextbp=0, nextjp=0;
 	unsigned int nextb=0, nextj=0;
 	nullpo_retr(0, sd);
@@ -5051,12 +5053,14 @@ int pc_gainexp(struct map_session_data *sd, struct block_list *src, unsigned int
 		clif_updatestatus(sd,SP_JOBEXP);
 	}
 
+#if PACKETVER < 20091027
 	if(sd->state.showexp){
 		sprintf(output,
 			"Experience Gained Base:%u (%.2f%%) Job:%u (%.2f%%)",base_exp,nextbp*(float)100,job_exp,nextjp*(float)100);
 		clif_disp_onlyself(sd,output,strlen(output));
 
 	}
+#endif
 
 	return 1;
 }
