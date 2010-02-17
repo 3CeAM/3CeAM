@@ -6,6 +6,11 @@
 //========================================
 
 02/17/2010
+	r201 [pakpil]
+	* Minor fixed in WM_SEVERE_RAINSTORM skill.c
+	* Reverted casting reduction on Bolts.
+
+02/17/2010
 	r200 [pakpil]
 	* Fixed fame ranking.
 	* Fixed SC_FREEZING and SC_BURNING that were stacking. We still need more info about it.
