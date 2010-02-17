@@ -231,17 +231,14 @@ void pc_addfame(struct map_session_data *sd,int count)
 {
 	nullpo_retv(sd);
 	sd->status.fame += count;
-	if(sd->status.fame > MAX_FAME)
+	if( sd->status.fame > MAX_FAME )
 		sd->status.fame = MAX_FAME;
-	switch(sd->class_&MAPID_THIRDMASK){// Need check if it's necesary [pakpil]
+	switch( sd->class_&MAPID_UPPERMASK )
+	{
 		case MAPID_BLACKSMITH: // Blacksmith
-		case MAPID_MECHANIC:
-		case MAPID_MECHANIC_T:
 			clif_fame_blacksmith(sd,count);
 			break;
 		case MAPID_ALCHEMIST: // Alchemist
-		case MAPID_GENETIC:
-		case MAPID_GENETIC_T:
 			clif_fame_alchemist(sd,count);
 			break;
 		case MAPID_TAEKWON: // Taekwon
