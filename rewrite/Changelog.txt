@@ -5,6 +5,16 @@
 // 	- Details.
 //========================================
 
+02/17/2010
+	r200 [pakpil]
+	* Fixed fame ranking.
+	* Fixed SC_FREEZING and SC_BURNING that were stacking. We still need more info about it.
+
+02/17/2010
+	r197 [pakpil]
+	* Fixed SC_REPRODUCE. Bug report 165.
+	* Fixed some issues in r196 that make conflicts with cygwin.
+
 02/16/2010
 	r196 [pakpil]
 	* Added some Wanderer/Minstrel skills: WM_VOICEOFSIREN, WM_DEADHILLHERE, WM_SIRCLEOFNATURE, WM_GREAT_ECHO,

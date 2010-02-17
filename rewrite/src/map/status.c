@@ -5142,10 +5142,16 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			return 0;
 	case SC_SLEEP:
 	case SC_STUN:
-	case SC_BURNING:
+	case SC_FREEZING:
 		if (sc->opt1)
 			return 0; //Cannot override other opt1 status changes. [Skotlex]
+	break;	
+		
+	case SC_BURNING:
+		if(sc->data[SC_FREEZING] || sc->opt1)
+			return 0;
 	break;
+
 	case SC_SIGNUMCRUCIS:
 		//Only affects demons and undead element (but not players)
 		if((!undead_flag && status->race!=RC_DEMON) || bl->type == BL_PC)

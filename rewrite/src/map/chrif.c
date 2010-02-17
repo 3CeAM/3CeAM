@@ -1062,16 +1062,12 @@ int chrif_updatefamelist(struct map_session_data* sd)
 	char type;
 	chrif_check(-1);
 
-	switch(sd->class_ & MAPID_THIRDMASK)//Need test [pakpil]
+	switch( sd->class_&MAPID_BASEMASK )
 	{
 		case MAPID_BLACKSMITH:
-		case MAPID_MECHANIC:
-		case MAPID_MECHANIC_T:
 			type = 1;
 			break;
 		case MAPID_ALCHEMIST:
-		case MAPID_GENETIC:
-		case MAPID_GENETIC_T:
 			type = 2;
 			break;
 		case MAPID_TAEKWON:    type = 3; break;
