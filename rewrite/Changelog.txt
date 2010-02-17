@@ -5,6 +5,11 @@
 // 	- Details.
 //========================================
 
+
+02/17/2020
+	r202 [pakpil]
+	* Fixed SC_REPRODUCE. This was memorizing a wrong skill id on certain skills.
+
 02/17/2010
 	r201 [pakpil]
 	* Minor fixed in WM_SEVERE_RAINSTORM skill.c

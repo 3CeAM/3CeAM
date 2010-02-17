@@ -2063,22 +2063,55 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 			clif_addskill(tsd,skillid);
 		}
 	}
-	if(damage > 0 && dmg.flag&BF_SKILL && sc && sc->data[SC__REPRODUCE] && can_copy(tsd,skillid,bl) &&
-		!tsd->status.skill[skillid].id )
+	if(damage > 0 && dmg.flag&BF_SKILL && sc && sc->data[SC__REPRODUCE] )
 	{
-		if (tsd->reproduceskill_id && tsd->status.skill[tsd->reproduceskill_id].flag == 13)
-		{ // Delete previous reproduced skill.
-			tsd->status.skill[tsd->reproduceskill_id].id = 0;
-			tsd->status.skill[tsd->reproduceskill_id].lv = 0;
-			tsd->status.skill[tsd->reproduceskill_id].flag = 0;
-			clif_skillinfo_delete(tsd,tsd->reproduceskill_id);
+		int temp_skill = skillid;
+		switch( skillid )
+		{ // Still need know what skill you can reproduce.
+			case WL_TETRAVORTEX_FIRE:
+			case WL_TETRAVORTEX_WATER:
+			case WL_TETRAVORTEX_WIND:
+			case WL_TETRAVORTEX_GROUND:
+				temp_skill = WL_TETRAVORTEX;
+				break;
+			case WL_CHAINLIGHTNING_ATK:
+				temp_skill = WL_CHAINLIGHTNING;
+				break;
+			case WM_REVERBERATION_MELEE:
+			case WM_REVERBERATION_MAGIC:
+				temp_skill = WM_REVERBERATION;
+				break;
+			case GN_CRAZYWEED_ATK:
+				temp_skill = GN_CRAZYWEED;
+				break;
+			case GN_FIRE_EXPANSION_SMOKE_POWDER:
+			case GN_FIRE_EXPANSION_TEAR_GAS:
+			case GN_FIRE_EXPANSION_ACID:
+				temp_skill = GN_FIRE_EXPANSION;
+				break;
+			case GN_HELLS_PLANT_ATK:
+				temp_skill = GN_HELLS_PLANT;
+				break;
+			case WM_SEVERE_RAINSTORM_MELEE:
+				temp_skill = WM_SEVERE_RAINSTORM;
+				break;
 		}
+		if( can_copy(tsd,temp_skill,bl) && !tsd->status.skill[temp_skill].id )
+		{
+			if (tsd->reproduceskill_id && tsd->status.skill[tsd->reproduceskill_id].flag == 13)
+			{ // Delete previous reproduced skill.
+				tsd->status.skill[tsd->reproduceskill_id].id = 0;
+				tsd->status.skill[tsd->reproduceskill_id].lv = 0;
+				tsd->status.skill[tsd->reproduceskill_id].flag = 0;
+				clif_skillinfo_delete(tsd,tsd->reproduceskill_id);
+			}
 
-		tsd->reproduceskill_id = skillid;
-		tsd->status.skill[skillid].id = skillid;
-		tsd->status.skill[skillid].lv = min(skilllv,pc_checkskill(tsd,SC_REPRODUCE)); // I have noticed that the level is the level used. [pakpil]
-		tsd->status.skill[skillid].flag = 13;//cloneskill flag
-		clif_addskill(tsd,skillid);
+			tsd->reproduceskill_id = temp_skill;
+			tsd->status.skill[temp_skill].id = temp_skill;
+			tsd->status.skill[temp_skill].lv = min(skilllv,pc_checkskill(tsd,SC_REPRODUCE)); // I have noticed that the level is the level used. [pakpil]
+			tsd->status.skill[temp_skill].flag = 13;//cloneskill flag
+			clif_addskill(tsd,temp_skill);
+		}
 	}
 
 	if( skillid != WZ_SIGHTRASHER &&
