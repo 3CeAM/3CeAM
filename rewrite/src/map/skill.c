@@ -2061,14 +2061,15 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 			clif_addskill(tsd,skillid);
 		}
 	}
-	if(damage > 0 && dmg.flag&BF_SKILL && sc && sc->data[SC__REPRODUCE] && can_copy(tsd,skillid,bl) )
+	if(damage > 0 && dmg.flag&BF_SKILL && sc && sc->data[SC__REPRODUCE] && can_copy(tsd,skillid,bl) &&
+		!tsd->status.skill[skillid].id )
 	{
 		if (tsd->reproduceskill_id && tsd->status.skill[tsd->reproduceskill_id].flag == 13)
 		{ // Delete previous reproduced skill.
-			clif_skillinfo_delete(tsd,tsd->reproduceskill_id);
 			tsd->status.skill[tsd->reproduceskill_id].id = 0;
 			tsd->status.skill[tsd->reproduceskill_id].lv = 0;
 			tsd->status.skill[tsd->reproduceskill_id].flag = 0;
+			clif_skillinfo_delete(tsd,tsd->reproduceskill_id);
 		}
 
 		tsd->reproduceskill_id = skillid;
@@ -7049,7 +7050,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		else if( sd )
 		{
-			int count = skill_check_pc_partner(sd,skillid,&(short)skilllv,skill_get_splash(skillid,skilllv),1);
+			short lv = (short)skilllv;
+			int count = skill_check_pc_partner(sd,skillid,&lv,skill_get_splash(skillid,skilllv),1);
 			if( sc_start2(bl,type,100,skilllv,count,skill_get_time(skillid,skilllv)) )
 				party_foreachsamemap(skill_area_sub,sd,skill_get_splash(skillid,skilllv),src,skillid,skilllv,tick,flag|BCT_PARTY|1,skill_castend_nodamage_id);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
@@ -7066,7 +7068,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		else if( sd )
 		{	// These affect to all targets arround the caster.
-			skill_area_temp[0] = skill_check_pc_partner(sd,skillid,&(short)skilllv,skill_get_splash(skillid,skilllv),1);
+			short lv = (short)skilllv;
+			skill_area_temp[0] = skill_check_pc_partner(sd,skillid,&lv,skill_get_splash(skillid,skilllv),1);
 			map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid,skilllv),BL_PC, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
@@ -7109,7 +7112,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		else
 		{
-			skill_area_temp[0] = skill_check_pc_partner(sd,skillid,&(short)skilllv,skill_get_splash(skillid,skilllv),1);
+			short lv = (short)skilllv;
+			skill_area_temp[0] = skill_check_pc_partner(sd,skillid,&lv,skill_get_splash(skillid,skilllv),1);
 			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid,skilllv),BL_PC, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
@@ -9556,7 +9560,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 		case UNT_EARTHSTRAIN:
 			{
 				unsigned short location = 0;
-				int rate;
+				int rate = 0;
 				/*As the info said strip chance is increased by the caster's BLv
 				  and strip chance is decreased by the target's Dex
 				  Overall Formula: Success chance * (Blvl/100) * (1-Dex/200). [Jobbie]*/

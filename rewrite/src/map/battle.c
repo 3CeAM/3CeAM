@@ -2826,7 +2826,10 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					case WM_GREAT_ECHO:
 						skillratio = 900 + 100 * skill_lv;
 						if( sd )	// Still need official value [pakpil]
-							skillratio += 20 * skill_check_pc_partner(sd,skill_num,&(short)skill_lv,skill_get_splash(skill_num,skill_lv),0);
+						{
+							short lv = (short)skill_lv;
+							skillratio += 20 * skill_check_pc_partner(sd,skill_num,&lv,skill_get_splash(skill_num,skill_lv),0);
+						}
 						break;
 					case SO_FIREWALK:
 					case SO_ELECTRICWALK:
