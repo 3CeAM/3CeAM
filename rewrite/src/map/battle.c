@@ -320,7 +320,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 
 		if(!damage) return 0;
 	}
-
+	// FIXMI: Double definition of "sc".
 	sc = status_get_sc(bl);
 	tsc = status_get_sc(src);
 
@@ -392,7 +392,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 		if(sc->data[SC_DODGE] && !sc->opt1 &&
 			(flag&BF_LONG || sc->data[SC_SPURT])
 			&& rand()%100 < 20) {
-				if (sd && pc_issit(sd) && !(sc->data[SC_SATURDAYNIGHTFEVER] && sc->data[SC_SATURDAYNIGHTFEVER]->val2)) pc_setstand(sd); //Stand it to dodge.
+				if (sd && pc_issit(sd) && !sc->data[SC_SITDOWN_FORCE]) pc_setstand(sd); //Stand it to dodge.
 			clif_skill_nodamage(bl,bl,TK_DODGE,1,1);
 			if (!sc->data[SC_COMBO])
 				sc_start4(bl, SC_COMBO, 100, TK_JUMPKICK, src->id, 1, 0, 2000);
@@ -561,7 +561,12 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 		if ((sce=sc->data[SC_BLOODLUST]) && flag&BF_WEAPON && damage > 0 &&
 			rand()%100 < sce->val3)
 			status_heal(src, damage*sce->val4/100, 0, 3);
+	}
 
+	if( sc && sc->data[SC__DEADLYINFECT] && damage > 0 )
+	{
+		if( rand()%100 < 50 ) // Estimated value
+			status_change_spread(bl, src);
 	}
 
 	//SC effects from caster side.
@@ -571,6 +576,12 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 	{
 		if( sc->data[SC_INVINCIBLE] && !sc->data[SC_INVINCIBLEOFF] )
 			damage += damage * 75 / 100;
+	}
+
+	if( sc && sc->data[SC__DEADLYINFECT] && damage > 0 )
+	{
+		if( rand()%100 < 50 )
+			status_change_spread(src, bl);
 	}
 
 	if (battle_config.pk_mode && sd && bl->type == BL_PC && damage)
@@ -1535,7 +1546,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				skillratio += sc->data[SC_OVERTHRUST]->val3;
 			if(sc->data[SC_MAXOVERTHRUST])
 				skillratio += sc->data[SC_MAXOVERTHRUST]->val2;
-			if(sc->data[SC_BERSERK])
+			if(sc->data[SC_BERSERK] || sc->data[SC_SATURDAYNIGHTFEVER])
 				skillratio += 100;
 		}
 		if( !skill_num )
@@ -2509,12 +2520,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 		struct Damage md = battle_calc_magic_attack(src, target, RK_ENCHANTBLADE, ((TBL_PC*)src)->status.skill[RK_ENCHANTBLADE].lv, wflag);
 		wd.damage += md.damage;
 		wd.flag += md.flag;
-	}
-
-	if( (sc && sc->data[SC__DEADLYINFECT]) || (tsc && tsc->data[SC__DEADLYINFECT]) )
-	{
-		if( rand()%100 < 50 ) // Estimated value
-			status_change_spread(src, target);
 	}
 
 	return wd;

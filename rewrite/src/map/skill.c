@@ -2014,6 +2014,9 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 		else // the central target doesn't display an animation
 			dmg.dmotion = clif_skill_damage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, 5); // needs -2(!) as skill level
 		break;
+	case WL_CHAINLIGHTNING_ATK:
+		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,1,WL_CHAINLIGHTNING,-2,6);
+		break;
 	case WM_SEVERE_RAINSTORM_MELEE:
 		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,1,WM_SEVERE_RAINSTORM,skilllv,5);
 		break;
@@ -2022,7 +2025,7 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 		break;
 	case WM_REVERBERATION_MELEE:
 	case WM_REVERBERATION_MAGIC:
-		dmg.dmotion = clif_skill_damage(src, bl, tick, dmg.amotion, dmg.dmotion, damage, 1, skillid, -2, 6);
+		dmg.dmotion = clif_skill_damage(src, bl, tick, dmg.amotion, dmg.dmotion, damage, 1, WM_REVERBERATION, -2, 6);
 		break;
 
 	default:
@@ -3887,7 +3890,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 						dstsd = sd;
 					}
 				} else
-				if (tsc->data[SC_BERSERK])
+				if (tsc->data[SC_BERSERK] || tsc->data[SC_SATURDAYNIGHTFEVER])
 					heal = 0; //Needed so that it actually displays 0 when healing.
 			}
 			if( dstsd && dstsd->sc.option&OPTION_MADO )
@@ -5416,7 +5419,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 						continue;
 					break;
 				}
-				if(i==SC_BERSERK) tsc->data[i]->val2=0; //Mark a dispelled berserk to avoid setting hp to 100 by setting hp penalty to 0.
+				if(i==SC_BERSERK || i==SC_SATURDAYNIGHTFEVER) tsc->data[i]->val2=0; //Mark a dispelled berserk to avoid setting hp to 100 by setting hp penalty to 0.
 				status_change_end(bl,(sc_type)i,-1);
 			}
 			break;
@@ -6609,7 +6612,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 							continue;
 						break;
 				}
-				if( i == SC_BERSERK )
+				if( i == SC_BERSERK || i == SC_SATURDAYNIGHTFEVER)
 					tsc->data[i]->val2 = 0; //Mark a dispelled berserk to avoid setting hp to 100 by setting hp penalty to 0.
 				status_change_end(bl, (sc_type)i, -1);
 			}
@@ -7042,10 +7045,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		if( flag&1 )
 		{	// Affect to all targets arround the caster and caster too.
 			if( !(tsc && tsc->data[type]) )
-			{
-				sc_start4(bl, type, 100, skilllv, 0,0,1000,skill_get_time(skillid, skilllv));
-				sc_start(bl, SC_SATURDAYNIGHTFEVER, 100, skilllv,skill_get_time(skillid, skilllv)+skill_get_time2(skillid,skilllv));
-			}
+				sc_start(bl, type, 100, skilllv,skill_get_time(skillid, skilllv));
 		}
 		else if( flag&2 )
 		{
@@ -8242,12 +8242,12 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 							ud->skillunit[i]->unit->group->val2 = skilllv;
 							break;
 						case 3:
-							ud->skillunit[i]->unit_id = UNT_DEMONIC_FIRE2;
-							clif_changetraplook(&ud->skillunit[i]->unit->bl, UNT_DEMONIC_FIRE2);
+							ud->skillunit[i]->unit_id = UNT_FIRE_EXPANSION_SMOKE_POWDER;
+							clif_changetraplook(&ud->skillunit[i]->unit->bl, UNT_FIRE_EXPANSION_SMOKE_POWDER);
 							break;
 						case 4:
-							ud->skillunit[i]->unit_id = UNT_DEMONIC_FIRE3;
-							clif_changetraplook(&ud->skillunit[i]->unit->bl, UNT_DEMONIC_FIRE3);
+							ud->skillunit[i]->unit_id = UNT_FIRE_EXPANSION_TEAR_GAS;
+							clif_changetraplook(&ud->skillunit[i]->unit->bl, UNT_FIRE_EXPANSION_TEAR_GAS);
 							break;
 						case 5:
 						default:
@@ -8323,7 +8323,8 @@ int skill_castend_map (struct map_session_data *sd, short skill_num, const char 
 		sd->sc.data[SC_WHITEIMPRISON] ||
 		(sd->sc.data[SC_STASIS] && skill_stasis_check(&sd->bl, sd->sc.data[SC_STASIS]->val2, skill_num)) ||
 		sd->sc.data[SC_CRYSTALIZE] ||
-		sd->sc.data[SC__MANHOLE]
+		sd->sc.data[SC__MANHOLE] ||
+		sd->sc.data[SC_SATURDAYNIGHTFEVER]
 	 )) {
 		skill_failed(sd);
 		return 0;
@@ -9668,8 +9669,8 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 		case UNT_NETHERWORLD:
 			if( status_get_mode(bl) != MD_BOSS )
 			{
-				if( !(tsc && tsc->data[SC_STOP]) )
-					sc_start(bl, SC_STOP, 100, sg->skill_lv, skill_get_time2(sg->skill_id,sg->skill_lv));
+				if( !(tsc && tsc->data[type]) )
+					sc_start(bl, type, 100, sg->skill_lv, skill_get_time2(sg->skill_id,sg->skill_lv));
 			}
 			break;
 
@@ -9722,8 +9723,8 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			}
 			break;
 
-		case UNT_DEMONIC_FIRE2:
-		case UNT_DEMONIC_FIRE3:
+		case UNT_FIRE_EXPANSION_SMOKE_POWDER:
+		case UNT_FIRE_EXPANSION_TEAR_GAS:
 			// FIXME: Invalid status change -1 [LimitLine]
 			sc_start(bl, status_skill2sc(sg->skill_id), 100, sg->skill_lv, 1000);
 			break;

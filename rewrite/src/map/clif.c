@@ -8601,7 +8601,7 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 			clif_status_load(&sd->bl, SI_RIDING, 1);
 
 		if (sd->sc.option&OPTION_RIDING_WUG)
-			clif_status_load(&sd->bl, SI_WOLFMOUNT, 1);
+			clif_status_load(&sd->bl, SI_WUGMOUNT, 1);
 
 		if(sd->status.manner < 0)
 			sc_start(&sd->bl,SC_NOCHAT,100,0,0);
@@ -8912,7 +8912,7 @@ void clif_parse_GlobalMessage(int fd, struct map_session_data* sd)
 		return;
 
 	if( sd->sc.data[SC_BERSERK] || (sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOCHAT) ||
-		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2) )
+		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2) || sd->sc.data[SC_SATURDAYNIGHTFEVER])
 		return;
 
 	if( battle_config.min_chat_delay )
@@ -9154,7 +9154,7 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 			clif_skill_fail(sd, 1, 0, 2);
 			break;
 		}
-		if( sd->sc.data[SC_SATURDAYNIGHTFEVER] && sd->sc.data[SC_SATURDAYNIGHTFEVER]->val2 )
+		if( sd->sc.data[SC_SITDOWN_FORCE] )
 			return;
 
 		if(pc_issit(sd)) {
@@ -9177,7 +9177,7 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 		clif_sitting(&sd->bl);
 	break;
 	case 0x03: // standup
-		if( sd->sc.data[SC_SATURDAYNIGHTFEVER] && sd->sc.data[SC_SATURDAYNIGHTFEVER]->val2 )
+		if( sd->sc.data[SC_SITDOWN_FORCE] )
 			return;
 
 		if (!pc_issit(sd)) {
@@ -9250,7 +9250,7 @@ void clif_parse_WisMessage(int fd, struct map_session_data* sd)
 		return;
 
 	if (sd->sc.data[SC_BERSERK] || (sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOCHAT) ||
-		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2))
+		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2) || sd->sc.data[SC_SATURDAYNIGHTFEVER])
 		return;
 
 	if (battle_config.min_chat_delay)
@@ -10807,7 +10807,7 @@ void clif_parse_PartyMessage(int fd, struct map_session_data* sd)
 		return;
 
 	if( sd->sc.data[SC_BERSERK] || (sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOCHAT) ||
-		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2))
+		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2) || sd->sc.data[SC_SATURDAYNIGHTFEVER])
 		return;
 
 	if( battle_config.min_chat_delay )
@@ -11119,7 +11119,7 @@ void clif_parse_GuildMessage(int fd, struct map_session_data* sd)
 		return;
 
 	if( sd->sc.data[SC_BERSERK] || (sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOCHAT) ||
-		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2))
+		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2) || sd->sc.data[SC_SATURDAYNIGHTFEVER])
 		return;
 
 	if( battle_config.min_chat_delay )
@@ -13597,7 +13597,7 @@ void clif_parse_BattleChat(int fd, struct map_session_data* sd)
 		return;
 
 	if( sd->sc.data[SC_BERSERK] || (sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOCHAT) ||
-		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2))
+		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2) || sd->sc.data[SC_SATURDAYNIGHTFEVER])
 		return;
 
 	if( battle_config.min_chat_delay )

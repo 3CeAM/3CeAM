@@ -3550,7 +3550,7 @@ int pc_isUseitem(struct map_session_data *sd,int n)
 		case 12243: // Mercenary's Berserk Potion
 			if( sd->md == NULL || sd->md->db == NULL )
 				return 0;
-			if( sd->md->sc.data[SC_BERSERK] )
+			if( sd->md->sc.data[SC_BERSERK] || sd->md->sc.data[SC_SATURDAYNIGHTFEVER])
 				return 0;
 			if( nameid == 12242 && sd->md->db->lv < 40 )
 				return 0;
@@ -3651,7 +3651,8 @@ int pc_useitem(struct map_session_data *sd,int n)
 		sd->sc.data[SC__SHADOWFORM] ||
 		sd->sc.data[SC__INVISIBILITY] ||
 		sd->sc.data[SC_CRYSTALIZE] ||
-		sd->sc.data[SC_DEEPSLEEP]
+		sd->sc.data[SC_DEEPSLEEP] ||
+		sd->sc.data[SC_SATURDAYNIGHTFEVER]
 	))
 		return 0;
 
@@ -6492,13 +6493,9 @@ int pc_jobchange(struct map_session_data *sd,int job, int upper)
 		chrif_buildfamelist();
 	} else if (sd->status.fame > 0) {
 		//It may be that now they are famous?
- 		switch (sd->class_&MAPID_THIRDMASK) {
+ 		switch (sd->class_&MAPID_UPPERMASK) {
 			case MAPID_BLACKSMITH:
-			case MAPID_MECHANIC:
-			case MAPID_MECHANIC_T:
 			case MAPID_ALCHEMIST:
-			case MAPID_GENETIC:
-			case MAPID_GENETIC_T:
 			case MAPID_TAEKWON:
 				chrif_save(sd,0);
 				chrif_buildfamelist();
@@ -6655,12 +6652,12 @@ int pc_setoption(struct map_session_data *sd,int type)
 
 	if (type&OPTION_RIDING_WUG && !(p_type&OPTION_RIDING_WUG) && ((sd->class_&MAPID_BASEMASK) == MAPID_ARCHER) && (sd->class_&JOBL_THIRD) && sd->class_&JOBL_2_1)
 	{	//We are going to mount. [Rikter]
-		clif_status_load(&sd->bl,SI_WOLFMOUNT,1);
+		clif_status_load(&sd->bl,SI_WUGMOUNT,1);
 		status_calc_pc(sd,0); //Mounting/Umounting affects walk and attack speeds.
 	}
 	else if (!(type&OPTION_RIDING_WUG) && p_type&OPTION_RIDING_WUG && ((sd->class_&MAPID_BASEMASK) == MAPID_ARCHER) && (sd->class_&JOBL_THIRD) && sd->class_&JOBL_2_1)
 	{	//We are going to dismount.
-		clif_status_load(&sd->bl,SI_WOLFMOUNT,0);
+		clif_status_load(&sd->bl,SI_WUGMOUNT,0);
 		status_calc_pc(sd,0); //Mounting/Umounting affects walk and attack speeds.
 	}
 	// Some info from iRO-Wiki says that MADO are a mount not another class. The HP/SP dealed by damage are the owner ones. [pakpil]
@@ -7371,7 +7368,7 @@ int pc_equipitem(struct map_session_data *sd,int n,int req_pos)
 		return 0;
 	}
 
-	if( sd->sc.data[SC_BERSERK] )
+	if( sd->sc.data[SC_BERSERK] || sd->sc.data[SC_SATURDAYNIGHTFEVER] )
 	{
 		clif_equipitemack(sd,n,0,0);	// fail
 		return 0;
@@ -7517,7 +7514,7 @@ int pc_unequipitem(struct map_session_data *sd,int n,int flag)
 	}
 
 	// if player is berserk then cannot unequip
-	if( !(flag&2) && sd->sc.count && sd->sc.data[SC_BERSERK] )
+	if( !(flag&2) && sd->sc.count && (sd->sc.data[SC_BERSERK] || sd->sc.data[SC_SATURDAYNIGHTFEVER]) )
 	{
 		clif_unequipitemack(sd,n,0,0);
 		return 0;
