@@ -6486,7 +6486,8 @@ int atcommand_npctalk(const int fd, struct map_session_data* sd, const char* com
 	if (sd->sc.count && //no "chatting" while muted.
 		(sd->sc.data[SC_BERSERK] ||
 		(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOCHAT) ||
-		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2)))
+		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2) ||
+		sd->sc.data[SC_SATURDAYNIGHTFEVER]))
 		return -1;
 
 	if (!message || !*message || sscanf(message, "%23[^,], %99[^\n]", name, mes) < 2) {
@@ -6522,7 +6523,8 @@ int atcommand_pettalk(const int fd, struct map_session_data* sd, const char* com
 	if (sd->sc.count && //no "chatting" while muted.
 		(sd->sc.data[SC_BERSERK] ||
 		(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOCHAT) ||
-		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2)))
+		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2) ||
+		sd->sc.data[SC_SATURDAYNIGHTFEVER]))
 		return -1;
 
 	if (!message || !*message || sscanf(message, "%99[^\n]", mes) < 1) {
@@ -7311,7 +7313,8 @@ int atcommand_homtalk(const int fd, struct map_session_data* sd, const char* com
 	if (sd->sc.count && //no "chatting" while muted.
 		(sd->sc.data[SC_BERSERK] ||
 		(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOCHAT) ||
-		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2)))
+		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2) ||
+		sd->sc.data[SC_SATURDAYNIGHTFEVER]))
 		return -1;
 
 	if ( !merc_is_hom_active(sd->hd) ) {
@@ -7733,7 +7736,8 @@ int atcommand_me(const int fd, struct map_session_data* sd, const char* command,
 	if (sd->sc.count && //no "chatting" while muted.
 		(sd->sc.data[SC_BERSERK] ||
 		(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOCHAT) ||
-		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2)))
+		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2) ||
+		sd->sc.data[SC_SATURDAYNIGHTFEVER]))
 		return -1;
 
 	if (!message || !*message || sscanf(message, "%199[^\n]", tempmes) < 0) {

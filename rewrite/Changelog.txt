@@ -6,7 +6,16 @@
 //========================================
 
 
-02/17/2020
+02/19/2010
+	r203 [pakpil]
+	* Fixed fame ranking follow up r200. Sry.
+	* Fixed SC_DEADLYINFECT and SC_INVISIBILITY skills. Bug report 152.
+	* Fixed Shado Chasers's Mascarades range. Bug report 152.
+	* Updated SC and SI lists.
+	* Optimized WM_SATURDAY_NIGHT_FEVER according to the official behavior.
+	* Cleaned Unit_id enum.
+
+02/17/2010
 	r202 [pakpil]
 	* Fixed SC_REPRODUCE. This was memorizing a wrong skill id on certain skills.
 

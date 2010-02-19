@@ -1062,7 +1062,7 @@ int chrif_updatefamelist(struct map_session_data* sd)
 	char type;
 	chrif_check(-1);
 
-	switch( sd->class_&MAPID_BASEMASK )
+	switch( sd->class_&MAPID_UPPERMASK )
 	{
 		case MAPID_BLACKSMITH:
 			type = 1;
