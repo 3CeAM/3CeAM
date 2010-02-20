@@ -1956,7 +1956,6 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 			clif_combo_delay(src, flag);
 		}
 	}
-
 	
 	if( sc && sc->data[SC__SHADOWFORM] && damage > 0 )
 	{
@@ -2639,10 +2638,6 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 				case WM_REVERBERATION_MAGIC:
 					skill_attack(skill_get_type(skl->skill_id),src, src, target, skl->skill_id, skl->skill_lv, 0, SD_LEVEL);
 					break;
-				case GN_SPORE_EXPLOSION:
-					map_foreachinrange(skill_area_sub, target, skill_get_splash(skl->skill_id, skl->skill_lv), BL_CHAR,
-						src, skl->skill_id, skl->skill_lv, 0, skl->flag|1|BCT_ENEMY, skill_castend_damage_id);
-					break;
 				case SC_FATALMENACE:
 					{
 						short x,y;
@@ -2670,6 +2665,10 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 								unit_warp(target, -1, x, y, 3);
 						}
 					}
+					break;
+				case GN_SPORE_EXPLOSION:
+					map_foreachinrange(skill_area_sub, target, skill_get_splash(skl->skill_id, skl->skill_lv), BL_CHAR,
+						src, skl->skill_id, skl->skill_lv, 0, skl->flag|1|BCT_ENEMY, skill_castend_damage_id);
 					break;
 
 				default:
@@ -6424,7 +6423,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 	case RK_REFRESH:
 		{
-			int heal = status_get_max_hp(bl) * 25 / 100;
+			int heal = status_get_max_hp(bl) * 25 / 100;		
+			sc_start(bl,SC_REUSE_REFRESH,100,skilllv,skill_get_cooldown(skillid,skilllv)); // Cooldown
 			clif_skill_nodamage(src,bl,skillid,skilllv,
 				sc_start2(bl,type,100,skilllv,skill_get_time(skillid,skilllv),skill_get_cooldown(skillid,skilllv)));
 			status_heal(bl,heal,0,1);
@@ -7845,7 +7845,6 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case NJ_RAIGEKISAI:
 	case NJ_KAMAITACHI:
 	case NPC_EVILLAND:
-	case WL_COMET:
 	case RA_ELECTRICSHOCKER:
 	case RA_CLUSTERBOMB:
 	case RA_MAGENTATRAP:
@@ -8141,7 +8140,11 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 			map_foreachinarea(skill_area_sub, src->m, x - i, y - i, x + i, y + i, BL_CHAR, src, ALL_RESURRECTION, 1, tick, flag|BCT_NOENEMY|1,skill_castend_nodamage_id);
 		}
 		break;
-
+	case WL_COMET:
+		flag|=1;
+		skill_unitsetting(src,skillid,skilllv,x,y,0);
+		sc_start(src,type,100,skilllv,skill_get_cooldown(skillid,skilllv));
+		break;
 	case WL_EARTHSTRAIN:
 		{
 			int i;
@@ -10593,6 +10596,8 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		break;	
 	case AB_ADORAMUS:
 	case WL_COMET:
+		if( sc && sc->data[SC_REUSE_COMET] )
+			return 0;
 		if( skill_check_pc_partner(sd, skill, &lv, 1, 0) )
 			sd->special_state.no_gemstone = 1;
 		break;

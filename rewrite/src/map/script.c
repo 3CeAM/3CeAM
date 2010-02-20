@@ -6746,7 +6746,7 @@ BUILDIN_FUNC(autobonus3)
 	sd = script_rid2sd(st);
 	if( sd == NULL )
 		return 0; // no player attached
-	
+
 	if( sd->state.autobonus&sd->status.inventory[current_equip_item_index].equip )
 		return 0;
 

@@ -416,6 +416,8 @@ typedef enum sc_type {
 	SC_WARMER,
 	SC_STRIKING,
 	SC_CRYSTALIZE,
+	// Temporary status change used as cooldown in certain skills.
+	SC_REUSE_COMET,
 
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
@@ -1085,9 +1087,7 @@ struct weapon_atk {
 struct status_data {
 	unsigned int
 		hp, sp,
-		max_hp, max_sp,
-		mech_hp, mech_sp,
-		mado_hp, mado_sp;
+		max_hp, max_sp;
 	unsigned short
 		str, agi, vit, int_, dex, luk,
 		batk,

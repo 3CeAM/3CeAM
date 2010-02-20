@@ -5,6 +5,14 @@
 // 	- Details.
 //========================================
 
+02/20/2010
+	r204 [pakpil]
+	* Fixed some Rune Knight skill times.
+	* Fixed some Shadow Chaser skill damage type that was wrong.
+	* Added SC_REUSE_REFRESH as cooldown for RK_REFRESH according to the official behavior.
+	* Added SC_REUSE_COMET as temproray cooldown until we find a good way to handler it.
+	* Fixed Fear status change.
+	* Fixed SC_STRIPACCESORY skill.
 
 02/19/2010
 	r203 [pakpil]
