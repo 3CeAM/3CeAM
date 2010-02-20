@@ -3620,7 +3620,10 @@ int pc_useitem(struct map_session_data *sd,int n)
 		int skill = 0;
 		switch(sd->status.inventory[n].nameid)
 		{
-			case ITEMID_NAUTHIZ: skill = RK_REFRESH; break;
+			case ITEMID_NAUTHIZ:
+				if( sd->sc.count && sd->sc.data[SC_REUSE_REFRESH] )
+					return 0;
+				break;
 			case ITEMID_RAIDO: skill = RK_CRUSHSTRIKE; break;
 			case ITEMID_BERKANA: skill = RK_MILLENNIUMSHIELD; break;
 			case ITEMID_ISA: skill = RK_VITALITYACTIVATION; break;

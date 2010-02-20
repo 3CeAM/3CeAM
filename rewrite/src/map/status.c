@@ -407,9 +407,9 @@ void initChangeTables(void)
 	add_sc( SA_ELEMENTWIND       , SC_ELEMENTALCHANGE );
 
 	set_sc( RK_ENCHANTBLADE      , SC_ENCHANTBLADE    , SI_ENCHANTBLADE    , SCB_NONE );
-	add_sc( RK_WINDCUTTER        , SC_FEAR            );
+	set_sc( RK_WINDCUTTER        , SC_FEAR            , SI_BLANK           , SCB_FLEE|SCB_HIT );
 	set_sc( RK_DEATHBOUND        , SC_DEATHBOUND      , SI_DEATHBOUND      , SCB_NONE );
-	add_sc( RK_DRAGONHOWLING     , SC_FEAR            );
+	set_sc( RK_DRAGONHOWLING     , SC_FEAR            , SI_BLANK           , SCB_FLEE|SCB_HIT );
 	add_sc( RK_DRAGONBREATH      , SC_BURNING         );
 	set_sc( RK_MILLENNIUMSHIELD  , SC_BERKANA         , SI_REUSE_MILLENNIUMSHIELD      , SCB_NONE );
 	set_sc( RK_CRUSHSTRIKE       , SC_RAIDO           , SI_REUSE_CRUSHSTRIKE           , SCB_NONE );
@@ -436,6 +436,7 @@ void initChangeTables(void)
 	set_sc( WL_RECOGNIZEDSPELL   , SC_RECOGNIZEDSPELL , SI_RECOGNIZEDSPELL , SCB_MATK );
 	set_sc( WL_FROSTMISTY        , SC_FREEZING        , SI_FROSTMISTY        , SCB_ASPD|SCB_SPEED|SCB_DEF|SCB_DEF2 );
 	set_sc( WL_MARSHOFABYSS      , SC_MARSHOFABYSS    , SI_MARSHOFABYSS    , SCB_SPEED|SCB_FLEE|SCB_DEF|SCB_DEF2 );
+	add_sc( WL_COMET             , SC_REUSE_COMET );
 
 	set_sc( RA_FEARBREEZE        , SC_FEARBREEZE      , SI_FEARBREEZE      , SCB_NONE );
 	set_sc( RA_ELECTRICSHOCKER   , SC_ELECTRICSHOCKER , SI_ELECTRICSHOCKER , SCB_NONE );
@@ -3543,6 +3544,8 @@ static unsigned short status_calc_int(struct block_list *bl, struct status_chang
 		int_ -= int_ * sc->data[SC__STRIPACCESSORY]->val2 / 100;
 	if(sc->data[SC_HARMONIZE])
 		int_ += sc->data[SC_HARMONIZE]->val2;
+	if(bl->type == BL_MOB && sc->data[SC__STRIPACCESSORY])
+		int_ -= int_ * sc->data[SC__STRIPACCESSORY]->val2 / 100;
 
 	return (unsigned short)cap_value(int_,0,USHRT_MAX);
 }
@@ -3803,6 +3806,8 @@ static signed short status_calc_hit(struct block_list *bl, struct status_change 
 		hit += sc->data[SC_MERC_HITUP]->val2;
 	if(sc->data[SC__GROOMY])
 		hit -= hit * sc->data[SC__GROOMY]->val3 / 100;
+	if(sc->data[SC_FEAR])
+		hit -= hit * 20 / 100;
 
 	return (short)cap_value(hit,1,SHRT_MAX);
 }
@@ -3850,6 +3855,8 @@ static signed short status_calc_flee(struct block_list *bl, struct status_change
 		flee += 10 + sc->data[SC_SPEED]->val1 * 10;
 	if(sc->data[SC_MERC_FLEEUP])
 		flee += sc->data[SC_MERC_FLEEUP]->val2;
+	if(sc->data[SC_FEAR])
+		flee -= flee * 20 / 100;
 	if( sc->data[SC_MARSHOFABYSS] )	// Need official formula. [LimitLine]
 		flee -= flee / 100 * sc->data[SC_MARSHOFABYSS]->val4;
 	if(sc->data[SC_INFRAREDSCAN])
@@ -4739,7 +4746,7 @@ void status_set_viewdata(struct block_list *bl, int class_)
 				if (sd->sc.option&OPTION_XMAS)
 					class_ = JOB_XMAS;
 				else
-				if (sd->sc.option&OPTION_RIDING)
+				if (sd->sc.option&OPTION_RIDING || sd->sc.option&(OPTION_RIDING_DRAGON))
 				switch (class_)
 				{	//Adapt class to a Mounted one.
 				case JOB_KNIGHT:
@@ -5341,6 +5348,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	case SC_SATURDAYNIGHTFEVER:
 		if(sc->data[SC_BERSERK])
 			return 0;
+	break;
 	}
 
 	//Check for BOSS resistances
@@ -6453,7 +6461,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val2 = 20*val1; //% of life to be revived with
 			break;
 		case SC_FEAR:
-			val2 = 1; // Stop walking
+			val2 = 2;
 			val4 = tick / 1000;
 			tick = 1000;
 			break;
@@ -6572,7 +6580,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC__GROOMY:
 			val2 = 20 + 10 * val1; //ASPD. Need to confirm if Movement Speed reduction is the same. [Jobbie]
 			val3 = 20 * val1; //HIT
-			val_flag |= 1|2|4;			
+			val_flag |= 1|2|4;
 			if( sd )
 			{
 				if( pc_isriding(sd,OPTION_RIDING|OPTION_RIDING_DRAGON|OPTION_RIDING_WUG|OPTION_MADO) ) pc_setriding(sd, 0);
@@ -6728,6 +6736,10 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			break;	
 		case SC_KAAHI:
 			val4 = -1;
+			break;
+		case SC_REUSE_COMET:
+			if( sd )
+				clif_skill_cooldown(sd,WL_COMET,tick);
 			break;
 	}
 
@@ -7484,7 +7496,7 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 		opt_flag|= 2|4; //Check for warp trigger + AoE trigger
 		break;
 	case SC_CLOAKING:
-	case SC__INVISIBILITY: // Is it ok? [pakpil]
+	case SC__INVISIBILITY:
 		sc->option &= ~OPTION_CLOAK;
 		opt_flag|= 2;
 		break;
@@ -8062,6 +8074,16 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 			map_freeblock_unlock();
 			if( !flag )// Target still lives. [LimitLine]
 				sc_timer_next(2000 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
+
+	case SC_FEAR:
+		if( --(sce->val4) >= 0 )
+		{
+			if( sce->val2 > 0 )
+				sce->val2--;
+			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}
 		break;

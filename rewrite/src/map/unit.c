@@ -841,6 +841,7 @@ int unit_can_move(struct block_list *bl)
 			|| sc->data[SC_THORNSTRAP]
 			|| sc->data[SC_CRYSTALIZE]
 			|| sc->data[SC__MANHOLE]
+			|| (sc->data[SC_FEAR] && sc->data[SC_FEAR]->val2 > 0)
 			|| sc->data[SC_DEEPSLEEP]
 		))
 			return 0;
