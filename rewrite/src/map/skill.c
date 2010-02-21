@@ -8147,29 +8147,39 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		break;
 	case WL_EARTHSTRAIN:
 		{
-			int i;
+			int i, dir = map_calc_dir(src, x, y);
 			type = skill_get_unit_range(skillid, skilllv);
-			for( i = 1; i <= 5; i ++ )
+			x = src->x;
+			y = src->y;
+			for( i = 0; i <= 5; i ++ )
 			{
-				switch( map_calc_dir(src, x, y) )
+				switch( dir )
 				{
-					case 0:	// North
-						y += type;
+					// North
+					case 0:
+					case 1:
+					case 7:
+						y += (i==0)?1:type;
 						break;
-					case 2:	// West
-						x -= type;
+					// West
+					case 2:
+						x -= (i==0)?1:type;
 						break;
-					case 4:	// South
-						y -= type;
+					// South
+					case 3:
+					case 4:
+					case 5:
+						y -= (i==0)?1:type;
 						break;
-					case 6:	// East
-						x += type;
-						break;
-					default:
-						if( sd ) clif_skill_fail(sd, skillid, 0x12, 0);
+					// East
+					case 6:
+						x += (i==0)?1:type;
 						break;
 				}
+				if( map_getcell(src->m,x,y,CELL_CHKWALL) )
+					break;
 				skill_addtimerskill(src, gettick() + 250 * i, src->id, x, y, skillid, skilllv, 0, 0);
+				
 			}
 		}
 		break;
@@ -14020,25 +14030,25 @@ void skill_init_unit_layout (void)
 		skill_unit_layout[pos].count = 5;
 		if (i&1) {
 			if (i&0x2) {
-				int dx[] = {-5,-5, 0, 5, 5};
-				int dy[] = { 5, 5, 0,-5,-5};
+				int dx[] = {-7,-5, 0, 5, 7};
+				int dy[] = { 0, 0, 0, 0, 0};
 				memcpy(skill_unit_layout[pos].dx,dx,sizeof(dx));
 				memcpy(skill_unit_layout[pos].dy,dy,sizeof(dy));
 			} else {
-				int dx[] = { 5, 5 ,0,-5,-5};
-				int dy[] = { 5, 5, 0,-5,-5};
+				int dx[] = {-7,-5 ,0, 5, 7};
+				int dy[] = { 0, 0, 0, 0, 0};
 				memcpy(skill_unit_layout[pos].dx,dx,sizeof(dx));
 				memcpy(skill_unit_layout[pos].dy,dy,sizeof(dy));
 			}
 		} else {
 			if (i%4==0) {
-				int dx[] = {-5,-5, 0, 5, 5};
+				int dx[] = {-7,-5, 0, 5, 7};
 				int dy[] = { 0, 0, 0, 0, 0};
 				memcpy(skill_unit_layout[pos].dx,dx,sizeof(dx));
 				memcpy(skill_unit_layout[pos].dy,dy,sizeof(dy));
 			} else {
 				int dx[] = { 0, 0, 0, 0, 0};
-				int dy[] = {-5,-5, 0, 5, 5};
+				int dy[] = {-7,-5, 0, 5, 7};
 				memcpy(skill_unit_layout[pos].dx,dx,sizeof(dx));
 				memcpy(skill_unit_layout[pos].dy,dy,sizeof(dy));
 			}

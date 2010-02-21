@@ -6,6 +6,10 @@
 //========================================
 
 02/21/2010
+	r206 [pakpil]
+	* Fixed WL_EARTHSTRAIN that was dealing damage through walls and adjusted its behavior.
+
+02/21/2010
 	r205 [pakpil]
 	* Fixed RK_MILLENNIUMSHIELD packet. Bug report 192.
 
