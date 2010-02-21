@@ -3770,10 +3770,10 @@ static signed short status_calc_critical(struct block_list *bl, struct status_ch
 		critical += critical;
 	if(sc->data[SC_STRIKING])
 		critical += 1 * sc->data[SC_STRIKING]->val1;
-	if(sc->data[SC__UNLUCKY])
-		critical -= critical * sc->data[SC__UNLUCKY]->val2 / 100;
 	if(sc->data[SC__INVISIBILITY])
 		critical += critical * sc->data[SC__INVISIBILITY]->val3 / 100;
+	if(sc->data[SC__UNLUCKY])
+		critical -= critical * sc->data[SC__UNLUCKY]->val2 / 100;
 
 	return (short)cap_value(critical,10,SHRT_MAX);
 }

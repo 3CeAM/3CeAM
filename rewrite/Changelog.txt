@@ -5,6 +5,10 @@
 // 	- Details.
 //========================================
 
+02/21/2010
+	r205 [pakpil]
+	* Fixed RK_MILLENNIUMSHIELD packet. Bug report 192.
+
 02/20/2010
 	r204 [pakpil]
 	* Fixed some Rune Knight skill times.
