@@ -5,11 +5,15 @@
 // 	- Details.
 //========================================
 
+02/22/2010
+	r207 [Jobbie]
+	* Minor fix to Strip Accessory. No need for another checking if the target is BL_MOB since "(!sd)" part is already doing it.
+	- Strip chance was 12+2*skillLV but still needs the official value of casters dex and targets dex w/c affecting the strip success chance.
+
 02/21/2010
 	r206 [pakpil]
 	* Fixed WL_EARTHSTRAIN that was dealing damage through walls and adjusted its behavior.
 
-02/21/2010
 	r205 [pakpil]
 	* Fixed RK_MILLENNIUMSHIELD packet. Bug report 192.
 
