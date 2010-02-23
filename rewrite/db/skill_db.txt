@@ -1023,7 +1023,7 @@
 2421,9,6,16,0,0x1,0,5,1,no,0,0,0,none,0,		WM_DEADHILLHERE,Valley of Death
 2422,8,6,2,0,0x3,11:13:15:19:21,5,1,yes,0,0,0,misc,0,		WM_LULLABY_DEEPSLEEP,Deep Sleep Lullaby
 2423,0,6,4,0,0x3,-1,5,1,no,0,0,0,none,0,		WM_SIRCLEOFNATURE,Circle of Nature's Sound
-2424,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		WM_RANDOMIZESPELL,Improvised Song
+2424,0,6,4,0,0x1,0,5,1,yes,0,0,0,magic,0,		WM_RANDOMIZESPELL,Improvised Song
 2425,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		WM_GLOOMYDAY,Gloomy Day
 2426,9,6,2,0,0x2,5:7:7:9:9,5,1,no,0,0x2000,0,magic,0,		WM_GREAT_ECHO,Great Echo
 2427,0,6,4,0,0x3,-1,5,0,no,0,0x2000,0,none,0,		WM_SONG_OF_MANA,Song of Mana

@@ -6,6 +6,10 @@
 //========================================
 
 02/22/2010
+	r209 [pakpil]
+	* Added WM_RANDOMIZESPELL skills. All Wanderer/Minstrell skills are rewrited.
+
+02/22/2010
 	r207 [Jobbie]
 	* Minor fix to Strip Accessory. No need for another checking if the target is BL_MOB since "(!sd)" part is already doing it.
 	- Strip chance was 12+2*skillLV but still needs the official value of casters dex and targets dex w/c affecting the strip success chance.
