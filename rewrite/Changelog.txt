@@ -6,6 +6,11 @@
 //========================================
 
 02/23/2010
+	r211 [pakpil]
+	* Added GC_CROSSIMPACT, GC_CLOAKINGEXCEED, GC_ROLLINGCUTTER and GC_ROLLINGCUTTER skills.
+	* Fixed WM_POEMOFNETHERWORLD. Added missing entry. Bug report 199.
+
+02/23/2010
 	r210 [pakpil]
 	* Fixed a issue in clif_set_unit_idle that was causing conflics.
 
