@@ -5,6 +5,10 @@
 // 	- Details.
 //========================================
 
+02/23/2010
+	r210 [pakpil]
+	* Fixed a issue in clif_set_unit_idle that was causing conflics.
+
 02/22/2010
 	r209 [pakpil]
 	* Added WM_RANDOMIZESPELL skills. All Wanderer/Minstrell skills are rewrited.
