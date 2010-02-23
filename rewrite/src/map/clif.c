@@ -859,12 +859,13 @@ static int clif_set_unit_idle(struct block_list* bl, unsigned char* buffer, bool
 			offset+=2;
 			buf = WBUFP(buffer,offset); //Shift 2 bytes to the right for the rest of fields
 		} else
-#elif PACKETVER < 7
-			WBUFW(buf,12) = (sc)? sc->option : 0;
-#else
+#endif
+#if PACKETVER >= 20091103
 		WBUFL(buf,12) = (sc) ? sc->option : 0;
 		offset+=2;
-		buf = WBUFP(buffer,offset);
+		buf = WBUFP(buffer,offset);		
+#else
+			WBUFW(buf,12) = (sc)? sc->option : 0;
 #endif
 		WBUFW(buf,14) = vd->class_;
 		WBUFW(buf,16) = vd->hair_style;
@@ -918,13 +919,12 @@ static int clif_set_unit_idle(struct block_list* bl, unsigned char* buffer, bool
 		offset+=2;
 		buf = WBUFP(buffer,offset); //Shift additional 2 bytes...
 	} else
-#elif PACKETVER < 7
-		WBUFW(buf,42) = (sc)? sc->opt3 : 0;
-#else
+#elif PACKETVER >= 20091103
 	WBUFL(buf,42) = (sc) ? sc->opt3 : 0;
 	offset+=2;
 	buf = WBUFP(buffer,offset);
 #endif
+		WBUFW(buf,42) = (sc)? sc->opt3 : 0;
 	WBUFB(buf,44) = (sd)? sd->status.karma : 0;
 	WBUFB(buf,45) = vd->sex;
 	WBUFPOS(buf,46,bl->x,bl->y,unit_getdir(bl));
@@ -3010,9 +3010,9 @@ int clif_spellbook_list(struct map_session_data *sd)
  *------------------------------------------*/
 int clif_skill_select_request( struct map_session_data *sd )
 {
+#if PACKETVER >= 20081210
 	int fd, i, c;
 
-#if PACKETVER >= 20081210
 	nullpo_retr(0,sd);
 
 	fd = sd->fd;
