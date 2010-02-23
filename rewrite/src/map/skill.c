@@ -2915,6 +2915,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case RK_WINDCUTTER:
 	case RK_DRAGONBREATH:
 	case RK_STORMBLAST:
+	case GC_CROSSIMPACT:
 	case AB_DUPLELIGHT_MELEE:
 	case RA_AIMEDBOLT:
 	case RA_WUGBITE:
@@ -2927,8 +2928,8 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case SC_TRIANGLESHOT:
 	case SC_FEINTBOMB:
 	case WM_METALICSOUND:
-	case GN_CRAZYWEED_ATK:
 	case WM_SEVERE_RAINSTORM_MELEE:
+	case GN_CRAZYWEED_ATK:
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
@@ -3133,6 +3134,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case NPC_HELLJUDGEMENT:
 	case NPC_VAMPIRE_GIFT:
 	case RK_IGNITIONBREAK:
+	case GC_ROLLINGCUTTER:
 	case AB_JUDEX:
 	case WL_SOULEXPANSION:
 	case WL_CRIMSONROCK:
@@ -3490,6 +3492,20 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
+	case GC_CROSSRIPPERSLASHER:
+		if( !(sc && sc->data[SC_ROLLINGCUTTER]) )
+		{
+			if(sd)
+				clif_skill_fail(sd,skillid,0x17,0);
+			break;
+		}
+		else
+		{
+			skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
+			status_change_end(src,SC_ROLLINGCUTTER,-1);
+		}
+		break;
+
 	case WL_DRAINLIFE:
 		{
 			int heal = skill_attack(skill_get_type(skillid), src, src, bl, skillid, skilllv, tick, flag);
@@ -3690,6 +3706,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 				sc_start(bl, SC_INFRAREDSCAN, 10000, skilllv, skill_get_time(skillid, skilllv));
 			status_change_end(bl, SC_HIDING, -1);
 			status_change_end(bl, SC_CLOAKING, -1);
+			status_change_end(bl, SC_CLOAKINGEXCEED, -1); // Need confirm it.
 		}
 		else
 			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), splash_target(src), src, skillid, skilllv, tick, flag|BCT_ENEMY|SD_SPLASH|1, skill_castend_damage_id);
@@ -4852,6 +4869,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			clif_walkok(sd); // So aegis has to resend the walk ok.
 		break;
 	case AS_CLOAKING:
+	case GC_CLOAKINGEXCEED:
 	case SC_INVISIBILITY:
 		if (tsce)
 		{
@@ -6478,6 +6496,23 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				sc_start2(bl,type,100,7,5,skill_get_time(skillid,skilllv));
 		}
 		break;
+		
+	case GC_ROLLINGCUTTER:
+		{
+			short count = 1;
+			skill_area_temp[2] = 0;
+			map_foreachinrange(skill_area_sub,src,skill_get_splash(skillid,skilllv),BL_CHAR,src,skillid,skilllv,tick,flag|BCT_ENEMY|SD_PREAMBLE|SD_SPLASH|1,skill_castend_damage_id);
+			if( tsc && tsc->data[SC_ROLLINGCUTTER] )
+			{ // Every time the skill is casted the status change is reseted adding a counter.
+				count += (short)tsc->data[SC_ROLLINGCUTTER]->val1;
+				if( count > 10 )
+					count = 10; // Max coounter
+				status_change_end(bl,SC_ROLLINGCUTTER,-1);
+			}
+			sc_start(bl,SC_ROLLINGCUTTER,100,count,skill_get_time(skillid,skilllv));
+			clif_skill_nodamage(src,src,skillid,skilllv,1);
+		}
+		break;
 
 	case AB_ANCILLA:
 	 	if( sd )
@@ -6899,12 +6934,13 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SC_BODYPAINT:
 		if( flag&1 )
 		{
-			if( tsc && (tsc->data[SC_HIDING] || tsc->data[SC_CLOAKING] ||
-				tsc->data[SC_CHASEWALK] || tsc->data[SC__INVISIBILITY]) )
+			if( tsc && (tsc->data[SC_HIDING] || tsc->data[SC_CLOAKING] || tsc->data[SC_CHASEWALK] ||
+				tsc->data[SC_CLOAKINGEXCEED] || tsc->data[SC__INVISIBILITY]) )
 			{
 				status_change_end(bl, SC_HIDING, -1);
 				status_change_end(bl, SC_CLOAKING, -1);
 				status_change_end(bl, SC_CHASEWALK, -1);
+				status_change_end(bl, SC_CLOAKINGEXCEED, -1);
 				status_change_end(bl, SC__INVISIBILITY, -1);
 
 				sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
@@ -7912,6 +7948,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case SC_MAELSTROM:
 	case WM_REVERBERATION:
 	case WM_SEVERE_RAINSTORM:
+	case WM_POEMOFNETHERWORLD:
 	case SO_EARTHGRAVE:
 	case SO_DIAMONDDUST:
 	case SO_PSYCHIC_WAVE:
@@ -10642,6 +10679,13 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		if (!merc_is_hom_active(sd->hd) || sd->hd->battle_status.hp < (sd->hd->battle_status.max_hp*80/100))
 		{
 			clif_skill_fail(sd,skill,0,0);
+			return 0;
+		}
+		break;
+	case GC_CROSSRIPPERSLASHER:
+		if( !(sc && sc->data[SC_ROLLINGCUTTER]) )
+		{
+			clif_skill_fail(sd, skill, 0x17, 0 );
 			return 0;
 		}
 		break;
