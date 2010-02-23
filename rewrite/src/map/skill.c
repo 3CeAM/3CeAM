@@ -61,6 +61,7 @@ struct s_skill_produce_db skill_produce_db[MAX_SKILL_PRODUCE_DB];
 struct s_skill_arrow_db skill_arrow_db[MAX_SKILL_ARROW_DB];
 struct s_skill_abra_db skill_abra_db[MAX_SKILL_ABRA_DB];
 struct s_skill_spellbook_db skill_spellbook_db[MAX_SKILL_SPELLBOOK_DB];
+struct s_skill_improvise_db skill_improvise_db[MAX_SKILL_IMPROVISE_DB];
 
 struct s_skill_unit_layout skill_unit_layout[MAX_SKILL_UNIT_LAYOUT];
 int firewall_unit_pos;
@@ -7152,6 +7153,57 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid,skilllv),BL_PC, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
+		break;
+
+	case WM_RANDOMIZESPELL:
+		{
+			int improv_skillid = 0, improv_skilllv;
+			do
+			{
+				i = rand() % MAX_SKILL_IMPROVISE_DB;
+				improv_skillid = skill_improvise_db[i].skillid;
+			}
+			while( improv_skillid == 0 || rand()%10000 >= skill_improvise_db[i].per );
+			improv_skilllv = 4 + (sd)?pc_checkskill(sd,skillid):5; // Assume max level on mobs.
+			clif_skill_nodamage (src, bl, skillid, skilllv, 1);
+
+			if( sd )
+			{
+				sd->state.improv_flag = 1;
+				sd->skillitem = improv_skillid;
+				sd->skillitemlv = improv_skilllv;
+				clif_item_skill(sd, improv_skillid, improv_skilllv);
+			}
+			else
+			{
+				struct unit_data *ud = unit_bl2ud(src);
+				int inf = skill_get_inf(improv_skillid);
+				int target_id = 0;
+				if (!ud) break;
+				if (inf&INF_SELF_SKILL || inf&INF_SUPPORT_SKILL) {
+					if (src->type == BL_PET)
+						bl = (struct block_list*)((TBL_PET*)src)->msd;
+					if (!bl) bl = src;
+					unit_skilluse_id(src, bl->id, improv_skillid, improv_skilllv);
+				} else {
+					if (ud->target)
+						target_id = ud->target;
+					else switch (src->type) {
+						case BL_MOB: target_id = ((TBL_MOB*)src)->target_id; break;
+						case BL_PET: target_id = ((TBL_PET*)src)->target_id; break;
+					}
+					if (!target_id)
+						break;
+					if (skill_get_casttype(improv_skillid) == CAST_GROUND) {
+						bl = map_id2bl(target_id);
+						if (!bl) bl = src;
+						unit_skilluse_pos(src, bl->x, bl->y, improv_skillid, improv_skilllv);
+					} else
+						unit_skilluse_id(src, target_id, improv_skillid, improv_skilllv);
+				}
+			}
+		}
+		break;
 
 	case SO_ARRULLO:
 		if( flag & 1 )
@@ -7479,7 +7531,7 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 				skill_blockpc_start(sd,BD_ADAPTATION,3000);
 		}
 
-		if( sd && ud->skillid != SA_ABRACADABRA ) // Hocus-Pocus has just set the data so leave it as it is.[Inkfish]
+		if( sd && ud->skillid != SA_ABRACADABRA && ud->skillid != WM_RANDOMIZESPELL ) // Hocus-Pocus has just set the data so leave it as it is.[Inkfish]
 			sd->skillitem = sd->skillitemlv = 0;
 
 		if (ud->skilltimer == -1) {
@@ -10256,6 +10308,8 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 	{
 		if( sd->state.abra_flag ) // Hocus-Pocus was used. [Inkfish]
 			sd->state.abra_flag = 0;
+		else if( sd->state.improv_flag )
+			sd->state.improv_flag = 0;
 		else
 		{ // When a target was selected, consume items that were skipped in pc_use_item [Skotlex]
 			if( (i = sd->itemindex) == -1 ||
@@ -11275,7 +11329,7 @@ int skill_delayfix (struct block_list *bl, int skill_id, int skill_lv)
 	nullpo_retr(0, bl);
 	sd = BL_CAST(BL_PC, bl);
 
-	if (skill_id == SA_ABRACADABRA)
+	if (skill_id == SA_ABRACADABRA || skill_id == WM_RANDOMIZESPELL)
 		return 0; //Will use picked skill's delay.
 
 	if (bl->type&battle_config.no_skill_delay)
@@ -14393,6 +14447,33 @@ static bool skill_parse_row_spellbookdb(char* split[], int columns, int current)
 
 }
 
+static bool skill_parse_row_improvisedb(char* split[], int columns, int current)
+{// SkillID
+	int i = atoi(split[0]);
+	int j = atoi(split[1]);
+
+	if( !skill_get_index(i) || !skill_get_max(i) )
+	{
+		ShowError("improvise_db: Invalid skill ID %d\n", i);
+		return false;
+	}
+	if ( !skill_get_inf(i) )
+	{
+		ShowError("improvise_db: Passive skills cannot be casted (%d/%s)\n", i, skill_get_name(i));
+		return false;
+	}
+	if( j < 1 )
+	{
+		ShowError("improvise_db: Chances have to be 1 or above! (%d/%s)\n", i, skill_get_name(i));
+		return false;
+	}
+
+	skill_improvise_db[current].skillid = i;
+	skill_improvise_db[current].per = j; // Still need confirm it.
+
+	return true;
+}
+
 static void skill_readdb(void)
 {
 	// init skill db structures
@@ -14401,6 +14482,7 @@ static void skill_readdb(void)
 	memset(skill_produce_db,0,sizeof(skill_produce_db));
 	memset(skill_arrow_db,0,sizeof(skill_arrow_db));
 	memset(skill_abra_db,0,sizeof(skill_abra_db));
+	memset(skill_improvise_db,0,sizeof(skill_improvise_db));
 
 	// load skill databases
 	safestrncpy(skill_db[0].name, "UNKNOWN_SKILL", sizeof(skill_db[0].name));
@@ -14416,6 +14498,7 @@ static void skill_readdb(void)
 	sv_readdb(db_path, "create_arrow_db.txt"   , ',', 1+2,  1+2*MAX_ARROW_RESOURCE, MAX_SKILL_ARROW_DB, skill_parse_row_createarrowdb);
 	sv_readdb(db_path, "abra_db.txt"           , ',',   4,  4, MAX_SKILL_ABRA_DB, skill_parse_row_abradb);
 	sv_readdb(db_path, "spellbook_db.txt"      , ',',   2,  2, MAX_SKILL_SPELLBOOK_DB, skill_parse_row_spellbookdb);
+	sv_readdb(db_path, "improvise_db.txt"      , ',',   2,  2, MAX_SKILL_IMPROVISE_DB, skill_parse_row_improvisedb);
 }
 
 void skill_reload (void)
