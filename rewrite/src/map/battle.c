@@ -365,6 +365,17 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			return 0;
 		}
 
+		if( sc->data[SC_WEAPONBLOCKING] && (flag&(BF_WEAPON|BF_SHORT)) )
+		{
+			if( rand()%100 < sc->data[SC_WEAPONBLOCKING]->val2 )
+			{
+				clif_skill_nodamage(bl,src,GC_WEAPONBLOCKING,1,1);
+				d->dmg_lv = ATK_NONE;
+				sc_start(bl,SC_COMBO,100,GC_WEAPONBLOCKING,2000);
+				return 0;
+			}
+		}
+
 		if( (sce=sc->data[SC_AUTOGUARD]) && flag&BF_WEAPON && !(skill_get_nk(skill_num)&NK_NO_CARDFIX_ATK) && rand()%100 < sce->val2 )
 		{
 			int delay;
@@ -1895,6 +1906,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					break;
 				case GC_CROSSIMPACT:
 					skillratio += 1050 + 50 * skill_lv;
+					break;
+				case GC_COUNTERSLASH:
+					skillratio += 300 + (100 * skill_lv) + status_get_agi(src);
 					break;
 				case GC_ROLLINGCUTTER:
 					skillratio += 20 * skill_lv;
