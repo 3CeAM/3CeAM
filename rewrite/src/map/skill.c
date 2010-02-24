@@ -3135,6 +3135,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case NPC_VAMPIRE_GIFT:
 	case RK_IGNITIONBREAK:
 	case GC_ROLLINGCUTTER:
+	case GC_COUNTERSLASH:
 	case AB_JUDEX:
 	case WL_SOULEXPANSION:
 	case WL_CRIMSONROCK:
@@ -3490,6 +3491,10 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case RK_CRUSHSTRIKE:
 		sc_start(bl,SC_RAIDO,100,skilllv,skill_get_time(skillid,skilllv));
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
+		break;
+
+	case GC_WEAPONCRUSH:
+		skill_castend_nodamage_id(src,bl,skillid,skilllv,tick,flag);
 		break;
 
 	case GC_CROSSRIPPERSLASHER:
@@ -4665,6 +4670,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case NC_FLAMELAUNCHER:
 	case NC_AXETORNADO:
 	case NC_INFRAREDSCAN:
+	case GC_COUNTERSLASH:
 	case GN_CART_TORNADO:
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 	case NPC_EARTHQUAKE:
@@ -5186,6 +5192,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case RG_STRIPHELM:
 	case ST_FULLSTRIP:
 	case SC_STRIPACCESSARY:
+	case GC_WEAPONCRUSH:
 	{
 		unsigned short location = 0;
 		int d = 0;
@@ -5223,6 +5230,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			break;
 		case SC_STRIPACCESSARY:
 			location = EQP_ACC;
+			break;
+		case GC_WEAPONCRUSH:
+			location = EQP_WEAPON;
 			break;
 		}
 
@@ -6512,6 +6522,26 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			sc_start(bl,SC_ROLLINGCUTTER,100,count,skill_get_time(skillid,skilllv));
 			clif_skill_nodamage(src,src,skillid,skilllv,1);
 		}
+		break;
+
+	case GC_WEAPONBLOCKING:
+		/*if( tsc && tsc->data[SC_WEAPONBLOCKING_POSTDELAY] )
+		{ // Still not confirmed.
+			if( sd )
+				clif_skill_fail(sd,skillid,0,0);
+		}
+		else */if( tsc && tsc->data[SC_WEAPONBLOCKING] )
+		{
+			status_change_end(bl,SC_WEAPONBLOCKING,-1);
+			//sc_start(bl,SC_WEAPONBLOCKING_POSTDELAY,100,skill_get_cooldown(skillid,skilllv));
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		}
+		else
+		{
+			sc_start(bl,SC_WEAPONBLOCKING,100,skilllv,skill_get_time(skillid,skilllv));
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		}
+
 		break;
 
 	case AB_ANCILLA:
@@ -10682,6 +10712,12 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			return 0;
 		}
 		break;
+	case GC_COUNTERSLASH:
+	case GC_WEAPONCRUSH:
+		if(!sc)
+			return 0;
+		if(sc->data[SC_COMBO] && sc->data[SC_COMBO]->val1 == GC_WEAPONBLOCKING)
+			break;
 	case GC_CROSSRIPPERSLASHER:
 		if( !(sc && sc->data[SC_ROLLINGCUTTER]) )
 		{
