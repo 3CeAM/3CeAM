@@ -6,6 +6,13 @@
 //========================================
 
 02/24/2010
+	r213 [Rytech]
+	*Added official names for mechanic FAW monsters. Also properly assigned each elemental version to each ID.
+	-You can see what element tower belongs on what ID by looking at the lub files.
+	-Also switched the skills used for 2 of the magic decoy towers.
+	*Corrected a incorrectly set ID for SO_ENDMARK in the skill_require_db.
+
+02/24/2010
 	r212 [pakpil]
 	* Added GC_WEAPONBLOCKING, GC_WEAPONCRUSH and GC_COUNTERSLASH skills.
 
