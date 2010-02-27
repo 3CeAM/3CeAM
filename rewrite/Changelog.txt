@@ -6,6 +6,10 @@
 //========================================
 
 02/26/2010
+	r215 [pakpil]
+	* Added missing file in r214.
+
+02/26/2010
 	r214 [pakpil]
 	* Added GC_RESEARCHNEWPOISON, GC_CREATENEWPOISON and GC_POISONINGWEAPON skills.
 	- Added all poisons but still need more test.
