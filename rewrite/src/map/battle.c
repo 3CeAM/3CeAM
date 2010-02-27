@@ -530,6 +530,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 		}
 
 		//Finally added to remove the status of immobile when aimedbolt is used. [Jobbie]
+		// Should be moved down and removed tsc?? [pakpil]
 		if( skill_num == RA_AIMEDBOLT && !(tsc && (tsc->data[SC_BITE] ||
 			tsc->data[SC_ANKLE] || tsc->data[SC_ELECTRICSHOCKER])) )
 		{
@@ -587,6 +588,16 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 	{
 		if( sc->data[SC_INVINCIBLE] && !sc->data[SC_INVINCIBLEOFF] )
 			damage += damage * 75 / 100;
+	}
+
+	if( sc->data[SC_POISONINGWEAPON] && (flag&BF_WEAPON) && damage > 0)
+	{
+		if( rand()%100 < sc->data[SC_POISONINGWEAPON]->val3 )
+		{
+			sc_start(bl,sc->data[SC_POISONINGWEAPON]->val2,100,sc->data[SC_POISONINGWEAPON]->val1,
+				skill_get_time2(GC_POISONINGWEAPON,sc->data[SC_POISONINGWEAPON]->val1));
+			status_change_end(src, SC_POISONINGWEAPON, -1);
+		}
 	}
 
 	if( sc && sc->data[SC__DEADLYINFECT] && damage > 0 )

@@ -127,7 +127,7 @@ void clif_refreshlook(struct block_list *bl,int id,int type,int val,enum send_ta
 int clif_arrowequip(struct map_session_data *sd,int val); //self
 int clif_arrow_fail(struct map_session_data *sd,int type); //self
 int clif_arrow_create_list(struct map_session_data *sd);	//self
-int clif_rune_create_list(struct map_session_data *sd, int trigger, int rune_ore); //self
+int clif_poison_list(struct map_session_data *sd, int skill_lv);
 int clif_spellbook_list(struct map_session_data *sd);	//self
 int clif_skill_select_request( struct map_session_data *sd ); //self
 int clif_statusupack(struct map_session_data *,int,int,int);	// self
@@ -200,7 +200,7 @@ int clif_skillinfo_delete(struct map_session_data *sd, int id);
 
 int clif_skillcasting(struct block_list* bl,int src_id,int dst_id,int dst_x,int dst_y,int skill_num,int pl,int casttime);
 int clif_skillcastcancel(struct block_list* bl);
-int clif_skill_fail(struct map_session_data *sd,int skill_id,int type,int btype);
+int clif_skill_fail(struct map_session_data *sd,int skill_id,int type,int btype, int val);
 int clif_skill_cooldown(struct map_session_data *sd, int skillid, unsigned int tick);
 int clif_skill_damage(struct block_list *src,struct block_list *dst,unsigned int tick,int sdelay,int ddelay,int damage,int div,int skill_id,int skill_lv,int type);
 //int clif_skill_damage2(struct block_list *src,struct block_list *dst,unsigned int tick,int sdelay,int ddelay,int damage,int div,int skill_id,int skill_lv,int type);
@@ -210,7 +210,7 @@ int clif_skill_estimation(struct map_session_data *sd,struct block_list *dst);
 void clif_skill_warppoint(struct map_session_data* sd, short skill_num, short skill_lv, unsigned short map1, unsigned short map2, unsigned short map3, unsigned short map4);
 void clif_skill_memomessage(struct map_session_data* sd, int type);
 void clif_skill_teleportmessage(struct map_session_data* sd, int type);
-int clif_skill_produce_mix_list(struct map_session_data *sd, int trigger);
+int clif_skill_produce_mix_list(struct map_session_data *sd, int skill_num, int trigger);
 void clif_cooking_list(struct map_session_data *sd, int trigger);
 
 int clif_produceeffect(struct map_session_data* sd,int flag,int nameid);

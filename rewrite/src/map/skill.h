@@ -20,6 +20,7 @@ struct status_change_entry;
 #define MAX_SKILL_ABRA_DB		350
 #define MAX_SKILL_SPELLBOOK_DB	MAX_SKILL
 #define MAX_SKILL_IMPROVISE_DB 50
+#define MAX_SKILL_MAGICMUSHROOM_DB 22
 
 #define MAX_SKILL_LEVEL 100
 
@@ -221,6 +222,12 @@ struct s_skill_improvise_db {
 };
 extern struct s_skill_improvise_db skill_improvise_db[MAX_SKILL_IMPROVISE_DB];
 
+struct s_skill_magicmushroom_db {
+	int skillid;
+};
+
+extern struct s_skill_magicmushroom_db skill_magicmushroom_db[MAX_SKILL_MAGICMUSHROOM_DB];
+
 extern int enchant_eff[5];
 extern int deluge_eff[5];
 
@@ -349,6 +356,7 @@ int skill_can_produce_mix( struct map_session_data *sd, int nameid, int trigger,
 int skill_produce_mix( struct map_session_data *sd, int skill_id, int nameid, int slot1, int slot2, int slot3, int qty );
 
 int skill_arrow_create( struct map_session_data *sd,int nameid);
+int skill_poisoningweapon( struct map_session_data *sd, int nameid);
 int skill_spellbook( struct map_session_data *sd, int nameid);	// Warlock Spellbooks. [LimitLine]
 int skill_select_menu( struct map_session_data *sd, int flag, int skill_id); // Shadow Cheser Auto Shadow Spell [pakpil]
 
@@ -1608,10 +1616,10 @@ enum {
 };
 
 enum gx_poison {
-	PO_PARALYZE = 12717,
-	PO_LEECHEND,
+	PO_PARALYSE = 12717,
+	PO_LEECHESEND,
 	PO_OBLIVIONCURSE,
-	PO_DISHEART,
+	PO_DEATHHURT,
 	PO_TOXIN,
 	PO_PYREXIA,
 	PO_MAGICMUSHROOM,

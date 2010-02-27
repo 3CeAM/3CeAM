@@ -421,6 +421,7 @@ void initChangeTables(void)
 	set_sc( RK_FIGHTINGSPIRIT    , SC_OTHILA          , SI_FIGHTINGSPIRIT     , SCB_WATK|SCB_ASPD );
 	set_sc( RK_ABUNDANCE         , SC_URUZ            , SI_ABUNDANCE          , SCB_NONE );
 
+	set_sc( GC_POISONINGWEAPON   , SC_POISONINGWEAPON , SI_POISONINGWEAPON    , SCB_NONE );
 	set_sc( GC_WEAPONBLOCKING    , SC_WEAPONBLOCKING  , SI_WEAPONBLOCKING     , SCB_NONE );
 	set_sc( GC_ROLLINGCUTTER     , SC_ROLLINGCUTTER   , SI_ROLLINGCUTTER      , SCB_NONE );
 	set_sc( GC_CLOAKINGEXCEED    , SC_CLOAKINGEXCEED  , SI_CLOAKINGEXCEED     , SCB_SPEED );
@@ -610,6 +611,15 @@ void initChangeTables(void)
 
 	StatusIconChangeTable[SC_GLOOMYDAY_SK] = SI_GLOOMYDAY;
 
+	StatusIconChangeTable[SC_TOXIN] = SI_TOXIN;
+	StatusIconChangeTable[SC_PARALYSE] = SI_PARALYSE;
+	StatusIconChangeTable[SC_VENOMBLEED] = SI_VENOMBLEED;
+	StatusIconChangeTable[SC_MAGICMUSHROOM] = SI_MAGICMUSHROOM;
+	StatusIconChangeTable[SC_DEATHHURT] = SI_DEATHHURT;
+	StatusIconChangeTable[SC_PYREXIA] = SI_PYREXIA;
+	StatusIconChangeTable[SC_OBLIVIONCURSE] = SI_OBLIVIONCURSE;
+	StatusIconChangeTable[SC_LEECHESEND] = SI_LEECHESEND;
+
 	//Other SC which are not necessarily associated to skills.
 	StatusChangeFlagTable[SC_ASPDPOTION0] = SCB_ASPD;
 	StatusChangeFlagTable[SC_ASPDPOTION1] = SCB_ASPD;
@@ -659,6 +669,11 @@ void initChangeTables(void)
 	StatusChangeFlagTable[SC_MERC_HPUP] |= SCB_MAXHP;
 	StatusChangeFlagTable[SC_MERC_SPUP] |= SCB_MAXSP;
 	StatusChangeFlagTable[SC_MERC_HITUP] |= SCB_HIT;
+	
+	StatusChangeFlagTable[SC_PARALYSE] |= SCB_ASPD|SCB_FLEE|SCB_SPEED;
+	StatusChangeFlagTable[SC_VENOMBLEED] |= SCB_MAXHP;
+	StatusChangeFlagTable[SC_DEATHHURT] |= SCB_REGEN;
+	StatusChangeFlagTable[SC_OBLIVIONCURSE] |= SCB_REGEN;
 
 	if( !battle_config.display_hallucination ) //Disable Hallucination.
 		StatusIconChangeTable[SC_HALLUCINATION] = SI_BLANK;
@@ -2874,6 +2889,7 @@ void status_calc_regen_rate(struct block_list *bl, struct regen_data *regen, str
 		|| sc->data[SC_BERSERK]
 		|| sc->data[SC_TRICKDEAD]
 		|| sc->data[SC_BLEEDING]
+		|| sc->data[SC_MAGICMUSHROOM]
 		|| sc->data[SC_SATURDAYNIGHTFEVER]
 	)	//No regen
 		regen->flag = 0;
@@ -2883,7 +2899,7 @@ void status_calc_regen_rate(struct block_list *bl, struct regen_data *regen, str
 		|| (
 			(((TBL_PC*)bl)->class_&MAPID_UPPERMASK) == MAPID_MONK &&
 			(sc->data[SC_EXTREMITYFIST] || (sc->data[SC_EXPLOSIONSPIRITS] && (!sc->data[SC_SPIRIT] || sc->data[SC_SPIRIT]->val2 != SL_MONK)))
-			)
+			) || sc->data[SC_OBLIVIONCURSE]
 	)	//No natural SP regen
 		regen->flag &=~RGN_SP;
 
@@ -2908,6 +2924,11 @@ void status_calc_regen_rate(struct block_list *bl, struct regen_data *regen, str
 			regen->rate.sp += sce->val3;
 		} else
 			regen->flag&=~sce->val4; //Remove regen as specified by val4
+	}
+	if( sc->data[SC_DEATHHURT] )
+	{
+		regen->rate.hp -= 1;
+		regen->rate.sp -= 1;
 	}
 	if( sc->data[SC_ISA] )
 		regen->flag &=~RGN_SP;
@@ -3865,6 +3886,8 @@ static signed short status_calc_flee(struct block_list *bl, struct status_change
 		flee += sc->data[SC_MERC_FLEEUP]->val2;
 	if(sc->data[SC_FEAR])
 		flee -= flee * 20 / 100;
+	if(sc->data[SC_PARALYSE])
+		flee -= sc->data[SC_PARALYSE]->val2 / 200;
 	if( sc->data[SC_MARSHOFABYSS] )	// Need official formula. [LimitLine]
 		flee -= flee / 100 * sc->data[SC_MARSHOFABYSS]->val4;
 	if(sc->data[SC_INFRAREDSCAN])
@@ -4117,6 +4140,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 					val = max( val, 300 );
 				if( sc->data[SC_FREEZING] )
 					val = max( val, 70 );
+				if( sc->data[SC_PARALYSE] )
+					val = max( val, 50 );
 				if( sc->data[SC_MARSHOFABYSS] )
 					val = max( val, 40 + 10 * sc->data[SC_MARSHOFABYSS]->val1 );
 				if( sc->data[SC_CAMOUFLAGE] && (sc->data[SC_CAMOUFLAGE]->val3&1) == 0 )
@@ -4299,6 +4324,8 @@ static short status_calc_aspd_rate(struct block_list *bl, struct status_change *
 		aspd_rate += 300;
 	if( sc->data[SC_OTHILA] && sc->data[SC_OTHILA]->val2 )
 		aspd_rate -= (aspd_rate * sc->data[SC_OTHILA]->val2 / 100) + sc->data[SC_OTHILA]->val3;
+	if( sc->data[SC_PARALYSE] )
+		aspd_rate += sc->data[SC_PARALYSE]->val2 / 100;
 	if( sc->data[SC__BODYPAINT] )
 		aspd_rate += aspd_rate * 25 / 100;
 	if( sc->data[SC__INVISIBILITY] )
@@ -6499,9 +6526,42 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_THURISAZ:
 			val4 = tick / 1000;
 			break;
+		case SC_POISONINGWEAPON:
+			val_flag |= 1|2|4;
+			break;
 		case SC_WEAPONBLOCKING:
 			val2 = 10 + 2 * val1; // Chance
 			val_flag |= 1|2;
+			break;
+		case SC_TOXIN:
+			val4 = tick / 3000;
+			tick = 3000;
+			break;
+		case SC_PARALYSE:
+			val2 = 10; // Aspd and flee reduction
+			break;
+		case SC_VENOMBLEED:
+			val2 = 15; // Max HP reduction
+			break;
+		case SC_MAGICMUSHROOM:
+			val2 = 3; // % HP drained
+			val4 = tick / 4000;
+			tick = 4000;
+			break;
+		case SC_DEATHHURT:
+			val2 = 20;
+			break;
+		case SC_PYREXIA:
+			val2 = 100;
+			break;
+		case SC_OBLIVIONCURSE:
+			val4 = tick / 3000;
+			tick = 3000;
+			break;
+		case SC_LEECHESEND:
+			val2 = 30 * val1; // Still need official value.
+			val4 = tick / 1000;
+			tick = 1000;
 			break;
 		case SC_ROLLINGCUTTER:
 			val_flag |= 1;
@@ -8079,6 +8139,86 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 				sc_timer_next(10000+tick, status_change_timer, bl->id, data);
 				return 0;
 			}
+		}
+		break;
+
+	case SC_TOXIN:
+		if( --(sce->val4) >= 0 )
+		{
+			bool flag;
+			map_freeblock_lock();
+			clif_damage(bl, bl, gettick(), status_get_amotion(bl), 1, 1, 0, 0, 0);
+			status_fix_damage(NULL, bl, 1, 0);
+			flag = !sc->data[type];
+			map_freeblock_unlock();
+			if (flag) return 0;
+			sc_timer_next(3000 + tick, status_change_timer, bl->id, data );
+			return 0;
+		}
+		break;
+
+	case SC_MAGICMUSHROOM:
+		if( --(sce->val4) >= 0 )
+		{
+			bool flag;
+			int heal = status->max_hp * sce->val2 / 100;
+
+			if( status->hp < heal )
+			{
+				heal = status->hp - 1;
+			}
+
+			map_freeblock_lock();
+			if( heal  )
+				status_zap(bl, heal, 0);
+			flag = !sc->data[type]; //We check for this rather than 'killed' since the target could have revived with kaizel.
+			
+			unit_stop_attack(bl);
+			unit_skillcastcancel(bl,1);
+			if( sd )
+			{ // Mobs don't cast any skill.??
+				int skill, i;
+				do
+				{
+					i = rand() % MAX_SKILL_MAGICMUSHROOM_DB;
+					skill = skill_magicmushroom_db[i].skillid;
+				}
+				while( skill == 0 );
+				clif_skill_nodamage(bl, bl, skill, sce->val1, 1);
+
+				sd->state.magicmushroom_flag = 1;
+				sd->skillitem = skill;
+				sd->skillitemlv = sce->val1;
+				clif_item_skill(sd, skill, skill);
+			}
+			map_freeblock_unlock();
+			if (flag) return 0; //target died
+			clif_emotion(bl,18);	
+			sc_timer_next(4000 + tick, status_change_timer, bl->id, data );
+			return 0;
+		}
+		break;
+
+	case SC_OBLIVIONCURSE:
+		if( --(sce->val4) >= 0 )
+		{
+			clif_emotion(bl,1);	
+			sc_timer_next(3000 + tick, status_change_timer, bl->id, data );
+			return 0;
+		}
+		break;
+
+	case SC_LEECHESEND:
+		if( --(sce->val4) >= 0 )
+		{
+			bool flag;
+			map_freeblock_lock();
+			status_zap(bl, sce->val2, 0);
+			flag = !sc->data[type];
+			map_freeblock_unlock();
+			if (flag) return 0;
+			sc_timer_next(1000 + tick, status_change_timer, bl->id, data );
+			return 0;
 		}
 		break;
 

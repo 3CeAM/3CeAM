@@ -5,6 +5,14 @@
 // 	- Details.
 //========================================
 
+02/26/2010
+	r214 [pakpil]
+	* Added GC_RESEARCHNEWPOISON, GC_CREATENEWPOISON and GC_POISONINGWEAPON skills.
+	- Added all poisons but still need more test.
+	- Added new file with all skill that Magic Mushroom should cast. Magic Mushroom don't cast skill in mobs. Still need more test.
+	* Improved clif_skill_fail packet to use it propertly with some skills. Still need more fix.
+	* Improved makerune, it's uses skill_produce_mix_list right now instead clif_rune_create_list.
+
 02/24/2010
 	r213 [Rytech]
 	*Added official names for mechanic FAW monsters. Also properly assigned each elemental version to each ID.
