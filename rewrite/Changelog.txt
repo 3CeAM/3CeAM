@@ -5,6 +5,11 @@
 // 	- Details.
 //========================================
 
+02/27/2010
+	r216 [pakpil]
+	* Minor fix in GC_POISONINGWEAPON. Removed extra sound effect when the weapon is poisoned. Bug report 209.
+	* Minor fix in GC_ROLLINGCUTTER. The counter is reseted when you move from your place. Bug report 209.
+
 02/26/2010
 	r215 [pakpil]
 	* Added missing file in r214.
