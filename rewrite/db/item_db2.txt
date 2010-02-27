@@ -313,11 +313,12 @@
 12733,Runstone_Hagalas,Hagalaz Rune,11,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ if(Class == Job_Rune_Knight || Class == Job_Rune_Knight_T) itemskill "RK_STONEHARDSKIN",1; },{},{}
 
 // Rune Knight Rune Ores
-12734,Runstone_Quality,Luxurious Rune,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ makerune 24,1; },{},{}
-12735,Runstone_Ancient,Ancient Rune,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ makerune 24,2; },{},{}
-12736,Runstone_Mystic,Mystic Rune,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ makerune 24,3; },{},{}
-12737,Runstone_Ordinary,General Rune,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ makerune 24,4; },{},{}
-12738,Runstone_Rare,Rare Rune,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ makerune 24,5; },{},{}
+
+12734,Runstone_Quality,Luxurious Rune,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ makerune 1; },{},{}
+12735,Runstone_Ancient,Ancient Rune,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ makerune 2; },{},{}
+12736,Runstone_Mystic,Mystic Rune,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ makerune 3; },{},{}
+12737,Runstone_Ordinary,General Rune,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ makerune 4; },{},{}
+12738,Runstone_Rare,Rare Rune,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ makerune 5; },{},{}
 
 // Genetic Created Bombs And Lumps
 13260,Apple_Bomb,Apple Bomb,3,10,,10,,,,,,,,,,,,,{},{},{}

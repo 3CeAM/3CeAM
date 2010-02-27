@@ -20,6 +20,10 @@
 #define ITEMID_TRAP_ALLOY 7940
 #define ITEMID_STONE 7049
 #define ITEMID_SKULL_ 7420
+#define ITEMID_FACEPAINTS 6120
+#define ITEMID_MAKEUPBRUSH 6121
+#define ITEMID_PAINTBRUSH 6122
+#define ITEMID_SURFACEPAINTS 6123
 
 //The only item group required by the code to be known. See const.txt for the full list.
 #define IG_FINDINGORE 6
@@ -119,6 +123,7 @@ struct item_data* itemdb_exists(int nameid);
 #define itemdb_viewid(n) (itemdb_search(n)->view_id)
 #define itemdb_autoequip(n) (itemdb_search(n)->flag.autoequip)
 #define itemdb_is_rune(n) (n >= ITEMID_NAUTHIZ && n <= ITEMID_HAGALAZ)
+#define itemdb_is_poison(n) (n >= 12717 && n <= 12724)
 #define itemdb_is_spellbook(n) (n > 6188 && n < 6205)
 
 int itemdb_group_bonus(struct map_session_data* sd, int itemid);

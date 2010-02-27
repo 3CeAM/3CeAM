@@ -133,6 +133,7 @@ struct map_session_data {
 		unsigned short user_font;
 		unsigned short autobonus; //flag to indicate if an autobonus is activated. [Inkfish]
 		unsigned improv_flag : 1;
+		unsigned magicmushroom_flag : 1;
 	} state;
 	struct {
 		unsigned char no_weapon_damage, no_magic_damage, no_misc_damage;

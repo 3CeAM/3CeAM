@@ -7395,7 +7395,7 @@ BUILDIN_FUNC(produce)
 		return 0;
 
 	trigger=script_getnum(st,2);
-	clif_skill_produce_mix_list(sd, trigger);
+	clif_skill_produce_mix_list(sd, -1, trigger);
 	return 0;
 }
 /*==========================================
@@ -7419,7 +7419,7 @@ BUILDIN_FUNC(cooking)
  *------------------------------------------*/
 BUILDIN_FUNC(makerune)
 {
-	int trigger, rune_ore;
+	int rune_ore;
 	TBL_PC* sd;
 
 	sd = script_rid2sd(st);
@@ -7427,9 +7427,9 @@ BUILDIN_FUNC(makerune)
 	if( sd == NULL )
 		return 0;
 
-	trigger=script_getnum(st,2);
-	rune_ore=script_getnum(st,3);
-	clif_rune_create_list(sd,trigger,rune_ore);
+	rune_ore=script_getnum(st,2);
+	sd->menuskill_itemused = rune_ore;
+	clif_skill_produce_mix_list(sd,RK_RUNEMASTERY,24);
 	return 0;
 
 }
@@ -14456,7 +14456,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(itemskill,"vi"),
 	BUILDIN_DEF(produce,"i"),
 	BUILDIN_DEF(cooking,"i"),
-	BUILDIN_DEF(makerune,"ii"),
+	BUILDIN_DEF(makerune,"i"),
 	BUILDIN_DEF(monster,"siisii*"),
 	BUILDIN_DEF(getmobdrops,"i"),
 	BUILDIN_DEF(areamonster,"siiiisii*"),
