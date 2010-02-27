@@ -13775,7 +13775,6 @@ int skill_poisoningweapon( struct map_session_data *sd, int nameid)
 	chance = 2 + 2 * sd->menuskill_itemused; // 2 + 2 * skill_lv
 
 	sc_start4(&sd->bl,SC_POISONINGWEAPON,100,t_lv,type,chance,0,skill_get_time(GC_POISONINGWEAPON,sd->menuskill_itemused));
-	clif_skill_nodamage(&sd->bl,&sd->bl,GC_POISONINGWEAPON,1,1);
 	sd->menuskill_itemused = 0;
 
 	return 0;

@@ -414,6 +414,8 @@ int map_moveblock(struct block_list *bl, int x1, int y1, unsigned int tick)
 				status_change_end(bl, SC_TATAMIGAESHI, -1);
 			if (sc->data[SC_MAGICROD])
 				status_change_end(bl, SC_MAGICROD, -1);
+			if (sc->data[SC_ROLLINGCUTTER])
+				status_change_end(bl,SC_ROLLINGCUTTER,-1);
 		}
 	} else
 	if (bl->type == BL_NPC)
