@@ -6818,14 +6818,13 @@ int pc_setriding(TBL_PC* sd, int flag)
 			break;
 		case JOB_MECHANIC: case JOB_MECHANIC2: case JOB_MECHANIC_T: case JOB_MECHANIC_T2:
 			option = OPTION_MADO;
-			skillnum = NC_MADOLICENCE;
 			break;
 		default:
 			return -1;
 	}
 	if( flag )
 	{		
-		if( pc_checkskill(sd,skillnum) > 0 ) // Check if you have the necessary skill to mount.
+		if( option != OPTION_MADO && (pc_checkskill(sd,skillnum) > 0) ) // Check if you have the necessary skill to mount.
 			pc_setoption(sd, sd->sc.option|option);
 	}
 	else if( pc_isriding(sd, OPTION_RIDING|(OPTION_RIDING_DRAGON)|OPTION_RIDING_WUG|OPTION_MADO) )

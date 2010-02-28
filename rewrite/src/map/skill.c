@@ -3499,17 +3499,9 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		break;
 
 	case GC_CROSSRIPPERSLASHER:
-		if( !(sc && sc->data[SC_ROLLINGCUTTER]) )
-		{
-			if(sd)
-				clif_skill_fail(sd,skillid,0x17,0,0);
-			break;
-		}
-		else
-		{
-			skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
+		if( sc && sc->data[SC_ROLLINGCUTTER] )
 			status_change_end(src,SC_ROLLINGCUTTER,-1);
-		}
+		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
 	case WL_DRAINLIFE:
@@ -10803,6 +10795,20 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			return 0;
 		}
 		break;
+	case RA_SENSITIVEKEEN:
+		if(!pc_iswarg(sd))
+		{
+			clif_skill_fail(sd,skill,0x17,0,0);
+			return 0;
+		}
+		break;
+	case RA_WUGRIDER:
+		if(!pc_isriding(sd,OPTION_RIDING_WUG) && !pc_iswarg(sd))
+		{
+			clif_skill_fail(sd,skill,0x17,0,0);
+			return 0;
+		}
+		break;
  	/*NOTE: Uncomment when this sc is available. [pakpil]
 	case SC_MANHOLE:
 	case SC_DIMENSIONDOOR:
@@ -10823,8 +10829,15 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			}
 			else
 				require.sp /= count;
-			break;
 		}
+		break;
+	case RETURN_TO_ELDICASTES:
+		if( pc_isriding(sd,OPTION_MADO) )
+		{ //Cannot be used if Mado is equipped.
+			clif_skill_fail(sd,skill,0,0,0);
+			return 0;
+		}
+		break;
 	}
 
 	switch(require.state) {
@@ -10916,28 +10929,15 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		clif_skill_fail(sd,skill,0,0,0);
 		return 0;
 	case ST_WUG:
-		if(skill == RA_SENSITIVEKEEN){
-			if(!pc_iswarg(sd)) {
-				clif_skill_fail(sd,skill,0x17,0,0);
-				return 0;
-			}
-		}else if(!pc_iswarg(sd)) {
+		if(!pc_iswarg(sd)) {
 			clif_skill_fail(sd,skill,0,0,0);
 			return 0;
 		}
 		break;
 	case ST_RIDINGWUG:
-		if(skill == RA_WUGRIDER){
-			if(!pc_isriding(sd,OPTION_RIDING_WUG) && !pc_iswarg(sd)) {
-				clif_skill_fail(sd,skill,0x17,0,0);
-				return 0;
-			}
-		}
-		else if(skill == RA_WUGSTRIKE){
-			if(!pc_isriding(sd,OPTION_RIDING_WUG) && !pc_iswarg(sd)){
-				clif_skill_fail(sd,skill,0,0,0);
-				return 0;
-			}
+		if(!pc_isriding(sd,OPTION_RIDING_WUG) && !pc_iswarg(sd)){
+			clif_skill_fail(sd,skill,0,0,0);
+			return 0;
 		}
 		break;
 	case ST_MADO:
