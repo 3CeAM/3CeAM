@@ -5273,19 +5273,9 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 	
 	skill_point = pc_calc_skillpoint(sd);
 
-	if( (sd->class_&JOBL_2) && (sd->class_&MAPID_UPPERMASK) != MAPID_SUPER_NOVICE &&
-		sd->status.skill_point >= sd->status.job_level && ((skill_num >= KN_SPEARMASTERY && skill_num < TK_RUN ) ||
-		(skill_num > TK_HIGHJUMP && skill_num < GS_GLITTERING) || skill_num > MB_B_EQUIP) && // Ignore all 1st job skills from extended class.
-		((sd->change_level[0] > 0 && skill_point < sd->change_level[0]+8) || skill_point < 58))
+	if( (sd->class_&MAPID_THIRDMASK) >= MAPID_RUNE_KNIGHT && sd->status.skill_point >= sd->status.job_level )
 	{
-		i = (sd->change_level[0] > 0 ? sd->change_level[0]+8:58) - skill_point;		
-		clif_msgtable_num(sd->fd,1566,i);
-		return 0;
-	}
-	else if( (sd->class_&MAPID_THIRDMASK) >= MAPID_RUNE_KNIGHT &&
-		sd->status.skill_point >= sd->status.job_level )
-	{
-		if( ((sd->change_level[0] > 0 && skill_point < sd->change_level[0]+8) || skill_point < 58) && skill_num >= KN_SPEARMASTERY)
+		if( (sd->change_level[0] > 0 ? ( skill_point < sd->change_level[0]+8 ): (skill_point < 58)) && skill_num >= KN_SPEARMASTERY)
 		{
 			i = (sd->change_level[0] > 0 ? sd->change_level[0]+8:58) - skill_point;		
 			clif_msgtable_num(sd->fd,1566,i);
@@ -5298,6 +5288,15 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 			clif_msgtable_num(sd->fd,1567, i);
 			return 0;
 		}
+	}
+	else if( (sd->class_&JOBL_2) && (sd->class_&MAPID_UPPERMASK) != MAPID_SUPER_NOVICE &&
+		sd->status.skill_point >= sd->status.job_level && ((skill_num >= KN_SPEARMASTERY && skill_num < TK_RUN ) ||
+		(skill_num > TK_HIGHJUMP && skill_num < GS_GLITTERING) || skill_num > MB_B_EQUIP) && // Ignore all 1st job skills from extended class.
+		(sd->change_level[0] > 0 ? (skill_point < sd->change_level[0]+8) : skill_point < 58))
+	{
+		i = (sd->change_level[0] > 0 ? sd->change_level[0]+8:58) - skill_point;		
+		clif_msgtable_num(sd->fd,1566,i);
+		return 0;
 	}
 
 	if( sd->status.skill_point > 0 &&
@@ -6397,18 +6396,19 @@ int pc_jobchange(struct map_session_data *sd,int job, int upper)
 	if ((unsigned short)b_class == sd->class_)
 		return 1; //Nothing to change.
 	// check if we are changing from 1st to 2nd job
-	if (b_class&JOBL_2) {
+	if (b_class&JOBL_THIRD) {
+		if (!(sd->class_&JOBL_THIRD) )
+			sd->change_level[1] = sd->status.job_level;
+		else if (!sd->change_level[1])
+			sd->change_level[1] = (b_class&JOBL_THIRD_UPPER)?70:50; // Assume 50 to Base 3rd jobs and 70 to Trans 3rd jobs
+		pc_setglobalreg(sd, "jobchange_level2", sd->change_level[1]);
+	}
+	else if (b_class&JOBL_2) {
 		if (!(sd->class_&JOBL_2))
 			sd->change_level[0] = sd->status.job_level;
 		else if (!sd->change_level[0])
 			sd->change_level[0] = 40; //Assume 40?
 		pc_setglobalreg (sd, "jobchange_level", sd->change_level[0]);
-
-		if (!(sd->class_&JOBL_THIRD))
-			sd->change_level[1] = sd->status.job_level;
-		else if (!sd->change_level[1])
-			sd->change_level[1] = (sd->class_&JOBL_THIRD_UPPER)?70:50; // Assume 50 to Base 3rd jobs and 70 to Trans 3rd jobs
-		pc_setglobalreg(sd, "jobchange_level2", sd->change_level[1]);
 	}
 
 	if(sd->cloneskill_id) {

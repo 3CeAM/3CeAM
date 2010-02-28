@@ -6,6 +6,10 @@
 //========================================
 
 02/28/2010
+	r218 [pakpil]
+	* Fixed pc_skillup and pc_jobchange that were malfunctioning. Bug report 193.
+
+02/28/2010
 	r217 [Jobbie]
 	* Mado Gear is usable without Madolicense skill upgraded. Without the license your movement speed will be 50%.
 	- When in Mado Gear Blacksmith and Mastersmith skills are unusable.
