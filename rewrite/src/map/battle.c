@@ -795,9 +795,6 @@ int battle_addmastery(struct map_session_data *sd,struct block_list *target,int 
 
 	if((skill = pc_checkskill(sd,NC_RESEARCHFE)) > 0 && (status->def_ele == ELE_FIRE || status->def_ele == ELE_EARTH) )
 		damage += (skill * 10);
-
-	if( (skill = pc_checkskill(sd,RA_TOOTHOFWUG)) > 0 && (sd && (sd->sc.option&OPTION_WUG || sd->sc.option&OPTION_RIDING_WUG)) )
-		damage += skill * 6;
 	
 	if( pc_isriding(sd, OPTION_MADO) )
 		damage += 20 + 20 * pc_checkskill(sd, NC_MADOLICENCE);
@@ -839,6 +836,8 @@ int battle_addmastery(struct map_session_data *sd,struct block_list *target,int 
 		case W_2HMACE:
 			if((skill = pc_checkskill(sd,PR_MACEMASTERY)) > 0)
 				damage += (skill * 3);
+			if((skill = pc_checkskill(sd,NC_TRAININGAXE)) > 0)
+				damage += (skill * 5); //It works with axe also.
 			break;
 		case W_FIST:
 			if((skill = pc_checkskill(sd,TK_RUN)) > 0)
@@ -1391,7 +1390,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 			case GN_CART_TORNADO:
 			case GN_CARTCANNON:
 				if( sd && pc_checkskill(sd, GN_REMODELING_CART) )
-					hitrate += pc_checkskill(sd, GN_REMODELING_CART) * 4;
+					hitrate += hitrate * (pc_checkskill(sd, GN_REMODELING_CART) * 4) / 100;
 				break;
 		}
 
@@ -1399,9 +1398,14 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 		if (sd && (skill = pc_checkskill(sd,BS_WEAPONRESEARCH)) > 0)
 			hitrate += hitrate * ( 2 * skill ) / 100;
 
+		if( sd && (sd->status.weapon == W_1HAXE || sd->status.weapon == W_2HAXE) &&
+			(sd->status.weapon == W_MACE || sd->status.weapon == W_2HMACE) &&
+			(skill = pc_checkskill(sd, NC_TRAININGAXE))>0 )
+			hitrate += hitrate * ( 2 * skill ) / 100;
+
 		if( sd && (sd->status.weapon == W_1HSWORD || sd->status.weapon == W_DAGGER) && 
 			(skill = pc_checkskill(sd, GN_TRAINING_SWORD))>0 )
-			hitrate += 3 * skill;
+			hitrate += hitrate * ( 3 * skill ) / 100;
 
 		hitrate = cap_value(hitrate, battle_config.min_hitrate, battle_config.max_hitrate); 
 
@@ -1947,6 +1951,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 							case 2: skillratio = skillratio*4; break;
 						}
 					break;
+				case RA_WUGDASH:
+					skillratio += 500;//Damage based from iROwiki info. [Jobbie]
+					break;
 				case RA_WUGSTRIKE:
 					skillratio = 120 * skill_lv - 100;
 					break;
@@ -2053,6 +2060,12 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					break;
 				case NJ_SYURIKEN:
 					ATK_ADD(4*skill_lv);
+					break;
+				case RA_WUGDASH:
+				case RA_WUGSTRIKE:
+				case RA_WUGBITE:
+					if(sd)
+						ATK_ADD(6*pc_checkskill(sd, RA_TOOTHOFWUG));
 					break;
 			}
 		}
@@ -2853,9 +2866,6 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					case WL_SUMMON_ATK_WIND:
 					case WL_SUMMON_ATK_GROUND:
 						skillratio += 50 * skill_lv - 50;
-						break;
-					case RA_WUGDASH:
-						skillratio += 500;//Damage based from iROwiki info. [Jobbie]
 						break;
 					case WM_SEVERE_RAINSTORM:
 						skillratio += 50 * skill_lv;

@@ -1293,7 +1293,6 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 						return 0;
 				}
 			}
-
 		}
 	}
 
@@ -1319,17 +1318,35 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 			switch( skill_num )
 			{
 				case HT_ANKLESNARE:		case HT_SHOCKWAVE:
-				case HT_SANDMAN:		case HT_FLASHER:			
-				case HT_FREEZINGTRAP:	case HT_BLASTMINE:			
-				case HT_CLAYMORETRAP:	case HT_TALKIEBOX:			
-				case RA_DETONATOR:		case RA_CLUSTERBOMB:			
-				case RA_FIRINGTRAP:		case RA_ICEBOUNDTRAP:			
-				case RA_WUGDASH:		case RA_WUGSTRIKE:			
+				case HT_SANDMAN:		case HT_FLASHER:
+				case HT_FREEZINGTRAP:	case HT_BLASTMINE:
+				case HT_CLAYMORETRAP:	case HT_TALKIEBOX:
+				case RA_DETONATOR:		case RA_CLUSTERBOMB:
+				case RA_FIRINGTRAP:		case RA_ICEBOUNDTRAP:
+				case RA_WUGDASH:		case RA_WUGSTRIKE:
 				case RA_WUGRIDER:
 					break;
 				default:
 					return 0;
 			}
+		if (sc->option&OPTION_MADO && ((TBL_PC*)src)->skillitem != skill_num)
+		{
+			switch(skill_num)
+			{ //Blacksmiths and Mastersmiths skills are unusable when Mado is equipped. [Jobbie]
+				case BS_REPAIRWEAPON:  case WS_MELTDOWN:
+				case BS_HAMMERFALL:    case WS_CARTBOOST:
+				case BS_ADRENALINE:    case WS_WEAPONREFINE:
+				case BS_WEAPONPERFECT: case WS_CARTTERMINATION:
+				case BS_OVERTHRUST:    case WS_OVERTHRUSTMAX:
+				case BS_MAXIMIZE:
+				case BS_ADRENALINE2:
+				case BS_UNFAIRLYTRICK:
+				case BS_GREED:
+					return 0;
+				default: //Only Mechanic exlcusive skill can be used.
+					break;
+			}
+		}
 	}
 	if (target == NULL || target == src) //No further checking needed.
 		return 1;
@@ -2424,11 +2441,8 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 			status->rhw.range += skill;
 		}
 	}
-	if(sd->status.weapon == W_1HAXE && sd->status.weapon == W_2HAXE)
-	{
-		if((skill=pc_checkskill(sd,NC_TRAININGAXE))>0)
-			sd->hit_rate += 2*skill;
-	}
+	if((skill=pc_checkskill(sd,NC_TRAININGAXE))>0)
+			status->hit += skill*3;
 
 // ----- FLEE CALCULATION -----
 
@@ -4215,7 +4229,12 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 		if( sc->data[SC_WALKSPEED] && sc->data[SC_WALKSPEED]->val1 > 0 ) // ChangeSpeed
 			speed = speed * 100 / sc->data[SC_WALKSPEED]->val1;
 		if( sd && pc_isriding(sd, OPTION_MADO) )
-			speed += speed * (50 - 10 * pc_checkskill(sd, NC_MADOLICENCE)) / 100;
+		{
+			if( pc_checkskill(sd, NC_MADOLICENCE)>0 )
+				speed += speed * (50 - 10 * pc_checkskill(sd, NC_MADOLICENCE)) / 100;
+			else //Without the license your movement speed will be 50%.
+				speed += speed * 50 / 100;
+		}
 	}
 
 	return (short)cap_value(speed,10,USHRT_MAX);
@@ -8177,23 +8196,24 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 			unit_skillcastcancel(bl,1);
 			if( sd )
 			{ // Mobs don't cast any skill.??
-				int skill, i;
+				int mushroom_skillid, mushroom_skilllv, i;
 				do
 				{
 					i = rand() % MAX_SKILL_MAGICMUSHROOM_DB;
-					skill = skill_magicmushroom_db[i].skillid;
+					mushroom_skillid = skill_magicmushroom_db[i].skillid;
 				}
-				while( skill == 0 );
-				clif_skill_nodamage(bl, bl, skill, sce->val1, 1);
+				while( mushroom_skillid == 0 );
+				mushroom_skilllv = min(1, skill_get_max(mushroom_skillid));
+				clif_skill_nodamage(bl, bl, mushroom_skillid, sce->val1, 1);
 
 				sd->state.magicmushroom_flag = 1;
-				sd->skillitem = skill;
-				sd->skillitemlv = sce->val1;
-				clif_item_skill(sd, skill, skill);
+				sd->skillitem = mushroom_skillid;
+				sd->skillitemlv = mushroom_skilllv;
+				clif_item_skill(sd, mushroom_skillid, mushroom_skilllv);
 			}
 			map_freeblock_unlock();
 			if (flag) return 0; //target died
-			clif_emotion(bl,18);	
+			clif_emotion(bl,18);
 			sc_timer_next(4000 + tick, status_change_timer, bl->id, data );
 			return 0;
 		}

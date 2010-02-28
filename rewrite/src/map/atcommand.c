@@ -4582,7 +4582,6 @@ int atcommand_mount(const int fd, struct map_session_data* sd, const char* comma
 				riding_flag = 1;
 			msg[0] = 710; msg[1] = 712; msg[2] = 711; msg[3] = 713;
 			option = OPTION_MADO;
-			skillnum = NC_MADOLICENCE;
 			break;
 		case JOB_ROYAL_GUARD: case JOB_ROYAL_GUARD2: case JOB_ROYAL_GUARD_T: case JOB_ROYAL_GUARD_T2:
 			if( pc_isriding(sd, OPTION_RIDING) && (sd->class_&JOBL_THIRD))
@@ -4596,7 +4595,7 @@ int atcommand_mount(const int fd, struct map_session_data* sd, const char* comma
 			return -1;
 	}
 
-	if( !pc_checkskill(sd,skillnum) )
+	if( !pc_checkskill(sd,skillnum) && option != OPTION_MADO )
 	{ // You haven't required skill to mount
 		clif_displaymessage(fd, msg_txt(msg[2])); // You can not mount with your current job.
 		return -1;

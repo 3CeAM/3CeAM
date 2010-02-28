@@ -5,6 +5,18 @@
 // 	- Details.
 //========================================
 
+02/28/2010
+	r217 [Jobbie]
+	* Mado Gear is usable without Madolicense skill upgraded. Without the license your movement speed will be 50%.
+	- When in Mado Gear Blacksmith and Mastersmith skills are unusable.
+	* Cannot use the skill Return to El Dicaste when mounted in Mado.
+	* Some clean up to the state "ridingwarg" and "warg".
+	* Minor clean up to skill Cross Ripper Slasher avoiding redundant sc checking.
+	* Fix the bonus given of Tooth of Warg skill.
+	* Minor fix to NC_TRAININGAXE, GN_REMODELING_CART, GN_TRAINING_SWORD hitrate bonus.
+	* NC_TRAININGAXE should work with Mace.
+	* Minor fix to new poison items and in const.txt. 
+
 02/27/2010
 	r216 [pakpil]
 	* Minor fix in GC_POISONINGWEAPON. Removed extra sound effect when the weapon is poisoned. Bug report 209.
@@ -14,7 +26,6 @@
 	r215 [pakpil]
 	* Added missing file in r214.
 
-02/26/2010
 	r214 [pakpil]
 	* Added GC_RESEARCHNEWPOISON, GC_CREATENEWPOISON and GC_POISONINGWEAPON skills.
 	- Added all poisons but still need more test.
