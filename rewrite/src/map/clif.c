@@ -3538,38 +3538,61 @@ void clif_tradestart(struct map_session_data* sd, uint8 type)
  *------------------------------------------*/
 void clif_tradeadditem(struct map_session_data* sd, struct map_session_data* tsd, int index, int amount)
 {
-	int fd;
+	int fd, cmd = 0xe9, offset = 0;
 	nullpo_retv(sd);
 	nullpo_retv(tsd);
 
+#if PACKETVER >= 20100223
+	cmd = 0x80f;
+#endif
+
 	fd = tsd->fd;
-	WFIFOHEAD(fd,packet_len(0xe9));
-	WFIFOW(fd,0) = 0xe9;
+
+	WFIFOHEAD(fd,packet_len(cmd));
+	WFIFOW(fd,0) = cmd;
+
+#if PACKETVER < 20100223
 	WFIFOL(fd,2) = amount;
+	offset = 4;
+#endif
 	if( index == 0 )
 	{
-		WFIFOW(fd,6) = 0; // type id
-		WFIFOB(fd,8) = 0; //identify flag
-		WFIFOB(fd,9) = 0; // attribute
-		WFIFOB(fd,10)= 0; //refine
-		WFIFOW(fd,11)= 0; //card (4w)
-		WFIFOW(fd,13)= 0; //card (4w)
-		WFIFOW(fd,15)= 0; //card (4w)
-		WFIFOW(fd,17)= 0; //card (4w)
+		WFIFOW(fd, 2 + offset) = 0; // type id
+#if PACKETVER >= 20100223
+		WFIFOB(fd, 4) = 0;	// type
+		WFIFOL(fd, 5) = 0;	// amount
+		offset = 1;
+#else
+		offset = 0;
+#endif
+		WFIFOB(fd, 8 + offset) = 0; //identify flag
+		WFIFOB(fd, 9 + offset) = 0; // attribute
+		WFIFOB(fd,10 + offset)= 0; //refine
+		WFIFOW(fd,11 + offset)= 0; //card (4w)
+		WFIFOW(fd,13 + offset)= 0; //card (4w)
+		WFIFOW(fd,15 + offset)= 0; //card (4w)
+		WFIFOW(fd,17 + offset)= 0; //card (4w)
 	}
 	else
 	{
 		index -= 2; //index fix
 		if(sd->inventory_data[index] && sd->inventory_data[index]->view_id > 0)
-			WFIFOW(fd,6) = sd->inventory_data[index]->view_id;
+			WFIFOW(fd, 2 + offset) = sd->inventory_data[index]->view_id;
 		else
-			WFIFOW(fd,6) = sd->status.inventory[index].nameid; // type id
-		WFIFOB(fd,8) = sd->status.inventory[index].identify; //identify flag
-		WFIFOB(fd,9) = sd->status.inventory[index].attribute; // attribute
-		WFIFOB(fd,10)= sd->status.inventory[index].refine; //refine
-		clif_addcards(WFIFOP(fd, 11), &sd->status.inventory[index]);
+			WFIFOW(fd, 2 + offset) = sd->status.inventory[index].nameid; // type id
+#if PACKETVER >= 20100223
+			WFIFOB(fd, 4) = itemdb_type(sd->status.inventory[index].nameid);	// type
+			WFIFOL(fd, 5) = amount;	// amount
+			offset = 1;
+#else
+		offset = 0;
+#endif
+		WFIFOB(fd, 8 + offset) = sd->status.inventory[index].identify; //identify flag
+		WFIFOB(fd, 9 + offset) = sd->status.inventory[index].attribute; // attribute
+		WFIFOB(fd,10 + offset)= sd->status.inventory[index].refine; //refine
+		clif_addcards(WFIFOP(fd,11 + offset), &sd->status.inventory[index]);
 	}
-	WFIFOSET(fd,packet_len(0xe9));
+	WFIFOSET(fd,packet_len(cmd));
 }
 
 /*==========================================
@@ -14270,7 +14293,7 @@ static int packetdb_readdb(void)
 	    0,  0,  8,  0,  0,  8,  8, 32, -1,  5,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0, 14, -1, -1, -1,  8, 25,  0,  0,  0,  0,
 	  //#0x0800
-	   -1, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 14,  0,
+	   -1, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 14, 20,
 	};
 	struct {
 		void (*func)(int, struct map_session_data *);
