@@ -6,6 +6,10 @@
 //========================================
 
 03/02/2010
+	r221 [pakpil]
+	* Fixed clif_guildstorageitemadded packet that was malfuntioning when you put an item in the storage with lastest client.
+
+03/02/2010
 	r220 [pakpil]
 	* Added new clif_tradeadditem packet. 0xe9 -> 0x80f.
 
