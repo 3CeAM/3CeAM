@@ -3739,6 +3739,7 @@ void clif_guildstorageitemadded(struct map_session_data* sd, struct item* i, int
 	fd=sd->fd;
 	view = itemdb_viewid(i->nameid);
 
+#if PACKETVER < 20100223
 	WFIFOHEAD(fd,packet_len(0xf4));
 	WFIFOW(fd, 0) = 0xf4; // Storage item added
 	WFIFOW(fd, 2) = index+1; // index
@@ -3749,6 +3750,19 @@ void clif_guildstorageitemadded(struct map_session_data* sd, struct item* i, int
 	WFIFOB(fd,12) = i->refine; //refine
 	clif_addcards(WFIFOP(fd,13), i);
 	WFIFOSET(fd,packet_len(0xf4));
+#else
+	WFIFOHEAD(fd,packet_len(0x1c4));
+	WFIFOW(fd, 0) = 0x1c4; // Storage item added
+	WFIFOW(fd, 2) = index+1; // index
+	WFIFOL(fd, 4) = amount; // amount
+	WFIFOW(fd, 8) = ( view > 0 ) ? view : i->nameid; // id
+	WFIFOB(fd,10) = itemdb_type(i->nameid); //type
+	WFIFOB(fd,11) = i->identify; //identify flag
+	WFIFOB(fd,12) = i->attribute; // attribute
+	WFIFOB(fd,13) = i->refine; //refine
+	clif_addcards(WFIFOP(fd,14), i);
+	WFIFOSET(fd,packet_len(0x1c4));
+#endif
 }
 
 /*==========================================
