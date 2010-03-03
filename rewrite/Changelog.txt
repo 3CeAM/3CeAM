@@ -5,6 +5,14 @@
 // 	- Details.
 //========================================
 
+03/03/2010
+	r222 [pakpil]
+	* Minor fix in trade and gstorage packets to avoid conflicts to lastest clients.
+	* Added GC_VENOMPRESSURE skill.
+	* Fixed clif_parse_ProduceMix. Bug report 224.
+	* Improved Runes cooldown control, adjusted to the official one.
+	* Minor fix in SC__SHADOWFORM. Moved to a place between freeblock_lock/freeblock_unlock to avoid conflict.
+
 03/02/2010
 	r221 [pakpil]
 	* Fixed clif_guildstorageitemadded packet that was malfuntioning when you put an item in the storage with lastest client.

@@ -1958,36 +1958,6 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 			clif_combo_delay(src, flag);
 		}
 	}
-	
-	if( sc && sc->data[SC__SHADOWFORM] && damage > 0 )
-	{
-		struct block_list *s_bl = map_id2bl(sc->data[SC__SHADOWFORM]->val2);
-		
-		if( !s_bl )
-		{
-				status_change_end(bl, SC__SHADOWFORM, -1);
-		}
-		else if( status_isdead(s_bl) )
-		{
-				status_change_end(bl, SC__SHADOWFORM, -1);
-				if( s_bl->type == BL_PC )
-					((TBL_PC*)s_bl)->shadowform_id = 0;
-		}
-		else
-		{
-			if( (--sc->data[SC__SHADOWFORM]->val3) < 0 )
-			{
-				status_change_end(bl, SC__SHADOWFORM, -1);
-				if( s_bl->type == BL_PC )
-					((TBL_PC*)s_bl)->shadowform_id = 0;
-			}
-			else
-			{
-				clif_damage(s_bl,s_bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,dmg.type,dmg.damage2);
-				status_fix_damage(NULL, s_bl, damage, 0);
-			}
-		}
-	}
 
 	//Display damage.
 	switch( skillid )
@@ -2209,6 +2179,48 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 	
 	if( damage > 0 && skillid == RK_CRUSHSTRIKE ) // Your weapon will not be broken if you miss.
 			skill_break_equip(src,EQP_WEAPON,10000,BCT_SELF);
+
+	
+	if(  damage > 0 && skillid == GC_VENOMPRESSURE && (sc = status_get_sc(src)) && sc->data[SC_POISONINGWEAPON] )
+	{
+		if( rand()%100 < 70 + 5 * skilllv )
+		{
+			sc_start(bl,sc->data[SC_POISONINGWEAPON]->val2,100,sc->data[SC_POISONINGWEAPON]->val1,
+				skill_get_time(GC_POISONINGWEAPON,sc->data[SC_POISONINGWEAPON]->val1));
+			status_change_end(src,SC_POISONINGWEAPON,-1);
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);				
+		}
+	}
+
+	if( sc && sc->data[SC__SHADOWFORM] && damage > 0 )
+	{
+		struct block_list *s_bl = map_id2bl(sc->data[SC__SHADOWFORM]->val2);
+		
+		if( !s_bl )
+		{
+				status_change_end(bl, SC__SHADOWFORM, -1);
+		}
+		else if( status_isdead(s_bl) )
+		{
+				status_change_end(bl, SC__SHADOWFORM, -1);
+				if( s_bl->type == BL_PC )
+					((TBL_PC*)s_bl)->shadowform_id = 0;
+		}
+		else
+		{
+			if( (--sc->data[SC__SHADOWFORM]->val3) < 0 )
+			{
+				status_change_end(bl, SC__SHADOWFORM, -1);
+				if( s_bl->type == BL_PC )
+					((TBL_PC*)s_bl)->shadowform_id = 0;
+			}
+			else
+			{
+				clif_damage(s_bl,s_bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,dmg.type,dmg.damage2);
+				status_fix_damage(NULL, s_bl, damage, 0);
+			}
+		}
+	}
 
 	if (!(flag&2) &&
 		(
@@ -2917,6 +2929,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case RK_DRAGONBREATH:
 	case RK_STORMBLAST:
 	case GC_CROSSIMPACT:
+	case GC_VENOMPRESSURE:
 	case AB_DUPLELIGHT_MELEE:
 	case RA_AIMEDBOLT:
 	case RA_WUGBITE:
@@ -3490,7 +3503,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		}
 		break;
 	case RK_CRUSHSTRIKE:
-		sc_start(bl,SC_RAIDO,100,skilllv,skill_get_time(skillid,skilllv));
+		sc_start(bl,SC_RAIDO,100,skilllv,skill_get_cooldown(skillid,skilllv));
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
@@ -3499,9 +3512,17 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		break;
 
 	case GC_CROSSRIPPERSLASHER:
-		if( sc && sc->data[SC_ROLLINGCUTTER] )
+		if( !(sc && sc->data[SC_ROLLINGCUTTER]) )
+		{
+			if(sd)
+				clif_skill_fail(sd,skillid,0x17,0,0);
+			break;
+		}
+		else
+		{
+			skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 			status_change_end(src,SC_ROLLINGCUTTER,-1);
-		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
+		}
 		break;
 
 	case WL_DRAINLIFE:
@@ -6445,17 +6466,16 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 	case RK_REFRESH:
 		{
-			int heal = status_get_max_hp(bl) * 25 / 100;		
-			sc_start(bl,SC_REUSE_REFRESH,100,skilllv,skill_get_cooldown(skillid,skilllv)); // Cooldown
+			int heal = status_get_max_hp(bl) * 25 / 100;
+			sc_start(bl,SC_REUSE_REFRESH,100,skilllv,skill_get_cooldown(skillid,skilllv)); // Official cooldown handler for this skill. [pakpil]
 			clif_skill_nodamage(src,bl,skillid,skilllv,
-				sc_start2(bl,type,100,skilllv,skill_get_time(skillid,skilllv),skill_get_cooldown(skillid,skilllv)));
+				sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
 			status_heal(bl,heal,0,1);
 			status_change_clear_buffs(bl,2);
 		}
 		break;
 	case RK_STORMBLAST:
 		{
-			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
 			clif_skill_damage(src,bl,tick,status_get_amotion(src),0,-30000,1,skillid,skilllv,6);
 			map_foreachinrange(skill_area_sub,bl,skill_get_splash(skillid,skilllv),splash_target(src),src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
 		}
@@ -10829,6 +10849,7 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			}
 			else
 				require.sp /= count;
+			break;
 		}
 		break;
 	case RETURN_TO_ELDICASTES:
