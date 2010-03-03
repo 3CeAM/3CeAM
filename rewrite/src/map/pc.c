@@ -3614,27 +3614,28 @@ int pc_useitem(struct map_session_data *sd,int n)
 	if( sd->status.inventory[n].nameid <= 0 || sd->status.inventory[n].amount <= 0 )
 		return 0;
 
-	// In this case these sc are cooldown for these skills
+	// In this case these sc are OFFICIALS cooldowns for these skills
 	if( itemdb_is_rune(sd->status.inventory[n].nameid) )
 	{
-		int skill = 0;
-		switch(sd->status.inventory[n].nameid)
+		struct status_change *sc = status_get_sc(&sd->bl);
+		if( sc )
 		{
-			case ITEMID_NAUTHIZ:
-				if( sd->sc.count && sd->sc.data[SC_REUSE_REFRESH] )
-					return 0;
-				break;
-			case ITEMID_RAIDO: skill = RK_CRUSHSTRIKE; break;
-			case ITEMID_BERKANA: skill = RK_MILLENNIUMSHIELD; break;
-			case ITEMID_ISA: skill = RK_VITALITYACTIVATION; break;
-			case ITEMID_OTHILA: skill = RK_FIGHTINGSPIRIT; break;
-			case ITEMID_URUZ: skill = RK_ABUNDANCE; break;
-			case ITEMID_THURISAZ: skill = RK_GIANTGROWTH; break;
-			case ITEMID_WYRD: skill = RK_STORMBLAST; break;
-			case ITEMID_HAGALAZ: skill = RK_STONEHARDSKIN; break;
+			switch(sd->status.inventory[n].nameid)
+			{
+				case ITEMID_NAUTHIZ:
+					if( sc->data[SC_REUSE_REFRESH] )
+						return 0;
+					break;
+				case ITEMID_RAIDO:
+					if( sc->data[SC_RAIDO] )
+						return 0;
+					break;
+				case ITEMID_BERKANA:
+					if( sc->data[SC_BERKANA] )
+						return 0;
+					break;
+			}
 		}
-		if (sd->blockskill[skill] > 0)
-			return 0; // Nothing to do.
 	}
 
 	if( !pc_isUseitem(sd,n) )

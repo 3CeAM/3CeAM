@@ -3739,7 +3739,7 @@ void clif_guildstorageitemadded(struct map_session_data* sd, struct item* i, int
 	fd=sd->fd;
 	view = itemdb_viewid(i->nameid);
 
-#if PACKETVER < 20100223
+#if PACKETVER < 20100217
 	WFIFOHEAD(fd,packet_len(0xf4));
 	WFIFOW(fd, 0) = 0xf4; // Storage item added
 	WFIFOW(fd, 2) = index+1; // index
@@ -10305,7 +10305,9 @@ void clif_parse_RequestMemo(int fd,struct map_session_data *sd)
  *------------------------------------------*/
 void clif_parse_ProduceMix(int fd,struct map_session_data *sd)
 {
-	if (sd->menuskill_id !=	AM_PHARMACY && sd->menuskill_id != RK_RUNEMASTERY && sd->menuskill_id != GC_CREATENEWPOISON)
+	// -1 is used by produce script command.
+	if (sd->menuskill_id != -1 && sd->menuskill_id != AM_PHARMACY && sd->menuskill_id != SA_CREATECON &&
+		sd->menuskill_id != RK_RUNEMASTERY && sd->menuskill_id != GC_CREATENEWPOISON)
 		return;
 	
 	if (pc_istrading(sd)) {

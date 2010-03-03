@@ -417,7 +417,7 @@ void initChangeTables(void)
 	set_sc( RK_GIANTGROWTH       , SC_THURISAZ        , SI_GIANTGROWTH        , SCB_STR );
 	set_sc( RK_STONEHARDSKIN     , SC_HAGALAZ         , SI_STONEHARDSKIN      , SCB_NONE );
 	set_sc( RK_VITALITYACTIVATION       , SC_ISA      , SI_VITALITYACTIVATION , SCB_REGEN );
-	set_sc( RK_STORMBLAST        , SC_WYRD            , SI_REUSE_STORMBLAST   , SCB_NONE );
+	//set_sc( RK_STORMBLAST        , SC_WYRD            , SI_REUSE_STORMBLAST   , SCB_NONE );
 	set_sc( RK_FIGHTINGSPIRIT    , SC_OTHILA          , SI_FIGHTINGSPIRIT     , SCB_WATK|SCB_ASPD );
 	set_sc( RK_ABUNDANCE         , SC_URUZ            , SI_ABUNDANCE          , SCB_NONE );
 
