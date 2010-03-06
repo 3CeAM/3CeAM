@@ -431,6 +431,10 @@ typedef enum sc_type {
 	// Temporary status change used as cooldown in certain skills.
 	SC_REUSE_COMET,
 
+	SC_VENOMIMPRESS,
+	SC_HALLUCINATIONWALK,
+	SC_HALLUCINATIONWALK_POSTDELAY,
+
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
 

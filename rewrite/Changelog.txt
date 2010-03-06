@@ -5,6 +5,14 @@
 // 	- Details.
 //========================================
 
+03/06/2010
+	r223 [pakpil]
+	* Added GC_VENOMIMPRESS, GC_HALLUCINATIONWALK and GC_ANTIDOTE skills.
+	* Minor fix in new packet clif_tradeadditem that wasn't showing zeny.
+	* Added 3 extra seconds per GC_RESEARCHNEWPOISON level bonus in ASC_EDP.
+	* Minor fix in some status changes used as cooldown that shouldn't be debuffed.
+	* Minor fix in GC_COUNTERSLASH and GC_WEAPONCRUSH that should show skill fail every time you try to use these skills.
+
 03/03/2010
 	r222 [pakpil]
 	* Minor fix in trade and gstorage packets to avoid conflicts to lastest clients.

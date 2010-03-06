@@ -268,6 +268,8 @@ int battle_attr_fix(struct block_list *src, struct block_list *target, int damag
 			damage = 0;
 		else
 			status_change_end(target, SC_WHITEIMPRISON, -1);
+		if( tsc->data[SC_VENOMIMPRESS] && atk_elem == ELE_POISON)
+			ratio += tsc->data[SC_VENOMIMPRESS]->val2;
 		if( atk_elem == ELE_FIRE && tsc->data[SC_THORNSTRAP] )
 			status_change_end(target, SC_THORNSTRAP, -1);
 	}

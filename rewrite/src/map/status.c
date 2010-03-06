@@ -421,10 +421,12 @@ void initChangeTables(void)
 	set_sc( RK_FIGHTINGSPIRIT    , SC_OTHILA          , SI_FIGHTINGSPIRIT     , SCB_WATK|SCB_ASPD );
 	set_sc( RK_ABUNDANCE         , SC_URUZ            , SI_ABUNDANCE          , SCB_NONE );
 
+	set_sc( GC_VENOMIMPRESS      , SC_VENOMIMPRESS    , SI_VENOMIMPRESS       , SCB_NONE );
 	set_sc( GC_POISONINGWEAPON   , SC_POISONINGWEAPON , SI_POISONINGWEAPON    , SCB_NONE );
 	set_sc( GC_WEAPONBLOCKING    , SC_WEAPONBLOCKING  , SI_WEAPONBLOCKING     , SCB_NONE );
 	set_sc( GC_ROLLINGCUTTER     , SC_ROLLINGCUTTER   , SI_ROLLINGCUTTER      , SCB_NONE );
 	set_sc( GC_CLOAKINGEXCEED    , SC_CLOAKINGEXCEED  , SI_CLOAKINGEXCEED     , SCB_SPEED );
+	set_sc( GC_HALLUCINATIONWALK , SC_HALLUCINATIONWALK , SI_HALLUCINATIONWALK , SCB_FLEE );
 
 	add_sc( AB_CLEMENTIA         , SC_BLESSING );
 	add_sc( AB_CANTO             , SC_INCREASEAGI );
@@ -602,6 +604,8 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_MERC_HITUP] = SI_MERC_HITUP;
 
 	StatusIconChangeTable[SC_REUSE_REFRESH] = SI_REUSE_REFRESH;
+
+	StatusIconChangeTable[SC_HALLUCINATIONWALK_POSTDELAY] = SI_HALLUCINATIONWALK_POSTDELAY;
 	// Warlock Spheres
 	StatusIconChangeTable[SC_SPHERE_1] = SI_SPHERE_1;
 	StatusIconChangeTable[SC_SPHERE_2] = SI_SPHERE_2;
@@ -670,6 +674,7 @@ void initChangeTables(void)
 	StatusChangeFlagTable[SC_MERC_SPUP] |= SCB_MAXSP;
 	StatusChangeFlagTable[SC_MERC_HITUP] |= SCB_HIT;
 	
+	StatusChangeFlagTable[SC_HALLUCINATIONWALK_POSTDELAY] |= SCB_SPEED;
 	StatusChangeFlagTable[SC_PARALYSE] |= SCB_ASPD|SCB_FLEE|SCB_SPEED;
 	StatusChangeFlagTable[SC_VENOMBLEED] |= SCB_MAXHP;
 	StatusChangeFlagTable[SC_DEATHHURT] |= SCB_REGEN;
@@ -3910,6 +3915,8 @@ static signed short status_calc_flee(struct block_list *bl, struct status_change
 		flee -= flee * sc->data[SC__LAZINESS]->val3 / 100;
 	if( sc->data[SC_GLOOMYDAY] )
 		flee -= flee * sc->data[SC_GLOOMYDAY]->val2 / 100;
+	if( sc->data[SC_HALLUCINATIONWALK] )
+		flee += 50 * sc->data[SC_HALLUCINATIONWALK]->val1;
 
 	return (short)cap_value(flee,1,SHRT_MAX);
 }
@@ -4156,6 +4163,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 					val = max( val, 70 );
 				if( sc->data[SC_PARALYSE] )
 					val = max( val, 50 );
+				if( sc->data[SC_HALLUCINATIONWALK_POSTDELAY] && sc->data[SC_HALLUCINATIONWALK_POSTDELAY]->val4 )
+					val = max( val, sc->data[SC_HALLUCINATIONWALK_POSTDELAY]->val2 );
 				if( sc->data[SC_MARSHOFABYSS] )
 					val = max( val, 40 + 10 * sc->data[SC_MARSHOFABYSS]->val1 );
 				if( sc->data[SC_CAMOUFLAGE] && (sc->data[SC_CAMOUFLAGE]->val3&1) == 0 )
@@ -6545,6 +6554,10 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_THURISAZ:
 			val4 = tick / 1000;
 			break;
+		case SC_VENOMIMPRESS:
+			val2 = 10 * val1;
+			val_flag |= 1|2;
+			break;
 		case SC_POISONINGWEAPON:
 			val_flag |= 1|2|4;
 			break;
@@ -6594,6 +6607,16 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			else
 				val4 |= battle_config.monster_cloak_check_type&7;
 			tick = 1000;
+			break;
+		case SC_HALLUCINATIONWALK:
+			val2 = 50; // Evasion rate of physical attacks.
+			val3 = 10; // Evasion rate of magical attacks. Not available.
+			val_flag |= 1|2|4;
+			break;
+		case SC_HALLUCINATIONWALK_POSTDELAY:
+			val2 = 50;
+			val4 = 1;
+			tick = 25000; // Walking speed reduction time.
 			break;
 		case SC_RENOVATIO:
 			val4 = tick / 5000;
@@ -6846,6 +6869,12 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_REUSE_COMET:
 			if( sd )
 				clif_skill_cooldown(sd,WL_COMET,tick);
+			break;
+		case SC_HALLUCINATIONWALK:
+		case SC_HALLUCINATIONWALK_POSTDELAY:
+			if( sd )
+				clif_skill_cooldown(sd,GC_HALLUCINATIONWALK,tick);
+			val4 = 0;
 			break;
 	}
 
@@ -7534,6 +7563,9 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 		case SC_BERKANA:
 			if( sce->val2 )
 				clif_millenniumshield(sd,0);
+			break;
+		case SC_HALLUCINATIONWALK:
+			sc_start(bl,SC_HALLUCINATIONWALK_POSTDELAY,100,sce->val1,skill_get_time2(GC_HALLUCINATIONWALK,sce->val1));
 			break;
 		case SC_WHITEIMPRISON:
 			clif_damage(bl, bl, 0, 0, 0, sce->val1 * 400, 0, 0, 0);
@@ -8258,6 +8290,16 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
 		return 0;
 
+	case SC_HALLUCINATIONWALK_POSTDELAY:
+		if( sce->val4 == 1)
+		{	// After 25 first seconds movement speed ends.
+			sce->val4 = 0;
+			status_calc_bl(bl,SCB_SPEED);
+			sc_timer_next(245000 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
+
 	case SC_RENOVATIO:
 		if( --(sce->val4) >= 0 )
 		{
@@ -8589,6 +8631,11 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC_ELECTRICSHOCKER:
 			case SC__MANHOLE:
 			case SC__MAELSTROM:
+			// Extra large skills cooldowns
+			case SC_REUSE_REFRESH:
+			case SC_WEAPONBLOCKING_POSTDELAY:
+			case SC_REUSE_COMET:
+			case SC_HALLUCINATIONWALK_POSTDELAY:
 				continue;
 				
 			//Debuffs that can be removed.

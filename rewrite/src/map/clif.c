@@ -3560,7 +3560,7 @@ void clif_tradeadditem(struct map_session_data* sd, struct map_session_data* tsd
 		WFIFOW(fd, 2 + offset) = 0; // type id
 #if PACKETVER >= 20100223
 		WFIFOB(fd, 4) = 0;	// type
-		WFIFOL(fd, 5) = 0;	// amount
+		WFIFOL(fd, 5) = amount;	// amount
 		offset = 1;
 #else
 		offset = 0;
@@ -5308,13 +5308,21 @@ void clif_set0199(struct map_session_data* sd, int mode)
 	WFIFOSET(fd,packet_len(0x199));
 }
 
-/// Set the map mode (special)
-/// 0 = city
-/// 1 = in
-/// 2 = field
-/// 6 = gvg
-/// 8 = gvg castle
-/// 19 = battleground
+// Set the map mode (special)
+// mode 0 = city
+// mode 1 = city in
+// mode 2 = field
+// mode 3 = dungeon
+// mode 4 = arena
+// mode 5 = pvp penalty
+// mode 6 = pvp no penalty
+// mode 7 = gvg
+// mode 8 = gvg castle
+// mode 15 = jail
+// mode 16 = monster track
+// mode 17 = poring battle
+// mode 19 = battleground
+
 void clif_set01D6(struct map_session_data* sd, int mode)
 {
 	int fd;
