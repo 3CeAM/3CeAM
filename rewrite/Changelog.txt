@@ -6,6 +6,10 @@
 //========================================
 
 03/06/2010
+	r224 [pakpil]
+	* Added GC_POISONSMOKE, GC_PHANTOMMENACE and GC_DARKILLUSION skills.
+
+03/06/2010
 	r223 [pakpil]
 	* Added GC_VENOMIMPRESS, GC_HALLUCINATIONWALK and GC_ANTIDOTE skills.
 	* Minor fix in new packet clif_tradeadditem that wasn't showing zeny.
