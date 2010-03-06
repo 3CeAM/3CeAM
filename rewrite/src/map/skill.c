@@ -4357,7 +4357,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case HW_MAGICPOWER:
 	case PF_MEMORIZE:
 	case PA_SACRIFICE:
-	case ASC_EDP:
 	case PF_DOUBLECASTING:
 	case SG_SUN_COMFORT:
 	case SG_MOON_COMFORT:
@@ -4378,6 +4377,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case RK_GIANTGROWTH:
 	case RK_VITALITYACTIVATION:
 	case RK_ABUNDANCE:
+	case GC_VENOMIMPRESS:
 	case WL_RECOGNIZEDSPELL:
 	case AB_EXPIATIO:
 	case AB_DUPLELIGHT:
@@ -4673,6 +4673,15 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		status_change_end(src, SC_HIDING, -1);
 		break;
 
+	case ASC_EDP:
+		{
+			int time = skill_get_time(skillid,skilllv);
+			if( sd )
+				time += 3000 * pc_checkskill(sd,GC_RESEARCHNEWPOISON);
+			clif_skill_nodamage(src,bl,skillid,skilllv,
+				sc_start(bl,type,100,skilllv,time));
+		}
+		break;
 	case ASC_METEORASSAULT:
 	case GS_SPREADATTACK:
 		skill_area_temp[1] = 0;
@@ -6594,6 +6603,26 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			status_change_end(bl,SC_TOXIN,-1);
 		if( tsc->data[SC_OBLIVIONCURSE] )
 			status_change_end(bl,SC_OBLIVIONCURSE,-1);
+		break;
+
+	case GC_HALLUCINATIONWALK:
+		{
+			int heal = status_get_max_hp(bl) * 10 / 100;
+			if( status_get_hp(bl) < heal )
+			{ // if you haven't enough HP skill fail.
+				if( sd )
+					clif_skill_fail(sd,skillid,0x02,0,0);
+				break;
+			}
+			if( !status_charge(bl,heal,0) )
+			{
+				if( sd )
+					clif_skill_fail(sd,skillid,0x02,0,0);
+				break;
+			}
+			clif_skill_nodamage(src,bl,skillid,skilllv,
+				sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
+		}
 		break;
 
 	case AB_ANCILLA:
@@ -10715,7 +10744,7 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 	case GD_REGENERATION:
 	case GD_RESTORE:
 		if (!map_flag_gvg2(sd->bl.m)) {
-			clif_skill_fail(sd,skill,0,0,0);
+			clif_skill_fail(sd,skill,0x00,0,0);
 			return 0;
 		}
 	case GD_EMERGENCYCALL:
@@ -10726,26 +10755,26 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 
 	case GS_GLITTERING:
 		if(sd->spiritball >= 10) {
-			clif_skill_fail(sd,skill,0,0,0);
+			clif_skill_fail(sd,skill,0x00,0,0);
 			return 0;
 		}
 		break;
 
 	case NJ_ISSEN:
 		if (status->hp < 2) {
-			clif_skill_fail(sd,skill,0,0,0);
+			clif_skill_fail(sd,skill,0x00,0,0);
 			return 0;
 		}
 	case NJ_BUNSINJYUTSU:
 		if (!(sc && sc->data[SC_NEN])) {
-			clif_skill_fail(sd,skill,0,0,0);
+			clif_skill_fail(sd,skill,0x00,0,0);
 			return 0;
 	  	}
 		break;
 
 	case NJ_ZENYNAGE:
 		if(sd->status.zeny < require.zeny) {
-			clif_skill_fail(sd,skill,5,0,0);
+			clif_skill_fail(sd,skill,0x05,0,0);
 			return 0;
 		}
 		break;
@@ -10755,14 +10784,14 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		break;
 	case AM_CALLHOMUN: //Can't summon if a hom is already out
 		if (sd->status.hom_id && sd->hd && !sd->hd->homunculus.vaporize) {
-			clif_skill_fail(sd,skill,0,0,0);
+			clif_skill_fail(sd,skill,0x00,0,0);
 			return 0;
 		}
 		break;
 	case AM_REST: //Can't vapo homun if you don't have an active homunc or it's hp is < 80%
 		if (!merc_is_hom_active(sd->hd) || sd->hd->battle_status.hp < (sd->hd->battle_status.max_hp*80/100))
 		{
-			clif_skill_fail(sd,skill,0,0,0);
+			clif_skill_fail(sd,skill,0x00,0,0);
 			return 0;
 		}
 		break;
@@ -10781,6 +10810,13 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			return 0;
 		}
 		break;
+	case GC_HALLUCINATIONWALK:
+		if( sc && (sc->data[SC_HALLUCINATIONWALK] || sc->data[SC_HALLUCINATIONWALK_POSTDELAY]) )
+		{
+			clif_skill_fail(sd, skill, 0x00, 0, 0 );
+			return 0;
+		}
+		break;
 	case AB_ANCILLA:
 		{
 			int count = 0, i;
@@ -10789,7 +10825,7 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 					count += sd->status.inventory[i].amount;
 			if( count >= 3 )
 			{
-				clif_skill_fail(sd, skill, 0xc, 0, 0);
+				clif_skill_fail(sd, skill, 0x0c, 0, 0);
 				return 0;
 			}
 		}
