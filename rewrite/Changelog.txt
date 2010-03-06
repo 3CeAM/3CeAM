@@ -6,6 +6,10 @@
 //========================================
 
 03/06/2010
+	r225 [pakpil]
+	* Fixed a mistake in my last commit. Sorry.
+
+03/06/2010
 	r224 [pakpil]
 	* Added GC_POISONSMOKE, GC_PHANTOMMENACE and GC_DARKILLUSION skills.
 
