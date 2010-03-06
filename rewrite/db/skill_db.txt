@@ -804,7 +804,7 @@
 // Guillotine Cross
 2021,5,6,1,5,0x1,0,5,1,no,0,0,0,weapon,0,	GC_VENOMIMPRESS,Venom Impress
 2022,3,8,1,-1,0,0,5,-7,yes,0,0,0,weapon,0,	GC_CROSSIMPACT,Cross Impact
-//2023,3:4:5:6:7,6,1,-1,0,0,5,1,yes,0,0,0,weapon,0,	GC_DARKILLUSION,Dark Illusion
+2023,3:4:5:6:7,6,1,-1,0,0,5,1,yes,0,0,0,weapon,0,	GC_DARKILLUSION,Dark Illusion
 2024,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		GC_RESEARCHNEWPOISON,Research New Poison
 2025,0,6,4,0,0x1,0,1,0,no,0,0,0,none,0,		GC_CREATENEWPOISON,Create New Poison
 2026,5,6,16,0,0x1,0,1,1,yes,0,0,0,none,0,	GC_ANTIDOTE,Antidote
@@ -813,9 +813,9 @@
 2029,-2,6,4,-1,0x2,3,5,1,no,0,0,0,weapon,3,	GC_COUNTERSLASH,Counter Slash
 2030,-2,6,4,-1,0x1,0,5,1,no,0,0,0,weapon,0,	GC_WEAPONCRUSH,Weapon Crush
 2031,1,6,1,5,0,0,5,1,no,0,0,0,weapon,0,	GC_VENOMPRESSURE,Venom Pressure
-//2032,2,6,2,5,0x1,0,5,1,no,0,0,1,weapon,0,	GC_POISONSMOKE,Poison Smoke
+2032,2,6,2,5,0x1,0,5,1,no,0,0,1,weapon,0,	GC_POISONSMOKE,Poison Smoke
 2033,0,6,4,0,0x1,0,5,1,no,0,0,0,weapon,0,	GC_CLOAKINGEXCEED,Cloaking Exceed
-//2034,0,6,4,0,0x2,7,1,1,no,0,0,0,weapon,0,	GC_PHANTOMMENACE,Phantom Menace
+2034,0,6,4,0,0x2,7,1,1,no,0,0,0,weapon,0,	GC_PHANTOMMENACE,Phantom Menace
 2035,0,6,4,0,0x1,0,5,1,no,0,0,0,weapon,0,	GC_HALLUCINATIONWALK,Hallucination Walk
 2036,0,8,4,0,0x2,3,5,1,no,0,0,0,weapon,0,	GC_ROLLINGCUTTER,Rolling Cutter
 2037,7,8,1,0,0,0,5,1,no,0,0,0,weapon,0,		GC_CROSSRIPPERSLASHER,Cross Ripper Slasher
