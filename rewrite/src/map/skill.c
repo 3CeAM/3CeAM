@@ -10880,7 +10880,7 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		if( !(sc && sc->data[SC_POISONINGWEAPON]) )
 		{
 			if( sd )
-				clif_skill_fail(sd,skillid,0x20,0,0);
+				clif_skill_fail(sd,skill,0x20,0,0);
 			return 0;
 		}
 		break;
