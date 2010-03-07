@@ -67,11 +67,9 @@
 // 3rd Class Weapons
 // Weapons needing bonuses scripts
 // Alcabringer - Every 2 refines add +1 ASPD
-// Lapine Staff - MATK + %30. Each +1 refine decreases cast time by 1% (does not stack with cards or other effects)
-// Note: Lapine Staff orginally does this...MATK + 180. Each +1 refine decreases fixed cast time by 1% (does not stack with cards or other effects)
 1191,Alcabringer,Alcabringer,4,10,,3400,280,,1,0,0x00004080,24,2,34,3,100,1,3,{},{},{}
 1287,Dulga,Dulga,4,10,,1200,190,,1,1,0x00001000,24,2,34,3,100,1,16,{},{},{}
-1649,Lapine_Staff,Lapine Staff,4,10,,500,30,,1,0,0x00018300,24,2,2,3,100,1,10,{ bonus bMatkRate,30; },{},{}
+1649,Lapine_Staff,Lapine Staff,4,10,,500,30,,1,0,0x00018300,24,2,2,3,100,1,10,{ bonus bMatkRate,30; bonus bFixCastRate,-getrefine(); },{},{}
 1746,Elven_Bow,Elven Bow,4,10,,1500,160,,5,1,0x00080800,24,2,34,3,100,1,11,{},{},{}
 16003,Kalga_Mace,Kalga Mace,4,10,,1500,175,,1,2,0x0004C580,24,2,2,3,100,1,8,{},{},{}
 
@@ -432,8 +430,8 @@
 2844,Light_of_El_Dicastes,Light of El Dicastes,5,20,,100,,0,,0,0xFFFFFFFF,31,2,136,,80,0,0,{ skill "RETURN_TO_ELDICASTES",1; },{},{}
 2853,Test_Item_28,Test Item 28,3,10,,10,,,,,,,,,,,,,{},{},{}
 2854,Test_Item_29,Test Item 29,3,10,,10,,,,,,,,,,,,,{},{},{}
-4760,Test_Item_30,Test Item 30,3,10,,10,,,,,,,,,,,,,{},{},{}
-4761,Test_Item_31,Test Item 31,3,10,,10,,,,,,,,,,,,,{},{},{}
+4760,MagicalAttack1%,MATK+1%,6,20,,,,,,,,,,16,,,,,{ bonus bMatkRate,1; bonus bFixCastRate,-1; },{},{}
+4761,MagicalAttack2%,MATK+2%,6,20,,,,,,,,,,16,,,,,{ bonus bMatkRate,2; bonus bFixCastRate,-1; },{},{}
 4762,Test_Item_32,Test Item 32,3,10,,10,,,,,,,,,,,,,{},{},{}
 4763,Test_Item_33,Test Item 33,3,10,,10,,,,,,,,,,,,,{},{},{}
 4764,Test_Item_34,Test Item 34,3,10,,10,,,,,,,,,,,,,{},{},{}

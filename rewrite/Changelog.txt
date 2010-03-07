@@ -5,15 +5,22 @@
 // 	- Details.
 //========================================
 
+03/07/2010
+	r226 [Jobbie]
+	* Added bFixCastRate.
+	- Updated items which uses the bonus bFixCastRate.
+	* Renovatio has a full fixed cast time not a skill that is not reducable by dex. follow up r61.
+	* Minor update for the damage calculation structure for Sorcerer skills.
+	* Added the rest of status id's taken from aegis data.
+	* Minor fix to Venom Pressure the skill cannot be used without Poisoning Weapon status.
+
 03/06/2010
 	r225 [pakpil]
 	* Fixed a mistake in my last commit. Sorry.
 
-03/06/2010
 	r224 [pakpil]
 	* Added GC_POISONSMOKE, GC_PHANTOMMENACE and GC_DARKILLUSION skills.
 
-03/06/2010
 	r223 [pakpil]
 	* Added GC_VENOMIMPRESS, GC_HALLUCINATIONWALK and GC_ANTIDOTE skills.
 	* Minor fix in new packet clif_tradeadditem that wasn't showing zeny.
@@ -33,7 +40,6 @@
 	r221 [pakpil]
 	* Fixed clif_guildstorageitemadded packet that was malfuntioning when you put an item in the storage with lastest client.
 
-03/02/2010
 	r220 [pakpil]
 	* Added new clif_tradeadditem packet. 0xe9 -> 0x80f.
 
@@ -44,11 +50,9 @@
 	-You can get 3rd class skills too, but only for the 3rd job your playing as.
 	-Thankyou Pakpil for the help. =D
 
-02/28/2010
 	r218 [pakpil]
 	* Fixed pc_skillup and pc_jobchange that were malfunctioning. Bug report 193.
 
-02/28/2010
 	r217 [Jobbie]
 	* Mado Gear is usable without Madolicense skill upgraded. Without the license your movement speed will be 50%.
 	- When in Mado Gear Blacksmith and Mastersmith skills are unusable.
@@ -83,7 +87,6 @@
 	-Also switched the skills used for 2 of the magic decoy towers.
 	*Corrected a incorrectly set ID for SO_ENDMARK in the skill_require_db.
 
-02/24/2010
 	r212 [pakpil]
 	* Added GC_WEAPONBLOCKING, GC_WEAPONCRUSH and GC_COUNTERSLASH skills.
 
@@ -92,7 +95,6 @@
 	* Added GC_CROSSIMPACT, GC_CLOAKINGEXCEED, GC_ROLLINGCUTTER and GC_ROLLINGCUTTER skills.
 	* Fixed WM_POEMOFNETHERWORLD. Added missing entry. Bug report 199.
 
-02/23/2010
 	r210 [pakpil]
 	* Fixed a issue in clif_set_unit_idle that was causing conflics.
 
@@ -100,7 +102,6 @@
 	r209 [pakpil]
 	* Added WM_RANDOMIZESPELL skills. All Wanderer/Minstrell skills are rewrited.
 
-02/22/2010
 	r207 [Jobbie]
 	* Minor fix to Strip Accessory. No need for another checking if the target is BL_MOB since "(!sd)" part is already doing it.
 	- Strip chance was 12+2*skillLV but still needs the official value of casters dex and targets dex w/c affecting the strip success chance.
@@ -134,17 +135,14 @@
 	r202 [pakpil]
 	* Fixed SC_REPRODUCE. This was memorizing a wrong skill id on certain skills.
 
-02/17/2010
 	r201 [pakpil]
 	* Minor fixed in WM_SEVERE_RAINSTORM skill.c
 	* Reverted casting reduction on Bolts.
 
-02/17/2010
 	r200 [pakpil]
 	* Fixed fame ranking.
 	* Fixed SC_FREEZING and SC_BURNING that were stacking. We still need more info about it.
 
-02/17/2010
 	r197 [pakpil]
 	* Fixed SC_REPRODUCE. Bug report 165.
 	* Fixed some issues in r196 that make conflicts with cygwin.

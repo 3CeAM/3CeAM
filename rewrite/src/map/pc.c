@@ -1910,6 +1910,10 @@ int pc_bonus(struct map_session_data *sd,int type,int val)
 		if(sd->state.lr_flag != 2)
 			sd->castrate+=val;
 		break;
+	case SP_FIXCASTRATE:
+		if(sd->state.lr_flag != 2)
+			sd->fixcastrate+=val;
+		break;
 	case SP_MAXHPRATE:
 		if(sd->state.lr_flag != 2)
 			sd->hprate+=val;
@@ -2666,6 +2670,7 @@ int pc_bonus2(struct map_session_data *sd,int type,int type2,int val)
 		break;
 
 	case SP_CASTRATE:
+	case SP_FIXCASTRATE:
 		if(sd->state.lr_flag == 2)
 			break;
 		ARR_FIND(0, ARRAYLENGTH(sd->skillcast), i, sd->skillcast[i].id == 0 || sd->skillcast[i].id == type2);

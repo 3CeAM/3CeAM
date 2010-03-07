@@ -297,6 +297,7 @@ struct map_session_data {
 	int hprecov_rate,sprecov_rate;
 	int matk_rate;
 	int critical_rate,hit_rate,flee_rate,flee2_rate,def_rate,def2_rate,mdef_rate,mdef2_rate;
+	int fixcastrate;	//fixed casting reduction. [Jobbie]
 
 	int itemid;
 	short itemindex;	//Used item's index in sd->inventory [Skotlex]
