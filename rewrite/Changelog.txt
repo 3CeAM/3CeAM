@@ -6,6 +6,10 @@
 //========================================
 
 03/07/2010
+	r228 [pakpil]
+	* Minor fix in WL_RECOGNIZEDSPELL behavior.
+
+03/07/2010
 	r227 [Jobbie]
 	* Archbishop skills update.
 	- Casting time and Cooldowns was updated based on latest info.
