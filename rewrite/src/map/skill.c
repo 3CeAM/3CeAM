@@ -10868,36 +10868,6 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			return 0;
 		}
 		break;
-	case GC_COUNTERSLASH:
-	case GC_WEAPONCRUSH:
-		if(!(sc && sc->data[SC_COMBO] && sc->data[SC_COMBO]->val1 == GC_WEAPONBLOCKING) )
-		{
-			clif_skill_fail(sd, skill, 0x1f, 0, 0);
-			return 0;
-		}
-		break;
-	case GC_POISONSMOKE:
-		if( !(sc && sc->data[SC_POISONINGWEAPON]) )
-		{
-			if( sd )
-				clif_skill_fail(sd,skill,0x20,0,0);
-			return 0;
-		}
-		break;
-	case GC_CROSSRIPPERSLASHER:
-		if( !(sc && sc->data[SC_ROLLINGCUTTER]) )
-		{
-			clif_skill_fail(sd, skill, 0x17, 0, 0 );
-			return 0;
-		}
-		break;
-	case GC_HALLUCINATIONWALK:
-		if( sc && (sc->data[SC_HALLUCINATIONWALK] || sc->data[SC_HALLUCINATIONWALK_POSTDELAY]) )
-		{
-			clif_skill_fail(sd, skill, 0x00, 0, 0 );
-			return 0;
-		}
-		break;
 	case AB_ANCILLA:
 		{
 			int count = 0, i;
@@ -10917,6 +10887,36 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			return 0;
 		if( skill_check_pc_partner(sd, skill, &lv, 1, 0) )
 			sd->special_state.no_gemstone = 1;
+		break;
+	case GC_COUNTERSLASH:
+	case GC_WEAPONCRUSH:
+		if(!(sc && sc->data[SC_COMBO] && sc->data[SC_COMBO]->val1 == GC_WEAPONBLOCKING) )
+		{
+			clif_skill_fail(sd, skill, 0x1f, 0, 0);
+			return 0;
+		}
+		break;
+	case GC_CROSSRIPPERSLASHER:
+		if( !(sc && sc->data[SC_ROLLINGCUTTER]) )
+		{
+			clif_skill_fail(sd, skill, 0x17, 0, 0);
+			return 0;
+		}
+		break;
+	case GC_POISONSMOKE:
+	case GC_VENOMPRESSURE:
+		if( !(sc && sc->data[SC_POISONINGWEAPON]) )
+		{
+			clif_skill_fail(sd, skill, 0x20, 0, 0);
+			return 0;
+		}
+		break;
+	case GC_HALLUCINATIONWALK:
+		if( sc && (sc->data[SC_HALLUCINATIONWALK] || sc->data[SC_HALLUCINATIONWALK_POSTDELAY]) )
+		{
+			clif_skill_fail(sd, skill, 0x00, 0, 0 );
+			return 0;
+		}
 		break;
 	case RA_WUGMASTERY:
 		if((pc_isfalcon(sd) && !battle_config.warg_can_falcon) || sd->sc.data[SC__GROOMY])
@@ -11506,24 +11506,40 @@ int skill_castfix(struct block_list *bl, int skill_id, int skill_lv)
 	}
 	else
 	{
-		variable_time = skill_get_cast(skill_id, skill_lv) * 80/100;// 80% of casttime is variable
-		fixed_time = skill_get_cast(skill_id, skill_lv) * 20/100;// 20% of casttime is fixed
-
-		// calculate variable cast time reduced by dex and int
-		if( !(skill_get_castnodex(skill_id, skill_lv)&1) )
-			scale = cap_value((status_get_dex(bl)*2 + status_get_int(bl))*10000, INT_MIN, INT_MAX);
-		
 		//Place here for skills that has a full variable and fixed cast time. [Jobbie]
 		switch( skill_id )
 		{
 			case MG_ENERGYCOAT:
 			case HW_GANBANTEIN:
 			case HW_GRAVITATION:
-				{
-					variable_time = 0;
-					fixed_time = skill_get_cast(skill_id, skill_lv);
-				}
+			case AB_RENOVATIO:
+				variable_time = 0;
+				fixed_time = skill_get_cast(skill_id, skill_lv);
 				break;
+			default:
+				variable_time = skill_get_cast(skill_id, skill_lv) * 80/100;// 80% of casttime is variable
+				fixed_time = skill_get_cast(skill_id, skill_lv) * 20/100;// 20% of casttime is fixed
+				break;
+		}
+
+		// calculate variable cast time reduced by dex and int
+		if( !(skill_get_castnodex(skill_id, skill_lv)&1) )
+			scale = cap_value((status_get_dex(bl)*2 + status_get_int(bl))*10000, INT_MIN, INT_MAX);
+
+		// calculate fixed cast time reduced by item bonuses
+		if( sd )
+		{
+			int i;
+			if( sd->fixcastrate != 100 )
+				fixed_time = fixed_time * sd->fixcastrate / 100;
+			for( i = 0; i < ARRAYLENGTH(sd->skillcast) && sd->skillcast[i].id; i++ )
+			{
+				if( sd->skillcast[i].id == skill_id )
+				{
+					fixed_time += fixed_time * sd->skillcast[i].val / 100;
+					break;
+				}
+			}
 		}
 	}
 

@@ -1914,6 +1914,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	sd->hprate=100;
 	sd->sprate=100;
 	sd->castrate=100;
+	sd->fixcastrate=100;
 	sd->delayrate=100;
 	sd->dsprate=100;
 	sd->hprecov_rate = 100;
@@ -2560,6 +2561,8 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		sd->dsprate = 0;
 	if(sd->castrate < 0)
 		sd->castrate = 0;
+	if(sd->fixcastrate <0)
+		sd->fixcastrate = 0;
 	if(sd->delayrate < 0)
 		sd->delayrate = 0;
 	if(sd->hprecov_rate < 0)
