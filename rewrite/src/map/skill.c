@@ -4422,6 +4422,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case RA_FEARBREEZE:
 	case NC_ACCELERATION:
 	case NC_HOVERING:
+	case NC_SHAPESHIFT:
 	case SC_DEADLYINFECT:
 	case SO_STRIKING:
 	case GN_CARTBOOST:
@@ -6673,7 +6674,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	 	if( sd )
 		{
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
-			skill_produce_mix(sd, skillid, 12333, 0, 0, 0, 1);
+			skill_produce_mix(sd, skillid, ITEMID_ANCILLA, 0, 0, 0, 1);
 		}
 		break;
 
@@ -6995,6 +6996,24 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		if( i ) clif_skill_nodamage(src,bl,skillid,skilllv,i);
 		else if( sd )
 			clif_skill_fail(sd,skillid,0,0,0);
+		break;
+
+	case NC_F_SIDESLIDE:
+		{
+			skill_blown(src,bl,skill_get_blewcount(skillid,skilllv),(unit_getdir(src)+4)%8,0x1);
+			clif_slide(src,src->x,src->y);
+			clif_fixpos(src); //Aegis sent this packet
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		}
+		break;
+
+	case NC_B_SIDESLIDE:
+		{
+			skill_blown(src,bl,skill_get_blewcount(skillid,skilllv),unit_getdir(bl),1);
+			clif_slide(src,src->x,src->y);
+			clif_fixpos(src); //Aegis sent this packet
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		}
 		break;
 
 	case NC_SELFDESTRUCTION:
@@ -11388,6 +11407,10 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 			if (lv <= 5)	// no gems required at level 1-5
 				continue;
 			break;
+		case NC_SHAPESHIFT:
+			if ( i < 4 )
+				continue;
+			break;
 		}
 
 		req.itemid[i] = skill_db[j].itemid[i];
@@ -11406,6 +11429,11 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 					req.amount[i] = 1; // Hocus Pocus allways use at least 1 gem
 			}
 		}
+	}
+	if( skill == NC_SHAPESHIFT )
+	{		
+		req.itemid[lv-1] = skill_db[j].itemid[lv-1];
+		req.amount[lv-1] = skill_db[j].amount[lv-1];
 	}
 
 	// Check for cost reductions due to skills & SCs
