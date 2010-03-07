@@ -440,7 +440,7 @@ void initChangeTables(void)
 	set_sc( AB_DUPLELIGHT        , SC_DUPLELIGHT      , SI_DUPLELIGHT      , SCB_NONE );
 	set_sc( AB_SECRAMENT         , SC_SECRAMENT       , SI_SECRAMENT       , SCB_NONE );
 
-	set_sc( WL_RECOGNIZEDSPELL   , SC_RECOGNIZEDSPELL , SI_RECOGNIZEDSPELL , SCB_MATK );
+	set_sc( WL_RECOGNIZEDSPELL   , SC_RECOGNIZEDSPELL , SI_RECOGNIZEDSPELL , SCB_NONE );
 	set_sc( WL_FROSTMISTY        , SC_FREEZING        , SI_FROSTMISTY        , SCB_ASPD|SCB_SPEED|SCB_DEF|SCB_DEF2 );
 	set_sc( WL_MARSHOFABYSS      , SC_MARSHOFABYSS    , SI_MARSHOFABYSS    , SCB_SPEED|SCB_FLEE|SCB_DEF|SCB_DEF2 );
 	add_sc( WL_COMET             , SC_REUSE_COMET );
@@ -3221,11 +3221,6 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 			
 		status->matk_min = status_calc_matk(bl, sc, status->matk_min);
 		status->matk_max = status_calc_matk(bl, sc, status->matk_max);
-
-		if(sc->data[SC_RECOGNIZEDSPELL]) {
-			status->matk_min = status->matk_max;
-			status->matk_max = status->matk_max;
-		}
 
 		if(sc->data[SC_MAGICPOWER]) { //Store current matk values
 			sc->mp_matk_min = status->matk_min;

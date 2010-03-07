@@ -2705,7 +2705,11 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 				break;
 			default:
 			{
-				if (sstatus->matk_max > sstatus->matk_min) {
+				
+				if(sc && sc->data[SC_RECOGNIZEDSPELL]) {
+					MATK_ADD(sstatus->matk_max);
+				}
+				else if (sstatus->matk_max > sstatus->matk_min) {
 					MATK_ADD(sstatus->matk_min+rand()%(1+sstatus->matk_max-sstatus->matk_min));
 				} else {
 					MATK_ADD(sstatus->matk_min);
