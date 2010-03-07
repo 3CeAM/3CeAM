@@ -6,6 +6,23 @@
 //========================================
 
 03/07/2010
+	r227 [Jobbie]
+	* Archbishop skills update.
+	- Casting time and Cooldowns was updated based on latest info.
+	- Clearance was rewritted to behave same to official server.
+	Info: http://forums.irowiki.org/showpost.php?p=591645&postcount=576
+	- Updated Expiatio skill. Currently the skill works the same as Asperio but only its a self skill. Still needs to be redone.
+	- Duple light Melee should take weapon element and Magic is forced to be neutral. Chance to trigger is 25%.
+	- Adoramus requires 1 blue gemstone if casted solo.
+	- Fix structure for Adoramus and Judex damage calculation.
+	- Epiclesis as of official server doesn't damage Undead or Demon type monster.
+	- Renovatio should damage to undead type of monster and fail if casted to self/ally with undead armor.
+	- Cleanup Ancilla coding.
+	- Updated the behavior of Coluceo Heal skill.
+	- Updated Lauda Ramus and Agnus to work like official behavior. Info the same as above link.
+	* Fixed casting reduction now takes the maximum value to be used as reduction rate.
+	* Named some related kRO items in item_db2.txt
+
 	r226 [Jobbie]
 	* Added bFixCastRate.
 	- Updated items which uses the bonus bFixCastRate.

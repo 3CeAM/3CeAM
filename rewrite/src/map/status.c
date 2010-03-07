@@ -436,7 +436,7 @@ void initChangeTables(void)
 	set_sc( AB_LAUDAAGNUS        , SC_LAUDAAGNUS      , SI_LAUDAAGNUS      , SCB_VIT );
 	set_sc( AB_LAUDARAMUS        , SC_LAUDARAMUS      , SI_LAUDARAMUS      , SCB_LUK );
 	set_sc( AB_RENOVATIO         , SC_RENOVATIO       , SI_RENOVATIO       , SCB_REGEN );
-	set_sc( AB_EXPIATIO          , SC_EXPIATIO        , SI_EXPIATIO        , SCB_NONE );
+	set_sc( AB_EXPIATIO          , SC_EXPIATIO        , SI_EXPIATIO        , SCB_ATK_ELE );
 	set_sc( AB_DUPLELIGHT        , SC_DUPLELIGHT      , SI_DUPLELIGHT      , SCB_NONE );
 	set_sc( AB_SECRAMENT         , SC_SECRAMENT       , SI_SECRAMENT       , SCB_NONE );
 
@@ -4494,6 +4494,8 @@ unsigned char status_calc_attack_element(struct block_list *bl, struct status_ch
 		return ELE_DARK;
 	if(sc->data[SC_GHOSTWEAPON])
 		return ELE_GHOST;
+	if(sc->data[SC_EXPIATIO])
+		return ELE_HOLY;
 	if(sc->data[SC__INVISIBILITY])
 		return ELE_GHOST;
 	return (unsigned char)cap_value(element,0,UCHAR_MAX);
@@ -5764,6 +5766,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_EARTHWEAPON:
 		case SC_SHADOWWEAPON:
 		case SC_GHOSTWEAPON:
+		case SC_EXPIATIO:
 			skill_enchant_elemental_end(bl,type);
 			break;
 		case SC_ELEMENTALCHANGE:
@@ -6623,8 +6626,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			break;
 		case SC_RENOVATIO:
 			val4 = tick / 5000;
-			if( val4 < 1 )
-				val4 = 1;
 			tick = 5000;
 			break;
 		case SC_SECRAMENT:

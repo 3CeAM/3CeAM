@@ -432,12 +432,12 @@
 2854,Test_Item_29,Test Item 29,3,10,,10,,,,,,,,,,,,,{},{},{}
 4760,MagicalAttack1%,MATK+1%,6,20,,,,,,,,,,16,,,,,{ bonus bMatkRate,1; bonus bFixCastRate,-1; },{},{}
 4761,MagicalAttack2%,MATK+2%,6,20,,,,,,,,,,16,,,,,{ bonus bMatkRate,2; bonus bFixCastRate,-1; },{},{}
-4762,Test_Item_32,Test Item 32,3,10,,10,,,,,,,,,,,,,{},{},{}
-4763,Test_Item_33,Test Item 33,3,10,,10,,,,,,,,,,,,,{},{},{}
-4764,Test_Item_34,Test Item 34,3,10,,10,,,,,,,,,,,,,{},{},{}
-4765,Test_Item_35,Test Item 35,3,10,,10,,,,,,,,,,,,,{},{},{}
-4766,Test_Item_36,Test Item 36,3,10,,10,,,,,,,,,,,,,{},{},{}
-4767,Test_Item_37,Test Item 37,3,10,,10,,,,,,,,,,,,,{},{},{}
+4762,Flee6,FLEE+6,6,20,,,,,,,,,,16,,,,,{ bonus bFlee,6; },{},{}
+4763,Flee12,FLEE+12,6,20,,,,,,,,,,16,,,,,{ bonus bFlee,12; },{},{}
+4764,Critical5,CRI+5,6,20,,,,,,,,,,16,,,,,{ bonus bCritical,5; },{},{}
+4765,Critical7,CRI+7,6,20,,,,,,,,,,16,,,,,{ bonus bCritical,7; },{},{}
+4766,Attack2%,ATK+2%,6,20,,,,,,,,,,16,,,,,{ bonus bAtkRate,2; },{},{}
+4767,Attack3%,ATK+3%,6,20,,,,,,,,,,16,,,,,{ bonus bAtkRate,3; },{},{}
 5742,Test_Item_38,Test Item 38,3,10,,10,,,,,,,,,,,,,{},{},{}
 6304,Test_Item_39,Test Item 39,3,10,,10,,,,,,,,,,,,,{},{},{}
 6305,Test_Item_40,Test Item 40,3,10,,10,,,,,,,,,,,,,{},{},{}
