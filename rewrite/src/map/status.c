@@ -458,6 +458,7 @@ void initChangeTables(void)
 
 	set_sc( NC_ACCELERATION      , SC_ACCELERATION     , SI_ACCELERATION    , SCB_SPEED );
 	set_sc( NC_HOVERING          , SC_HOVERING         , SI_HOVERING        , SCB_SPEED );
+	set_sc( NC_SHAPESHIFT        , SC_SHAPESHIFT       , SI_SHAPESHIFT      , SCB_DEF_ELE );
 	set_sc( NC_INFRAREDSCAN      , SC_INFRAREDSCAN     , SI_INFRAREDSCAN    , SCB_FLEE );
 	set_sc( NC_ANALYZE           , SC_ANALYZE          , SI_ANALYZE         , SCB_DEF|SCB_DEF2|SCB_MDEF|SCB_MDEF2 );
 
@@ -4442,6 +4443,8 @@ static unsigned char status_calc_element(struct block_list *bl, struct status_ch
 		return ELE_UNDEAD;
 	if(sc->data[SC_ELEMENTALCHANGE])
 		return sc->data[SC_ELEMENTALCHANGE]->val2;
+	if(sc->data[SC_SHAPESHIFT])
+		return sc->data[SC_SHAPESHIFT]->val2;
 	return (unsigned char)cap_value(element,0,UCHAR_MAX);
 }
 
@@ -4460,6 +4463,8 @@ static unsigned char status_calc_element_lv(struct block_list *bl, struct status
 		return 1;
 	if(sc->data[SC_ELEMENTALCHANGE])
 		return sc->data[SC_ELEMENTALCHANGE]->val1;
+	if(sc->data[SC_SHAPESHIFT])
+		return 1;
 	if(sc->data[SC__INVISIBILITY])
 		return 1;
 
@@ -6665,6 +6670,15 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			if( val4 < 1 )
 				val4 = 1;
 			tick = 10000;
+			break;
+		case SC_SHAPESHIFT:
+			switch( val1 )
+			{
+				case 1: val2 = ELE_FIRE; break;
+				case 2: val2 = ELE_EARTH; break;
+				case 3: val2 = ELE_WIND; break;
+				case 4: val2 = ELE_WATER; break;
+			}
 			break;
 		case SC_ELECTRICSHOCKER:
 		case SC_CRYSTALIZE:

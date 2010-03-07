@@ -1297,9 +1297,9 @@
 2394,Krieger_Suit1,Glorious Suit,5,0,,0,,0,,0,0xFFFFFFFE,31,2,16,,81,1,0,{ bonus bMaxHPRate,20; bonus2 bSubRace,RC_DemiHuman,7; if( isequipped(2444) && isequipped(2549) ) { bonus bAtkRate,5; bonus bMatkRate,5; bonus2 bResEff,Eff_Freeze,10000; bonus2 bSkillHeal2,"AM_POTIONPITCHER",3; bonus2 bSkillHeal2,"AL_HEAL",3; bonus2 bSkillHeal2,"PR_SANCTUARY",3; } },{},{}
 2395,Krieger_Suit2,Glorious Popularized Suit,5,0,,0,,0,,0,0xFFFFFFFE,31,2,16,,61,1,0,{ bonus bMaxHP,600; bonus bSPrecovRate,10; },{},{}
 2396,Krieger_Suit3,Glorious Mass-Production Suit,5,0,,0,,0,,0,0xFFFFFFFE,31,2,16,,61,1,0,{ bonus bMaxHP,500; },{},{}
-2397,Incredible_Coat,Incredible Coat,5,0,,900,,2,,0,0xFFFFFFFF,7,2,16,,0,1,0,{},{},{}
-2398,Sniping_Suit_M,Sniping Suit,5,20,,750,,5,,0,0x00000800,2,2,16,,50,1,0,{ bonus bMdef,5; bonus bCritical,6+(readparam(bLuk)/10); bonus bDelayRate,-23; },{},{}
-2399,Dragon_Vest,Dragon Vest,5,0,,500,,3,,1,0xFFFFFFFE,7,2,16,,0,1,0,{ bonus bMdef,3; if(isequipped(2553)) { bonus bAgi,5; bonus bFlee,15; } },{},{}
+2397,Incredible_Coat,Incredible Coat,5,0,,900,,2,,0,0xFFFFFFFF,31,2,16,,0,1,0,{},{},{}
+2398,Sniping_Suit_M,Sniping Suit,5,20,,750,,5,,0,0x00000800,26,2,16,,50,1,0,{ bonus bMdef,5; bonus bCritical,6+(readparam(bLuk)/10); bonus bDelayRate,-23; },{},{}
+2399,Dragon_Vest,Dragon Vest,5,0,,500,,3,,1,0xFFFFFFFE,31,2,16,,0,1,0,{ bonus bMdef,3; if(isequipped(2553)) { bonus bAgi,5; bonus bFlee,15; } },{},{}
 // Footgears
 //===================================================================
 2401,Sandals,Sandals,5,400,,200,,1,,0,0xFFFFFFFF,31,2,64,,0,1,0,{},{},{}

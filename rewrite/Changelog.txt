@@ -6,10 +6,13 @@
 //========================================
 
 03/07/2010
+	r229 [Jobbie]
+	* Added NC_F_SIDESLIDE, NC_B_SIDESLIDE and NC_SHAPESHIFT.
+	* Fix some item inside item_db which is not updated to latest Equippable upper-types.
+
 	r228 [pakpil]
 	* Minor fix in WL_RECOGNIZEDSPELL behavior.
 
-03/07/2010
 	r227 [Jobbie]
 	* Archbishop skills update.
 	- Casting time and Cooldowns was updated based on latest info.
