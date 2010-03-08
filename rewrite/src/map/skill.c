@@ -8450,7 +8450,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		clif_skill_damage(src,src,tick,status_get_amotion(src),0,-30000,1,skillid,skilllv,6);
 		break;
 	
-	case SC_FEINTBOMB:	
+	case SC_FEINTBOMB:
 		{
 			short x = src->x, y = src->y;
 			skill_unitsetting(src,skillid,skilllv,x,y,0);			
@@ -8458,13 +8458,13 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 			switch( unit_getdir(src) )
 			{
 				case 0: y -= 6; break;
-				case 1: x += 3; y -= 3; break;
+				case 1: x += 5; y -= 5; break;
 				case 2: x += 6; break;
-				case 3: x -= 3; y += 3; break;
+				case 3: x -= 5; y += 5; break;
 				case 4: y += 6; break;
-				case 5: x -= 3; y += 3; break;
+				case 5: x -= 5; y += 5; break;
 				case 6: x -= 6; break;
-				case 7: x -= 3; y -= 3; break;
+				case 7: x -= 5; y -= 5; break;
 				default: break;
 			}
 			if( unit_movepos(src, x, y, 1, 1))
@@ -10282,8 +10282,6 @@ int skill_unit_ondamaged (struct skill_unit *src, struct block_list *bl, int dam
 		break;
 	case UNT_WALLOFTHORN:
 		src->val1 -= damage;
-		if( src->val1 < 1 )
-			skill_delunit(src);
 		break;
 	default:
 		damage = 0;
@@ -13148,8 +13146,9 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 			case UNT_ELECTRICSHOCKER:
 			case UNT_CLUSTERBOMB:
 			case UNT_REVERBERATION:
+			case UNT_WALLOFTHORN:
 				if( unit->val1 <= 0 ) {
-					if( (group->unit_id == UNT_ANKLESNARE || group->unit_id == UNT_ELECTRICSHOCKER) && group->val2 > 0 )
+					if( ((group->unit_id == UNT_ANKLESNARE || group->unit_id == UNT_ELECTRICSHOCKER) && group->val2 > 0) || group->unit_id == UNT_WALLOFTHORN )
 						skill_delunit(unit);
 					else {
 						group->unit_id = UNT_USED_TRAPS;
@@ -13930,7 +13929,7 @@ int skill_poisoningweapon( struct map_session_data *sd, int nameid)
 {
 
 	sc_type type;
-	int t_lv = 0, chance;
+	int t_lv = 0, chance, i;
 
 	nullpo_retr(0, sd);
 
@@ -13939,6 +13938,14 @@ int skill_poisoningweapon( struct map_session_data *sd, int nameid)
 		clif_skill_fail(sd, GC_POISONINGWEAPON, 0, 0, 0);
 		return 0;
 	}
+
+	if( (i = pc_search_inventory(sd,nameid)) == -1 )
+	{ // prevent hacking
+		clif_skill_fail(sd, GC_POISONINGWEAPON, 0, 0, 0);
+		return 0;
+	}
+
+	pc_delitem(sd, i, 1, 0);
 
 	switch( nameid )
 	{
@@ -13972,6 +13979,14 @@ int skill_spellbook (struct map_session_data *sd, int nameid)
 
 	if( nameid <= 0 )
 		return 1;
+	
+	if( (i = pc_search_inventory(sd,nameid)) == -1 )
+	{ // prevent hacking
+		clif_skill_fail(sd, WL_READING_SB, 0, 0, 0);
+		return 0;
+	}
+
+	pc_delitem(sd, i, 1, 0);
 
 	switch( nameid )
 	{

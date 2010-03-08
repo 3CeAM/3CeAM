@@ -5,6 +5,12 @@
 // 	- Details.
 //========================================
 
+03/08/2010
+	r230 [pakpil]
+	* Minor fix in SC_FEINTBOMB that was moving to a wrong cell in diagonal.
+	* Fixed crash server in GN_WALLOFTHORN when it received damage.
+	* Fixed GC_POISONINGWEAPON and WL_READING_SB that weren't removing poisons or spellbooks from inventory.
+
 03/07/2010
 	r229 [Jobbie]
 	* Added NC_F_SIDESLIDE, NC_B_SIDESLIDE and NC_SHAPESHIFT.
