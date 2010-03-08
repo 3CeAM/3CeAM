@@ -13980,14 +13980,6 @@ int skill_spellbook (struct map_session_data *sd, int nameid)
 	if( nameid <= 0 )
 		return 1;
 	
-	if( (i = pc_search_inventory(sd,nameid)) == -1 )
-	{ // prevent hacking
-		clif_skill_fail(sd, WL_READING_SB, 0, 0, 0);
-		return 0;
-	}
-
-	pc_delitem(sd, i, 1, 0);
-
 	switch( nameid )
 	{
 		case SB_FIREBOLT: skill = MG_FIREBOLT; break;
