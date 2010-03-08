@@ -6,6 +6,10 @@
 //========================================
 
 03/08/2010
+	r232 [pakpil]
+	* Reverted where WL_READING_SB remove items, sorry was a mistake.
+
+03/08/2010
 	r230 [pakpil]
 	* Minor fix in SC_FEINTBOMB that was moving to a wrong cell in diagonal.
 	* Fixed crash server in GN_WALLOFTHORN when it received damage.
