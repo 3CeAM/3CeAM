@@ -3382,7 +3382,6 @@ int parse_char(int fd)
 			WFIFOSET(fd,5);
 			RFIFOSKIP(fd,32);
 		break;
-
 		// log in as map-server
 		case 0x2af8:
 			if (RFIFOREST(fd) < 60)

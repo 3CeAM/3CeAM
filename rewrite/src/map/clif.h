@@ -196,7 +196,7 @@ int clif_skillinfo(struct map_session_data *sd,int skillid,int type,int range);
 int clif_skillinfoblock(struct map_session_data *sd);
 int clif_skillup(struct map_session_data *sd,int skill_num);
 int clif_addskill(struct map_session_data *sd, int skill);
-int clif_skillinfo_delete(struct map_session_data *sd, int id);
+int clif_deleteskill(struct map_session_data *sd, int skill);
 
 int clif_skillcasting(struct block_list* bl,int src_id,int dst_id,int dst_x,int dst_y,int skill_num,int pl,int casttime);
 int clif_skillcastcancel(struct block_list* bl);
@@ -416,6 +416,7 @@ void clif_quest_delete(struct map_session_data * sd, int quest_id);
 void clif_quest_update_status(struct map_session_data * sd, int quest_id, bool active); 
 void clif_quest_update_objective(struct map_session_data * sd, struct quest * qd, int index); 
 void clif_quest_show_event(struct map_session_data *sd, struct block_list *bl, short state, short color);
+void clif_displayexp(struct map_session_data *sd, int exp, short type, bool gain, short quest);
 
 
 void clif_msgtable(int fd, int line);
@@ -470,7 +471,5 @@ void clif_progressbar_abort(struct map_session_data * sd);
 
 void clif_equip_damaged(struct map_session_data *sd, int equip_index);
 void clif_millenniumshield(struct map_session_data *sd, short shields );
-
-int clif_displayexp(struct map_session_data *sd, int exp, short type, bool gain, short flag);
 
 #endif /* _CLIF_H_ */

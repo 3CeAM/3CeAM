@@ -6,6 +6,9 @@
 //========================================
 
 03/10/2010
+	r237 [pakpil]
+	* Full updated to eAthena revision 14260.
+
 	r236 [pakpil]
 	* Minor update to eAthena revision 14243.
 

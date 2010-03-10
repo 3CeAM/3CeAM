@@ -298,7 +298,6 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 	struct map_session_data *tsd = NULL;
 	struct status_change *sc, *tsc;
 	struct status_change_entry *sce;
-	//struct status_data *status;
 	int div_ = d->div_, flag = d->flag;
 
 	nullpo_retr(0, bl);
@@ -728,9 +727,11 @@ int battle_calc_gvg_damage(struct block_list *src,struct block_list *bl,int dama
 	case NJ_ZENYNAGE:
 		break;
 	default:
-		/*if (md && md->guardian_data) {
+		/* Uncomment if you want god-mode Emperiums at 100 defense. [Kisuka]
+		if (md && md->guardian_data) {
 			damage -= damage * (md->guardian_data->castle->defense/100) * battle_config.castle_defense_rate/100;
-		}*/
+		}
+		*/
 		if (flag & BF_SKILL) { //Skills get a different reduction than non-skills. [Skotlex]
 			if (flag&BF_WEAPON)
 				damage = damage * battle_config.gvg_weapon_damage_rate/100;
@@ -2374,7 +2375,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 						cardfix_=cardfix_*(100+sd->left_weapon.addrace2[t_race2])/100;
 						cardfix_=cardfix_*(100+sd->left_weapon.addrace[is_boss(target)?RC_BOSS:RC_NONBOSS])/100;
 						if( tstatus->race != RC_DEMIHUMAN )
-							cardfix=cardfix*(100+sd->left_weapon.addrace[RC_NONDEMIHUMAN])/100;
+							cardfix_=cardfix_*(100+sd->left_weapon.addrace[RC_NONDEMIHUMAN])/100;
 					}
 				}
 				else

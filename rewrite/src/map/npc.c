@@ -149,7 +149,6 @@ int npc_enable_sub(struct block_list *bl, va_list ap)
 			pc_stop_walking(sd,1);
 			npc_click(sd,nd);
 		}
-
 	}
 	return 0;
 }
@@ -742,14 +741,14 @@ int npc_event(struct map_session_data* sd, const char* eventname, int ontouch)
 {
 	struct event_data* ev = (struct event_data*)strdb_get(ev_db, eventname);
 	struct npc_data *nd;
-	
+
 	nullpo_retr(0,sd);
 
 	if( ev == NULL || (nd = ev->nd) == NULL )
 	{
 		if( !ontouch )
 			ShowError("npc_event: event not found [%s]\n", eventname);
-			return ontouch;
+		return ontouch;
 	}
 
 	switch(ontouch)
@@ -867,14 +866,14 @@ int npc_touch_areanpc(struct map_session_data* sd, int m, int x, int y)
 		case SCRIPT:
 			if( npc_ontouch_event(sd,map[m].npc[i]) > 0 && npc_ontouch2_event(sd,map[m].npc[i]) > 0 )
 			{ // failed to run OnTouch event, so just click the npc
-					struct unit_data *ud = unit_bl2ud(&sd->bl);
-					if( ud && ud->walkpath.path_pos < ud->walkpath.path_len )
-					{ // Since walktimer always == -1 at this time, we stop walking manually. [Inkfish]
-						clif_fixpos(&sd->bl);
-						ud->walkpath.path_pos = ud->walkpath.path_len;
-					}
-					sd->areanpc_id = map[m].npc[i]->bl.id;
-					npc_click(sd,map[m].npc[i]);
+				struct unit_data *ud = unit_bl2ud(&sd->bl);
+				if( ud && ud->walkpath.path_pos < ud->walkpath.path_len )
+				{ // Since walktimer always == -1 at this time, we stop walking manually. [Inkfish]
+					clif_fixpos(&sd->bl);
+					ud->walkpath.path_pos = ud->walkpath.path_len;
+				}
+				sd->areanpc_id = map[m].npc[i]->bl.id;
+				npc_click(sd,map[m].npc[i]);
 			}
 			break;
 	}
@@ -2622,7 +2621,7 @@ static const char* npc_parse_mob(char* w1, char* w2, char* w3, char* w4, const c
 		return strchr(start,'\n');// skip and continue
 	}
 	m =  map_mapname2mapid(mapname);
-	if( m < 0 )//Not loaded on this map-server instance. instance.
+	if( m < 0 )//Not loaded on this map-server instance.
 		return strchr(start,'\n');// skip and continue
 	mob.m = (unsigned short)m;
 

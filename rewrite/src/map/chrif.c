@@ -928,7 +928,7 @@ int chrif_deadopt(int father_id, int mother_id, int child_id)
 		sd->status.skill[WE_CALLBABY].id = 0;
 		sd->status.skill[WE_CALLBABY].lv = 0;
 		sd->status.skill[WE_CALLBABY].flag = 0;
-		clif_skillinfo_delete(sd,WE_CALLBABY);
+		clif_deleteskill(sd,WE_CALLBABY);
 	}
 
 	if( mother_id && (sd = map_charid2sd(mother_id)) != NULL && sd->status.child == child_id )
@@ -937,7 +937,7 @@ int chrif_deadopt(int father_id, int mother_id, int child_id)
 		sd->status.skill[WE_CALLBABY].id = 0;
 		sd->status.skill[WE_CALLBABY].lv = 0;
 		sd->status.skill[WE_CALLBABY].flag = 0;
-		clif_skillinfo_delete(sd,WE_CALLBABY);
+		clif_deleteskill(sd,WE_CALLBABY);
 	}
 
 	return 0;
@@ -1062,14 +1062,10 @@ int chrif_updatefamelist(struct map_session_data* sd)
 	char type;
 	chrif_check(-1);
 
-	switch( sd->class_&MAPID_UPPERMASK )
+	switch(sd->class_ & MAPID_UPPERMASK)
 	{
-		case MAPID_BLACKSMITH:
-			type = 1;
-			break;
-		case MAPID_ALCHEMIST:
-			type = 2;
-			break;
+		case MAPID_BLACKSMITH: type = 1; break;
+		case MAPID_ALCHEMIST:  type = 2; break;
 		case MAPID_TAEKWON:    type = 3; break;
 		default:
 			return 0;
@@ -1505,13 +1501,7 @@ int send_users_tochar(void)
 
 	chrif_check(-1);
 
-	// get user count (TODO: improve this)
-	iter = mapit_getallusers();
-	for( mapit_first(iter); mapit_exists(iter); mapit_next(iter) )
-		users++;
-	mapit_free(iter);
-
-	// build the packet
+	users = map_usercount();
 	WFIFOHEAD(char_fd, 6+8*users);
 	WFIFOW(char_fd,0) = 0x2aff;
 	iter = mapit_getallusers();

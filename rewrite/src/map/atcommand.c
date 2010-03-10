@@ -3779,7 +3779,7 @@ int atcommand_lostskill(const int fd, struct map_session_data* sd, const char* c
 
 	sd->status.skill[skill_id].lv = 0;
 	sd->status.skill[skill_id].flag = 0;
-	clif_skillinfo_delete(sd,skill_id);
+	clif_deleteskill(sd,skill_id);
 	clif_displaymessage(fd, msg_txt(71)); // You have forgotten the skill.
 
 	return 0;
