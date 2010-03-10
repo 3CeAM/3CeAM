@@ -6,6 +6,9 @@
 //========================================
 
 03/10/2010
+	r236 [pakpil]
+	* Minor update to eAthena revision 14243.
+
 	r235 [pakpil]
 	* Rewrited WL_READING_SB and WL_RELEASE improving and adjusting its behavior to the official one.
 	- Should use status changes instead arrays in map_session_data.
