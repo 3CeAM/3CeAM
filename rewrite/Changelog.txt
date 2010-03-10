@@ -6,6 +6,9 @@
 //========================================
 
 03/10/2010
+	r238 [pakpil]
+	*Added missing files in r237
+
 	r237 [pakpil]
 	* Full updated to eAthena revision 14260.
 
