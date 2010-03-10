@@ -1447,7 +1447,7 @@ packet_ver: 25
 //0x07fe,26
 //0x07ff,-1
 
-//2009-12-08aRagexeRE
+//2010-01-05aRagexeRE
 0x0800,-1
 0x0801,-1,purchasereq2,2:4:8:12
 

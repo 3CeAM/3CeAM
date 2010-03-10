@@ -393,10 +393,6 @@ struct map_session_data {
 	struct quest quest_log[MAX_QUEST_DB];
 	bool save_quest;
 
-	// Warlock Spellbooks [LimitLine]
-	short rsb_used;
-	int rsb_id[10];
-
 	// temporary debug [flaviojs]
 	const char* debug_file;
 	int debug_line;

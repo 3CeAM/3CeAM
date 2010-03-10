@@ -18,7 +18,7 @@ struct status_change_entry;
 #define MAX_SKILL_ARROW_DB		150
 #define MAX_ARROW_RESOURCE		5
 #define MAX_SKILL_ABRA_DB		350
-#define MAX_SKILL_SPELLBOOK_DB	MAX_SKILL
+#define MAX_SKILL_SPELLBOOK_DB	17
 #define MAX_SKILL_IMPROVISE_DB 50
 #define MAX_SKILL_MAGICMUSHROOM_DB 22
 
@@ -212,6 +212,7 @@ struct s_skill_abra_db {
 extern struct s_skill_abra_db skill_abra_db[MAX_SKILL_ABRA_DB];
 
 struct s_skill_spellbook_db {
+	int skillid;
 	int points;
 };
 extern struct s_skill_spellbook_db skill_spellbook_db[MAX_SKILL_SPELLBOOK_DB];

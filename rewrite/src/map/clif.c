@@ -2986,7 +2986,7 @@ int clif_spellbook_list(struct map_session_data *sd)
 
 	fd = sd->fd;
 	WFIFOHEAD(fd, 8 * 8 + 8);
-	WFIFOW(fd,0) = 0x1ad;	// This is the official packet. [pakpil]
+	WFIFOW(fd,0) = 0x1ad;
 
 	for( i = 0, c = 0; i < MAX_INVENTORY; i ++ )
 	{
