@@ -1301,7 +1301,6 @@ static void pc_check_skilltree(struct map_session_data *sd, int skill)
 		return;
 	}
 	c = pc_class2idx(c);
-
 	do {
 		flag = 0;
 		for( i = 0; i < MAX_SKILL_TREE && (id=skill_tree[c][i].id)>0; i++ )
@@ -2999,13 +2998,12 @@ int pc_skill(TBL_PC* sd, int id, int level, int flag)
 		if( !level ) //Remove skill.
 		{
 			sd->status.skill[id].id = 0;
-			clif_skillinfo_delete(sd,id);
+			clif_deleteskill(sd,id);
 		}
 		else
 			clif_addskill(sd,id);
 		if( !skill_get_inf(id) ) //Only recalculate for passive skills.
 			status_calc_pc(sd, 0);
-		//(level) ? clif_addskill(sd,id) : clif_skillinfo_delete(sd,id);
 	break;
 	case 1: //Item bonus skill.
 		if( sd->status.skill[id].id == id ){
@@ -3587,7 +3585,7 @@ int pc_isUseitem(struct map_session_data *sd,int n)
 
 	//Not equipable by class. [Skotlex]
 	if (!(
-		(1<<(sd->class_&MAPID_THIRDMASK)) & // Need check if it's necesary [pakpil]
+		(1<<(sd->class_&MAPID_BASEMASK)) &
 		(item->class_base[sd->class_&JOBL_2_1?1:(sd->class_&JOBL_2_2?2:0)])
 	))
 		return 0;
@@ -4988,7 +4986,7 @@ static void pc_calcexp(struct map_session_data *sd, unsigned int *base_exp, unsi
 /*==========================================
  * ??’lŽæ“¾
  *------------------------------------------*/
-int pc_gainexp(struct map_session_data *sd, struct block_list *src, unsigned int base_exp,unsigned int job_exp, short type)
+int pc_gainexp(struct map_session_data *sd, struct block_list *src, unsigned int base_exp,unsigned int job_exp, bool quest)
 {
 #if PACKETVER < 20091027
 	char output[256];
@@ -5042,7 +5040,7 @@ int pc_gainexp(struct map_session_data *sd, struct block_list *src, unsigned int
 			sd->status.base_exp += base_exp;
 		pc_checkbaselevelup(sd);
 #if PACKETVER >= 20091027
-		clif_displayexp(sd,base_exp,1,true,type);
+		clif_displayexp(sd,base_exp,1,true,quest);
 #endif
 		clif_updatestatus(sd,SP_BASEEXP);
 	}
@@ -5055,7 +5053,7 @@ int pc_gainexp(struct map_session_data *sd, struct block_list *src, unsigned int
 			sd->status.job_exp += job_exp;
 		pc_checkjoblevelup(sd);
 #if PACKETVER >= 20091027
-		clif_displayexp(sd,job_exp,2,true,type);
+		clif_displayexp(sd,job_exp,2,true,quest);
 #endif
 		clif_updatestatus(sd,SP_JOBEXP);
 	}
@@ -5327,6 +5325,7 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 		//available to the current job tab instead clif_skillinfoblock. [pakpil]
 		clif_skillinfoblock(sd);
 	}
+
 	return 0;
 }
 
@@ -6444,7 +6443,7 @@ int pc_jobchange(struct map_session_data *sd,int job, int upper)
 		pc_setoption(sd,sd->sc.option&~OPTION_MADO);
 	
 	sd->status.class_ = job;
-	fame_flag = pc_famerank(sd->status.char_id,sd->class_&MAPID_THIRDMASK);
+	fame_flag = pc_famerank(sd->status.char_id,sd->class_&MAPID_UPPERMASK);
 	sd->class_ = (unsigned short)b_class;
 	sd->status.job_level=1;
 	sd->status.job_exp=0;

@@ -4432,40 +4432,40 @@ int clif_skillinfoblock(struct map_session_data *sd)
 	return 1;
 }
 
-int clif_addskill(struct map_session_data *sd, int skill )
+int clif_addskill(struct map_session_data *sd, int id )
 {
-	int fd, id;
+	int fd;
 
 	nullpo_retr(0, sd);
 
 	fd = sd->fd;
 	if (!fd) return 0;
 
-	if( (id = sd->status.skill[skill].id) <= 0 )
+	if( sd->status.skill[id].id <= 0 )
 		return 0;
 
 	WFIFOHEAD(fd, packet_len(0x111));
 	WFIFOW(fd,0) = 0x111;
-	WFIFOW(fd,2) = skill;
+	WFIFOW(fd,2) = id;
 	if( (id == MO_EXTREMITYFIST && sd->state.combo&1) || (id == TK_JUMPKICK && sd->state.combo&2) )
 		WFIFOW(fd,4) = INF_SELF_SKILL;
 	else
 		WFIFOW(fd,4) = skill_get_inf(id);
-	WFIFOW(fd,6) = 0;
+ 	WFIFOW(fd,6) = 0;
 	WFIFOW(fd,8) = sd->status.skill[id].lv;
-	WFIFOW(fd,10) = skill_get_sp(id,sd->status.skill[skill].lv);
-	WFIFOW(fd,12)= skill_get_range2(&sd->bl, id,sd->status.skill[skill].lv);
-	safestrncpy((char*)WFIFOP(fd,14), skill_get_name(id), NAME_LENGTH);
-	if( sd->status.skill[skill].flag == 0 )
-		WFIFOB(fd,38) = (sd->status.skill[skill].lv < skill_tree_get_max(id, sd->status.class_))? 1:0;
-	else
-		WFIFOB(fd,38) = 0;
-	WFIFOSET(fd,packet_len(0x111));
+	WFIFOW(fd,10) = skill_get_sp(id,sd->status.skill[id].lv);
+    WFIFOW(fd,12)= skill_get_range2(&sd->bl, id,sd->status.skill[id].lv);
+    safestrncpy((char*)WFIFOP(fd,14), skill_get_name(id), NAME_LENGTH);
+    if( sd->status.skill[id].flag == 0 )
+        WFIFOB(fd,38) = (sd->status.skill[id].lv < skill_tree_get_max(id, sd->status.class_))? 1:0;
+    else
+        WFIFOB(fd,38) = 0;
+    WFIFOSET(fd,packet_len(0x111));
 
-	return 1;
+    return 1;
 }
 
-int clif_skillinfo_delete(struct map_session_data *sd, int id)
+int clif_deleteskill(struct map_session_data *sd, int id)
 {
 #if PACKETVER >= 20081217
 	int fd;
@@ -5844,6 +5844,7 @@ void clif_closevendingboard(struct block_list* bl, int fd)
 /*==========================================
  * Sends a list of items in a shop
  * R 0133 <len>.w <ID>.l {<value>.l <amount>.w <index>.w <type>.B <item ID>.w <identify flag>.B <attribute?>.B <refine>.B <card>.4w}.22B
+ * R 0800 <len>.w <ID>.l <CID>.l  {<value>.l <amount>.w <index>.w <type>.B <item ID>.w <identify flag>.B <attribute?>.B <refine>.B <card>.4w}.22B
  *------------------------------------------*/
 void clif_vendinglist(struct map_session_data* sd, int id, struct s_vending* vending)
 {
@@ -6974,7 +6975,7 @@ int clif_guild_memberlist(struct map_session_data *sd)
 		WFIFOW(fd,c*104+16)=m->gender;
 		WFIFOW(fd,c*104+18)=m->class_;
 		WFIFOW(fd,c*104+20)=m->lv;
-		WFIFOL(fd,c*104+22)=cap_value(m->exp,0,INT_MAX);
+		WFIFOL(fd,c*104+22)=(int)cap_value(m->exp,0,INT_MAX);
 		WFIFOL(fd,c*104+26)=m->online;
 		WFIFOL(fd,c*104+30)=m->position;
 		memset(WFIFOP(fd,c*104+34),0,50);	// ÉÅÉÇÅH
@@ -11331,9 +11332,6 @@ void clif_parse_GMKick(int fd, struct map_session_data *sd)
 	if( battle_config.atc_gmonly && !pc_isGM(sd) )
 		return;
 
-	if( pc_isGM(sd) < (lv=get_atcommand_level(atcommand_kick)) )
-		return;
-
 	tid = RFIFOL(fd,2);
 	target = map_id2bl(tid);
 	if (!target) {
@@ -11345,7 +11343,15 @@ void clif_parse_GMKick(int fd, struct map_session_data *sd)
 	case BL_PC:
 	{
 		struct map_session_data *tsd = (struct map_session_data *)target;
-		if (pc_isGM(sd) <= pc_isGM(tsd)) {
+		if (pc_isGM(sd) <= pc_isGM(tsd))
+		{
+			clif_GM_kickack(sd, 0);
+			return;
+		}
+
+		lv = get_atcommand_level(atcommand_kick);
+		if( pc_isGM(sd) < lv )
+		{
 			clif_GM_kickack(sd, 0);
 			return;
 		}
@@ -11361,6 +11367,12 @@ void clif_parse_GMKick(int fd, struct map_session_data *sd)
 	break;
 	case BL_MOB:
 	{
+		lv = get_atcommand_level(atcommand_killmonster);
+		if( pc_isGM(sd) < lv )
+		{
+			clif_GM_kickack(sd, 0);
+			return;
+		}
 		if(log_config.gm && lv >= log_config.gm) {
 			char message[256];
 			sprintf(message, "/kick %s (%d)", status_get_name(target), status_get_class(target));
@@ -11375,7 +11387,10 @@ void clif_parse_GMKick(int fd, struct map_session_data *sd)
 		struct npc_data* nd = (struct npc_data *)target;
 		lv = get_atcommand_level(atcommand_unloadnpc);
 		if( pc_isGM(sd) < lv )
+		{
+			clif_GM_kickack(sd, 0);
 			return;
+		}
 
 		if( log_config.gm && lv >= log_config.gm ) {
 			char message[256];
@@ -13864,10 +13879,8 @@ void clif_party_show_picker(struct map_session_data * sd, struct item * item_dat
 	WBUFW(buf,13) = item_data->card[1];
 	WBUFW(buf,15) = item_data->card[2];
 	WBUFW(buf,17) = item_data->card[3];
-	//Unknown
-	//WBUFB(buf,19) = 0;
-	//WBUFB(buf,20) = 0;
-	//WBUFB(buf,21) = 0;
+	//WBUFW(buf,19) = 0; // equip location? 32+2 for left/right hand, 0x8000 for 'throw' (verify this)
+	//WBUFB(buf,21) = 0; // item type
 	clif_send(buf, packet_len(0x2b8), &sd->bl, PARTY_SAMEMAP_WOS);
 #endif
 }
@@ -13903,12 +13916,12 @@ void clif_millenniumshield(struct map_session_data *sd, short shields )
  * type: 1 = base_exp, 2 = job_exp.
  * flag: 0 = normal exp, 1 = quest exp.
  *-----------------------------------------*/
-int clif_displayexp(struct map_session_data *sd, int exp, short type, bool gain, short flag)
+void clif_displayexp(struct map_session_data *sd, int exp, short type, bool gain, short quest)
 {
 #if PACKETVER >= 20091027
 	int fd;
 
-	nullpo_retr(0, sd);
+	nullpo_retv(sd);
 
 	fd = sd->fd;
 	if( !gain )
@@ -13918,10 +13931,10 @@ int clif_displayexp(struct map_session_data *sd, int exp, short type, bool gain,
 	WFIFOL(fd,2) = sd->bl.id;
 	WFIFOL(fd,6) = exp;
 	WFIFOW(fd,10) = type; // 1: base exp, 2: job exp
-	WFIFOW(fd,12) = (flag)?1:0;// Current exp is shown in yellow, quest exp is shown in purple.
+	WFIFOW(fd,12) = quest?1:0;// Normal exp is shown in yellow, quest exp is shown in purple.
 	WFIFOSET(fd,packet_len(0x7f6));
 #endif
-	return 0;
+    return;
 }
 
 /*==========================================

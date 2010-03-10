@@ -179,15 +179,6 @@ int map_getusers(void)
  *------------------------------------------*/
 int map_usercount(void)
 {
-/*
-	int count = 0;
-	struct s_mapiterator* iter = mapit_getallusers();
-	for( mapit_first(iter); mapit_exists(iter); mapit_next(iter) )
-		count++;
-	mapit_free(iter);
-	return count;
-*/
-	// since pc_db now only holds fully authed players, this approach is equivalent:
 	return pc_db->size(pc_db);
 }
 
@@ -3625,10 +3616,10 @@ void map_helpscreen(int flag)
  *------------------------------------------------------*/
 void map_versionscreen(int flag)
 {
-	ShowInfo(CL_WHITE "eAthena version %d.%02d.%02d, Athena Mod version %d" CL_RESET"\n",				
+	ShowInfo(CL_WHITE "eAthena version %d.%02d.%02d, Athena Mod version %d" CL_RESET"\n",
 		ATHENA_MAJOR_VERSION, ATHENA_MINOR_VERSION, ATHENA_REVISION,
 		ATHENA_MOD_VERSION);
-	ShowInfo(CL_GREEN "Website/Forum:" CL_RESET "\thttp://eathena.deltaanime.net/\n"); 
+	ShowInfo(CL_GREEN "Website/Forum:" CL_RESET "\thttp://eathena.deltaanime.net/\n");
 	ShowInfo(CL_GREEN "IRC Channel:" CL_RESET "\tirc://irc.deltaanime.net/#athena\n");
 	ShowInfo("\nOpen " CL_WHITE "readme.html" CL_RESET " for more information.");
 	if (ATHENA_RELEASE_FLAG) ShowNotice("This version is not for release.\n");

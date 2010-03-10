@@ -318,7 +318,7 @@ void initChangeTables(void)
 	set_sc( TK_READYTURN         , SC_READYTURN       , SI_READYTURN       , SCB_NONE );
 	set_sc( TK_READYCOUNTER      , SC_READYCOUNTER    , SI_READYCOUNTER    , SCB_NONE );
 	set_sc( TK_DODGE             , SC_DODGE           , SI_DODGE           , SCB_NONE );
-	add_sc( TK_SPTIME            , SC_EARTHSCROLL );
+	set_sc( TK_SPTIME            , SC_EARTHSCROLL     , SI_EARTHSCROLL     , SCB_NONE );
 	add_sc( TK_SEVENWIND         , SC_SEVENWIND ); 
 	set_sc( TK_SEVENWIND         , SC_GHOSTWEAPON     , SI_GHOSTWEAPON     , SCB_ATK_ELE ); 
 	set_sc( TK_SEVENWIND         , SC_SHADOWWEAPON    , SI_SHADOWWEAPON    , SCB_ATK_ELE ); 
@@ -1590,7 +1590,6 @@ int status_calc_mob_(struct mob_data* md, bool first)
 
 	if (md->guardian_data && md->guardian_data->guardup_lv)
 		flag|=4;
-
 	if (md->class_ == MOBID_EMPERIUM)
 		flag|=4;
 
@@ -7104,7 +7103,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		clif_status_change(bl,StatusIconChangeTable[type],1,duration,(val_flag&1)?val1:1,(val_flag&2)?val2:0,(val_flag&4)?val3:0);
 	else if( sd ) //Send packet to self otherwise (disguised player?)
 		clif_status_load(bl,StatusIconChangeTable[type],1);
-	
+
 	//Don't trust the previous sce assignment, in case the SC ended somewhere between there and here.
 	if((sce=sc->data[type]))
 	{// reuse old sc
@@ -7168,7 +7167,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	}
 
 	if( opt_flag&2 && sd && sd->touching_id )
-		npc_touchnext_areanpc(sd,false);
+		npc_touchnext_areanpc(sd,false); // run OnTouch_ on next char in range
 
 	return 1;
 }
@@ -7948,7 +7947,7 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		break;
 
 	case SC_POISON:
-		if(status->hp <= status->max_hp>>2) //Stop damaging after 25% HP left.
+		if(status->hp <= max(status->max_hp>>2, sce->val4)) //Stop damaging after 25% HP left.
 			break;
 	case SC_DPOISON:
 		if (--(sce->val3) > 0) {
@@ -7993,7 +7992,7 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 			if( !flag ) {
 				if( status->hp == 1 ) break;
 				sc_timer_next(10000 + tick, status_change_timer, bl->id, data);
-			} 
+			}
 			return 0;
 		}
 		break;
