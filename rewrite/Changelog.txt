@@ -5,11 +5,16 @@
 // 	- Details.
 //========================================
 
+03/10/2010
+	r235 [pakpil]
+	* Rewrited WL_READING_SB and WL_RELEASE improving and adjusting its behavior to the official one.
+	- Should use status changes instead arrays in map_session_data.
+	- Reduced MAX_SKILL_SPELLBOOK_DB to the real ammount of currently available spellbooks, 17.
+
 03/08/2010
 	r232 [pakpil]
 	* Reverted where WL_READING_SB remove items, sorry was a mistake.
 
-03/08/2010
 	r230 [pakpil]
 	* Minor fix in SC_FEINTBOMB that was moving to a wrong cell in diagonal.
 	* Fixed crash server in GN_WALLOFTHORN when it received damage.

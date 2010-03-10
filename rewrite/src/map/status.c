@@ -6663,13 +6663,14 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			tick = 1000;
 			val_flag |= 1;
 			break;
-		case SC_FREEZINGSPELL:
-			if( !sd )
-				return 0;	// Should only work on players.
-			val4 = tick / 10000;
-			if( val4 < 1 )
-				val4 = 1;
-			tick = 10000;
+		case SC_READING_SB_1:
+		case SC_READING_SB_2:
+		case SC_READING_SB_3:
+		case SC_READING_SB_4:
+		case SC_READING_SB_5:
+		case SC_READING_SB_6:
+		case SC_READING_SB_7:
+			val_flag |= 1|2|4;
 			break;
 		case SC_SHAPESHIFT:
 			switch( val1 )
@@ -7584,15 +7585,6 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 			clif_damage(bl, bl, 0, 0, 0, sce->val1 * 400, 0, 0, 0);
 			status_zap(bl, sce->val1 * 400, 0);
 			break;
-		case SC_FREEZINGSPELL:
-			if( sd )
-			{
-				int i = 0;
-				sd->rsb_used = 0;
-				for( i = 0; i < 10; i ++ )
-					sd->rsb_id[i] = 0;
-			}
-			break;
 		case SC_WUGDASH:
 			{
 				struct unit_data *ud = unit_bl2ud(bl);
@@ -8374,16 +8366,6 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 			if( !status_charge(bl, 0, 1) )
 				break;
 			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
-			return 0;
-		}
-		break;
-
-	case SC_FREEZINGSPELL:
-		if( --(sce->val4) >= 0 && sd )
-		{
-			if( !sd->rsb_used || !status_charge(bl, 0, sd->rsb_used) )
-				break;
-			sc_timer_next(10000 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}
 		break;

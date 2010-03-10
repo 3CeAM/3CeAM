@@ -436,6 +436,14 @@ typedef enum sc_type {
 	SC_HALLUCINATIONWALK,
 	SC_HALLUCINATIONWALK_POSTDELAY,
 
+	SC_READING_SB_1,
+	SC_READING_SB_2,
+	SC_READING_SB_3,
+	SC_READING_SB_4,
+	SC_READING_SB_5,
+	SC_READING_SB_6,
+	SC_READING_SB_7,
+
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
 
@@ -917,7 +925,13 @@ enum si_type {
 //	SI_LIMIT_ODINS_RECALL =  475,
 //	SI_STOMACHACHE =  476,
 // 477 - 489
-	SI_VACUUM_EXTREME = 490
+	SI_VACUUM_EXTREME = 490,
+
+
+	SI_READING_SB_4 = 499,
+	SI_READING_SB_5 = 500,
+	SI_READING_SB_6 = 501,
+	SI_READING_SB_7 = 502,
 };
 
 enum wl_spheres {

@@ -30,13 +30,15 @@
 // 20081218 - 2008-12-17bRagexeRE+ - 0x6d (Note: From this one client use new Char Info Packet Structure)
 // 20090603 - 2009-06-03aRagexeRE+ - 0x7d7, 0x7d8, 0x7d9, 0x7da
 // 20090617 - 2009-06-17aRagexeRE+ - 0x7d9
+// 20090805 - 2009-08-05aRagexeRE+ - 0x7e2
 // 20090922 - 2009-09-22aRagexeRE+ - 0x7e5, 0x7e7, 0x7e8, 0x7e9
+// 20091027 - 2009-10-27aRagexeRE+ - 0x7f6
 // 20091103 - 2009-11-03aRagexeRE+ - 0x7f7, 0x7f8, 0x7f9, 0x7fb
 // 20100105 - 2010-01-05aRagexeRE+ - 0x800, 0x801
 // 20100217 - 2010-02-17aRagexeRE+ - 0xf4 -> 0x1c4 (guildsotrage)
 // 20100223 - 2010-02-23aRagexeRE+ - 0x80f
 #ifndef PACKETVER
-	//#define PACKETVER	20090922
+	//#define PACKETVER	20081126
 	#define PACKETVER 20100223
 #endif
 // backward compatible PACKETVER 8 and 9
