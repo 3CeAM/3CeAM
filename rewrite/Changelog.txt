@@ -5,6 +5,11 @@
 // 	- Details.
 //========================================
 
+03/11/2010
+	r241 [pakpil]
+	* Added missing sc check in GC_POISONINGWEAPON.
+	* Fixed an issue in WM_REVERBERATION where these should get 1 damage like plants.
+
 03/10/2010
 	r238 [pakpil]
 	*Added missing files in r237

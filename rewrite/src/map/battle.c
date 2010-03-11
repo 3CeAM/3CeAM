@@ -591,7 +591,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			damage += damage * 75 / 100;
 	}
 
-	if( sc->data[SC_POISONINGWEAPON] && (flag&BF_WEAPON) && damage > 0)
+	if( sc && sc->data[SC_POISONINGWEAPON] && (flag&BF_WEAPON) && damage > 0)
 	{
 		if( rand()%100 < sc->data[SC_POISONINGWEAPON]->val3 )
 		{
@@ -1071,7 +1071,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 	//Initial flag
 	flag.rh=1;
 	flag.weapon=1;
-	flag.infdef=(tstatus->mode&MD_PLANT?1:0);
+	flag.infdef=((tstatus->mode&MD_PLANT || (target->type == BL_SKILL && ((TBL_SKILL*)target)->group->skill_id==WM_REVERBERATION))?1:0);
 
 	//Initial Values
 	wd.type=0; //Normal attack
