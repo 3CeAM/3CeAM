@@ -9187,6 +9187,9 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 			if (val1 < 1) val1 = 1;
 			val2 = 0;
 			break;
+		case WM_REVERBERATION:
+			val1 = 1;
+			break;
 		case GN_WALLOFTHORN:
 			val1 = 1000 * skilllv;	// Need official value. [LimitLine]
 			val2 = src->id;
@@ -10326,16 +10329,14 @@ int skill_unit_ondamaged (struct skill_unit *src, struct block_list *bl, int dam
 	case UNT_TALKIEBOX:
 	case UNT_ANKLESNARE:
 	case UNT_ICEWALL:
+	case UNT_REVERBERATION:
+	case UNT_WALLOFTHORN:
 		src->val1-=damage;
 		break;
 	case UNT_BLASTMINE:
 	case UNT_CLAYMORETRAP:
 		skill_blown(bl, &src->bl, 2, -1, 0);
 		break;
-	case UNT_REVERBERATION:
-		src->val1 = 0;
-		break;
-	case UNT_WALLOFTHORN:
 		src->val1 -= damage;
 		break;
 	default:
@@ -13200,7 +13201,6 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 			case UNT_ANKLESNARE:
 			case UNT_ELECTRICSHOCKER:
 			case UNT_CLUSTERBOMB:
-			case UNT_REVERBERATION:
 			case UNT_WALLOFTHORN:
 				if( unit->val1 <= 0 ) {
 					if( ((group->unit_id == UNT_ANKLESNARE || group->unit_id == UNT_ELECTRICSHOCKER) && group->val2 > 0) || group->unit_id == UNT_WALLOFTHORN )
@@ -13210,6 +13210,10 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 						group->limit = DIFF_TICK(tick, group->tick) + 1500;
 					}
 				}
+				break;			
+			case UNT_REVERBERATION:
+				if( unit->val1 <= 0 )
+					unit->limit = DIFF_TICK(tick+700,group->tick);
 				break;
 		}
 	}
