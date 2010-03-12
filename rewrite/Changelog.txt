@@ -6,6 +6,9 @@
 //========================================
 
 03/12/2010
+	r244 [pakpil]
+	* Minor fix in LG_FORCEOFVANGUARD where should add rage with physical attacks only.
+
 	r243 [pakpil]
 	* Added LG_FORCEOFVANGUARD and LG_RAGEBURST skills.
 	- Added similar funtions to those used with Monk's spirit spheres to hadle LG_FORCEOFVANGUARD since these skills have same behavior and you can get both at a time.
