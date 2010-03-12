@@ -574,6 +574,9 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 		if ((sce=sc->data[SC_BLOODLUST]) && flag&BF_WEAPON && damage > 0 &&
 			rand()%100 < sce->val3)
 			status_heal(src, damage*sce->val4/100, 0, 3);
+
+		if( (tsd = BL_CAST(BL_PC,bl)) != NULL && (sce = sc->data[SC_FORCEOFVANGUARD]) && rand()%100 < sce->val2 )
+			pc_addrageball(tsd,skill_get_time(LG_FORCEOFVANGUARD,sce->val1),sce->val3);
 	}
 
 	if( sc && sc->data[SC__DEADLYINFECT] && damage > 0 )
@@ -1394,6 +1397,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 			case GN_CARTCANNON:
 				if( sd && pc_checkskill(sd, GN_REMODELING_CART) )
 					hitrate += hitrate * (pc_checkskill(sd, GN_REMODELING_CART) * 4) / 100;
+				break;
 			case GC_VENOMPRESSURE:
 				hitrate += 10 + 4 * skill_lv;
 				break;
@@ -2004,6 +2008,10 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					break;
 				case SC_FEINTBOMB:
 					skillratio += 100 + 100 * skill_lv;
+					break;
+				case LG_RAGEBURST:
+					if( sd && sd->rageball_old )
+						skillratio = sd->rageball_old * 200 * status_get_lv(src) / 100;
 					break;
 				case WM_METALICSOUND:
 					skillratio += 450 + (50 * skill_lv);

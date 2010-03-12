@@ -444,6 +444,9 @@ typedef enum sc_type {
 	SC_READING_SB_6,
 	SC_READING_SB_7,
 
+	SC_REFLECTDAMAGE,
+	SC_FORCEOFVANGUARD,
+
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
 

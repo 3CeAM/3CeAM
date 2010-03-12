@@ -226,6 +226,103 @@ int pc_delspiritball(struct map_session_data *sd,int count,int type)
 	return 0;
 }
 
+
+static int pc_rageball_timer(int tid, unsigned int tick, int id, intptr data)
+{
+	struct map_session_data *sd;
+	int i;
+
+	if( (sd=(struct map_session_data *)map_id2sd(id)) == NULL || sd->bl.type!=BL_PC )
+		return 1;
+
+	if( sd->rageball <= 0 )
+	{
+		ShowError("pc_spiritball_timer: %d spiritball's available. (aid=%d cid=%d tid=%d)\n", sd->spiritball, sd->status.account_id, sd->status.char_id, tid);
+		sd->rageball = 0;
+		return 0;
+	}
+
+	ARR_FIND(0, sd->rageball, i, sd->rage_timer[i] == tid);
+	if( i == sd->rageball )
+	{
+		ShowError("pc_rageball_timer: timer not found (aid=%d cid=%d tid=%d)\n", sd->status.account_id, sd->status.char_id, tid);
+		return 0;
+	}
+
+	sd->rageball--;
+	if( i != sd->rageball )
+		memmove(sd->rage_timer+i, sd->rage_timer+i+1, (sd->rageball-i)*sizeof(int));
+	sd->rage_timer[sd->rageball] = INVALID_TIMER;
+
+	clif_millenniumshield(sd, sd->rageball);
+
+	return 0;
+}
+
+int pc_addrageball(struct map_session_data *sd,int interval, int max)
+{
+	int tid, i;
+
+	nullpo_retr(0, sd);
+
+	if(max > MAX_RAGE)
+		max = MAX_RAGE;
+	if(sd->rageball < 0)
+		sd->rageball = 0;
+
+	if( sd->rageball && sd->rageball >= max )
+		return 0;
+
+	tid = add_timer(gettick()+interval, pc_rageball_timer, sd->bl.id, 0);
+	ARR_FIND(0, sd->rageball, i, sd->rage_timer[i] == INVALID_TIMER || DIFF_TICK(get_timer(tid)->tick, get_timer(sd->rage_timer[i])->tick) < 0);
+	if( i != sd->rageball )
+		memmove(sd->rage_timer+i+1, sd->rage_timer+i, (sd->rageball-i)*sizeof(int));
+	sd->rage_timer[i] = tid;
+	sd->rageball++;
+	clif_millenniumshield(sd,sd->rageball);
+
+	return 0;
+}
+
+int pc_delrageball(struct map_session_data *sd,int count)
+{
+	int i;
+
+	nullpo_retr(0, sd);
+
+	if( sd->rageball <= 0 )
+	{
+		sd->rageball = 0;
+		return 0;
+	}
+
+	if( count <= 0 )
+		return 0;
+	if( count > sd->rageball )
+		count = sd->rageball;
+	sd->rageball -= count;
+	if( count > MAX_RAGE )
+		count = MAX_RAGE;
+
+	for( i = 0; i < count; i++ )
+	{
+		if( sd->rage_timer[i] != -1 )
+		{
+			delete_timer(sd->rage_timer[i],pc_rageball_timer);
+			sd->rage_timer[i] = -1;
+		}
+	}
+	for( i = count; i < MAX_RAGE; i++ ) {
+		sd->rage_timer[i-count] = sd->rage_timer[i];
+		sd->rage_timer[i] = -1;
+	}
+
+	clif_millenniumshield(sd, sd->rageball);
+
+	return 0;
+}
+
+
 // Increases a player's fame points and displays a notice to him
 void pc_addfame(struct map_session_data *sd,int count)
 {
@@ -8552,6 +8649,7 @@ int do_init_pc(void)
 	add_timer_func_list(pc_spiritball_timer, "pc_spiritball_timer");
 	add_timer_func_list(pc_follow_timer, "pc_follow_timer");
 	add_timer_func_list(pc_endautobonus, "pc_endautobonus");
+	add_timer_func_list(pc_rageball_timer, "pc_rageball_timer"),
 
 	add_timer(gettick() + autosave_interval, pc_autosave, 0, 0);
 
