@@ -5,6 +5,12 @@
 // 	- Details.
 //========================================
 
+03/12/2010
+	r243 [pakpil]
+	* Added LG_FORCEOFVANGUARD and LG_RAGEBURST skills.
+	- Added similar funtions to those used with Monk's spirit spheres to hadle LG_FORCEOFVANGUARD since these skills have same behavior and you can get both at a time.
+	* Minor fix in battle_calc_weapon_attack where hitrate calculation is done. Added missing break.
+
 03/11/2010
 	r241 [pakpil]
 	* Added missing sc check in GC_POISONINGWEAPON.

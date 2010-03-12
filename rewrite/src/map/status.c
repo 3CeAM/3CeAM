@@ -480,6 +480,8 @@ void initChangeTables(void)
 	set_sc( SC_BLOODYLUST        , SC__BLOODYLUST        , SI_BLOODYLUST        , SCB_BATK|SCB_WATK|SCB_DEF );
 	add_sc( SC_MAELSTROM         , SC__MAELSTROM );
 
+	set_sc( LG_FORCEOFVANGUARD   , SC_FORCEOFVANGUARD    , SI_FORCEOFVANGUARD   , SCB_MAXHP|SCB_DEF );
+
 	set_sc( WA_SWING_DANCE       , SC_SWINGDANCE         , SI_SWINGDANCE        , SCB_SPEED|SCB_ASPD );
 	set_sc( WA_SYMPHONY_OF_LOVER , SC_SYMPHONYOFLOVER    , SI_SYMPHONYOFLOVERS  , SCB_MDEF );
 	set_sc( WA_MOONLIT_SERENADE  , SC_MOONLITSERENADE    , SI_MOONLITSERENADE   , SCB_MATK );
@@ -3977,10 +3979,12 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 		def -= def / 10 * 3;
 	if( sc->data[SC_MARSHOFABYSS] )	// Need official formula. [LimitLine]
 		def -= def / 100 * sc->data[SC_MARSHOFABYSS]->val4;
-	if(sc->data[SC_ANALYZE])
+	if( sc->data[SC_ANALYZE] )
 		def -= def * ( 14 * sc->data[SC_ANALYZE]->val1 ) / 100;
 	if( sc->data[SC__BLOODYLUST] )
 		def -= def * 55 / 100; // Still need official value [pakpil]
+	if( sc->data[SC_FORCEOFVANGUARD] )
+		def += def * 2 * sc->data[SC_FORCEOFVANGUARD]->val1 / 100;
 
 
 	return (signed char)cap_value(def,CHAR_MIN,CHAR_MAX);
@@ -4408,6 +4412,8 @@ static unsigned int status_calc_maxhp(struct block_list *bl, struct status_chang
 		maxhp -= maxhp * sc->data[SC__WEAKNESS]->val2 / 100;
 	if(sc->data[SC_LERADSDEW])
 		maxhp += maxhp * sc->data[SC_LERADSDEW]->val3 / 100;
+	if(sc->data[SC_FORCEOFVANGUARD])
+		maxhp += maxhp * 3 * sc->data[SC_FORCEOFVANGUARD]->val1 / 100;
 
 	return cap_value(maxhp,1,UINT_MAX);
 }
@@ -6858,6 +6864,13 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			}
 			break;
 
+		case SC_FORCEOFVANGUARD: // This is not the official way to handle it but I think we should use it. [pakpil]
+			val2 = 20 + 12 * (val1 - 1); // Chance
+			val3 = 5 + (2 * val1); // Max rage counters
+			tick = 6000;
+			val_flag |= 1|2|4;
+			break;
+
 		default:
 			if( calc_flag == SCB_NONE && StatusSkillChangeTable[type] == 0 && StatusIconChangeTable[type] == 0 )
 			{	//Status change with no calc, no icon, and no skill associated...? 
@@ -8501,6 +8514,12 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 			return 0;
 		}
 		break;
+
+	case SC_FORCEOFVANGUARD:
+		if( !status_charge(bl,0,20) )
+			break;
+		sc_timer_next(6000 + tick, status_change_timer, bl->id, data);
+		return 0;
 
 	}
 

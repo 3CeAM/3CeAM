@@ -2941,6 +2941,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case NC_POWERSWING:
 	case SC_TRIANGLESHOT:
 	case SC_FEINTBOMB:
+	case LG_RAGEBURST:
 	case WM_METALICSOUND:
 	case WM_SEVERE_RAINSTORM_MELEE:
 	case GN_CRAZYWEED_ATK:
@@ -4971,11 +4972,12 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case AS_CLOAKING:
 	case GC_CLOAKINGEXCEED:
 	case SC_INVISIBILITY:
+	case LG_FORCEOFVANGUARD:
 		if (tsce)
 		{
 			i = status_change_end(bl, type, -1);
 			if( i )
-				clif_skill_nodamage(src,bl,skillid,-1,i);
+				clif_skill_nodamage(src,bl,skillid,(skillid==LG_FORCEOFVANGUARD)?skilllv:-1,i);
 			else if( sd )
 				clif_skill_fail(sd,skillid,0,0,0);
 			map_freeblock_unlock();
@@ -4983,7 +4985,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		i = sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
 		if( i )
-			clif_skill_nodamage(src,bl,skillid,-1,i);
+			clif_skill_nodamage(src,bl,skillid,(skillid==LG_FORCEOFVANGUARD)?skilllv:-1,i);
 		else if( sd )
 			clif_skill_fail(sd,skillid,0,0,0);
 		break;
@@ -11015,6 +11017,14 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			return 0;
 		}
 		break;
+	case LG_RAGEBURST:
+		if( sd->rageball == 0 )
+		{
+			clif_skill_fail(sd,skill,0x04,0,0);
+			return 0;
+		}
+		sd->rageball_old = require.spiritball = sd->rageball;
+		break;
  	/*NOTE: Uncomment when this sc is available. [pakpil]
 	case SC_MANHOLE:
 	case SC_DIMENSIONDOOR:
@@ -11177,7 +11187,7 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		return 0;
 	}
 
-	if( require.spiritball > 0 && sd->spiritball < require.spiritball) {
+	if( require.spiritball > 0 && sd->spiritball < require.spiritball && skill != LG_RAGEBURST ) {
 		clif_skill_fail(sd,skill,0,0,0);
 		return 0;
 	}
@@ -11329,7 +11339,12 @@ int skill_consume_requirement( struct map_session_data *sd, short skill, short l
 			status_zap(&sd->bl, req.hp, req.sp);
 
 		if(req.spiritball > 0)
-			pc_delspiritball(sd,req.spiritball,0);
+		{
+			if( skill == LG_RAGEBURST )
+				pc_delrageball(sd,req.spiritball);
+			else
+				pc_delspiritball(sd,req.spiritball,0);
+		}
 
 		if(req.zeny > 0)
 		{
@@ -11550,6 +11565,10 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 				}
 			}
 			break;
+		case LG_RAGEBURST:
+			req.spiritball = sd->rageball?sd->rageball:1;
+			break;
+
 	}
 	
 	return req;

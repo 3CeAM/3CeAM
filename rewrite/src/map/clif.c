@@ -5110,7 +5110,7 @@ int clif_status_change(struct block_list *bl, int type, int flag, unsigned int t
 		type == SI_BUMP || type == SI_READYSTORM || type == SI_READYDOWN ||
 		type == SI_READYTURN || type == SI_READYCOUNTER || type == SI_DODGE ||
 		type == SI_DEVIL || type == SI_NIGHT || type == SI_INTRAVISION || type == SI_REPRODUCE ||
-		type == SI_BLOODYLUST)
+		type == SI_BLOODYLUST || type == SI_FORCEOFVANGUARD)
 		tick=0;
 
 	if( battle_config.display_status_timers && tick>0 )
