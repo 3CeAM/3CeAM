@@ -5,6 +5,10 @@
 // 	- Details.
 //========================================
 
+03/13/2010
+	r245 [Jobbie]
+	* Fixed an issue where Mechanics cannot equip mado when using NPC
+
 03/12/2010
 	r244 [pakpil]
 	* Minor fix in LG_FORCEOFVANGUARD where should add rage with physical attacks only.
