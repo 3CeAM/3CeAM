@@ -270,22 +270,22 @@
 12419,Manaplus,Manaplus,3,10,,10,,,,,,,,,,,,,{},{},{}
 12420,Muramura_M,Muramura M,3,10,,10,,,,,,,,,,,,,{},{},{}
 12421,Falmons_F,Falmons F,3,10,,10,,,,,,,,,,,,,{},{},{}
-12422,HP_Increase_Potion_(Small),HP Increase Potion (Small),3,10,,10,,,,,,,,,,,,,{},{},{}
-12423,HP_Increase_Potion_(Medium),HP Increase Potion (Medium),3,10,,10,,,,,,,,,,,,,{},{},{}
-12424,HP_Increase_Potion_(Large),HP Increase Potion (Large),3,10,,10,,,,,,,,,,,,,{},{},{}
-12425,SP_Increase_Potion_(Small),SP Increase Potion (Small),3,10,,10,,,,,,,,,,,,,{},{},{}
-12426,SP_Increase_Potion_(Medium),SP Increase Potion (Medium),3,10,,10,,,,,,,,,,,,,{},{},{}
-12427,SP_Increase_Potion_(Large),SP Increase Potion (Large),3,10,,10,,,,,,,,,,,,,{},{},{}
-12428,Concentrated_White_Potion_Z,Concentrated White Potion Z,3,10,,10,,,,,,,,,,,,,{},{},{}
-12429,Savage_Full_Roast,Savage Full Roast,3,10,,10,,,,,,,,,,,,,{},{},{}
-12430,Cocktail_Warg_Blood,Cocktail Warg Blood,3,10,,10,,,,,,,,,,,,,{},{},{}
-12431,Minor_Stew,Minor Stew,3,10,,10,,,,,,,,,,,,,{},{},{}
-12432,Siroma_Iced_Tea,Siroma Iced Tea,3,10,,10,,,,,,,,,,,,,{},{},{}
-12433,Drosera_Herb_Salad,Drosera Herb Salad,3,10,,10,,,,,,,,,,,,,{},{},{}
-12434,Petite_Tail_Noodles,Petite Tail Noodles,3,10,,10,,,,,,,,,,,,,{},{},{}
+12422,HP_Increase_Potion_(Small),HP Increase Potion (Small),0,10,,10,,,,,0xFFFFFFFF,24,2,,,,,,{},{},{}
+12423,HP_Increase_Potion_(Medium),HP Increase Potion (Medium),0,10,,10,,,,,0xFFFFFFFF,24,2,,,,,,{},{},{}
+12424,HP_Increase_Potion_(Large),HP Increase Potion (Large),0,10,,10,,,,,0xFFFFFFFF,24,2,,,,,,{},{},{}
+12425,SP_Increase_Potion_(Small),SP Increase Potion (Small),0,10,,10,,,,,0xFFFFFFFF,24,2,,,,,,{},{},{}
+12426,SP_Increase_Potion_(Medium),SP Increase Potion (Medium),0,10,,10,,,,,0xFFFFFFFF,24,2,,,,,,{},{},{}
+12427,SP_Increase_Potion_(Large),SP Increase Potion (Large),0,10,,10,,,,,0xFFFFFFFF,24,2,,,,,,{},{},{}
++12428,Concentrated_White_Potion_Z,Concentrated White Potion Z,0,10,,10,,,,,0xFFFFFFFF,24,2,,,,,,{},{},{}
+12429,Savage_Full_Roast,Savage Full Roast,0,10,,10,,,,,0xFFFFFFFF,24,2,,,,,,{},{},{}
+12430,Cocktail_Warg_Blood,Cocktail Warg Blood,0,10,,10,,,,,0xFFFFFFFF,24,2,,,,,,{},{},{}
+12431,Minor_Stew,Minor Stew,0,10,,10,,,,,0xFFFFFFFF,24,2,,,,,,{},{},{}
+12432,Siroma_Iced_Tea,Siroma Iced Tea,0,10,,10,,,,,0xFFFFFFFF,24,2,,,,,,{},{},{}
+12433,Drosera_Herb_Salad,Drosera Herb Salad,0,10,,10,,,,,0xFFFFFFFF,24,2,,,,,,{},{},{}
+12434,Petite_Tail_Noodles,Petite Tail Noodles,0,10,,10,,,,,0xFFFFFFFF,24,2,,,,,,{},{},{}
 12435,Black_Mass,Black Mass,3,10,,10,,,,,,,,,,,,,{},{},{}
-12436,Vitata_500,Vitata 500,3,10,,10,,,,,,,,,,,,,{},{},{}
-12437,Concentrated_Ceromain_Soup,Concentrated Ceromain Soup,3,10,,10,,,,,,,,,,,,,{},{},{}
+12436,Vitata_500,Vitata 500,0,10,,10,,,,,0xFFFFFFFF,24,2,,,,,,{},{},{}
+12437,Concentrated_Ceromain_Soup,Concentrated Ceromain Soup,0,10,,10,,,,,0xFFFFFFFF,24,2,,,,,,{},{},{}
 
 12475,Cure_Photo,Cure Photo,3,10,,10,,,,,,,,,,,,,{},{},{}
 

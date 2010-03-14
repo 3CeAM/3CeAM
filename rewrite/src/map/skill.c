@@ -634,6 +634,12 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 				rate=(sd->status.job_level+9)/10;
 				skill_castend_damage_id(src,bl,HT_BLITZBEAT,(skill<rate)?skill:rate,tick,SD_LEVEL);
 			}
+			// Automatic trigger of Warg Strike [Jobbie]
+			if (pc_iswarg(sd) && (sd->status.weapon == W_BOW || sd->status.weapon == W_FIST) && (skill=pc_checkskill(sd,RA_WUGSTRIKE))>0 &&
+				rand()%1000 <= sstatus->luk*10/3+1 ) {
+				rate=(sd->status.job_level+9)/10;
+				skill_castend_damage_id(src,bl,RA_WUGSTRIKE,(skill<rate)?skill:rate,tick,0);
+			}
 			// Gank
 			if(dstmd && sd->status.weapon != W_BOW &&
 				(skill=pc_checkskill(sd,RG_SNATCHER)) > 0 &&
@@ -1026,7 +1032,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		break;
 	case NC_COLDSLOWER:
 		sc_start(bl, SC_FREEZING, 20 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
-		sc_start(bl, SC_FREEZING, 10 * skilllv, skilllv, skill_get_time(skillid, skilllv));
+		sc_start(bl, SC_FREEZE, 10 * skilllv, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case NC_POWERSWING:
 		if( rand()%100 < 15 ) //Assumed chance of stun status and axe boomerang skill.
@@ -7103,6 +7109,15 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 
+	case NC_DISJOINT:
+		{
+			if( bl->type != BL_MOB ) break;				
+			md = map_id2md(bl->id);
+			if( md && md->class_ >= 2042 && md->class_ <= 2046 )
+				status_kill(bl);
+		}
+		break;
+
 	case SC_REPRODUCE:
 		if( tsc && tsc->data[SC__REPRODUCE] )
 		{
@@ -7493,6 +7508,31 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
 		}
 		break;
+
+	case GN_MIX_COOKING:
+		if(sd) {
+			sd->menuskill_itemused = skilllv;
+			clif_skill_produce_mix_list(sd,skillid,27);
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		}
+		break;
+
+	case GN_MAKEBOMB:
+		if(sd) {
+			sd->menuskill_itemused = skilllv;
+			clif_skill_produce_mix_list(sd,skillid,28);
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		}
+		break;
+
+	case GN_S_PHARMACY:
+		if(sd) {
+			sd->menuskill_itemused = skilllv;
+			clif_skill_produce_mix_list(sd,skillid,29);
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		}
+		break;
+
 	case RETURN_TO_ELDICASTES:
 		if( sd )
 		{
@@ -8504,6 +8544,24 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		i = skill_get_splash(skillid, skilllv);
 		map_foreachinarea(skill_detonator,src->m,x-i,y-i,x+i,y+i,BL_SKILL,src);
 		clif_skill_damage(src,src,tick,status_get_amotion(src),0,-30000,1,skillid,skilllv,6);
+		break;
+
+	case NC_SILVERSNIPER:
+		{
+			int class_ = 2042;
+			struct mob_data *md;
+
+			md = mob_once_spawn_sub(src, src->m, x, y, status_get_name(src), class_, "");
+			if( md )
+			{
+				md->master_id = src->id;
+				md->special_state.ai = 3;
+				if( md->deletetimer != INVALID_TIMER )
+					delete_timer(md->deletetimer, mob_timer_delete);
+				md->deletetimer = add_timer (gettick() + skill_get_time(skillid, skilllv), mob_timer_delete, md->bl.id, 0);
+				mob_spawn( md );
+			}
+		}
 		break;
 	
 	case SC_FEINTBOMB:
@@ -10574,6 +10632,9 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		case AM_TWILIGHT1:
 		case AM_TWILIGHT2:
 		case AM_TWILIGHT3:
+		case GN_MIX_COOKING:
+		case GN_MAKEBOMB:
+		case GN_S_PHARMACY:
 			return 0;
 		}
 	}
@@ -11219,6 +11280,9 @@ int skill_check_condition_castend(struct map_session_data* sd, short skill, shor
 		case AM_TWILIGHT1:
 		case AM_TWILIGHT2:
 		case AM_TWILIGHT3:
+		case GN_MIX_COOKING:
+		case GN_MAKEBOMB:
+		case GN_S_PHARMACY:
 			return 0;
 		}
 	}
@@ -11257,6 +11321,22 @@ int skill_check_condition_castend(struct map_session_data* sd, short skill, shor
 		}
 		break;
 	}
+	case NC_SILVERSNIPER:
+		{
+			int c = 0;
+			int maxcount = skill_get_maxcount(skill,lv);
+			int mob_class = 2042;
+			if( battle_config.land_skill_limit && maxcount > 0 && ( battle_config.land_skill_limit&BL_PC ) )
+			{
+				i = map_foreachinmap(skill_check_condition_mob_master_sub, sd->bl.m, BL_MOB, sd->bl.id, mob_class, skill, &c);
+				if( c >= maxcount )
+					{
+						clif_skill_fail(sd , skill, 0, 0, 0);
+						return 0;
+					}
+			}
+		}
+		break;
 	}
 
 	status = &sd->battle_status;
@@ -11609,6 +11689,9 @@ int skill_castfix(struct block_list *bl, int skill_id, int skill_lv)
 			case HW_GANBANTEIN:
 			case HW_GRAVITATION:
 			case AB_RENOVATIO:
+			case NC_SELFDESTRUCTION:
+			case NC_INFRAREDSCAN:
+			case NC_ANALYZE:
 				variable_time = 0;
 				fixed_time = skill_get_cast(skill_id, skill_lv);// full fixed cast time.
 				break;
@@ -13742,6 +13825,28 @@ int skill_produce_mix (struct map_session_data *sd, int skill_id, int nameid, in
 				skill_lv = pc_checkskill(sd,GC_RESEARCHNEWPOISON);
 				make_per = 3000 + 500 * skill_lv;
 				break;
+			case GN_MIX_COOKING:
+			case GN_MAKEBOMB:
+				{
+					i = sd->menuskill_itemused;
+					make_per = (5000 + 50*status->dex + 30*status->luk); //Custom rate value.
+					if( i == 2 )
+						qty = 10; //SkillLv 2 creates you 10 items directly.
+				}
+				break;
+			case GN_S_PHARMACY:
+				{
+					i = sd->menuskill_itemused;
+					make_per = 100000; //100% success rate.
+					switch( i )
+					{
+						case 6: case 7: case 8: qty = 3; break; //3 items to make at once.
+						case 9: qty = 3 + rand()%3; break; //3~5 items to make at once.
+						case 10: qty = 4 + rand()%3; break; //4~6 items to make at once.
+						default: qty = 2; //2 item to make at once.
+					}
+				}
+				break;
 			default:
 				if (sd->menuskill_id ==	AM_PHARMACY &&
 					sd->menuskill_val > 10 && sd->menuskill_val <= 20)
@@ -13808,6 +13913,9 @@ int skill_produce_mix (struct map_session_data *sd, int skill_id, int nameid, in
 				case AM_TWILIGHT1:
 				case AM_TWILIGHT2:
 				case AM_TWILIGHT3:
+				case GN_MIX_COOKING:
+				case GN_MAKEBOMB:
+				case GN_S_PHARMACY:
 					flag = battle_config.produce_item_name_input&0x2;
 					break;
 				case AL_HOLYWATER:
@@ -13851,7 +13959,10 @@ int skill_produce_mix (struct map_session_data *sd, int skill_id, int nameid, in
 					if(skill_id != AM_PHARMACY &&
 						skill_id != AM_TWILIGHT1 &&
 						skill_id != AM_TWILIGHT2 &&
-						skill_id != AM_TWILIGHT3)
+						skill_id != AM_TWILIGHT3 &&
+						skill_id != GN_MIX_COOKING &&
+						skill_id != GN_MAKEBOMB &&
+						skill_id != GN_S_PHARMACY)
 						continue;
 					//Add fame as needed.
 					switch(++sd->potion_success_counter) {
@@ -13881,6 +13992,9 @@ int skill_produce_mix (struct map_session_data *sd, int skill_id, int nameid, in
 				case AM_TWILIGHT2:
 				case AM_TWILIGHT3:
 				case ASC_CDP:
+				case GN_MIX_COOKING:
+				case GN_MAKEBOMB:
+				case GN_S_PHARMACY:
 					clif_produceeffect(sd,2,nameid);
 					clif_misceffect(&sd->bl,5);
 					break;
@@ -13929,6 +14043,9 @@ int skill_produce_mix (struct map_session_data *sd, int skill_id, int nameid, in
 			case AM_TWILIGHT1:
 			case AM_TWILIGHT2:
 			case AM_TWILIGHT3:
+			case GN_MIX_COOKING:
+			case GN_MAKEBOMB:
+			case GN_S_PHARMACY:
 				clif_produceeffect(sd,3,nameid);
 				clif_misceffect(&sd->bl,6);
 				sd->potion_success_counter = 0; // Fame point system [DracoRPG]

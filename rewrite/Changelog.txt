@@ -6,6 +6,16 @@
 //========================================
 
 03/14/2010
+	r249 [Jobbie]
+	* Corrected some items in item_db2.
+	* Added NC_MAINFRAME, NC_SILVERSNIPER, NC_DISJOINT, GN_S_PHARMACY, GN_MIX_COOKING and GN_MAKEBOMB.
+	* Fixed some radius effect, cooldown and casttime of Mechanic and Genetic skills.
+	* Corrected some requirements when using NC_SILVERSNIPER.
+	* Corrected some SC_* in which mado is unequipped it is not ended.
+	* Fixed missing auto trigger code of Warg Strike when attacking normal or with Bow.
+	* Fixed NC_COLDSLOWER which is having the same status effect.
+	* Fixed SC_LEECHESEND. follow up (r246).
+
 	r248 [pakpil]
 	* Fixed WL_COMET and AB_ADORAMUS that are not checking for partner correctly and wasn't consuming Blue/Red gemstones while were casted alone.
 	* Minor fix in riding where Gryphons and PecoPeco should work the same way.
