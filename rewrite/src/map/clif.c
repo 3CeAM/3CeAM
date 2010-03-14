@@ -10316,7 +10316,8 @@ void clif_parse_ProduceMix(int fd,struct map_session_data *sd)
 {
 	// -1 is used by produce script command.
 	if (sd->menuskill_id != -1 && sd->menuskill_id != AM_PHARMACY && sd->menuskill_id != SA_CREATECON &&
-		sd->menuskill_id != RK_RUNEMASTERY && sd->menuskill_id != GC_CREATENEWPOISON)
+		sd->menuskill_id != RK_RUNEMASTERY && sd->menuskill_id != GC_CREATENEWPOISON &&
+		sd->menuskill_id != GN_MIX_COOKING && sd->menuskill_id != GN_MAKEBOMB && sd->menuskill_id != GN_S_PHARMACY)
 		return;
 	
 	if (pc_istrading(sd)) {

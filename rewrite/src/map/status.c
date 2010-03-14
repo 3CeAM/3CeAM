@@ -1645,6 +1645,11 @@ int status_calc_mob_(struct mob_data* md, bool first)
 				status->mode|= MD_CANATTACK|MD_AGGRESSIVE;
 			}
 			status->hp = status->max_hp;
+
+			if (ud->skillid == NC_SILVERSNIPER) {
+				status->mode |= MD_CANATTACK|MD_AGGRESSIVE;
+				status->batk += 200 + 100 * ud->skilllv;
+			}
 		}
 	}
 
@@ -6619,11 +6624,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			tick = 3000;
 			break;
 		case SC_LEECHESEND:
-			if( !sd )//FIXME: Mob and not GX type char has the same formula. [Jobbie]
-				val2 = ( status->hp / 100 - 3 * status->vit );
-			else //This formula is only for GX not for both char.
-				val2 = ( status->hp / 100 + status->vit * 2 );
-			val4 = tick / 1000;
+			val3 = tick / 1000;
 			tick = 1000;
 			break;
 		case SC_ROLLINGCUTTER:
@@ -8315,14 +8316,19 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		break;
 
 	case SC_LEECHESEND:
-		if( --(sce->val4) >= 0 )
+		if( --(sce->val3) >= 0 )
 		{
-			bool flag;
+			struct map_session_data *tsd;
+			nullpo_retr(0, tsd = ( struct map_session_data*)bl );
+
 			map_freeblock_lock();
-			status_zap(bl, sce->val3, 0);
-			flag = !sc->data[type];
+			if( !sd || ((tsd->class_&MAPID_UPPERMASK) != MAPID_GUILLOTINE_CROSS ||
+				(tsd->class_&MAPID_UPPERMASK) != MAPID_GUILLOTINE_CROSS_T) )
+				status_zap(bl, status->hp / 100 - 3 * status->vit, 0);
+			else
+				status_zap(bl, status->hp / 100 + 2 * status->vit, 0);
 			map_freeblock_unlock();
-			if (flag) return 0;
+			if ( !sc->data[type] ) return 0;
 			sc_timer_next(1000 + tick, status_change_timer, bl->id, data );
 			return 0;
 		}

@@ -439,3 +439,66 @@
 //-- Oblivion Curse <-- GC_RESEARCHNEWPOISON Lv9, 10 Mermaid Heart, 1 Isildor
 12724,25,2024,9,7931,0,950,10,709,1
 //==============================================
+
+//==============================================
+// Genetic Item Creation
+//==============================================
+//----- Change Material ---- ItemLV=26 ---------
+//-- Thorny Seed <-- GN_CHANGEMATERIAL & Plant Genetic Cultivation Guide &
+6210,26,2494,1,6284,0
+//-- Vampire Plant Seed <-- GN_CHANGEMATERIAL & Plant Genetic Cultivation Guide &
+6211,26,2494,1,6284,0
+//-- Bomb Mushroom Seed <-- GN_CHANGEMATERIAL & Plant Genetic Cultivation Guide &
+6212,26,2494,1,6284,0
+//6213 <-- Possible item to create with this skill
+//6214 <-- Possible item to create with this skill
+//6215 <-- Possible item to create with this skill
+//6216 <-- Possible item to create with this skill
+//6217 <-- Possible item to create with this skill
+
+//----- Mix Cooking ---- ItemLV=27 -------------
+//-- Savage Full Roast <-- GN_MIX_COOKING & Mix Cooking Ingredient Book & 1 Savage Meat, 1 Iron Cooking Skewer, 1 Bituminous Coal
+12429,27,2495,1,11022,0,6249,1,6250,1,6251,1
+//-- Cocktail Warg Blood <-- GN_MIX_COOKING & Mix Cooking Ingredient Book & 3 Wolf's Blood, 2 Cold Ice
+12430,27,2495,1,11022,0,6252,3,6253,2
+//-- Minor Stew <-- GN_MIX_COOKING & Mix Cooking Ingredient Book & 1 Comodo Tropical Fruit, 2 Seasoned Tough Meat, 1 Large Pan
+12431,27,2495,1,11022,0,6258,1,6254,2,6255,1
+//-- Siroma Iced Tea <-- GN_MIX_COOKING & Mix Cooking Ingredient Book & 1 Comodo Tropical Fruit, 3 Powdered Ice, 2 Ice Crystal
+12432,27,2495,1,11022,0,6258,1,6256,3,6257,2
+//-- Drosera Tentacle <-- GN_MIX_COOKING & Mix Cooking Ingredient Book & 3 Drosera Tentacle, 3 Red Herb, 3 Blue Herb, 3 White Herb, 1 Large Pan
+12433,27,2495,1,11022,0,6259,3,507,3,509,3,510,3,6255,1
+//-- Petite Tail Noodles <-- GN_MIX_COOKING & Mix Cooking Ingredient Book & 2 Petite Tail, 1 Fine Noodles, 1 Cold Broth
+12434,27,2495,1,11022,0,6260,2,6261,1,6262,1
+
+//----- Create Bomb ---- ItemLV=28 -------------
+//-- Apple Bomb <-- GN_MAKEBOMB & Apple Bomb Guide & Apple & Scell & Dark Powder & Detonator
+13260,28,2496,1,6279,0,512,1,911,1,6244,1,1051,1
+//-- Coconut Bomb <-- GN_MAKEBOMB & Coconut Bomb Guide & Coconut & 2 Dark Powder & Detonator
+13261,28,2496,1,6280,0,6263,1,6244,2,1051,1
+//-- Melon Bomb <-- GN_MAKEBOMB & Melon Bomb Guide & Melon & Sticky Mucus & 2 Dark Powder & Detonator
+13262,28,2496,1,6281,0,6264,1,938,1,6244,2,1051,1
+//-- Pineapple Bomb <-- GN_MAKEBOMB & Pineapple Bomb Guide & Pineapple & Cactus Needle & 3 Dark Powder & Detonator
+13263,28,2496,1,6282,0,6265,1,952,1,6244,3,1051,1
+//-- Banana Bomb <-- GN_MAKEBOMB & Banana Bomb Guide & Banana & 4 Dark Powder & Detonator & (missing item mold powder?)
+13264,28,2496,1,6283,0,513,1,6244,4,1051,1
+
+//----- Special Pharmacy ---- ItemLV=29 --------
+//-- HP Potions (Small) <-- GN_S_PHARMACY & 10 Empty Bottles, 5 Monster Food, 10 White Herb, 1 Spicy Sauce
+12422,29,2497,1,713,10,528,5,509,10,7455,1
+//-- HP Potions (Medium) <-- GN_S_PHARMACY & 10 Empty Bottles, 10 White Herb, 10 Yellow Herb, 1 Spicy Sauce
+12423,29,2497,1,713,10,509,10,508,10,7455,1
+//-- HP Potions (Large) <-- GN_S_PHARMACY & 10 Empty Bottles, 15 White Herb, Mastella 3, 1 Holy Water, 1 Spicy Sauce
+12424,29,2497,1,713,10,509,15,522,3,523,1,7455,1
+//-- SP Potions (Small) <-- GN_S_PHARMACY & 10 Empty Bottles, 10 Lemon, 10 Grapes, 1 Sweet Sauce
+12425,29,2497,1,713,10,568,10,514,10,7453,1
+//-- SP Potions (Medium) <-- GN_S_PHARMACY & 10 Empty Bottles, 10 Honey, 10 Blue Herb, 1 Sweet Sauce
+12426,29,2497,1,713,10,518,10,510,10,7453,1
+//-- SP Potions (Large) <-- GN_S_PHARMACY & 10 Empty Bottles, 10 Royal Jelly, 10 Blue Herb, 1 Sweet Sauce
+12427,29,2497,1,713,10,526,10,510,10,7453,1
+//-- White Potion Z <-- GN_S_PHARMACY & Improved Potion Creation Manual & 20 White Potion, 10 Test Tube, 10 White Herb, 1 Alcohol
+12428,29,2497,1,6285,0,504,20,1092,10,509,10,970,1
+//-- Vitata 500 <-- GN_S_PHARMACY & Improved Potion Creation Manual & 10 Test Tube, 10 Grapes, 10 Honey, 10 Blue Herb
+12436,29,2497,1,6285,0,1092,10,514,10,518,10,510,10
+//-- Concentrated Ceromain Soup <-- GN_S_PHARMACY & & Improved Potion Creation Manual 10 Test Tube, 6 Awakening Potion, 5 Concentration Potion, 5 Spicy Sauce
+12437,29,2497,1,6285,0,1092,10,645,5,656,6,7455,5
+//===============================================
