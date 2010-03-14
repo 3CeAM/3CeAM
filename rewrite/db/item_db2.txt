@@ -250,7 +250,7 @@
 12380,Former_Experimental_Flute,Former Experimental Flute,3,10,,10,,,,,,,,,,,,,{},{},{}
 12381,Ancient_Language_Scroll_1,Ancient Language Scroll 1,3,10,,10,,,,,,,,,,,,,{},{},{}
 12382,Ancient_Language_Scroll_2,Ancient Language Scroll 2,3,10,,10,,,,,,,,,,,,,{},{},{}
-12383,Vulcan_Bullet_Magazine,Vulcan Bullet Magazine,2,10,,500,,,,,,,,,,,,,{ getitem 6145,1000; },{},{}
+12383,Vulcan_Bullet_Magazine,Vulcan Bullet Magazine,2,10,,500,,,,,0xFFFFFFFF,24,2,,,,,,{ getitem 6145,1000; },{},{}
 12384,Magical_Ruby_1,Magical Ruby 1,3,10,,10,,,,,,,,,,,,,{},{},{}
 12385,Magical_Ruby_2,Magical Ruby 2,3,10,,10,,,,,,,,,,,,,{},{},{}
 12386,Magical_Ruby_3,Magical Ruby 3,3,10,,10,,,,,,,,,,,,,{},{},{}

@@ -300,7 +300,6 @@ int skill_get_range2 (struct block_list *bl, int id, int lv)
 int skill_calc_heal(struct block_list *src, struct block_list *target, int skill_id, int skill_lv, bool heal)
 {
 	int skill, hp;
-	int multiplier = 0;
 	struct map_session_data *sd = map_id2sd(src->id);
 	struct map_session_data *tsd = map_id2sd(target->id);
 	struct status_change* sc;
@@ -319,9 +318,7 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, int skill
 		hp = (skill_lv>6)?666:skill_lv*100;
 		break;
 	case AB_HIGHNESSHEAL:
-		multiplier = 1 / 2 + skill_lv / 2;	// Insert official Heal multiplier for Highness Heal here. [LimitLine]
-		if( sd )
-			skill_lv = pc_checkskill(sd, AL_HEAL);	// Highness Heal should use the maximum level of Heal learned, right?
+		if( sd ) skill_lv = pc_checkskill(sd, AL_HEAL);
 	default:
 		if (skill_lv >= battle_config.max_heal_lv)
 			return battle_config.max_heal;
@@ -331,8 +328,6 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, int skill
 			hp += hp * skill * 2 / 100;
 		else if( src->type == BL_HOM && (skill = merc_hom_checkskill(((TBL_HOM*)src), HLIF_BRAIN)) > 0 )
 			hp += hp * skill * 2 / 100;
-		if( multiplier )
-			hp *= multiplier;
 		break;
 	}
 
@@ -3983,6 +3978,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			if( sd && dstsd && sd->status.partner_id == dstsd->status.char_id && (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE && sd->status.sex == 0 )
 				heal = heal*2;
 
+			if( skillid == AB_HIGHNESSHEAL )
+				heal = (int)( heal * ( 4 + 0.6 * ( skilllv - 1 ) ) ) / 2;
+
 			if( tsc && tsc->count )
 			{
 				if( tsc->data[SC_KAITE] && !(sstatus->mode&MD_BOSS) )
@@ -6741,6 +6739,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			if( sd && tstatus && !battle_check_undead(tstatus->race, tstatus->def_ele) )
 			{
 				i = skill_calc_heal(src, bl, AL_HEAL, pc_checkskill(sd, AL_HEAL), true);
+				status_heal(bl, i, 0, 2);
 				clif_skill_nodamage(bl, bl, skillid, i, 1);
 			}
 		}

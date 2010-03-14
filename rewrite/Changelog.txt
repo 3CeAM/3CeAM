@@ -5,6 +5,14 @@
 // 	- Details.
 //========================================
 
+03/14/2010
+	r246 [Jobbie]
+	* Corrected item id 12383 which is not usable.
+	* Corrected Highness Heal healing value formula.
+	* Corrected Coloceo Heal which not healing players although it displays the healing value.
+	* Adjusted Guillotine Cross poisons behavior to work same in official server.
+	
+
 03/13/2010
 	r245 [Jobbie]
 	* Fixed an issue where Mechanics cannot equip mado when using NPC

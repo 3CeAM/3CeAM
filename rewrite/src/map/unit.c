@@ -1169,6 +1169,10 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 			status_change_end(src, SC_MEMORIZE, -1);
 	}
 
+	// force to use the random skill effect from magic mushroom. [Jobbie]
+	if( sc && sc->data[SC_MAGICMUSHROOM] )
+		casttime = 0;
+
 	if( casttime > 0 || temp )
 	{ 
 		unit_stop_walking(src,1);
@@ -1325,6 +1329,10 @@ int unit_skilluse_pos2( struct block_list *src, short skill_x, short skill_y, sh
 		if (sc->data[SC_MEMORIZE] && (--sc->data[SC_MEMORIZE]->val2) <= 0)
 			status_change_end(src, SC_MEMORIZE, -1);
 	}
+
+	// force to use the random skill effect from magic mushroom. [Jobbie]
+	if( sc && sc->data[SC_MAGICMUSHROOM] )
+		casttime = 0;
 
 	ud->state.skillcastcancel = castcancel&&casttime>0?1:0;
 	if( !sd || sd->skillitem != skill_num || skill_get_cast(skill_num,skill_lv) )
