@@ -2532,8 +2532,8 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	// Weight
 	if((skill=pc_checkskill(sd,MC_INCCARRY))>0)
 		sd->max_weight += 2000*skill;
-	if(pc_isriding(sd,OPTION_RIDING) && pc_checkskill(sd,KN_RIDING)>0 && !(sd->class_&JOBL_THIRD))
-		sd->max_weight += 10000;
+	if(pc_isriding(sd,OPTION_RIDING) && pc_checkskill(sd,KN_RIDING)>0)
+		sd->max_weight += 10000; // Same in gryphons
 	if(pc_isriding(sd,OPTION_RIDING_DRAGON) && (skill=pc_checkskill(sd,RK_DRAGONTRAINING))>0)
 		sd->max_weight += sd->max_weight * (30 + skill) / 100;
 	if(sd->sc.option&OPTION_MADO)

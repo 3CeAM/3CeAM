@@ -6,6 +6,10 @@
 //========================================
 
 03/14/2010
+	r248 [pakpil]
+	* Fixed WL_COMET and AB_ADORAMUS that are not checking for partner correctly and wasn't consuming Blue/Red gemstones while were casted alone.
+	* Minor fix in riding where Gryphons and PecoPeco should work the same way.
+
 	r246 [Jobbie]
 	* Corrected item id 12383 which is not usable.
 	* Corrected Highness Heal healing value formula.
