@@ -6,6 +6,9 @@
 //========================================
 
 03/14/2010
+	r251 [pakpil]
+	* Fixed RA_ELECTRICSHOCKET that wasn't draining SP and wasn't traped all in 5x5 area.
+
 	r250 [Jobbie]
 	* Update skill cast time of some Rune Knight skills.
 
