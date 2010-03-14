@@ -6,6 +6,9 @@
 //========================================
 
 03/14/2010
+	r250 [Jobbie]
+	* Update skill cast time of some Rune Knight skills.
+
 	r249 [Jobbie]
 	* Corrected some items in item_db2.
 	* Added NC_MAINFRAME, NC_SILVERSNIPER, NC_DISJOINT, GN_S_PHARMACY, GN_MIX_COOKING and GN_MAKEBOMB.

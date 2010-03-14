@@ -11681,6 +11681,13 @@ int skill_castfix(struct block_list *bl, int skill_id, int skill_lv)
 		//Place here for skills that has a full variable and fixed cast time. [Jobbie]
 		switch( skill_id )
 		{
+			case RK_DRAGONBREATH:
+				variable_time = skill_get_cast(skill_id, skill_lv);
+				fixed_time = 500; //Has a .5sec fixed cast time.
+				break;
+			case RK_HUNDREDSPEAR:
+			case RK_CRUSHSTRIKE:
+			case RK_STORMBLAST:
 			case AB_CLEARANCE:
 				variable_time = skill_get_cast(skill_id, skill_lv);// full variable cast time.
 				fixed_time = 0;
