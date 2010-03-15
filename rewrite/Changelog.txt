@@ -5,6 +5,10 @@
 // 	- Details.
 //========================================
 
+03/15/2010
+	r252 [pakpil]
+	* Fixed an issue where the client freeze when use disguise. Bug report 252.
+
 03/14/2010
 	r251 [pakpil]
 	* Fixed RA_ELECTRICSHOCKET that wasn't draining SP and wasn't traped all in 5x5 area.
