@@ -6,6 +6,9 @@
 //========================================
 
 03/15/2010
+	r254 [pakpil]
+	* Fixed an issue in WL_READING_SB where it wasn't removing SC_STOP status when the Warlock haven't Spellbooks on the inventory.
+
 	r253 [pakpil]
 	* Fixed  some items that aren't given its bonus correctly to certain classes.
 	* Fixed splash area in skill_db that were wrong. Can't remember the reporter's name, thx anyway.

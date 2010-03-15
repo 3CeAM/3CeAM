@@ -3037,7 +3037,10 @@ int clif_spellbook_list(struct map_session_data *sd)
 		WFIFOSET(fd, WFIFOW(fd, 2));
 	}
 	else
+	{
+		status_change_end(&sd->bl,SC_STOP,-1);
 		return 0;
+	}
 
 	return 1;
 }
