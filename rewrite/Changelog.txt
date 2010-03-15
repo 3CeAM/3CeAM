@@ -6,6 +6,14 @@
 //========================================
 
 03/15/2010
+	r253 [pakpil]
+	* Fixed  some items that aren't given its bonus correctly to certain classes.
+	* Fixed splash area in skill_db that were wrong. Can't remember the reporter's name, thx anyway.
+	* Fixed WL_COMET adjusting its behavior to the official one.
+	* Minor fix in WL_COMET and AB_ADORAMUS that should fails before cast them if you haven't requires gemstones when are casted alone.
+	* Added check for 3rd jobs in Thanatos tower quest.
+	* Added custom Breeder for 3rd jobs. Plz report any problem.
+
 	r252 [pakpil]
 	* Fixed an issue where the client freeze when use disguise. Bug report 252.
 

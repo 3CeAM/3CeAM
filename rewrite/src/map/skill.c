@@ -1986,6 +1986,9 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 		else // the central target doesn't display an animation
 			dmg.dmotion = clif_skill_damage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, 5); // needs -2(!) as skill level
 		break;
+	case WL_COMET:
+		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.damage,damage,20,skillid,skilllv,8);
+		break;
 	case WL_CHAINLIGHTNING_ATK:
 		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,1,WL_CHAINLIGHTNING,-2,6);
 		break;
@@ -3155,6 +3158,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case AB_JUDEX:
 	case WL_SOULEXPANSION:
 	case WL_CRIMSONROCK:
+	case WL_COMET:
 	case RA_ARROWSTORM:
 	case RA_WUGDASH:
 	case NC_FLAMELAUNCHER:
@@ -8496,9 +8500,9 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		break;
 
 	case WL_COMET:
-		flag|=1;
-		skill_unitsetting(src,skillid,skilllv,x,y,0);
-		sc_start(src,type,100,skilllv,skill_get_cooldown(skillid,skilllv));
+		i = skill_get_splash(skillid,skilllv);
+		sc_start4(src,type,100,skilllv,x,y,0,skill_get_cooldown(skillid,skilllv));
+		map_foreachinarea(skill_area_sub,src->m,x-i,y-i,x+i,y+i,BL_CHAR,src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
 		break;
 
 	case WL_EARTHSTRAIN:
@@ -9664,16 +9668,6 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 					if (rand()%100 < src->val1)
 						skill_attack(BF_WEAPON,ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
 				break;
-
-				case WL_COMET:
-					if( tsc )
-					{
-						tsc->comet_x = src->bl.x;
-						tsc->comet_y = src->bl.y;
-					}
-					clif_skill_damage(bl,bl,sg->tick, status_get_amotion(bl), 0, -30000, 1, sg->skill_id, sg->skill_lv, 6);
-					skill_attack(skill_get_type(sg->skill_id), ss, &src->bl, bl, sg->skill_id, sg->skill_lv, tick, 0);
-					break;
 
 				case GN_CRAZYWEED:
 					skill_castend_damage_id(ss, bl, GN_CRAZYWEED_ATK, sg->skill_lv, tick, SD_LEVEL|SD_ANIMATION);
@@ -11002,9 +10996,24 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 	case WL_COMET:
 		if( sc && sc->data[SC_REUSE_COMET] )
 			return 0;
+		if( skill_check_pc_partner(sd, skill, &lv, 1, 0) )
+			sd->special_state.no_gemstone = 1;
+		else
+			if( pc_search_inventory(sd, ITEMID_RED_GEMSTONE) <= require.amount[0] )
+			{
+				clif_skill_fail(sd,skill,0x04,0,0);
+				return 0;
+			}
+		break;
 	case AB_ADORAMUS:
 		if( skill_check_pc_partner(sd, skill, &lv, 1, 0) )
 			sd->special_state.no_gemstone = 1;
+		else
+			if( pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE) <= require.amount[0] )
+			{
+				clif_skill_fail(sd,skill,0x04,0,0);
+				return 0;
+			}
 		break;
 	case AB_LAUDAAGNUS:
 	case AB_LAUDARAMUS:

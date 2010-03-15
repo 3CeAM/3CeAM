@@ -2850,11 +2850,9 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						skillratio += 200;
 						break;
 					case WL_COMET:
+						if( sc && sc->data[SC_REUSE_COMET] )
 						{
-							struct status_change *tsc = status_get_sc(target);
-							if( !tsc )
-								break;
-							switch( distance_xy(target->x, target->y, tsc->comet_x, tsc->comet_y) )
+							switch( distance_xy(target->x, target->y, sc->data[SC_REUSE_COMET]->val2,sc->data[SC_REUSE_COMET]->val3) )
 							{
 								case 0: case 1: case 2: case 3:
 									skillratio += 2400 + 500 * skill_lv;
@@ -2870,6 +2868,8 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 									break;
 							}
 						}
+						else
+							skillratio += 2400 + 500 * skill_lv; 
 						break;
 					case WL_CHAINLIGHTNING_ATK:
 						skillratio += 300 + 100 * skill_lv;

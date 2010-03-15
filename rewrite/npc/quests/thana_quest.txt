@@ -2591,7 +2591,7 @@ OnThanaDead:
 }
 
 tha_t06,119,120,0	script	thana6-7	45,1,1,{
-	if (((Upper == 1) && ((Class > Job_Thief_High) && (Class < Job_Baby))) || (((Class == Job_Gunslinger) || (Class == Job_Ninja) || (BaseClass == Job_Taekwon)) && (BaseLevel >= 95))) {
+	if (((Upper == 1) && ((Class > Job_Thief_High) && (Class < Job_Baby))) || (((Class == Job_Gunslinger) || (Class == Job_Ninja) || (BaseClass == Job_Taekwon) || (Class > Job_Rune_Knight && Class <= JOB_MECHANIC_T2) && (BaseLevel >= 95))) {
 		warp "thana_step",69,369;
 		end;
 	}
