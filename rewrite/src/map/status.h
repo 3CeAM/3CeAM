@@ -1212,7 +1212,6 @@ struct status_change {
 	int cl_tid;	//ID of the next picked target for Chain Lightning. [LimitLine]
 	int cl_counter;	//Chain Lightning counter. [LimitLine]
 	int cl_counter2;//Chain Lightning counter (for the three-hit countdown when there's nobody in range). [LimitLine]
-	int comet_x, comet_y;	// X and Y coordinates of the center of the comet that hit you. [LimitLine]
 	struct status_change_entry *data[SC_MAX];
 };
 
