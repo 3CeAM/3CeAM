@@ -6,6 +6,9 @@
 //========================================
 
 03/15/2010
+	r256 [pakpil]
+	* Added missing 'breeder_3ceAM' npc in r253.
+	
 	r255 [pakpil]
 	* Fixed WL_HELLINFERNO that was not working propertly.
 	* Minor cleanup in skill_additional_effect.
