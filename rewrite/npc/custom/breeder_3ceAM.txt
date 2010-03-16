@@ -1,0 +1,89 @@
+//===== eAthena Script ======================================= 
+//= Custom Free Breeder aka Universal Renter (not reccomended)
+//===== By: ================================================== 
+//= eAthena Team
+//===== Current Version: ===================================== 
+//= 1.5
+//===== Compatible With: ===================================== 
+//= eAthena 1.0 Final +
+//===== Description: ========================================= 
+//= A Free PecoPeco and Falcon Breeder
+//===== Additional Comments: ================================= 
+//= 1.1 FIXED checkriding/cart/falcon funcs [Lupus]
+//= 1.2 Added Rebirth/Advanced Class support [Mass Zero]
+//= 1.3 Simplified the checks of job [Silentdragon]
+//= 1.3a Fixed a Typo Error. [Samuray22]
+//	-Thanks to ~AnnieRuru~.
+//= 1.4 Optimized Script. No need for 50 million Labels. [Spre]
+//= 1.5 Adapted to 3CeAM and 3rd jobs. [pakpil]
+//============================================================ 
+ 
+prontera,128,214,5	script	Universal Rental Npc#3rd	105,{
+	mes "[Universal Rental Npc]";
+	mes "Hi, here you can rent Carts, Falcons, Pecopecos, Dragons, Mados or Gryphons.";
+	next;
+	switch(select("Cart:Falcon:Peco/Dragon/Gryphon:Mado"))
+	{
+		case 1:
+			if( (BaseClass == Job_Merchant || BaseJob == Job_SuperNovice) && checkcart() == 0 && getskilllv("MC_PUSHCART") > 0 )
+			{
+				setcart;
+				close;
+			}
+			else
+			{
+				mes "[Universal Rental Npc]";
+				mes "Sorry " + strcharinfo(0) + ", Please make sure you are the required job and have the required skill.";
+				close;
+			}
+		case 2:
+			if( (Class == Job_Ranger || Class == Job_Ranger_T) && checkriding() )
+			{
+				mes "Sorry " + strcharinfo(0) + ", you can't rent a Falcon if you have a Warg rented.";
+				close;
+			}
+			if( BaseJob != Job_Archer && BaseClass == Job_Archer && checkfalcon() == 0 && getskilllv("HT_FALCON") > 0 )
+			{
+				setfalcon;
+				close;
+			}
+			else
+			{
+				mes "[Universal Rental Npc]";
+				mes "Sorry " + strcharinfo(0) + ", Please make sure you are the required job and have the required skill.";
+				close;
+			}					
+		case 3:
+			if( BaseJob != Job_Swordman && BaseClass == Job_Swordman && checkriding() == 0 && getskilllv("KN_RIDING") > 0 )
+			{
+				set @flag, 0;
+				if( Class == Job_Rune_Knight || Class == Job_Rune_Knight_T )
+				{
+					mes "Please select the color of your dragon.";
+					next;
+					set @flag, select("Green:Black:White:Blue:Red");
+					
+				}
+				setriding @flag;
+				close;
+			}
+			else
+			{
+				mes "[Universal Rental Npc]";
+				mes "Sorry " + strcharinfo(0) + ", Please make sure you are the required job and have the required skill.";
+				close;
+			}
+		case 4:
+			if( (Class == Job_Mechanic || Class == Job_Mechanic_T) && checkriding() == 0 )
+			{
+				setriding;
+				close;
+			}
+			else
+			{
+				mes "[Universal Retal Npc]";
+				mes "Sorry " + strcharinfo(0) + ", Please make sure you are the required job.";
+				close;
+			}
+	}
+}
