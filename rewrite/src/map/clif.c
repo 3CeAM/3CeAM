@@ -1097,7 +1097,6 @@ static void clif_setdisguise(struct block_list *bl, unsigned char *buf,int len)
 	clif_send(buf, len, bl, SELF);
 }
 
-
 /*==========================================
  * クラスチェンジ typeはMobの場合は1で他は0？
  *------------------------------------------*/
