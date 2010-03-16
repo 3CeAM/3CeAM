@@ -2641,7 +2641,10 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 
 
 	//Initialize variables that will be used afterwards
-	s_ele = skill_get_ele(skill_num, skill_lv);
+	if( skill_num == WL_HELLINFERNO && mflag&1 )
+		s_ele = ELE_FIRE; // Flag&1 Fire, Flag&2 Shawdow.
+	else
+		s_ele = skill_get_ele(skill_num, skill_lv);
 
 	if (s_ele == -1) // pl=-1 : the skill takes the weapon's element
 		s_ele = sstatus->rhw.ele;
@@ -2844,10 +2847,10 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						skillratio += 1400 + 100 * skill_lv;
 						break;
 					case WL_HELLINFERNO:
-						// Now Hell Inferno deals 300% fire damage and 1200% shadow damage at level 5.
-						// Need damage modifiers for lower levels. Also, need to figure out if a new skill tag was added
-						// for the shadow part. [LimitLine]
-						skillratio += 200;
+						if( s_ele == ELE_FIRE )
+							skillratio += 60 * skill_lv;
+						else
+							skillratio += 240 * skill_lv;
 						break;
 					case WL_COMET:
 						if( sc && sc->data[SC_REUSE_COMET] )

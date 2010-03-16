@@ -983,16 +983,15 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl,SC_CRITICALWOUND,100,skilllv,skill_get_time2(skillid,skilllv));
 		break;
 	case RK_WINDCUTTER:
-		if( rand()%100 < 3 + 2 * skilllv )
-			sc_start(bl,SC_FEAR,100,skilllv,skill_get_time2(skillid,skilllv));
+		sc_start(bl,SC_FEAR,3 + 2 * skilllv,skilllv,skill_get_time2(skillid,skilllv));
 		break;
 	case RK_HUNDREDSPEAR:
-		if( rand()%100 < 10 + 3 * skilllv )
+		rate = 10 + 3 * skilllv;
+		if( rand()%100 < rate )
 			skill_castend_damage_id(src,bl,KN_SPEARBOOMERANG,1,tick,0);
 		break;
 	case RK_DRAGONBREATH:
-		if( rand()%100 < 5 + 5 * skilllv )
-			sc_start(bl,SC_BURNING,100,skilllv,skill_get_time(skillid,skilllv));
+		sc_start(bl,SC_BURNING,5 + 5 * skilllv,skilllv,skill_get_time(skillid,skilllv));
 		break;
 	case AB_ADORAMUS:
 		sc_start(bl, SC_BLIND, 100, skilllv, skill_get_time(skillid, skilllv));
@@ -1009,7 +1008,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl, SC_STUN, 40, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case WL_HELLINFERNO:
-		sc_start(bl, SC_BURNING, 55 + skilllv * 5, skilllv, skill_get_time(skillid, skilllv));
+		sc_start(bl, SC_BURNING, 55 + 5 * skilllv, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case WL_COMET:
 		sc_start(bl, SC_BURNING, 100, skilllv, skill_get_time2(skillid, skilllv));
@@ -1040,8 +1039,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl, SC_STUN, 5*skilllv, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case WM_METALICSOUND:
-		if( rand()%100 < 20 + 5 * skilllv )
-			sc_start(bl, SC_CHAOS, 100, skilllv, skill_get_time(skillid,skilllv));
+		sc_start(bl, SC_CHAOS, 20 + 5 * skilllv, skilllv, skill_get_time(skillid,skilllv));
 		break;
 	case SO_EARTHGRAVE:
 		sc_start(bl, SC_BLEEDING, 10 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));	// Need official rate. [LimitLine]
@@ -1986,8 +1984,11 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 		else // the central target doesn't display an animation
 			dmg.dmotion = clif_skill_damage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, 5); // needs -2(!) as skill level
 		break;
+	case WL_HELLINFERNO:
+		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,1,skillid,-2,6);
+		break;
 	case WL_COMET:
-		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.damage,damage,20,skillid,skilllv,8);
+		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,skillid,skilllv,8);
 		break;
 	case WL_CHAINLIGHTNING_ATK:
 		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,1,WL_CHAINLIGHTNING,-2,6);
@@ -3332,7 +3333,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case AB_RENOVATIO:
 	case AB_HIGHNESSHEAL:
 	case AB_DUPLELIGHT_MAGIC:
-	case WL_HELLINFERNO:
 	case WL_FROSTMISTY:
 	case WM_GREAT_ECHO:
 	case NC_REPAIR:
@@ -3576,6 +3576,11 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 				clif_skill_nodamage(NULL, src, AL_HEAL, heal, 1);
 			}
 		}
+		break;
+
+	case WL_HELLINFERNO:
+		skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag|1);
+		skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag|2);
 		break;
 
 	case WL_CHAINLIGHTNING:

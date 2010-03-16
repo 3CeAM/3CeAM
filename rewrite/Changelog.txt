@@ -6,6 +6,11 @@
 //========================================
 
 03/15/2010
+	r255 [pakpil]
+	* Fixed WL_HELLINFERNO that was not working propertly.
+	* Minor cleanup in skill_additional_effect.
+	* Fixed a mistake in Thanatos Tower quest in r253. Sorry :/
+
 	r254 [pakpil]
 	* Fixed an issue in WL_READING_SB where it wasn't removing SC_STOP status when the Warlock haven't Spellbooks on the inventory.
 
