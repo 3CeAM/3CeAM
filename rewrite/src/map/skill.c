@@ -998,11 +998,10 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl, SC_DECREASEAGI, 100, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case WL_FROSTMISTY:
-		// Need oficial success chance at lower levels and how much each job level increases the success chance. [LimitLine]
-		sc_start(bl, SC_FREEZING, 30 + 10 * skilllv + (sd ? sd->status.job_level / 5 : 0), skilllv, skill_get_time(skillid, skilllv));
+		sc_start(bl, SC_FREEZING, (20 + 12 * skilllv) + (1 + sd ? sd->status.job_level / 200 : 0), skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case WL_JACKFROST:
-		sc_start(bl, SC_FREEZE, 10000, skilllv, skill_get_time(skillid, skilllv));
+		sc_start(bl, SC_FREEZE, 100, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case WL_CRIMSONROCK:
 		sc_start(bl, SC_STUN, 40, skilllv, skill_get_time(skillid, skilllv));
@@ -2946,9 +2945,11 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case NC_POWERSWING:
 	case SC_TRIANGLESHOT:
 	case SC_FEINTBOMB:
+	case LG_BANISHINGPOINT:
 	case LG_RAGEBURST:
 	case WM_METALICSOUND:
 	case WM_SEVERE_RAINSTORM_MELEE:
+	case WM_GREAT_ECHO:
 	case GN_CRAZYWEED_ATK:
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
@@ -3334,7 +3335,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case AB_HIGHNESSHEAL:
 	case AB_DUPLELIGHT_MAGIC:
 	case WL_FROSTMISTY:
-	case WM_GREAT_ECHO:
 	case NC_REPAIR:
 		skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag);
 		break;
@@ -11113,7 +11113,7 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 				return 0;
 			}
 			else
-				require.sp /= count;
+				require.sp -= require.sp * 20 * count / 100; //  -20% each W/M in the party.
 			break;
 		}
 		break;

@@ -956,7 +956,7 @@
 
 // Royal Guard
 2307,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_CANNONSPEAR,Cannon Spear
-2308,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		LG_BANISHINGPOINT,Banishing Point
+2308,7,6,1,0,0,0,10,1,yes,0,0,0,weapon,0,		LG_BANISHINGPOINT,Banishing Point
 2309,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_TRAMPLE,Trample
 2310,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_SHIELDPRESS,Shield Press
 2311,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_REFLECTDAMAGE,Reflect Damage
@@ -1025,7 +1025,7 @@
 2423,0,6,4,0,0x3,-1,5,1,no,0,0,0,none,0,		WM_SIRCLEOFNATURE,Circle of Nature's Sound
 2424,0,6,4,0,0x1,0,5,1,yes,0,0,0,magic,0,		WM_RANDOMIZESPELL,Improvised Song
 2425,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		WM_GLOOMYDAY,Gloomy Day
-2426,9,6,2,0,0x2,2:3:3:4:4,5,1,no,0,0x2000,0,magic,0,		WM_GREAT_ECHO,Great Echo
+2426,9,6,2,-1,0x2,2:3:3:4:4,5,1,no,0,0x2000,0,weapon,0,		WM_GREAT_ECHO,Great Echo
 2427,0,6,4,0,0x3,-1,5,0,no,0,0x2000,0,none,0,		WM_SONG_OF_MANA,Song of Mana
 2428,0,6,4,0,0x3,-1,5,1,no,0,0x2000,0,none,0,		WM_DANCE_WITH_WUG,Dance With A Warg
 2429,9,6,1,0,0x3,2:3:3:4:4,5,1,no,0,0x2000,0,none,0,		WM_SOUND_OF_DESTRUCTION,Sound of Destruction
