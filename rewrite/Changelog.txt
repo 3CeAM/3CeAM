@@ -5,6 +5,16 @@
 // 	- Details.
 //========================================
 
+03/17/2010
+	r258 [pakpil]
+	* Added LG_BANISHINGPOINT skill.
+	* Fixed WM_GREAT_ECHO skill damage type and SP reduction per W/M in party.
+	* Fixed WL_FROSTMISTY and WL_JACKFROST casting, aftercast and cooldown time and Freezing/Freeze chances.
+	* Fixed SC_FREEZING that don't affect to boss monsters.
+	* Fixed WL_FROSTMISTY damage.
+	* Fixed RK_SONICWAVE and RK_HUNDREDSPEAR damages.
+
+
 03/15/2010
 	r256 [pakpil]
 	* Added missing 'breeder_3ceAM' npc in r253.
