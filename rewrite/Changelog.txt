@@ -6,6 +6,9 @@
 //========================================
 
 03/17/2010
+	r259 [pakpil]
+	* Fixed WM_VOICEOFSIREN that wasn't blocking use skills in the W/M under the skill effect.
+
 	r258 [pakpil]
 	* Added LG_BANISHINGPOINT skill.
 	* Fixed WM_GREAT_ECHO skill damage type and SP reduction per W/M in party.

@@ -10138,6 +10138,9 @@ void clif_parse_UseSkillToId(int fd, struct map_session_data *sd)
 	if( target_id < 0 && -target_id == sd->bl.id ) // for disguises [Valaris]
 		target_id = sd->bl.id;
 	
+	if( sd->sc.data[SC_VOICEOFSIREN] && sd->sc.data[SC_VOICEOFSIREN]->val2 == target_id )
+		return;
+	
 	if( sd->ud.skilltimer != -1 )
 	{
 		if( skillnum != SA_CASTCANCEL )
