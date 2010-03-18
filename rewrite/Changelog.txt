@@ -6,7 +6,10 @@
 //========================================
 
 03/18/2010
-	r260 [Rytech]
+	r260 [pakpil]
+	* Fixed SC_AUTOSHADOWSPELL that wasn't removing SC_STOP when the skill fails.
+
+	r259 [Rytech]
 	*Added tags and ID's for all the latest and future status ID's in status.h.
 	-They will be disabled until realy to use.
 	*Updated const.txt to support all the latest existing NPC's.
@@ -16,10 +19,10 @@
 	-I dont plan on leaveing them here since they will require their own systems and database files real soon.
 
 03/17/2010
-	r259 [pakpil]
+	r258 [pakpil]
 	* Fixed WM_VOICEOFSIREN that wasn't blocking use skills in the W/M under the skill effect.
 
-	r258 [pakpil]
+	r257 [pakpil]
 	* Added LG_BANISHINGPOINT skill.
 	* Fixed WM_GREAT_ECHO skill damage type and SP reduction per W/M in party.
 	* Fixed WL_FROSTMISTY and WL_JACKFROST casting, aftercast and cooldown time and Freezing/Freeze chances.
