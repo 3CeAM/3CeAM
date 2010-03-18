@@ -3081,6 +3081,8 @@ int clif_skill_select_request( struct map_session_data *sd )
 	}
 #endif
 
+	status_change_end(&sd->bl,SC_STOP,-1);
+	clif_skill_fail(sd,SC_AUTOSHADOWSPELL,0x0,0,0);
 	return 0;
 }
 
