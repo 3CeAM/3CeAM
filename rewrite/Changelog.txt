@@ -6,6 +6,9 @@
 //========================================
 
 03/18/2010
+	r261 [pakpil]
+	* Udated all Mechanic accessory.
+
 	r260 [pakpil]
 	* Fixed SC_AUTOSHADOWSPELL that wasn't removing SC_STOP when the skill fails.
 
