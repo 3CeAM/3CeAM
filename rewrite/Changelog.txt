@@ -5,6 +5,16 @@
 // 	- Details.
 //========================================
 
+03/18/2010
+	r260 [Rytech]
+	*Added tags and ID's for all the latest and future status ID's in status.h.
+	-They will be disabled until realy to use.
+	*Updated const.txt to support all the latest existing NPC's.
+	-Have fun adding those new npc's to your server's. =P
+	*Added sorcerer's elemental spirit and genetic homunculus s tags and ID's to the mob_db2.
+	-They will remain disabled until the sprites come out for them.
+	-I dont plan on leaveing them here since they will require their own systems and database files real soon.
+
 03/17/2010
 	r259 [pakpil]
 	* Fixed WM_VOICEOFSIREN that wasn't blocking use skills in the W/M under the skill effect.
