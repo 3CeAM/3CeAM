@@ -1025,7 +1025,8 @@ enum {
 	OPT1_SLEEP,
 	//Aegis uses OPT1 = 5 to identify undead enemies (which also grants them immunity to the other opt1 changes)
 	OPT1_STONEWAIT=6, //Petrifying
-	OPT1_BURNING
+	OPT1_BURNING,
+	OPT1_IMPRISON
 };
 
 //opt2: Stackable status changes.
@@ -1038,6 +1039,7 @@ enum {
 	OPT2_ANGELUS      = 0x0020,
 	OPT2_BLEEDING     = 0x0040,
 	OPT2_DPOISON      = 0x0080,
+	OPT2_FEAR         = 0x0100,
 };
 
 //opt3: (SHOW_EFST_*)
