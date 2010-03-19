@@ -5,6 +5,12 @@
 // 	- Details.
 //========================================
 
+03/19/2010
+	r262 [pakpil]
+	* Updated WL_WHITEIMPRISON and WL_SOULEXPANSION skills.
+	- Added official OPT1_IMPRISON used whit WL_WHITEIMPRISON.
+	* Updated item_db2.txt.
+
 03/18/2010
 	r261 [pakpil]
 	* Udated all Mechanic accessory.

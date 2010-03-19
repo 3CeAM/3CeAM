@@ -1986,6 +1986,7 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 	case WL_HELLINFERNO:
 		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,1,skillid,-2,6);
 		break;
+	case WL_SOULEXPANSION:
 	case WL_COMET:
 		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,skillid,skilllv,8);
 		break;
@@ -6882,25 +6883,17 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case WL_WHITEIMPRISON:
-		// Need success rate at lower levels, as well as how much each job level influences the success rate. [LimitLine]
-		if( (src == bl || battle_check_target(src, bl, BCT_ENEMY)) &&
-			rand()%100 <= 15 + 10 * skilllv + (sd ? sd->status.job_level / 5 : 0) )
+		if( (src == bl || battle_check_target(src, bl, BCT_ENEMY)) )
 		{
-			if( bl->type == BL_MOB )
-				i = 1;
-			if( src != bl )
-				i = 2;
-			else
-				i = 3;
+			if( tsc && tsc->data[type] )
+			{
+				if( sd )
+					clif_skill_fail(sd, skillid, 0, 0, 0);
+				break;
+			}
 			clif_skill_nodamage(src, bl, skillid, skilllv,
-				sc_start(bl, SC_WHITEIMPRISON, 100, skilllv,
-				skill_get_time(skillid, i)));
-		}
-		else if( sd )
-		{
-			clif_skill_nodamage(src, bl, skillid, skilllv, 1);
-			clif_skill_fail(sd, skillid, 0, 0, 0);
-			break;
+				sc_start2(bl, type, (50+3*skilllv)*(1+((sd)?sd->status.job_level:1)/100), skilllv, src->id,
+				(src == bl)?skill_get_time2(skillid,skilllv):skill_get_time(skillid, skilllv)));
 		}
 		break;
 
