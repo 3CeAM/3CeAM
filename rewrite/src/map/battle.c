@@ -268,7 +268,7 @@ int battle_attr_fix(struct block_list *src, struct block_list *target, int damag
 		{
 			damage = 0;
 		}
-		else
+		else if( tsc->data[SC_WHITEIMPRISON] )
 		{
 			tsc->data[SC_WHITEIMPRISON]->val3 = 1;	// Don't deal damage when sc ends.
 			status_change_end(target, SC_WHITEIMPRISON, -1);
