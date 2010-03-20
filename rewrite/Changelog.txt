@@ -5,6 +5,22 @@
 // 	- Details.
 //========================================
 
+03/20/2010
+	r263 [Rytech]
+	*This is part 1 of a big major update.
+	-WARNING!!!! For the next few revisions following this one, the program will be uncompileable due to many checks needing to be redone
+	-because of the add in of this update. Update to this revision ONLY if your intrested at looking at the code.
+
+	*Added in the V2.0 3CeAM job system.
+	-This system will give better support for many things and also fix and improve on many of the problems weve had in the past.
+	-Another update will follow soon to add in some other needed info for the charactor server.
+	-This adds support for the 3rd class baby jobs. You can freely test them, but their skills will not appear in the client normally.
+	-The item database upper settings are planned on being redone soon as third jobs now only use 1 upper setting.
+	-You WILL need a 2010-03-10 RE client or higher to beable to see the baby jobs. XRay may not beable to support baby jobs
+	-properly, even if you add them into your tables since the client itself does the sprite shrink trick for baby jobs. (I think)
+	-Please do not post any "It wont compile, and it gives errors trying" reports. I am aware of this as many of the checks and features
+	-will have to be changed or redone to work with the new system.
+
 03/19/2010
 	r262 [pakpil]
 	* Updated WL_WHITEIMPRISON and WL_SOULEXPANSION skills.

@@ -1358,6 +1358,19 @@ int atcommand_jobchange(const int fd, struct map_session_data* sd, const char* c
 			{ "sura2",		4077 },
 			{ "genetic2",		4078 },
 			{ "shadow chaser2",	4079 },
+			{ "baby rune",		4096 },
+			{ "baby warlock",	4097 },
+			{ "baby ranger",	4098 },
+			{ "baby bishop",	4099 },
+			{ "baby mechanic",	4100 },
+			{ "baby cross",		4101 },
+			{ "baby guard",		4102 },
+			{ "baby sorcerer",	4103 },
+			{ "baby minstrel",	4104 },
+			{ "baby wanderer",	4105 },
+			{ "baby sura",		4106 },
+			{ "baby genetic",	4107 },
+			{ "baby chaser",	4108 },
 		};
 
 		for (i=0; i < ARRAYLENGTH(jobs); i++) {
@@ -1401,13 +1414,19 @@ int atcommand_jobchange(const int fd, struct map_session_data* sd, const char* c
 			clif_displaymessage(fd, "  23 Super Novice     24 Gunslinger       25 Ninja          4046 Taekwon");
 			clif_displaymessage(fd, "4047 Star Gladiator 4049 Soul Linker    4050 Gangsi         4051 Death Knight");
 			clif_displaymessage(fd, "4052 Dark Collector");
-			clif_displaymessage(fd, "---- Baby Classes ----");
+			clif_displaymessage(fd, "---- 1st And 2nd Baby Class ----");
 			clif_displaymessage(fd, "4023 Baby Novice    4024 Baby Swordsman 4025 Baby Mage      4026 Baby Archer");
 			clif_displaymessage(fd, "4027 Baby Acolyte   4028 Baby Merchant  4029 Baby Thief     4030 Baby Knight");
 			clif_displaymessage(fd, "4031 Baby Priest    4032 Baby Wizard    4033 Baby Blacksmith 4034 Baby Hunter");
 			clif_displaymessage(fd, "4035 Baby Assassin  4037 Baby Crusader  4038 Baby Monk      4039 Baby Sage");
 			clif_displaymessage(fd, "4040 Baby Rogue     4041 Baby Alchemist 4042 Baby Bard      4043 Baby Dancer");
 			clif_displaymessage(fd, "4045 Super Baby");
+			clif_displaymessage(fd, "---- 3rd Baby Class ----");
+			clif_displaymessage(fd, "4096 Baby Rune Knight    4097 Baby Warlock        4098 Baby Ranger");
+			clif_displaymessage(fd, "4099 Baby Arch Bishop    4010 Baby Mechanic       4011 Baby Guillotine Cross");
+			clif_displaymessage(fd, "4012 Baby Royal Guard    4013 Baby Sorcerer       4014 Baby Minstrel");
+			clif_displaymessage(fd, "4015 Baby Wanderer       4016 Baby Sura           4017 Baby Genetic");
+			clif_displaymessage(fd, "4018 Baby Shadow Chaser");
 			clif_displaymessage(fd, "---- Mounts, Modes, And Others ----");
 			clif_displaymessage(fd, "  13 Knight (Peco)    21 Crusader (Peco)  22 Wedding          26 Christmas");
 			clif_displaymessage(fd, "  27 Summer 4014 Lord Knight (Peco) 4022 Paladin (Peco)  4036 Baby Knight (Peco)");
@@ -1461,13 +1480,19 @@ int atcommand_jobchange(const int fd, struct map_session_data* sd, const char* c
 		clif_displaymessage(fd, "  23 Super Novice     24 Gunslinger       25 Ninja          4046 Taekwon");
 		clif_displaymessage(fd, "4047 Star Gladiator 4049 Soul Linker    4050 Gangsi         4051 Death Knight");
 		clif_displaymessage(fd, "4052 Dark Collector");
-		clif_displaymessage(fd, "---- Baby Classes ----");
+		clif_displaymessage(fd, "---- 1st And 2nd Baby Class ----");
 		clif_displaymessage(fd, "4023 Baby Novice    4024 Baby Swordsman 4025 Baby Mage      4026 Baby Archer");
 		clif_displaymessage(fd, "4027 Baby Acolyte   4028 Baby Merchant  4029 Baby Thief     4030 Baby Knight");
 		clif_displaymessage(fd, "4031 Baby Priest    4032 Baby Wizard    4033 Baby Blacksmith 4034 Baby Hunter");
 		clif_displaymessage(fd, "4035 Baby Assassin  4037 Baby Crusader  4038 Baby Monk      4039 Baby Sage");
 		clif_displaymessage(fd, "4040 Baby Rogue     4041 Baby Alchemist 4042 Baby Bard      4043 Baby Dancer");
 		clif_displaymessage(fd, "4045 Super Baby");
+		clif_displaymessage(fd, "---- 3rd Baby Class ----");
+		clif_displaymessage(fd, "4096 Baby Rune Knight    4097 Baby Warlock        4098 Baby Ranger");
+		clif_displaymessage(fd, "4099 Baby Arch Bishop    4010 Baby Mechanic       4011 Baby Guillotine Cross");
+		clif_displaymessage(fd, "4012 Baby Royal Guard    4013 Baby Sorcerer       4014 Baby Minstrel");
+		clif_displaymessage(fd, "4015 Baby Wanderer       4016 Baby Sura           4017 Baby Genetic");
+		clif_displaymessage(fd, "4018 Baby Shadow Chaser");
 		clif_displaymessage(fd, "---- Mounts, Modes, And Others ----");
 		clif_displaymessage(fd, "  13 Knight (Peco)    21 Crusader (Peco)  22 Wedding          26 Christmas");
 		clif_displaymessage(fd, "  27 Summer 4014 Lord Knight (Peco) 4022 Paladin (Peco)  4036 Baby Knight (Peco)");
