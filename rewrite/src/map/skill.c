@@ -6269,7 +6269,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		sc_start(src,SC_SMA,100,skilllv,skill_get_time(SL_SMA,skilllv));
 		break;
 	case SL_HIGH:
-		if (sd && !(dstsd && ((dstsd->class_&JOBL_UPPER || dstsd->class_&JOBL_THIRD_BASE || dstsd->class_&JOBL_THIRD_UPPER)) && !(dstsd->class_&JOBL_2) && dstsd->status.base_level < 70)) {
+		if (sd && !(dstsd && (dstsd->class_&JOBL_UPPER) && !(dstsd->class_&JOBL_2) && dstsd->status.base_level < 70)) {
 			clif_skill_fail(sd,skillid,0,0,0);
 			break;
 		}

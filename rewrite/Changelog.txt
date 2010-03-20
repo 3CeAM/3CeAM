@@ -6,6 +6,12 @@
 //========================================
 
 03/20/2010
+	r268 [Rytech]
+	*Added in the adjusted checks for the V2.0 job system.
+	-This should be the final revision for the adding of the updated system.
+	-A big thanks for pakpil for this one.
+
+03/20/2010
 	r267 [Jobbie]
 	* Fixed an issue of recent skills in eA that using skill_blockpc_start
 

@@ -1488,11 +1488,10 @@ int pc_calc_skilltree_normalize_job(struct map_session_data *sd)
 	else
 	if( (sd->class_&MAPID_THIRDMASK) >= MAPID_RUNE_KNIGHT &&
 		sd->status.skill_point >= sd->status.job_level &&
-		((sd->change_level[1] > 0 && skill_point < (sd->change_level[0] + sd->change_level[1] + 7)) || skill_point < (sd->class_&JOBL_THIRD_UPPER) ? 127 : 107) )
+		((sd->change_level[1] > 0 && skill_point < (sd->change_level[0] + sd->change_level[1] + 7)) || skill_point < (sd->class_&JOBL_UPPER) ? 127 : 107) )
 	{
 			// Send it to 2nd class
-		c ^= (sd->class_&JOBL_THIRD_UPPER)?JOBL_THIRD_UPPER:JOBL_THIRD_BASE;
-		c |= JOBL_UPPER;
+		c ^= JOBL_THIRD;
 	}
 	if (sd->class_&JOBL_UPPER) //Convert to Upper
 		c |= JOBL_UPPER;
@@ -5429,10 +5428,10 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 			clif_msgtable_num(sd->fd,1566,i);
 			return 0;
 		}
-		if( skill_point < (sd->change_level[1] > 0 ? sd->change_level[0] + sd->change_level[1] + 7 : (sd->class_&JOBL_THIRD_UPPER) ? 127 : 107) &&
+		if( skill_point < (sd->change_level[1] > 0 ? sd->change_level[0] + sd->change_level[1] + 7 : (sd->class_&JOBL_UPPER) ? 127 : 107) &&
 			skill_num >= RK_ENCHANTBLADE && skill_num <= SR_RIDEINLIGHTNING )
 		{
-			i = (sd->change_level[1] > 0 ? sd->change_level[0] + sd->change_level[1] + 7 : (sd->class_&JOBL_THIRD_UPPER) ? 127 : 107) - skill_point;
+			i = (sd->change_level[1] > 0 ? sd->change_level[0] + sd->change_level[1] + 7 : (sd->class_&JOBL_UPPER) ? 127 : 107) - skill_point;
 			clif_msgtable_num(sd->fd,1567, i);
 			return 0;
 		}
@@ -5623,7 +5622,7 @@ int pc_resetstate(struct map_session_data* sd)
 			return 0;
 		}
 		
-		sd->status.status_point = statp[sd->status.base_level] + ( (sd->class_&JOBL_UPPER || sd->class_&JOBL_THIRD_UPPER) ? 52 : 0 ); // extra 52+48=100 stat points
+		sd->status.status_point = statp[sd->status.base_level] + (sd->class_&JOBL_UPPER ? 52 : 0); // extra 52+48=100 stat points
 	}
 	else
 	{ //Use new stat-calculating equation [Skotlex]
@@ -6245,7 +6244,7 @@ int pc_readparam(struct map_session_data* sd,int type)
 	case SP_JOBLEVEL:    val = sd->status.job_level; break;
 	case SP_CLASS:       val = sd->status.class_; break;
 	case SP_BASEJOB:     val = pc_mapid2jobid(sd->class_&MAPID_UPPERMASK, sd->status.sex); break; //Base job, extracting upper type.
-	case SP_UPPER:       val = sd->class_&JOBL_UPPER?1:(sd->class_&JOBL_BABY?2:(sd->class_&JOBL_THIRD_BASE?3:(sd->class_&JOBL_THIRD_UPPER?4:0))); break;
+	case SP_UPPER:       val = sd->class_&JOBL_THIRD?3:(sd->class_&JOBL_UPPER?1:(sd->class_&JOBL_BABY?2:0)); break;
 	case SP_BASECLASS:   val = pc_mapid2jobid(sd->class_&MAPID_BASEMASK, sd->status.sex); break; //Extract base class tree. [Skotlex]
 	case SP_SEX:         val = sd->status.sex; break;
 	case SP_WEIGHT:      val = sd->weight; break;
@@ -6530,10 +6529,7 @@ int pc_jobchange(struct map_session_data *sd,int job, int upper)
 			b_class|= JOBL_BABY;
 			break;
 		case 3:
-			b_class|= JOBL_THIRD_BASE;
-			break;
-		case 4:
-			b_class|= JOBL_THIRD_UPPER;
+			b_class|= JOBL_THIRD;
 			break;
 	}
 	//This will automatically adjust bard/dancer classes to the correct gender
@@ -6549,7 +6545,7 @@ int pc_jobchange(struct map_session_data *sd,int job, int upper)
 		if (!(sd->class_&JOBL_THIRD) )
 			sd->change_level[1] = sd->status.job_level;
 		else if (!sd->change_level[1])
-			sd->change_level[1] = (b_class&JOBL_THIRD_UPPER)?70:50; // Assume 50 to Base 3rd jobs and 70 to Trans 3rd jobs
+			sd->change_level[1] = (b_class&JOBL_UPPER)?70:50; // Assume 50 to Base 3rd jobs and 70 to Trans 3rd jobs
 		pc_setglobalreg(sd, "jobchange_level2", sd->change_level[1]);
 	}
 	else if (b_class&JOBL_2) {
