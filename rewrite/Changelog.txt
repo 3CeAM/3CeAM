@@ -6,6 +6,9 @@
 //========================================
 
 03/20/2010
+	r265 [pakpil]
+	* Fixed an issue that was crashing server. Bug report 281.
+
 	r264 [Rytech]
 	*Added the remaining parts of the system update.
 	-All thats left is to update the few checks in the map server.
