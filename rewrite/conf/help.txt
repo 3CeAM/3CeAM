@@ -103,7 +103,7 @@
  40:   23: Super Novice     24: Gunslinger       25: Ninja
  40: 4046: Taekwon        4047: Star Gladiator 4049: Soul Linker
  40: 4050: Gangsi         4051: Death Knight   4052: Dark Collector
- 40: ---- Baby Classes ----
+ 40: ---- 1st And 2nd Class Babys ----
  40: 4023: Baby          4024: Baby Swordman   4025: Baby Mage
  40: 4026: Baby Archer   4027: Baby Acolyte    4028: Baby Merchant
  40: 4029: Baby Thief    4030: Baby Knight     4031: Baby Priest
@@ -111,6 +111,12 @@
  40: 4035: Baby Assassin 4037: Baby Crusader   4038: Baby Monk
  40: 4039: Baby Sage     4040: Baby Rogue      4041: Baby Alchemist
  40: 4042: Baby Bard     4043: Baby Dancer     4045: Super Baby
+ 40: ---- 3rd Class Babys ----
+ 40: 4096: Baby Rune Knight 4097: Baby Warlock  4098: Baby Ranger
+ 40: 4099: Baby Arch Bishop 4100: Baby Mechanic 4101: Baby Guillotine Cross
+ 40: 4102: Baby Royal Guard 4103: Baby Sorcerer 4104: Baby Minstrel
+ 40: 4105: Baby Wanderer    4106: Baby Sura     4107: Baby Genetic
+ 40: 4108: Baby Shadow Chaser
  40: ---- Mounts, Modes, And Others ----
  40:   13 Knight (Peco)    21 Crusader (Peco)  22 Wedding          26 Christmas
  40:   27 Summer 4014 Lord Knight (Peco) 4022 Paladin (Peco)  4036 Baby Knight (Peco)
