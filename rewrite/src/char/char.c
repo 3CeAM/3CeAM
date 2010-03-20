@@ -2541,7 +2541,10 @@ void char_read_fame_list(void)
 		if (char_dat[id[i]].status.fame && (
 			char_dat[id[i]].status.class_ == JOB_BLACKSMITH ||
 			char_dat[id[i]].status.class_ == JOB_WHITESMITH ||
-			char_dat[id[i]].status.class_ == JOB_BABY_BLACKSMITH))
+			char_dat[id[i]].status.class_ == JOB_BABY_BLACKSMITH ||
+			char_dat[id[i]].status.class_ == JOB_MECHANIC ||
+			char_dat[id[i]].status.class_ == JOB_MECHANIC_T ||
+			char_dat[id[i]].status.class_ == JOB_BABY_MECHANIC))
 		{
 			fame_item.id = char_dat[id[i]].status.char_id;
 			fame_item.fame = char_dat[id[i]].status.fame;
@@ -2556,7 +2559,10 @@ void char_read_fame_list(void)
 		if (char_dat[id[i]].status.fame && (
 			char_dat[id[i]].status.class_ == JOB_ALCHEMIST ||
 			char_dat[id[i]].status.class_ == JOB_CREATOR ||
-			char_dat[id[i]].status.class_ == JOB_BABY_ALCHEMIST))
+			char_dat[id[i]].status.class_ == JOB_BABY_ALCHEMIST ||
+			char_dat[id[i]].status.class_ == JOB_GENETIC ||
+			char_dat[id[i]].status.class_ == JOB_GENETIC_T ||
+			char_dat[id[i]].status.class_ == JOB_BABY_GENETIC))
 		{
 			fame_item.id = char_dat[id[i]].status.char_id;
 			fame_item.fame = char_dat[id[i]].status.fame;
