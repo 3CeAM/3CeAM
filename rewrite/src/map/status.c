@@ -6601,6 +6601,8 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			break;
 		case SC_WEAPONBLOCKING:
 			val2 = 10 + 2 * val1; // Chance
+			val4 = tick / 1000;
+			tick = 1000;
 			val_flag |= 1|2;
 			break;
 		case SC_TOXIN:
