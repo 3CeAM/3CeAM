@@ -6,6 +6,9 @@
 //========================================
 
 03/20/2010
+	r267 [Jobbie]
+	* Fixed an issue of recent skills in eA that using skill_blockpc_start
+
 	r266 [pakpil]
 	* Fixed GC_WEAPONBLOCKING that wasn't consuming SP while active.
 	* Fixed some damage formulas.
