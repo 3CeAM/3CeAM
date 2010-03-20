@@ -6,6 +6,11 @@
 //========================================
 
 03/20/2010
+	r264 [Rytech]
+	*Added the remaining parts of the system update.
+	-All thats left is to update the few checks in the map server.
+
+03/20/2010
 	r263 [Rytech]
 	*This is part 1 of a big major update.
 	-WARNING!!!! For the next few revisions following this one, the program will be uncompileable due to many checks needing to be redone
