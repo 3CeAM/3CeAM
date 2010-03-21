@@ -6749,11 +6749,14 @@ int pc_setoption(struct map_session_data *sd,int type)
 	p_type = sd->sc.option;
 	status = status_get_status_data(&sd->bl);
 
+	if( p_type&OPTION_MADO && p_type&OPTION_CART) // Don't remove cart when you're removing your mado.
+		type |= (p_type&OPTION_CART);
+
 	//Option has to be changed client-side before the class sprite or it won't always work (eg: Wedding sprite) [Skotlex]
 	sd->sc.option = type;
 	clif_changeoption(&sd->bl);
 	
-	if( type&OPTION_RIDING && !(p_type&OPTION_RIDING) && (sd->class_&MAPID_BASEMASK) == MAPID_SWORDMAN )
+	if( type&OPTION_RIDING && !(p_type&OPTION_RIDING) && (sd->class_&MAPID_BASEMASK) == MAPID_SWORDMAN && (sd->class_&MAPID_THIRDMASK) < MAPID_BABY_RUNE) // Remove when Baby Guard class can mount.
 	{	//We are going to mount. [Skotlex]
 		clif_status_load(&sd->bl, SI_RIDING, 1);
 		status_calc_pc(sd,0); //Mounting/Umounting affects walk and attack speeds.
@@ -6798,24 +6801,24 @@ int pc_setoption(struct map_session_data *sd,int type)
 	else if (!(type&OPTION_FALCON) && p_type&OPTION_FALCON) //Falcon OFF
 		clif_status_load(&sd->bl,SI_FALCON,0);
 
-	if (type&OPTION_RIDING_WUG && !(p_type&OPTION_RIDING_WUG) && ((sd->class_&MAPID_BASEMASK) == MAPID_ARCHER) && (sd->class_&JOBL_THIRD) && sd->class_&JOBL_2_1)
+	if (type&OPTION_RIDING_WUG && !(p_type&OPTION_RIDING_WUG) && ((sd->class_&MAPID_BASEMASK) == MAPID_ARCHER) && (sd->class_&MAPID_THIRDMASK) < MAPID_BABY_RUNE)
 	{	//We are going to mount. [Rikter]
 		clif_status_load(&sd->bl,SI_WUGMOUNT,1);
 		status_calc_pc(sd,0); //Mounting/Umounting affects walk and attack speeds.
 	}
-	else if (!(type&OPTION_RIDING_WUG) && p_type&OPTION_RIDING_WUG && ((sd->class_&MAPID_BASEMASK) == MAPID_ARCHER) && (sd->class_&JOBL_THIRD) && sd->class_&JOBL_2_1)
+	else if (!(type&OPTION_RIDING_WUG) && p_type&OPTION_RIDING_WUG && ((sd->class_&MAPID_BASEMASK) == MAPID_ARCHER) )
 	{	//We are going to dismount.
 		clif_status_load(&sd->bl,SI_WUGMOUNT,0);
 		status_calc_pc(sd,0); //Mounting/Umounting affects walk and attack speeds.
 	}
 	// Some info from iRO-Wiki says that MADO are a mount not another class. The HP/SP dealed by damage are the owner ones. [pakpil]
-	if (type&OPTION_MADO && !(p_type&OPTION_MADO) && ((sd->class_&MAPID_BASEMASK) == MAPID_MERCHANT) && (sd->class_&JOBL_THIRD) && sd->class_&JOBL_2_1)
+	if (type&OPTION_MADO && !(p_type&OPTION_MADO) && ((sd->class_&MAPID_BASEMASK) == MAPID_MERCHANT) && (sd->class_&MAPID_THIRDMASK) < MAPID_BABY_RUNE)
 	{
 		if( pc_checkskill(sd, NC_MADOLICENCE) < 5 )
 			status_calc_pc(sd, 0); // Apply speed penalty.
 	}
 
-	else if (!(type&OPTION_MADO) && p_type&OPTION_MADO && ((sd->class_&MAPID_BASEMASK) == MAPID_MERCHANT) && (sd->class_&JOBL_THIRD) && sd->class_&JOBL_2_1)
+	else if (!(type&OPTION_MADO) && p_type&OPTION_MADO && ((sd->class_&MAPID_BASEMASK) == MAPID_MERCHANT) )
 	{
 		if( pc_checkskill(sd, NC_MADOLICENCE) < 5 )
 			status_calc_pc(sd, 0); // Remove speed penalty.
