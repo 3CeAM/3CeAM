@@ -6,6 +6,9 @@
 //========================================
 
 03/21/2010
+	r271 [pakpil]
+	* Updated to eA revision 14267.
+
 	r270 [pakpil]
 	* Fixed an issue when reading exp table.
 	
@@ -84,6 +87,7 @@
 	* Fixed SC_FREEZING that don't affect to boss monsters.
 	* Fixed WL_FROSTMISTY damage.
 	* Fixed RK_SONICWAVE and RK_HUNDREDSPEAR damages.
+	* Added custom 3CeAM breeder. Follow up r253.
 
 
 03/15/2010
