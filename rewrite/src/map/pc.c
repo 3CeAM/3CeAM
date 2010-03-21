@@ -8506,7 +8506,7 @@ int pc_readdb(void)
 	fclose(fp);
 	for (i = 0; i < JOB_MAX; i++) {
 		if (!pcdb_checkid(i)) continue;
-		if (i == JOB_WEDDING || i == JOB_XMAS || i == JOB_SUMMER)
+		if (i == JOB_WEDDING || i == JOB_XMAS || i == JOB_SUMMER || (i > JOB_MECHANIC_T2 && i < JOB_BABY_RUNE))
 			continue; //Classes that do not need exp tables.
 		j = pc_class2idx(i);
 		if (!max_level[j][0])

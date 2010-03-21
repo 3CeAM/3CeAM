@@ -6,7 +6,10 @@
 //========================================
 
 03/21/2010
-	r267 [pakpil]
+	r270 [pakpil]
+	* Fixed an issue when reading exp table.
+	
+	r269 [pakpil]
 	* Added max_baby_third_paramater to set max parameter to 3rd baby classes.
 	* Fixed an issue where the cart was being taked off when you are removing your mado.
 	* Minor fix in pc_setoption to prevent 3rd baby class to mount until these can do it.
