@@ -6,6 +6,11 @@
 //========================================
 
 03/21/2010
+	r272 [Rytech]
+	*Server now ignores the rune knight ID's that between the MECHANIC_T2 and BABY_RUNE jobs.
+	-Removed the exp fix as its not needed.
+
+03/21/2010
 	r271 [pakpil]
 	* Updated to eA revision 14267.
 
