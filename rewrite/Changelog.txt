@@ -5,6 +5,11 @@
 // 	- Details.
 //========================================
 
+03/22/2010
+	r274 [pakpil]
+	* Fixed GC_WEAPONCRUSH behavior.
+	* Fixed minor typo in pc.h.
+
 03/21/2010
 	r272 [Rytech]
 	*Server now ignores the rune knight ID's that between the MECHANIC_T2 and BABY_RUNE jobs.
