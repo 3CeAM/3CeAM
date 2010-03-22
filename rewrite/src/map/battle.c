@@ -377,7 +377,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			{
 				clif_skill_nodamage(bl,src,GC_WEAPONBLOCKING,1,1);
 				d->dmg_lv = ATK_NONE;
-				sc_start(bl,SC_COMBO,100,GC_WEAPONBLOCKING,2000);
+				sc_start2(bl,SC_COMBO,100,GC_WEAPONBLOCKING,src->id,2000);
 				return 0;
 			}
 		}

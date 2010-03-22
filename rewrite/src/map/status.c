@@ -1850,9 +1850,9 @@ static unsigned int status_base_pc_maxhp(struct map_session_data* sd, struct sta
 
 	val += val * status->vit/100; // +1% per each point of VIT
 
-	if (sd->class_&JOBL_UPPER)
+	if( sd->class_&JOBL_UPPER )
 		val += val * 25/100; //Trans classes get a 25% hp bonus
-	else if (sd->class_&JOBL_BABY)
+	else if( sd->class_&JOBL_BABY )
 		val -= val * 30/100; //Baby classes get a 30% hp penalty
 	return val;
 }

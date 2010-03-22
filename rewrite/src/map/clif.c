@@ -9979,7 +9979,6 @@ void clif_parse_GetItemFromCart(int fd,struct map_session_data *sd)
  *------------------------------------------*/
 void clif_parse_RemoveOption(int fd,struct map_session_data *sd)
 {
-	//FIXME: Cart and Mado should be removed at a time?
 	//Can only remove Cart/Riding Peco/Falcon/Riding Dragon/Mado.
 	pc_setoption(sd,sd->sc.option&~(OPTION_CART|OPTION_RIDING|OPTION_FALCON|(OPTION_RIDING_DRAGON)|OPTION_MADO));
 }
