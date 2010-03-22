@@ -6,6 +6,11 @@
 //========================================
 
 03/22/2010
+	r275 [pakpil]
+	* Fixed GC_CREATENEWPOISON skill.
+	- All poisons require and consume 1 Medicine Bowl and 1 Poison Creation Kit.
+	- The ammount of bottles obtained depends on GC_RESEARCHNEWPOISON skill level.
+
 	r274 [pakpil]
 	* Fixed GC_WEAPONCRUSH behavior.
 	* Fixed minor typo in pc.h.

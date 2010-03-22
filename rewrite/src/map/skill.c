@@ -13695,6 +13695,9 @@ int skill_produce_mix (struct map_session_data *sd, int skill_id, int nameid, in
 	if (!skill_id) //A skill can be specified for some override cases.
 		skill_id = skill_produce_db[idx].req_skill;
 
+	if( skill_id == GC_RESEARCHNEWPOISON )
+		skill_id = GC_CREATENEWPOISON;
+
 	slot[0]=slot1;
 	slot[1]=slot2;
 	slot[2]=slot3;
@@ -13848,6 +13851,7 @@ int skill_produce_mix (struct map_session_data *sd, int skill_id, int nameid, in
 			case GC_CREATENEWPOISON:
 				skill_lv = pc_checkskill(sd,GC_RESEARCHNEWPOISON);
 				make_per = 3000 + 500 * skill_lv;
+				qty = skill_lv;
 				break;
 			case GN_MIX_COOKING:
 			case GN_MAKEBOMB:
