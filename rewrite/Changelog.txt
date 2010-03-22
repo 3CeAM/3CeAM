@@ -6,6 +6,10 @@
 //========================================
 
 03/22/2010
+	r276 [Jobbie]
+	* Adjusted the behavior of Fearbreeze skill.
+	* Fixed a mistake in checking wind element for both hands when using NC_AXETORNADO.
+
 	r275 [pakpil]
 	* Added missing changes in r274.
 
