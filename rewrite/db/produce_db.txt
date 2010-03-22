@@ -419,25 +419,25 @@
 12727,24,2010,9,7939,1,7210,1
 //==============================================
 
-//===== Guillotine Cross Poisons ===============
+//===== Guillotine Cross Poisons ===ItemLv=25 ==
 //-- Paralize <-- GC_RESEARCHNEWPOISON Lv1, 20 Poison Toad Skin, 1 Amoena
-12717,25,2024,1,7931,0,7155,20,7937,1
+12717,25,2024,1,7931,1,7155,20,7937,1,7134,1
 //-- Pyrexia <-- GC_RESEARCHNEWPOISON Lv2, 20 Anolian Skin, 1 Lantana
-12718,25,2024,2,7931,0,7003,20,7933,1
+12718,25,2024,2,7931,1,7003,20,7933,1,7134,1
 //-- Disheart <-- GC_RESEARCHNEWPOISON Lv3, 10 Decayed Nail, 1 Celatom
-12719,25,2024,3,7931,0,957,10,7935,1
+12719,25,2024,3,7931,1,957,10,7935,1,7134,1
 //-- Leech End <-- GC_RESEARCHNEWPOISON Lv4, 1 Nerium, 1 Scoforia
-12720,25,2024,4,7931,0,7932,1,7936,1
+12720,25,2024,4,7931,1,7932,1,7936,1,7134,1
 //-- Antidote <-- GC_RESEARCHNEWPOISON Lv5, 2 Green Herbs, 1 Blue Herb, 1 White Herb
-6128,25,2024,5,7931,0,509,1,510,1,511,2
+6128,25,2024,5,7931,1,509,1,510,1,511,2,7134,1
 //-- Venom Bleed <-- GC_RESEARCHNEWPOISON Lv6, 10 Sticky Poison, 1 Isildor
-12721,25,2024,6,7931,0,7565,10,709,1
+12721,25,2024,6,7931,1,7565,10,709,1,7134,1
 //-- Magic Mushroom <-- GC_RESEARCHNEWPOISON Lv7, 10 Poison Spore, 1 Makulrata
-12722,25,2024,7,7931,0,7033,10,7934,1
+12722,25,2024,7,7931,1,7033,10,7934,1,7134,1
 //-- Toxin <-- GC_RESEARCHNEWPOISON Lv8, 10 Sticky Poison, 1 Nerium
-12723,25,2024,8,7931,0,7565,10,7932,1
+12723,25,2024,8,7931,1,7565,10,7932,1,7134,1
 //-- Oblivion Curse <-- GC_RESEARCHNEWPOISON Lv9, 10 Mermaid Heart, 1 Isildor
-12724,25,2024,9,7931,0,950,10,709,1
+12724,25,2024,9,7931,1,950,10,709,1,7134,1
 //==============================================
 
 //==============================================
