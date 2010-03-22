@@ -1240,23 +1240,16 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 			wd.div_ = skill_get_num(GS_CHAINACTION,skill_lv);
 			wd.type = 0x08;
 		}
-	}
-
-	if( sc && sc->data[SC_FEARBREEZE] && !skill_num )
-	{	// Fear Breeze. Should it go here, before crit, hit and flee calculations? [LimitLine]
-		int rate = 0, hits = 0;
-		switch( sc->data[SC_FEARBREEZE]->val1 )
+		else if( sc && sc->data[SC_FEARBREEZE] && sd->weapontype1 == W_BOW && (i = sd->equip_index[EQI_AMMO]) >= 0 && sd->inventory_data[i] && sd->status.inventory[i].amount > 1 )
 		{
-			case 1: case 2: rate = 4; hits = 2; break;
-			case 3: rate = 7; hits = 2 + rand()%1; break;
-			case 4: rate = 9; hits = 2 + rand()%2; break;
-			case 5: default: rate = 10; hits = 2 + rand()%3; break;
-		}
-		if( rand()%100 <= rate )
-		{
-			wd.div_ = hits;
-			if( sd )
-				battle_consume_ammo(sd, RA_FEARBREEZE, hits);
+			short rate[] = { 4, 4, 7, 9, 10 };
+			if( sc->data[SC_FEARBREEZE]->val1 > 0 && sc->data[SC_FEARBREEZE]->val1 < 6 && rand()%100 < rate[sc->data[SC_FEARBREEZE]->val1] )
+			{
+				wd.type = 0x08;
+				flag.ammo = 1; // To consume Ammo Later (div_ - 1)
+				wd.div_ = 2 + (sc->data[SC_FEARBREEZE]->val1 > 2) ? rand()%(sc->data[SC_FEARBREEZE]->val1 - 2) : 0;
+				wd.div_ = min(wd.div_,sd->status.inventory[i].amount); // Reduce number of hits if you don't have enough arrows
+			}
 		}
 	}
 
@@ -2138,7 +2131,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 			case NC_POWERSWING:
 			case NC_AXETORNADO:
 				ATK_ADDRATE(status_get_lv(src)/6);//Should led up to 1.25 times the normal damage if Blevel is 150. [Jobbie]
-				if( skill_num == NC_AXETORNADO && ((sstatus->rhw.atk) == ELE_WIND || (sstatus->lhw.ele) == ELE_WIND) )
+				if( skill_num == NC_AXETORNADO && ((sstatus->rhw.ele) == ELE_WIND || (sstatus->lhw.ele) == ELE_WIND) )
 					ATK_ADDRATE(50);
 				break;
 		}
