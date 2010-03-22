@@ -6,6 +6,10 @@
 //========================================
 
 03/22/2010
+	r277 [Jobbie]
+	* Minor fix on my last commit. Follow up r276
+	- Sorry for being rusty
+
 	r276 [Jobbie]
 	* Adjusted the behavior of Fearbreeze skill.
 	* Fixed a mistake in checking wind element for both hands when using NC_AXETORNADO.

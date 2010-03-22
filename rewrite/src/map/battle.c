@@ -1246,7 +1246,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 			if( sc->data[SC_FEARBREEZE]->val1 > 0 && sc->data[SC_FEARBREEZE]->val1 < 6 && rand()%100 < rate[sc->data[SC_FEARBREEZE]->val1] )
 			{
 				wd.type = 0x08;
-				flag.ammo = 1; // To consume Ammo Later (div_ - 1)
+				flag.arrow = 1; // To consume Ammo Later (div_ - 1)
 				wd.div_ = 2 + (sc->data[SC_FEARBREEZE]->val1 > 2) ? rand()%(sc->data[SC_FEARBREEZE]->val1 - 2) : 0;
 				wd.div_ = min(wd.div_,sd->status.inventory[i].amount); // Reduce number of hits if you don't have enough arrows
 			}
