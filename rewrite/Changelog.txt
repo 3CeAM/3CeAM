@@ -5,6 +5,15 @@
 // 	- Details.
 //========================================
 
+03/23/2010
+	r279 [Rytech]
+	*Changed some settings back to classic mechanic's and eAthena defults to keep true to the project goals.
+	-Things like max stats for 3rd jobs will by 99 for regular and 80 for babys. You can raise this if you want.
+	-Changed to setting for renewal cast times to no to keep the classic casting system working.
+	-Changed MAX_CHAR in mmo.h to 9, which is eA's defult, as well as the defult in diff patches.
+	-MAX_LEVEL will be kept at a 150 int he source, however itl stay limited to 99 in the exp.txt
+	-unless you switch to using the exp2.txt table and set your own limits from there.
+
 03/22/2010
 	r277 [Jobbie]
 	* Minor fix on my last commit. Follow up r276
