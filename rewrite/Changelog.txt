@@ -6,6 +6,11 @@
 //========================================
 
 03/23/2010
+	r280 [pakpil]
+	* Added LG_REFLECTDAMAGE skill.
+	- Updated CR_REFLECTSHIELD that should fail if you are under LG_REFLECTDAMAGE and viceversa.
+	* Minor fix in LG_BANISHINGPOINT that should take the weapon element.
+
 	r279 [Rytech]
 	*Changed some settings back to classic mechanic's and eAthena defults to keep true to the project goals.
 	-Things like max stats for 3rd jobs will by 99 for regular and 80 for babys. You can raise this if you want.
