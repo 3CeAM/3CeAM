@@ -1857,7 +1857,13 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 
 	if( damage > 0 && dmg.flag&BF_WEAPON && src != bl && ( src == dsrc || ( dsrc->type == BL_SKILL && ( skillid == SG_SUN_WARM || skillid == SG_MOON_WARM || skillid == SG_STAR_WARM ) ) )
 		&& skillid != WS_CARTTERMINATION )
+		rdamage = battle_calc_return_damage(bl, damage, dmg.flag);	
+
+	if( damage > 0 && sc && sc->data[SC_REFLECTDAMAGE] )
+	{
 		rdamage = battle_calc_return_damage(bl, damage, dmg.flag);
+		damage -= rdamage;
+	}
 
 	//Skill hit type
 	type=(skillid==0)?5:skill_get_hit(skillid);
@@ -2174,15 +2180,23 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 
 	if( rdamage > 0 )
 	{
-		if( dmg.amotion )
-			battle_delay_damage(tick, dmg.amotion,bl,src,0,0,0,rdamage,ATK_DEF,0);
+		if( sc && sc->data[SC_REFLECTDAMAGE] )
+		{
+			damage -= rdamage;
+			map_foreachinrange(battle_damage_area,bl,skill_get_splash(LG_REFLECTDAMAGE,1),BL_CHAR,tick,bl,dmg.amotion,sstatus->dmotion,rdamage,tstatus->race);
+		}
 		else
-			status_fix_damage(bl,src,rdamage,0);
-		clif_damage(src,src,tick, dmg.amotion,0,rdamage,1,4,0);
-		//Use Reflect Shield to signal this kind of skill trigger. [Skotlex]
-		if( tsd && src != bl )
-			battle_drain(tsd, src, rdamage, rdamage, sstatus->race, is_boss(src));
-		skill_additional_effect(bl, src, CR_REFLECTSHIELD, 1, BF_WEAPON|BF_SHORT|BF_NORMAL,ATK_DEF,tick);
+		{
+			if( dmg.amotion )
+				battle_delay_damage(tick, dmg.amotion,bl,src,0,0,0,rdamage,ATK_DEF,0);
+			else
+				status_fix_damage(bl,src,rdamage,0);
+			clif_damage(src,src,tick, dmg.amotion,0,rdamage,1,4,0);
+			//Use Reflect Shield to signal this kind of skill trigger. [Skotlex]
+			if( tsd && src != bl )
+				battle_drain(tsd, src, rdamage, rdamage, sstatus->race, is_boss(src));
+			skill_additional_effect(bl, src, CR_REFLECTSHIELD, 1, BF_WEAPON|BF_SHORT|BF_NORMAL,ATK_DEF,tick);
+		}
 	}
 	
 	if( damage > 0 && skillid == RK_CRUSHSTRIKE ) // Your weapon will not be broken if you miss.
@@ -4432,7 +4446,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case KN_ONEHAND:
 	case MER_QUICKEN:
 	case CR_SPEARQUICKEN:
-	case CR_REFLECTSHIELD:
 	case MS_REFLECTSHIELD:
 	case AS_POISONREACT:
 	case MC_LOUD:
@@ -4485,6 +4498,16 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SC_DEADLYINFECT:
 	case SO_STRIKING:
 	case GN_CARTBOOST:
+		clif_skill_nodamage(src,bl,skillid,skilllv,
+			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
+		break;
+	case CR_REFLECTSHIELD:
+		if( tsc && tsc->data[SC_REFLECTSHIELD] )
+		{
+			if( sd )
+				clif_skill_fail(sd, skillid, 0x04, 0, 0);
+			break;
+		}
 		clif_skill_nodamage(src,bl,skillid,skilllv,
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
 		break;
@@ -7235,6 +7258,20 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		else
 			clif_skill_fail(sd,skillid,0,0,0);
+		break;
+
+	case LG_REFLECTDAMAGE:
+		if( tsc && tsc->data[SC_REFLECTSHIELD] )
+		{
+			if( sd )
+				clif_skill_fail(sd, skillid, 0x04, 0, 0);
+			break;
+		}
+		if( tsc && tsc->data[type] )
+			status_change_end(bl,type,-1);
+		else
+			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
+		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		break;
 
 	case WA_SWING_DANCE:
