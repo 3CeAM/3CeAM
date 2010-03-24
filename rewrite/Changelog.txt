@@ -5,6 +5,10 @@
 // 	- Details.
 //========================================
 
+03/24/2010
+	r281 [pakpil]
+	* Fixed a mistake in CR_REFLECSHIELD and LG_REFLECTDAMAGE. Follow up r280.
+
 03/23/2010
 	r280 [pakpil]
 	* Added LG_REFLECTDAMAGE skill.
