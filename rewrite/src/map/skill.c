@@ -4446,6 +4446,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case KN_ONEHAND:
 	case MER_QUICKEN:
 	case CR_SPEARQUICKEN:
+	case CR_REFLECTSHIELD:
 	case MS_REFLECTSHIELD:
 	case AS_POISONREACT:
 	case MC_LOUD:
@@ -4498,16 +4499,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SC_DEADLYINFECT:
 	case SO_STRIKING:
 	case GN_CARTBOOST:
-		clif_skill_nodamage(src,bl,skillid,skilllv,
-			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
-		break;
-	case CR_REFLECTSHIELD:
-		if( tsc && tsc->data[SC_REFLECTSHIELD] )
-		{
-			if( sd )
-				clif_skill_fail(sd, skillid, 0x04, 0, 0);
-			break;
-		}
 		clif_skill_nodamage(src,bl,skillid,skilllv,
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
 		break;
@@ -11162,6 +11153,20 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		if( pc_isriding(sd,OPTION_MADO) )
 		{ //Cannot be used if Mado is equipped.
 			clif_skill_fail(sd,skill,0,0,0);
+			return 0;
+		}
+		break;
+	case CR_REFLECTSHIELD:
+		if( sc && sc->data[SC_REFLECTDAMAGE] )
+		{
+			clif_skill_fail(sd, skill, 0x04, 0, 0);
+			return 0;
+		}
+		break;
+	case LG_REFLECTDAMAGE:
+		if( sc && sc->data[SC_REFLECTSHIELD] )
+		{
+			clif_skill_fail(sd, skill, 0x04, 0, 0);
 			return 0;
 		}
 		break;
