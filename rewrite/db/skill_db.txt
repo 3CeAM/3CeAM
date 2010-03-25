@@ -1060,8 +1060,8 @@
 2304,0,6,4,0,0x3,2,3,1,yes,0,0,0,weapon,0,		SC_FEINTBOMB,Feint Bomb
 
 // Royal Guard
-2307,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_CANNONSPEAR,Cannon Spear
-2308,7,6,-1,0,0,0,10,1,yes,0,0,0,weapon,0,		LG_BANISHINGPOINT,Banishing Point
+2307,0,6,4,-1,0x02,1,5,1,no,0,0,10,weapon,0,		LG_CANNONSPEAR,Cannon Spear
+2308,7,6,1,-1,0,0,10,1,yes,0,0,0,weapon,0,		LG_BANISHINGPOINT,Banishing Point
 2309,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_TRAMPLE,Trample
 2310,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_SHIELDPRESS,Shield Press
 2311,0,6,4,0,0x03,2,5,1,no,0,0,0,none,0,		LG_REFLECTDAMAGE,Reflect Damage

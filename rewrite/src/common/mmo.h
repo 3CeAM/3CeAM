@@ -32,8 +32,8 @@
 // 20090617 - 2009-06-17aRagexeRE+ - 0x7d9
 // 20090805 - 2009-08-05aRagexeRE+ - 0x7e2
 // 20090922 - 2009-09-22aRagexeRE+ - 0x7e5, 0x7e7, 0x7e8, 0x7e9
-// 20091027 - 2009-10-27aRagexeRE+ - 0x7f6
 // 20091103 - 2009-11-03aRagexeRE+ - 0x7f7, 0x7f8, 0x7f9, 0x7fb
+// 20091110 - 2009-11-10aRagexeRE+ - 0x7f6
 // 20100105 - 2010-01-05aRagexeRE+ - 0x800, 0x801
 // 20100217 - 2010-02-17aRagexeRE+ - 0xf4 -> 0x1c4 (guildsotrage)
 // 20100223 - 2010-02-23aRagexeRE+ - 0x80f
