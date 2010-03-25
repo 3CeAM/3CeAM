@@ -6,6 +6,9 @@
 //========================================
 
 03/25/2010
+	r286 [Jobbie]
+	* Important merged up of eAthena SVN update from rev14268-71.
+
 	r285 [Jobbie]
 	* Updated some sp cost in Sorcerer skills.
 	* Crystalize status must be ended when hitted by fire element.
