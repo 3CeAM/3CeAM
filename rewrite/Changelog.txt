@@ -5,6 +5,10 @@
 // 	- Details.
 //========================================
 
+03/25/2010
+	r283 [Rytech]
+	*Small fix in the skill_db.
+
 03/24/2010
 	r282 [Rytech]
 	*Added baby mount support to the job system.
