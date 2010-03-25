@@ -6,6 +6,17 @@
 //========================================
 
 03/25/2010
+	r289 [Rytech]
+	*Database updates.....
+	-Added Sorcerer's point items that are used for their summon skills.
+	-Added skill_db and skill_require_db entrys for more Sorcerer skills, however they have no ID yet.
+	-Updated Sura skill requirements.
+	-Updated Sura skill trees.
+	*Source Updates.....
+	-Added job entrys for mounts in char.c
+	-Added tons of new status tags and ID's to status.h
+
+03/25/2010
 	r288 [Jobbie]
 	* Added new SC_*'s used by items 12429 to 12434.
 	- These items uses its own sc together with its own status icon to match official servers implementation.

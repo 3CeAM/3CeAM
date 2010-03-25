@@ -1154,11 +1154,21 @@
 2453,9,6,2,0,0,0,5,1,yes,0,0,0,magic,0,			SO_VACUUM_EXTREME,Vacuum Extreme
 2454,9,6,1,4,0x2,1:1:2:2:3,5,1,yes,0,0,0,magic,0,	SO_VARETYR_SPEAR,Varetyr Spear
 2455,9,6,1,0,0x3,1:1:2:2:3,5,1,yes,0,0,0,magic,0,	SO_ARRULLO,Arrullo
-2456,0,0,0,0,0,0,3,0,no,0,0,0,none,0,			SO_EL_CONTROL,Ordinance Control
-2457,0,0,0,0,0,0,3,0,no,0,0,0,none,0,			SO_SUMMON_AGNI,Summon Agni
-2458,0,0,0,0,0,0,3,0,no,0,0,0,none,0,			SO_SUMMON_AQUA,Summon Aqua
-2459,0,0,0,0,0,0,3,0,no,0,0,0,none,0,			SO_SUMMON_VENTUS,Summon Ventus
-2460,0,0,0,0,0,0,3,0,no,0,0,0,none,0,			SO_SUMMON_TERA,Summon Tera
+2456,0,0,0,0,0,0,3,0,no,0,0,0,none,0,			SO_EL_CONTROL,Spirit Control
+2457,0,0,0,0,0,0,3,0,no,0,0,0,none,0,			SO_SUMMON_AGNI,Summon Fire Spirit Agni
+2458,0,0,0,0,0,0,3,0,no,0,0,0,none,0,			SO_SUMMON_AQUA,Summon Water Spirit Aqua
+2459,0,0,0,0,0,0,3,0,no,0,0,0,none,0,			SO_SUMMON_VENTUS,Summon Wind Spirit Ventus
+2460,0,0,0,0,0,0,3,0,no,0,0,0,none,0,			SO_SUMMON_TERA,Summon Wind Spirit Tera
+
+// Sorcerer Skill With Unknown ID's
+//2460,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		SO_EL_ACTION,Elemental Action
+//2460,0,0,0,0,0,0,2,0,no,0,0,0,none,0,		SO_EL_ANALYSIS,Four Spirit Analysis
+//2460,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		SO_EL_SYMPATHY,Spirit Sympathy
+//2460,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		SO_EL_CURE,Spirit Recovery
+//2460,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		SO_FIRE_INSIGNIA,Fire Insignia
+//2460,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		SO_WATER_INSIGNIA,Water Insignia
+//2460,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		SO_WIND_INSIGNIA,Wind Insignia
+//2460,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		SO_EARTH_INSIGNIA,Earth Insignia
 
 2472,0,0,0,0,0,0,1,0,no,0,0,0,none,0,	SO_ENDMARK,End Mark
 
