@@ -1405,6 +1405,10 @@ char * job_name(int class_)
 	case JOB_BABY_SURA: return "Baby Sura";
 	case JOB_BABY_GENETIC: return "Baby Genetic";
 	case JOB_BABY_CHASER: return "Baby Shadow Chaser";
+	case JOB_BABY_RUNE2: return "Baby Rune Knight Dragon";
+	case JOB_BABY_GUARD2: return "Baby Royal Guard Gryphon";
+	case JOB_BABY_RANGER2: return "Baby Ranger Warg";
+	case JOB_BABY_MECHANIC2: return "Baby Mechanic Mado Gear";
 	}
 	return "Unknown Job";
 }
