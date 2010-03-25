@@ -5572,6 +5572,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_SPEEDUP1:    case SC_AUTOTRADE:   case SC_CRITICALWOUND:
 				case SC_JEXPBOOST:   case SC_INVINCIBLE:  case SC_INVINCIBLEOFF:
 				case SC_ELECTRICSHOCKER: case SC__STRIPACCESSORY:
+				case SC_SAVAGE_STEAK:  case SC_COCKTAIL_WARG_BLOOD:
+				case SC_MINOR_BBQ:   case SC_SIROMA_ICE_TEA:  case SC_DROCERA_HERB_STEAMED:
+				case SC_PUTTI_TAILS_NOODLES:
 					continue;
 				case SC_ASSUMPTIO:
 					if( bl->type == BL_MOB )
@@ -6869,6 +6872,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_ELECTRICSHOCKER: case SC_BITE:    case SC__STRIPACCESSORY:
 				case SC__ENERVATION: case SC__GROOMY:     case SC__IGNORANCE:
 				case SC__LAZINESS:   case SC__UNLUCKY:    case SC__WEAKNESS:
+				case SC_SAVAGE_STEAK:  case SC_COCKTAIL_WARG_BLOOD:
+				case SC_MINOR_BBQ:   case SC_SIROMA_ICE_TEA:  case SC_DROCERA_HERB_STEAMED:
+				case SC_PUTTI_TAILS_NOODLES:
 					continue;
 				case SC_ASSUMPTIO:
 					if( bl->type == BL_MOB )
