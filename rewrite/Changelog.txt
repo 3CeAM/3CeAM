@@ -6,6 +6,11 @@
 //========================================
 
 03/25/2010
+	r285 [Jobbie]
+	* Updated some sp cost in Sorcerer skills.
+	* Crystalize status must be ended when hitted by fire element.
+	* Slight cleanup in status.c
+
 	r284 [pakpil]
 	* Fixed a mistake in PACKETVER that affec to to clif_displayexp. Sorry.
 	- This was caussing dead mobs don't dessapear correclty in clients oldest than 2009-11-10aRagexeRE.
@@ -20,7 +25,6 @@
 	*Added baby mount support to the job system.
 	-The mounts wont be accessable until their fully coded in the needed area's in the source.
 
-03/24/2010
 	r281 [pakpil]
 	* Fixed a mistake in CR_REFLECSHIELD and LG_REFLECTDAMAGE. Follow up r280.
 

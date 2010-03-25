@@ -291,6 +291,12 @@ int battle_attr_fix(struct block_list *src, struct block_list *target, int damag
 			}
 		}
 	}
+	if( atk_elem == ELE_FIRE && tsc && tsc->count && tsc->data[SC_CRYSTALIZE] )
+	{ //FIXTHIS: is this right to be an accurate way to remove Crystalize status when hitted by fire element? [Jobbie]
+		tsc->data[SC_CRYSTALIZE]->val1 = 0;
+		if( tsc->data[SC_CRYSTALIZE]->val2 == 0 )
+			status_change_end(target,SC_CRYSTALIZE,-1);
+	}
 	return damage*ratio/100;
 }
 
@@ -1953,9 +1959,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 						tsc->data[SC_ELECTRICSHOCKER]) )
 						switch(tstatus->size)
 						{
-							case 0: skillratio = skillratio*2; break;
-							case 1: skillratio = skillratio*3; break;
-							case 2: skillratio = skillratio*4; break;
+							case 0: skillratio = skillratio * 2; break;
+							case 1: skillratio = skillratio * 3; break;
+							case 2: skillratio = skillratio * 4; break;
 						}
 					break;
 				case RA_WUGDASH:

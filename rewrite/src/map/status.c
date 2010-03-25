@@ -5079,11 +5079,12 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 		break;
 	case SC_ELECTRICSHOCKER:
 	case SC_BITE:
-		if( bl->type == BL_MOB ){
-			tick -= 1000 * (status->agi/10);
+		{
+			if( bl->type == BL_MOB )
+				tick -= 1000 * (status->agi/10);
+			if( sd && type != SC_ELECTRICSHOCKER )
+				tick >>= 1; //Only 10 seconds should be on players.
 		}
-		if(sd && type != SC_ELECTRICSHOCKER)
-			tick >>= 1; //Only 10 seconds should be on players.
 		break;
 	case SC__ENERVATION:
 	case SC__GROOMY:
@@ -5183,7 +5184,7 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 	else
 		tick -= tick*tick_def/100;
 	// Changed to 5 seconds according to recent tests [Playtester]
-	if ((type == SC_ANKLE /*|| type == SC_ELECTRICSHOCKER*/) && tick < 5000)	// Does it also apply for electric shocker? [LimitLine]
+	if (type == SC_ANKLE && tick < 5000)
 		tick = 5000;
 	return tick<=0?0:tick;
 }
