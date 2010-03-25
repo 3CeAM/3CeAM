@@ -6,10 +6,15 @@
 //========================================
 
 03/25/2010
-	r286 [Jobbie]
+	r288 [Jobbie]
+	* Added new SC_*'s used by items 12429 to 12434.
+	- These items uses its own sc together with its own status icon to match official servers implementation.
+	* Fix typo in changelog.
+
+	r287 [Jobbie]
 	* Important merged up of eAthena SVN update from rev14268-71.
 
-	r285 [Jobbie]
+	r286 [Jobbie]
 	* Updated some sp cost in Sorcerer skills.
 	* Crystalize status must be ended when hitted by fire element.
 	* Slight cleanup in status.c
