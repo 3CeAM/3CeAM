@@ -137,6 +137,11 @@ Job_Baby_Sura	4106
 Job_Baby_Genetic	4107
 Job_Baby_Chaser	4108
 
+Job_Baby_Rune2	4109
+Job_Baby_Guard2	4110
+Job_Baby_Ranger2	4111
+Job_Baby_Mechanic2	4112
+
 EAJL_2_1	0x100
 EAJL_2_2	0x200
 EAJL_2	0x300

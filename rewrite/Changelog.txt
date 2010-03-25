@@ -6,6 +6,11 @@
 //========================================
 
 03/24/2010
+	r282 [Rytech]
+	*Added baby mount support to the job system.
+	-The mounts wont be accessable until their fully coded in the needed area's in the source.
+
+03/24/2010
 	r281 [pakpil]
 	* Fixed a mistake in CR_REFLECSHIELD and LG_REFLECTDAMAGE. Follow up r280.
 

@@ -4464,20 +4464,22 @@ int pc_jobid2mapid(unsigned short b_class)
 		b_class == JOB_ROYAL_GUARD_T2 || b_class == JOB_RANGER_T2 || b_class == JOB_MECHANIC_T2)
 		class_|= JOBL_THIRD|JOBL_UPPER;
 
-	else if (b_class >= JOB_BABY_RUNE && b_class <= JOB_BABY_CHASER)
+	else if (b_class >= JOB_BABY_RUNE && b_class <= JOB_BABY_MECHANIC2)
 		class_|= JOBL_THIRD|JOBL_BABY;
 
 	if ((b_class >= JOB_KNIGHT && b_class <= JOB_KNIGHT2) || 
 		(b_class >= JOB_RUNE_KNIGHT && b_class <= JOB_GUILLOTINE_CROSS_T) || 
 		(b_class >= JOB_RUNE_KNIGHT2 && b_class <= JOB_RUNE_KNIGHT_T2) || 
 		(b_class >= JOB_RANGER2 && b_class <= JOB_MECHANIC_T2) || 
-		(b_class >= JOB_BABY_RUNE && b_class <= JOB_BABY_CROSS))
+		(b_class >= JOB_BABY_RUNE && b_class <= JOB_BABY_CROSS) || 
+		b_class == JOB_BABY_RUNE2 || b_class == JOB_BABY_RANGER2 || b_class == JOB_BABY_MECHANIC2)
 		class_|= JOBL_2_1;
 
 	else if ((b_class >= JOB_CRUSADER && b_class <= JOB_CRUSADER2) || 
 		(b_class >= JOB_ROYAL_GUARD && b_class <= JOB_SHADOW_CHASER_T) || 
 		(b_class >= JOB_ROYAL_GUARD2 && b_class <= JOB_ROYAL_GUARD_T2) || 
-		(b_class >= JOB_BABY_GUARD && b_class <= JOB_BABY_CHASER))
+		(b_class >= JOB_BABY_GUARD && b_class <= JOB_BABY_CHASER) || 
+		b_class == JOB_BABY_GUARD2)
 		class_|= JOBL_2_2;
 
 	switch (b_class)
@@ -4504,7 +4506,9 @@ int pc_jobid2mapid(unsigned short b_class)
 		case JOB_ROYAL_GUARD_T:
 		case JOB_ROYAL_GUARD_T2:
 		case JOB_BABY_RUNE:
+		case JOB_BABY_RUNE2:
 		case JOB_BABY_GUARD:
+		case JOB_BABY_GUARD2:
 			class_ |= MAPID_SWORDMAN;
 			break;
 		case JOB_PRIEST:
@@ -4536,6 +4540,7 @@ int pc_jobid2mapid(unsigned short b_class)
 		case JOB_GENETIC:
 		case JOB_GENETIC_T:
 		case JOB_BABY_MECHANIC:
+		case JOB_BABY_MECHANIC2:
 		case JOB_BABY_GENETIC:
 			class_ |= MAPID_MERCHANT;
 			break;
@@ -4551,6 +4556,7 @@ int pc_jobid2mapid(unsigned short b_class)
 		case JOB_MINSTREL_T:
 		case JOB_WANDERER_T:
 		case JOB_BABY_RANGER:
+		case JOB_BABY_RANGER2:
 		case JOB_BABY_MINSTREL:
 		case JOB_BABY_WANDERER:
 			class_ |= MAPID_ARCHER;
@@ -4928,8 +4934,6 @@ char* job_name(int class_)
 	case JOB_BABY_BISHOP:
 	case JOB_BABY_MECHANIC:
 	case JOB_BABY_CROSS:
-		return msg_txt(638 - JOB_BABY_RUNE+class_);
-
 	case JOB_BABY_GUARD:
 	case JOB_BABY_SORCERER:
 	case JOB_BABY_MINSTREL:
@@ -4937,7 +4941,19 @@ char* job_name(int class_)
 	case JOB_BABY_SURA:
 	case JOB_BABY_GENETIC:
 	case JOB_BABY_CHASER:
-		return msg_txt(644 - JOB_BABY_GUARD+class_);
+		return msg_txt(638 - JOB_BABY_RUNE+class_);
+
+	case JOB_BABY_RUNE2:
+		return msg_txt(638);
+
+	case JOB_BABY_GUARD2:
+		return msg_txt(644);
+
+	case JOB_BABY_RANGER2:
+		return msg_txt(640);
+
+	case JOB_BABY_MECHANIC2:
+		return msg_txt(642);
 
 	default:
 		return msg_txt(651);

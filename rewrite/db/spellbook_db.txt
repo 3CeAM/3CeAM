@@ -4,10 +4,14 @@
 // SkillID,PreservePoints
 //============================================================
 //
+
+//Mage
 14,7	//Cold Bolt
 19,7	//Fire Bolt
 20,7	//Lightning Bolt
 21,9	//Thunder Storm
+
+//Wizard
 83,10	//Meteor Storm
 84,9	//Jupitel Thunder
 85,10	//Lord of Vermillion
@@ -15,6 +19,8 @@
 89,10	//Storm Gust
 90,8	//Earth Spike
 91,9	//Heaven's Drive
+
+//Warlock
 2210,8	//Drain Life
 2211,12	//Crimson Rock
 2213,22	//Comet
