@@ -4587,6 +4587,7 @@ int atcommand_mount(const int fd, struct map_session_data* sd, const char* comma
 			skillnum = KN_RIDING;
 			break;
 		case JOB_RUNE_KNIGHT: case JOB_RUNE_KNIGHT2: case JOB_RUNE_KNIGHT_T:  case JOB_RUNE_KNIGHT_T2:
+		case JOB_BABY_RUNE: case JOB_BABY_RUNE2:
 			if( pc_isriding(sd, OPTION_RIDING_DRAGON) )
 				riding_flag = 1;
 			msg[0] = 700; msg[1] = 702; msg[2] = 701; msg[3] = 703;
@@ -4594,6 +4595,7 @@ int atcommand_mount(const int fd, struct map_session_data* sd, const char* comma
 			skillnum = RK_DRAGONTRAINING;
 			break;
 		case JOB_RANGER: case JOB_RANGER2: case JOB_RANGER_T: case JOB_RANGER_T2:
+		case JOB_BABY_RANGER: case JOB_BABY_RANGER2:
 			if( pc_iswarg(sd) )
 				pc_setoption(sd, sd->sc.option&~OPTION_WUG);
 			if( pc_isriding(sd, OPTION_RIDING_WUG) )
@@ -4603,12 +4605,14 @@ int atcommand_mount(const int fd, struct map_session_data* sd, const char* comma
 			skillnum = RA_WUGRIDER;
 			break;
 		case JOB_MECHANIC: case JOB_MECHANIC2: case JOB_MECHANIC_T: case JOB_MECHANIC_T2:
+		case JOB_BABY_MECHANIC: case JOB_BABY_MECHANIC2:
 			if( pc_isriding(sd, OPTION_MADO) )
 				riding_flag = 1;
 			msg[0] = 710; msg[1] = 712; msg[2] = 711; msg[3] = 713;
 			option = OPTION_MADO;
 			break;
 		case JOB_ROYAL_GUARD: case JOB_ROYAL_GUARD2: case JOB_ROYAL_GUARD_T: case JOB_ROYAL_GUARD_T2:
+		case JOB_BABY_GUARD: case JOB_BABY_GUARD2:
 			if( pc_isriding(sd, OPTION_RIDING) && (sd->class_&JOBL_THIRD))
 				riding_flag = 1;
 			msg[0] = 714; msg[1] = 716; msg[2] = 715; msg[3] = 717;

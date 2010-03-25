@@ -6,6 +6,9 @@
 //========================================
 
 03/25/2010
+	r300 [Jobbie]
+	* Baby Rune, Baby Guard, Baby Ranger and Baby Mechanic is now accessible mounting. Follow up r282
+
 	r289 [Rytech]
 	*Database updates.....
 	-Added Sorcerer's point items that are used for their summon skills.
@@ -16,7 +19,6 @@
 	-Added job entrys for mounts in char.c
 	-Added tons of new status tags and ID's to status.h
 
-03/25/2010
 	r288 [Jobbie]
 	* Added new SC_*'s used by items 12429 to 12434.
 	- These items uses its own sc together with its own status icon to match official servers implementation.
