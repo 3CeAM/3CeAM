@@ -6772,7 +6772,7 @@ int pc_setoption(struct map_session_data *sd,int type)
 	sd->sc.option = type;
 	clif_changeoption(&sd->bl);
 	
-	if( type&OPTION_RIDING && !(p_type&OPTION_RIDING) && (sd->class_&MAPID_BASEMASK) == MAPID_SWORDMAN && (sd->class_&MAPID_THIRDMASK) < MAPID_BABY_RUNE) // Remove when Baby Guard class can mount.
+	if( type&OPTION_RIDING && !(p_type&OPTION_RIDING) && (sd->class_&MAPID_BASEMASK) == MAPID_SWORDMAN /*&& (sd->class_&MAPID_THIRDMASK) < MAPID_BABY_RUNE*/) // Remove when Baby Guard class can mount.
 	{	//We are going to mount. [Skotlex]
 		clif_status_load(&sd->bl, SI_RIDING, 1);
 		status_calc_pc(sd,0); //Mounting/Umounting affects walk and attack speeds.
@@ -6784,14 +6784,14 @@ int pc_setoption(struct map_session_data *sd,int type)
 	}
 
 	if( (type&OPTION_RIDING_DRAGON) && !(p_type&OPTION_RIDING_DRAGON) &&
-		(((sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT) || (sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT_T) )
+		(((sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT) || (sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT_T || (sd->class_&MAPID_THIRDMASK) == MAPID_BABY_RUNE) )
 	{
 		//We are going to mount. [pakpil]
 		clif_status_load(&sd->bl,SI_RIDING,0);
 		status_calc_pc(sd,0);
 	}
 	else if( !(type&OPTION_RIDING_DRAGON) && (p_type&OPTION_RIDING_DRAGON) &&
-		(((sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT) || (sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT_T) )
+		(((sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT) || (sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT_T || (sd->class_&MAPID_THIRDMASK) == MAPID_BABY_RUNE) )
 	{
 		//We are going to dismoount [pakpil]
 		clif_status_load(&sd->bl,SI_RIDING,0);
@@ -6817,7 +6817,7 @@ int pc_setoption(struct map_session_data *sd,int type)
 	else if (!(type&OPTION_FALCON) && p_type&OPTION_FALCON) //Falcon OFF
 		clif_status_load(&sd->bl,SI_FALCON,0);
 
-	if (type&OPTION_RIDING_WUG && !(p_type&OPTION_RIDING_WUG) && ((sd->class_&MAPID_BASEMASK) == MAPID_ARCHER) && (sd->class_&MAPID_THIRDMASK) < MAPID_BABY_RUNE)
+	if (type&OPTION_RIDING_WUG && !(p_type&OPTION_RIDING_WUG) && ((sd->class_&MAPID_BASEMASK) == MAPID_ARCHER) /*&& (sd->class_&MAPID_THIRDMASK) < MAPID_BABY_RUNE*/)
 	{	//We are going to mount. [Rikter]
 		clif_status_load(&sd->bl,SI_WUGMOUNT,1);
 		status_calc_pc(sd,0); //Mounting/Umounting affects walk and attack speeds.
@@ -6828,7 +6828,7 @@ int pc_setoption(struct map_session_data *sd,int type)
 		status_calc_pc(sd,0); //Mounting/Umounting affects walk and attack speeds.
 	}
 	// Some info from iRO-Wiki says that MADO are a mount not another class. The HP/SP dealed by damage are the owner ones. [pakpil]
-	if (type&OPTION_MADO && !(p_type&OPTION_MADO) && ((sd->class_&MAPID_BASEMASK) == MAPID_MERCHANT) && (sd->class_&MAPID_THIRDMASK) < MAPID_BABY_RUNE)
+	if (type&OPTION_MADO && !(p_type&OPTION_MADO) && ((sd->class_&MAPID_BASEMASK) == MAPID_MERCHANT) /*&& (sd->class_&MAPID_THIRDMASK) < MAPID_BABY_RUNE*/)
 	{
 		if( pc_checkskill(sd, NC_MADOLICENCE) < 5 )
 			status_calc_pc(sd, 0); // Apply speed penalty.
@@ -6976,19 +6976,22 @@ int pc_setriding(TBL_PC* sd, int flag)
 		case JOB_KNIGHT: case JOB_KNIGHT2: case JOB_CRUSADER: case JOB_CRUSADER2:
 		case JOB_LORD_KNIGHT: case JOB_PALADIN:  case JOB_BABY_KNIGHT: case JOB_BABY_KNIGHT2:
 		case JOB_BABY_CRUSADER: case JOB_BABY_CRUSADER2: case JOB_ROYAL_GUARD: case JOB_ROYAL_GUARD2: 
-		case JOB_ROYAL_GUARD_T: case JOB_ROYAL_GUARD_T2:
+		case JOB_ROYAL_GUARD_T: case JOB_ROYAL_GUARD_T2: case JOB_BABY_GUARD: case JOB_BABY_GUARD2:
 			option = OPTION_RIDING;
 			skillnum = KN_RIDING;
 			break;
 		case JOB_RUNE_KNIGHT: case JOB_RUNE_KNIGHT2: case JOB_RUNE_KNIGHT_T:  case JOB_RUNE_KNIGHT_T2:
+		case JOB_BABY_RUNE: case JOB_BABY_RUNE2:
 			option = (pc_isriding(sd, OPTION_RIDING_DRAGON))?OPTION_RIDING_DRAGON:((flag==2)?OPTION_BLACK_DRAGON:(flag==3)?OPTION_WHITE_DRAGON:(flag==4)?OPTION_BLUE_DRAGON:(flag==5)?OPTION_RED_DRAGON:OPTION_GREEN_DRAGON);
 			skillnum = RK_DRAGONTRAINING;
 			break;
 		case JOB_RANGER: case JOB_RANGER2: case JOB_RANGER_T: case JOB_RANGER_T2:
+		case JOB_BABY_RANGER: case JOB_BABY_RANGER2:
 			option = OPTION_RIDING_WUG;
 			skillnum = RA_WUGRIDER;
 			break;
 		case JOB_MECHANIC: case JOB_MECHANIC2: case JOB_MECHANIC_T: case JOB_MECHANIC_T2:
+		case JOB_BABY_MECHANIC: case JOB_BABY_MECHANIC2:
 			option = OPTION_MADO;
 			break;
 		default:
@@ -7028,18 +7031,22 @@ bool pc_isriding( struct map_session_data *sd, int flag )
 		case JOB_KNIGHT: case JOB_KNIGHT2: case JOB_CRUSADER: case JOB_CRUSADER2:
 		case JOB_LORD_KNIGHT: case JOB_LORD_KNIGHT2: case JOB_PALADIN: case JOB_PALADIN2:
 		case JOB_ROYAL_GUARD: case JOB_ROYAL_GUARD2: case JOB_ROYAL_GUARD_T: case JOB_ROYAL_GUARD_T2:
+		case JOB_BABY_GUARD: case JOB_BABY_GUARD2:
 			if( sd->sc.option&OPTION_RIDING && (flag&OPTION_RIDING) )
 				isriding = true;
 			break;
 		case JOB_RUNE_KNIGHT: case JOB_RUNE_KNIGHT2: case JOB_RUNE_KNIGHT_T:  case JOB_RUNE_KNIGHT_T2:
+		case JOB_BABY_RUNE: case JOB_BABY_RUNE2:
 			if( sd->sc.option&(OPTION_RIDING_DRAGON) && (flag&(OPTION_RIDING_DRAGON)) )
 				isriding = true;
 			break;
 		case JOB_RANGER: case JOB_RANGER2: case JOB_RANGER_T: case JOB_RANGER_T2:
+		case JOB_BABY_RANGER: case JOB_BABY_RANGER2:
 			if( sd->sc.option&OPTION_RIDING_WUG  && (flag&OPTION_RIDING_WUG))
 				isriding = true;
 			break;
 		case JOB_MECHANIC: case JOB_MECHANIC2: case JOB_MECHANIC_T: case JOB_MECHANIC_T2:
+		case JOB_BABY_MECHANIC: case JOB_BABY_MECHANIC2:
 			if( sd->sc.option&OPTION_MADO  && (flag&OPTION_MADO) )
 				isriding = true;
 			break;
