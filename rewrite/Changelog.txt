@@ -6,6 +6,12 @@
 //========================================
 
 03/25/2010
+	r284 [pakpil]
+	* Fixed a mistake in PACKETVER that affec to to clif_displayexp. Sorry.
+	- This was caussing dead mobs don't dessapear correclty in clients oldest than 2009-11-10aRagexeRE.
+	* Added LG_CANNONSPEAR skill. Still need some info.
+	* Fixed LG_REFLECTDAMAGE that shouldn't reduce damage reflected.	
+
 	r283 [Rytech]
 	*Small fix in the skill_db.
 

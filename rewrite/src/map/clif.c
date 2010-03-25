@@ -13959,7 +13959,7 @@ void clif_millenniumshield(struct map_session_data *sd, short shields )
  *-----------------------------------------*/
 void clif_displayexp(struct map_session_data *sd, int exp, short type, bool gain, short quest)
 {
-#if PACKETVER >= 20091027
+#if PACKETVER >= 20091110
 	int fd;
 
 	nullpo_retv(sd);
