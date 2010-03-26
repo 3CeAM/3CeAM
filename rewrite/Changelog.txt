@@ -5,8 +5,12 @@
 // 	- Details.
 //========================================
 
+03/26/2010
+	r291 [Jobbie]
+	* Fixed missing mob_chat_db.txt
+
 03/25/2010
-	r300 [Jobbie]
+	r290 [Jobbie]
 	* Baby Rune, Baby Guard, Baby Ranger and Baby Mechanic is now accessible mounting. Follow up r282
 
 	r289 [Rytech]
