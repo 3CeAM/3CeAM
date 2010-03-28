@@ -4016,7 +4016,7 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 	if (sc->data[SC_FLING])
 		def -= def * (sc->data[SC_FLING]->val2)/100;
 	if( sc->data[SC_FREEZING] )
-		def -= def / 10 * 3;
+		def -= def * 30 / 100;
 	if( sc->data[SC_MARSHOFABYSS] )	// Need official formula. [LimitLine]
 		def -= def / 100 * sc->data[SC_MARSHOFABYSS]->val4;
 	if( sc->data[SC_ANALYZE] )
@@ -4059,7 +4059,7 @@ static signed short status_calc_def2(struct block_list *bl, struct status_change
 	if(sc->data[SC_FLING])
 		def2 -= def2 * (sc->data[SC_FLING]->val3)/100;
 	if( sc->data[SC_FREEZING] )
-		def2 -= def2 / 10 * 3;
+		def2 -= def2 * 30 / 100;
 	if( sc->data[SC_MARSHOFABYSS] )	// Need official formula. [LimitLine]
 		def2 -= def2 / 100 * sc->data[SC_MARSHOFABYSS]->val4;
 	if(sc->data[SC_ANALYZE])
