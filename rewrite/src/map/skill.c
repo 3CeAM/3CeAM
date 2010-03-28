@@ -3759,17 +3759,10 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 
 	case RA_WUGSTRIKE:
 		if( sd && pc_isriding(sd, OPTION_RIDING_WUG) ){
-			if( map_flag_gvg(bl->m) || map[bl->m].flag.battleground )
-			{ // Cannot be used in woe. [Jobbie]
-				clif_skill_fail(sd,skillid,0x17,0, 0);
-				break;
-			}
-			if( unit_movepos(src, bl->x, bl->y, 1, 1) ){
-				map_freeblock_lock();
-				skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
-				clif_slide(src,bl->x,bl->y);
-				map_freeblock_unlock();
-			}
+			if( !map_flag_gvg(src->m) && !map[src->m].flag.battleground 
+				&& unit_movepos(src, bl->x, bl->y, 0, 1) )
+				clif_slide(src, bl->x, bl->y);
+			skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		}else
 			skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
@@ -6982,26 +6975,13 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			{
 				switch( skillid )
 				{
-					case WL_SUMMONFB:
-						element = WLS_FIRE;
-						break;
-					case WL_SUMMONBL:
-						element = WLS_WIND;
-						break;
-					case WL_SUMMONWB:
-						element = WLS_WATER;
-						break;
-					case WL_SUMMONSTONE:
-						element = WLS_STONE;
-						break;
+					case WL_SUMMONFB: element = WLS_FIRE; break;
+					case WL_SUMMONBL: element = WLS_WIND; break;
+					case WL_SUMMONWB: element = WLS_WATER; break;
+					case WL_SUMMONSTONE: element = WLS_STONE; break;
 				}
 				sc_start(src, i, 100, element, skill_get_time(skillid, skilllv));
 				clif_skill_nodamage(src, bl, skillid, 0, 0);
-			}
-			else if( sd )
-			{
-				clif_skill_fail(sd, skillid, 0, 1, 0);
-				break;
 			}
 		}
 		break;
@@ -11079,6 +11059,16 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 				clif_skill_fail(sd,skill,0x04,0,0);
 				return 0;
 			}
+		break;
+	case WL_SUMMONFB:
+	case WL_SUMMONBL:
+	case WL_SUMMONWB:
+	case WL_SUMMONSTONE:
+		if(sc && sc->data[SC_SPHERE_1] && sc->data[SC_SPHERE_2] && sc->data[SC_SPHERE_3] && sc->data[SC_SPHERE_4] && sc->data[SC_SPHERE_5])
+		{
+			clif_skill_fail(sd,skill,0x13,0,0);
+			return 0;
+		}
 		break;
 	case AB_ADORAMUS:
 		if( skill_check_pc_partner(sd, skill, &lv, 1, 0) )

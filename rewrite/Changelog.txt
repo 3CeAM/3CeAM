@@ -6,7 +6,13 @@
 //========================================
 
 03/28/2010
-	r92 [Jobbie]
+	r293 [Jobbie]
+	* Updated Warlocks skills Casting Time, After-Cast Delay, Re-use Delay and Duration.
+	* Fixed wrong value of -Def for freezing status.
+	* Corrected the behavior of Warg Strike when used in WoE while mounted.
+	* Corrected the behavior of Summon Balls of Warlock when reaching maximum #'s of summon.
+
+	r292 [Jobbie]
 	* Fixed a mistake in calculation for Clusterbomb skill.
 	* Fixed a missing case of Job Id's in pc_isriding.
 	* Corrected the behavior of Reflect Shield and Reflect Damage when used vice versa.
