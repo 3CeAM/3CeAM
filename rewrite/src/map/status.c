@@ -5656,6 +5656,12 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		status_change_end(bl,SC_BEYONDOFWARCRY,-1);
 		status_change_end(bl,SC_UNLIMITEDHUMMINGVOICE,-1);
 		break;
+	case SC_REFLECTSHIELD:
+		status_change_end(bl,SC_REFLECTDAMAGE,-1);
+		break;
+	case SC_REFLECTDAMAGE:
+		status_change_end(bl,SC_REFLECTSHIELD,-1);
+		break;
 	}
 
 	//Check for overlapping fails

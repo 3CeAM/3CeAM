@@ -3241,7 +3241,7 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 			struct Damage wd = battle_calc_attack(BF_WEAPON, src, target, 0, 0, mflag);
 			if( sd )
 				md.damage = (sd->status.base_level*2 + ((sd->status.base_level/50) + 3)*sstatus->dex + 300)*skill_lv + sstatus->int_*5 + pc_checkskill(sd,RA_RESEARCHTRAP);
-			md.damage += ( wd.damage + wd.damage2 ) * ( skill_num == RA_CLUSTERBOMB ) ? (skill_lv+2) : 1;
+			md.damage += ( wd.damage + wd.damage2 ) * ( skill_num == RA_CLUSTERBOMB ? (skill_lv+2) : 1 );
 		}
 		break;
 	}

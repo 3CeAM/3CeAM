@@ -5,6 +5,12 @@
 // 	- Details.
 //========================================
 
+03/28/2010
+	r92 [Jobbie]
+	* Fixed a mistake in calculation for Clusterbomb skill.
+	* Fixed a missing case of Job Id's in pc_isriding.
+	* Corrected the behavior of Reflect Shield and Reflect Damage when used vice versa.
+
 03/26/2010
 	r291 [Jobbie]
 	* Fixed missing mob_chat_db.txt

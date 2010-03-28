@@ -7293,12 +7293,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case LG_REFLECTDAMAGE:
-		if( tsc && tsc->data[SC_REFLECTSHIELD] )
-		{
-			if( sd )
-				clif_skill_fail(sd, skillid, 0x04, 0, 0);
-			break;
-		}
 		if( tsc && tsc->data[type] )
 			status_change_end(bl,type,-1);
 		else
@@ -11073,7 +11067,10 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		break;
 	case WL_COMET:
 		if( sc && sc->data[SC_REUSE_COMET] )
+		{
+			clif_skill_fail(sd,skill,0x4,0,0);
 			return 0;
+		}
 		if( skill_check_pc_partner(sd, skill, &lv, 1, 0) )
 			sd->special_state.no_gemstone = 1;
 		else
@@ -11194,20 +11191,6 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		if( pc_isriding(sd,OPTION_MADO) )
 		{ //Cannot be used if Mado is equipped.
 			clif_skill_fail(sd,skill,0,0,0);
-			return 0;
-		}
-		break;
-	case CR_REFLECTSHIELD:
-		if( sc && sc->data[SC_REFLECTDAMAGE] )
-		{
-			clif_skill_fail(sd, skill, 0x04, 0, 0);
-			return 0;
-		}
-		break;
-	case LG_REFLECTDAMAGE:
-		if( sc && sc->data[SC_REFLECTSHIELD] )
-		{
-			clif_skill_fail(sd, skill, 0x04, 0, 0);
 			return 0;
 		}
 		break;
