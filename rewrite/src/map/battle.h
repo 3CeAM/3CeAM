@@ -284,6 +284,7 @@ extern struct Battle_Config
 	int party_share_type;
 	int party_hp_mode;
 	int party_show_share_picker;
+	int show_party_name; // [Jobbie]
 	int show_picker_item_type;
 	int attack_attr_none;
 	int item_rate_mvp, item_rate_common, item_rate_common_boss, item_rate_card, item_rate_card_boss,
