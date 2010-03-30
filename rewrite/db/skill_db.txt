@@ -1143,7 +1143,7 @@
 // Sorcerer
 2443,0,6,4,3,0,0,5,-1,yes,0,0,0,magic,0,		SO_FIREWALK,Fire Walk
 2444,0,6,4,4,0,0,5,-1,yes,0,0,0,magic,0,		SO_ELECTRICWALK,Electric Walk
-2445,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		SO_SPELLFIST,Spell Fist
+2445,0,6,0,0,0x1,0,5,1,no,0,0,0,none,0,		SO_SPELLFIST,Spell Fist
 2446,9,6,2,2,0,0,5,-1,yes,0,0,0,magic,0,		SO_EARTHGRAVE,Earth Grave
 2447,9,6,2,1,0,0,5,-1,yes,0,0,0,magic,0,		SO_DIAMONDDUST,Diamond Dust
 2448,9,6,1,5,0,0,5,-1,yes,0,0,0,magic,0,		SO_POISON_BUSTER,Poison Buster
@@ -1203,7 +1203,7 @@
 2515,9,6,16,0,0x1,0,5,1,yes,0,0,0,magic,0,	AB_SECRAMENT,Sacrament
 2516,0,0,1,-1,0x2,5,5,0,no,0,0,0,weapon,0,		WM_SEVERE_RAINSTORM_MELEE,Severe Rainstorm Melee
 2517,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		SR_HOWLINGOFLION,Howling of Lion
-2518,3,6,2,-1,0x2,2:2:3:4:4,5,1,no,0,0,0,weapon,0,	SR_RIDEINLIGHTNING,Ride In Lightening
+2518,3,6,0,-1,0x2,2:2:3:4:4,5,1,no,0,0,0,weapon,0,	SR_RIDEINLIGHTNING,Ride In Lightening
 
 2533,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		ALL_ODINS_RECALL,Odin's Recall
 2534,0,0,4,0,0x1,0,1,0,yes,0,0,0,none,0,	RETURN_TO_ELDICASTES,Return To Eldicastes
