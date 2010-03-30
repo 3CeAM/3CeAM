@@ -67,18 +67,18 @@
 // 3rd Class Weapons
 // Weapons needing bonuses scripts
 // Alcabringer - Every 2 refines add +1 ASPD
-1191,Alcabringer,Alcabringer,4,10,,3400,280,,1,0,0x00004080,24,2,34,3,100,1,3,{},{},{}
-1287,Dulga,Dulga,4,10,,1200,190,,1,1,0x00001000,24,2,34,3,100,1,16,{},{},{}
-1649,Lapine_Staff,Lapine Staff,4,10,,500,30,,1,0,0x00018300,24,2,2,3,100,1,10,{ bonus bMatkRate,30; bonus bFixCastRate,-getrefine(); },{},{}
-1746,Elven_Bow,Elven Bow,4,10,,1500,160,,5,1,0x00080800,24,2,34,3,100,1,11,{},{},{}
-16003,Kalga_Mace,Kalga Mace,4,10,,1500,175,,1,2,0x0004C580,24,2,2,3,100,1,8,{},{},{}
+1191,Alcabringer,Alcabringer,4,20,,3400,280,,1,0,0x00004080,24,2,34,3,100,1,3,{},{},{}
+1287,Dulga,Dulga,4,20,,1200,190,,1,1,0x00001000,24,2,34,3,100,1,16,{},{},{}
+1649,Lapine_Staff,Lapine Staff,4,20,,500,30,,1,0,0x00018300,24,2,2,3,100,1,10,{ bonus bMatkRate,30; bonus bFixCastRate,-getrefine(); },{},{}
+1746,Elven_Bow,Elven Bow,4,20,,1500,160,,5,1,0x00080800,24,2,34,3,100,1,11,{},{},{}
+16003,Kalga_Mace,Kalga Mace,4,20,,1500,175,,1,2,0x0004C580,24,2,2,3,100,1,8,{},{},{}
 
 // Mechanic Mado Weapons
-1549,Pile_Bunker,Pile Bunker,4,10,,3000,450,,1,0,0x00000400,24,2,2,3,99,0,23,{},{},{}
+1549,Pile_Bunker,Pile Bunker,4,10000,,3000,450,,1,0,0x00000400,24,2,2,3,99,0,23,{},{},{}
 
 // Mechanic Mado Side Arm Weapons
 2139,Flame_Thrower,Flame Thrower,5,20000,,2000,,5,,0,0x00000400,24,2,32,,99,0,5,{},{},{}
-2140,Energy_Rune_Guard,Energy Rune Guard,5,10,,10,,1,,1,0xFFFFFFFF,31,2,32,,70,1,5,{ bonus bMaxSPrate,2; },{},{}
+2140,Energy_Rune_Guard,Energy Rune Guard,5,20,,10,,1,,1,0xFFFFFFFF,31,2,32,,70,1,5,{ bonus bMaxSPrate,2; },{},{}
 
 //2794,Magic_Stone_Ring,Magic Stone Ring,5,10,,10,,0,,0,0xFFFFFFFF,31,2,136,,0,0,0{ bonus bStr,2; },{},{}
 //2795,Immature_Apple_Ring,Immature Apple Ring,5,10,,10,,0,,0,0xFFFFFFFE,31,2,136,,0,0,0,{},{},{}
@@ -95,30 +95,30 @@
 2805,Magnetic_Field_Generator,Magnetic Field Generator,5,100000,,6000,,0,,1,0x00000400,24,2,136,,99,0,0,{ bonus bDex,1; },{},{}
 2806,Barrier_Generator,Barrier Generator,5,150000,,8000,,3,,1,0x00000400,24,2,136,,99,0,0,{ bonus bDex,1; },{},{}
 2807,Repair_Kit,Repair Kit,5,200000,,400,,0,,1,0x00000400,24,2,136,,99,0,0,{},{},{}
-2808,Optical_Camouflage_Generator,Optical Camouflage Generator,5,10,,1000,,0,,1,0x00000400,24,2,136,,99,0,0,{ bonus bAgi,3; },{},{}
-2809,Advanced_Cooling_System,Advanced Cooling System,5,10,,10,,0,,1,0x00000400,24,2,136,,99,0,0,{ bonus bDex,1; },{},{}
-2810,Special_Cooling_System,Special Cooling System,5,10,,10,,0,,1,0x00000400,24,2,136,,99,0,0,{ bonus bDex,1; },{},{}
+2808,Optical_Camouflage_Generator,Optical Camouflage Generator,5,250000,,1000,,0,,1,0x00000400,24,2,136,,99,0,0,{ bonus bAgi,3; },{},{}
+2809,Advanced_Cooling_System,Advanced Cooling System,5,20,,10,,0,,1,0x00000400,24,2,136,,99,0,0,{ bonus bDex,1; },{},{}
+2810,Special_Cooling_System,Special Cooling System,5,20,,10,,0,,1,0x00000400,24,2,136,,99,0,0,{ bonus bDex,1; },{},{}
 
 //5516,Hawkeye_1,Hawkeye,5,10,,1000,,0,,0,0x00080808,31,2,256,,0,1,0,{},{},{}
 //5517,Hawkeye_2,Hawkeye,5,10,,1000,,0,,0,0x00000800,26,2,256,,0,1,0,{ bonus bDex,1; bonus bLongAtkRate,3; },{},{}
 
 // Shadow Chaser Paint And Brushes
-6120,Face_Paint,Face Paint,3,10,,10,,,,,,,,,,,,,{},{},{}
-6121,Makeup_Brush,Makeup Brush,3,10,,10,,,,,,,,,,,,,{},{},{}
-6122,Paint_Brush,Paint Brush,3,10,,10,,,,,,,,,,,,,{},{},{}
-6123,Surface_Paint,Surface Paint,3,10,,10,,,,,,,,,,,,,{},{},{}
+6120,Face_Paint,Face Paint,3,120,,10,,,,,,,,,,,,,{},{},{}
+6121,Makeup_Brush,Makeup Brush,3,20,,10,,,,,,,,,,,,,{},{},{}
+6122,Paint_Brush,Paint Brush,3,20,,10,,,,,,,,,,,,,{},{},{}
+6123,Surface_Paint,Surface Paint,3,200,,10,,,,,,,,,,,,,{},{},{}
 
 // Ranger Flute
 6124,Wolf_Flute,Wolf Flute,3,250,,10,,,,,,,,,,,,,{},{},{}
 
 // Guillotine Cross Poison Antidote
-6128,Antidote,Antidote,3,10,,10,,,,,,,,,,,,,{},{},{}
+6128,Antidote,Antidote,3,1,,10,,,,,,,,,,,,,{},{},{}
 
-6144,Painful_Tear,Painful Tear,3,10,,10,,,,,,,,,,,,,{},{},{}
+6144,Painful_Tear,Painful Tear,3,1000,,10,,,,,,,,,,,,,{},{},{}
 
 // Mechanic Mado Gear Skill Required Items
 6145,Vulcan_Bullet,Vulcan Bullet,3,10,,3,,,,,,,,,,,,,{},{},{}
-6146,Mado/Magic_Gear_Fuel,Mado/Magic Gear Fuel,3,300,,30,,,,,,,,,,,,,{},{},{}
+6146,Mado_Gear_Fuel,Mado Gear Fuel,3,300,,30,,,,,,,,,,,,,{},{},{}
 6147,Liquid_Cold_Bullet,Liquid Cold Bullet,3,100,,10,,,,,,,,,,,,,{},{},{}
 
 6150,House_Key,House Key,3,10,,10,,,,,,,,,,,,,{},{},{}
@@ -136,57 +136,57 @@
 6186,Monkey_Wrench,Monkey Wrench,3,500,,10,,,,,,,,,,,,,{},{},{}
 
 // Warlock's Magic Spellbooks
-6189,Magic_Book_(Fire_Bolt),Magic Book (Fire Bolt),3,10,,10,,,,,,,,,,,,,{},{},{}
-6190,Magic_Book_(Cold_Bolt),Magic Book (Cold Bolt),3,10,,10,,,,,,,,,,,,,{},{},{}
-6191,Magic_Book_(Lightning_Bolt),Magic Book (Lightning Bolt),3,10,,10,,,,,,,,,,,,,{},{},{}
-6192,Magic_Book_(Storm_Gust),Magic Book (Storm Gust),3,10,,10,,,,,,,,,,,,,{},{},{}
-6193,Magic_Book_(Lord_Of_Vermillion),Magic Book (Lord Of Vermillion),3,10,,10,,,,,,,,,,,,,{},{},{}
-6194,Magic_Book_(Meteor_Storm),Magic Book (Meteor Storm),3,10,,10,,,,,,,,,,,,,{},{},{}
-6195,Magic_Book_(Comet),Magic Book (Comet),3,10,,10,,,,,,,,,,,,,{},{},{}
-6196,Magic_Book_(Tetra_Vortex),Magic Book (Tetra Vortex),3,10,,10,,,,,,,,,,,,,{},{},{}
-6197,Magic_Book_(Thunder_Storm),Magic Book (Thunder Storm),3,10,,10,,,,,,,,,,,,,{},{},{}
-6198,Magic_Book_(Jupitel_Thunder),Magic Book (Jupitel Thunder),3,10,,10,,,,,,,,,,,,,{},{},{}
-6199,Magic_Book_(Water_Ball),Magic Book (Water_Ball),3,10,,10,,,,,,,,,,,,,{},{},{}
-6200,Magic_Book_(Heaven's_Drive),Magic Book (Heaven's Drive),3,10,,10,,,,,,,,,,,,,{},{},{}
-6201,Magic_Book_(Earth_Spike),Magic Book (Earth Spike),3,10,,10,,,,,,,,,,,,,{},{},{}
-6202,Magic_Book_(Earth_Strain),Magic Book (Earth Strain),3,10,,10,,,,,,,,,,,,,{},{},{}
-6203,Magic_Book_(Chain_Lightning),Magic Book (Chain Lightning),3,10,,10,,,,,,,,,,,,,{},{},{}
-6204,Magic_Book_(Crimson_Rock),Magic Book (Crimson_Rock),3,10,,10,,,,,,,,,,,,,{},{},{}
-6205,Magic_Book_(Drain_Life),Magic Book (Drain Life),3,10,,10,,,,,,,,,,,,,{},{},{}
+6189,Magic_Book_(Fire_Bolt),Magic Book (Fire Bolt),3,20,,10,,,,,,,,,,,,,{},{},{}
+6190,Magic_Book_(Cold_Bolt),Magic Book (Cold Bolt),3,20,,10,,,,,,,,,,,,,{},{},{}
+6191,Magic_Book_(Lightning_Bolt),Magic Book (Lightning Bolt),3,20,,10,,,,,,,,,,,,,{},{},{}
+6192,Magic_Book_(Storm_Gust),Magic Book (Storm Gust),3,20,,10,,,,,,,,,,,,,{},{},{}
+6193,Magic_Book_(Lord_Of_Vermillion),Magic Book (Lord Of Vermillion),3,20,,10,,,,,,,,,,,,,{},{},{}
+6194,Magic_Book_(Meteor_Storm),Magic Book (Meteor Storm),3,20,,10,,,,,,,,,,,,,{},{},{}
+6195,Magic_Book_(Comet),Magic Book (Comet),3,20,,10,,,,,,,,,,,,,{},{},{}
+6196,Magic_Book_(Tetra_Vortex),Magic Book (Tetra Vortex),3,20,,10,,,,,,,,,,,,,{},{},{}
+6197,Magic_Book_(Thunder_Storm),Magic Book (Thunder Storm),3,20,,10,,,,,,,,,,,,,{},{},{}
+6198,Magic_Book_(Jupitel_Thunder),Magic Book (Jupitel Thunder),3,20,,10,,,,,,,,,,,,,{},{},{}
+6199,Magic_Book_(Water_Ball),Magic Book (Water_Ball),3,20,,10,,,,,,,,,,,,,{},{},{}
+6200,Magic_Book_(Heaven's_Drive),Magic Book (Heaven's Drive),3,20,,10,,,,,,,,,,,,,{},{},{}
+6201,Magic_Book_(Earth_Spike),Magic Book (Earth Spike),3,20,,10,,,,,,,,,,,,,{},{},{}
+6202,Magic_Book_(Earth_Strain),Magic Book (Earth Strain),3,20,,10,,,,,,,,,,,,,{},{},{}
+6203,Magic_Book_(Chain_Lightning),Magic Book (Chain Lightning),3,20,,10,,,,,,,,,,,,,{},{},{}
+6204,Magic_Book_(Crimson_Rock),Magic Book (Crimson_Rock),3,20,,10,,,,,,,,,,,,,{},{},{}
+6205,Magic_Book_(Drain_Life),Magic Book (Drain Life),3,20,,10,,,,,,,,,,,,,{},{},{}
 
 // Genetic Skill Required Items
-6210,Thorny_Seed,Thorny Seed,3,10,,10,,,,,,,,,,,,,{},{},{}
-6211,Bloodsucker_Seed,Bloodsucker Seed,3,10,,10,,,,,,,,,,,,,{},{},{}
-6212,Bomb_Mushroom_Spores,Bomb Mushroom Spores,3,10,,10,,,,,,,,,,,,,{},{},{}
-6213,Explosive_Powder,Explosive Powder,3,10,,10,,,,,,,,,,,,,{},{},{}
-6214,Smokescreen_Powder,Smokescreen Powder,3,10,,10,,,,,,,,,,,,,{},{},{}
-6215,Tear_Gas,Tear Gas,3,10,,10,,,,,,,,,,,,,{},{},{}
-6216,Oil_Bottle,Oil Bottle,3,10,,10,,,,,,,,,,,,,{},{},{}
-6217,Mandragora_Flowerpot,Mandragora Flowerpot,3,10,,10,,,,,,,,,,,,,{},{},{}
+6210,Thorny_Seed,Thorny Seed,3,20,,10,,,,,,,,,,,,,{},{},{}
+6211,Bloodsucker_Seed,Bloodsucker Seed,3,20,,10,,,,,,,,,,,,,{},{},{}
+6212,Bomb_Mushroom_Spores,Bomb Mushroom Spores,3,20,,10,,,,,,,,,,,,,{},{},{}
+6213,Explosive_Powder,Explosive Powder,3,500,,10,,,,,,,,,,,,,{},{},{}
+6214,Smokescreen_Powder,Smokescreen Powder,3,500,,10,,,,,,,,,,,,,{},{},{}
+6215,Tear_Gas,Tear Gas,3,500,,10,,,,,,,,,,,,,{},{},{}
+6216,Oil_Bottle,Oil Bottle,3,1000,,10,,,,,,,,,,,,,{},{},{}
+6217,Mandragora_Flowerpot,Mandragora Flowerpot,3,2000,,10,,,,,,,,,,,,,{},{},{}
 
 // Genetic Item Creation Ingredients
 6244,Dark_Powder,Dark Powder,3,10,,10,,,,,,,,,,,,,{},{},{}
-6245,Black_Powder,Black Powder,3,10,,10,,,,,,,,,,,,,{},{},{}
-6246,Yellow_Powder,Yellow Powder,3,10,,10,,,,,,,,,,,,,{},{},{}
-6247,White_Powder,White Powder,3,10,,10,,,,,,,,,,,,,{},{},{}
-6248,Stew_Pot,Stew Pot,3,10,,10,,,,,,,,,,,,,{},{},{}
-6249,Savage_Meat,Savage Meat,3,10,,10,,,,,,,,,,,,,{},{},{}
-6250,Iron_Cooking_Skewer,Iron Cooking Skewer,3,10,,10,,,,,,,,,,,,,{},{},{}
-6251,Bituminous_Coal,Bituminous Coal,3,10,,10,,,,,,,,,,,,,{},{},{}
-6252,Wolf's_Blood,Wolf's Blood,3,10,,10,,,,,,,,,,,,,{},{},{}
-6253,Cold_Ice,Cold Ice,3,10,,10,,,,,,,,,,,,,{},{},{}
-6254,Seasoned_Tough_Meat,Seasoned Tough Meat,3,10,,10,,,,,,,,,,,,,{},{},{}
-6255,Large_Pan,Large Pan,3,10,,10,,,,,,,,,,,,,{},{},{}
-6256,Powdered_Ice,Powdered Ice,3,10,,10,,,,,,,,,,,,,{},{},{}
-6257,Ice_Crystal,Ice Crystal,3,10,,10,,,,,,,,,,,,,{},{},{}
-6258,Comodo_Tropical_Fruit,Comodo Tropical Fruit,3,10,,10,,,,,,,,,,,,,{},{},{}
-6259,Drosera_Feeler,Drosera Feeler,3,10,,10,,,,,,,,,,,,,{},{},{}
-6260,Petite_Tail,Petite Tail,3,10,,10,,,,,,,,,,,,,{},{},{}
-6261,Fine_Noodles,Fine Noodles,3,10,,10,,,,,,,,,,,,,{},{},{}
-6262,Cold_Broth,Cold Broth,3,10,,10,,,,,,,,,,,,,{},{},{}
-6263,Coconut,Coconut,3,10,,10,,,,,,,,,,,,,{},{},{}
-6264,Melon,Melon,3,10,,10,,,,,,,,,,,,,{},{},{}
-6265,Pineapple,Pineapple,3,10,,10,,,,,,,,,,,,,{},{},{}
+6245,Black_Powder,Black Powder,3,100,,10,,,,,,,,,,,,,{},{},{}
+6246,Yellow_Powder,Yellow Powder,3,100,,10,,,,,,,,,,,,,{},{},{}
+6247,White_Powder,White Powder,3,100,,10,,,,,,,,,,,,,{},{},{}
+6248,Stew_Pot,Stew Pot,3,600,,10,,,,,,,,,,,,,{},{},{}
+6249,Savage_Meat,Savage Meat,3,100,,10,,,,,,,,,,,,,{},{},{}
+6250,Iron_Cooking_Skewer,Iron Cooking Skewer,3,300,,10,,,,,,,,,,,,,{},{},{}
+6251,Bituminous_Coal,Bituminous Coal,3,300,,10,,,,,,,,,,,,,{},{},{}
+6252,Wolf's_Blood,Wolf's Blood,3,100,,10,,,,,,,,,,,,,{},{},{}
+6253,Cold_Ice,Cold Ice,3,100,,10,,,,,,,,,,,,,{},{},{}
+6254,Seasoned_Tough_Meat,Seasoned Tough Meat,3,100,,10,,,,,,,,,,,,,{},{},{}
+6255,Large_Pan,Large Pan,3,500,,10,,,,,,,,,,,,,{},{},{}
+6256,Powdered_Ice,Powdered Ice,3,100,,10,,,,,,,,,,,,,{},{},{}
+6257,Ice_Crystal,Ice Crystal,3,100,,10,,,,,,,,,,,,,{},{},{}
+6258,Comodo_Tropical_Fruit,Comodo Tropical Fruit,3,800,,10,,,,,,,,,,,,,{},{},{}
+6259,Drosera_Feeler,Drosera Feeler,3,100,,10,,,,,,,,,,,,,{},{},{}
+6260,Petite_Tail,Petite Tail,3,100,,10,,,,,,,,,,,,,{},{},{}
+6261,Fine_Noodles,Fine Noodles,3,500,,10,,,,,,,,,,,,,{},{},{}
+6262,Cold_Broth,Cold Broth,3,400,,10,,,,,,,,,,,,,{},{},{}
+6263,Coconut,Coconut,3,100,,10,,,,,,,,,,,,,{},{},{}
+6264,Melon,Melon,3,100,,10,,,,,,,,,,,,,{},{},{}
+6265,Pineapple,Pineapple,3,100,,10,,,,,,,,,,,,,{},{},{}
 
 // 3-2 Jobs Quest Items ???
 //6266,Test_Item_2,Test Item 2,3,10,,10,,,,,,,,,,,,,{},{},{}
@@ -204,13 +204,13 @@
 //6278,Test_Item_14,Test Item 14,3,10,,10,,,,,,,,,,,,,{},{},{}
 
 // Genetic Guide's And Manurals
-6279,Apple_Bomb_Guidebook,Apple Bomb Guidebook,3,10,,10,,,,,,,,,,,,,{},{},{}
-6280,Pineapple_Bomb_Guidebook,Pineapple Bomb Guidebook,3,10,,10,,,,,,,,,,,,,{},{},{}
-6281,Coconut_Bomb_Guidebook,Coconut Bomb Guidebook,3,10,,10,,,,,,,,,,,,,{},{},{}
-6282,Melon_Bomb_Guidebook,Melon Bomb Guidebook,3,10,,10,,,,,,,,,,,,,{},{},{}
-6283,Banana_Bomb_Guidebook,Banana Bomb Guidebook,3,10,,10,,,,,,,,,,,,,{},{},{}
-6284,Plant_Genetic_Cultivation_Guide,Plant Genetic Cultivation Guide,3,10,,10,,,,,,,,,,,,,{},{},{}
-6285,Improved_Potion_Creation_Manual,Improved Potion Creation Manual,3,10,,10,,,,,,,,,,,,,{},{},{}
+6279,Apple_Bomb_Guidebook,Apple Bomb Guidebook,3,1000,,10,,,,,,,,,,,,,{},{},{}
+6280,Pineapple_Bomb_Guidebook,Pineapple Bomb Guidebook,3,1000,,10,,,,,,,,,,,,,{},{},{}
+6281,Coconut_Bomb_Guidebook,Coconut Bomb Guidebook,3,1000,,10,,,,,,,,,,,,,{},{},{}
+6282,Melon_Bomb_Guidebook,Melon Bomb Guidebook,3,1000,,10,,,,,,,,,,,,,{},{},{}
+6283,Banana_Bomb_Guidebook,Banana Bomb Guidebook,3,1000,,10,,,,,,,,,,,,,{},{},{}
+6284,Plant_Genetic_Cultivation_Guide,Plant Genetic Cultivation Guide,3,1500,,10,,,,,,,,,,,,,{},{},{}
+6285,Improved_Potion_Creation_Manual,Improved Potion Creation Manual,3,1000,,10,,,,,,,,,,,,,{},{},{}
 
 6297,Empty_Potion_Bottle,Empty Potion Bottle,3,10,,10,,,,,,,,,,,,,{},{},{}
 
@@ -221,17 +221,17 @@
 //6363,Lime_Green_Point,Lime Green Point,3,10,,5,,,,,,,,,,,,,{},{},{}
 
 // Guillotine Cross Poison Ingredients
-7931,Poison_Kit,Poison Manufacture Kit,3,10,,10,,,,,,,,,,,,,{},{},{}
-7932,Poison_Herb_Nerium,Nerium,3,10,,10,,,,,,,,,,,,,{},{},{}
-7933,Poison_Herb_Rantana,Lantana,3,10,,10,,,,,,,,,,,,,{},{},{}
-7934,Poison_Herb_Makulata,Makulrata,3,10,,10,,,,,,,,,,,,,{},{},{}
-7935,Poison_Herb_Seratum,Celatom,3,10,,10,,,,,,,,,,,,,{},{},{}
-7936,Poison_Herb_Scopolia,Scoforia,3,10,,10,,,,,,,,,,,,,{},{},{}
-7937,Poison_Herb_Amoena,Amoena,3,10,,10,,,,,,,,,,,,,{},{},{}
+7931,Poison_Kit,Poison Manufacture Kit,3,1,,10,,,,,,,,,,,,,{},{},{}
+7932,Poison_Herb_Nerium,Nerium,3,1,,10,,,,,,,,,,,,,{},{},{}
+7933,Poison_Herb_Rantana,Lantana,3,1,,10,,,,,,,,,,,,,{},{},{}
+7934,Poison_Herb_Makulata,Makulrata,3,1,,10,,,,,,,,,,,,,{},{},{}
+7935,Poison_Herb_Seratum,Celatom,3,1,,10,,,,,,,,,,,,,{},{},{}
+7936,Poison_Herb_Scopolia,Scoforia,3,1,,10,,,,,,,,,,,,,{},{},{}
+7937,Poison_Herb_Amoena,Amoena,3,1,,10,,,,,,,,,,,,,{},{},{}
 
 // Rune Knight Rune Stone Ingredients
-7938,Light_Granule,Light Partacle,3,10,,10,,,,,,,,,,,,,{},{},{}
-7939,Elder_Branch,Elder's Branch,3,10,,10,,,,,,,,,,,,,{},{},{}
+7938,Light_Granule,Light Partacle,3,1000,,10,,,,,,,,,,,,,{},{},{}
+7939,Elder_Branch,Elder's Branch,3,1000,,10,,,,,,,,,,,,,{},{},{}
 
 // Ranger Special Alloy Trap
 7940,Special_Alloy_Trap,Special Alloy Trap,3,10,,10,,,,,,,,,,,,,{},{},{}
@@ -242,7 +242,7 @@
 11024,Energy_Drink_Formula,Energy Drink Formula,3,10,,10,,,,,,,,,,,,,{},{},{}
 
 // Minstrel And Wanderer Cough Drop
-11513,Cough_Drop,Cough Drop,3,10,,10,,,,,,,,,,,,,{},{},{}
+11513,Cough_Drop,Cough Drop,3,200,,10,,,,,,,,,,,,,{},{},{}
 
 // Genetic Cure Free
 //11518,Cure_Free,Cure Free,3,10,,10,,,,,,,,,,,,,{},{},{}
@@ -266,9 +266,9 @@
 //12390,Something_Something_Rune_Stone_3,Something Something Rune Stone 3,3,10,,10,,,,,,,,,,,,,{},{},{}
 
 // Mechanic Mado Gear Repair Items
-12392,Repair_A,Repair A,0,100,,70,,,,,0x00000400,24,2,,,,,,{ itemheal rand(200,300),0; },{},{}
-12393,Repair_B,Repair B,0,100,,70,,,,,0x00000400,24,2,,,,,,{ itemheal rand(300,400),0; },{},{}
-12394,Repair_C,Repair C,0,100,,70,,,,,0x00000400,24,2,,,,,,{ itemheal rand(400,500),0; },{},{}
+12392,Repair_A,Repair A,0,220,,70,,,,,0x00000400,24,2,,,,,,{ itemheal rand(200,300),0; },{},{}
+12393,Repair_B,Repair B,0,500,,70,,,,,0x00000400,24,2,,,,,,{ itemheal rand(300,400),0; },{},{}
+12394,Repair_C,Repair C,0,1100,,70,,,,,0x00000400,24,2,,,,,,{ itemheal rand(400,500),0; },{},{}
 
 // Genetic Created Boosting Items
 12417,Boost_500,Boost 500,3,10,,10,,,,,,,,,,,,,{},{},{}
@@ -296,14 +296,14 @@
 12475,Cure_Photo,Cure Photo,3,10,,10,,,,,,,,,,,,,{},{},{}
 
 // Guillotine Cross Poisons
-12717,Poison_Paralysis,Paralyze,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ sc_start SC_PARALYSE,300000,0; },{},{}
-12718,Poison_Leech,Leech End,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ sc_start SC_LEECHESEND,300000,0; },{},{}
-12719,Poison_Oblivion,Oblivion Curse,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ sc_start SC_OBLIVIONCURSE,300000,0; },{},{}
-12720,Poison_Disheart,Disheart,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ sc_start SC_DEATHHURT,300000,0; },{},{}
-12721,Poison_Numb,Toxin,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ sc_start SC_TOXIN,300000,0; },{},{}
-12722,Poison_Fever,Pyrexia,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ sc_start SC_PYREXIA,300000,0; },{},{}
-12723,Poison_Laughing,Magic Mushroom,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ sc_start SC_MAGICMUSHROOM,300000,0; },{},{}
-12724,Poison_Fatigue,Venom Bleed,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ sc_start SC_VENOMBLEED,15000,0; },{},{}
+12717,Poison_Paralysis,Paralyze,0,2,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ sc_start SC_PARALYSE,300000,0; },{},{}
+12718,Poison_Leech,Leech End,0,2,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ sc_start SC_LEECHESEND,300000,0; },{},{}
+12719,Poison_Oblivion,Oblivion Curse,0,2,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ sc_start SC_OBLIVIONCURSE,300000,0; },{},{}
+12720,Poison_Disheart,Disheart,0,2,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ sc_start SC_DEATHHURT,300000,0; },{},{}
+12721,Poison_Numb,Toxin,0,2,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ sc_start SC_TOXIN,300000,0; },{},{}
+12722,Poison_Fever,Pyrexia,0,2,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ sc_start SC_PYREXIA,300000,0; },{},{}
+12723,Poison_Laughing,Magic Mushroom,0,2,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ sc_start SC_MAGICMUSHROOM,300000,0; },{},{}
+12724,Poison_Fatigue,Venom Bleed,0,2,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ sc_start SC_VENOMBLEED,15000,0; },{},{}
 
 // Rune Knight's Rune Stones
 12725,Runstone_Nosiege,Nauthiz Rune,11,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ if(Class == Job_Rune_Knight || Class == Job_Rune_Knight_T) itemskill "RK_REFRESH",1; },{},{}
@@ -317,12 +317,11 @@
 12733,Runstone_Hagalas,Hagalaz Rune,11,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ if(Class == Job_Rune_Knight || Class == Job_Rune_Knight_T) itemskill "RK_STONEHARDSKIN",1; },{},{}
 
 // Rune Knight Rune Ores
-
-12734,Runstone_Quality,Luxurious Rune,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ makerune 1; },{},{}
-12735,Runstone_Ancient,Ancient Rune,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ makerune 2; },{},{}
-12736,Runstone_Mystic,Mystic Rune,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ makerune 3; },{},{}
-12737,Runstone_Ordinary,General Rune,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ makerune 4; },{},{}
-12738,Runstone_Rare,Rare Rune,0,100,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ makerune 5; },{},{}
+12734,Runstone_Quality,Luxurious Rune,0,2,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ makerune 1; },{},{}
+12735,Runstone_Ancient,Ancient Rune,0,2,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ makerune 2; },{},{}
+12736,Runstone_Mystic,Mystic Rune,0,2,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ makerune 3; },{},{}
+12737,Runstone_Ordinary,General Rune,0,2,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ makerune 4; },{},{}
+12738,Runstone_Rare,Rare Rune,0,2,,100,,,,,0xFFFFFFFF,24,2,,,,,,{ makerune 5; },{},{}
 
 // Genetic Created Bombs And Lumps
 13260,Apple_Bomb,Apple Bomb,3,10,,10,,,,,,,,,,,,,{},{},{}

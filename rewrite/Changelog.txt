@@ -6,6 +6,10 @@
 //========================================
 
 03/30/2010
+	r296 [Rytech]
+	*Updated prices on items in item_db2.
+
+03/30/2010
 	r295 [Jobbie]
 	* Added official feature of party name display.
 	- Configuration was added to allow server owner which way to follow (Aegis or eAthena).
