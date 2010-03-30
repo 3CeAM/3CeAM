@@ -6,6 +6,10 @@
 //========================================
 
 03/30/2010
+	r295 [Jobbie]
+	* Added official feature of party name display.
+	- Configuration was added to allow server owner which way to follow (Aegis or eAthena).
+
 	r294 [Jobbie]
 	- Disabled skills which are not yet implemented to avoid map-server warnings.
 
