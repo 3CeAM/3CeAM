@@ -5,6 +5,10 @@
 // 	- Details.
 //========================================
 
+03/30/2010
+	r294 [Jobbie]
+	- Disabled skills which are not yet implemented to avoid map-server warnings.
+
 03/28/2010
 	r293 [Jobbie]
 	* Updated Warlocks skills Casting Time, After-Cast Delay, Re-use Delay and Duration.
