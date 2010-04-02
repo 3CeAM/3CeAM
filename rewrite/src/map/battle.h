@@ -43,7 +43,7 @@ int battle_attr_ratio(int atk_elem,int def_type, int def_lv);
 int battle_attr_fix(struct block_list *src, struct block_list *target, int damage,int atk_elem,int def_type, int def_lv);
 
 // ダメージ最終計算
-int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damage *d,int damage,int skill_num,int skill_lv);
+int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damage *d,int damage,int skill_num,int skill_lv,int element);
 int battle_calc_gvg_damage(struct block_list *src,struct block_list *bl,int damage,int div_,int skill_num,int skill_lv,int flag);
 int battle_calc_bg_damage(struct block_list *src,struct block_list *bl,int damage,int div_,int skill_num,int skill_lv,int flag);
 
@@ -69,6 +69,8 @@ enum damage_lv battle_weapon_attack( struct block_list *bl,struct block_list *ta
 struct block_list* battle_get_master(struct block_list *src);
 struct block_list* battle_gettargeted(struct block_list *target);
 struct block_list* battle_getenemy(struct block_list *target, int type, int range);
+struct block_list* battle_getenemyarea(struct block_list *src, int x, int y, int range, int type, int ignore_id);
+
 int battle_gettarget(struct block_list *bl);
 int battle_getcurrentskill(struct block_list *bl);
 
