@@ -2909,10 +2909,10 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 								addv -= 500 * i;
 								mulv -= 100 * i;
 							}
-							skillmod += addv + mulv * skill_lv;
+							skillratio += addv + mulv * skill_lv;
 						}
 						else
-							skillmod += 2400 + 500 * skill_lv; // Monsters maybe...
+							skillratio += 2400 + 500 * skill_lv; // Monsters maybe...
 						break;
 					case WL_CHAINLIGHTNING_ATK:
 						skillratio += 300 + 100 * skill_lv;
