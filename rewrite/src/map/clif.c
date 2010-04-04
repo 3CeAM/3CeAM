@@ -3028,17 +3028,12 @@ int clif_spellbook_list(struct map_session_data *sd)
 			c ++;
 		}
 	}
+	WFIFOW(fd,2) = c * 2 + 4;
+	WFIFOSET(fd, WFIFOW(fd, 2));
 	if( c > 0 )
 	{
 		sd->menuskill_id = WL_READING_SB;
 		sd->menuskill_val = c;
-		WFIFOW(fd,2) = c * 2 + 4;
-		WFIFOSET(fd, WFIFOW(fd, 2));
-	}
-	else
-	{
-		status_change_end(&sd->bl,SC_STOP,-1);
-		return 0;
 	}
 
 	return 1;
