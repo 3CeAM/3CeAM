@@ -6742,15 +6742,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			tick = 1000;
 			val_flag |= 1;
 			break;
-		case SC_READING_SB_1:
-		case SC_READING_SB_2:
-		case SC_READING_SB_3:
-		case SC_READING_SB_4:
-		case SC_READING_SB_5:
-		case SC_READING_SB_6:
-		case SC_READING_SB_7:
-			val_flag |= 1|2|4;
-			break;
 		case SC_SHAPESHIFT:
 			switch( val1 )
 			{

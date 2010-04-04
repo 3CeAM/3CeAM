@@ -20,6 +20,7 @@
 
 #define MAX_RUNE 20
 #define MAX_RAGE 15
+#define MAX_SPELLBOOK 10
 
 struct weapon_data {
 	int atkmods[3];
@@ -390,6 +391,13 @@ struct map_session_data {
 		struct mail_data inbox;
 		bool changed; // if true, should sync with charserver on next mailbox request
 	} mail;
+
+	// Reading SpellBook
+	struct {
+		unsigned short skillid;
+		unsigned char level;
+		unsigned char points;
+	} rsb[MAX_SPELLBOOK];
 
 	//Quest log system [Kevin] [Inkfish]
 	int num_quests;

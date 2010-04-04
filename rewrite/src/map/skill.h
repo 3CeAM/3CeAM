@@ -206,6 +206,7 @@ struct s_skill_abra_db {
 extern struct s_skill_abra_db skill_abra_db[MAX_SKILL_ABRA_DB];
 
 struct s_skill_spellbook_db {
+	int nameid;
 	int skillid;
 	int points;
 };
@@ -1620,25 +1621,5 @@ enum gx_poison {
 	PO_MAGICMUSHROOM,
 	PO_VENOMBLEED
 }; 
-
-enum wl_spellbook {
-	SB_FIREBOLT = 6189,
-	SB_COLDBOLT,
-	SB_LIGHTNINGBOLT,
-	SB_STORMGUST,
-	SB_LORDOFVERMILLION,
-	SB_METEORSTORM,
-	SB_COMET,
-	SB_TETRAVORTEX,
-	SB_THUNDERSTORM,
-	SB_JUPITELTHUNDER,
-	SB_WATERBALL,
-	SB_HEAVENSDRIVE,
-	SB_EARTHSPIKE,
-	SB_EARTHSTRAIN,
-	SB_CHAINLIGHTNING,
-	SB_CRIMSONROCK,
-	SB_DRAINLIFE
-};
 
 #endif /* _SKILL_H_ */
