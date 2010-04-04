@@ -500,26 +500,27 @@ int skillnotok_mercenary(int skillid, struct mercenary_data *md)
 	return skillnotok(skillid, md->master);
 }
 
-struct s_skill_unit_layout* skill_get_unit_layout (int skillid, int skilllv, struct block_list* src, int x, int y)
+struct s_skill_unit_layout* skill_get_unit_layout (int skillid, int skilllv, struct block_list* src, int x, int y, int dir)
 {
 	int pos = skill_get_unit_layout_type(skillid,skilllv);
-	int dir;
 
-	if (pos < -1 || pos >= MAX_SKILL_UNIT_LAYOUT) {
+	if( pos < -1 || pos >= MAX_SKILL_UNIT_LAYOUT )
+	{
 		ShowError("skill_get_unit_layout: unsupported layout type %d for skill %d (level %d)\n", pos, skillid, skilllv);
 		pos = cap_value(pos, 0, MAX_SQUARE_LAYOUT); // cap to nearest square layout
 	}
 
-	if (pos != -1) // simple single-definition layout
+	if( pos != -1 ) // simple single-definition layout
 		return &skill_unit_layout[pos];
 
-	dir = (src->x == x && src->y == y) ? 6 : map_calc_dir(src,x,y); // 6 - default aegis direction
+	if( dir == -1 )
+		dir = (src->x == x && src->y == y) ? 6 : map_calc_dir(src,x,y); // 6 - default aegis direction
 
-	if (skillid == MG_FIREWALL)
+	if( skillid == MG_FIREWALL )
 		return &skill_unit_layout [firewall_unit_pos + dir];
-	else if (skillid == WZ_ICEWALL)
+	else if( skillid == WZ_ICEWALL )
 		return &skill_unit_layout [icewall_unit_pos + dir];
-	else if (skillid == WL_EARTHSTRAIN)
+	else if( skillid == WL_EARTHSTRAIN )
 		return &skill_unit_layout [earthstrain_unit_pos + dir];
 
 	ShowError("skill_get_unit_layout: unknown unit layout for skill %d (level %d)\n", skillid, skilllv);
@@ -800,6 +801,26 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 
 	case AM_DEMONSTRATION:
 		skill_break_equip(bl, EQP_WEAPON, 100*skilllv, BCT_ENEMY);
+		break;
+
+	case WL_EARTHSTRAIN:
+		{
+			int rate = 0, i;
+			const int pos[5] = { EQP_WEAPON, EQP_HELM, EQP_SHIELD, EQP_ARMOR, EQP_ACC };
+			switch( skilllv )
+			{
+			case 1: rate = 6; break;
+			case 2: rate = 14; break;
+			case 3: rate = 24; break;
+			case 4: rate = 36; break;
+			case 5: rate = 50; break;
+			}
+			rate = rate * status_get_lv(src) / 100; // Increased by Level
+			rate -= rate * tstatus->dex/200; // Reduced by Target Dex
+
+			for( i = 0; i < skilllv; i++ )
+				skill_strip_equip(bl,pos[i],rate,skilllv,skill_get_time(skillid,skilllv));
+		}
 		break;
 
 	case CR_SHIELDCHARGE:
@@ -2688,9 +2709,6 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 					}
 					break;
 
-				case WL_EARTHSTRAIN:
-					skill_unitsetting(src, skl->skill_id, skl->skill_lv, skl->x, skl->y, skl->flag);
-					break;
 				case WM_REVERBERATION_MELEE:
 				case WM_REVERBERATION_MAGIC:
 					skill_attack(skill_get_type(skl->skill_id),src, src, target, skl->skill_id, skl->skill_lv, 0, SD_LEVEL);
@@ -2749,6 +2767,10 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 					}
 					else if( path_search_long(NULL, src->m, src->x, src->y, skl->x, skl->y, CELL_CHKWALL) )
 						skill_unitsetting(src,skl->skill_id,skl->skill_lv,skl->x,skl->y,skl->flag);
+					break;
+				case WL_EARTHSTRAIN:
+					// skl->type = original direction, to avoid change it if caster walks in the waves progress.
+					skill_unitsetting(src,skl->skill_id,skl->skill_lv,skl->x,skl->y,skl->type);
 					break;
 			}
 		}
@@ -8582,39 +8604,18 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 
 	case WL_EARTHSTRAIN:
 		{
-			int i, dir = map_calc_dir(src, x, y);
-			type = skill_get_unit_range(skillid, skilllv);
-			x = src->x;
-			y = src->y;
-			for( i = 0; i <= 5; i ++ )
+			int i, wave = skilllv + 2, dir = map_calc_dir(src,x,y);
+			int sx = src->x, sy = src->y; // Start from caster position, casting point is only to give it direction
+			for( i = 0; i < wave; i++ )
 			{
 				switch( dir )
 				{
-					// North
-					case 0:
-					case 1:
-					case 7:
-						y += (i==0)?1:type;
-						break;
-					// West
-					case 2:
-						x -= (i==0)?1:type;
-						break;
-					// South
-					case 3:
-					case 4:
-					case 5:
-						y -= (i==0)?1:type;
-						break;
-					// East
-					case 6:
-						x += (i==0)?1:type;
-						break;
+				case 0: case 1: case 7: sy = src->y + i; break;
+				case 3: case 4: case 5: sy = src->y - i; break;
+				case 2: sx = src->x - i; break;
+				case 6: sx = src->x + i; break;
 				}
-				if( map_getcell(src->m,x,y,CELL_CHKWALL) )
-					break;
-				skill_addtimerskill(src, gettick() + 250 * i, src->id, x, y, skillid, skilllv, 0, 0);
-				
+				skill_addtimerskill(src,gettick() + (250 * i),0,sx,sy,skillid,skilllv,dir,flag);
 			}
 		}
 		break;
@@ -8990,7 +8991,7 @@ static bool skill_dance_switch(struct skill_unit* unit, int flag)
 struct skill_unit_group* skill_unitsetting (struct block_list *src, short skillid, short skilllv, short x, short y, int flag)
 {
 	struct skill_unit_group *group;
-	int i,limit,val1=0,val2=0,val3=0;
+	int i,limit,val1=0,val2=0,val3=0,dir=-1;
 	int target,interval,range,unit_flag;
 	struct s_skill_unit_layout *layout;
 	struct map_session_data *sd;
@@ -9006,7 +9007,12 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 	interval = skill_get_unit_interval(skillid);
 	target = skill_get_unit_target(skillid);
 	unit_flag = skill_get_unit_flag(skillid);
-	layout = skill_get_unit_layout(skillid,skilllv,src,x,y);
+	if( skillid == WL_EARTHSTRAIN )
+	{ // flag is the original skill direction
+		dir = flag;
+		flag = 0;
+	}
+	layout = skill_get_unit_layout(skillid,skilllv,src,x,y,dir);
 
 	sd = BL_CAST(BL_PC, src);
 	status = status_get_status_data(src);
@@ -10087,27 +10093,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			break;
 
 		case UNT_EARTHSTRAIN:
-			{
-				unsigned short location = 0;
-				int rate = 0;
-				/*As the info said strip chance is increased by the caster's BLv
-				  and strip chance is decreased by the target's Dex
-				  Overall Formula: Success chance * (Blvl/100) * (1-Dex/200). [Jobbie]*/
-				switch( sg->skill_lv )
-				{
-					case 1: rate = 6*status_get_lv(ss)/100; break; //4% chance
-					case 2: rate = 14*status_get_lv(ss)/100; break; //14% chance
-					case 3: rate = 24*status_get_lv(ss)/100; break; //24% chance
-					case 4: rate = 36*status_get_lv(ss)/100; break; //36% chance
-					case 5: rate = 50*status_get_lv(ss)/100; break; //50% chance
-				}
-				rate = rate * (1-tstatus->dex/200); //Strip Chance * (1-TargetsDex/200);
-				location = EQP_SHIELD|EQP_ARMOR|EQP_ACC;
-				
-				if( rate = skill_strip_equip(bl, location, rate, sg->skill_lv, skill_get_time2(sg->skill_id,sg->skill_lv)) )
-					clif_skill_nodamage(&src->bl,bl,sg->skill_id,sg->skill_lv,rate);
-				skill_attack(skill_get_type(sg->skill_id), ss, &src->bl, bl, sg->skill_id, sg->skill_lv, tick, 0);
-			}
+			skill_attack(skill_get_type(sg->skill_id),ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
 			break;
 
 		case UNT_MANHOLE:
@@ -14780,32 +14766,28 @@ void skill_init_unit_layout (void)
 		pos++;
 	}
 	earthstrain_unit_pos = pos;
-	for (i=0;i<8;i++) {
-		skill_unit_layout[pos].count = 5;
-		if (i&1) {
-			if (i&0x2) {
-				int dx[] = {-7,-5, 0, 5, 7};
-				int dy[] = { 0, 0, 0, 0, 0};
-				memcpy(skill_unit_layout[pos].dx,dx,sizeof(dx));
-				memcpy(skill_unit_layout[pos].dy,dy,sizeof(dy));
-			} else {
-				int dx[] = {-7,-5 ,0, 5, 7};
-				int dy[] = { 0, 0, 0, 0, 0};
-				memcpy(skill_unit_layout[pos].dx,dx,sizeof(dx));
-				memcpy(skill_unit_layout[pos].dy,dy,sizeof(dy));
-			}
-		} else {
-			if (i%4==0) {
-				int dx[] = {-7,-5, 0, 5, 7};
-				int dy[] = { 0, 0, 0, 0, 0};
-				memcpy(skill_unit_layout[pos].dx,dx,sizeof(dx));
-				memcpy(skill_unit_layout[pos].dy,dy,sizeof(dy));
-			} else {
-				int dx[] = { 0, 0, 0, 0, 0};
-				int dy[] = {-7,-5, 0, 5, 7};
+	for( i = 0; i < 8; i++ )
+	{ // For each Direction
+		skill_unit_layout[pos].count = 3; // 3 Heaven's Drive, each 5x5
+		switch( i )
+		{
+		case 0: case 1: case 3: case 4: case 5: case 7:
+			{
+				int dx[] = {-5, 0, 5};
+				int dy[] = { 0, 0, 0};
 				memcpy(skill_unit_layout[pos].dx,dx,sizeof(dx));
 				memcpy(skill_unit_layout[pos].dy,dy,sizeof(dy));
 			}
+			break;
+		case 2:
+		case 6:
+			{
+				int dx[] = { 0, 0, 0};
+				int dy[] = {-5, 0, 5};
+				memcpy(skill_unit_layout[pos].dx,dx,sizeof(dx));
+				memcpy(skill_unit_layout[pos].dy,dy,sizeof(dy));
+			}
+			break;
 		}
 		pos++;
 	}
