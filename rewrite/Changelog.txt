@@ -6,6 +6,10 @@
 //========================================
 
 04/05/2010
+	r304 [pakpil]
+	*Added LG_PIETY skill.
+	*Fixed bug report 317.
+
 	r302 [pakpil]
 	*Fixed bug report 335.
 	*Fixed bug report 337.
