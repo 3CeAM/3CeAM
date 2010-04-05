@@ -1726,6 +1726,8 @@ int map_quit(struct map_session_data *sd)
 			status_change_end(&sd->bl,SC_WEIGHT90,-1);
 		if(sd->sc.data[SC_SATURDAYNIGHTFEVER])
 			status_change_end(&sd->bl,SC_SATURDAYNIGHTFEVER,-1);
+		if(sd->sc.data[SC_READING_SB])
+			status_change_end(&sd->bl,SC_READING_SB,-1);
 		if (battle_config.debuff_on_logout&1) {
 			if(sd->sc.data[SC_ORCISH])
 				status_change_end(&sd->bl,SC_ORCISH,-1);
