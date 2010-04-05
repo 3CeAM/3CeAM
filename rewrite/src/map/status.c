@@ -6729,6 +6729,10 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_FREEZING:
 			status_change_end(bl, SC_BURNING, -1);
 			break;
+		case SC_READING_SB:
+			// val2 = sp reduction per second
+			tick = 1000;
+			break;
 		case SC_SPHERE_1:
 		case SC_SPHERE_2:
 		case SC_SPHERE_3:
@@ -7650,6 +7654,9 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 			// from here it's not neccesary to continue
 			return 1;
 			break;
+		case SC_READING_SB:
+			if( sd ) memset(sd->rsb,0,sizeof(sd->rsb)); // Clear all Spell Books
+			break;
 		case SC_STOP:
 			if( sce->val2 )
 			{
@@ -8465,6 +8472,11 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 			return 0;
 		}
 		break;
+
+	case SC_READING_SB:
+		status_charge(bl,0,sce->val2);
+		sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
+		return 0;
 
 	case SC_ELECTRICSHOCKER:
 		if( --(sce->val4) >= 0 )

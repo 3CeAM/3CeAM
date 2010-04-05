@@ -2880,7 +2880,8 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						}
 						break;
 					case WL_FROSTMISTY:
-						skillratio = (200 + 100 * skill_lv) * (status_get_lv(src) / 100);
+						skillratio += 100 + 100 * skill_lv;
+						skillratio = skillratio * status_get_lv(src) / 100;
 						break;
 					case WL_JACKFROST:
 						skillratio += 900 + 300 * skill_lv;
@@ -2918,7 +2919,8 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						skillratio += 300 + 100 * skill_lv;
 						break;
 					case WL_EARTHSTRAIN:
-						skillratio += 1900 + 100 * skill_lv * status_get_lv(src)/100;
+						skillratio += 1900 + 100 * skill_lv;
+						skillratio = skillratio * status_get_lv(src)/100;
 						break;
 					case WL_TETRAVORTEX_FIRE:
 					case WL_TETRAVORTEX_WATER:
