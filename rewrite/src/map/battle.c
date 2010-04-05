@@ -3406,18 +3406,24 @@ int battle_calc_return_damage(struct block_list* bl, int damage, int flag)
 {
 	struct map_session_data* sd = NULL;
 	int rdamage = 0;
+	struct status_change* sc = status_get_sc(bl);
 
 	sd = BL_CAST(BL_PC, bl);
 
+	// Reflect Damage skill should reflect all damage types.
+	if( sc && sc->data[SC_REFLECTDAMAGE] )
+	{
+		int max_damage = status_get_max_hp(bl) * status_get_lv(bl) / 100;
+		rdamage = damage * sc->data[SC_REFLECTDAMAGE]->val2 / 100;
+		if( rdamage > max_damage ) rdamage = max_damage;
+	}
 	//Bounces back part of the damage.
-	if (flag & BF_SHORT) {
-		struct status_change* sc;
+	else if (flag & BF_SHORT) {
 		if (sd && sd->short_weapon_damage_return)
 		{
 			rdamage += damage * sd->short_weapon_damage_return / 100;
 			if(rdamage < 1) rdamage = 1;
 		}
-		sc = status_get_sc(bl);
 		if (sc && sc->data[SC_REFLECTSHIELD])
 		{
 			rdamage += damage * sc->data[SC_REFLECTSHIELD]->val2 / 100;
@@ -3426,12 +3432,6 @@ int battle_calc_return_damage(struct block_list* bl, int damage, int flag)
 		if( sc && sc->data[SC_DEATHBOUND] && damage > 0 )
 		{
 			rdamage = damage * sc->data[SC_DEATHBOUND]->val2 / 100; // Amplify damage.
-		}
-		if( sc && sc->data[SC_REFLECTDAMAGE] )
-		{
-			int max_damage = status_get_max_hp(bl) * status_get_lv(bl) / 100;
-			rdamage = damage * sc->data[SC_REFLECTDAMAGE]->val2 / 100;
-			if( rdamage > max_damage ) rdamage = max_damage;
 		}
 	} else {
 		if (sd && sd->long_weapon_damage_return)

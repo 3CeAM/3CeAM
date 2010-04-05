@@ -1887,8 +1887,8 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 	if( (skillid == AL_INCAGI || skillid == AL_BLESSING || skillid == CASH_BLESSING || skillid == CASH_INCAGI) && tsd->sc.data[SC_CHANGEUNDEAD] )
 		damage = 1;
 
-	if( damage > 0 && (dmg.flag&BF_WEAPON && src != bl && ( src == dsrc || ( dsrc->type == BL_SKILL && ( skillid == SG_SUN_WARM || skillid == SG_MOON_WARM || skillid == SG_STAR_WARM ) ) )
-		&& skillid != WS_CARTTERMINATION) || (sc && sc->data[SC_REFLECTDAMAGE]) )
+	if( damage > 0 && ((dmg.flag&BF_WEAPON && src != bl && ( src == dsrc || ( dsrc->type == BL_SKILL && ( skillid == SG_SUN_WARM || skillid == SG_MOON_WARM || skillid == SG_STAR_WARM ) ) )
+		&& skillid != WS_CARTTERMINATION) || (sc && sc->data[SC_REFLECTDAMAGE])) )
 		rdamage = battle_calc_return_damage(bl, damage, dmg.flag);
 
 	//Skill hit type
@@ -7366,6 +7366,17 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		else
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		break;
+
+	case LG_PIETY:
+		if( flag&1 )
+			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
+		else
+		{
+			skill_area_temp[2] = 0;
+			map_foreachinrange(skill_area_sub,bl,skill_get_splash(skillid,skilllv),BL_PC,src,skillid,skilllv,tick,flag|SD_PREAMBLE|BCT_PARTY|BCT_SELF|1,skill_castend_nodamage_id);
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		}
 		break;
 
 	case WA_SWING_DANCE:
