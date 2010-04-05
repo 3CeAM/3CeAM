@@ -5,6 +5,11 @@
 // 	- Details.
 //========================================
 
+04/05/2010
+	r302 [pakpil]
+	*Fixed bug report 335.
+	*Fixed bug report 337.
+
 03/30/2010
 	r296 [Rytech]
 	*Updated prices on items in item_db2.
