@@ -484,6 +484,7 @@ void initChangeTables(void)
 	
 	add_sc( LG_REFLECTDAMAGE     , SC_REFLECTDAMAGE );
 	set_sc( LG_FORCEOFVANGUARD   , SC_FORCEOFVANGUARD    , SI_FORCEOFVANGUARD   , SCB_MAXHP|SCB_DEF );
+	set_sc( LG_PRESTIGE          , SC_PRESTIGE           , SI_PRESTIGE          , SCB_DEF2 );
 	set_sc( LG_PIETY             , SC_BENEDICTIO         , SI_BENEDICTIO        , SCB_DEF_ELE );
 	
 	set_sc( WA_SWING_DANCE       , SC_SWINGDANCE         , SI_SWINGDANCE        , SCB_SPEED|SCB_ASPD );
@@ -4067,6 +4068,9 @@ static signed short status_calc_def2(struct block_list *bl, struct status_change
 		def2 -= def2 * ( 14 * sc->data[SC_ANALYZE]->val1 ) / 100;
 	if( sc->data[SC_ECHOSONG] )
 		def2 += def2 * sc->data[SC_ECHOSONG]->val2/100;
+	if( sc->data[SC_PRESTIGE] )
+		def2 += def2 * sc->data[SC_PRESTIGE]->val1 / 100;
+
 
 	return (short)cap_value(def2,1,SHRT_MAX);
 }
@@ -6943,6 +6947,14 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val3 = 5 + (2 * val1); // Max rage counters
 			tick = 6000;
 			val_flag |= 1|2|4;
+			break;
+			
+		case SC_PRESTIGE:	// Bassed on suggested formula in iRO Wiki and some test, still need more test. [pakpil]
+			val2 = ((status->int_ + status->luk) / 6) + 5;	// Chance to evade magic damage.
+			val1 *= 15; // Defence added
+			if( sd )
+				val1 += 10 * pc_checkskill(sd,CR_DEFENDER);
+			val_flag |= 1|2;
 			break;
 
 		default:
