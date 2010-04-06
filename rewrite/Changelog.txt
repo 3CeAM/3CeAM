@@ -6,6 +6,12 @@
 //========================================
 
 04/05/2010
+	r305 [pakpil]
+	*Added LG_PRESTIGE and LG_SHIELDPRESS skills.
+	*Minor fix in LG_PIETY where its casting should be interrupted when the caster get damage.
+	*Fixed bug report 346.
+
+04/05/2010
 	r304 [pakpil]
 	*Added LG_PIETY skill.
 	*Fixed bug report 317.

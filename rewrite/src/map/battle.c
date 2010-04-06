@@ -476,6 +476,12 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			return 0;
 		}
 
+		if( flag&BF_MAGIC && (sce=sc->data[SC_PRESTIGE]) && rand()%100 < sce->val2)
+		{
+			clif_specialeffect(bl, 462, AREA); // Still need confirm it.
+			return 0;
+		}
+
 		if (((sce=sc->data[SC_UTSUSEMI]) || sc->data[SC_BUNSINJYUTSU])
 		&& 
 			flag&BF_WEAPON && !(skill_get_nk(skill_num)&NK_NO_CARDFIX_ATK))
@@ -1179,6 +1185,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 
 			case CR_SHIELDBOOMERANG:
 			case PA_SHIELDCHAIN:
+			case LG_SHIELDPRESS:
 				flag.weapon = 0;
 				break;
 
@@ -1524,6 +1531,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				break;
 			case CR_SHIELDBOOMERANG:
 			case PA_SHIELDCHAIN:
+			case LG_SHIELDPRESS:
 				wd.damage = sstatus->batk;
 				if (sd) {
 					short index = sd->equip_index[EQI_HAND_L];
@@ -2053,6 +2061,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					break;
 				case LG_BANISHINGPOINT:
 					skillratio = ((50 * skill_lv) + (30 * ((sd)?pc_checkskill(sd,SM_BASH):1))) * status_get_lv(src) / 100;
+					break;
+				case LG_SHIELDPRESS:
+					skillratio += 60 + 43 * skill_lv * status_get_lv(src) / 100;
 					break;
 				case LG_RAGEBURST:
 					if( sd && sd->rageball_old )
