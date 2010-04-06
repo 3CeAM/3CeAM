@@ -3815,7 +3815,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 				{
 					skele = WL_RELEASE - 5 + sc->data[spheres[i]]->val1 - WLS_FIRE; // Convert Ball Element into Skill ATK for balls
 					// WL_SUMMON_ATK_FIRE, WL_SUMMON_ATK_WIND, WL_SUMMON_ATK_WATER, WL_SUMMON_ATK_GROUND
-					skill_addtimerskill(src,tick+status_get_adelay(src)*i,bl->id,0,0,skele,skilllv,BF_MAGIC,flag);
+					skill_addtimerskill(src,tick+status_get_adelay(src)*i,bl->id,0,0,skele,skilllv,BF_MAGIC,SD_LEVEL);
 					status_change_end(src,spheres[i],-1); // Eliminate ball
 				}
 				clif_skill_nodamage(src,bl,skillid,0,1);
