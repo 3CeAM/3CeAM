@@ -6,6 +6,10 @@
 //========================================
 
 04/07/2010
+	r309 [Rytech]
+	*Added tags and place holders for elemental spirits skills.
+
+04/07/2010
 	r308 [pakpil]
 	* Fixed LG_SHIELDPRESS.
 	- Applied missing effects from Gloomy Day skill.
