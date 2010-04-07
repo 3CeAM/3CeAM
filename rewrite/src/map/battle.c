@@ -2068,7 +2068,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				case LG_SHIELDPRESS:
 					skillratio += 60 + 43 * skill_lv * status_get_lv(src) / 100;
 					if( sc && sc->data[SC_GLOOMYDAY_SK] )
-						skillratio += 80 + 5 * sc->data[SC_GLOOMYDAY_SK]->val1);
+						skillratio += 80 + (5 * sc->data[SC_GLOOMYDAY_SK]->val1);
 					break;
 				case LG_RAGEBURST:
 					if( sd && sd->rageball_old )
