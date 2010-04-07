@@ -1024,8 +1024,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		skill_castend_nodamage_id(src,bl,skillid,skilllv,tick,BCT_ENEMY);
 		break;
 	case AB_ADORAMUS:
-		sc_start(bl, SC_BLIND, 100, skilllv, skill_get_time(skillid, skilllv));
-		sc_start(bl, SC_DECREASEAGI, 100, skilllv, skill_get_time(skillid, skilllv));
+		sc_start(bl, SC_ADORAMUS, 100, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case WL_JACKFROST:
 		status_change_start(bl,SC_FREEZE,10000,skilllv,0,0,0,skill_get_time(skillid,skilllv),0);

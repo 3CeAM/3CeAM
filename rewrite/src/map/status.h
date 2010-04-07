@@ -456,6 +456,7 @@ typedef enum sc_type {
 
 	SC_REUSE_STASIS,
 	SC_PRESTIGE,
+	SC_ADORAMUS,
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
 
@@ -1309,9 +1310,6 @@ struct status_change {
 	unsigned short mp_matk_min, mp_matk_max; //Previous matk min/max for ground spells (Amplify magic power)
 	int sg_id; //ID of the previous Storm gust that hit you
 	unsigned char sg_counter; //Storm gust counter (previous hits from storm gust)
-	int cl_tid;	//ID of the next picked target for Chain Lightning. [LimitLine]
-	int cl_counter;	//Chain Lightning counter. [LimitLine]
-	int cl_counter2;//Chain Lightning counter (for the three-hit countdown when there's nobody in range). [LimitLine]
 	struct status_change_entry *data[SC_MAX];
 };
 

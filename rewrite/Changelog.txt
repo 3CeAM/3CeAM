@@ -5,6 +5,11 @@
 // 	- Details.
 //========================================
 
+04/06/2010
+	r307 [Jobbie]
+	* Adoramus Update adjusted to official behavior.
+	- Uses now its own SC_* and SI_* regardless to its blind status effect.
+
 04/05/2010
 	r306 [Jobbie]
 	- Minor fix to WL_RELEASE skill when releasing ball. Removed displaying "Unknown-Skill"
