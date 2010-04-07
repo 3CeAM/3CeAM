@@ -2059,11 +2059,16 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				case SC_FEINTBOMB:
 					skillratio += 100 + 100 * skill_lv;
 					break;
+				case LG_CANNONSPEAR:// Stimated formula. Still need confirm it.
+					skillratio += -100 + (50 * skill_lv) * ( sstatus->str / 50 ) * (status_get_lv(src) / 100);
+					break;
 				case LG_BANISHINGPOINT:
 					skillratio = ((50 * skill_lv) + (30 * ((sd)?pc_checkskill(sd,SM_BASH):1))) * status_get_lv(src) / 100;
 					break;
 				case LG_SHIELDPRESS:
 					skillratio += 60 + 43 * skill_lv * status_get_lv(src) / 100;
+					if( sc && sc->data[SC_GLOOMYDAY_SK] )
+						skillratio += 80 + 5 * sc->data[SC_GLOOMYDAY_SK]->val1);
 					break;
 				case LG_RAGEBURST:
 					if( sd && sd->rageball_old )
@@ -2089,9 +2094,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 						skillratio += 20 * skill_check_pc_partner(sd,skill_num,&lv,skill_get_splash(skill_num,skill_lv),0);
 					}
 					break;
-				case LG_CANNONSPEAR:// Stimated formula. Still need confirm it.
-					skillratio += -100 + (50 * skill_lv) * ( sstatus->str / 50 ) * (status_get_lv(src) / 100);
-					break;
 				case GN_CART_TORNADO:
 					skillratio += 50 * skill_lv;
 					if( sd )
@@ -2108,11 +2110,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				case GN_CRAZYWEED_ATK:
 					skillratio += 400 + 100 * skill_lv;
 					break;
-				/* Plz add this when the skill is implemented. [pakpil]
-				case LG_SHIELDPRESS:				
-					if( sc && sc->data[SC_GLOOMYDAY_SK] )
-						skillratio += 190 + 5 * sc->data[SC_GLOOMYDAY_SK]->val1);
-					break;*/
 			}
 
 			ATK_RATE(skillratio);

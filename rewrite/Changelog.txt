@@ -5,6 +5,11 @@
 // 	- Details.
 //========================================
 
+04/07/2010
+	r308 [pakpil]
+	* Fixed LG_SHIELDPRESS.
+	- Applied missing effects from Gloomy Day skill.
+
 04/06/2010
 	r307 [Jobbie]
 	* Adoramus Update adjusted to official behavior.
