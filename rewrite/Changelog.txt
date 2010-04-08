@@ -6,6 +6,13 @@
 //========================================
 
 04/07/2010
+	r312 [pakpil]
+	* Fixed WM_GLOOMYDAY. Added missing skill data.
+	* Fixed LG_REFLECTDAMAGE area effect. Follow up r304.
+	* Fixed GN_THORNSTRAP.
+	- Fixed its unit layout.
+	- Fixed behavior using clif_changetraplook instead skill_unitsetting.
+
 	r311 [Jobbie]
 	* Fix minor bug in battle.c
 
