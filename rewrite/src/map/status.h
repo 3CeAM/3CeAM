@@ -457,6 +457,7 @@ typedef enum sc_type {
 	SC_REUSE_STASIS,
 	SC_PRESTIGE,
 	SC_ADORAMUS,
+	SC_VACUUM_EXTREME,
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
 

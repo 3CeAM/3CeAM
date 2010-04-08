@@ -519,6 +519,7 @@ void initChangeTables(void)
 	add_sc( SO_ELECTRICWALK      , SC_ELECTRICWALK );
 	set_sc( SO_CLOUD_KILL        , SC_ELEMENTALCHANGE , SI_CLOUDKILL       , SCB_NONE );
 	set_sc( SO_WARMER            , SC_WARMER          , SI_WARMER          , SCB_NONE );
+	set_sc( SO_VACUUM_EXTREME    , SC_VACUUM_EXTREME  , SI_VACUUM_EXTREME  , SCB_NONE );
 	set_sc( SO_STRIKING          , SC_STRIKING        , SI_STRIKING        , SCB_BATK|SCB_CRI );
 	set_sc( SO_ARRULLO           , SC_DEEPSLEEP       , SI_DEEPSLEEP       , SCB_NONE );
 
@@ -5152,7 +5153,10 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 		sc_def = (status->agi / 4) + (status->luk / 10) + (status_get_lv(bl) / 20) ;
 		break;
 	case SC_CRYSTALIZE:
-		tick -= (1000 * (status->vit/10)) + (status_get_lv(bl)/50);
+		tick -= (1000*(status->vit/10))+(status_get_lv(bl)/50);
+		break;
+	case SC_VACUUM_EXTREME:
+		tick -= 500*status->str;
 		break;
 	case SC_MAGICMIRROR:
 	case SC_ARMORCHANGE:
@@ -7029,6 +7033,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_CHAOS:
 		case SC_CRYSTALIZE:
 		case SC_WHITEIMPRISON:
+		case SC_VACUUM_EXTREME:
 			unit_stop_walking(bl,1);
 		break;
 		case SC_HIDING:
@@ -8800,6 +8805,7 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC_STRIPHELM:
 			case SC_BITE:
 			case SC_ADORAMUS:
+			case SC_VACUUM_EXTREME:
 				if (!(type&2))
 					continue;
 				break;

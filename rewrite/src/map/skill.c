@@ -10269,7 +10269,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			break;
 
 		case UNT_VACUUM_EXTREME:
-			sc_start(bl, SC_STOP, 100, sg->skill_lv, skill_get_time(sg->skill_id, sg->skill_lv));
+			sc_start(bl, SC_VACUUM_EXTREME, 100, sg->skill_lv, skill_get_time(sg->skill_id, sg->skill_lv));
 			break;
 
 	}
