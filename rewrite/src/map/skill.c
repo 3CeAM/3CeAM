@@ -14747,6 +14747,15 @@ void skill_init_unit_layout (void)
 				pos++;
 				break;
 			}
+			case GN_WALLOFTHORN:
+			{
+				static const int dx[] = {-1,-2,-2,-2,-2,-2,-1, 0, 1, 2, 2, 2, 2, 2, 1, 0};
+				static const int dy[] = { 2, 2, 1, 0,-1,-2,-2,-2,-2,-2,-1, 0, 1, 2, 2, 2};
+				skill_unit_layout[pos].count = 16;
+				memcpy(skill_unit_layout[pos].dx,dx,sizeof(dx));
+				memcpy(skill_unit_layout[pos].dy,dy,sizeof(dy));
+				break;
+			}
 			default:
 				ShowError("unknown unit layout at skill %d\n",i);
 				break;
