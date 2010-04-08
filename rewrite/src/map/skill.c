@@ -3053,7 +3053,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case NC_POWERSWING:
 	case SC_TRIANGLESHOT:
 	case SC_FEINTBOMB:
-	case LG_CANNONSPEAR:
 	case LG_BANISHINGPOINT:
 	case LG_SHIELDPRESS:
 	case LG_RAGEBURST:
@@ -3888,6 +3887,31 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		else
 			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), splash_target(src), src, skillid, skilllv, tick, flag|BCT_ENEMY|SD_SPLASH|1, skill_castend_damage_id);
 		clif_skill_damage(src,src,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
+		break;
+		
+	case LG_CANNONSPEAR:
+		{
+			int length = skill_get_maxcount(skillid,skilllv);
+			int dir = map_calc_dir(src,bl->x,bl->y);
+			short src_x = src->x, src_y = src->y;
+			short dst_x = src_x, dst_y = src_y;
+			// Normalize attack direction.
+			switch( dir )
+			{
+				case 0:	src_y++; dst_y += length; break;
+				case 1: src_x--; src_y++; dst_x -= length; dst_y += length; break;
+				case 2: src_x--; dst_x -= length; break;
+				case 3: src_x--; src_y--; dst_x -= length; dst_y -= length; break;
+				case 4: src_y--; dst_y -= length; break;
+				case 5: src_x++; src_y--; dst_x += length; dst_y -= length; break;
+				case 6: src_x++; dst_x += length; break;
+				case 7: src_x++; src_y++; dst_x += length; dst_y += length; break;
+			}
+			clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
+			map_foreachinpath(skill_attack_area,src->m,src_x,src_y,dst_x,dst_y,
+				skill_get_splash(skillid, skilllv),length, splash_target(src),
+				skill_get_type(skillid),src,src,skillid,skilllv,tick,flag,BCT_ENEMY);
+		}
 		break;
 
 	case SO_POISON_BUSTER:
@@ -7323,45 +7347,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		else
 			clif_skill_fail(sd,skillid,0,0,0);
-		break;
-	
-	case LG_CANNONSPEAR:
-		{
-			int length = skill_get_maxcount(skillid,skilllv);
-			clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
-			// North ( dir 0 )
-			map_foreachinpath(skill_attack_area,src->m,src->x,src->y,src->x,src->y+length,
-				skill_get_splash(skillid, skilllv),length, splash_target(src),
-				skill_get_type(skillid),src,src,skillid,skilllv,tick,flag,BCT_ENEMY);
-			// North-west ( dir 1 )
-			map_foreachinpath(skill_attack_area,src->m,src->x,src->y,src->x-length,src->y+length,
-				skill_get_splash(skillid, skilllv),length, splash_target(src),
-				skill_get_type(skillid),src,src,skillid,skilllv,tick,flag,BCT_ENEMY);
-			// West ( dir 2 )
-			map_foreachinpath(skill_attack_area,src->m,src->x,src->y,src->x-length,src->y,
-				skill_get_splash(skillid, skilllv),length, splash_target(src),
-				skill_get_type(skillid),src,src,skillid,skilllv,tick,flag,BCT_ENEMY);
-			// South-west ( dir 3 )
-			map_foreachinpath(skill_attack_area,src->m,src->x,src->y,src->x-length,src->y-length,
-				skill_get_splash(skillid, skilllv),length, splash_target(src),
-				skill_get_type(skillid),src,src,skillid,skilllv,tick,flag,BCT_ENEMY);
-			// South ( dir 4 )
-			map_foreachinpath(skill_attack_area,src->m,src->x,src->y,src->x,src->y-length,
-				skill_get_splash(skillid, skilllv),skill_get_maxcount(skillid,skilllv), splash_target(src),
-				skill_get_type(skillid),src,src,skillid,skilllv,tick,flag,BCT_ENEMY);
-			// South-east ( dir 5 )
-			map_foreachinpath(skill_attack_area,src->m,src->x,src->y,src->x+length,src->y-length,
-				skill_get_splash(skillid, skilllv),length, splash_target(src),
-				skill_get_type(skillid),src,src,skillid,skilllv,tick,flag,BCT_ENEMY);
-			// East ( dir 6 )
-			map_foreachinpath(skill_attack_area,src->m,src->x,src->y,src->x+length,src->y,
-				skill_get_splash(skillid, skilllv),length, splash_target(src),
-				skill_get_type(skillid),src,src,skillid,skilllv,tick,flag,BCT_ENEMY);
-			// North-east ( dir 7 )
-			map_foreachinpath(skill_attack_area,src->m,src->x,src->y,src->x+length,src->y+length,
-				skill_get_splash(skillid, skilllv),length, splash_target(src),
-				skill_get_type(skillid),src,src,skillid,skilllv,tick,flag,BCT_ENEMY);
-		}
 		break;
 
 	case LG_REFLECTDAMAGE:
