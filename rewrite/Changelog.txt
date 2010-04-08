@@ -6,6 +6,10 @@
 //========================================
 
 04/08/2010
+	r315 [Jobbie]
+	* Fixed Vacuum Extreme missing duration resistance. Bug Report 360.
+	- This skill now uses its own SC_* and SI_* to adopt official behavior.
+
 	r313 [Jobbie]
 	* Added GN_MANDRAGORA skill.
 
