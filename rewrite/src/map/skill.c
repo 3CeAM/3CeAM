@@ -7630,7 +7630,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case SO_ARRULLO:
-		if( flag & 1 )
+		if( flag&1 )
 			sc_start2(bl, type, 80, skilllv, 1, skill_get_time(skillid, skilllv));
 		else
 		{
@@ -7654,22 +7654,20 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case GN_MANDRAGORA:
-		if( flag & 1 )
+		if( flag&1 )
 		{
 			status_zap(bl, 0, status_get_max_sp(bl) / 100 * 25 + 5 * skilllv);
-			// Need official VIT/LUK decrease. [LimitLine]
-			sc_start(bl, type, 35 + 10 * skilllv - (status_get_vit(bl) + status_get_luk(bl) / 6), skilllv, skill_get_time(skillid, skilllv));
+			clif_skill_nodamage(bl, src, skillid, skilllv, 
+				sc_start(bl, type, 35 + 10 * skilllv, skilllv, skill_get_time(skillid, skilllv)));
 		}
 		else
-		{
-			clif_skill_nodamage(src, bl, skillid, 0, 1);
 			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), BL_CHAR,
 				src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
-		}
 		break;
 
 	case GN_MIX_COOKING:
-		if(sd) {
+		if( sd )
+		{
 			sd->menuskill_itemused = skilllv;
 			clif_skill_produce_mix_list(sd,skillid,27);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
@@ -7677,7 +7675,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case GN_MAKEBOMB:
-		if(sd) {
+		if( sd )
+		{
 			sd->menuskill_itemused = skilllv;
 			clif_skill_produce_mix_list(sd,skillid,28);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
@@ -7685,7 +7684,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case GN_S_PHARMACY:
-		if(sd) {
+		if( sd )
+		{
 			sd->menuskill_itemused = skilllv;
 			clif_skill_produce_mix_list(sd,skillid,29);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
@@ -11911,6 +11911,12 @@ int skill_castfix(struct block_list *bl, int skill_id, int skill_lv)
 				}
 			}
 		}
+
+		/*iRO wiki said all affected by Howling of Mandragora will have increased fixed cast time for 2
+		  seconds and those skills that are instant cast will have a cast time.
+		  NOTE: Value of fixed time will be update soon if there is other info. [Jobbie]*/
+		if( sc && sc->data[SC_MANDRAGORA] && ( skill_id >= SM_BASH && skill_id <= RETURN_TO_ELDICASTES ) )
+			fixed_time += 2000;
 	}
 
 	// calculate variable cast time reduced by item/card/skills bonuses
