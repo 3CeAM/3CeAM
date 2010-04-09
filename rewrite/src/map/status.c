@@ -3861,7 +3861,7 @@ static signed short status_calc_critical(struct block_list *bl, struct status_ch
 	if(sc->data[SC_CLOAKING])
 		critical += critical;
 	if(sc->data[SC_STRIKING])
-		critical += 1 * sc->data[SC_STRIKING]->val1;
+		critical += critical * sc->data[SC_STRIKING]->val1 / 100;
 	if(sc->data[SC__INVISIBILITY])
 		critical += critical * sc->data[SC__INVISIBILITY]->val3 / 100;
 	if(sc->data[SC__UNLUCKY])
@@ -6875,13 +6875,13 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			status_change_end(bl, SC_CRYSTALIZE, -1);
 			break;
 		case SC_STRIKING:
-			val2 = 50 + 50 * val1;
+			val2 = 25 + 10 * val1;
 			if( sd )
 			{
-				val2 += 5 * pc_checkskill(sd, SA_FLAMELAUNCHER);
-				val2 += 5 * pc_checkskill(sd, SA_FROSTWEAPON);
-				val2 += 5 * pc_checkskill(sd, SA_LIGHTNINGLOADER);
-				val2 += 5 * pc_checkskill(sd, SA_SEISMICWEAPON);
+				val2 += pc_checkskill(sd, SA_FLAMELAUNCHER);
+				val2 += pc_checkskill(sd, SA_FROSTWEAPON);
+				val2 += pc_checkskill(sd, SA_LIGHTNINGLOADER);
+				val2 += pc_checkskill(sd, SA_SEISMICWEAPON);
 			}
 			val4 = tick / 1000;
 			tick = 1000;
