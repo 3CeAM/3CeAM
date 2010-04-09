@@ -6,6 +6,9 @@
 //========================================
 
 04/09/2010
+	r317 [pakpil]
+	* Fixed SO_STRICKING. Bug report 277.
+
 	r316 [pakpil]
 	* Fixed a type in LG_SHIELDPRESS stun duration. Bug report 357.
 
