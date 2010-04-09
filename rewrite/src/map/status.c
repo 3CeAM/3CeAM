@@ -520,7 +520,7 @@ void initChangeTables(void)
 	set_sc( SO_CLOUD_KILL        , SC_ELEMENTALCHANGE , SI_CLOUDKILL       , SCB_NONE );
 	set_sc( SO_WARMER            , SC_WARMER          , SI_WARMER          , SCB_NONE );
 	set_sc( SO_VACUUM_EXTREME    , SC_VACUUM_EXTREME  , SI_VACUUM_EXTREME  , SCB_NONE );
-	set_sc( SO_STRIKING          , SC_STRIKING        , SI_STRIKING        , SCB_BATK|SCB_CRI );
+	set_sc( SO_STRIKING          , SC_STRIKING        , SI_STRIKING        , SCB_WATK|SCB_CRI );
 	set_sc( SO_ARRULLO           , SC_DEEPSLEEP       , SI_DEEPSLEEP       , SCB_NONE );
 
 	set_sc( HLIF_AVOID           , SC_AVOID           , SI_BLANK           , SCB_SPEED );
@@ -3755,8 +3755,6 @@ static unsigned short status_calc_batk(struct block_list *bl, struct status_chan
 		batk -= batk / 100 * 25;
 	if(sc->data[SC_GN_CARTBOOST])
 		batk += sc->data[SC_GN_CARTBOOST]->val1 * 10;
-	if(sc->data[SC_STRIKING])
-		batk += sc->data[SC_STRIKING]->val2;
 	if(sc->data[SC__ENERVATION])
 		batk -= batk * 25 / 100;
 	if(sc->data[SC__BLOODYLUST])
@@ -3816,6 +3814,8 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += sc->data[SC_OTHILA]->val1;
 	if(sc->data[SC__BLOODYLUST])
 		watk += watk * 32 / 100; // Still need official value [pakpil]
+	if(sc->data[SC_STRIKING])
+		watk += sc->data[SC_STRIKING]->val2;
 
 	return (unsigned short)cap_value(watk,0,USHRT_MAX);
 }
@@ -6875,8 +6875,14 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			status_change_end(bl, SC_CRYSTALIZE, -1);
 			break;
 		case SC_STRIKING:
+			val2 = 50 + 50 * val1;
 			if( sd )
-				val2 = pc_checkskill(sd, SA_FLAMELAUNCHER|SA_FROSTWEAPON|SA_LIGHTNINGLOADER|SA_SEISMICWEAPON);
+			{
+				val2 += 5 * pc_checkskill(sd, SA_FLAMELAUNCHER);
+				val2 += 5 * pc_checkskill(sd, SA_FROSTWEAPON);
+				val2 += 5 * pc_checkskill(sd, SA_LIGHTNINGLOADER);
+				val2 += 5 * pc_checkskill(sd, SA_SEISMICWEAPON);
+			}
 			val4 = tick / 1000;
 			tick = 1000;
 			break;
