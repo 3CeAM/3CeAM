@@ -5,6 +5,10 @@
 // 	- Details.
 //========================================
 
+04/09/2010
+	r316 [pakpil]
+	* Fixed a type in LG_SHIELDPRESS stun duration. Bug report 357.
+
 04/08/2010
 	r315 [Jobbie]
 	* Fixed Vacuum Extreme missing duration resistance. Bug Report 360.
