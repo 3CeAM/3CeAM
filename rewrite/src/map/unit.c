@@ -1942,6 +1942,7 @@ int unit_remove_map_(struct block_list *bl, int clrtype, const char* file, int l
 		status_change_end(bl,SC_MARIONETTE2,-1);
 		status_change_end(bl,SC_CLOSECONFINE,-1);
 		status_change_end(bl,SC_CLOSECONFINE2,-1);
+		status_change_end(bl,SC_ROLLINGCUTTER,-1);
 		status_change_end(bl,SC_HIDING,-1);
 		status_change_end(bl,SC_CLOAKING,-1);
 		status_change_end(bl,SC_CHASEWALK,-1);

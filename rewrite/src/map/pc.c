@@ -538,7 +538,7 @@ int pc_makesavestatus(struct map_session_data *sd)
 
   	//Only copy the Cart/Peco/Falcon/Dragon/Warg/Mado options, the rest are handled via
 	//status change load/saving. [Skotlex]
-	sd->status.option = sd->sc.option&(OPTION_CART|OPTION_FALCON|OPTION_RIDING|(OPTION_RIDING_DRAGON)|OPTION_WUG|OPTION_RIDING_WUG|OPTION_MADO);
+	sd->status.option = sd->sc.option&(OPTION_CART|OPTION_FALCON|OPTION_RIDING|OPTION_RIDING_DRAGON|OPTION_WUG|OPTION_RIDING_WUG|OPTION_MADO);
 		
 	if (sd->sc.data[SC_JAILED])
 	{	//When Jailed, do not move last point.
@@ -6481,11 +6481,14 @@ int pc_itemheal(struct map_session_data *sd,int itemid, int hp,int sp)
 			sp = sp * bonus / 100;
 	}
 
-	if (sd->sc.data[SC_CRITICALWOUND])
-	{
-		hp -= hp * sd->sc.data[SC_CRITICALWOUND]->val2 / 100;
-		sp -= sp * sd->sc.data[SC_CRITICALWOUND]->val2 / 100;
-	}
+	bonus = 0;
+	if( sd->sc.data[SC_CRITICALWOUND] )
+		bonus += sd->sc.data[SC_CRITICALWOUND]->val2;
+	if( sd->sc.data[SC_DEATHHURT] )
+		bonus += 20;
+
+	hp -= hp * bonus / 100;
+	sp -= sp * bonus / 100;
 
 	if( sd->sc.data[SC_ISA] )
 	{

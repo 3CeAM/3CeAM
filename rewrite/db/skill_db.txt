@@ -920,10 +920,10 @@
 2031,1,6,1,5,0,0,5,1,no,0,0,0,weapon,0,	GC_VENOMPRESSURE,Venom Pressure
 2032,2,6,2,5,0x1,0,5,1,no,0,0,1,weapon,0,	GC_POISONSMOKE,Poison Smoke
 2033,0,6,4,0,0x1,0,5,1,no,0,0,0,weapon,0,	GC_CLOAKINGEXCEED,Cloaking Exceed
-2034,0,6,4,0,0x2,3,1,1,no,0,0,0,weapon,0,	GC_PHANTOMMENACE,Phantom Menace
+2034,0,6,4,-1,0x2,3,1,1,no,0,0,0,weapon,0,	GC_PHANTOMMENACE,Phantom Menace
 2035,0,6,4,0,0x1,0,5,1,no,0,0,0,weapon,0,	GC_HALLUCINATIONWALK,Hallucination Walk
-2036,0,8,4,0,0x2,1,5,1,no,0,0,0,weapon,0,	GC_ROLLINGCUTTER,Rolling Cutter
-2037,7,8,1,0,0,0,5,1,no,0,0,0,weapon,0,		GC_CROSSRIPPERSLASHER,Cross Ripper Slasher
+2036,0,8,4,-1,0x2,1,5,1,no,0,0,0,weapon,0,	GC_ROLLINGCUTTER,Rolling Cutter
+2037,7,8,1,-1,0,0,5,1,no,0,0,0,weapon,0,		GC_CROSSRIPPERSLASHER,Cross Ripper Slasher
 
 // Arch Bishop
 2038,3,8,1,6,0x2,1,5,-3,yes,0,0,0,magic,0,	AB_JUDEX,Judex

@@ -691,13 +691,13 @@ void initChangeTables(void)
 	StatusChangeFlagTable[SC_MERC_SPUP] |= SCB_MAXSP;
 	StatusChangeFlagTable[SC_MERC_HITUP] |= SCB_HIT;
 	
-	StatusChangeFlagTable[SC_HALLUCINATIONWALK_POSTDELAY] |= SCB_SPEED;
-	StatusChangeFlagTable[SC_PARALYSE] |= SCB_ASPD|SCB_FLEE|SCB_SPEED;
+	StatusChangeFlagTable[SC_HALLUCINATIONWALK_POSTDELAY] |= SCB_ASPD|SCB_SPEED;
+	StatusChangeFlagTable[SC_PARALYSE] |= SCB_ASPD|SCB_FLEE; // |SCB_SPEED; Speed Part is not working currently on Kro
 	StatusChangeFlagTable[SC_MAGICMUSHROOM] |= SCB_REGEN;
 	StatusChangeFlagTable[SC_VENOMBLEED] |= SCB_MAXHP;
-	StatusChangeFlagTable[SC_DEATHHURT] |= SCB_REGEN;
 	StatusChangeFlagTable[SC_PYREXIA] |= SCB_FLEE|SCB_HIT;
-	StatusChangeFlagTable[SC_OBLIVIONCURSE] |= SCB_REGEN|SCB_SPEED;
+	StatusChangeFlagTable[SC_DEATHHURT] |= SCB_REGEN;
+	StatusChangeFlagTable[SC_OBLIVIONCURSE] |= SCB_REGEN;
 	//Genetics New Food Items.
 	StatusChangeFlagTable[SC_SAVAGE_STEAK] |= SCB_STR;
 	StatusChangeFlagTable[SC_COCKTAIL_WARG_BLOOD] |= SCB_INT;
@@ -789,6 +789,7 @@ int status_charge(struct block_list* bl, int hp, int sp)
 //If flag&2, fail if target does not has enough to substract.
 //If flag&4, if killed, mob must not give exp/loot.
 //If flag&8, sp loss on dead target.
+//If flag&16, cancel casting on damage
 int status_damage(struct block_list *src,struct block_list *target,int hp, int sp, int walkdelay, int flag)
 {
 	struct status_data *status;
@@ -880,7 +881,7 @@ int status_damage(struct block_list *src,struct block_list *target,int hp, int s
 			if(sc->data[SC_CLOAKINGEXCEED] && --(sc->data[SC_CLOAKINGEXCEED]->val2) <= 0)
 				status_change_end(target,SC_CLOAKINGEXCEED,-1);
 		}
-		unit_skillcastcancel(target, 2);
+		unit_skillcastcancel(target,(flag&16)?0:2);
 	}
 
 	if ((unsigned int)hp >= status->hp) {
@@ -3888,7 +3889,7 @@ static signed short status_calc_hit(struct block_list *bl, struct status_change 
 		hit += sc->data[SC_CONCENTRATION]->val3;
 	if(sc->data[SC_INCHITRATE])
 		hit += hit * sc->data[SC_INCHITRATE]->val1/100;
-	if(sc->data[SC_BLIND])
+	if(sc->data[SC_BLIND] || sc->data[SC_PYREXIA])
 		hit -= hit * 25/100;
 	if(sc->data[SC_ADJUSTMENT])
 		hit -= 30;
@@ -3896,8 +3897,6 @@ static signed short status_calc_hit(struct block_list *bl, struct status_change 
 		hit += 20; // RockmanEXE; changed based on updated [Reddozen]
 	if(sc->data[SC_MERC_HITUP])
 		hit += sc->data[SC_MERC_HITUP]->val2;
-	if(sc->data[SC_PYREXIA])
-		hit -= sc->data[SC_PYREXIA]->val3;
 	if(sc->data[SC__GROOMY])
 		hit -= hit * sc->data[SC__GROOMY]->val3 / 100;
 	if(sc->data[SC_FEAR])
@@ -3939,7 +3938,7 @@ static signed short status_calc_flee(struct block_list *bl, struct status_change
 		flee -= flee * 50/100;
 	if(sc->data[SC_BERSERK] || sc->data[SC_SATURDAYNIGHTFEVER])
 		flee -= flee * 50/100;
-	if(sc->data[SC_BLIND])
+	if(sc->data[SC_BLIND] || sc->data[SC_PYREXIA])
 		flee -= flee * 25/100;
 	if(sc->data[SC_ADJUSTMENT])
 		flee += 30;
@@ -3952,9 +3951,7 @@ static signed short status_calc_flee(struct block_list *bl, struct status_change
 	if(sc->data[SC_FEAR])
 		flee -= flee * 20 / 100;
 	if(sc->data[SC_PARALYSE])
-		flee -= sc->data[SC_PARALYSE]->val2 / 200;
-	if(sc->data[SC_PYREXIA])
-		flee -= flee * sc->data[SC_PYREXIA]->val3 / 100;
+		flee -= flee / 10; // 10% Flee reduction
 	if( sc->data[SC_MARSHOFABYSS] ) // [Zephyrus] : I am sure, by Videos, it's a Hit reduction, not Flee
 		flee -= (9 * sc->data[SC_MARSHOFABYSS]->val3 / 10 + sc->data[SC_MARSHOFABYSS]->val2 / 10) * (bl->type == BL_MOB ? 2 : 1);
 	if(sc->data[SC_INFRAREDSCAN])
@@ -3964,7 +3961,7 @@ static signed short status_calc_flee(struct block_list *bl, struct status_change
 	if( sc->data[SC_GLOOMYDAY] )
 		flee -= flee * sc->data[SC_GLOOMYDAY]->val2 / 100;
 	if( sc->data[SC_HALLUCINATIONWALK] )
-		flee += 50 * sc->data[SC_HALLUCINATIONWALK]->val1;
+		flee += sc->data[SC_HALLUCINATIONWALK]->val2;
 
 	return (short)cap_value(flee,1,SHRT_MAX);
 }
@@ -4188,11 +4185,11 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 
 				if( sc->data[SC_DECREASEAGI] || sc->data[SC_ADORAMUS] )
 					val = max( val, 25 );
-				if( sc->data[SC_QUAGMIRE] )
+				if( sc->data[SC_QUAGMIRE] || sc->data[SC_HALLUCINATIONWALK_POSTDELAY] /*|| sc->data[SC_PARALYSE]*/ )
 					val = max( val, 50 );
 				if( sc->data[SC_DONTFORGETME] )
 					val = max( val, sc->data[SC_DONTFORGETME]->val3 );
-				if( sc->data[SC_CURSE] || sc->data[SC_OBLIVIONCURSE] )
+				if( sc->data[SC_CURSE] )
 					val = max( val, 300 );
 				if( sc->data[SC_CHASEWALK] )
 					val = max( val, sc->data[SC_CHASEWALK]->val3 );
@@ -4218,8 +4215,6 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				   Currently the movement speed reduction does not work.
 				if( sc->data[SC_PARALYSE] )
 					val = max( val, 50 );*/
-				if( sc->data[SC_HALLUCINATIONWALK_POSTDELAY] && sc->data[SC_HALLUCINATIONWALK_POSTDELAY]->val4 )
-					val = max( val, sc->data[SC_HALLUCINATIONWALK_POSTDELAY]->val2 );
 				if( sc->data[SC_MARSHOFABYSS] )
 					val = max( val, 40 + 10 * sc->data[SC_MARSHOFABYSS]->val1 );
 				if( sc->data[SC_CAMOUFLAGE] && (sc->data[SC_CAMOUFLAGE]->val3&1) == 0 )
@@ -4405,10 +4400,12 @@ static short status_calc_aspd_rate(struct block_list *bl, struct status_change *
 	}
 	if( sc->data[SC_FREEZING] )
 		aspd_rate += 300;
+	if( sc->data[SC_HALLUCINATIONWALK_POSTDELAY] )
+		aspd_rate += 500;
 	if( sc->data[SC_OTHILA] && sc->data[SC_OTHILA]->val2 )
 		aspd_rate -= (aspd_rate * sc->data[SC_OTHILA]->val2 / 100) + sc->data[SC_OTHILA]->val3;
 	if( sc->data[SC_PARALYSE] )
-		aspd_rate += sc->data[SC_PARALYSE]->val2 / 100;
+		aspd_rate += 100;
 	if( sc->data[SC__BODYPAINT] )
 		aspd_rate += aspd_rate * 25 / 100;
 	if( sc->data[SC__INVISIBILITY] )
@@ -4462,7 +4459,7 @@ static unsigned int status_calc_maxhp(struct block_list *bl, struct status_chang
 	if(sc->data[SC_EPICLESIS])
 		maxhp += maxhp / 100 * 5 * sc->data[SC_EPICLESIS]->val1;
 	if(sc->data[SC_VENOMBLEED])
-		maxhp -= maxhp * sc->data[SC_VENOMBLEED]->val2 / 100;
+		maxhp -= maxhp * 15 / 100;
 	if(sc->data[SC__WEAKNESS])
 		maxhp -= maxhp * sc->data[SC__WEAKNESS]->val2 / 100;
 	if(sc->data[SC_LERADSDEW])
@@ -5133,7 +5130,7 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 		tick = max(tick,10000); // Minimum Duration 10s.
 		break;
 	case SC_OBLIVIONCURSE:
-		sc_def = status->int_ / 125; //FIXME: info said this is the formula of status chance. Check again pls. [Jobbie]
+		sc_def = status->int_*4/5; //FIXME: info said this is the formula of status chance. Check again pls. [Jobbie]
 		break;
 	case SC_ELECTRICSHOCKER:
 	case SC_BITE:
@@ -5516,9 +5513,10 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 
 	//Check for BOSS resistances
 	if(status->mode&MD_BOSS && !(flag&1)) {
-		 if (type>=SC_COMMON_MIN && type <= SC_COMMON_MAX)
+		 if( type >= SC_COMMON_MIN && type <= SC_COMMON_MAX )
 			 return 0;
-		 switch (type) {
+		 switch( type )
+		 {
 			case SC_BLESSING:
 			  if (!undead_flag && status->race!=RC_DEMON)
 				  break;
@@ -5531,9 +5529,19 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC_ROKISWEIL:
 			case SC_FOGWALL:
 			case SC_FREEZING:
-			case SC_BURNING:// Place here until we have info about its behavior on Boss-monsters. [pakpil]
+			case SC_BURNING: // Place here until we have info about its behavior on Boss-monsters. [pakpil]
 			case SC_MARSHOFABYSS:
 			case SC_ADORAMUS:
+
+			// Exploid prevention - kRO Fix
+			case SC_PYREXIA:
+			case SC_DEATHHURT:
+			case SC_TOXIN:
+			case SC_PARALYSE:
+			case SC_VENOMBLEED:
+			case SC_MAGICMUSHROOM:
+			case SC_OBLIVIONCURSE:
+			case SC_LEECHESEND:
 				return 0;
 		}
 	}
@@ -6677,48 +6685,36 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			break;
 		case SC_WEAPONBLOCKING:
 			val2 = 10 + 2 * val1; // Chance
-			val4 = tick / 1000;
-			tick = 1000;
+			val4 = tick / 3000;
+			tick = 3000;
 			val_flag |= 1|2;
 			break;
 		case SC_TOXIN:
 			val4 = tick / 10000;
 			tick = 10000;
 			break;
-		case SC_PARALYSE:
-			val2 = 10; // Aspd and flee reduction
-			break;
-		case SC_VENOMBLEED:
-			val2 = 15; // Max HP reduction
-			break;
 		case SC_MAGICMUSHROOM:
-			val2 = 3; // % HP drained
 			val4 = tick / 4000;
 			tick = 4000;
 			break;
-		case SC_DEATHHURT:
-			val2 = 20;
-			break;
 		case SC_PYREXIA:
-			val2 = 100; //Damage dealt.
-			val3 = 25; // -25 for hit and 25% flee penalty.
-			val4 = tick / 3000;
-			tick = 3000;
-			break;
-		case SC_OBLIVIONCURSE:
 			val4 = tick / 3000;
 			tick = 3000;
 			break;
 		case SC_LEECHESEND:
-			val3 = tick / 1000;
+			val4 = tick / 1000;
 			tick = 1000;
+			break;
+		case SC_OBLIVIONCURSE:
+			val4 = tick / 3000;
+			tick = 3000;
 			break;
 		case SC_ROLLINGCUTTER:
 			val_flag |= 1;
 			break;
 		case SC_CLOAKINGEXCEED:
 			val2 = ( val1 + 1 ) / 2; // Hits
-			val3 = 90 + val1 * 10; // Walk speed
+			val3 = ( val1 - 1 ) * 10; // Walk speed
 			val_flag |= 1|2|4;			
 			if (bl->type == BL_PC)
 				val4 |= battle_config.pc_cloak_check_type&7;
@@ -6727,14 +6723,9 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			tick = 1000;
 			break;
 		case SC_HALLUCINATIONWALK:
-			val2 = 50; // Evasion rate of physical attacks.
-			val3 = 10; // Evasion rate of magical attacks. Not available.
+			val2 = 50 * val1; // Evasion rate of physical attacks. Flee
+			val3 = 10 * val1; // Evasion rate of magical attacks.
 			val_flag |= 1|2|4;
-			break;
-		case SC_HALLUCINATIONWALK_POSTDELAY:
-			val2 = 50;
-			val4 = 1;
-			tick = 25000; // Walking speed reduction time.
 			break;
 		case SC_RENOVATIO:
 			val4 = tick / 5000;
@@ -7002,12 +6993,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_KAAHI:
 			val4 = -1;
 			break;
-		case SC_HALLUCINATIONWALK:
-		case SC_HALLUCINATIONWALK_POSTDELAY:
-			if( sd )
-				clif_skill_cooldown(sd,GC_HALLUCINATIONWALK,tick);
-			val4 = 0;
-			break;
 	}
 
 	//Those that make you stop attacking/walking....
@@ -7070,7 +7055,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_WHITEIMPRISON: sc->opt1 = OPT1_IMPRISON;  break;
 		//OPT2
 		case SC_POISON:       sc->opt2 |= OPT2_POISON;       break;
-		case SC_CURSE: case SC_OBLIVIONCURSE:        sc->opt2 |= OPT2_CURSE;        break;
+		case SC_CURSE:        sc->opt2 |= OPT2_CURSE;        break;
 		case SC_SILENCE:      sc->opt2 |= OPT2_SILENCE;      break;
 		case SC_SIGNUMCRUCIS: case SC_CHAOS: sc->opt2 |= OPT2_SIGNUMCRUCIS; break;
 		case SC_BLIND:        sc->opt2 |= OPT2_BLIND;        break;
@@ -7255,8 +7240,9 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	switch( type )
 	{
 		// Skills Delay controled by SC
-		case SC_REUSE_STASIS:   if( sd ) clif_skill_cooldown(sd,WL_STASIS,tick);    break;
-		case SC_REUSE_COMET:    if( sd ) clif_skill_cooldown(sd,WL_COMET,tick);     break;
+		case SC_REUSE_STASIS:   if( sd ) clif_skill_cooldown(sd,WL_STASIS,tick); break;
+		case SC_REUSE_COMET:    if( sd ) clif_skill_cooldown(sd,WL_COMET,tick); break;
+		case SC_REUSE_HALLUCINATIONWALK: if( sd ) clif_skill_cooldown(sd,GC_HALLUCINATIONWALK,tick); break;
 		// ----------------------------
 		case SC_BERSERK:
 		case SC_SATURDAYNIGHTFEVER:
@@ -7344,6 +7330,7 @@ int status_change_clear(struct block_list* bl, int type)
 		case SC_AUTOTRADE:
 		case SC_REUSE_STASIS:
 		case SC_REUSE_COMET:
+		case SC_REUSE_HALLUCINATIONWALK:
 			continue;
 		}
 
@@ -8339,13 +8326,89 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 	case SC_PYREXIA:
 		if( --(sce->val4) >= 0 )
 		{
-			//TODO: Trigger blind status for 30 seconds.
+			bool flag;
 			map_freeblock_lock();
-			clif_damage(bl, bl, gettick(), status_get_amotion(bl), sce->val4, sce->val2, 0, 0, 0);
-			status_fix_damage(NULL, bl, sce->val2, 0);
+			clif_damage(bl,bl,tick,status_get_amotion(bl),0,100,0,0,0);
+			status_fix_damage(NULL,bl,100,0);
+			flag = !sc->data[type];
 			map_freeblock_unlock();
-			if( !sc->data[type] ) return 0;
-			sc_timer_next(3000 + tick, status_change_timer, bl->id, data);
+			if( !flag )
+			{
+				if( sce->val4 == 10 )
+					sc_start(bl,SC_BLIND,100,sce->val1,30000); // Blind status for the final 30 seconds
+				sc_timer_next(3000+tick,status_change_timer,bl->id,data);
+			}
+			return 0;
+		}
+		break;
+
+	case SC_LEECHESEND:
+		if( --(sce->val4) >= 0 )
+		{
+			bool flag;
+			int damage = status->max_hp/100;
+			if( sd && (sd->status.class_ == JOB_GUILLOTINE_CROSS || sd->status.class_ == JOB_GUILLOTINE_CROSS_T || sd->status.class_ == JOB_BABY_CROSS) )
+				damage += 3 * status->vit;
+			else
+				damage += 7 * status->vit;
+
+			map_freeblock_lock();
+			status_zap(bl,damage,0);
+			flag = !sc->data[type];
+			map_freeblock_unlock();
+			if( !flag )
+				sc_timer_next(1000 + tick, status_change_timer, bl->id, data );
+			return 0;
+		}
+		break;
+
+	case SC_MAGICMUSHROOM:
+		if( --(sce->val4) >= 0 )
+		{
+			bool flag = 0;
+			int damage = status->max_hp * 3 / 100;
+			if( status->hp <= damage )
+				damage = status->hp - 1; // Cannot Kill
+
+			if( damage > 0 )
+			{ // 3% Damage each 4 seconds
+				map_freeblock_lock();
+				status_zap(bl,damage,0);
+				flag = !sc->data[type]; // Killed? Should not
+				map_freeblock_unlock();
+			}
+
+			if( !flag )
+			{ // Random Skill Cast
+				if( sd )
+				{
+					int mushroom_skillid = 0, i;
+					unit_stop_attack(bl);
+					unit_skillcastcancel(bl,1);
+					do
+					{
+						i = rand() % MAX_SKILL_MAGICMUSHROOM_DB;
+						mushroom_skillid = skill_magicmushroom_db[i].skillid;
+					}
+					while( mushroom_skillid == 0 );
+
+					switch( skill_get_casttype(mushroom_skillid) )
+					{ // Magic Mushroom skills are buffs or area damage
+						case CAST_GROUND:
+							skill_castend_pos2(bl,bl->x,bl->y,mushroom_skillid,1,tick,0);
+							break;
+						case CAST_NODAMAGE:
+							skill_castend_nodamage_id(bl,bl,mushroom_skillid,1,tick,0);
+							break;
+						case CAST_DAMAGE:
+							skill_castend_damage_id(bl,bl,mushroom_skillid,1,tick,0);
+							break;
+					}
+				}
+
+				clif_emotion(bl,18);
+				sc_timer_next(4000+tick,status_change_timer,bl->id,data);
+			}
 			return 0;
 		}
 		break;
@@ -8355,56 +8418,12 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		{ //Damage is every 10 seconds including 3%sp drain.
 			bool flag;
 			map_freeblock_lock();
-			if( !status_charge(bl, 0, status->max_sp * 3 / 100))
-				break;
-			clif_damage(bl, bl, gettick(), status_get_amotion(bl), 1, 1, 0, 0, 0);
-			status_fix_damage(NULL, bl, 1, 0);
+			clif_damage(bl,bl,tick,status_get_amotion(bl),1,1,0,0,0);
+			status_damage(NULL,bl,1,status->max_sp*3/100,0,16);
 			flag = !sc->data[type];
 			map_freeblock_unlock();
-			if (flag) return 0;
-			sc_timer_next(10000 + tick, status_change_timer, bl->id, data );
-			return 0;
-		}
-		break;
-
-	case SC_MAGICMUSHROOM:
-		if( --(sce->val4) >= 0 )
-		{
-			bool flag;
-			int heal = status->max_hp * sce->val2 / 100;
-
-			if( status->hp < heal )
-			{
-				heal = status->hp - 1;
-			}
-
-			map_freeblock_lock();
-			if( heal )
-				status_zap(bl, heal, 0);
-			flag = !sc->data[type]; //We check for this rather than 'killed' since the target could have revived with kaizel.
-			
-			unit_stop_attack(bl);
-			unit_skillcastcancel(bl,1);
-			if( sd )
-			{ // Mobs don't cast any skill.??
-				int mushroom_skillid = 0, mushroom_skilllv, i;
-				do
-				{
-					i = rand() % MAX_SKILL_MAGICMUSHROOM_DB;
-					mushroom_skillid = skill_magicmushroom_db[i].skillid;
-				}
-				while( mushroom_skillid == 0 );
-				mushroom_skilllv = min(1, skill_get_max(mushroom_skillid));
-
-				sd->state.magicmushroom_flag = 1;
-				sd->skillitem = mushroom_skillid;
-				sd->skillitemlv = mushroom_skilllv;
-				clif_item_skill(sd, mushroom_skillid, mushroom_skilllv);
-			}
-			map_freeblock_unlock();
-			if (flag) return 0; //target died
-			clif_emotion(bl,18);
-			sc_timer_next(4000 + tick, status_change_timer, bl->id, data );
+			if( !flag )
+				sc_timer_next(10000 + tick, status_change_timer, bl->id, data );
 			return 0;
 		}
 		break;
@@ -8418,50 +8437,21 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		}
 		break;
 
-	case SC_LEECHESEND:
-		if( --(sce->val3) >= 0 )
-		{
-			struct map_session_data *tsd;
-			nullpo_retr(0, tsd = ( struct map_session_data*)bl );
-
-			map_freeblock_lock();
-			if( !sd || ((tsd->class_&MAPID_UPPERMASK) != MAPID_GUILLOTINE_CROSS ||
-				(tsd->class_&MAPID_UPPERMASK) != MAPID_GUILLOTINE_CROSS_T) )
-				status_zap(bl, status->hp / 100 - 3 * status->vit, 0);
-			else
-				status_zap(bl, status->hp / 100 + 2 * status->vit, 0);
-			map_freeblock_unlock();
-			if ( !sc->data[type] ) return 0;
-			sc_timer_next(1000 + tick, status_change_timer, bl->id, data );
-			return 0;
-		}
-		break;
-
 	case SC_WEAPONBLOCKING:
 		if( --(sce->val4) >= 0 )
 		{
-			if(!status_charge(bl,0,3))
+			if( !status_charge(bl,0,3) )
 				break;
-			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
+			sc_timer_next(3000+tick,status_change_timer,bl->id,data);
 			return 0;
 		}
 		break;
 
 	case SC_CLOAKINGEXCEED:
-		if(!status_charge(bl, 0, 10 - sce->val1))
+		if(!status_charge(bl,0,10-sce->val1))
 			break;
 		sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
 		return 0;
-
-	case SC_HALLUCINATIONWALK_POSTDELAY:
-		if( sce->val4 == 1)
-		{	// After 25 first seconds movement speed ends.
-			sce->val4 = 0;
-			status_calc_bl(bl,SCB_SPEED);
-			sc_timer_next(245000 + tick, status_change_timer, bl->id, data);
-			return 0;
-		}
-		break;
 
 	case SC_RENOVATIO:
 		if( --(sce->val4) >= 0 )
@@ -8783,10 +8773,9 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC__MAELSTROM:
 			// Extra large skills cooldowns
 			case SC_REUSE_REFRESH:
-			case SC_WEAPONBLOCKING_POSTDELAY:
 			case SC_REUSE_COMET:
 			case SC_REUSE_STASIS:
-			case SC_HALLUCINATIONWALK_POSTDELAY:
+			case SC_REUSE_HALLUCINATIONWALK:
 			case SC_SAVAGE_STEAK:
 			case SC_COCKTAIL_WARG_BLOOD:
 			case SC_MINOR_BBQ:
