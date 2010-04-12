@@ -2396,6 +2396,7 @@ int parse_frommap(int fd)
 				{
 					Sql_GetData(sql_handle, 0, &data, NULL); scd.skill_id = atoi(data);
 					Sql_GetData(sql_handle, 1, &data, NULL); scd.tick = atoi(data);
+					memcpy(WFIFOP(fd,14+count*sizeof(struct skill_cooldown_data)), &scd, sizeof(struct skill_cooldown_data));
 				}
 				if( count >= MAX_SKILLCOOLDOWN )
 					ShowWarning("Too many skillcooldowns for %d:%d, some of them were not loaded.\n", aid, cid);
