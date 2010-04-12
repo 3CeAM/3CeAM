@@ -79,6 +79,11 @@ struct s_autobonus {
 	unsigned short pos;
 };
 
+struct skill_cooldown_entry {
+	unsigned short skill_id;
+	int timer;
+};
+
 struct map_session_data {
 	struct block_list bl;
 	struct unit_data ud;
@@ -194,7 +199,7 @@ struct map_session_data {
 	short skillid_old,skilllv_old;
 	short skillid_dance,skilllv_dance;
 	short cook_mastery; // range: [0,1999] [Inkfish]
-	unsigned char blockskill[MAX_SKILL];
+	struct skill_cooldown_entry *scd[MAX_SKILLCOOLDOWN]; // Skill Cooldown
 	int cloneskill_id, reproduceskill_id;
 	int menuskill_id, menuskill_val, menuskill_itemused;
 

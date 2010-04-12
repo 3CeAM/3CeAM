@@ -37,6 +37,7 @@ bool chrif_auth_finished(struct map_session_data* sd);
 void chrif_authreq(struct map_session_data* sd);
 void chrif_authok(int fd);
 int chrif_scdata_request(int account_id, int char_id);
+int chrif_skillcooldown_request(int account_id, int char_id);
 int chrif_save(struct map_session_data* sd, int flag);
 int chrif_charselectreq(struct map_session_data* sd, uint32 s_ip);
 int chrif_changemapserver(struct map_session_data* sd, uint32 ip, uint16 port);
@@ -47,6 +48,7 @@ int chrif_char_ask_name(int acc, const char* character_name, unsigned short oper
 int chrif_updatefamelist(struct map_session_data *sd);
 int chrif_buildfamelist(void);
 int chrif_save_scdata(struct map_session_data *sd);
+int chrif_skillcooldown_save(struct map_session_data *sd);
 int chrif_ragsrvinfo(int base_rate,int job_rate, int drop_rate);
 int chrif_char_offline(struct map_session_data *sd);
 int chrif_char_offline_nsd(int account_id, int char_id);
