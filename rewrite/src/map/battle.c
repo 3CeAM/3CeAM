@@ -2901,11 +2901,10 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							skillratio += 240 * skill_lv - 100;
 						break;
 					case WL_COMET:
-						if( sc && sc->data[SC_REUSE_COMET] )
-						{
-							// From 0 to 7 Distance
+						if( sc )
+						{ // From 0 to 7 Distance
 							int addv = 2400, mulv = 500;
-							i = distance_xy(target->x, target->y, sc->data[SC_REUSE_COMET]->val2,sc->data[SC_REUSE_COMET]->val3);
+							i = distance_xy(target->x, target->y, sc->comet_x, sc->comet_y);
 							if( i > 1 )
 							{
 								i = (i+3)%4;

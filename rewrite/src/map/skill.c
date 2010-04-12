@@ -3325,7 +3325,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 			skill_area_temp[1] = bl->id;
 			skill_area_temp[2] = 0;
 			if( skillid == WL_CRIMSONROCK )
-			{ // Neccesary to calculate blown direction
+			{
 				skill_area_temp[4] = bl->x;
 				skill_area_temp[5] = bl->y;
 			}
@@ -5663,10 +5663,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_SAVAGE_STEAK:  case SC_COCKTAIL_WARG_BLOOD:
 				case SC_MINOR_BBQ:   case SC_SIROMA_ICE_TEA:  case SC_DROCERA_HERB_STEAMED:
 				case SC_PUTTI_TAILS_NOODLES:
-				// Skill Delay controled by SC
-				case SC_REUSE_STASIS: case SC_REUSE_HALLUCINATIONWALK:
-				case SC_REUSE_COMET:
-				// ---------------------------
 					continue;
 				case SC_ASSUMPTIO:
 					if( bl->type == BL_MOB )
@@ -6814,7 +6810,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				break;
 			}
 			clif_skill_nodamage(src,bl,skillid,skilllv,sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
-			if( sd ) sc_start(src,SC_REUSE_HALLUCINATIONWALK,100,skilllv,-skill_get_cooldown(skillid,skilllv));
 		}
 		break;
 
@@ -6950,10 +6945,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_SAVAGE_STEAK:  case SC_COCKTAIL_WARG_BLOOD:
 				case SC_MINOR_BBQ:   case SC_SIROMA_ICE_TEA:  case SC_DROCERA_HERB_STEAMED:
 				case SC_PUTTI_TAILS_NOODLES:
-				// Skill Delay controled by SC
-				case SC_REUSE_STASIS: case SC_REUSE_HALLUCINATIONWALK:
-				case SC_REUSE_COMET:
-				// ---------------------------
 					continue;
 				case SC_ASSUMPTIO:
 					if( bl->type == BL_MOB )
@@ -6981,7 +6972,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		else
 		{
 			map_foreachinrange(skill_area_sub,src,skill_get_splash(skillid, skilllv),BL_CHAR,src,skillid,skilllv,tick,(map_flag_vs(src->m)?BCT_ALL:BCT_ENEMY|BCT_SELF)|flag|1,skill_castend_nodamage_id);
-			if( sd ) sc_start(src,SC_REUSE_STASIS,100,skilllv,-skill_get_cooldown(skillid,skilllv));
 			clif_skill_nodamage(src, bl, skillid, skilllv, 1);
 		}
 		break;
@@ -8631,8 +8621,11 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		break;
 
 	case WL_COMET:
-		if( sd )
-			sc_start4(src,SC_REUSE_COMET,100,skilllv,x,y,0,-skill_get_cooldown(skillid,skilllv)); // SC_REUSE_COMET - also used to control x and y casting point
+		if( sc )
+		{
+			sc->comet_x = x;
+			sc->comet_y = y;
+		}
 		i = skill_get_splash(skillid,skilllv);
 		map_foreachinarea(skill_area_sub,src->m,x-i,y-i,x+i,y+i,BL_CHAR,src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
 		break;
@@ -11117,22 +11110,15 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			return 0;
 		}
 		break;
-	case WL_STASIS:
-		if( sc && sc->data[SC_REUSE_STASIS] )
-		{
-			clif_skill_fail(sd,skill,0x4,0,0);
-			return 0;
-		}
-		break;
 	case GC_HALLUCINATIONWALK:
-		if( sc && (sc->data[SC_REUSE_HALLUCINATIONWALK] || sc->data[SC_HALLUCINATIONWALK] || sc->data[SC_HALLUCINATIONWALK_POSTDELAY]) )
+		if( sc && (sc->data[SC_HALLUCINATIONWALK] || sc->data[SC_HALLUCINATIONWALK_POSTDELAY]) )
 		{
 			clif_skill_fail(sd,skill,0x0,0,0);
 			return 0;
 		}
 		break;
 	case WL_COMET:
-		if( (sc && sc->data[SC_REUSE_COMET]) || (skill_check_pc_partner(sd,skill,&lv,1,0) <= 0 && pc_search_inventory(sd,ITEMID_RED_GEMSTONE) <= require.amount[0]) )
+		if( skill_check_pc_partner(sd,skill,&lv,1,0) <= 0 && pc_search_inventory(sd,ITEMID_RED_GEMSTONE) <= require.amount[0] )
 		{
 			clif_skill_fail(sd,skill,0x4,0,0);
 			return 0;

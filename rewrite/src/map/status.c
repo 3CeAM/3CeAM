@@ -7239,11 +7239,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 
 	switch( type )
 	{
-		// Skills Delay controled by SC
-		case SC_REUSE_STASIS:   if( sd ) clif_skill_cooldown(sd,WL_STASIS,tick); break;
-		case SC_REUSE_COMET:    if( sd ) clif_skill_cooldown(sd,WL_COMET,tick); break;
-		case SC_REUSE_HALLUCINATIONWALK: if( sd ) clif_skill_cooldown(sd,GC_HALLUCINATIONWALK,tick); break;
-		// ----------------------------
 		case SC_BERSERK:
 		case SC_SATURDAYNIGHTFEVER:
 			sce->val2 = 5*status->max_hp/100;
@@ -7328,9 +7323,6 @@ int status_change_clear(struct block_list* bl, int type)
 		case SC_HELLPOWER:
 		case SC_JEXPBOOST:
 		case SC_AUTOTRADE:
-		case SC_REUSE_STASIS:
-		case SC_REUSE_COMET:
-		case SC_REUSE_HALLUCINATIONWALK:
 			continue;
 		}
 
@@ -8773,9 +8765,6 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC__MAELSTROM:
 			// Extra large skills cooldowns
 			case SC_REUSE_REFRESH:
-			case SC_REUSE_COMET:
-			case SC_REUSE_STASIS:
-			case SC_REUSE_HALLUCINATIONWALK:
 			case SC_SAVAGE_STEAK:
 			case SC_COCKTAIL_WARG_BLOOD:
 			case SC_MINOR_BBQ:
