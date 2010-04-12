@@ -429,15 +429,13 @@ typedef enum sc_type {
 	SC_WARMER,
 	SC_STRIKING,
 	SC_CRYSTALIZE,
-	// Temporary status change used as cooldown in certain skills.
-	SC_REUSE_COMET,
-
-	SC_VENOMIMPRESS,
+	// SC_REUSE_COMET,
+	SC_VENOMIMPRESS = 451,
 	SC_HALLUCINATIONWALK,
 	SC_HALLUCINATIONWALK_POSTDELAY,
 
 	SC_READING_SB, // From iROwiki : your SP slowly drains depending on the number of spells frozen
-	SC_REUSE_HALLUCINATIONWALK,
+	// SC_REUSE_HALLUCINATIONWALK,
 	// SC_READING_SB_3,
 	// SC_READING_SB_4,
 	// SC_READING_SB_5,
@@ -454,8 +452,8 @@ typedef enum sc_type {
 	SC_DROCERA_HERB_STEAMED,
 	SC_PUTTI_TAILS_NOODLES,
 
-	SC_REUSE_STASIS,
-	SC_PRESTIGE,
+	// SC_REUSE_STASIS,
+	SC_PRESTIGE = 470,
 	SC_ADORAMUS,
 	SC_VACUUM_EXTREME,
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
@@ -1311,6 +1309,7 @@ struct status_change {
 	unsigned short mp_matk_min, mp_matk_max; //Previous matk min/max for ground spells (Amplify magic power)
 	int sg_id; //ID of the previous Storm gust that hit you
 	unsigned char sg_counter; //Storm gust counter (previous hits from storm gust)
+	short comet_x, comet_y; // Point where src casted Comet - required to calculate damage from this point
 	struct status_change_entry *data[SC_MAX];
 };
 
