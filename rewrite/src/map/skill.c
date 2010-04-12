@@ -2234,7 +2234,6 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 	{
 		if( sc && sc->data[SC_REFLECTDAMAGE] )
 		{
-			damage -= rdamage;
 			map_foreachinrange(battle_damage_area,bl,skill_get_splash(LG_REFLECTDAMAGE,1),BL_CHAR,tick,bl,dmg.amotion,sstatus->dmotion,rdamage,tstatus->race);
 		}
 		else

@@ -5,6 +5,14 @@
 // 	- Details.
 //========================================
 
+04/12/2010
+	r323 [pakpil]
+	* Fixed SC_AUTOSHADOWSPELL cast time. Bug report 379.
+	* Fixed some isequipped() checks on item_db.txt.
+	* Fixed exp table in exp.txt.
+	- 3rd job have been moved to hadle these by separate.
+	* Fixed LG_REFLECTDAMAGE that shouldn't reduce damage received.
+
 04/09/2010
 	r318 [pakpil]
 	* Fixed SO_STRIKING. Follow up r317.
