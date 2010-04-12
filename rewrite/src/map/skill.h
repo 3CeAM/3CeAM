@@ -345,6 +345,9 @@ int skillnotok(int skillid, struct map_session_data *sd);
 int skillnotok_hom(int skillid, struct homun_data *hd);
 int skillnotok_mercenary(int skillid, struct mercenary_data *md);
 
+int skill_blockpc_clear(struct map_session_data *sd);
+int skill_blockpc_end(int tid, unsigned int tick, int id, intptr data);
+
 int skill_chastle_mob_changetarget(struct block_list *bl,va_list ap);
 
 // ƒAƒCƒeƒ€ì¬
