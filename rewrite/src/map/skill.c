@@ -150,6 +150,7 @@ int	skill_get_itemqty(int id, int idx)    { skill_get (skill_db[id].amount[idx],
 int	skill_get_zeny( int id ,int lv )      { skill_get (skill_db[id].zeny[lv-1], id, lv); }
 int	skill_get_num( int id ,int lv )       { skill_get (skill_db[id].num[lv-1], id, lv); }
 int	skill_get_cast( int id ,int lv )      { skill_get (skill_db[id].cast[lv-1], id, lv); }
+int	skill_get_fixed_cast( int id ,int lv ){ skill_get (skill_db[id].fixed_cast[lv-1], id, lv); }
 int	skill_get_delay( int id ,int lv )     { skill_get (skill_db[id].delay[lv-1], id, lv); }
 int	skill_get_cooldown( int id ,int lv )  { skill_get (skill_db[id].cooldown[lv-1], id, lv); }
 int	skill_get_walkdelay( int id ,int lv ) { skill_get (skill_db[id].walkdelay[lv-1], id, lv); }
@@ -11822,64 +11823,42 @@ int skill_castfix(struct block_list *bl, int skill_id, int skill_lv)
 	}
 	else
 	{
-		//Place here for skills that has a full variable and fixed cast time. [Jobbie]
-		switch( skill_id )
+		fixed_time = skill_get_fixed_cast(skill_id, skill_lv);
+		if( fixed_time < 0 )
 		{
-			case RK_DRAGONBREATH:
-				variable_time = base_time;
-				fixed_time = 500; //Has a .5sec fixed cast time.
-				break;
-			case RK_HUNDREDSPEAR:
-			case RK_CRUSHSTRIKE:
-			case RK_STORMBLAST:
-			case AB_CLEARANCE:
-				variable_time = base_time;// full variable cast time.
-				fixed_time = 0;
-				break;
-			case MG_ENERGYCOAT:
-			case HW_GANBANTEIN:
-			case HW_GRAVITATION:
-			case AB_RENOVATIO:
-			case NC_SELFDESTRUCTION:
-			case NC_INFRAREDSCAN:
-			case NC_ANALYZE:
-				variable_time = 0;
-				fixed_time = base_time;// full fixed cast time.
-				break;
-			default:
-				variable_time = base_time * 80/100;// 80% of casttime is variable
-				fixed_time = base_time * 20/100;// 20% of casttime is fixed
-				break;
+			fixed_time = 0;
+			variable_time = skill_get_cast(skill_id, skill_lv);
+		}
+		else
+		if( fixed_time )
+			variable_time = skill_get_cast(skill_id, skill_lv) - fixed_time;
+		else
+		{
+			variable_time = skill_get_cast(skill_id, skill_lv) * 80 /100;
+			fixed_time = skill_get_cast(skill_id, skill_lv) * 20 /100;
 		}
 
 		// calculate variable cast time reduced by dex and int
 		if( !(skill_get_castnodex(skill_id, skill_lv)&1) )
 			scale = cap_value((status_get_dex(bl) * 2 + status_get_int(bl)) * 10000, INT_MIN, INT_MAX);
-
-		// calculate fixed cast time reduced by item bonuses
-		if( sd )
-		{
-			int i;
-			if( sd->fixcastrate != 100 )
-				fixed_time = fixed_time * sd->fixcastrate / 100;
-			for( i = 0; i < ARRAYLENGTH(sd->fixskillcast) && sd->fixskillcast[i].id; i++ )
-			{
-				if( sd->fixskillcast[i].id == skill_id )
-				{
-					fixed_time += fixed_time * sd->fixskillcast[i].val / 100;
-					break;
-				}
-			}
-		}
-
-		/*iRO wiki said all affected by Howling of Mandragora will have increased fixed cast time for 2
-		  seconds and those skills that are instant cast will have a cast time.
-		  NOTE: Value of fixed time will be update soon if there is other info. [Jobbie]*/
-		if( sc && sc->data[SC_MANDRAGORA] && ( skill_id >= SM_BASH && skill_id <= RETURN_TO_ELDICASTES ) )
-			fixed_time += 2000;
 	}
 
-	// calculate variable cast time reduced by item/card/skills bonuses
+	// variable cast time mod by status changes
+	if( !(skill_get_castnodex(skill_id, skill_lv)&2) && sc && sc->count )
+	{
+		if( sc->data[SC_SLOWCAST] )
+			variable_time += variable_time * sc->data[SC_SLOWCAST]->val2 / 100;
+		if( sc->data[SC_SUFFRAGIUM] )
+			variable_time -= variable_time * sc->data[SC_SUFFRAGIUM]->val2 / 100;
+		if( sc->data[SC_MEMORIZE] )
+			variable_time >>= 2;
+		if( sc->data[SC_POEMBRAGI] )
+			variable_time -= variable_time * sc->data[SC_POEMBRAGI]->val2 / 100;
+		if( sc->data[SC_DANCEWITHWUG] ) //FIXME: Doesn't it affect fixed cast time? [Inkfish]
+			variable_time -= variable_time * sc->data[SC_DANCEWITHWUG]->val3 / 100;
+	}
+
+	// variable cast time mod by equip/card bonuses/penalties
 	if( !(skill_get_castnodex(skill_id, skill_lv)&4) && sd )
 	{
 		int i;
@@ -11895,28 +11874,41 @@ int skill_castfix(struct block_list *bl, int skill_id, int skill_lv)
 		}
 	}
 
-	if( sd && pc_checkskill(sd, WL_RADIUS) && skill_id >= WL_WHITEIMPRISON && skill_id <= WL_FREEZE_SP )
-		max_fixedReduction = 5 + 5 * pc_checkskill(sd, WL_RADIUS); // 10 15 20% of Fixed Cast Time reduced.
+	/*iRO wiki said all affected by Howling of Mandragora will have increased fixed cast time for 2
+	seconds and those skills that are instant cast will have a cast time.
+	NOTE: Value of fixed time will be update soon if there is other info. [Jobbie]*/
+	if( sc && sc->data[SC_MANDRAGORA] && ( skill_id >= SM_BASH && skill_id <= RETURN_TO_ELDICASTES ) )
+		fixed_time += 2000; //FIXME: Where on earth should we apply this? Before all modifiers? [Inkfish]
 
-	// calculate variable and fixed cast time reduced on sc data
+	// fixed cast time mod by status changes
 	if( !(skill_get_castnodex(skill_id, skill_lv)&2) && sc && sc->count )
 	{
-		if( sc->data[SC_SLOWCAST] )
-			variable_time += variable_time * sc->data[SC_SLOWCAST]->val2 / 100;
-		if( sc->data[SC_SUFFRAGIUM] )
-			variable_time -= variable_time * sc->data[SC_SUFFRAGIUM]->val2 / 100;
-		if( sc->data[SC_MEMORIZE] )
-			variable_time >>= 2;
-		if( sc->data[SC_POEMBRAGI] )
-			variable_time -= variable_time * sc->data[SC_POEMBRAGI]->val2 / 100;
 		if( sc->data[SC_FREEZING] )
 			fixed_time += fixed_time * 50 / 100;
 		if( sc->data[SC__LAZINESS] )
 			fixed_time += fixed_time * sc->data[SC__LAZINESS]->val2 / 100;
-		if( sc->data[SC_DANCEWITHWUG] )
-			variable_time -= variable_time * sc->data[SC_DANCEWITHWUG]->val3 / 100;
+
 		if( sc->data[SC_SECRAMENT] && sc->data[SC_SECRAMENT]->val2 > max_fixedReduction )
 			max_fixedReduction = sc->data[SC_SECRAMENT]->val2;
+	}
+
+	if( sd && pc_checkskill(sd, WL_RADIUS) && skill_id >= WL_WHITEIMPRISON && skill_id <= WL_FREEZE_SP )
+		max_fixedReduction = 5 + 5 * pc_checkskill(sd, WL_RADIUS); // 10 15 20% of Fixed Cast Time reduced.
+
+	// fixed cast time mod by equip/card bonuses/penalties
+	if( !(skill_get_castnodex(skill_id, skill_lv)&4) && sd )
+	{
+		int i;
+		if( sd->fixcastrate != 100 )
+			fixed_time = fixed_time * sd->fixcastrate / 100;
+		for( i = 0; i < ARRAYLENGTH(sd->fixskillcast) && sd->fixskillcast[i].id; i++ )
+		{
+			if( sd->fixskillcast[i].id == skill_id )
+			{
+				fixed_time += fixed_time * sd->fixskillcast[i].val / 100;
+				break;
+			}
+		}
 	}
 
 	if( max_fixedReduction )
@@ -15033,6 +15025,8 @@ static bool skill_parse_row_castdb(char* split[], int columns, int current)
 	skill_split_atoi(split[4],skill_db[i].walkdelay);
 	skill_split_atoi(split[5],skill_db[i].upkeep_time);
 	skill_split_atoi(split[6],skill_db[i].upkeep_time2);
+	if( split[7] )
+		skill_split_atoi(split[7],skill_db[i].fixed_cast);
 
 	return true;
 }
@@ -15253,7 +15247,7 @@ static void skill_readdb(void)
 	safestrncpy(skill_db[0].desc, "Unknown Skill", sizeof(skill_db[0].desc));
 	sv_readdb(db_path, "skill_db.txt"          , ',',  17, 17, MAX_SKILL_DB, skill_parse_row_skilldb);
 	sv_readdb(db_path, "skill_require_db.txt"  , ',',  32, 32, MAX_SKILL_DB, skill_parse_row_requiredb);
-	sv_readdb(db_path, "skill_cast_db.txt"     , ',',   7,  7, MAX_SKILL_DB, skill_parse_row_castdb);
+	sv_readdb(db_path, "skill_cast_db.txt"     , ',',   7,  8, MAX_SKILL_DB, skill_parse_row_castdb);
 	sv_readdb(db_path, "skill_castnodex_db.txt", ',',   2,  3, MAX_SKILL_DB, skill_parse_row_castnodexdb);
 	sv_readdb(db_path, "skill_nocast_db.txt"   , ',',   2,  2, MAX_SKILL_DB, skill_parse_row_nocastdb);
 	sv_readdb(db_path, "skill_unit_db.txt"     , ',',   8,  8, MAX_SKILL_DB, skill_parse_row_unitdb);
