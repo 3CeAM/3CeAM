@@ -342,7 +342,7 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, int skill
 
 	if( sc && sc->count )
 	{
-		if( sd->sc.data[SC_DEATHHURT] )
+		if( sc->data[SC_DEATHHURT] )
 			hp -= hp * 20 / 100;
 		if( sc->data[SC_CRITICALWOUND] && heal ) // Critical Wound has no effect on offensive heal. [Inkfish]
 			hp -= hp * sc->data[SC_CRITICALWOUND]->val2/100;
