@@ -84,7 +84,7 @@ struct s_skill_db {
 	char desc[40];
 	int range[MAX_SKILL_LEVEL],hit,inf,element[MAX_SKILL_LEVEL],nk,splash[MAX_SKILL_LEVEL],max;
 	int num[MAX_SKILL_LEVEL];
-	int cast[MAX_SKILL_LEVEL],walkdelay[MAX_SKILL_LEVEL],delay[MAX_SKILL_LEVEL],cooldown[MAX_SKILL_LEVEL];
+	int cast[MAX_SKILL_LEVEL],walkdelay[MAX_SKILL_LEVEL],delay[MAX_SKILL_LEVEL],cooldown[MAX_SKILL_LEVEL],fixed_cast[MAX_SKILL_LEVEL];
 	int upkeep_time[MAX_SKILL_LEVEL],upkeep_time2[MAX_SKILL_LEVEL];
 	int castcancel,cast_def_rate;
 	int inf2,maxcount[MAX_SKILL_LEVEL],skill_type;
