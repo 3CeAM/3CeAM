@@ -11827,15 +11827,15 @@ int skill_castfix(struct block_list *bl, int skill_id, int skill_lv)
 		if( fixed_time < 0 )
 		{
 			fixed_time = 0;
-			variable_time = skill_get_cast(skill_id, skill_lv);
+			variable_time = base_time;
 		}
 		else
 		if( fixed_time )
-			variable_time = skill_get_cast(skill_id, skill_lv) - fixed_time;
+			variable_time = base_time - fixed_time;
 		else
 		{
-			variable_time = skill_get_cast(skill_id, skill_lv) * 80 /100;
-			fixed_time = skill_get_cast(skill_id, skill_lv) * 20 /100;
+			variable_time = base_time * 80 /100;
+			fixed_time = base_time * 20 /100;
 		}
 
 		// calculate variable cast time reduced by dex and int
