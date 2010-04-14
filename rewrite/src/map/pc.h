@@ -535,7 +535,7 @@ extern int duel_count;
 #define pc_isinvisible(sd)    ( (sd)->sc.option&OPTION_INVISIBLE )
 #define pc_is50overweight(sd) ( (sd)->weight*100 >= (sd)->max_weight*battle_config.natural_heal_weight_rate )
 #define pc_is90overweight(sd) ( (sd)->weight*10 >= (sd)->max_weight*9 )
-#define pc_maxparameter(sd)   ( (((sd)->class_&MAPID_THIRDMASK) >= MAPID_BABY_RUNE) ? battle_config.max_baby_third_paramater:(sd)->class_&JOBL_THIRD ? battle_config.max_third_parameter : ((sd)->class_&JOBL_BABY ? battle_config.max_baby_parameter : battle_config.max_parameter) )
+#define pc_maxparameter(sd)   ( ((sd)->class_&JOBL_THIRD ? ((sd)->class_&JOBL_BABY ? battle_config.max_baby_third_paramater : battle_config.max_third_parameter) : ((sd)->class_&JOBL_BABY ? battle_config.max_baby_parameter : battle_config.max_parameter)) )
 
 #define pc_stop_walking(sd, type) unit_stop_walking(&(sd)->bl, type)
 #define pc_stop_attack(sd) unit_stop_attack(&(sd)->bl)
@@ -706,6 +706,7 @@ int pc_addeventtimercount(struct map_session_data *sd,const char *name,int tick)
 int pc_calc_pvprank(struct map_session_data *sd);
 int pc_calc_pvprank_timer(int tid, unsigned int tick, int id, intptr data);
 
+int pc_calc_skillpoint(struct map_session_data* sd);
 int pc_ismarried(struct map_session_data *sd);
 int pc_marriage(struct map_session_data *sd,struct map_session_data *dstsd);
 int pc_divorce(struct map_session_data *sd);

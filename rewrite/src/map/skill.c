@@ -10536,7 +10536,7 @@ static int skill_check_condition_char_sub (struct block_list *bl, va_list ap)
 
 	if( skill_get_inf2(skillid)&INF2_CHORUS_SKILL )
 	{
-		if( tsd->status.party_id == sd->status.party_id && (tsd->class_&MAPID_THIRDMASK) == MAPID_MINSTRELWANDERER || (tsd->class_&MAPID_THIRDMASK) == MAPID_MINSTRELWANDERER_T )
+		if( tsd->status.party_id == sd->status.party_id && (tsd->class_&JOBL_THIRD) && (tsd->class_&MAPID_UPPERMASK) == MAPID_BARDDANCER )
 			p_sd[(*c)++] = tsd->bl.id;
 		return 1;
 	}
