@@ -1339,8 +1339,10 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 		}
 		if(tsd && tsd->critical_def)
 			cri = cri*(100-tsd->critical_def)/100;
-		if (rand()%1000 < cri)
+		if (rand()%1000 < cri) // Steel need confirm if critical def reduce it.
 			flag.cri= 1;
+		if( skill_num == LG_PINPOINTATTACK )
+			flag.cri = 1;
 	}
 	if (flag.cri)
 	{
@@ -1363,6 +1365,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				case CR_SHIELDBOOMERANG:
 					if( sc && sc->data[SC_SPIRIT] && sc->data[SC_SPIRIT]->val2 == SL_CRUSADER )
 						flag.hit = 1;
+					break;
+				case LG_PINPOINTATTACK:
+					flag.hit = 1; // Always hits.
 					break;
 			}
 		if (tsc && !flag.hit && tsc->opt1 && tsc->opt1 != OPT1_STONEWAIT)
@@ -1605,6 +1610,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 
 					if(flag.cri && sd->crit_atk_rate)
 						ATK_ADDRATE(sd->crit_atk_rate);
+					if(skill_num == LG_PINPOINTATTACK )
+						ATK_ADDRATE(140);
 
 					if(sd->status.party_id && (skill=pc_checkskill(sd,TK_POWER)) > 0){
 						if( (i = party_foreachsamemap(party_sub_count, sd, 0)) > 1 ) // exclude the player himself [Inkfish]
@@ -2063,6 +2070,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					skillratio += 60 + 43 * skill_lv * status_get_lv(src) / 100;
 					if( sc && sc->data[SC_GLOOMYDAY_SK] )
 						skillratio += 80 + (5 * sc->data[SC_GLOOMYDAY_SK]->val1);
+					break;
+				case LG_PINPOINTATTACK:
+					skillratio = ((100 * skill_lv) + (10 * status_get_agi(src)) ) * status_get_lv(src) / 100;
 					break;
 				case LG_RAGEBURST:
 					if( sd && sd->rageball_old )
