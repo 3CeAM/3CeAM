@@ -64,7 +64,6 @@ struct item_data;
 #define JOBL_THIRD 0x4000 //16384
 
 //for filtering and quick checking.
-#define MAPID_THIRDMASK 0xffff
 #define MAPID_UPPERMASK 0x0fff
 #define MAPID_BASEMASK 0x00ff
 //First Jobs
