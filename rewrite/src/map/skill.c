@@ -10554,19 +10554,13 @@ static int skill_check_condition_char_sub (struct block_list *bl, va_list ap)
 		}
 		case AB_ADORAMUS:
 		{ // Adoramus does not consume Blue Gemstone when there is at least 1 Priest class next to the caster
-			if( tsd->status.sp >= 10+lv && (
-				tsd->status.class_ == JOB_PRIEST ||
-				tsd->status.class_ == JOB_HIGH_PRIEST ||
-				tsd->status.class_ == JOB_BABY_PRIEST ||
-				tsd->status.class_ == JOB_ARCH_BISHOP ||
-				tsd->status.class_ == JOB_ARCH_BISHOP_T ||
-				tsd->status.class_ == JOB_BABY_BISHOP) )
+			if( tsd->status.sp >= 10+lv && (tsd->class_&MAPID_UPPERMASK) == MAPID_PRIEST )
 				p_sd[(*c)++] = tsd->bl.id;
 			return 1;
 		}
 		case WL_COMET:
 		{ // Comet does not consume Red Gemstones when there is at least 1 Warlock class next to the caster
-			if( tsd->status.class_ == JOB_WARLOCK || tsd->status.class_ == JOB_WARLOCK_T || tsd->status.class_ == JOB_BABY_WARLOCK )
+			if( tsd->class_&JOBL_THIRD && (tsd->class_&MAPID_UPPERMASK) == MAPID_WIZARD )
 				p_sd[(*c)++] = tsd->bl.id;
 			return 1;
 		}
