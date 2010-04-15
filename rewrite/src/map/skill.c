@@ -10554,7 +10554,7 @@ static int skill_check_condition_char_sub (struct block_list *bl, va_list ap)
 
 	if( skill_get_inf2(skillid)&INF2_CHORUS_SKILL )
 	{
-		if( tsd->status.party_id == sd->status.party_id && (tsd->class_&JOBL_THIRD) && (tsd->class_&MAPID_UPPERMASK) == MAPID_BARDDANCER )
+		if( tsd->status.party_id == sd->status.party_id && (tsd->class_&MAPID_UPPERMASK_THIRD) == MAPID_MINSTRELWANDERER )
 			p_sd[(*c)++] = tsd->bl.id;
 		return 1;
 	}
@@ -10578,7 +10578,7 @@ static int skill_check_condition_char_sub (struct block_list *bl, va_list ap)
 		}
 		case WL_COMET:
 		{ // Comet does not consume Red Gemstones when there is at least 1 Warlock class next to the caster
-			if( tsd->class_&JOBL_THIRD && (tsd->class_&MAPID_UPPERMASK) == MAPID_WIZARD )
+			if( (tsd->class_&MAPID_MINSTRELWANDERER) == MAPID_WARLOCK )
 				p_sd[(*c)++] = tsd->bl.id;
 			return 1;
 		}
