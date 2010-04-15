@@ -7047,7 +7047,7 @@ int pc_setriding(TBL_PC* sd, int flag)
 
 	if( flag )
 	{		
-		if( option&OPTION_MADO || (pc_checkskill(sd,skillnum) > 0) ) // Check if you have the necessary skill to mount.?
+		if( option&OPTION_MADO || (pc_checkskill(sd,skillnum) > 0) ) // Check if you have the necessary skill to mount. Mechanics do not require any skill to ride a metch.
 			pc_setoption(sd, sd->sc.option|option);
 	}
 	else if( pc_isriding(sd,OPTION_RIDING|(OPTION_RIDING_DRAGON)|OPTION_RIDING_WUG|OPTION_MADO) )

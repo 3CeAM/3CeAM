@@ -9,4 +9,4 @@ CREATE TABLE IF NOT EXISTS `skillcooldown` (
   `tick` int(11) NOT NULL,
   KEY (`account_id`),
   KEY (`char_id`)
-) ENGINE=InnoDB;
+) ENGINE=MyISAM;
