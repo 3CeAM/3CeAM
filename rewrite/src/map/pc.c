@@ -3794,7 +3794,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 	script = sd->inventory_data[n]->script;
 	
 	// If any other class that isn't Rune Knight class, uses one rune, this is consumed without nothing happends.
-	if( itemdb_is_rune(sd->status.inventory[n].nameid) && !((sd->class_&JOBL_THIRD) && (sd->class_&MAPID_UPPERMASK) == MAPID_KNIGHT) )
+	if( itemdb_is_rune(sd->status.inventory[n].nameid) && !((sd->class_&MAPID_UPPERMASK_THIRD) == MAPID_RUNE_KNIGHT) )
 	{
 		clif_useitemack(sd,n,amount-1,1);
 		if( log_config.enable_logs&0x100 )
@@ -6281,7 +6281,9 @@ int pc_readparam(struct map_session_data* sd,int type)
 	case SP_JOBLEVEL:    val = sd->status.job_level; break;
 	case SP_CLASS:       val = sd->status.class_; break;
 	case SP_BASEJOB:     val = pc_mapid2jobid(sd->class_&MAPID_UPPERMASK, sd->status.sex); break; //Base job, extracting upper type.
-	case SP_UPPER:       val = sd->class_&JOBL_THIRD?3:(sd->class_&JOBL_UPPER?1:(sd->class_&JOBL_BABY?2:0)); break;
+	//This is way wrong. Since there are no trans-baby classes, this way might be fine with clean eA. But now we have trans-3rd classes. [Inkfish]
+	//case SP_UPPER:       val = sd->class_&JOBL_THIRD?3:(sd->class_&JOBL_UPPER?1:(sd->class_&JOBL_BABY?2:0)); break;
+	case SP_UPPER:       val = ((sd->class_&MAPID_JOBMASK)>>12); break;
 	case SP_BASECLASS:   val = pc_mapid2jobid(sd->class_&MAPID_BASEMASK, sd->status.sex); break; //Extract base class tree. [Skotlex]
 	case SP_SEX:         val = sd->status.sex; break;
 	case SP_WEIGHT:      val = sd->weight; break;
@@ -6798,12 +6800,12 @@ int pc_setoption(struct map_session_data *sd,int type)
 
 	if( (sd->class_&MAPID_UPPERMASK) == MAPID_KNIGHT || (sd->class_&MAPID_UPPERMASK) == MAPID_CRUSADER )
 	{
-		if( (type&OPTION_RIDING && !(p_type&OPTION_RIDING)) || (type&OPTION_RIDING_DRAGON && !(p_type&OPTION_RIDING_DRAGON) && sd->class_&JOBL_THIRD && (sd->class_&MAPID_UPPERMASK) == MAPID_KNIGHT) )
+		if( (type&OPTION_RIDING && !(p_type&OPTION_RIDING)) || (type&OPTION_RIDING_DRAGON && !(p_type&OPTION_RIDING_DRAGON) && (sd->class_&MAPID_UPPERMASK_THIRD) == MAPID_RUNE_KNIGHT) )
 		{ // Mounting
 			clif_status_load(&sd->bl,SI_RIDING,1);
 			status_calc_pc(sd,0);
 		}
-		else if( (!(type&OPTION_RIDING) && p_type&OPTION_RIDING) || (!(type&OPTION_RIDING_DRAGON) && p_type&OPTION_RIDING_DRAGON && sd->class_&JOBL_THIRD && (sd->class_&MAPID_UPPERMASK) == MAPID_KNIGHT) )
+		else if( (!(type&OPTION_RIDING) && p_type&OPTION_RIDING) || (!(type&OPTION_RIDING_DRAGON) && p_type&OPTION_RIDING_DRAGON && (sd->class_&MAPID_UPPERMASK_THIRD) == MAPID_RUNE_KNIGHT) )
 		{ // Dismount
 			clif_status_load(&sd->bl,SI_RIDING,0);
 			status_calc_pc(sd,0);
@@ -6978,7 +6980,7 @@ int pc_setriding(TBL_PC* sd, int flag)
 	
 	if( (sd->class_&MAPID_UPPERMASK) == MAPID_KNIGHT || (sd->class_&MAPID_UPPERMASK) == MAPID_CRUSADER )
 	{
-		if( (sd->class_&JOBL_THIRD) && (sd->class_&MAPID_UPPERMASK) == MAPID_KNIGHT )
+		if( (sd->class_&MAPID_UPPERMASK_THIRD) == MAPID_RUNE_KNIGHT )
 		{ // Rune Knight
 			option = (pc_isriding(sd,OPTION_RIDING_DRAGON)) ? OPTION_RIDING_DRAGON :
 				(flag == 2) ? OPTION_BLACK_DRAGON :
@@ -7009,7 +7011,7 @@ int pc_setriding(TBL_PC* sd, int flag)
 
 	if( flag )
 	{		
-		if( option&OPTION_MADO || (pc_checkskill(sd,skillnum) > 0) ) // Check if you have the necessary skill to mount.
+		if( option&OPTION_MADO || (pc_checkskill(sd,skillnum) > 0) ) // Check if you have the necessary skill to mount.?
 			pc_setoption(sd, sd->sc.option|option);
 	}
 	else if( pc_isriding(sd,OPTION_RIDING|(OPTION_RIDING_DRAGON)|OPTION_RIDING_WUG|OPTION_MADO) )
@@ -7027,18 +7029,16 @@ bool pc_isriding( struct map_session_data *sd, int flag )
 
 	if( (sd->class_&MAPID_UPPERMASK) == MAPID_KNIGHT || (sd->class_&MAPID_UPPERMASK) == MAPID_CRUSADER )
 	{
-		if( sd->class_&JOBL_THIRD && (sd->class_&MAPID_UPPERMASK) == MAPID_KNIGHT )
+		if( (sd->class_&MAPID_UPPERMASK_THIRD) == MAPID_RUNE_KNIGHT )
 			isriding = (bool)( sd->sc.option&OPTION_RIDING_DRAGON && flag&OPTION_RIDING_DRAGON );
 		else
 			isriding = (bool)( sd->sc.option&OPTION_RIDING && flag&OPTION_RIDING );
 	}
-	if( sd->class_&JOBL_THIRD )
-	{
-		if( (sd->class_&MAPID_UPPERMASK) == MAPID_HUNTER )
-			isriding = (bool)( sd->sc.option&OPTION_RIDING_WUG && flag&OPTION_RIDING_WUG );
-		if( (sd->class_&MAPID_UPPERMASK) == MAPID_BLACKSMITH )
-			isriding = (bool)( sd->sc.option&OPTION_MADO && flag&OPTION_MADO );
-	}
+
+	if( (sd->class_&MAPID_UPPERMASK_THIRD) == MAPID_RANGER )
+		isriding = (bool)( sd->sc.option&OPTION_RIDING_WUG && flag&OPTION_RIDING_WUG );
+	if( (sd->class_&MAPID_UPPERMASK_THIRD) == MAPID_MECHANIC )
+		isriding = (bool)( sd->sc.option&OPTION_MADO && flag&OPTION_MADO );
 
 	return isriding;
 }
