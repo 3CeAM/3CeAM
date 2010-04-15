@@ -49,6 +49,7 @@ The eA Job System:
 
 	EAJL_UPPER	0x1000
 	EAJL_BABY	0x2000
+	EAJL_THIRD	0x4000
 
 So using these three categories, any job class can be constructed from the others. Let's take a swordman, for example.
 
