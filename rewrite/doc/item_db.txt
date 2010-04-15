@@ -66,11 +66,14 @@ Job: Equippable jobs. Uses the following bitmask table:
 	Ninja       (2^25): 0x02000000
 
 Upper: Equippable upper-types. Uses the following bitmasks:
-	 1: Normal jobs
+	 1: All jobs
 	 2: Upper jobs
 	 4: Baby jobs
-	 8: Base Third jobs
-	16: Trans Third jobs
+	 8: Third jobs
+NOTE:	1 used to stand for Normal jobs, but why would there be such a limit that you can equip something when
+	you are a non-trans class and then you can't when you become a trans class? And there isn't such usage
+	in official script, so in order to have backward compatibility when doing 3rd jobs, I changed 1 to 
+	mean All jobs. [Inkfish]
 
 Gender: Gender restriction. 0 is female, 1 is male, 2 for both.
 
