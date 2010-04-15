@@ -3929,7 +3929,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		break;
 
 	case LG_PINPOINTATTACK:
-		if( unit_movepos(src, bl->x, bl->y, 1, 1) && !map_flag_gvg(src->m) && !map[src->m].flag.battleground )
+		if( !map_flag_gvg(src->m) && !map[src->m].flag.battleground && unit_movepos(src, bl->x, bl->y, 1, 1) )
 		{
 			clif_slide(src,bl->x,bl->y);
 			clif_fixpos(src); // Aegis send this packet too.
@@ -10223,6 +10223,10 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			break;
 
 		case UNT_WALLOFTHORN:
+			if( tstatus->mode&MD_BOSS )
+				break;	// iRO Wiki says that this skill don't affect to Boss monsters.
+			if( bl->type != BL_MOB && !map_flag_vs(bl->m) )
+				break;	// Don't deal damage to non-monsters out of vs maps.
 			skill_attack(skill_get_type(sg->skill_id), ss, &src->bl, bl, sg->skill_id, sg->skill_lv, tick, 0);
 			break;
 
