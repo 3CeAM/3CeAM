@@ -10578,7 +10578,7 @@ static int skill_check_condition_char_sub (struct block_list *bl, va_list ap)
 		}
 		case WL_COMET:
 		{ // Comet does not consume Red Gemstones when there is at least 1 Warlock class next to the caster
-			if( (tsd->class_&MAPID_MINSTRELWANDERER) == MAPID_WARLOCK )
+			if( (tsd->class_&MAPID_UPPERMASK_THIRD) == MAPID_WARLOCK )
 				p_sd[(*c)++] = tsd->bl.id;
 			return 1;
 		}
