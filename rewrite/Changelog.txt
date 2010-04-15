@@ -5,6 +5,11 @@
 // 	- Details.
 //========================================
 
+04/15/2010
+	r330 [Jobbie]
+	* Minor fix to Pinpoint Attack. (followed up r329)
+	- Snap effect during WoE should not be triggered however this skill is usable as range attack.
+
 04/12/2010
 	r323 [pakpil]
 	* Fixed SC_AUTOSHADOWSPELL cast time. Bug report 379.

@@ -3929,15 +3929,12 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		break;
 
 	case LG_PINPOINTATTACK:
-		if( unit_movepos(src, bl->x, bl->y, 1, 1) )
+		if( unit_movepos(src, bl->x, bl->y, 1, 1) && !map_flag_gvg(src->m) && !map[src->m].flag.battleground )
 		{
-			if( map_flag_gvg(src->m) )
-			{
-				clif_slide(src,bl->x,bl->y);
-				clif_fixpos(src);	// Aegis send this packet too.
-			}
-			skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
+			clif_slide(src,bl->x,bl->y);
+			clif_fixpos(src); // Aegis send this packet too.
 		}
+		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
 	case SO_POISON_BUSTER:
