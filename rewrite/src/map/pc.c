@@ -918,7 +918,7 @@ int pc_isequip(struct map_session_data *sd,int n)
 		// Well, you can uncomment this if you wanna make 1 mean 'Normal jobs' instead of 'All jobs'
 		// If so the upper column needs to be updated from 7 to 15 to mean 'All jobs'.
 		// Since there is usually no special treatmeant for 'Normal jobs', i suggest we leave it as it is to have compatibility with old eA DB.
-		//if( !(sd->class_&MAPID_UPPERMASK) ) 
+		//if( !(sd->class_&MAPID_JOBMASK) ) 
 			i |= 1;
 
 		if( sd->class_&JOBL_UPPER ) i |= 2;
@@ -3736,7 +3736,7 @@ int pc_isUseitem(struct map_session_data *sd,int n)
 		// Well, you can uncomment this if you wanna make 1 mean 'Normal jobs' instead of 'All jobs'
 		// If so the upper column needs to be updated from 7 to 15 to mean 'All jobs'.
 		// Since there is usually no special treatmeant for 'Normal jobs', i suggest we leave it as it is to have compatibility with old eA DB.
-		//if( !(sd->class_&MAPID_UPPERMASK) ) 
+		//if( !(sd->class_&MAPID_JOBMASK) ) 
 			i |= 1;
 
 		if( sd->class_&JOBL_UPPER ) i |= 2;
