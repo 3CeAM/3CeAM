@@ -3028,6 +3028,19 @@
 4067,2453,5,288,2,0,0,0,0,0,0,0,0 //SO_VACUUM_EXTREME#Vacuum Extreme#
 4067,2454,5,283,1,287,4,0,0,0,0,0,0 //SO_VARETYR_SPEAR#Varetyr Spear#
 4067,2455,5,2452,2,0,0,0,0,0,0,0,0 //SO_ARRULLO#Arrullo#
+4067,2456,3,0,0,0,0,0,0,0,0,0,0 //SO_EL_CONTROL#Spirit Control#
+4067,2457,3,0,0,0,0,0,0,0,0,0,0 //SO_SUMMON_AGNI#Summon Fire Spirit Agni#
+4067,2458,3,0,0,0,0,0,0,0,0,0,0 //SO_SUMMON_AQUA#Summon Water Spirit Aqua#
+4067,2459,3,0,0,0,0,0,0,0,0,0,0 //SO_SUMMON_VENTUS#Summon Wind Spirit Ventus#
+4067,2460,3,0,0,0,0,0,0,0,0,0,0 //SO_SUMMON_TERA#Summon Wind Spirit Tera#
+4067,2461,1,0,0,0,0,0,0,0,0,0,0 //SO_EL_ACTION#Elemental Action#
+4067,2462,2,0,0,0,0,0,0,0,0,0,0 //SO_EL_ANALYSIS#Four Spirit Analysis#
+4067,2463,5,0,0,0,0,0,0,0,0,0,0 //SO_EL_SYMPATHY#Spirit Sympathy#
+4067,2464,1,0,0,0,0,0,0,0,0,0,0 //SO_EL_CURE#Spirit Recovery#
+4067,2465,3,0,0,0,0,0,0,0,0,0,0 //SO_FIRE_INSIGNIA#Fire Insignia#
+4067,2466,3,0,0,0,0,0,0,0,0,0,0 //SO_WATER_INSIGNIA#Water Insignia#
+4067,2467,3,0,0,0,0,0,0,0,0,0,0 //SO_WIND_INSIGNIA#Wind Insignia#
+4067,2468,3,0,0,0,0,0,0,0,0,0,0 //SO_EARTH_INSIGNIA#Earth Insignia#
 //Minstrel (Base 2nd to 3rd)
 4068,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4068,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -3430,6 +3443,19 @@
 4074,2453,5,288,2,0,0,0,0,0,0,0,0 //SO_VACUUM_EXTREME#Vacuum Extreme#
 4074,2454,5,283,1,287,4,0,0,0,0,0,0 //SO_VARETYR_SPEAR#Varetyr Spear#
 4074,2455,5,2452,2,0,0,0,0,0,0,0,0 //SO_ARRULLO#Arrullo#
+4074,2456,3,0,0,0,0,0,0,0,0,0,0 //SO_EL_CONTROL#Spirit Control#
+4074,2457,3,0,0,0,0,0,0,0,0,0,0 //SO_SUMMON_AGNI#Summon Fire Spirit Agni#
+4074,2458,3,0,0,0,0,0,0,0,0,0,0 //SO_SUMMON_AQUA#Summon Water Spirit Aqua#
+4074,2459,3,0,0,0,0,0,0,0,0,0,0 //SO_SUMMON_VENTUS#Summon Wind Spirit Ventus#
+4074,2460,3,0,0,0,0,0,0,0,0,0,0 //SO_SUMMON_TERA#Summon Wind Spirit Tera#
+4074,2461,1,0,0,0,0,0,0,0,0,0,0 //SO_EL_ACTION#Elemental Action#
+4074,2462,2,0,0,0,0,0,0,0,0,0,0 //SO_EL_ANALYSIS#Four Spirit Analysis#
+4074,2463,5,0,0,0,0,0,0,0,0,0,0 //SO_EL_SYMPATHY#Spirit Sympathy#
+4074,2464,1,0,0,0,0,0,0,0,0,0,0 //SO_EL_CURE#Spirit Recovery#
+4074,2465,3,0,0,0,0,0,0,0,0,0,0 //SO_FIRE_INSIGNIA#Fire Insignia#
+4074,2466,3,0,0,0,0,0,0,0,0,0,0 //SO_WATER_INSIGNIA#Water Insignia#
+4074,2467,3,0,0,0,0,0,0,0,0,0,0 //SO_WIND_INSIGNIA#Wind Insignia#
+4074,2468,3,0,0,0,0,0,0,0,0,0,0 //SO_EARTH_INSIGNIA#Earth Insignia#
 //Minstrel (Trans 2nd to 3rd)
 4075,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4075,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -4614,6 +4640,19 @@
 4103,2453,5,288,2,0,0,0,0,0,0,0,0 //SO_VACUUM_EXTREME#Vacuum Extreme#
 4103,2454,5,283,1,287,4,0,0,0,0,0,0 //SO_VARETYR_SPEAR#Varetyr Spear#
 4103,2455,5,2452,2,0,0,0,0,0,0,0,0 //SO_ARRULLO#Arrullo#
+4103,2456,3,0,0,0,0,0,0,0,0,0,0 //SO_EL_CONTROL#Spirit Control#
+4103,2457,3,0,0,0,0,0,0,0,0,0,0 //SO_SUMMON_AGNI#Summon Fire Spirit Agni#
+4103,2458,3,0,0,0,0,0,0,0,0,0,0 //SO_SUMMON_AQUA#Summon Water Spirit Aqua#
+4103,2459,3,0,0,0,0,0,0,0,0,0,0 //SO_SUMMON_VENTUS#Summon Wind Spirit Ventus#
+4103,2460,3,0,0,0,0,0,0,0,0,0,0 //SO_SUMMON_TERA#Summon Wind Spirit Tera#
+4103,2461,1,0,0,0,0,0,0,0,0,0,0 //SO_EL_ACTION#Elemental Action#
+4103,2462,2,0,0,0,0,0,0,0,0,0,0 //SO_EL_ANALYSIS#Four Spirit Analysis#
+4103,2463,5,0,0,0,0,0,0,0,0,0,0 //SO_EL_SYMPATHY#Spirit Sympathy#
+4103,2464,1,0,0,0,0,0,0,0,0,0,0 //SO_EL_CURE#Spirit Recovery#
+4103,2465,3,0,0,0,0,0,0,0,0,0,0 //SO_FIRE_INSIGNIA#Fire Insignia#
+4103,2466,3,0,0,0,0,0,0,0,0,0,0 //SO_WATER_INSIGNIA#Water Insignia#
+4103,2467,3,0,0,0,0,0,0,0,0,0,0 //SO_WIND_INSIGNIA#Wind Insignia#
+4103,2468,3,0,0,0,0,0,0,0,0,0,0 //SO_EARTH_INSIGNIA#Earth Insignia#
 //Baby Minstrel
 4104,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4104,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
