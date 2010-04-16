@@ -6,6 +6,20 @@
 //========================================
 
 04/15/2010
+	r336 [Rytech]
+	*Fixes and updates to the database.
+	-Fixed incorrectly set ID's for baby mounts job bonuses in job_db2.
+	-Enabled the elemental spirits monsters in mob_db2. They will remain in here since the client
+	-treats them as regular monsters.
+	-Assigned ID's to the remaining sorcerer's elemental skills in skill_db and skill_cast_db.
+	-Added sorcerer's elemental spirit skills to the skill trees. However the prerequirements
+	-wernt added yet as this was added for testing purposes, plus I dont know them yet.
+
+	*Update to source.
+	-Small cleanup to the job system. Thanks goes to Pakpil for pointing it out.
+	-Added skill tags for remaining sorcerer elemental skills.
+
+04/15/2010
 	r330 [Jobbie]
 	* Minor fix to Pinpoint Attack. (followed up r329)
 	- Snap effect during WoE should not be triggered however this skill is usable as range attack.
