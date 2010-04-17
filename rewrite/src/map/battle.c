@@ -2078,6 +2078,14 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					if( sd && sd->rageball_old )
 						skillratio = sd->rageball_old * 200 * status_get_lv(src) / 100;
 					break;
+				case LG_OVERBRAND:
+					if( wflag&4 )
+						skillratio = 160 * skill_lv * status_get_lv(src);
+					else if( wflag&1 )
+						skillratio += (((2667 * skill_lv)/10) * skill_lv + (sd) ? pc_checkskill(sd,CR_SPEARQUICKEN): 1) * (status_get_lv(src) / 3);
+					else
+						skillratio = ((200 * skill_lv) +  (2 * (status_get_str(src) + status_get_dex(src)) / 3)) * (status_get_lv(src) / 100);
+					break;
 				case WM_METALICSOUND:
 					skillratio += 450 + (50 * skill_lv);
 					if( sd )
