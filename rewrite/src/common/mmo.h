@@ -37,6 +37,7 @@
 // 20100105 - 2010-01-05aRagexeRE+ - 0x800, 0x801
 // 20100217 - 2010-02-17aRagexeRE+ - 0xf4 -> 0x1c4 (guildsotrage)
 // 20100223 - 2010-02-23aRagexeRE+ - 0x80f
+// 20100414 - 2010-04-14aRagexeRE+ - 0x6b (Note: Add support to the new char slots managment.)
 #ifndef PACKETVER
 	//#define PACKETVER	20081126
 	#define PACKETVER 20100223
@@ -73,8 +74,23 @@
 
 #define MAX_MAP_PER_SERVER 1500 // Increased to allow creation of Instance Maps
 #define MAX_INVENTORY 100
+
 //Max number of characters per account. Note that changing this setting alone is not enough if the client is not hexed to support more characters as well.
-#define MAX_CHARS 9
+//Note: clients from 2010-04-14aRagexeRE don't need be hexed and the char slot amount is fixed server side.
+#define MAX_CHARS_SLOTS 9	// Max slots, should be multiple of 3. Is the old MAX_CHARS.
+
+/* You can set here how many character slot you set as available.
+ * Character slots bitween MAX_CHARS and MAX_CHARS_SLOTS will be non-available
+ * and cannot be used as usually */
+// TODO: Release this feature.
+#define MAX_CHARS MAX_CHARS_SLOTS // Max available slot to be used. Don't need be multiple of 3.
+
+// MAX_CHARS cannot be higher than MAX_CHARS_SLOTS
+#if MAX_CHARS > MAX_CHARS_SLOTS
+#undef MAX_CHARS
+#define MAX_CHARS MAX_CHARS_SLOTS
+#endif
+
 //Number of slots carded equipment can have. Never set to less than 4 as they are also used to keep the data of forged items/equipment. [Skotlex]
 //Note: The client seems unable to receive data for more than 4 slots due to all related packets having a fixed size.
 #define MAX_SLOTS 4
