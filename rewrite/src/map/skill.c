@@ -2212,8 +2212,21 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 			case PR_SANCTUARY: direction = unit_getdir(bl); break; // backwards
 			case WL_CRIMSONROCK: map_calc_dir(bl,skill_area_temp[4],skill_area_temp[5]);	break;
 			case SC_TRIANGLESHOT:  direction = unit_getdir(bl);	break; // backwards
+			case LG_OVERBRAND: direction = unit_getdir(bl); break;
 		}
-		skill_blown(dsrc,bl,dmg.blewcount,direction,0);
+		if( skillid == LG_OVERBRAND )
+		{
+			if( skill_blown(dsrc,bl,dmg.blewcount,direction,0) && !(flag&4) )
+			{
+				short dir_x, dir_y;
+				dir_x = dirx[(direction+4)%8];
+				dir_y = diry[(direction+4)%8];
+				if( map_getcell(bl->m,bl->x+dir_x,bl->y+dir_y,CELL_CHKNOPASS) )
+					skill_addtimerskill(src, tick+300, bl->id, 0, 0, skillid, skilllv, BF_WEAPON, flag&4);	
+			}
+		}
+		else
+			skill_blown(dsrc,bl,dmg.blewcount,direction,0);
 	}
 
 	//Delayed damage must be dealt after the knockback (it needs to know actual position of target)
@@ -2807,6 +2820,9 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 						}
 					}
 					break;
+				case LG_OVERBRAND:
+						skill_attack(BF_WEAPON, src, src, target, skl->skill_id, skl->skill_lv, tick, skl->flag|SD_LEVEL);
+						break;
 				case GN_SPORE_EXPLOSION:
 					map_foreachinrange(skill_area_sub, target, skill_get_splash(skl->skill_id, skl->skill_lv), BL_CHAR,
 						src, skl->skill_id, skl->skill_lv, 0, skl->flag|1|BCT_ENEMY, skill_castend_damage_id);
@@ -3936,6 +3952,13 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 			clif_fixpos(src); // Aegis send this packet too.
 		}
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
+		break;
+
+	case LG_OVERBRAND:
+		if( flag&1 )
+			skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv, tick, flag|SD_LEVEL);
+		else
+			skill_addtimerskill(src, tick + 300, bl->id, 0, 0, skillid, skilllv, BF_WEAPON, flag|SD_LEVEL);
 		break;
 
 	case SO_POISON_BUSTER:
@@ -8709,6 +8732,80 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 			}
 			if( unit_movepos(src, x, y, 1, 1))
 			clif_slide(src,x,y);
+		}
+		break;
+
+	case LG_OVERBRAND:
+		{
+			int x1_1 = 0, x1_2 = 0, y1_1 = 0, y1_2 = 0; // First area
+			int x2_1 = 0, x2_2 = 0, y2_1 = 0, y2_2 = 0; // Second area
+			short c, l, dir, ax, ay, bx, by; // a = colum, b = line.
+			i = skill_get_splash(skillid,skilllv);
+			dir = map_calc_dir(src, x, y);
+			switch( dir )
+			{
+				case 0:
+					ax = 0; ay = 1; bx = 1; by = 0;
+					x1_1 = src->x - i; y1_1 = src->y;
+					x2_1 = src->x - 1; y2_1 = src->y;
+					break;
+				case 1:
+					ax = -1; ay = 1; bx = 1; by = 1;
+					x1_1 = src->x - i; y1_1 = src->y - i;
+					x2_1 = src->x - 1; y2_1 = src->y - 1;
+					break;
+				case 2:
+					ax = -1; ay = 0; bx = 0; by = 1;
+					x1_1 = src->x; y1_1 = src->y - i;
+					x2_1 = src->x; y2_1 = src->y - 1;
+					break;
+				case 3:
+					ax = -1; ay = -1; bx = -1; by = 1;
+					x1_1 = src->x + i; y1_1 = src->y - i;
+					x2_1 = src->x + 1; y2_1 = src->y - 1;
+					break;
+				case 4:
+					ax = 0; ay = -1; bx = -1; by = 0;
+					x1_1 = src->x + i; y1_1 = src->y;
+					x2_1 = src->x + 1; y2_1 = src->y;
+					break;
+				case 5:
+					ax = 1; ay = -1; bx = -1; by = -1;
+					x1_1 = src->x + i; y1_1 = src->y + i;
+					x2_1 = src->x + 1; y2_1 = src->y + 1;
+					break;
+				case 6:
+					ax = 1; ay = 0; bx = 0; by = -1;
+					x1_1 = src->x; y1_1 = src->y + i;
+					x2_1 = src->x; y2_1 = src->y + 1;
+					break;
+				case 7:
+					ax = 1; ay = 1; bx = 1; by = -1;
+					x1_1 = src->x - i; y1_1 = src->y + i;
+					x2_1 = src->x - 1; y2_1 = src->y + 1;
+					break;
+
+			}
+			// First area
+			for( c = 0; c < 4; c++ )
+			{
+				for( l = 0; l < 11; l++ )
+				{
+					x1_2 = x1_1 + (ax * c) + (bx * l);
+					y1_2 = y1_1 + (ay * c) + (by * l);
+					map_foreachincell(skill_area_sub, src->m, x1_2, y1_2, BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY|1,skill_castend_damage_id);	
+				}
+			}
+			// Second area.
+			for( c = 0; c < 7; c++ )
+			{
+				for( l = 0; l < 3; l++ )
+				{
+					x2_2 = x2_1 + (ax * c) + (bx * l);
+					y2_2 = y2_1 + (ay * c) + (by * l);
+					map_foreachincell(skill_area_sub, src->m, x2_2, y2_2, BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY|2,skill_castend_damage_id);
+				}
+			}
 		}
 		break;
 
