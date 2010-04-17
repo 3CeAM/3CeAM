@@ -456,6 +456,7 @@ int skillnotok (int skillid, struct map_session_data *sd)
 			}
 			break;
 		case WM_LULLABY_DEEPSLEEP:
+		case WM_SIRCLEOFNATURE:
 			if( !map_flag_vs(m) )
 			{
 				clif_skill_teleportmessage(sd,2); // This skill uses this msg instead of skill fails.
@@ -6818,7 +6819,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		{
 			int heal = status_get_max_hp(bl) / 10;
 			if( status_get_hp(bl) < heal )
-			{ // if you haven't enough HP skill fail.
+			{ // if you haven't enough HP skill fails.
 				if( sd ) clif_skill_fail(sd,skillid,0x02,0,0);
 				break;
 			}
@@ -7383,20 +7384,14 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 	case MI_HARMONIZE:
 		{
-			if( tsc && tsc->data[SC_SWINGDANCE] )
-				status_change_end(bl,SC_SWINGDANCE,-1);
-			if( tsc && tsc->data[SC_SYMPHONYOFLOVER] )
-				status_change_end(bl,SC_SYMPHONYOFLOVER,-1);
-			if( tsc && tsc->data[SC_MOONLITSERENADE] )
-				status_change_end(bl,SC_MOONLITSERENADE,-1);
-			if( tsc && tsc->data[SC_RUSHWINDMILL] )
-				status_change_end(bl,SC_RUSHWINDMILL,-1);
-			if( tsc && tsc->data[SC_ECHOSONG] )
-				status_change_end(bl,SC_ECHOSONG,-1);
-			if( tsc && tsc->data[SC_HARMONIZE] )
-				status_change_end(bl,SC_HARMONIZE,-1);
-			clif_skill_nodamage(src,bl,skillid,skilllv,
-				sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
+			status_change_end(bl,SC_SWINGDANCE,-1);
+			status_change_end(bl,SC_SYMPHONYOFLOVER,-1);
+			status_change_end(bl,SC_MOONLITSERENADE,-1);
+			status_change_end(bl,SC_RUSHWINDMILL,-1);
+			status_change_end(bl,SC_ECHOSONG,-1);
+			status_change_end(bl,SC_HARMONIZE,-1);
+			clif_skill_nodamage(src, bl, skillid, skilllv,
+				sc_start(bl, type, 100, skilllv, skill_get_time(skillid,skilllv)));
 		}
 		break;
 
@@ -7420,8 +7415,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 		
-	case WM_VOICEOFSIREN:
 	case WM_SIRCLEOFNATURE:
+		flag |= BCT_PARTY|BCT_SELF;
+	case WM_VOICEOFSIREN:
 		if( flag&1 )
 		{
 			sc_start2(bl,type,(skillid==WM_VOICEOFSIREN)?20+10*skilllv:100,skilllv,(skillid==WM_VOICEOFSIREN)?src->id:0,skill_get_time(skillid,skilllv));
