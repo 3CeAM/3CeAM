@@ -1031,9 +1031,6 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 	case AB_ADORAMUS:
 		sc_start(bl, SC_ADORAMUS, 100, skilllv, skill_get_time(skillid, skilllv));
 		break;
-	case WL_JACKFROST:
-		status_change_start(bl,SC_FREEZE,10000,skilllv,0,0,0,skill_get_time(skillid,skilllv),0);
-		break;
 	case WL_COMET:
 		sc_start4(bl,SC_BURNING,100,skilllv,1000,src->id,0,skill_get_time(skillid,skilllv));
 		break;
@@ -1041,6 +1038,9 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		rate = 20 + 12 * skilllv;
 		if( sd ) rate += rate * sd->status.job_level / 200;
 		sc_start(bl,SC_FREEZING,rate,skilllv,skill_get_time(skillid,skilllv));
+		break;
+	case WL_JACKFROST:
+		sc_start(bl,SC_FREEZE,100,skilllv,skill_get_time(skillid,skilllv));
 		break;
 	case RA_WUGBITE:
 		sc_start(bl, SC_BITE, 100, skilllv, skill_get_time(skillid, skilllv));
@@ -3488,7 +3488,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case AB_RENOVATIO:
 	case AB_HIGHNESSHEAL:
 	case AB_DUPLELIGHT_MAGIC:
-	case WL_FROSTMISTY:
 	case NC_REPAIR:
 	case WL_HELLINFERNO:
 		skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag);
@@ -3703,6 +3702,15 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 			if(sc && (sc->option&(OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK) || sc->data[SC__INVISIBILITY]) )
 				skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		}
+		break;
+
+	case WL_FROSTMISTY:
+		//Don't deal damage to hidden targets but these get Freezing anyway.
+		sc = status_get_sc(bl);
+		if( sc && (sc->option&(OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK) || sc->data[SC__INVISIBILITY]) )
+			sc_start(bl,SC_FREEZING,20 + 12 * skilllv,skilllv,skill_get_time(skillid,skilllv));
+		else
+			skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
 	case WL_DRAINLIFE:
