@@ -3309,6 +3309,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case WL_SOULEXPANSION:
 	case WL_CRIMSONROCK:
 	case WL_COMET:
+	case WL_JACKFROST:
 	case RA_ARROWSTORM:
 	case RA_WUGDASH:
 	case NC_FLAMELAUNCHER:
@@ -3881,16 +3882,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 				}
 				skill_delunit(su);
 			}
-		}
-		break;
-
-	case WL_JACKFROST:
-		{
-			struct status_change *tsc = status_get_sc(bl);
-			if( bl->id == skill_area_temp[1] )
-				break;
-			if( tsc && tsc->data[SC_FREEZING] )
-				skill_attack(skill_get_type(skillid), src, src, bl, skillid, skilllv, tick, flag);
 		}
 		break;
 
@@ -7037,8 +7028,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case WL_JACKFROST:
 		{
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
-			skill_area_temp[1] = bl->id;
-			map_foreachinrange(skill_area_sub,bl,skill_get_splash(skillid,skilllv),splash_target(src),src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
+			skill_area_temp[1] = 0;
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), splash_target(src), 
+				src, skillid, skilllv, tick, flag|BCT_ENEMY|SD_SPLASH|1, skill_castend_damage_id);
 		}
 		break;
 
@@ -8739,7 +8732,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		{
 			int x1_1 = 0, x1_2 = 0, y1_1 = 0, y1_2 = 0; // First area
 			int x2_1 = 0, x2_2 = 0, y2_1 = 0, y2_2 = 0; // Second area
-			short c, l, dir, ax, ay, bx, by; // a = colum, b = line.
+			short c, l, dir, ax = 0, ay = 0, bx = 0, by = 0; // a = colum, b = line.
 			i = skill_get_splash(skillid,skilllv);
 			dir = map_calc_dir(src, x, y);
 			switch( dir )
