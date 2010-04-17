@@ -215,10 +215,10 @@
 6297,Empty_Potion_Bottle,Empty Potion Bottle,3,10,,10,,,,,,,,,,,,,{},{},{}
 
 // Sorcerer Elemental Points
-//6360,Scarlet_Point,Scarlet Point,3,10,,5,,,,,,,,,,,,,{},{},{}
-//6361,Indigo_Point,Indigo Point,3,10,,5,,,,,,,,,,,,,{},{},{}
-//6362,Yellow_Wish_Point,Yellow Wish Point,3,10,,5,,,,,,,,,,,,,{},{},{}
-//6363,Lime_Green_Point,Lime Green Point,3,10,,5,,,,,,,,,,,,,{},{},{}
+6360,Scarlet_Point,Scarlet Point,3,100,,5,,,,,,,,,,,,,{},{},{}
+6361,Indigo_Point,Indigo Point,3,100,,5,,,,,,,,,,,,,{},{},{}
+6362,Yellow_Wish_Point,Yellow Wish Point,3,100,,5,,,,,,,,,,,,,{},{},{}
+6363,Lime_Green_Point,Lime Green Point,3,100,,5,,,,,,,,,,,,,{},{},{}
 
 // Guillotine Cross Poison Ingredients
 7931,Poison_Kit,Poison Manufacture Kit,3,1,,10,,,,,,,,,,,,,{},{},{}

@@ -5,6 +5,16 @@
 // 	- Details.
 //========================================
 
+04/17/2010
+	r340 [Rytech]
+	*Added prices for sorcerer's elemental points and enabled them.
+	*Updated SO_EL_CONTROL's max level to 4.
+	*Added tags and ID's for a few new found Mercenary skills.
+	*Added remaining info and enabled elemental skills. Max levels may need to be raised later.
+	*Updated SP requirements for sorcerer skills.
+	*Fully updated all sorcerer skill trees to official.
+	*Added tags for some new mercenary skills to the source.
+
 04/15/2010
 	r336 [Rytech]
 	*Fixes and updates to the database.
