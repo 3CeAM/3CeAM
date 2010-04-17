@@ -4511,16 +4511,18 @@ int pc_jobid2mapid(unsigned short b_class)
 		class_|= JOBL_UPPER;
 	}
 
-	if (b_class >= JOB_RUNE_KNIGHT && b_class <= JOB_BABY_MECHANIC2)
+	if ((b_class >= JOB_RUNE_KNIGHT && b_class <= JOB_GUILLOTINE_CROSS) || 
+		(b_class >= JOB_ROYAL_GUARD && b_class <= JOB_SHADOW_CHASER) || b_class == JOB_RUNE_KNIGHT2 || 
+		b_class == JOB_ROYAL_GUARD2 || b_class == JOB_RANGER2 || b_class == JOB_MECHANIC2)
 		class_|= JOBL_THIRD;
 
 	else if ((b_class >= JOB_RUNE_KNIGHT_T && b_class <= JOB_GUILLOTINE_CROSS_T) || 
 		(b_class >= JOB_ROYAL_GUARD_T && b_class <= JOB_SHADOW_CHASER_T) || b_class == JOB_RUNE_KNIGHT_T2 || 
 		b_class == JOB_ROYAL_GUARD_T2 || b_class == JOB_RANGER_T2 || b_class == JOB_MECHANIC_T2)
-		class_|= JOBL_UPPER;
+		class_|= JOBL_THIRD|JOBL_UPPER;
 
 	else if (b_class >= JOB_BABY_RUNE && b_class <= JOB_BABY_MECHANIC2)
-		class_|= JOBL_BABY;
+		class_|= JOBL_THIRD|JOBL_BABY;
 
 	if ((b_class >= JOB_KNIGHT && b_class <= JOB_KNIGHT2) || 
 		(b_class >= JOB_RUNE_KNIGHT && b_class <= JOB_GUILLOTINE_CROSS_T) || 
