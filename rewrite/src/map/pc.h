@@ -419,8 +419,8 @@ struct map_session_data {
 };
 
 
-//Update this max as necessary. Raised from 54 to 77 as the trans version of Sorcerer needs it. [Rytech]
-#define MAX_SKILL_TREE 77
+//Update this max as necessary. Raised from 54 to 80 as the trans version of Sorcerer needs it. [Rytech]
+#define MAX_SKILL_TREE 80
 //Total number of classes (for data storage)
 #define CLASS_COUNT (JOB_MAX - JOB_NOVICE_HIGH + JOB_MAX_BASIC)
 
