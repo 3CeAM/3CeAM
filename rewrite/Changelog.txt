@@ -6,6 +6,13 @@
 //========================================
 
 04/17/2010
+	r343 [Rytech]
+	*Updated settings for sorcerer skills in skill_db.
+	*Added cast times for sorcerer's EL skills. Their based on info from iro wiki forums.
+	*Changed the max levels for all the elemental spirits skill to 3 as the level used depends
+	-on the spirit summoned.
+
+04/17/2010
 	r340 [Rytech]
 	*Added prices for sorcerer's elemental points and enabled them.
 	*Updated SO_EL_CONTROL's max level to 4.
