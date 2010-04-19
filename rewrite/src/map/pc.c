@@ -5523,12 +5523,13 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 		ShowError("pc_skillup: Unable to normalize job %d for character %s (%d:%d)\n", i, sd->status.name, sd->status.account_id, sd->status.char_id);
 		return 0;
 	}
-
-	if( skill_point < 9 )
+	// Code under avaluation
+	/*
+	if( skill_num != NV_BASIC && skill_point < 9 )
 	{
 		clif_displaymessage(sd->fd, "You have to use up all your Novice skill points");
 		return 0;
-	}
+	}*/
 
 	if( !pc_isSkillFromJob(c, skill_num) && (sd->class_&JOBL_2) && (sd->class_&MAPID_UPPERMASK) != MAPID_SUPER_NOVICE )
 	{
