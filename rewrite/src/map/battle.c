@@ -1177,6 +1177,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 			case CR_SHIELDBOOMERANG:
 			case PA_SHIELDCHAIN:
 			case LG_SHIELDPRESS:
+			case LG_EARTHDRIVE:
 				flag.weapon = 0;
 				break;
 
@@ -1528,16 +1529,16 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 			case CR_SHIELDBOOMERANG:
 			case PA_SHIELDCHAIN:
 			case LG_SHIELDPRESS:
+			case LG_EARTHDRIVE:
 				wd.damage = sstatus->batk;
-				if (sd) {
+				if( sd )
+				{
 					short index = sd->equip_index[EQI_HAND_L];
-
-					if (index >= 0 &&
-						sd->inventory_data[index] &&
-						sd->inventory_data[index]->type == IT_ARMOR)
+					if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_ARMOR )
 						ATK_ADD(sd->inventory_data[index]->weight/10);
 					break;
-				} else
+				}
+				else
 					ATK_ADD(sstatus->rhw.atk2); //Else use Atk2
 				if( sc && sc->data[SC_GLOOMYDAY_SK] )
 					ATK_ADD(50 + 5 * sc->data[SC_GLOOMYDAY_SK]->val1);
@@ -2085,6 +2086,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 						skillratio += (((2667 * skill_lv)/10) * skill_lv + (sd) ? pc_checkskill(sd,CR_SPEARQUICKEN): 1) * (status_get_lv(src) / 3);
 					else
 						skillratio = ((200 * skill_lv) +  (2 * (status_get_str(src) + status_get_dex(src)) / 3)) * (status_get_lv(src) / 100);
+					break;
+				case LG_EARTHDRIVE:
+					skillratio = (skillratio + 100) * skill_lv * status_get_lv(src) / 100;
 					break;
 				case WM_METALICSOUND:
 					skillratio += 450 + (50 * skill_lv);
