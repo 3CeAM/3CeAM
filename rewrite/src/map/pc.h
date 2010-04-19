@@ -791,4 +791,6 @@ int duel_checktime(struct map_session_data* sd);
 int pc_read_motd(void); // [Valaris]
 int pc_disguise(struct map_session_data *sd, int class_);
 
+bool pc_isSkillFromJob( int job_id, int skill_num );
+
 #endif /* _PC_H_ */
