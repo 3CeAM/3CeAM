@@ -1090,9 +1090,8 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 	case SO_DIAMONDDUST:
 		sc_start(bl, SC_CRYSTALIZE, 10 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
 		break;
-	case SO_PSYCHIC_WAVE:	// Need official rate. [LimitLine]
 	case SO_VARETYR_SPEAR:
-		sc_start(bl, SC_STUN, (skillid == SO_VARETYR_SPEAR)? 20 : 100, skilllv, skill_get_time2(skillid, skilllv));
+		sc_start(bl, SC_STUN, 20, skilllv, skill_get_time2(skillid, skilllv));
 		break;
 	case GN_CART_TORNADO:
 		sc_start(bl, SC_STUN, 1000000, skilllv, skill_get_time2(skillid, skilllv));	// Need official rate. [LimitLine]
@@ -9656,7 +9655,6 @@ static int skill_unit_onplace (struct skill_unit *src, struct block_list *bl, un
 	case UNT_VOLCANO:
 	case UNT_DELUGE:
 	case UNT_VIOLENTGALE:
-	case UNT_CLOUD_KILL:
 	case UNT_WARMER:
 		if(!sce)
 			sc_start(bl,type,100,sg->skill_lv,sg->limit);
@@ -10220,7 +10218,6 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 		case UNT_FIREWALK:
 		case UNT_ELECTRICWALK:
 		case UNT_PSYCHIC_WAVE:
-		case UNT_CLOUD_KILL:
 			skill_attack(skill_get_type(sg->skill_id),ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
 			break;
 
@@ -10385,6 +10382,12 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 
 		case UNT_HELLS_PLANT:
 			skill_attack(skill_get_type(GN_HELLS_PLANT_ATK), ss, &src->bl, bl, GN_HELLS_PLANT_ATK, sg->skill_lv, tick, 0);
+			break;
+
+		case UNT_CLOUD_KILL:
+			if(tsc && !tsc->data[type])
+				status_change_start(bl,type,10000,sg->skill_lv,sg->group_id,0,0,skill_get_time2(sg->skill_id,sg->skill_lv),8);
+			skill_attack(BF_WEAPON,ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
 			break;
 
 		case UNT_VACUUM_EXTREME:

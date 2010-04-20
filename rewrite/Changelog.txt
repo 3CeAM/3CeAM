@@ -6,6 +6,12 @@
 //========================================
 
 04/20/2010
+	r351 [Jobbie]
+	* Fixed Cloud Kill not causing poison effect. Bug Report 377.
+	- As of 01/06/2010 Patch 
+	-- The poison element changing part of the skill effect is removed. But still it will cause Poison status.
+	* Remove the probability of Stun status of Psychic Wave as of 01/06/2010 Patch. Bug Report 376
+
 	r350 [Jobbie]
 	- Adjusted Land skill of Sorcerer close to official behavior.
 	- Fix Cloud Kill which can be casted more than one.
