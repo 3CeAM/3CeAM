@@ -2081,11 +2081,11 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					break;
 				case LG_OVERBRAND:
 					if( wflag&4 )
-						skillratio = 160 * skill_lv * status_get_lv(src);
+						skillratio = 160 * skill_lv * status_get_lv(src) / 100;
 					else if( wflag&1 )
-						skillratio += (((2667 * skill_lv)/10) * skill_lv + (sd) ? pc_checkskill(sd,CR_SPEARQUICKEN): 1) * (status_get_lv(src) / 3);
+						skillratio += ((2567 * skill_lv / 10) + ((sd) ? pc_checkskill(sd,CR_SPEARQUICKEN): 1)) * (status_get_lv(src) / 100);
 					else
-						skillratio = ((200 * skill_lv) +  (2 * (status_get_str(src) + status_get_dex(src)) / 3)) * (status_get_lv(src) / 100);
+						skillratio = ((200 * skill_lv) +  (2 * (status_get_str(src) + status_get_dex(src)) / 3)) * status_get_lv(src) / 100;
 					break;
 				case LG_EARTHDRIVE:
 					skillratio = (skillratio + 100) * skill_lv * status_get_lv(src) / 100;
