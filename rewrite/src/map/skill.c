@@ -2222,8 +2222,8 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 				short dir_x, dir_y;
 				dir_x = dirx[(direction+4)%8];
 				dir_y = diry[(direction+4)%8];
-				if( map_getcell(bl->m,bl->x+dir_x,bl->y+dir_y,CELL_CHKNOPASS) )
-					skill_addtimerskill(src, tick+300, bl->id, 0, 0, skillid, skilllv, BF_WEAPON, flag&4);	
+				if( map_getcell(bl->m, bl->x+dir_x, bl->y+dir_y, CELL_CHKNOPASS) != 0 )
+					skill_addtimerskill(src, tick + 300 * ((flag&2) ? 1 : 2), bl->id, 0, 0, skillid, skilllv, BF_WEAPON, flag|4);	
 			}
 		}
 		else
@@ -2822,8 +2822,8 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 					}
 					break;
 				case LG_OVERBRAND:
-						skill_attack(BF_WEAPON, src, src, target, skl->skill_id, skl->skill_lv, tick, skl->flag|SD_LEVEL|4);
-						break;
+					skill_attack(BF_WEAPON, src, src, target, skl->skill_id, skl->skill_lv, tick, skl->flag|SD_LEVEL);
+					break;
 				case GN_SPORE_EXPLOSION:
 					map_foreachinrange(skill_area_sub, target, skill_get_splash(skl->skill_id, skl->skill_lv), BL_CHAR,
 						src, skl->skill_id, skl->skill_lv, 0, skl->flag|1|BCT_ENEMY, skill_castend_damage_id);
@@ -3972,7 +3972,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		if( flag&1 )
 			skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv, tick, flag|SD_LEVEL);
 		else
-			skill_addtimerskill(src, tick + 300, bl->id, 0, 0, skillid, skilllv, BF_WEAPON, flag|SD_LEVEL);
+			skill_addtimerskill(src, tick + 300, bl->id, 0, 0, skillid, skilllv, BF_WEAPON, flag|SD_LEVEL|2);
 		break;
 
 	case WM_LULLABY_DEEPSLEEP:
