@@ -5,6 +5,14 @@
 // 	- Details.
 //========================================
 
+04/20/2010
+	r350 [Jobbie]
+	- Adjusted Land skill of Sorcerer close to official behavior.
+	- Fix Cloud Kill which can be casted more than one.
+	- People not on top of Warmer area of effect must not take its status effect. Fix also which people affected this status is not immune to Freeze and Freezing status.
+	- Fix the resistance calculation for Vacuume Extreme.
+	- Corrected the Arch Bishop skill 'Adoramus' to not cause duplicate agi down effect.
+
 04/17/2010
 	r343 [Rytech]
 	*Updated settings for sorcerer skills in skill_db.

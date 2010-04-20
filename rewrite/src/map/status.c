@@ -517,7 +517,6 @@ void initChangeTables(void)
 
 	add_sc( SO_FIREWALK          , SC_FIREWALK );
 	add_sc( SO_ELECTRICWALK      , SC_ELECTRICWALK );
-	set_sc( SO_CLOUD_KILL        , SC_ELEMENTALCHANGE , SI_CLOUDKILL       , SCB_NONE );
 	set_sc( SO_WARMER            , SC_WARMER          , SI_WARMER          , SCB_NONE );
 	set_sc( SO_VACUUM_EXTREME    , SC_VACUUM_EXTREME  , SI_VACUUM_EXTREME  , SCB_NONE );
 	set_sc( SO_STRIKING          , SC_STRIKING        , SI_STRIKING        , SCB_WATK|SCB_CRI );
@@ -5153,7 +5152,7 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 		tick -= (1000*(status->vit/10))+(status_get_lv(bl)/50);
 		break;
 	case SC_VACUUM_EXTREME:
-		tick -= 500*status->str;
+		tick -= 50*status->str;
 		break;
 	case SC_MAGICMIRROR:
 	case SC_ARMORCHANGE:
@@ -5317,6 +5316,8 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	case SC_FREEZING:
 		if (sc->opt1)
 			return 0; //Cannot override other opt1 status changes. [Skotlex]
+		if((type == SC_FREEZE || type == SC_FREEZING) && sc->data[SC_WARMER])
+			return 0; //Immune to Frozen and Freezing status if under Warmer status. [Jobbie]
 	break;
 
 	case SC_BERSERK:
