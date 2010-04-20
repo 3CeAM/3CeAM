@@ -620,7 +620,7 @@ StatusPoint - Amount of status points remaining.
 BaseLevel   - Current base level
 SkillPoint  - Amount of skill points remaining
 Class       - Current job
-Upper       - 1 if the character is an advanced job class.
+Upper       - 0: Normal jobs, 1: Adv jobs. 2: Baby jobs, 4: Normal 3rd jobs. 5: Adv. 3rd jobs. 6: Baby 3rd jobs. 
 Zeny        - Current amount of zeny
 Sex         - Character's gender, 0 if female, 1 if male.
 Weight      - The weight the character currently carries.
