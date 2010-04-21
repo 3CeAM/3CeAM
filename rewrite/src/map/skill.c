@@ -3968,6 +3968,13 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
+	case LG_SHIELDSPELL:
+		if( flag&1 )
+			skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
+		else
+			skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag);
+		break;
+
 	case LG_OVERBRAND:
 		if( flag&1 )
 			skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv, tick, flag|SD_LEVEL);
@@ -7392,6 +7399,127 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		break;
 
+	case LG_SHIELDSPELL:
+		if( flag&1 )
+		{
+			int duration = (sd) ? sd->shieldmdef * 2000 : 10000;
+			sc_start(bl,SC_SILENCE,100,skilllv,duration);
+		}
+		else
+		{
+			int opt = skilllv;
+			int rate = rand()%100;
+			int val;
+			switch( skilllv )
+			{
+				case 1:
+					{
+						struct item_data *shield_data = sd->inventory_data[sd->equip_index[EQI_HAND_L]];
+						if( !shield_data || shield_data->type != IT_ARMOR )
+						{	// No shield?
+							if( sd )
+								clif_skill_fail(sd, skillid, 0, 0, 0);
+							break;
+						}
+						brate = shield_data->def * 10;
+						if( rate < 50 )
+							opt = 1;
+						else if( rate < 75 )
+							opt = 2;
+						else
+							opt = 3;
+
+						switch( opt )
+						{
+							case 1:
+								sc_start(bl,SC_SHIELDSPELL_DEF,100,opt,-1);
+								clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
+								if( rate < brate )
+									map_foreachinrange(skill_area_sub,src,skill_get_splash(skillid,skilllv),BL_CHAR,src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
+								status_change_end(bl,SC_SHIELDSPELL_DEF,-1);
+								break;
+							case 2:
+								val = 10 * shield_data->def; // % Reflected damage.
+								sc_start2(bl,SC_SHIELDSPELL_DEF,brate,opt,val,shield_data->def * 30000);
+								break;
+							case 3:
+								val = 20 * shield_data->def; // Attack increase.
+								sc_start2(bl,SC_SHIELDSPELL_DEF,brate,opt,val,shield_data->def * 30000);
+								break;
+						}
+					}
+					break;
+
+				case 2:
+					brate = sd->shieldmdef * 20;
+					if( rate < 30 )
+						opt = 1;
+					else if( rate < 60 )
+						opt = 2;
+					else
+						opt = 3;
+					switch( opt )
+					{
+						case 1:
+							sc_start(bl,SC_SHIELDSPELL_MDEF,100,opt,-1);
+							clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
+							if( rate < brate )
+								map_foreachinrange(skill_area_sub,src,skill_get_splash(skillid,skilllv),BL_CHAR,src,skillid,skilllv,tick,flag|BCT_ENEMY|2,skill_castend_damage_id);
+							status_change_end(bl,SC_SHIELDSPELL_MDEF,-1);
+							break;
+						case 2:
+							sc_start(bl,SC_SHIELDSPELL_MDEF,100,opt,-1);
+							clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
+							if( rate < brate )
+								map_foreachinrange(skill_area_sub,src,skill_get_splash(skillid,skilllv),BL_CHAR,src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_nodamage_id);
+							break;
+						case 3:
+							if( sc_start(bl,SC_SHIELDSPELL_MDEF,brate,opt,sd->shieldmdef * 30000) )
+								sc_start(bl,SC_MAGNIFICAT,100,1,sd->shieldmdef * 30000);
+							break;
+					}
+					break;
+
+				case 3:
+				{
+					struct item *it = &sd->status.inventory[sd->equip_index[EQI_HAND_L]];
+					if( !it )
+					{	// No shield?
+						if( sd )
+							clif_skill_fail(sd,skillid,0,0,0);
+						break;
+					}
+					brate = it->refine * 5;
+					if( rate < 25 )
+						opt = 1;
+					else if( rate < 50 )
+						opt = 2;
+					else
+						opt = 3;
+					switch( opt )
+					{
+						case 1:
+							val = (105 / 10) * it->refine;
+							sc_start2(bl,SC_SHIELDSPELL_REF,brate,opt,val,skill_get_time(skillid,skilllv));
+							break;
+						case 2: case 3:
+							if( rate < brate )
+							{
+								val = sstatus->max_hp * (11 + it->refine) / 100;
+								status_heal(bl, val, 0, 3);
+							}
+							break;
+						/*case 3:
+							// Full protection. I need confirm what effect should be here. Moved to case 2 to until we got it.
+							break;*/
+					}
+				}
+				break;
+			}
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		}
+		break;
+	
 	case LG_PIETY:
 		if( flag&1 )
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));

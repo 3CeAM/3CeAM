@@ -641,6 +641,10 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_DROCERA_HERB_STEAMED] = SI_DROCERA_HERB_STEAMED;
 	StatusIconChangeTable[SC_PUTTI_TAILS_NOODLES] = SI_PUTTI_TAILS_NOODLES;
 
+	StatusIconChangeTable[SC_SHIELDSPELL_DEF] = SI_SHIELDSPELL_DEF;
+	StatusIconChangeTable[SC_SHIELDSPELL_MDEF] = SI_SHIELDSPELL_MDEF;
+	StatusIconChangeTable[SC_SHIELDSPELL_REF] = SI_SHIELDSPELL_REF;
+
 	//Other SC which are not necessarily associated to skills.
 	StatusChangeFlagTable[SC_ASPDPOTION0] = SCB_ASPD;
 	StatusChangeFlagTable[SC_ASPDPOTION1] = SCB_ASPD;
@@ -705,6 +709,9 @@ void initChangeTables(void)
 	StatusChangeFlagTable[SC_SIROMA_ICE_TEA] |= SCB_DEX;
 	StatusChangeFlagTable[SC_DROCERA_HERB_STEAMED] |= SCB_AGI;
 	StatusChangeFlagTable[SC_PUTTI_TAILS_NOODLES] |= SCB_LUK;
+
+	StatusChangeFlagTable[SC_SHIELDSPELL_DEF] |= SCB_WATK;
+	StatusChangeFlagTable[SC_SHIELDSPELL_REF] |= SCB_DEF2;
 
 	if( !battle_config.display_hallucination ) //Disable Hallucination.
 		StatusIconChangeTable[SC_HALLUCINATION] = SI_BLANK;
@@ -2159,6 +2166,8 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		else if(sd->inventory_data[index]->type == IT_ARMOR) {
 			refinedef += sd->status.inventory[index].refine*refinebonus[0][0];
 			if(sd->inventory_data[index]->script) {
+				if( sd->status.inventory[index].equip == EQP_SHIELD )
+					sd->special_state.checkshieldmdef = 1;
 				run_script(sd->inventory_data[index]->script,0,sd->bl.id,0);
 				if (!calculating) //Abort, run_script retriggered this. [Skotlex]
 					return 1;
@@ -3817,6 +3826,8 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += watk * 32 / 100; // Still need official value [pakpil]
 	if(sc->data[SC_STRIKING])
 		watk += sc->data[SC_STRIKING]->val2;
+	if(sc->data[SC_SHIELDSPELL_DEF] && sc->data[SC_SHIELDSPELL_DEF]->val1 == 3)
+		watk += sc->data[SC_SHIELDSPELL_DEF]->val2;
 
 	return (unsigned short)cap_value(watk,0,USHRT_MAX);
 }
@@ -4071,6 +4082,8 @@ static signed short status_calc_def2(struct block_list *bl, struct status_change
 		def2 += def2 * sc->data[SC_ECHOSONG]->val2/100;
 	if( sc->data[SC_PRESTIGE] )
 		def2 += def2 * sc->data[SC_PRESTIGE]->val1 / 100;
+	if( sc->data[SC_SHIELDSPELL_REF] && sc->data[SC_SHIELDSPELL_REF]->val1 == 1 )
+		def2 += sc->data[SC_SHIELDSPELL_REF]->val2;
 
 
 	return (short)cap_value(def2,1,SHRT_MAX);
@@ -5701,6 +5714,15 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	case SC_REFLECTDAMAGE:
 		status_change_end(bl,SC_REFLECTSHIELD,-1);
 		break;
+	// Remove previous status changes.
+	case SC_SHIELDSPELL_DEF:
+	case SC_SHIELDSPELL_MDEF:
+	case SC_SHIELDSPELL_REF:
+		status_change_end(bl,SC_MAGNIFICAT,-1);
+		status_change_end(bl,SC_SHIELDSPELL_DEF,-1);
+		status_change_end(bl,SC_SHIELDSPELL_MDEF,-1);
+		status_change_end(bl,SC_SHIELDSPELL_REF,-1);
+		break;
 	}
 
 	//Check for overlapping fails
@@ -6971,6 +6993,12 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val1 *= 15; // Defence added
 			if( sd )
 				val1 += 10 * pc_checkskill(sd,CR_DEFENDER);
+			val_flag |= 1|2;
+			break;
+
+		case SC_SHIELDSPELL_DEF:
+		case SC_SHIELDSPELL_MDEF:
+		case SC_SHIELDSPELL_REF:
 			val_flag |= 1|2;
 			break;
 
