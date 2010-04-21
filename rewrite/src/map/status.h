@@ -456,6 +456,12 @@ typedef enum sc_type {
 	SC_PRESTIGE = 470,
 	SC_ADORAMUS,
 	SC_VACUUM_EXTREME,
+
+	SC_SHIELDSPELL_DEF,
+	SC_SHIELDSPELL_MDEF,
+	SC_SHIELDSPELL_REF,
+
+
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
 
