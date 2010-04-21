@@ -7409,7 +7409,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		{
 			int opt = skilllv;
 			int rate = rand()%100;
-			int val;
+			int val, brate;
 			switch( skilllv )
 			{
 				case 1:
@@ -7475,7 +7475,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 							break;
 						case 3:
 							if( sc_start(bl,SC_SHIELDSPELL_MDEF,brate,opt,sd->shieldmdef * 30000) )
-								sc_start(bl,SC_MAGNIFICAT,100,1,sd->shieldmdef * 30000);
+								clif_skill_nodamage(src,bl,PR_MAGNIFICAT,skilllv,
+								sc_start(bl,SC_MAGNIFICAT,100,1,sd->shieldmdef * 30000));
 							break;
 					}
 					break;
