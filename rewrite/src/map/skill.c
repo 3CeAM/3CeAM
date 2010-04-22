@@ -8985,36 +8985,34 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		{
 			int i;
 			struct unit_data *ud = unit_bl2ud(src);
-			if( !ud )
-				break;
+
+			if( !ud ) break;
+
 			for( i = 0; i < MAX_SKILLUNITGROUP && ud->skillunit[i]; i ++ )
 			{
 				if( ud->skillunit[i]->skill_id == GN_DEMONIC_FIRE &&
 					distance_xy(x, y, ud->skillunit[i]->unit->bl.x, ud->skillunit[i]->unit->bl.y) < 4 )
 				{
 					switch( skilllv )
-					{
-						case 1:
-						case 2:
-							ud->skillunit[i]->unit->val2 = skilllv;
-							ud->skillunit[i]->unit->group->val2 = skilllv;
-							break;
+					{							
 						case 3:
 							ud->skillunit[i]->unit_id = UNT_FIRE_EXPANSION_SMOKE_POWDER;
 							clif_changetraplook(&ud->skillunit[i]->unit->bl, UNT_FIRE_EXPANSION_SMOKE_POWDER);
 							break;
 						case 4:
 							ud->skillunit[i]->unit_id = UNT_FIRE_EXPANSION_TEAR_GAS;
-							clif_changetraplook(&ud->skillunit[i]->unit->bl, UNT_FIRE_EXPANSION_TEAR_GAS);
+							cliff_changetraplook(&ud->skillunit[i]->unit->bl, UNT_FIRE_EXPANSION_TEAR_GAS);
 							break;
 						case 5:
-						default:
 							map_foreachinarea(skill_area_sub, src->m,
 								ud->skillunit[i]->unit->bl.x - 3, ud->skillunit[i]->unit->bl.y - 3,
 								ud->skillunit[i]->unit->bl.x + 3, ud->skillunit[i]->unit->bl.y + 3, BL_CHAR,
-								src, CR_ACIDDEMONSTRATION, sd ? pc_checkskill(sd, CR_ACIDDEMONSTRATION) : skilllv,
-								tick, flag|BCT_ENEMY|1|SD_LEVEL, skill_castend_damage_id);
+								src, CR_ACIDDEMONSTRATION, sd ? pc_checkskill(sd, CR_ACIDDEMONSTRATION) : skilllv, tick, flag|BCT_ENEMY|1|SD_LEVEL, skill_castend_damage_id);
 							skill_delunit(ud->skillunit[i]->unit);
+							break;
+						default:
+							ud->skillunit[i]->unit->val2 = skilllv;
+							ud->skillunit[i]->unit->group->val2 = skilllv;
 							break;
 					}
 				}
@@ -10504,9 +10502,11 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			break;
 
 		case UNT_FIRE_EXPANSION_SMOKE_POWDER:
+			sc_start(bl, status_skill2sc(GN_FIRE_EXPANSION_SMOKE_POWDER), 100, sg->skill_lv, 1000);
+			break;
+
 		case UNT_FIRE_EXPANSION_TEAR_GAS:
-			// FIXME: Invalid status change -1 [LimitLine]
-			sc_start(bl, status_skill2sc(sg->skill_id), 100, sg->skill_lv, 1000);
+			sc_start(bl, status_skill2sc(GN_FIRE_EXPANSION_TEAR_GAS), 100, sg->skill_lv, 1000);
 			break;
 
 		case UNT_HELLS_PLANT:
@@ -10516,7 +10516,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 		case UNT_CLOUD_KILL:
 			if(tsc && !tsc->data[type])
 				status_change_start(bl,type,10000,sg->skill_lv,sg->group_id,0,0,skill_get_time2(sg->skill_id,sg->skill_lv),8);
-			skill_attack(BF_WEAPON,ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
+			skill_attack(skill_get_type(sg->skill_id),ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
 			break;
 
 		case UNT_VACUUM_EXTREME:
@@ -11949,15 +11949,19 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 		switch( skill )
 		{
 		case AM_CALLHOMUN:
-			if (sd->status.hom_id) //Don't delete items when hom is already out.
+			if( sd->status.hom_id ) //Don't delete items when hom is already out.
 				continue;
 			break;
 		case WZ_FIREPILLAR: // celest
-			if (lv <= 5)	// no gems required at level 1-5
+			if( lv <= 5 )	// no gems required at level 1-5
 				continue;
 			break;
 		case NC_SHAPESHIFT:
-			if ( i < 4 )
+			if( i < 4 )
+				continue;
+			break;
+		case GN_FIRE_EXPANSION:
+			if( i < 5 )
 				continue;
 			break;
 		}
@@ -11979,7 +11983,7 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 			}
 		}
 	}
-	if( skill == NC_SHAPESHIFT )
+	if( skill == NC_SHAPESHIFT || skill == GN_FIRE_EXPANSION )
 	{		
 		req.itemid[lv-1] = skill_db[j].itemid[lv-1];
 		req.amount[lv-1] = skill_db[j].amount[lv-1];
