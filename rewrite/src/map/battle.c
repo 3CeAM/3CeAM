@@ -3737,6 +3737,11 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			if(rate < 10) // Break your weapon still need official value
 				skill_break_equip(src, EQP_WEAPON, rate, BCT_SELF);
 		}
+		if( sc->data[SC_EXEEDBREAK] )
+		{
+			wd.damage = wd.damage * sc->data[SC_EXEEDBREAK]->val1 / 100;
+			status_change_end(src,SC_EXEEDBREAK,-1);
+		}
 	}
 
 	if(tsc && tsc->data[SC_THURISAZ] && wd.flag&(BF_WEAPON|BF_SHORT) )	// short range physical damage.
