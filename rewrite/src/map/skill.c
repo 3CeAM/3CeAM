@@ -10442,7 +10442,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			break;
 
 		case UNT_NETHERWORLD:
-			if( status_get_mode(bl) != MD_BOSS )
+			if( !(status_get_mode(bl)&MD_BOSS) )
 			{
 				if( !(tsc && tsc->data[type]) )
 					sc_start(bl, type, 100, sg->skill_lv, skill_get_time2(sg->skill_id,sg->skill_lv));
@@ -11366,10 +11366,11 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			}
 		}
 		break;
+	case WL_COMET:
 	case AB_ADORAMUS:
-		if( skill_check_pc_partner(sd,skill,&lv,1,0) <= 0 && pc_search_inventory(sd,ITEMID_BLUE_GEMSTONE) <= require.amount[0] )
+		if( skill_check_pc_partner(sd,skill,&lv,1,0) <= 0 && ((i = pc_search_inventory(sd,require.itemid[0])) < 0 || sd->status.inventory[i].amount < require.amount[0]) )
 		{
-			clif_skill_fail(sd,skill,0x04,0,0);
+			clif_skill_fail(sd,skill,0x4,0,0);
 			return 0;
 		}
 		break;
@@ -11377,13 +11378,6 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		if( sc && (sc->data[SC_HALLUCINATIONWALK] || sc->data[SC_HALLUCINATIONWALK_POSTDELAY]) )
 		{
 			clif_skill_fail(sd,skill,0x0,0,0);
-			return 0;
-		}
-		break;
-	case WL_COMET:
-		if( skill_check_pc_partner(sd,skill,&lv,1,0) <= 0 && pc_search_inventory(sd,ITEMID_RED_GEMSTONE) <= require.amount[0] )
-		{
-			clif_skill_fail(sd,skill,0x4,0,0);
 			return 0;
 		}
 		break;
