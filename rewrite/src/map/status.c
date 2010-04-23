@@ -487,6 +487,7 @@ void initChangeTables(void)
 	set_sc( LG_FORCEOFVANGUARD   , SC_FORCEOFVANGUARD    , SI_FORCEOFVANGUARD   , SCB_MAXHP|SCB_DEF );
 	set_sc( LG_PRESTIGE          , SC_PRESTIGE           , SI_PRESTIGE          , SCB_DEF2 );
 	set_sc( LG_PIETY             , SC_BENEDICTIO         , SI_BENEDICTIO        , SCB_DEF_ELE );
+	set_sc( LG_EXEEDBREAK       , SC_EXEEDBREAK         , SI_EXEEDBREAK       , SCB_NONE );
 	
 	set_sc( WA_SWING_DANCE                , SC_SWINGDANCE              , SI_SWINGDANCE                , SCB_SPEED|SCB_ASPD );
 	set_sc( WA_SYMPHONY_OF_LOVER          , SC_SYMPHONYOFLOVER         , SI_SYMPHONYOFLOVERS          , SCB_MDEF );
@@ -4145,9 +4146,12 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 	if( sc == NULL )
 		return cap_value(speed,10,USHRT_MAX);
 
-	if( sd && sd->ud.skilltimer != -1 && pc_checkskill(sd,SA_FREECAST) > 0 )
+	if( sd && sd->ud.skilltimer != -1 && ( sd->ud.skillid == LG_EXEEDBREAK || pc_checkskill(sd,SA_FREECAST) > 0) )
 	{
-		speed_rate = 175 - 5 * pc_checkskill(sd,SA_FREECAST);
+		if( sd->ud.skillid == LG_EXEEDBREAK )
+			speed_rate = 100 + 60 - (sd->ud.skilllv * 10); // -50% at skilllv 1 -> -10% at skilllv 5
+		else
+			speed_rate = 175 - 5 * pc_checkskill(sd,SA_FREECAST);
 	}
 	else
 	{
@@ -5785,6 +5789,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC_ENCHANTARMS:
 			case SC_ARMOR_ELEMENT:
 			case SC_ARMOR_RESIST:
+			case SC_EXEEDBREAK:
 				break;
 			case SC_GOSPEL:
 				 //Must not override a casting gospel char.
@@ -6986,6 +6991,18 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val3 = 5 + (2 * val1); // Max rage counters
 			tick = 6000;
 			val_flag |= 1|2|4;
+			break;
+
+		case SC_EXEEDBREAK:
+			val1 *= 150; // 150 * skill_lv
+			if( sd )
+			{	// Chars.
+				struct item_data *id = sd->inventory_data[sd->equip_index[EQI_HAND_R]];
+				if( id ) val1 += (id->weight/10 * id->wlv * status_get_lv(bl) / 100); // (weapon_weight * weapon_level * base_lvl)/100
+				val1 += 15 * sd->status.job_level; // 15 * job_lvl
+			}
+			else	// Mobs
+				val1 += (400 * status_get_lv(bl) / 100) + (15 * (status_get_lv(bl) / 2));	// About 1138% at mob_lvl 99. Is an aproximation to a standard weapon. [pakpil] 
 			break;
 			
 		case SC_PRESTIGE:	// Bassed on suggested formula in iRO Wiki and some test, still need more test. [pakpil]

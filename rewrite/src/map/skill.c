@@ -1081,6 +1081,9 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 			default: skill_break_equip(bl,(skilllv == 3) ? EQP_SHIELD : (skilllv == 4) ? EQP_ARMOR : EQP_WEAPON,rate,BCT_ENEMY); break;
 		}
 		break;
+	case LG_EARTHDRIVE:
+		skill_break_equip(src, EQP_SHIELD, 500, BCT_SELF);
+		break;
 	case WM_METALICSOUND:
 		sc_start(bl, SC_CHAOS, 20 + 5 * skilllv, skilllv, skill_get_time(skillid,skilllv));
 		break;
@@ -2064,9 +2067,6 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 		break;
 	case WM_SEVERE_RAINSTORM_MELEE:
 		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,1,WM_SEVERE_RAINSTORM,skilllv,5);
-		break;
-	case SC_FEINTBOMB:
-		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,1,skillid,skilllv,5);
 		break;
 	case WM_REVERBERATION_MELEE:
 	case WM_REVERBERATION_MAGIC:
@@ -4628,6 +4628,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case NC_HOVERING:
 	case NC_SHAPESHIFT:
 	case SC_DEADLYINFECT:
+	case LG_EXEEDBREAK:
 	case LG_PRESTIGE:
 	case SO_STRIKING:
 	case GN_CARTBOOST:
@@ -7919,7 +7920,7 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 			return 0;
 		}
 
-		if( sd && ud->skilltimer != -1 && pc_checkskill(sd,SA_FREECAST) > 0 )
+		if( sd && ud->skilltimer != -1 && (pc_checkskill(sd,SA_FREECAST) > 0 || ud->skillid == LG_EXEEDBREAK) )
 		{// restore original walk speed
 			ud->skilltimer = INVALID_TIMER;
 			status_calc_bl(&sd->bl, SCB_SPEED);
@@ -8209,7 +8210,7 @@ int skill_castend_pos(int tid, unsigned int tick, int id, intptr data)
 		return 0;
 	}
 
-	if( sd && ud->skilltimer != -1 && pc_checkskill(sd,SA_FREECAST) > 0 )
+	if( sd && ud->skilltimer != -1 && (pc_checkskill(sd,SA_FREECAST) > 0 || ud->skillid == LG_EXEEDBREAK) )
 	{// restore original walk speed
 		ud->skilltimer = INVALID_TIMER;
 		status_calc_bl(&sd->bl, SCB_SPEED);

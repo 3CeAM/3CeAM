@@ -792,7 +792,7 @@ int unit_can_move(struct block_list *bl)
 	if (!ud)
 		return 0;
 	
-	if (ud->skilltimer != -1 && (!sd || !pc_checkskill(sd, SA_FREECAST) || skill_get_inf2(ud->skillid)&INF2_GUILD_SKILL))
+	if (ud->skilltimer != -1 && ud->skillid != LG_EXEEDBREAK && (!sd || !pc_checkskill(sd, SA_FREECAST) || skill_get_inf2(ud->skillid)&INF2_GUILD_SKILL))
 		return 0; // prevent moving while casting
 	
 	if (DIFF_TICK(ud->canmove_tick, gettick()) > 0)
@@ -1193,7 +1193,7 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 	}
 
 	if( casttime > 0 || temp )
-	{ 
+	{
 		unit_stop_walking(src,1);
 		clif_skillcasting(src, src->id, target_id, 0,0, skill_num, skill_get_ele(skill_num, skill_lv), casttime);
 
@@ -1266,7 +1266,7 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 	if( casttime > 0 )
 	{
 		ud->skilltimer = add_timer( tick+casttime, skill_castend_id, src->id, 0 );
-		if( sd && pc_checkskill(sd,SA_FREECAST) > 0 )
+		if( (sd && pc_checkskill(sd,SA_FREECAST) > 0) || skill_num == LG_EXEEDBREAK )
 			status_calc_bl(&sd->bl, SCB_SPEED);
 	}
 	else
@@ -1396,7 +1396,7 @@ int unit_skilluse_pos2( struct block_list *src, short skill_x, short skill_y, sh
 		unit_stop_walking(src,1);
 		clif_skillcasting(src, src->id, 0, skill_x, skill_y, skill_num, skill_get_ele(skill_num, skill_lv), casttime);
 		ud->skilltimer = add_timer( tick+casttime, skill_castend_pos, src->id, 0 );
-		if( sd && pc_checkskill(sd,SA_FREECAST) > 0 )
+		if( (sd && pc_checkskill(sd,SA_FREECAST) > 0) || skill_num == LG_EXEEDBREAK )
 			status_calc_bl(&sd->bl, SCB_SPEED);
 	}
 	else
@@ -1811,6 +1811,8 @@ int unit_skillcastcancel(struct block_list *bl,int type)
 
 	if( sd && pc_checkskill(sd,SA_FREECAST) > 0 )
 		status_calc_bl(&sd->bl, SCB_SPEED);
+	if( skill == LG_EXEEDBREAK )
+		status_calc_bl(bl,SCB_SPEED);
 
 	if( sd )
 	{

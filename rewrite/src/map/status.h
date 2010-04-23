@@ -460,6 +460,7 @@ typedef enum sc_type {
 	SC_SHIELDSPELL_DEF,
 	SC_SHIELDSPELL_MDEF,
 	SC_SHIELDSPELL_REF,
+	SC_EXEEDBREAK,
 
 
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
@@ -868,7 +869,7 @@ enum si_type {
 	SI_SHIELDSPELL_MDEF = 397,
 	SI_SHIELDSPELL_REF = 398,
 	SI_BODYPAINTING = 399,	
-//	SI_EXEEDBREAK = 400,
+	SI_EXEEDBREAK = 400,
 	SI_ADORAMUS = 401,
 	SI_PRESTIGE = 402,
 	SI_INVISIBILITY = 403,
