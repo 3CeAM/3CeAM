@@ -5,6 +5,10 @@
 // 	- Details.
 //========================================
 
+04/24/2010
+	r364 [pakpil]
+	* Updated to eAthena r14278.
+
 04/20/2010
 	r351 [Jobbie]
 	* Fixed Cloud Kill not causing poison effect. Bug Report 377.
