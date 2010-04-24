@@ -5557,6 +5557,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC_BURNING: // Place here until we have info about its behavior on Boss-monsters. [pakpil]
 			case SC_MARSHOFABYSS:
 			case SC_ADORAMUS:
+			case SC_BITE:
 
 			// Exploid prevention - kRO Fix
 			case SC_PYREXIA:
