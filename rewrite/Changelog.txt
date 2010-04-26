@@ -5,6 +5,12 @@
 // 	- Details.
 //========================================
 
+04/26/2010
+	r368 [pakpil]
+	* Updated to eAthena r14281.
+	* Fixed Job check in thana_quest.txt
+	* Added LG_MOONLSLASHER skill.
+
 04/24/2010
 	r364 [pakpil]
 	* Updated to eAthena r14278.
