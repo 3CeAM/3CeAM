@@ -1543,6 +1543,10 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				if( sc && sc->data[SC_GLOOMYDAY_SK] )
 					ATK_ADD(50 + 5 * sc->data[SC_GLOOMYDAY_SK]->val1);
 				break;
+			case RK_DEATHBOUND:
+				if( sc && sc->data[SC_DEATHBOUND] )
+					wd.damage = sc->data[SC_DEATHBOUND]->val3;
+				break;
 			case RK_DRAGONBREATH:
 				wd.damage = (status_get_max_hp(src) * 80 / 1000) + (status_get_max_sp(src) * 180 / 100);
 				if( sd )
@@ -2096,7 +2100,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 						skillratio += (sd) ? sd->shieldmdef * 20 : 1000;
 					break;
 				case LG_MOONSLASHER:
-					skillratio = ((skillratio + 20) * skill_lv + ((sd) ? pc_checkskill(sd,LG_OVERBRAND) : 5) * 80) * (status_get_lv(src) / 100);
+					skillratio = ((skillratio + 20) * skill_lv + ((sd) ? pc_checkskill(sd,LG_OVERBRAND) : 5) * 20) * (status_get_lv(src) / 100);
 					break;
 				case LG_OVERBRAND:
 					if( wflag&4 )
@@ -3762,12 +3766,26 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		if( rdamage > 0 )
 		{
 			if( tsc && tsc->data[SC_DEATHBOUND] )
-			{
-				clif_skill_damage(src,src,tick, status_get_amotion(src),0,-30000,1,RK_DEATHBOUND,tsc->data[SC_DEATHBOUND]->val1,6);
-				damage = rdamage / 2;
-				wd.damage = damage;
+			{	// Still need confirm if Death Bound affect Boss monsters.
+				if( !(sstatus->mode&MD_BOSS) )
+				{
+					int dir = map_calc_dir(target,src->x,src->y);
+					int t_dir = unit_getdir(target);
+					int dist = distance_bl(src, target);
+					if(dist <= 0 || (!map_check_dir(dir,t_dir) && dist <= tstatus->rhw.range+1))
+					{
+						int skilllv = tsc->data[SC_DEATHBOUND]->val1;
+						clif_skillcastcancel(target);
+						damage = rdamage / 2;
+						wd.damage = damage;
+						tsc->data[SC_DEATHBOUND]->val3 = rdamage;
+						clif_skill_damage(src,target,tick, status_get_amotion(src), 0, -30000, 1, RK_DEATHBOUND, skilllv, 6);
+						skill_attack(BF_WEAPON,target,target,src,RK_DEATHBOUND,skilllv,tick,0);					
+						status_change_end(target,SC_DEATHBOUND,-1);
+					}
+				}
 			}
-			if( tsc && tsc->data[SC_REFLECTDAMAGE] )
+			else if( tsc && tsc->data[SC_REFLECTDAMAGE] )
 			{
 				map_foreachinrange(battle_damage_area,target,skill_get_splash(LG_REFLECTDAMAGE,1),BL_CHAR,tick,target,wd.amotion,wd.dmotion,rdamage,tstatus->race,0);
 			}
