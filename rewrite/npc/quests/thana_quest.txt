@@ -23,6 +23,8 @@
 //= 1.9 Fixed a bug in the last event which allowed an exploit after the first summoning. [SinSloth]
 //= 2.0 Cleaned up the trans-only check, and added expanded classes. [L0ne_W0lf]
 //= 2.1 Replaced effect numerics with constants. [Samuray22]
+//=== [3CeAM] ================================================
+//= 1.0 Added support to all 3rd jobs.
 //============================================================
 
 hu_fild01,140,163,5	script	Tower Keeper	852,3,3,{
@@ -2591,7 +2593,7 @@ OnThanaDead:
 }
 
 tha_t06,119,120,0	script	thana6-7	45,1,1,{
-	if (((Upper == 1) && ((Class > Job_Thief_High) && (Class < Job_Baby))) || (((Class == Job_Gunslinger) || (Class == Job_Ninja) || (BaseClass == Job_Taekwon) || (Class > Job_Rune_Knight && Class <= JOB_MECHANIC_T2)) && (BaseLevel >= 95))) {
+	if ((Upper >= 4) || ((Upper == 1) && ((Class > Job_Thief_High) && (Class < Job_Baby))) || (((Class == Job_Gunslinger) || (Class == Job_Ninja) || (BaseClass == Job_Taekwon) || (Class > Job_Rune_Knight && Class <= JOB_MECHANIC_T2)) && (BaseLevel >= 95))) {
 		warp "thana_step",69,369;
 		end;
 	}

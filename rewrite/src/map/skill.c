@@ -1081,6 +1081,13 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 			default: skill_break_equip(bl,(skilllv == 3) ? EQP_SHIELD : (skilllv == 4) ? EQP_ARMOR : EQP_WEAPON,rate,BCT_ENEMY); break;
 		}
 		break;
+	case LG_MOONSLASHER:
+		rate = 40 + (skilllv > 1) ? 8 * skilllv : 0;
+		if( rand()%100 < rate && dstsd ) // Uses skill_addtimerskill to avoid damage and setsit packet overlaping. Officially clif_setsit is received about 500 ms after damage packet.
+			skill_addtimerskill(src,tick+500,bl->id,0,0,skillid,skilllv,BF_WEAPON,0);
+		else if( dstmd && !is_boss(bl) )
+			sc_start(bl,SC_STOP,100,skilllv,skill_get_time(skillid,skilllv));
+		break;
 	case LG_EARTHDRIVE:
 		skill_break_equip(src, EQP_SHIELD, 500, BCT_SELF);
 		break;
@@ -2821,6 +2828,17 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 						}
 					}
 					break;
+				case LG_MOONSLASHER:
+					if( target->type == BL_PC )
+					{
+						struct map_session_data *tsd = BL_CAST(BL_PC,target);
+						if( tsd && !pc_issit(tsd) )
+						{
+							pc_setsit(tsd);
+							clif_sitting(&tsd->bl);
+						}
+					}
+					break;
 				case LG_OVERBRAND:
 					skill_attack(BF_WEAPON, src, src, target, skl->skill_id, skl->skill_lv, tick, skl->flag|SD_LEVEL);
 					break;
@@ -3316,6 +3334,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case NC_FLAMELAUNCHER:
 	case NC_SELFDESTRUCTION:
 	case NC_AXETORNADO:
+	case LG_MOONSLASHER:
 	case LG_EARTHDRIVE:
 	case WM_REVERBERATION:
 	case SO_VARETYR_SPEAR:
@@ -3349,6 +3368,8 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		{
 			if( skillid == NJ_BAKUENRYU || skillid == LG_EARTHDRIVE )
 				clif_skill_nodamage(src,bl,skillid,skilllv,1);
+			if( skillid ==  LG_MOONSLASHER );
+				clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
 
 			skill_area_temp[0] = 0;
 			skill_area_temp[1] = bl->id;
@@ -3922,7 +3943,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		break;
 
 	case SC_FATALMENACE:
-		if( !flag&1 )
+		if( !(flag&1) )
 			skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		else
 		{
@@ -3969,10 +3990,8 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		break;
 
 	case LG_SHIELDSPELL:
-		if( flag&1 )
-			skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
-		else
-			skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag);
+		// flag&1: Phisycal Attack, flag&2: Magic Attack.
+		skill_attack((flag&1)?BF_WEAPON:BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
 	case LG_OVERBRAND:
@@ -4944,6 +4963,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case NPC_VAMPIRE_GIFT:
 	case NPC_HELLJUDGEMENT:
 	case NPC_PULSESTRIKE:
+	case LG_MOONSLASHER:
 		skill_castend_damage_id(src, src, skillid, skilllv, tick, flag);
 		break;
 

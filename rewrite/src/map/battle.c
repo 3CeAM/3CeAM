@@ -2095,6 +2095,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					else
 						skillratio += (sd) ? sd->shieldmdef * 20 : 1000;
 					break;
+				case LG_MOONSLASHER:
+					skillratio = ((skillratio + 20) * skill_lv + ((sd) ? pc_checkskill(sd,LG_OVERBRAND) : 5) * 80) * (status_get_lv(src) / 100);
+					break;
 				case LG_OVERBRAND:
 					if( wflag&4 )
 						skillratio = 160 * skill_lv * status_get_lv(src) / 100;
