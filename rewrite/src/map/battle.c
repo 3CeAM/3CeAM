@@ -3564,7 +3564,8 @@ int battle_damage_area( struct block_list *bl, va_list ap)
 	dmotion=va_arg(ap,int);
 	damage=va_arg(ap,int);
 
-	if( bl != src && battle_check_target(src,bl,BCT_ENEMY) && !(bl->type == BL_MOB && ((TBL_MOB*)bl)->class_ == MOBID_EMPERIUM) )
+	if( bl != src && battle_check_target(src,bl,BCT_ENEMY) > 0 && !(bl->type == BL_MOB && ((TBL_MOB*)bl)->class_ == MOBID_EMPERIUM) &&
+		!( map[bl->m].flag.battleground && bl->type == BL_MOB && (((TBL_MOB*)bl)->class_ == 1914 || ((TBL_MOB*)bl)->class_ == 1915)) )
 	{
 		map_freeblock_lock();
 		if( amotion )
@@ -3787,7 +3788,8 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			}
 			else if( tsc && tsc->data[SC_REFLECTDAMAGE] )
 			{
-				map_foreachinrange(battle_damage_area,target,skill_get_splash(LG_REFLECTDAMAGE,1),BL_CHAR,tick,target,wd.amotion,wd.dmotion,rdamage,tstatus->race,0);
+				if( src != target )// Don't reflect your own damage (Grand Cross)
+					map_foreachinrange(battle_damage_area,target,skill_get_splash(LG_REFLECTDAMAGE,1),BL_CHAR,tick,target,wd.amotion,wd.dmotion,rdamage,tstatus->race,0);
 			}
 			else
 			{
