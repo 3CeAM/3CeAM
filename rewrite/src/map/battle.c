@@ -307,16 +307,18 @@ int battle_attr_fix(struct block_list *src, struct block_list *target, int damag
 	}
 	if( target && target->type == BL_SKILL )
 	{
-		struct skill_unit *unit = (struct skill_unit*)target;
 		if( atk_elem == ELE_FIRE && battle_getcurrentskill(target) == GN_WALLOFTHORN )
 		{
-			clif_changetraplook(&unit->bl,UNT_FIREWALL);
-			/*struct block_list *src = map_id2bl(unit->val2);
-			if( src )
-			{
-				skill_unitsetting(src, MG_FIREWALL, unit->group->skill_lv, target->x, target->y, 0);
-				return 0;
-			}*/
+			struct skill_unit *su = (struct skill_unit*)target;
+			struct skill_unit_group *sg;
+			struct block_list *src;
+
+			 if( !su || !su->alive || (sg = su->group) == NULL || !sg ||
+				 (src = map_id2bl(su->val2)) == NULL || status_isdead(src))
+				 return 0;
+			
+			skill_unitsetting(src,su->group->skill_id,su->group->skill_lv,src->x,src->y,1);
+			skill_delunitgroup(sg);
 		}
 	}
 	if( atk_elem == ELE_FIRE && tsc && tsc->count && tsc->data[SC_CRYSTALIZE] )

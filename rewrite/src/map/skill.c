@@ -2962,6 +2962,40 @@ static int skill_ative_reverberation( struct block_list *bl, va_list ap)
 	return 0;
 }
 
+static int skill_destroy_trap( struct block_list *bl, va_list ap )
+{
+	struct skill_unit *su = (struct skill_unit *)bl;
+	struct skill_unit_group *sg;
+	unsigned int tick;
+	
+	nullpo_retr(0, su);
+	nullpo_retr(0, sg = su->group);
+	tick = va_arg(ap, unsigned int);
+
+	if (su->alive && su->group && skill_get_inf2(su->group->skill_id)&INF2_TRAP)
+	{
+		switch( su->group->unit_id )
+		{
+			case UNT_FIRINGTRAP:
+			case UNT_ICEBOUNDTRAP:
+			case UNT_CLUSTERBOMB:
+			case UNT_LANDMINE:
+			case UNT_CLAYMORETRAP:
+			case UNT_BLASTMINE:
+			case UNT_SHOCKWAVE:
+			case UNT_SANDMAN:
+			case UNT_FLASHER:
+			case UNT_FREEZINGTRAP:
+				map_foreachinrange(skill_trap_splash,&su->bl, skill_get_splash(sg->skill_id, sg->skill_lv), sg->bl_flag, &su->bl,tick);
+				break;
+		}
+		// Traps aren't not recovered.
+		skill_delunit(su);
+	}
+	return 0;
+}
+
+
 /*==========================================
  *
  *
@@ -7412,6 +7446,11 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		else
 			clif_skill_fail(sd,skillid,0,0,0);
 		break;
+		
+	case LG_TRAMPLE:
+		clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
+		map_foreachinrange(skill_destroy_trap,bl,skill_get_splash(skillid,skilllv),BL_SKILL,tick);
+		break;
 
 	case LG_REFLECTDAMAGE:
 		if( tsc && tsc->data[type] )
@@ -7542,7 +7581,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
 		break;
-	
+
 	case LG_PIETY:
 		if( flag&1 )
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
@@ -9560,6 +9599,11 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 
 	case WM_REVERBERATION:
 		interval = limit;
+		break;
+
+	case GN_WALLOFTHORN:
+		if( flag&1 )
+			limit = 3000;
 		break;
 	}
 
@@ -13744,9 +13788,8 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 			case UNT_ANKLESNARE:
 			case UNT_ELECTRICSHOCKER:
 			case UNT_CLUSTERBOMB:
-			case UNT_WALLOFTHORN:
 				if( unit->val1 <= 0 ) {
-					if( ((group->unit_id == UNT_ANKLESNARE || group->unit_id == UNT_ELECTRICSHOCKER) && group->val2 > 0) || group->unit_id == UNT_WALLOFTHORN )
+					if( (group->unit_id == UNT_ANKLESNARE || group->unit_id == UNT_ELECTRICSHOCKER) && group->val2 > 0 )
 						skill_delunit(unit);
 					else {
 						group->unit_id = UNT_USED_TRAPS;
@@ -13757,6 +13800,13 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 			case UNT_REVERBERATION:
 				if( unit->val1 <= 0 )
 					unit->limit = DIFF_TICK(tick+700,group->tick);
+				break;
+			case UNT_WALLOFTHORN:
+				if( unit->val1 <= 0 )
+				{
+					group->unit_id = UNT_USED_TRAPS;
+					group->limit = DIFF_TICK(tick, group->tick) + 1500;
+				}
 				break;
 		}
 	}
