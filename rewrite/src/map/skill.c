@@ -1045,11 +1045,16 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl,SC_FREEZE,100,skilllv,skill_get_time(skillid,skilllv));
 		break;
 	case RA_WUGBITE:
-		sc_start(bl, SC_BITE, 100, skilllv, skill_get_time(skillid, skilllv));
+		{
+			int duration = skill_get_time(skillid, skilllv), bduration;
+			if( sd && (bduration = pc_checkskill(sd, RA_TOOTHOFWUG))>0 )
+				duration += bduration * 1000;
+			sc_start(bl, SC_BITE, 100, skilllv, duration);
+		}
 		break;
 	case RA_SENSITIVEKEEN:
 		if( rand()%100 < 8*skilllv )
-			skill_castend_damage_id(src, bl, RA_WUGBITE, sd ? pc_checkskill(sd, RA_WUGBITE):skilllv, tick, 1);
+			skill_castend_damage_id(src, bl, RA_WUGBITE, sd ? pc_checkskill(sd, RA_WUGBITE):skilllv, tick, SD_ANIMATION);
 		break;
 	case RA_FIRINGTRAP:
 		sc_start(bl, SC_BURNING, 10 * skilllv + 40, skilllv, skill_get_time2(skillid, skilllv));
@@ -3920,16 +3925,24 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		break;
 
 	case RA_WUGSTRIKE:
-		if( sd && pc_isriding(sd, OPTION_RIDING_WUG) ){
-			if( !map_flag_gvg(src->m) && !map[src->m].flag.battleground 
-				&& unit_movepos(src, bl->x, bl->y, 0, 1) )
+		if( sd && pc_isriding(sd, OPTION_RIDING_WUG) )
+		{
+			if( !map_flag_gvg(src->m) && !map[src->m].flag.battleground && unit_movepos(src, bl->x, bl->y, 0, 1) )
 				clif_slide(src, bl->x, bl->y);
 			skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
-		}else
+		}
+		else
 			skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
 	case RA_SENSITIVEKEEN:
+		if( bl->type != BL_SKILL )
+		{ // Only Hits Invisible Targets
+			sc = status_get_sc(bl);
+			if(sc && (sc->option&(OPTION_HIDE|OPTION_CLOAK) || sc->data[SC__INVISIBILITY]) )
+				skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
+		}
+		else
 		{
 			struct skill_unit *su = BL_CAST(BL_SKILL,bl);			
 			struct skill_unit_group* sg;
@@ -7268,13 +7281,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case RA_SENSITIVEKEEN:
-		if( sd )
-		{
-			map_foreachinrange( status_change_timer_sub, src, skill_get_splash(skillid, skilllv), BL_CHAR, src, skillid, SC_SIGHT, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
-			map_foreachinrange( skill_area_sub, src, skill_get_splash(skillid, skilllv), BL_SKILL, src, skillid,skilllv, tick, flag|BCT_ENEMY|1, skill_castend_damage_id);
-			clif_skill_damage(src,src,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
-			clif_skill_nodamage(src,bl,skillid,skilllv,1);
-		}	
+		clif_skill_damage(src,src,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
+		map_foreachinrange(skill_area_sub,src,skill_get_splash(skillid,skilllv),BL_CHAR|BL_SKILL,
+			src,skillid,skilllv,tick,flag|BCT_ENEMY,skill_castend_damage_id);
+		clif_skill_nodamage(src,bl,skillid,skilllv,1);	
 		break;
 
 	case RA_CAMOUFLAGE:
@@ -8837,7 +8847,6 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case NC_COLDSLOWER:
 	case NC_ARMSCANNON:
 	case RK_DRAGONBREATH:
-	case RA_SENSITIVEKEEN:
 	case WM_LULLABY_DEEPSLEEP:
 		i = skill_get_splash(skillid,skilllv);
 		map_foreachinarea(skill_area_sub,src->m,x-i,y-i,x+i,y+i,BL_CHAR,

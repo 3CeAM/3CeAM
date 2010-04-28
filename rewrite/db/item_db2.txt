@@ -119,7 +119,7 @@
 // Mechanic Mado Gear Skill Required Items
 6145,Vulcan_Bullet,Vulcan Bullet,3,10,,3,,,,,,,,,,,,,{},{},{}
 6146,Mado_Gear_Fuel,Mado Gear Fuel,3,300,,30,,,,,,,,,,,,,{},{},{}
-6147,Liquid_Cold_Bullet,Liquid Cold Bullet,3,100,,10,,,,,,,,,,,,,{},{},{}
+6147,Liquid_Cold_Bullet,Liquid Cold Bullet,3,100,,30,,,,,,,,,,,,,{},{},{}
 
 6150,House_Key,House Key,3,10,,10,,,,,,,,,,,,,{},{},{}
 6151,Huge_Bradium,Huge Bradium,3,10,,10,,,,,,,,,,,,,{},{},{}
