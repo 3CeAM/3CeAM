@@ -5,6 +5,14 @@
 // 	- Details.
 //========================================
 
+04/29/2010
+	r372 [Rytech]
+	*Added the ALL_BUYING_STORE to the database.
+	-Skill ID, max level, and sp cost is official.
+	-Level 1 is used through a item, like a item skill and gives 2 slots for purchaseing.
+	-Level 2 is used by using the actural skill in the skill list, it gives access to 5 slots.
+	-It doesent work yet, but the above info lists how its used and how each level works.
+
 04/26/2010
 	r368 [pakpil]
 	* Updated to eAthena r14281.
