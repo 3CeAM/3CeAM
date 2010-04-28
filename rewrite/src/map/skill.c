@@ -6975,9 +6975,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		{
 			if( sd && tstatus && !battle_check_undead(tstatus->race, tstatus->def_ele) )
 			{
-				i = skill_calc_heal(src, bl, AL_HEAL, pc_checkskill(sd, AL_HEAL), true);
-				status_heal(bl, i, 0, 2);
-				clif_skill_nodamage(bl, bl, skillid, i, 1);
+				i = skill_calc_heal(src, bl, AL_HEAL, pc_checkskill(sd, AL_HEAL), true);				
+				clif_skill_nodamage(bl, bl, skillid, status_heal(bl, i, 0, 1), 1);
 			}
 		}
 		else if( sd )
@@ -7244,7 +7243,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case RA_WUGMASTERY:
-		if( sd ){
+		if( sd )
+		{
 			if( !pc_iswarg(sd) )
 				pc_setoption(sd,sd->sc.option|OPTION_WUG);
 			else
@@ -7254,12 +7254,15 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case RA_WUGRIDER:
-		if( sd ){
-			if( pc_isriding(sd, OPTION_RIDING_WUG) ){
+		if( sd )
+		{
+			if( pc_isriding(sd, OPTION_RIDING_WUG) )
+			{
 				pc_setriding(sd,0);
 				pc_setoption(sd,sd->sc.option|OPTION_WUG);
 			}
-			else if( pc_iswarg(sd) ){
+			else if( pc_iswarg(sd) )
+			{
 				pc_setriding(sd,1);
 				pc_setoption(sd,sd->sc.option&~OPTION_WUG);
 			}
@@ -7274,7 +7277,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			map_freeblock_unlock();
 			return 0;
 		}
-		if( sd && pc_isriding(sd, OPTION_RIDING_WUG) ){
+		if( sd && pc_isriding(sd, OPTION_RIDING_WUG) )
+		{
 			clif_skill_nodamage(src,bl,skillid,skilllv,sc_start4(bl,type,100,skilllv,unit_getdir(bl),0,0,1));
 			clif_walkok(sd);
 		}
@@ -8909,8 +8913,8 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 
 	case RA_DETONATOR:
 		i = skill_get_splash(skillid, skilllv);
-		map_foreachinarea(skill_detonator,src->m,x-i,y-i,x+i,y+i,BL_SKILL,src);
-		clif_skill_damage(src,src,tick,status_get_amotion(src),0,-30000,1,skillid,skilllv,6);
+		map_foreachinarea(skill_detonator, src->m, x-i, y-i, x+i, y+i, BL_SKILL, src);
+		clif_skill_damage(src, src, tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
 		break;
 
 	case NC_SILVERSNIPER:
@@ -12955,41 +12959,44 @@ int skill_detonator (struct block_list *bl, va_list ap)
 
 	nullpo_retr(0, bl);
 	nullpo_retr(0, ap);
-	src = va_arg(ap,struct block_list *);
+	src = va_arg(ap, struct block_list *);
 
-	if(bl->type!=BL_SKILL || (unit=(struct skill_unit *)bl) == NULL)
+	if( bl->type!=BL_SKILL || (unit=(struct skill_unit *)bl) == NULL )
 		return 0;
-	if(unit->group->src_id != src->id)
+	if( unit->group->src_id != src->id )
 		return 0;
 
-	switch(unit->group->unit_id)
+	switch( unit->group->unit_id )
 	{ //List of Hunter and Ranger Traps that can be detonate.
 		case UNT_BLASTMINE:
 		case UNT_SANDMAN:
 		case UNT_CLAYMORETRAP:
 		case UNT_TALKIEBOX:
-			if((unit->group))
+			if( (unit->group) )
 			{
-				if(unit->group->unit_id != UNT_TALKIEBOX){
-					map_foreachinrange(skill_trap_splash,bl,i,unit->group->bl_flag,bl,unit->group->tick);
-					clif_changetraplook(bl,UNT_USED_TRAPS);
-					unit->group->limit=DIFF_TICK(gettick(),unit->group->tick)+1500;
+				if( unit->group->unit_id != UNT_TALKIEBOX )
+				{
+					map_foreachinrange(skill_trap_splash, bl, i, unit->group->bl_flag, bl, unit->group->tick);
+					clif_changetraplook(bl, UNT_USED_TRAPS);
+					unit->group->limit = DIFF_TICK(gettick(), unit->group->tick)+1500;
 					unit->group->unit_id = UNT_USED_TRAPS;
-				}else{
+				}
+				else
+				{
 					clif_talkiebox(bl, unit->group->valstr);
-					clif_changetraplook(bl,UNT_USED_TRAPS);
-					unit->group->limit=DIFF_TICK(gettick(),unit->group->tick)+5000;
+					clif_changetraplook(bl, UNT_USED_TRAPS);
+					unit->group->limit = DIFF_TICK(gettick(), unit->group->tick)+5000;
 					unit->group->unit_id = UNT_USED_TRAPS;
 				}
 			}
 		case UNT_CLUSTERBOMB:
 		case UNT_FIRINGTRAP:
 		case UNT_ICEBOUNDTRAP:
-			if((unit->group))
+			if( (unit->group) )
 			{
-				map_foreachinrange(skill_trap_splash,bl,i,unit->group->bl_flag,bl,unit->group->tick);
-				clif_changetraplook(bl, unit->group->unit_id==UNT_FIRINGTRAP?UNT_DUMMYSKILL:UNT_USED_TRAPS);
-				unit->group->limit=DIFF_TICK(gettick(),unit->group->tick)+1500;
+				map_foreachinrange(skill_trap_splash, bl, i, unit->group->bl_flag, bl, unit->group->tick);
+				clif_changetraplook(bl, unit->group->unit_id == UNT_FIRINGTRAP ? UNT_DUMMYSKILL : UNT_USED_TRAPS);
+				unit->group->limit = DIFF_TICK(gettick(), unit->group->tick)+1500;
 				unit->group->unit_id = UNT_USED_TRAPS;
 			}
 			break;
