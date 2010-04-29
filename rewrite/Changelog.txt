@@ -6,6 +6,17 @@
 //========================================
 
 04/29/2010
+	r376 [Rytech]
+	*Added purchase shop items to item_db2. Both items are %100 official coded.
+	*Changed ALL_BUYING_SHOP to a quest skill as its officially gained through a npc.
+	-Requires the player to have learned Vending level 1 and pay 10,000 zeny to learn.
+	*The ALL_BUYING_SHOP was added to every job in the skill_tree file that is able to
+	-learn the vending skill as its a quest skill needed in their trees. The lines were
+	-placed in a temporarly spot at the bottom for testing and will be organized in the
+	-future when the system is completed.
+	*Using the ALL_BUYING_SHOP skill requires and costs 1 Buying Stall Permit. Item 6377.
+
+04/28/2010
 	r372 [Rytech]
 	*Added the ALL_BUYING_STORE to the database.
 	-Skill ID, max level, and sp cost is official.

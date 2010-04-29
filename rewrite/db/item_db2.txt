@@ -474,3 +474,7 @@
 6343,Test_Item_66,Test Item 66,3,10,,10,,,,,,,,,,,,,{},{},{}
 12492,Test_Item_67,Test Item 67,3,10,,10,,,,,,,,,,,,,{},{},{}
 12539,Test_Item_68,Test Item 68,3,10,,10,,,,,,,,,,,,,{},{},{}
+
+// Purchase Shop Items
+6377,Buy_Stall_Permit,Buy Stall Permit,3,200,,10,,,,,,,,,,,,,{},{},{}
+12548,Buy_Shabby_Stall_Permit,Buy Shabby Stall Permit,11,500,,10,,,,,0xFFFFFFFF,24,2,,,,,,{ itemskill "ALL_BUYING_STORE",1; },{},{}
