@@ -5154,3 +5154,36 @@
 4112,2281,5,2277,2,0,0,0,0,0,0,0,0 //NC_SILVERSNIPER#FAW - Silver Sniper#
 4112,2282,5,2277,2,0,0,0,0,0,0,0,0 //NC_MAGICDECOY#FAW - Magic Decoy#
 4112,2283,1,2281,1,0,0,0,0,0,0,0,0 //NC_DISJOINT#FAW Removal#
+// Temporarly tree entry addin's for the Purchase Shop skill for testing.
+// This is a quest skill and is only learnable by jobs that have Vending
+// level 1 or higher, mainly merchant branch and higher jobs, as well as
+// super novice. Will clean this up later in the future once the skill
+// and system is completed.
+// Merchant
+5,2535,2,0,0,0,0,0,0,0,0,0,0 //ALL_BUYING_SHOP#Purchase Shop#
+// Blacksmith / Alchemist
+10,2535,2,0,0,0,0,0,0,0,0,0,0 //ALL_BUYING_SHOP#Purchase Shop#
+18,2535,2,0,0,0,0,0,0,0,0,0,0 //ALL_BUYING_SHOP#Purchase Shop#
+// Super Novice
+23,2535,2,0,0,0,0,0,0,0,0,0,0 //ALL_BUYING_SHOP#Purchase Shop#
+// High Merchant
+4006,2535,2,0,0,0,0,0,0,0,0,0,0 //ALL_BUYING_SHOP#Purchase Shop#
+// Whitesmith / Creator
+4011,2535,2,0,0,0,0,0,0,0,0,0,0 //ALL_BUYING_SHOP#Purchase Shop#
+4019,2535,2,0,0,0,0,0,0,0,0,0,0 //ALL_BUYING_SHOP#Purchase Shop#
+// Baby Merchant
+4028,2535,2,0,0,0,0,0,0,0,0,0,0 //ALL_BUYING_SHOP#Purchase Shop#
+// Baby Blacksmith / Baby Alchemist
+4033,2535,2,0,0,0,0,0,0,0,0,0,0 //ALL_BUYING_SHOP#Purchase Shop#
+4041,2535,2,0,0,0,0,0,0,0,0,0,0 //ALL_BUYING_SHOP#Purchase Shop#
+// Baby Super Novice
+4045,2535,2,0,0,0,0,0,0,0,0,0,0 //ALL_BUYING_SHOP#Purchase Shop#
+// Mechanic / Mechanic H
+4058,2535,2,0,0,0,0,0,0,0,0,0,0 //ALL_BUYING_SHOP#Purchase Shop#
+4064,2535,2,0,0,0,0,0,0,0,0,0,0 //ALL_BUYING_SHOP#Purchase Shop#
+// Genetic / Genetic H
+4071,2535,2,0,0,0,0,0,0,0,0,0,0 //ALL_BUYING_SHOP#Purchase Shop#
+4078,2535,2,0,0,0,0,0,0,0,0,0,0 //ALL_BUYING_SHOP#Purchase Shop#
+// Baby Mechanic / Baby Genetic
+4100,2535,2,0,0,0,0,0,0,0,0,0,0 //ALL_BUYING_SHOP#Purchase Shop#
+4107,2535,2,0,0,0,0,0,0,0,0,0,0 //ALL_BUYING_SHOP#Purchase Shop#
