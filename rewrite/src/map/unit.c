@@ -838,6 +838,7 @@ int unit_can_move(struct block_list *bl)
 			|| sc->data[SC_WHITEIMPRISON]
 			|| sc->data[SC_ELECTRICSHOCKER]
 			|| sc->data[SC_BITE]
+			|| sc->data[SC_MAGNETICFIELD]
 			|| sc->data[SC_THORNSTRAP]
 			|| sc->data[SC_CRYSTALIZE]
 			|| sc->data[SC__MANHOLE]
@@ -1963,6 +1964,11 @@ int unit_remove_map_(struct block_list *bl, int clrtype, const char* file, int l
 		status_change_end(bl,SC_BITE,-1);
 		status_change_end(bl,SC_WUGDASH,-1);
 		status_change_end(bl,SC_CAMOUFLAGE,-1);
+		status_change_end(bl,SC_MAGNETICFIELD,-1);
+		status_change_end(bl,SC_NEUTRALBARRIER_MASTER,-1);
+		status_change_end(bl,SC_NEUTRALBARRIER,-1);
+		status_change_end(bl,SC_STEALTHFIELD_MASTER,-1);
+		status_change_end(bl,SC_STEALTHFIELD,-1);
 		status_change_end(bl,SC_CRYSTALIZE,-1);
 		status_change_end(bl,SC__SHADOWFORM,-1);
 		status_change_end(bl,SC__MANHOLE,-1);

@@ -752,6 +752,7 @@ extern const struct sg_data sg_info[3];
 void pc_setinvincibletimer(struct map_session_data* sd, int val);
 void pc_delinvincibletimer(struct map_session_data* sd);
 
+int pc_overheat(struct map_session_data *sd, int val);
 int pc_addspiritball(struct map_session_data *sd,int,int);
 int pc_delspiritball(struct map_session_data *sd,int,int);
 int pc_addrageball(struct map_session_data *sd,int interval, int max);

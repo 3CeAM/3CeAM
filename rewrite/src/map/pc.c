@@ -226,6 +226,29 @@ int pc_delspiritball(struct map_session_data *sd,int count,int type)
 	return 0;
 }
 
+int pc_overheat(struct map_session_data *sd, int val)
+{
+	int heat = val, skill,
+		limit[] = { 10, 20, 28, 46, 66 };
+
+	if( !sd || !pc_isriding(sd,OPTION_MADO) || sd->sc.data[SC_OVERHEAT] )
+		return 0; // already burning
+
+	skill = cap_value(pc_checkskill(sd,NC_MAINFRAME),0,4);
+	if( sd->sc.data[SC_OVERHEAT_LIMITPOINT] )
+	{
+		heat += sd->sc.data[SC_OVERHEAT_LIMITPOINT]->val1;
+		status_change_end(&sd->bl,SC_OVERHEAT_LIMITPOINT,-1);
+	}
+
+	heat = max(0,heat); // Avoid negative HEAT
+	if( heat >= limit[skill] )
+		sc_start(&sd->bl,SC_OVERHEAT,100,0,1000);
+	else
+		sc_start(&sd->bl,SC_OVERHEAT_LIMITPOINT,100,heat,30000);
+
+	return 0;
+}
 
 static int pc_rageball_timer(int tid, unsigned int tick, int id, intptr data)
 {
@@ -4213,6 +4236,14 @@ int pc_setpos(struct map_session_data* sd, unsigned short mapindex, int x, int y
 				status_change_end(&sd->bl,SC_BOSSMAPINFO,-1);
 			if (sd->sc.data[SC_WARM])
 				status_change_end(&sd->bl,SC_WARM,-1);
+			if (sd->sc.data[SC_NEUTRALBARRIER_MASTER])
+				status_change_end(&sd->bl,SC_NEUTRALBARRIER_MASTER,-1);
+			if (sd->sc.data[SC_NEUTRALBARRIER])
+				status_change_end(&sd->bl,SC_NEUTRALBARRIER,-1);
+			if (sd->sc.data[SC_STEALTHFIELD_MASTER])
+				status_change_end(&sd->bl,SC_STEALTHFIELD_MASTER,-1);
+			if (sd->sc.data[SC_STEALTHFIELD])
+				status_change_end(&sd->bl,SC_STEALTHFIELD,-1);
 			if (sd->sc.data[SC_SUN_COMFORT])
 				status_change_end(&sd->bl,SC_SUN_COMFORT,-1);
 			if (sd->sc.data[SC_MOON_COMFORT])
@@ -6938,6 +6969,8 @@ int pc_setoption(struct map_session_data *sd,int type)
 				status_change_end(&sd->bl,SC_SHAPESHIFT,-1);
 				status_change_end(&sd->bl,SC_HOVERING,-1);
 				status_change_end(&sd->bl,SC_ACCELERATION,-1);
+				status_change_end(&sd->bl,SC_OVERHEAT_LIMITPOINT,-1);
+				status_change_end(&sd->bl,SC_OVERHEAT,-1);
 			}
 		}
 	}

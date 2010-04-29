@@ -464,6 +464,10 @@ int map_moveblock(struct block_list *bl, int x1, int y1, unsigned int tick)
 					skill_unit_move_unit_group(skill_id2group(sc->data[SC_DANCING]->val2), bl->m, x1-x0, y1-y0);
 				if (sc->data[SC_WARM])
 					skill_unit_move_unit_group(skill_id2group(sc->data[SC_WARM]->val4), bl->m, x1-x0, y1-y0);
+				if (sc->data[SC_NEUTRALBARRIER_MASTER])
+					skill_unit_move_unit_group(skill_id2group(sc->data[SC_NEUTRALBARRIER_MASTER]->val2), bl->m, x1-x0, y1-y0);
+				if (sc->data[SC_STEALTHFIELD_MASTER])
+					skill_unit_move_unit_group(skill_id2group(sc->data[SC_STEALTHFIELD_MASTER]->val2), bl->m, x1-x0, y1-y0);
 			}
 		}
 	} else
@@ -1731,6 +1735,10 @@ int map_quit(struct map_session_data *sd)
 			status_change_end(&sd->bl,SC_SATURDAYNIGHTFEVER,-1);
 		if(sd->sc.data[SC_READING_SB])
 			status_change_end(&sd->bl,SC_READING_SB,-1);
+		if(sd->sc.data[SC_OVERHEAT_LIMITPOINT])
+			status_change_end(&sd->bl,SC_OVERHEAT_LIMITPOINT,-1);
+		if(sd->sc.data[SC_OVERHEAT])
+			status_change_end(&sd->bl,SC_OVERHEAT,-1);
 		if (battle_config.debuff_on_logout&1) {
 			if(sd->sc.data[SC_ORCISH])
 				status_change_end(&sd->bl,SC_ORCISH,-1);
