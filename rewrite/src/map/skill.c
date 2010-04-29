@@ -2137,6 +2137,10 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 			case WL_CHAINLIGHTNING_ATK:
 				temp_skill = WL_CHAINLIGHTNING;
 				break;
+			case AB_DUPLELIGHT_MELEE:
+			case AB_DUPLELIGHT_MAGIC:
+				temp_skill = AB_DUPLELIGHT;
+				break;
 			case WM_REVERBERATION_MELEE:
 			case WM_REVERBERATION_MAGIC:
 				temp_skill = WM_REVERBERATION;
@@ -6975,7 +6979,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		{
 			if( sd && tstatus && !battle_check_undead(tstatus->race, tstatus->def_ele) )
 			{
-				i = skill_calc_heal(src, bl, AL_HEAL, pc_checkskill(sd, AL_HEAL), true);				
+				i = skill_calc_heal(src, bl, AL_HEAL, pc_checkskill(sd, AL_HEAL), true);
 				clif_skill_nodamage(bl, bl, skillid, status_heal(bl, i, 0, 1), 1);
 			}
 		}
