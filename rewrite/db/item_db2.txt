@@ -74,13 +74,13 @@
 16003,Kalga_Mace,Kalga Mace,4,20,,1500,175,,1,2,0x0004C580,24,2,2,3,100,1,8,{},{},{}
 
 // Mechanic Mado Weapons
-1549,Pile_Bunker,Pile Bunker,4,10000,,3000,450,,1,0,0x00000400,24,2,2,3,99,0,23,{},{},{}
+1549,Pile_Bunker,Pile Bunker,4,10000,,3000,450,,1,0,0x00000400,24,2,2,3,99,0,8,{},{},{}
 
 // Mechanic Mado Side Arm Weapons
 2139,Flame_Thrower,Flame Thrower,5,20000,,2000,,5,,0,0x00000400,24,2,32,,99,0,5,{},{},{}
 2140,Energy_Rune_Guard,Energy Rune Guard,5,20,,10,,1,,1,0xFFFFFFFF,31,2,32,,70,1,5,{ bonus bMaxSPrate,2; },{},{}
 
-//2794,Magic_Stone_Ring,Magic Stone Ring,5,10,,10,,0,,0,0xFFFFFFFF,31,2,136,,0,0,0{ bonus bStr,2; },{},{}
+//2794,Magic_Stone_Ring,Magic Stone Ring,5,10,,10,,0,,0,0xFFFFFFFF,31,2,136,,0,0,0,{ bonus bStr,2; },{},{}
 //2795,Immature_Apple_Ring,Immature Apple Ring,5,10,,10,,0,,0,0xFFFFFFFE,31,2,136,,0,0,0,{},{},{}
 //2796,Rocks,Rocks,3,10,,10,,,,,,,,,,,,,{},{},{}
 //2797,Rocks,Rocks,3,10,,10,,,,,,,,,,,,,{},{},{}
