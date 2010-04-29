@@ -462,6 +462,13 @@ typedef enum sc_type {
 	SC_SHIELDSPELL_REF,
 	SC_EXEEDBREAK,
 
+	SC_OVERHEAT,
+	SC_OVERHEAT_LIMITPOINT,
+	SC_NEUTRALBARRIER_MASTER,
+	SC_NEUTRALBARRIER,
+	SC_STEALTHFIELD_MASTER,
+	SC_STEALTHFIELD,
+	SC_MAGNETICFIELD,
 
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;

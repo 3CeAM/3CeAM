@@ -464,6 +464,9 @@ void initChangeTables(void)
 	set_sc( NC_SHAPESHIFT        , SC_SHAPESHIFT       , SI_SHAPESHIFT      , SCB_DEF_ELE );
 	set_sc( NC_INFRAREDSCAN      , SC_INFRAREDSCAN     , SI_INFRAREDSCAN    , SCB_FLEE );
 	set_sc( NC_ANALYZE           , SC_ANALYZE          , SI_ANALYZE         , SCB_DEF|SCB_DEF2|SCB_MDEF|SCB_MDEF2 );
+	set_sc( NC_MAGNETICFIELD     , SC_MAGNETICFIELD    , SI_MAGNETICFIELD   , SCB_NONE );
+	set_sc( NC_NEUTRALBARRIER    , SC_NEUTRALBARRIER   , SI_NEUTRALBARRIER  , SCB_NONE );
+	set_sc( NC_STEALTHFIELD      , SC_STEALTHFIELD     , SI_STEALTHFIELD    , SCB_NONE );
 
 	set_sc( SC_REPRODUCE         , SC__REPRODUCE         , SI_REPRODUCE         , SCB_NONE );
 	set_sc( SC_AUTOSHADOWSPELL   , SC__AUTOSHADOWSPELL   , SI_AUTOSHADOWSPELL   , SCB_NONE );
@@ -624,6 +627,11 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_SPHERE_4] = SI_SPHERE_4;
 	StatusIconChangeTable[SC_SPHERE_5] = SI_SPHERE_5;
 
+	StatusIconChangeTable[SC_OVERHEAT] = SI_OVERHEAT;
+	StatusIconChangeTable[SC_OVERHEAT_LIMITPOINT] = SI_OVERHEAT_LIMITPOINT;
+	StatusIconChangeTable[SC_NEUTRALBARRIER_MASTER] = SI_NEUTRALBARRIER_MASTER;
+	StatusIconChangeTable[SC_STEALTHFIELD_MASTER] = SI_STEALTHFIELD_MASTER;
+
 	StatusIconChangeTable[SC_GLOOMYDAY_SK] = SI_GLOOMYDAY;
 
 	StatusIconChangeTable[SC_TOXIN] = SI_TOXIN;
@@ -696,6 +704,7 @@ void initChangeTables(void)
 	StatusChangeFlagTable[SC_MERC_SPUP] |= SCB_MAXSP;
 	StatusChangeFlagTable[SC_MERC_HITUP] |= SCB_HIT;
 	
+	StatusChangeFlagTable[SC_STEALTHFIELD_MASTER] |= SCB_SPEED;
 	StatusChangeFlagTable[SC_HALLUCINATIONWALK_POSTDELAY] |= SCB_ASPD|SCB_SPEED;
 	StatusChangeFlagTable[SC_PARALYSE] |= SCB_ASPD|SCB_FLEE; // |SCB_SPEED; Speed Part is not working currently on Kro
 	StatusChangeFlagTable[SC_MAGICMUSHROOM] |= SCB_REGEN;
@@ -1426,6 +1435,8 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 				return 0;
 			if ( tsc->data[SC_CAMOUFLAGE] && !skill_num && !(status->mode&MD_BOSS) && !(status->mode&MD_DETECTOR) )
 				return 0;
+			if( tsc->data[SC_STEALTHFIELD] )
+				return 0;
 		}
 		break;
 	case BL_ITEM:	//Allow targetting of items to pick'em up (or in the case of mobs, to loot them).
@@ -1443,8 +1454,13 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 			return 0; // Can't use Potion Pitcher on Mercenaries
 	default:
 		//Check for chase-walk/hiding/cloaking opponents.
-		if (tsc && tsc->option&hide_flag && !(status->mode&(MD_BOSS|MD_DETECTOR)))
-			return 0;
+		if( tsc )
+		{
+			if( tsc->option&hide_flag && !(status->mode&(MD_BOSS|MD_DETECTOR)) )
+				return 0;
+			if( tsc->data[SC_STEALTHFIELD] )
+				return 0;
+		}
 	}
 	return 1;
 }
@@ -1467,6 +1483,8 @@ int status_check_visibility(struct block_list *src, struct block_list *target)
 	}
 
 	if (src->m != target->m || !check_distance_bl(src, target, view_range))
+		return 0;
+	if( tsc && tsc->data[SC_STEALTHFIELD] )
 		return 0;
 
 	switch (target->type)
@@ -1664,22 +1682,21 @@ int status_calc_mob_(struct mob_data* md, bool first)
 	{	//Max HP setting from Summon Flora/marine Sphere
 		struct unit_data *ud = unit_bl2ud(mbl);
 		//Remove special AI when this is used by regular mobs.
-		if (mbl->type == BL_MOB && !((TBL_MOB*)mbl)->special_state.ai)
+		if( mbl->type == BL_MOB && !((TBL_MOB*)mbl)->special_state.ai )
 			md->special_state.ai = 0;
-		if (ud)
+		if( ud )
 		{	// different levels of HP according to skill level
-			if (ud->skillid == AM_SPHEREMINE) {
+			if (ud->skillid == AM_SPHEREMINE)
 				status->max_hp = 2000 + 400*ud->skilllv;
-			} else { //AM_CANNIBALIZE
+			else
+			{ //AM_CANNIBALIZE
 				status->max_hp = 1500 + 200*ud->skilllv + 10*status_get_lv(mbl);
 				status->mode|= MD_CANATTACK|MD_AGGRESSIVE;
 			}
-			status->hp = status->max_hp;
 
-			if (ud->skillid == NC_SILVERSNIPER) {
-				status->mode |= MD_CANATTACK|MD_AGGRESSIVE;
-				status->batk += 200 + 100 * ud->skilllv;
-			}
+			status->hp = status->max_hp;
+			if( ud->skillid == NC_SILVERSNIPER )
+				status->rhw.atk = status->rhw.atk2 = 200 + 100 * ud->skilllv;
 		}
 	}
 
@@ -2490,8 +2507,8 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 			status->rhw.range += skill;
 		}
 	}
-	if((skill=pc_checkskill(sd,NC_TRAININGAXE))>0)
-		status->hit += skill*3;
+	if( (sd->status.weapon == W_1HAXE || sd->status.weapon == W_2HAXE || sd->status.weapon == W_MACE || sd->status.weapon == W_2HMACE) && (skill = pc_checkskill(sd,NC_TRAININGAXE)) > 0 )
+		status->hit += skill * 3;
 
 // ----- FLEE CALCULATION -----
 
@@ -2510,6 +2527,9 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		i =  status->def * sd->def_rate/100;
 		status->def = cap_value(i, CHAR_MIN, CHAR_MAX);
 	}
+
+	if( pc_isriding(sd,OPTION_MADO) && (skill = pc_checkskill(sd,NC_MAINFRAME)) > 0 )
+		status->def += skill < 3 ? 1 + 3 * skill : 4 * skill - 1;
 
 	if (!battle_config.weapon_defense_type && status->def > battle_config.max_def)
 	{
@@ -4182,8 +4202,12 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 			if( sd && pc_isriding(sd,OPTION_RIDING_WUG) )
 				val = 10 * pc_checkskill(sd, RA_WUGRIDER);
 			else
-			if( sc->data[SC_ACCELERATION] )
-				val = 25;
+			if( sd && pc_isriding(sd,OPTION_MADO) )
+			{
+				val = -10 * (5 - pc_checkskill(sd,NC_MADOLICENCE));
+				if( sc->data[SC_ACCELERATION] )
+					val += 25;
+			}
 
 			speed_rate -= val;
 		}
@@ -4244,6 +4268,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 					val = max( val, sc->data[SC_CAMOUFLAGE]->val1 < 3 ? 300 : 25 * (6 - sc->data[SC_CAMOUFLAGE]->val1) );
 				if( sc->data[SC__GROOMY] )
 					val = max( val, sc->data[SC__GROOMY]->val2);
+				if( sc->data[SC_STEALTHFIELD_MASTER] )
+					val = max( val, 30 );
 
 				if( sd && sd->speed_rate + sd->speed_add_rate > 0 ) // permanent item-based speedup
 					val = max( val, sd->speed_rate + sd->speed_add_rate );
@@ -4310,13 +4336,6 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 			speed = max(speed, 200);
 		if( sc->data[SC_WALKSPEED] && sc->data[SC_WALKSPEED]->val1 > 0 ) // ChangeSpeed
 			speed = speed * 100 / sc->data[SC_WALKSPEED]->val1;
-		if( sd && pc_isriding(sd, OPTION_MADO) )
-		{
-			if( pc_checkskill(sd, NC_MADOLICENCE)>0 )
-				speed += speed * (50 - 10 * pc_checkskill(sd, NC_MADOLICENCE)) / 100;
-			else //Without the license your movement speed will be 50%.
-				speed += speed * 50 / 100;
-		}
 	}
 
 	return (short)cap_value(speed,10,USHRT_MAX);
@@ -5534,6 +5553,10 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		if(sc->data[SC_BERSERK])
 			return 0;
 	break;
+	case SC_MAGNETICFIELD:
+		if(sc->data[SC_HOVERING])
+			return 0;
+	break;
 	}
 
 	//Check for BOSS resistances
@@ -5557,7 +5580,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC_BURNING: // Place here until we have info about its behavior on Boss-monsters. [pakpil]
 			case SC_MARSHOFABYSS:
 			case SC_ADORAMUS:
-			//case SC_BITE:
 
 			// Exploid prevention - kRO Fix
 			case SC_PYREXIA:
@@ -5568,6 +5590,11 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC_MAGICMUSHROOM:
 			case SC_OBLIVIONCURSE:
 			case SC_LEECHESEND:
+
+			// Ranger Effects
+			//case SC_BITE:
+			//case SC_ELECTRICSHOCKER:
+			case SC_MAGNETICFIELD:
 				return 0;
 		}
 	}
@@ -5587,7 +5614,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		break;
 	case SC_INCREASEAGI:
 		status_change_end(bl,SC_DECREASEAGI,-1);
-		status_change_end(bl,SC_ACCELERATION,-1);
 		status_change_end(bl,SC_ADORAMUS,-1);
 		break;
 	case SC_QUAGMIRE:
@@ -5607,6 +5633,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		status_change_end(bl,SC_TWOHANDQUICKEN,-1);
 		status_change_end(bl,SC_ONEHAND,-1);
 		status_change_end(bl,SC_MERC_QUICKEN,-1);
+		status_change_end(bl,SC_ACCELERATION,-1);
 		break;
 	case SC_ONEHAND:
 	  	//Removes the Aspd potion effect, as reported by Vicious. [Skotlex]
@@ -6993,18 +7020,15 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 				val3 = 15 - (2 * val2);
 			}
 			break;
-
 		case SC_REFLECTDAMAGE:
 			val2 = 15 + 5 * val1;
 			break;
-
 		case SC_FORCEOFVANGUARD: // This is not the official way to handle it but I think we should use it. [pakpil]
 			val2 = 20 + 12 * (val1 - 1); // Chance
 			val3 = 5 + (2 * val1); // Max rage counters
 			tick = 6000;
 			val_flag |= 1|2|4;
 			break;
-
 		case SC_EXEEDBREAK:
 			val1 *= 150; // 150 * skill_lv
 			if( sd )
@@ -7015,8 +7039,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			}
 			else	// Mobs
 				val1 += (400 * status_get_lv(bl) / 100) + (15 * (status_get_lv(bl) / 2));	// About 1138% at mob_lvl 99. Is an aproximation to a standard weapon. [pakpil] 
-			break;
-			
+			break;			
 		case SC_PRESTIGE:	// Bassed on suggested formula in iRO Wiki and some test, still need more test. [pakpil]
 			val2 = ((status->int_ + status->luk) / 6) + 5;	// Chance to evade magic damage.
 			val1 *= 15; // Defence added
@@ -7024,11 +7047,14 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 				val1 += 10 * pc_checkskill(sd,CR_DEFENDER);
 			val_flag |= 1|2;
 			break;
-
 		case SC_SHIELDSPELL_DEF:
 		case SC_SHIELDSPELL_MDEF:
 		case SC_SHIELDSPELL_REF:
 			val_flag |= 1|2;
+			break;
+		case SC_MAGNETICFIELD:
+			val3 = tick / 1000;
+			tick = 1000;
 			break;
 
 		default:
@@ -7781,6 +7807,15 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 			break;
 		case SC_ADORAMUS:
 			status_change_end(bl, SC_BLIND, -1);
+			break;
+		case SC_NEUTRALBARRIER_MASTER:
+		case SC_STEALTHFIELD_MASTER:
+			if( sce->val2 )
+			{
+				struct skill_unit_group* group = skill_id2group(sce->val2);
+				sce->val2 = 0;
+				skill_delunitgroup(group);
+			}
 			break;
 		}
 
@@ -8710,6 +8745,44 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		sc_timer_next(6000 + tick, status_change_timer, bl->id, data);
 		return 0;
 
+	case SC_OVERHEAT_LIMITPOINT:
+		if( --(sce->val1) > 0 ) // Cooling
+			sc_timer_next(30000 + tick, status_change_timer, bl->id, data);
+		break;
+
+	case SC_OVERHEAT:
+		{
+			int flag, damage = status->max_hp / 100; // Suggestion 1% each second
+			if( damage >= status->hp ) damage = status->hp - 1; // Do not kill, just keep you with 1 hp minimum
+			map_freeblock_lock();
+			status_fix_damage(NULL,bl,damage,clif_damage(bl,bl,tick,0,0,damage,0,0,0));
+			flag = !sc->data[type];
+			map_freeblock_unlock();
+			if( !flag )
+				sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
+		}
+		break;
+
+	case SC_MAGNETICFIELD:
+		{
+			if( --(sce->val3) <= 0 )
+				break; // Time out
+			if( sce->val2 == bl->id )
+			{
+				if( !status_charge(bl,0,14 + (3 * sce->val1)) )
+					break; // No more SP status should end, and in the next second will end for the other affected players
+			}
+			else
+			{
+				struct block_list *src = map_id2bl(sce->val2);
+				struct status_change *ssc;
+				if( !src || (ssc = status_get_sc(src)) == NULL || !ssc->data[SC_MAGNETICFIELD] )
+					break; // Source no more under Magnetic Field
+			}
+			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
+		}
+		break;
+
 	}
 
 	// default for all non-handled control paths is to end the status
@@ -8862,6 +8935,7 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC_BITE:
 			case SC_ADORAMUS:
 			case SC_VACUUM_EXTREME:
+			case SC_MAGNETICFIELD:
 				if (!(type&2))
 					continue;
 				break;
