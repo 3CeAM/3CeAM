@@ -3804,24 +3804,20 @@ int pc_useitem(struct map_session_data *sd,int n)
 	// In this case these sc are OFFICIALS cooldowns for these skills
 	if( itemdb_is_rune(sd->status.inventory[n].nameid) )
 	{
-		struct status_change *sc = status_get_sc(&sd->bl);
-		if( sc )
+		switch(sd->status.inventory[n].nameid)
 		{
-			switch(sd->status.inventory[n].nameid)
-			{
-				case ITEMID_NAUTHIZ:
-					if( sc->data[SC_REUSE_REFRESH] )
-						return 0;
-					break;
-				case ITEMID_RAIDO:
-					if( sc->data[SC_RAIDO] )
-						return 0;
-					break;
-				case ITEMID_BERKANA:
-					if( sc->data[SC_BERKANA] )
-						return 0;
-					break;
-			}
+			case ITEMID_NAUTHIZ:
+				if( skill_blockpc_get(sd,RK_REFRESH) != -1 )
+					return 0;
+				break;
+			case ITEMID_RAIDO:
+				if( skill_blockpc_get(sd,RK_CRUSHSTRIKE) != -1 )
+					return 0;
+				break;
+			case ITEMID_BERKANA:
+				if( skill_blockpc_get(sd,RK_MILLENNIUMSHIELD) != -1 )
+					return 0;
+				break;
 		}
 	}
 

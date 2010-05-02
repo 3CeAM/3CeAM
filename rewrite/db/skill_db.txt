@@ -885,18 +885,18 @@
 1019,9,6,1,4,0x1,0,1,1,yes,0,0x1,0,magic,0,	SA_ELEMENTWIND,Elemental Change Wind
 
 // Rune Knight
-2001,0,6,16,0,0x1,0,5,1,yes,0,0,0,magic,0,	RK_ENCHANTBLADE,Enchant Blade
+2001,9,6,16,0,0x1,0,5,1,yes,0,0,0,magic,0,	RK_ENCHANTBLADE,Enchant Blade
 2002,11,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	RK_SONICWAVE,Sonic Wave
 2003,0,6,4,0,0x1,0,10,1,yes,0,0,0,weapon,0,	RK_DEATHBOUND,Death Bound
 2004,4,8,1,0,0,1,10,-5,yes,0,0,0,weapon,0,	RK_HUNDREDSPEAR,Hundred Spear
 2005,1,6,2,4,0x2,2,5,1,yes,0,0,0,weapon,3,	RK_WINDCUTTER,Wind Cutter
-2006,0,6,4,0,0x2,3,5,1,yes,0,0,0,weapon,0,	RK_IGNITIONBREAK,Ignition Break
+2006,0,6,4,0,0x2,3,0,0,yes,0,0,0,weapon,0,	RK_IGNITIONBREAK,Ignition Break
 2007,0,0,0,0,0,0,5,0,no,0,0,0,weapon,0,		RK_DRAGONTRAINING,Dragon Training
-2008,10,6,2,3,0x2,1:1:1:2:2:2:3:3:4:4,10,1,yes,0,0,0,weapon,0,	RK_DRAGONBREATH,Dragon Breath
+2008,10,6,2,3,0x8A,1:1:1:2:2:2:3:3:4:4,10,1,yes,0,0,0,weapon,0,	RK_DRAGONBREATH,Dragon Breath
 2009,0,8,4,0,0x3,3:4:5:6:7,5,0,yes,0,0,0,weapon,0,	RK_DRAGONHOWLING,Dragon Howling
 2010,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		RK_RUNEMASTERY,Rune Mastery
 2011,0,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	RK_MILLENNIUMSHIELD,Millenium Shield
-2012,3,6,1,-1,0x70,0,1,1,yes,0,0,0,weapon,0,	RK_CRUSHSTRIKE,Crush Strike
+2012,3,6,1,-1,0,0x8,1,1,yes,0,0,0,weapon,0,	RK_CRUSHSTRIKE,Crush Strike
 2013,9,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	RK_REFRESH,Refresh
 2014,9,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	RK_GIANTGROWTH,Giant Growth
 2015,9,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	RK_STONEHARDSKIN,Stone Hard Skin
