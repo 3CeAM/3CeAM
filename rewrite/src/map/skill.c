@@ -995,7 +995,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl,SC_CRITICALWOUND,100,skilllv,skill_get_time2(skillid,skilllv));
 		break;
 	case RK_WINDCUTTER:
-		sc_start(bl,SC_FEAR,3 + 2 * skilllv,skilllv,skill_get_time2(skillid,skilllv));
+		sc_start(bl,SC_FEAR,3+2*skilllv,skilllv,skill_get_time(skillid,skilllv));
 		break;
 	case RK_HUNDREDSPEAR:
 		rate = 10 + 3 * skilllv;
@@ -1003,7 +1003,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 			skill_castend_damage_id(src,bl,KN_SPEARBOOMERANG,1,tick,0);
 		break;
 	case RK_DRAGONBREATH:
-		sc_start(bl,SC_BURNING,5 + 5 * skilllv,skilllv,skill_get_time(skillid,skilllv));
+		sc_start4(bl,SC_BURNING,5+5*skilllv,skilllv,1000,src->id,0,skill_get_time(skillid,skilllv));
 		break;
 	case GC_WEAPONCRUSH:// Rate is handled later.
 		skill_castend_nodamage_id(src,bl,skillid,skilllv,tick,BCT_ENEMY);
@@ -1956,7 +1956,7 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 
 	if( damage > 0 && ((dmg.flag&BF_WEAPON && src != bl && ( src == dsrc || ( dsrc->type == BL_SKILL && ( skillid == SG_SUN_WARM || skillid == SG_MOON_WARM || skillid == SG_STAR_WARM ) ) )
 		&& skillid != WS_CARTTERMINATION) || (sc && sc->data[SC_REFLECTDAMAGE])) )
-		rdamage = battle_calc_return_damage(bl, damage, dmg.flag);
+		rdamage = battle_calc_return_damage(src, bl, &damage, dmg.flag);
 
 	//Skill hit type
 	type=(skillid==0)?5:skill_get_hit(skillid);
@@ -3742,7 +3742,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 			skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 	case RK_CRUSHSTRIKE:
-		sc_start(bl,SC_RAIDO,100,skilllv,skill_get_cooldown(skillid,skilllv));
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
@@ -5019,6 +5018,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 	case ASC_METEORASSAULT:
 	case GS_SPREADATTACK:
+	case RK_STORMBLAST:
 	case NC_AXETORNADO:
 		skill_area_temp[1] = 0;
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
@@ -6797,7 +6797,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 	case RK_ENCHANTBLADE:
 		clif_skill_nodamage(src,bl,skillid,skilllv,
-			sc_start4(bl,type,100,skilllv,80+20*skilllv+status_get_status_data(src)->matk_min,src->id,0,skill_get_time(skillid,skilllv)));
+			sc_start4(bl,type,100,skilllv,100+20*skilllv+status_get_status_data(src)->matk_min,src->id,0,skill_get_time(skillid,skilllv)));
 		break;
 	case RK_DRAGONHOWLING:
 		if( flag&1)
@@ -6826,10 +6826,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 	case RK_STONEHARDSKIN:
 		{
-			int heal = sstatus->hp / 4;
+			int heal = sstatus->hp / 4; // 25% HP
 			if( status_charge(bl,heal,0) )
-				clif_skill_nodamage(src,bl,skillid,skilllv,
-					sc_start2(bl,type,100,skilllv,heal,skill_get_time(skillid,skilllv)));
+				clif_skill_nodamage(src,bl,skillid,skilllv,sc_start2(bl,type,100,skilllv,heal,skill_get_time(skillid,skilllv)));
 			else if( sd )
 				clif_skill_fail(sd,skillid,0,0,0);
 		}
@@ -6837,25 +6836,18 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case RK_REFRESH:
 		{
 			int heal = status_get_max_hp(bl) * 25 / 100;
-			sc_start(bl,SC_REUSE_REFRESH,100,skilllv,skill_get_cooldown(skillid,skilllv)); // Official cooldown handler for this skill. [pakpil]
 			clif_skill_nodamage(src,bl,skillid,skilllv,
 				sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
 			status_heal(bl,heal,0,1);
 			status_change_clear_buffs(bl,2);
 		}
 		break;
-	case RK_STORMBLAST:
-		skill_area_temp[1] = 0;
-		map_foreachinrange(skill_area_sub,src,skill_get_splash(skillid,skilllv),splash_target(src),src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
-		clif_skill_nodamage(src,src,skillid,skilllv,1);
-		break;
 
 	case RK_MILLENNIUMSHIELD:
 		{
-			short shields = (rand()%100 < 75)?2:4;
-			sc_start4(bl,type,100,skilllv,shields,0,skill_get_time(skillid,skilllv),skill_get_cooldown(skillid,skilllv));
-			if( sd )
-				clif_millenniumshield(sd,shields);
+			short shields = 2 + rand()%3;
+			sc_start4(bl,type,100,skilllv,shields,1000,0,skill_get_time(skillid,skilllv));
+			if( sd ) clif_millenniumshield(sd,shields);
 			clif_skill_nodamage(src,bl,skillid,1,1);
 		}
 		break;
@@ -6863,30 +6855,23 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case RK_FIGHTINGSPIRIT:
 		if( flag&1 )
 		{
-			if( src != bl )
-			{
-				struct status_change *sc = status_get_sc(src);
-				if( !(sc && sc->data[SC_OTHILA]) )
-						break;
-					sc_start(bl,type,100,sc->data[SC_OTHILA]->val1/4,skill_get_time(skillid,skilllv));
-			}
+			if( src == bl )
+				sc_start2(bl,type,100,skill_area_temp[5],40,skill_get_time(skillid,skilllv));
+			else
+				sc_start(bl,type,100,skill_area_temp[5]/4,skill_get_time(skillid,skilllv));
 		}
 		else
 		{
-			clif_skill_nodamage(src,bl,skillid,1,1);
 			if( sd && sd->status.party_id )
 			{
-				int atk = 7, aspd = 5; //Seems to be official values. Atk = 7 + 7 * party members, Aspd = +5% [pakpil]
 				i = party_foreachsamemap(skill_area_sub,sd,skill_get_splash(skillid,skilllv),src,skillid,skilllv,tick,BCT_PARTY,skill_area_sub_count);
-				if( i > 1 )
-					atk += atk * (i-1);
-				sc_start4(bl,type,100,atk,aspd,4*(pc_checkskill(sd,RK_RUNEMASTERY) == 10),0,skill_get_time(skillid,skilllv));
-				party_foreachsamemap(skill_area_sub,sd,skill_get_splash(skillid,skilllv),
-					src,skillid,skilllv,tick,flag|BCT_PARTY|1,skill_castend_nodamage_id);
+				skill_area_temp[5] = 7 * i; // ATK
+				party_foreachsamemap(skill_area_sub,sd,skill_get_splash(skillid,skilllv),src,skillid,skilllv,tick,flag|BCT_PARTY|1,skill_castend_nodamage_id);
 			}
 			else
 				sc_start2(bl,type,100,7,5,skill_get_time(skillid,skilllv));
 		}
+		clif_skill_nodamage(src,bl,skillid,1,1);
 		break;
 		
 	case GC_ROLLINGCUTTER:
@@ -9228,6 +9213,7 @@ int skill_castend_map (struct map_session_data *sd, short skill_num, const char 
 		sd->sc.data[SC_SILENCE] ||
 		sd->sc.data[SC_ROKISWEIL] ||
 		sd->sc.data[SC_AUTOCOUNTER] ||
+		sd->sc.data[SC_DEATHBOUND] ||
 		sd->sc.data[SC_STEELBODY] ||
 		(sd->sc.data[SC_DANCING] && skill_num < RK_ENCHANTBLADE && !pc_checkskill(sd, WM_LESSON)) ||
 		sd->sc.data[SC_BERSERK] ||

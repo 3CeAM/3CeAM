@@ -368,6 +368,7 @@ int skill_castend_damage_id( struct block_list* src, struct block_list *bl,int s
 int skill_castend_pos2( struct block_list *src, int x,int y,int skillid,int skilllv,unsigned int tick,int flag);
 
 int skill_blockpc_start (struct map_session_data*,int,int);
+int skill_blockpc_get(struct map_session_data *sd, int skillid);
 int skill_blockhomun_start (struct homun_data*,int,int);
 int skill_blockmerc_start (struct mercenary_data*,int,int);
 

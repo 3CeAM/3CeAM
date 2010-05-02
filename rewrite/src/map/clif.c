@@ -9344,6 +9344,7 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 	if (sd->sc.count &&
 		(sd->sc.data[SC_TRICKDEAD] ||
 	 	sd->sc.data[SC_AUTOCOUNTER] ||
+	 	sd->sc.data[SC_DEATHBOUND] ||
 		sd->sc.data[SC_BLADESTOP]))
 		return;
 
@@ -9720,6 +9721,7 @@ void clif_parse_DropItem(int fd, struct map_session_data *sd)
 
 		if (sd->sc.count && (
 			sd->sc.data[SC_AUTOCOUNTER] ||
+			sd->sc.data[SC_DEATHBOUND] ||
 			sd->sc.data[SC_BLADESTOP] ||
 			(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOITEM)
 		))

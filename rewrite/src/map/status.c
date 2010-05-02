@@ -412,13 +412,11 @@ void initChangeTables(void)
 	set_sc( RK_DEATHBOUND        , SC_DEATHBOUND      , SI_DEATHBOUND      , SCB_NONE );
 	set_sc( RK_DRAGONHOWLING     , SC_FEAR            , SI_BLANK           , SCB_FLEE|SCB_HIT );
 	add_sc( RK_DRAGONBREATH      , SC_BURNING         );
-	set_sc( RK_MILLENNIUMSHIELD  , SC_BERKANA         , SI_REUSE_MILLENNIUMSHIELD      , SCB_NONE );
-	set_sc( RK_CRUSHSTRIKE       , SC_RAIDO           , SI_REUSE_CRUSHSTRIKE           , SCB_NONE );
+	set_sc( RK_MILLENNIUMSHIELD  , SC_BERKANA         , SI_MILLENNIUMSHIELD   , SCB_NONE );
 	set_sc( RK_REFRESH           , SC_NAUTHIZ         , SI_REFRESH            , SCB_NONE );
 	set_sc( RK_GIANTGROWTH       , SC_THURISAZ        , SI_GIANTGROWTH        , SCB_STR );
 	set_sc( RK_STONEHARDSKIN     , SC_HAGALAZ         , SI_STONEHARDSKIN      , SCB_NONE );
 	set_sc( RK_VITALITYACTIVATION       , SC_ISA      , SI_VITALITYACTIVATION , SCB_REGEN );
-	//set_sc( RK_STORMBLAST        , SC_WYRD            , SI_REUSE_STORMBLAST   , SCB_NONE );
 	set_sc( RK_FIGHTINGSPIRIT    , SC_OTHILA          , SI_FIGHTINGSPIRIT     , SCB_WATK|SCB_ASPD );
 	set_sc( RK_ABUNDANCE         , SC_URUZ            , SI_ABUNDANCE          , SCB_NONE );
 
@@ -616,8 +614,6 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_MERC_HPUP] = SI_MERC_HPUP;
 	StatusIconChangeTable[SC_MERC_SPUP] = SI_MERC_SPUP;
 	StatusIconChangeTable[SC_MERC_HITUP] = SI_MERC_HITUP;
-
-	StatusIconChangeTable[SC_REUSE_REFRESH] = SI_REUSE_REFRESH;
 
 	StatusIconChangeTable[SC_HALLUCINATIONWALK_POSTDELAY] = SI_HALLUCINATIONWALK_POSTDELAY;
 	// Warlock Spheres
@@ -1253,7 +1249,7 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 
 		if (
 			(sc->data[SC_TRICKDEAD] && skill_num != NV_TRICKDEAD)
-			|| (sc->data[SC_AUTOCOUNTER] && !flag)
+			|| ((sc->data[SC_AUTOCOUNTER] || sc->data[SC_DEATHBOUND]) && !flag)
 			|| (sc->data[SC_GOSPEL] && sc->data[SC_GOSPEL]->val4 == BCT_SELF && skill_num != PA_GOSPEL)
 			|| (sc->data[SC_GRAVITATION] && sc->data[SC_GRAVITATION]->val3 == BCT_SELF && flag != 2)
 		)
@@ -3782,8 +3778,6 @@ static unsigned short status_calc_batk(struct block_list *bl, struct status_chan
 		batk += sc->data[SC_GATLINGFEVER]->val3;
 	if(sc->data[SC_MADNESSCANCEL])
 		batk += 100;
-	if(sc->data[SC_HAGALAZ] && sc->data[SC_HAGALAZ]->val3)
-		batk -= batk / 100 * 25;
 	if(sc->data[SC_GN_CARTBOOST])
 		batk += sc->data[SC_GN_CARTBOOST]->val1 * 10;
 	if(sc->data[SC__ENERVATION])
@@ -4445,7 +4439,7 @@ static short status_calc_aspd_rate(struct block_list *bl, struct status_change *
 	if( sc->data[SC_HALLUCINATIONWALK_POSTDELAY] )
 		aspd_rate += 500;
 	if( sc->data[SC_OTHILA] && sc->data[SC_OTHILA]->val2 )
-		aspd_rate -= (aspd_rate * sc->data[SC_OTHILA]->val2 / 100) + sc->data[SC_OTHILA]->val3;
+		aspd_rate -= sc->data[SC_OTHILA]->val2;
 	if( sc->data[SC_PARALYSE] )
 		aspd_rate += 100;
 	if( sc->data[SC__BODYPAINT] )
@@ -5323,9 +5317,36 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	if( !sc )
 		return 0; //Unable to receive status changes
 
-	if( sc->data[SC_NAUTHIZ] && type != SC_STUN && type != SC_FREEZING )
-		return 0;
-	
+	if( sc->data[SC_NAUTHIZ] )
+	{
+		if( type >= SC_COMMON_MIN && type <= SC_COMMON_MAX && type != SC_STUN )
+			return 0; // Inmune
+		switch( type )
+		{
+		case SC_HALLUCINATION:
+		case SC_QUAGMIRE:
+		case SC_SIGNUMCRUCIS:
+		case SC_DECREASEAGI:
+		case SC_SLOWDOWN:
+		case SC_MINDBREAKER:
+		case SC_WINKCHARM:
+		case SC_STOP:
+		case SC_ORCISH:
+		case SC_STRIPWEAPON:
+		case SC_STRIPSHIELD:
+		case SC_STRIPARMOR:
+		case SC_STRIPHELM:
+		case SC_BITE:
+		case SC_MAGNETICFIELD:
+		case SC_ADORAMUS:
+		case SC_VACUUM_EXTREME:
+		case SC_BURNING:
+		case SC_FEAR:
+		case SC_DEEPSLEEP:
+			return 0;
+		}
+	}
+
 	if( status_isdead(bl) )
 		return 0;
 
@@ -6725,18 +6746,12 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_DEATHBOUND:
 			val2 = 500 + 100 * val1;
 			break;
-		case SC_BERKANA:
-			val3 = 1000 * val2;
-			break;
 		case SC_OTHILA:
 			val_flag |= 1|2;
 			break;
 		case SC_URUZ:
 			val4 = tick / 10000;
 			tick = 10000;
-			break;
-		case SC_THURISAZ:
-			val4 = tick / 1000;
 			break;
 		case SC_VENOMIMPRESS:
 			val2 = 10 * val1;
@@ -7039,7 +7054,8 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			}
 			else	// Mobs
 				val1 += (400 * status_get_lv(bl) / 100) + (15 * (status_get_lv(bl) / 2));	// About 1138% at mob_lvl 99. Is an aproximation to a standard weapon. [pakpil] 
-			break;			
+			break;
+			
 		case SC_PRESTIGE:	// Bassed on suggested formula in iRO Wiki and some test, still need more test. [pakpil]
 			val2 = ((status->int_ + status->luk) / 6) + 5;	// Chance to evade magic damage.
 			val1 *= 15; // Defence added
@@ -7097,6 +7113,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			if (battle_config.sc_castcancel&bl->type)
 				unit_skillcastcancel(bl, 0);
 		case SC_STOP:
+		case SC_FEAR:
 		case SC_CONFUSION:
 		case SC_CLOSECONFINE:
 		case SC_CLOSECONFINE2:
@@ -7768,8 +7785,7 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 			}
 			break;
 		case SC_BERKANA:
-			if( sce->val2 )
-				clif_millenniumshield(sd,0);
+			clif_millenniumshield(sd,0);
 			break;
 		case SC_HALLUCINATIONWALK:
 			sc_start(bl,SC_HALLUCINATIONWALK_POSTDELAY,100,sce->val1,skill_get_time2(GC_HALLUCINATIONWALK,sce->val1));
@@ -8384,26 +8400,11 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		}
 		break;
 
-	case SC_THURISAZ:
-		if(--(sce->val4) > 0)
-		{
-			if(sce->val3 > 0)
-				sce->val3 *= -1; // mark it to be consumed.
-			else
-				sce->val3 = 0; // Consume it.
-			sc_timer_next(1000+tick, status_change_timer, bl->id, data);
-			return 0;
-		}
-		break;
-
 	case SC_URUZ:
 		if(--(sce->val4) > 0)
 		{
-			if( status_heal(bl,0,60,0) )
-			{
-				sc_timer_next(10000+tick, status_change_timer, bl->id, data);
-				return 0;
-			}
+			status_heal(bl,0,60,0);
+			sc_timer_next(10000+tick, status_change_timer, bl->id, data);
 		}
 		break;
 
@@ -8909,7 +8910,6 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC__MANHOLE:
 			case SC__MAELSTROM:
 			// Extra large skills cooldowns
-			case SC_REUSE_REFRESH:
 			case SC_SAVAGE_STEAK:
 			case SC_COCKTAIL_WARG_BLOOD:
 			case SC_MINOR_BBQ:
@@ -8935,6 +8935,8 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC_BITE:
 			case SC_ADORAMUS:
 			case SC_VACUUM_EXTREME:
+			case SC_BURNING:
+			case SC_FEAR:
 			case SC_MAGNETICFIELD:
 				if (!(type&2))
 					continue;
