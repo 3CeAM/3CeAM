@@ -11645,7 +11645,6 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		}
 		sd->rageball_old = require.spiritball = sd->rageball;
 		break;
- 	/*NOTE: Uncomment when this sc is available. [pakpil]
 	case SC_MANHOLE:
 	case SC_DIMENSIONDOOR:
 		if( sc && sc->data[SC_MAGNETICFIELD] )
@@ -11653,7 +11652,7 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			clif_skill_fail(sd,skill,0,0);
 			return 0;
 		}
-		break;*/
+		break;
 	case WM_GREAT_ECHO:
 		{
 			int count;
