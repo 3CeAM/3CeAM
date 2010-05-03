@@ -488,8 +488,9 @@ void initChangeTables(void)
 	set_sc( LG_FORCEOFVANGUARD   , SC_FORCEOFVANGUARD    , SI_FORCEOFVANGUARD   , SCB_MAXHP|SCB_DEF );
 	set_sc( LG_PRESTIGE          , SC_PRESTIGE           , SI_PRESTIGE          , SCB_DEF2 );
 	set_sc( LG_PIETY             , SC_BENEDICTIO         , SI_BENEDICTIO        , SCB_DEF_ELE );
-	set_sc( LG_EXEEDBREAK       , SC_EXEEDBREAK         , SI_EXEEDBREAK       , SCB_NONE );
-	
+	set_sc( LG_EXEEDBREAK        , SC_EXEEDBREAK         , SI_EXEEDBREAK        , SCB_NONE );
+	set_sc( LG_INSPIRATION       , SC_INSPIRATION		 , SI_INSPIRATION       , SCB_MAXHP|SCB_WATK|SCB_HIT|SCB_VIT|SCB_AGI|SCB_STR|SCB_DEX|SCB_INT|SCB_LUK);
+
 	set_sc( WA_SWING_DANCE                , SC_SWINGDANCE              , SI_SWINGDANCE                , SCB_SPEED|SCB_ASPD );
 	set_sc( WA_SYMPHONY_OF_LOVER          , SC_SYMPHONYOFLOVER         , SI_SYMPHONYOFLOVERS          , SCB_MDEF );
 	set_sc( WA_MOONLIT_SERENADE           , SC_MOONLITSERENADE         , SI_MOONLITSERENADE           , SCB_MATK );
@@ -3538,6 +3539,8 @@ static unsigned short status_calc_str(struct block_list *bl, struct status_chang
 		str += sc->data[SC_HARMONIZE]->val2;
 	if(sc->data[SC_SAVAGE_STEAK])
 		str += sc->data[SC_SAVAGE_STEAK]->val1;
+	if(sc->data[SC_INSPIRATION])
+		str += sc->data[SC_INSPIRATION]->val3;
 
 	return (unsigned short)cap_value(str,0,USHRT_MAX);
 }
@@ -3581,6 +3584,8 @@ static unsigned short status_calc_agi(struct block_list *bl, struct status_chang
 		agi += sc->data[SC_HARMONIZE]->val2;
 	if(sc->data[SC_DROCERA_HERB_STEAMED])
 		agi += sc->data[SC_DROCERA_HERB_STEAMED]->val1;
+	if(sc->data[SC_INSPIRATION])
+		agi += sc->data[SC_INSPIRATION]->val3;
 
 	return (unsigned short)cap_value(agi,0,USHRT_MAX);
 }
@@ -3616,6 +3621,8 @@ static unsigned short status_calc_vit(struct block_list *bl, struct status_chang
 		vit += sc->data[SC_HARMONIZE]->val2;
 	if(sc->data[SC_MINOR_BBQ])
 		vit += sc->data[SC_MINOR_BBQ]->val1;
+	if(sc->data[SC_INSPIRATION])
+		vit += sc->data[SC_INSPIRATION]->val3;
 
 	return (unsigned short)cap_value(vit,0,USHRT_MAX);
 }
@@ -3661,6 +3668,8 @@ static unsigned short status_calc_int(struct block_list *bl, struct status_chang
 		int_ += sc->data[SC_HARMONIZE]->val2;
 	if(sc->data[SC_COCKTAIL_WARG_BLOOD])
 		int_ += sc->data[SC_COCKTAIL_WARG_BLOOD]->val1;
+	if(sc->data[SC_INSPIRATION])
+		int_ += sc->data[SC_INSPIRATION]->val3;
 
 	return (unsigned short)cap_value(int_,0,USHRT_MAX);
 }
@@ -3707,6 +3716,8 @@ static unsigned short status_calc_dex(struct block_list *bl, struct status_chang
 		dex += sc->data[SC_HARMONIZE]->val2;
 	if(sc->data[SC_SIROMA_ICE_TEA])
 		dex += sc->data[SC_SIROMA_ICE_TEA]->val1;
+	if(sc->data[SC_INSPIRATION])
+		dex += sc->data[SC_INSPIRATION]->val3;
 
 	return (unsigned short)cap_value(dex,0,USHRT_MAX);
 }
@@ -3742,6 +3753,8 @@ static unsigned short status_calc_luk(struct block_list *bl, struct status_chang
 		luk += sc->data[SC_HARMONIZE]->val2;
 	if(sc->data[SC_PUTTI_TAILS_NOODLES])
 		luk += sc->data[SC_PUTTI_TAILS_NOODLES]->val1;
+	if(sc->data[SC_INSPIRATION])
+		luk += sc->data[SC_INSPIRATION]->val3;
 
 	return (unsigned short)cap_value(luk,0,USHRT_MAX);
 }
@@ -3845,6 +3858,8 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += sc->data[SC_STRIKING]->val2;
 	if(sc->data[SC_SHIELDSPELL_DEF] && sc->data[SC_SHIELDSPELL_DEF]->val1 == 3)
 		watk += sc->data[SC_SHIELDSPELL_DEF]->val2;
+	if(sc->data[SC_INSPIRATION])
+		watk += sc->data[SC_INSPIRATION]->val2;
 
 	return (unsigned short)cap_value(watk,0,USHRT_MAX);
 }
@@ -3929,6 +3944,8 @@ static signed short status_calc_hit(struct block_list *bl, struct status_change 
 		hit -= hit * sc->data[SC__GROOMY]->val3 / 100;
 	if(sc->data[SC_FEAR])
 		hit -= hit * 20 / 100;
+	if(sc->data[SC_INSPIRATION])
+		hit += 5 * sc->data[SC_INSPIRATION]->val1;
 
 	return (short)cap_value(hit,1,SHRT_MAX);
 }
@@ -4501,6 +4518,8 @@ static unsigned int status_calc_maxhp(struct block_list *bl, struct status_chang
 	if(sc->data[SC_LERADSDEW])
 		maxhp += maxhp * sc->data[SC_LERADSDEW]->val3 / 100;
 	if(sc->data[SC_FORCEOFVANGUARD])
+		maxhp += maxhp * 3 * sc->data[SC_FORCEOFVANGUARD]->val1 / 100;
+	if(sc->data[SC_FORCEOFVANGUARD]) //Custom value.
 		maxhp += maxhp * 3 * sc->data[SC_FORCEOFVANGUARD]->val1 / 100;
 
 	return cap_value(maxhp,1,UINT_MAX);
@@ -5347,6 +5366,32 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		}
 	}
 
+	if( sc->data[SC_INSPIRATION] )
+	{
+		if( type >= SC_COMMON_MIN && type <= SC_COMMON_MAX )
+			return 0; // Immune to status ailements
+		switch( type )
+		{
+			case SC_DEEPSLEEP:
+			case SC_SATURDAYNIGHTFEVER:
+			case SC_PYREXIA:
+			case SC_DEATHHURT:
+			case SC_MAGICMUSHROOM:
+			case SC_VENOMBLEED:
+			case SC_TOXIN:
+			case SC_OBLIVIONCURSE:
+			case SC_LEECHESEND:
+			case SC__ENERVATION:
+			case SC__GROOMY:
+			case SC__LAZINESS:
+			case SC__UNLUCKY:
+			case SC__WEAKNESS:
+			case SC__BODYPAINT:
+			case SC__IGNORANCE:
+				return 0;
+		}
+	}
+
 	if( status_isdead(bl) )
 		return 0;
 
@@ -5571,7 +5616,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		if (tick == 1) return 1; //Minimal duration: Only strip without causing the SC
 	break;
 	case SC_SATURDAYNIGHTFEVER:
-		if(sc->data[SC_BERSERK])
+		if(sc->data[SC_BERSERK] || sc->data[SC_INSPIRATION])
 			return 0;
 	break;
 	case SC_MAGNETICFIELD:
@@ -7071,6 +7116,16 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_MAGNETICFIELD:
 			val3 = tick / 1000;
 			tick = 1000;
+			break;
+		case SC_INSPIRATION:
+			if( sd )
+			{
+				val2 = (40 * val1) + (3 * sd->status.job_level); // ATK bonus
+				val3 = (sd->status.job_level / 10) * 2 + 12; // All stat bonus
+			}
+			val4 = tick / 1000;
+			tick = 1000;
+			status_change_clear_buffs(bl,3); //Remove buffs/debuffs
 			break;
 
 		default:
@@ -8781,6 +8836,22 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 					break; // Source no more under Magnetic Field
 			}
 			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
+		}
+		break;
+
+	case SC_INSPIRATION:
+		if(--(sce->val4) >= 0)
+		{ // Custom value of 1% Hp/Sp drain.
+			int hp = status->max_hp / 100;
+			int sp = status->max_sp / 100;
+			
+			if( status->sp <= sp )
+				status_change_end(bl,type,-1);
+			
+			status_zap(bl, hp, sp);
+			if( !sc->data[type] ) break;
+			sc_timer_next(1000+tick,status_change_timer,bl->id, data);
+			return 0;
 		}
 		break;
 

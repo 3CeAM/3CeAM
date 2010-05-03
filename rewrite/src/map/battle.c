@@ -3457,15 +3457,16 @@ struct Damage battle_calc_attack(int attack_type,struct block_list *bl,struct bl
 int battle_calc_return_damage(struct block_list *src, struct block_list *bl, int *damage, int flag)
 {
 	struct map_session_data* sd = NULL;
-	int rdamage = 0, max_damage;
+	int rdamage = 0, max_damage = status_get_hp(bl);
 	struct status_change *sc = status_get_sc(bl);
+	struct status_change *ssc = status_get_sc(src);
 
 	sd = BL_CAST(BL_PC, bl);
 
 	// Reflect Damage skill should reflect all damage types.
 	if( sc && sc->data[SC_REFLECTDAMAGE] )
 	{
-		max_damage = status_get_hp(bl) * status_get_lv(bl) / 100;
+		max_damage = max_damage * status_get_lv(bl) / 100;
 		rdamage = (*damage) * sc->data[SC_REFLECTDAMAGE]->val2 / 100;
 		if( rdamage > max_damage ) rdamage = max_damage;
 	}
@@ -3480,7 +3481,6 @@ int battle_calc_return_damage(struct block_list *src, struct block_list *bl, int
 		{
 			int dir = map_calc_dir(bl,src->x,src->y),
 				t_dir = unit_getdir(bl), rd1 = 0;
-			max_damage = status_get_hp(bl);
 
 			if( distance_bl(src,bl) <= 0 || !map_check_dir(dir,t_dir) )
 			{
@@ -3503,6 +3503,11 @@ int battle_calc_return_damage(struct block_list *src, struct block_list *bl, int
 			if( rdamage > max_damage )
 				rdamage = max_damage;
 			if( rdamage < 1 ) rdamage = 1;
+		}
+		if( ssc && ssc->data[SC_INSPIRATION] )
+		{
+			rdamage += (*damage) / 100;
+			rdamage = cap_value(rdamage,1,max_damage);
 		}
 	} else {
 		if (sd && sd->long_weapon_damage_return)

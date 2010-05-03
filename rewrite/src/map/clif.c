@@ -3105,7 +3105,7 @@ int clif_magicdecoy_list(struct map_session_data *sd, short x, short y)
 	}
 	else
 	{
-		clif_skill_fail(sd,NC_MAGICDECOY,0x2b,0,0);
+		clif_skill_fail(sd,NC_MAGICDECOY,0,0,0);
 		return 0;
 	}
 
@@ -5255,7 +5255,8 @@ int clif_status_change(struct block_list *bl, int type, int flag, unsigned int t
 		type == SI_BUMP || type == SI_READYSTORM || type == SI_READYDOWN ||
 		type == SI_READYTURN || type == SI_READYCOUNTER || type == SI_DODGE ||
 		type == SI_DEVIL || type == SI_NIGHT || type == SI_INTRAVISION || type == SI_REPRODUCE ||
-		type == SI_BLOODYLUST || type == SI_FORCEOFVANGUARD || type == SI_WARMER || type == SI_NEUTRALBARRIER )
+		type == SI_BLOODYLUST || type == SI_FORCEOFVANGUARD || type == SI_WARMER || type == SI_NEUTRALBARRIER ||
+		type == SI_OVERHEAT)
 		tick=0;
 
 	if( battle_config.display_status_timers && tick>0 )

@@ -7660,6 +7660,21 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
 		break;
+	
+	case LG_INSPIRATION:
+		if( sd )
+		{
+			if( !map[src->m].flag.noexppenalty )
+			{
+				sd->status.base_exp -= min(sd->status.base_exp, pc_nextbaseexp(sd) * 1 / 1000); //.1% penalty.
+				sd->status.job_exp -= min(sd->status.job_exp, pc_nextjobexp(sd) * 1 / 1000);
+				clif_updatestatus(sd,SP_BASEEXP);
+				clif_updatestatus(sd,SP_JOBEXP);
+			}
+			clif_skill_nodamage(bl,src,skillid,skilllv,
+				sc_start(bl, type, 100, skilllv, skill_get_time(skillid, skilllv)));
+		}
+		break;
 
 	case WA_SWING_DANCE:
 	case WA_SYMPHONY_OF_LOVER:
@@ -11615,14 +11630,13 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			return 0;
 		}
 		break;
-		/* Remove when these sc's are implemented. [pakpil]
 	case LG_PRESTIGE:
-		if( sc && (sc->data[SC_BANDING] || sc->data[SC_INSPIRATION]) )
+		if( sc && sc->data[SC_INSPIRATION] )
 		{
-			clif_skill_damage(sd,skill,0,0,0);
+			clif_skill_fail(sd,skill,0,0,0);
 			return 0;
 		}
-		break;*/
+		break;
 	case LG_RAGEBURST:
 		if( sd->rageball == 0 )
 		{
