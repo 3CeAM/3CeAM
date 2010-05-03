@@ -4519,8 +4519,8 @@ static unsigned int status_calc_maxhp(struct block_list *bl, struct status_chang
 		maxhp += maxhp * sc->data[SC_LERADSDEW]->val3 / 100;
 	if(sc->data[SC_FORCEOFVANGUARD])
 		maxhp += maxhp * 3 * sc->data[SC_FORCEOFVANGUARD]->val1 / 100;
-	if(sc->data[SC_FORCEOFVANGUARD]) //Custom value.
-		maxhp += maxhp * 3 * sc->data[SC_FORCEOFVANGUARD]->val1 / 100;
+	if(sc->data[SC_INSPIRATION]) //Custom value.
+		maxhp += maxhp * 3 * sc->data[SC_INSPIRATION]->val1 / 100;
 
 	return cap_value(maxhp,1,UINT_MAX);
 }
@@ -8746,7 +8746,7 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 	case SC_DEEPSLEEP:
 		if( --(sce->val4) >= 0 )
 		{ // Recovers 1% HP/SP every 2 seconds.
-			status_heal(bl, status->max_hp * 1 / 100, status->max_sp * 1 / 100, 2);
+			status_heal(bl, status->max_hp / 100, status->max_sp / 100, 2);
 			sc_timer_next(2000 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}
@@ -8777,8 +8777,8 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		// 1% HP/SP drain every 3 seconds [Jobbie]
 		if( --(sce->val3) >= 0 )
 		{
-			int hp = 1 * status->hp / 100;
-			int sp = 1 * status->sp / 100;
+			int hp = status->hp / 100;
+			int sp = status->sp / 100;
 			if( !status_charge(bl, hp, sp) )
 				break;
 			sc_timer_next(sce->val4+tick, status_change_timer, bl->id, data);
@@ -8789,7 +8789,7 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 	case SC_CRYSTALIZE:
 		if( --(sce->val4) >= 0 )
 		{ // Drains 2% of HP and 1% of SP every seconds.
-			status_charge(bl, status->max_hp * 2 / 100, status->max_sp * 1 / 100);
+			status_charge(bl, status->max_hp * 2 / 100, status->max_sp / 100);
 			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}
