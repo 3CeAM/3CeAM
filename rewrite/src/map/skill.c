@@ -1105,6 +1105,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		break;
 	case LG_EARTHDRIVE:
 		skill_break_equip(src, EQP_SHIELD, 500, BCT_SELF);
+		sc_start(bl, SC_EARTHDRIVE, 100, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case WM_METALICSOUND:
 		sc_start(bl, SC_CHAOS, 20 + 5 * skilllv, skilllv, skill_get_time(skillid,skilllv));
@@ -11649,7 +11650,7 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 	case SC_DIMENSIONDOOR:
 		if( sc && sc->data[SC_MAGNETICFIELD] )
 		{
-			clif_skill_fail(sd,skill,0,0);
+			clif_skill_fail(sd,skill,0,0,0);
 			return 0;
 		}
 		break;

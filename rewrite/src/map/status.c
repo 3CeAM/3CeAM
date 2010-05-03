@@ -490,6 +490,7 @@ void initChangeTables(void)
 	set_sc( LG_PIETY             , SC_BENEDICTIO         , SI_BENEDICTIO        , SCB_DEF_ELE );
 	set_sc( LG_EXEEDBREAK        , SC_EXEEDBREAK         , SI_EXEEDBREAK        , SCB_NONE );
 	set_sc( LG_INSPIRATION       , SC_INSPIRATION		 , SI_INSPIRATION       , SCB_MAXHP|SCB_WATK|SCB_HIT|SCB_VIT|SCB_AGI|SCB_STR|SCB_DEX|SCB_INT|SCB_LUK);
+	set_sc( LG_EARTHDRIVE        , SC_EARTHDRIVE         , SI_EARTHDRIVE        , SCB_DEF|SCB_ASPD );
 
 	set_sc( WA_SWING_DANCE                , SC_SWINGDANCE              , SI_SWINGDANCE                , SCB_SPEED|SCB_ASPD );
 	set_sc( WA_SYMPHONY_OF_LOVER          , SC_SYMPHONYOFLOVER         , SI_SYMPHONYOFLOVERS          , SCB_MDEF );
@@ -4079,6 +4080,8 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 		def += def * 2 * sc->data[SC_FORCEOFVANGUARD]->val1 / 100;
 	if(sc->data[SC_SATURDAYNIGHTFEVER])
 		def -= def * (10 + 10 * sc->data[SC_SATURDAYNIGHTFEVER]->val1) / 100;
+	if(sc->data[SC_EARTHDRIVE])
+		def -= def * 25 / 100;
 
 
 	return (signed char)cap_value(def,CHAR_MIN,CHAR_MAX);
@@ -4471,6 +4474,8 @@ static short status_calc_aspd_rate(struct block_list *bl, struct status_change *
 		aspd_rate -= aspd_rate * sc->data[SC_DANCEWITHWUG]->val3 / 100;	
 	if( sc->data[SC_GLOOMYDAY] )
 		aspd_rate += aspd_rate * sc->data[SC_GLOOMYDAY]->val3 / 100;
+	if( sc->data[SC_EARTHDRIVE] )
+		aspd_rate += aspd_rate * 25 / 100;
 
 	return (short)cap_value(aspd_rate,0,SHRT_MAX);
 }
