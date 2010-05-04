@@ -7039,7 +7039,7 @@ int pc_setcart(struct map_session_data *sd,int type)
  *------------------------------------------*/
 int pc_setfalcon(TBL_PC* sd, int flag)
 {
-	if( sd->sc.count && sd->sc.data[SC__GROOMY] )
+	if( sd->sc.data[SC__GROOMY] )
 		return 0;
 
 	if( flag )
@@ -7061,7 +7061,7 @@ int pc_setfalcon(TBL_PC* sd, int flag)
 int pc_setwarg(TBL_PC* sd, int flag)
 {
 
-	if( sd->sc.count && sd->sc.data[SC__GROOMY] )
+	if( sd->sc.data[SC__GROOMY] )
 		return 0;
 
 	if( flag ){
@@ -7083,7 +7083,7 @@ int pc_setriding(TBL_PC* sd, int flag)
 {
 	int option = 0, skillnum = 0;
 
-	if( sd->sc.count && sd->sc.data[SC__GROOMY] )
+	if( sd->sc.data[SC__GROOMY] )
 		return 0;
 	
 	if( (sd->class_&MAPID_UPPERMASK) == MAPID_KNIGHT || (sd->class_&MAPID_UPPERMASK) == MAPID_CRUSADER )

@@ -646,7 +646,7 @@ int merc_call_homunculus(struct map_session_data *sd)
 {
 	struct homun_data *hd;
 
-	if( sd->sc.count && sd->sc.data[SC__GROOMY] )
+	if( sd->sc.data[SC__GROOMY] )
 		return 0;
 
 	if (!sd->status.hom_id) //Create a new homun.
@@ -734,7 +734,7 @@ int merc_create_homunculus_request(struct map_session_data *sd, int class_)
 
 	nullpo_retr(1, sd);
 
-	if( sd->sc.count && sd->sc.data[SC__GROOMY] )
+	if( sd->sc.data[SC__GROOMY] )
 		return 0;
 
 	i = search_homunculusDB_index(class_,HOMUNCULUS_CLASS);
