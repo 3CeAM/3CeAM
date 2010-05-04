@@ -382,6 +382,7 @@ int map_moveblock(struct block_list *bl, int x1, int y1, unsigned int tick)
 	int x0 = bl->x, y0 = bl->y;
 	struct status_change *sc = NULL;
 	int moveblock = ( x0/BLOCK_SIZE != x1/BLOCK_SIZE || y0/BLOCK_SIZE != y1/BLOCK_SIZE);
+	struct map_session_data *sd = BL_CAST(BL_PC,bl);
 
 	if (!bl->prev) {
 		//Block not in map, just update coordinates, but do naught else.
@@ -423,39 +424,25 @@ int map_moveblock(struct block_list *bl, int x1, int y1, unsigned int tick)
 	else map_addblcell(bl);
 #endif
 
-	if (bl->type&BL_CHAR) {
-		if( sc && sc->data[SC__SHADOWFORM] )
-		{
-			struct map_session_data *s_sd = map_id2sd(sc->data[SC__SHADOWFORM]->val2);
-			if( s_sd )
-			{ 
-				if( !check_distance_bl(bl,&s_sd->bl,skill_get_range(SC_SHADOWFORM,sc->data[SC__SHADOWFORM]->val1)) )
-				{
-					status_change_end(bl,SC__SHADOWFORM,-1);
-					s_sd->shadowform_id = 0;
-				}
-			}
-		}
-		if( bl->type == BL_PC )
-		{
-			if( ((TBL_PC*)bl)->shadowform_id > 0 )
+	if( bl->type&BL_CHAR )
+	{
+		if( sd )
+		{ // Shadow Form distances
+			struct block_list *d_bl;
+			if( sc && sc->data[SC__SHADOWFORM] && ((d_bl = map_id2bl(sc->data[SC__SHADOWFORM]->val2)) == NULL || bl->m != d_bl->m || !check_distance_bl(bl,d_bl,skill_get_range(SC_SHADOWFORM,1))) )
+				status_change_end(bl,SC__SHADOWFORM,-1);
+			if( sd->shadowform_id && ((d_bl = map_id2bl(sd->shadowform_id)) == NULL || bl->m != d_bl->m || !check_distance_bl(bl,d_bl,skill_get_range(SC_SHADOWFORM,1))) )
 			{
-				struct block_list *s_bl = map_id2bl(((TBL_PC*)bl)->shadowform_id);
-				if( s_bl )
-				{
-					if( s_bl->m != bl->m || !check_distance_bl(bl,s_bl,skill_get_range(SC_SHADOWFORM,1)) ) // Asume lvl 1.
-					{
-						((TBL_PC*)bl)->shadowform_id = 0;
-						status_change_end(s_bl,SC__SHADOWFORM,-1);
-					}
-				}
-				else
-					((TBL_PC *)bl)->shadowform_id = 0;
+				if( d_bl ) status_change_end(d_bl,SC__SHADOWFORM,-1);
+				sd->shadowform_id = 0;
 			}
 		}
+
 		skill_unit_move(bl,tick,3);
-		if (sc) {
-			if (sc->count) {
+		if (sc)
+		{
+			if (sc->count)
+			{
 				if (sc->data[SC_CLOAKING])
 					skill_check_cloaking(bl, sc->data[SC_CLOAKING]);
 				if (sc->data[SC_CAMOUFLAGE])
@@ -470,8 +457,8 @@ int map_moveblock(struct block_list *bl, int x1, int y1, unsigned int tick)
 					skill_unit_move_unit_group(skill_id2group(sc->data[SC_STEALTHFIELD_MASTER]->val2), bl->m, x1-x0, y1-y0);
 			}
 		}
-	} else
-	if (bl->type == BL_NPC)
+	}
+	else if( bl->type == BL_NPC )
 		npc_setcells((TBL_NPC*)bl);
 
 	return 0;
@@ -1713,78 +1700,49 @@ int map_quit(struct map_session_data *sd)
 	if( sd->sc.count )
 	{
 		//Status that are not saved...
-		if(sd->sc.data[SC_BOSSMAPINFO])
-			status_change_end(&sd->bl,SC_BOSSMAPINFO,-1);
-		if(sd->sc.data[SC_AUTOTRADE])
-			status_change_end(&sd->bl,SC_AUTOTRADE,-1);
-		if(sd->sc.data[SC_SPURT])
-			status_change_end(&sd->bl,SC_SPURT,-1);
-		if(sd->sc.data[SC_BERSERK])
-			status_change_end(&sd->bl,SC_BERSERK,-1);
-		if(sd->sc.data[SC_TRICKDEAD])
-			status_change_end(&sd->bl,SC_TRICKDEAD,-1);
-		if(sd->sc.data[SC_GUILDAURA])
-			status_change_end(&sd->bl,SC_GUILDAURA,-1);
+		status_change_end(&sd->bl,SC_BOSSMAPINFO,-1);
+		status_change_end(&sd->bl,SC_AUTOTRADE,-1);
+		status_change_end(&sd->bl,SC_SPURT,-1);
+		status_change_end(&sd->bl,SC_BERSERK,-1);
+		status_change_end(&sd->bl,SC_TRICKDEAD,-1);
+		status_change_end(&sd->bl,SC_GUILDAURA,-1);
 		if(sd->sc.data[SC_ENDURE] && sd->sc.data[SC_ENDURE]->val4)
 			status_change_end(&sd->bl,SC_ENDURE,-1); //No need to save infinite endure.
-		if(sd->sc.data[SC_WEIGHT50])
-			status_change_end(&sd->bl,SC_WEIGHT50,-1);
-		if(sd->sc.data[SC_WEIGHT90])
-			status_change_end(&sd->bl,SC_WEIGHT90,-1);
-		if(sd->sc.data[SC_SATURDAYNIGHTFEVER])
-			status_change_end(&sd->bl,SC_SATURDAYNIGHTFEVER,-1);
-		if(sd->sc.data[SC_READING_SB])
-			status_change_end(&sd->bl,SC_READING_SB,-1);
-		if(sd->sc.data[SC_OVERHEAT_LIMITPOINT])
-			status_change_end(&sd->bl,SC_OVERHEAT_LIMITPOINT,-1);
-		if(sd->sc.data[SC_OVERHEAT])
-			status_change_end(&sd->bl,SC_OVERHEAT,-1);
-		if (battle_config.debuff_on_logout&1) {
-			if(sd->sc.data[SC_ORCISH])
-				status_change_end(&sd->bl,SC_ORCISH,-1);
-			if(sd->sc.data[SC_STRIPWEAPON])
-				status_change_end(&sd->bl,SC_STRIPWEAPON,-1);
-			if(sd->sc.data[SC_STRIPARMOR])
-				status_change_end(&sd->bl,SC_STRIPARMOR,-1);
-			if(sd->sc.data[SC_STRIPSHIELD])
-				status_change_end(&sd->bl,SC_STRIPSHIELD,-1);
-			if(sd->sc.data[SC_STRIPHELM])
-				status_change_end(&sd->bl,SC_STRIPHELM,-1);
-			if(sd->sc.data[SC__STRIPACCESSORY])
-				status_change_end(&sd->bl,SC__STRIPACCESSORY,-1);
-			if(sd->sc.data[SC_EXTREMITYFIST])
-				status_change_end(&sd->bl,SC_EXTREMITYFIST,-1);
-			if(sd->sc.data[SC_EXPLOSIONSPIRITS])
-				status_change_end(&sd->bl,SC_EXPLOSIONSPIRITS,-1);
-			if(sd->sc.data[SC_REGENERATION] && sd->sc.data[SC_REGENERATION]->val4)
+		status_change_end(&sd->bl,SC_WEIGHT50,-1);
+		status_change_end(&sd->bl,SC_WEIGHT90,-1);
+		status_change_end(&sd->bl,SC_SATURDAYNIGHTFEVER,-1);
+		status_change_end(&sd->bl,SC_READING_SB,-1);
+		status_change_end(&sd->bl,SC_OVERHEAT_LIMITPOINT,-1);
+		status_change_end(&sd->bl,SC_OVERHEAT,-1);
+
+		if (battle_config.debuff_on_logout&1)
+		{
+			status_change_end(&sd->bl,SC_ORCISH,-1);
+			status_change_end(&sd->bl,SC_STRIPWEAPON,-1);
+			status_change_end(&sd->bl,SC_STRIPARMOR,-1);
+			status_change_end(&sd->bl,SC_STRIPSHIELD,-1);
+			status_change_end(&sd->bl,SC_STRIPHELM,-1);
+			status_change_end(&sd->bl,SC__STRIPACCESSORY,-1);
+			status_change_end(&sd->bl,SC_EXTREMITYFIST,-1);
+			status_change_end(&sd->bl,SC_EXPLOSIONSPIRITS,-1);
+			if( sd->sc.data[SC_REGENERATION] && sd->sc.data[SC_REGENERATION]->val4 )
 				status_change_end(&sd->bl,SC_REGENERATION,-1);
 			//TO-DO Probably there are way more NPC_type negative status that are removed
-			if(sd->sc.data[SC_CHANGEUNDEAD])
-				status_change_end(&sd->bl,SC_CHANGEUNDEAD,-1);
+			status_change_end(&sd->bl,SC_CHANGEUNDEAD,-1);
 			// Both these statuses are removed on logout. [L0ne_W0lf]
-			if(sd->sc.data[SC_SLOWCAST])
-				status_change_end(&sd->bl,SC_SLOWCAST,-1);
-			if(sd->sc.data[SC_CRITICALWOUND])
-				status_change_end(&sd->bl,SC_CRITICALWOUND,-1);
+			status_change_end(&sd->bl,SC_SLOWCAST,-1);
+			status_change_end(&sd->bl,SC_CRITICALWOUND,-1);
 		}
 		if (battle_config.debuff_on_logout&2)
 		{
-			if(sd->sc.data[SC_MAXIMIZEPOWER])
-				status_change_end(&sd->bl,SC_MAXIMIZEPOWER,-1);
-			if(sd->sc.data[SC_MAXOVERTHRUST])
-				status_change_end(&sd->bl,SC_MAXOVERTHRUST,-1);
-			if(sd->sc.data[SC_STEELBODY])
-				status_change_end(&sd->bl,SC_STEELBODY,-1);
-			if(sd->sc.data[SC_PRESERVE])
-				status_change_end(&sd->bl,SC_PRESERVE,-1);
-			if(sd->sc.data[SC_KAAHI])
-				status_change_end(&sd->bl,SC_KAAHI,-1);
-			if(sd->sc.data[SC_SPIRIT])
-				status_change_end(&sd->bl,SC_SPIRIT,-1);
-			if(sd->sc.data[SC__REPRODUCE])
-				status_change_end(&sd->bl,SC__REPRODUCE,-1);
-			if(sd->sc.data[SC__INVISIBILITY]) // Still need confirm this. [pakpil]
-				status_change_end(&sd->bl,SC__INVISIBILITY,-1);
+			status_change_end(&sd->bl,SC_MAXIMIZEPOWER,-1);
+			status_change_end(&sd->bl,SC_MAXOVERTHRUST,-1);
+			status_change_end(&sd->bl,SC_STEELBODY,-1);
+			status_change_end(&sd->bl,SC_PRESERVE,-1);
+			status_change_end(&sd->bl,SC_KAAHI,-1);
+			status_change_end(&sd->bl,SC_SPIRIT,-1);
+			status_change_end(&sd->bl,SC__REPRODUCE,-1);
+			status_change_end(&sd->bl,SC__INVISIBILITY,-1);
 		}
 	}
 	

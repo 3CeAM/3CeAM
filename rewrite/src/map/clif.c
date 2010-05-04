@@ -3151,43 +3151,37 @@ int clif_spellbook_list(struct map_session_data *sd)
 /*===========================================
  * Skill list for Auto Shadow Spell
  *------------------------------------------*/
-int clif_skill_select_request( struct map_session_data *sd )
+int clif_skill_select_request(struct map_session_data *sd)
 {
-#if PACKETVER >= 20081210
 	int fd, i, c;
-
 	nullpo_retr(0,sd);
-
 	fd = sd->fd;
-
 	if( !fd ) return 0;
 
 	WFIFOHEAD(fd, 2 * 6 + 4);
 	WFIFOW(fd,0) = 0x442;
-	for( i = 0, c = 0; i < MAX_SKILL; i++)
-	{
-		if( sd->status.skill[i].flag == 13 && sd->status.skill[i].id > 0 && sd->status.skill[i].id <= NJ_ISSEN &&
-			skill_get_type(sd->status.skill[i].id) == BF_MAGIC )
-		{
-			// Can't auto cast both Extended class and 3rd class skills.
+	for( i = 0, c = 0; i < MAX_SKILL; i++ )
+		if( sd->status.skill[i].flag == 13 && sd->status.skill[i].id > 0 && sd->status.skill[i].id < GS_GLITTERING && skill_get_type(sd->status.skill[i].id) == BF_MAGIC )
+		{ // Can't auto cast both Extended class and 3rd class skills.
 			WFIFOW(fd,8+c*2) = sd->status.skill[i].id;
 			c++;
 		}
-	}
-	WFIFOW(fd,2) = 8+c*2;
-	WFIFOL(fd,4) = c;
-	WFIFOSET(fd,WFIFOW(fd,2));
+
 	if( c > 0 )
 	{
+		WFIFOW(fd,2) = 8 + c * 2;
+		WFIFOL(fd,4) = c;
+		WFIFOSET(fd,WFIFOW(fd,2));
 		sd->menuskill_id = SC_AUTOSHADOWSPELL;
 		sd->menuskill_val = c;
-		return 1;
 	}
-#endif
+	else
+	{
+		status_change_end(&sd->bl,SC_STOP,-1);
+		clif_skill_fail(sd,SC_AUTOSHADOWSPELL,0x15,0,0);
+	}
 
-	status_change_end(&sd->bl,SC_STOP,-1);
-	clif_skill_fail(sd,SC_AUTOSHADOWSPELL,0x0,0,0);
-	return 0;
+	return 1;
 }
 
 /*==========================================
@@ -6595,7 +6589,7 @@ int clif_sendegg(struct map_session_data *sd)
 		clif_displaymessage(fd, "Pets are not allowed in Guild Wars.");
 		return 0;
 	}
-	if( sd->sc.count && sd->sc.data[SC__GROOMY] )
+	if( sd->sc.data[SC__GROOMY] )
 		return 0;
 
 	WFIFOHEAD(fd, MAX_INVENTORY * 2 + 4);
@@ -9369,13 +9363,7 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 		if( sd->sc.option&OPTION_RIDING_WUG && sd->weapontype1 )
 			return;
 
-		if( sd->sc.data[SC_BASILICA] )
-			return;
-
-		if( sd->sc.data[SC_CRYSTALIZE] )
-			return;
-
-		if( sd->sc.data[SC__SHADOWFORM] )
+		if( sd->sc.data[SC_BASILICA] || sd->sc.data[SC_CRYSTALIZE] || sd->sc.data[SC__SHADOWFORM] )
 			return;
 
 		if( (sd->sc.count && sd->sc.data[SC__MANHOLE]) || (tsc && tsc->data[SC__MANHOLE]) )

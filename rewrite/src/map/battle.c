@@ -634,11 +634,8 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			pc_addrageball(sd,skill_get_time(LG_FORCEOFVANGUARD,sce->val1),sce->val3);
 	}
 
-	if( sc && sc->data[SC__DEADLYINFECT] && damage > 0 )
-	{
-		if( rand()%100 < 50 ) // Estimated value
-			status_change_spread(bl, src);
-	}
+	if( sc && sc->data[SC__DEADLYINFECT] && damage > 0 && rand()%100 < 20 )
+		status_change_spread(bl, src); // Deadly infect attacked side
 
 	//SC effects from caster side.
 	sc = status_get_sc(src);
@@ -647,16 +644,12 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 	{
 		if( sc->data[SC_INVINCIBLE] && !sc->data[SC_INVINCIBLEOFF] )
 			damage += damage * 75 / 100;
+		if( sc->data[SC__DEADLYINFECT] && damage > 0 && rand()%100 < 20 )
+			status_change_spread(src, bl);
 	}
 
 	if( sc && sc->data[SC_POISONINGWEAPON] && skill_num != GC_VENOMPRESSURE && (flag&BF_WEAPON) && damage > 0 && rand()%100 < sc->data[SC_POISONINGWEAPON]->val3 )
 		sc_start(bl,sc->data[SC_POISONINGWEAPON]->val2,100,sc->data[SC_POISONINGWEAPON]->val1,skill_get_time2(GC_POISONINGWEAPON,sc->data[SC_POISONINGWEAPON]->val1));
-
-	if( sc && sc->data[SC__DEADLYINFECT] && damage > 0 )
-	{
-		if( rand()%100 < 50 )
-			status_change_spread(src, bl);
-	}
 
 	if (battle_config.pk_mode && sd && bl->type == BL_PC && damage)
   	{
@@ -1453,6 +1446,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					break;
 				case GC_VENOMPRESSURE:
 					hitrate += 10 + 4 * skill_lv;
+					break;
+				case SC_FATALMENACE:
+					hitrate -= (35 - skill_lv * 5);
 					break;
 			}
 
@@ -3494,15 +3490,13 @@ int battle_calc_return_damage(struct block_list *src, struct block_list *bl, int
 		if( sc && sc->data[SC_REFLECTSHIELD] )
 		{
 			rdamage += (*damage) * sc->data[SC_REFLECTSHIELD]->val2 / 100;
-			if (rdamage < 1) rdamage = 1;
+			rdamage = cap_value(rdamage,1,max_damage);
 		}
 		if( sc && sc->data[SC_SHIELDSPELL_DEF] && sc->data[SC_SHIELDSPELL_DEF]->val1 == 2 )
 		{
 			max_damage = status_get_max_hp(bl);
 			rdamage += (*damage) * sc->data[SC_SHIELDSPELL_DEF]->val2 / 100;
-			if( rdamage > max_damage )
-				rdamage = max_damage;
-			if( rdamage < 1 ) rdamage = 1;
+			rdamage = cap_value(rdamage,1,max_damage);
 		}
 		if( ssc && ssc->data[SC_INSPIRATION] )
 		{
@@ -3854,30 +3848,22 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			}
 		}
 	}
-	if( sc && sc->data[SC__AUTOSHADOWSPELL] && wd.flag&BF_SHORT )
+	if( sd && wd.flag&BF_SHORT && sc && sc->data[SC__AUTOSHADOWSPELL] && rand()%100 < sc->data[SC__AUTOSHADOWSPELL]->val3 && sd->status.skill[sc->data[SC__AUTOSHADOWSPELL]->val1].id != 0 && sd->status.skill[sc->data[SC__AUTOSHADOWSPELL]->val1].flag == 13 )
 	{
-		if( sd )
+		int r_skill = sd->status.skill[sc->data[SC__AUTOSHADOWSPELL]->val1].id,
+			r_lv = sc->data[SC__AUTOSHADOWSPELL]->val2;
+
+		switch( skill_get_casttype(r_skill) )
 		{
-			int r_skill, r_lv;
-			if( (r_skill = sd->status.skill[sc->data[SC__AUTOSHADOWSPELL]->val1].id) != 0 && r_skill <= NJ_ISSEN )
-			{
-				if( rand()%1000 < sc->data[SC__AUTOSHADOWSPELL]->val3 )
-				{
-					r_lv = sd->status.skill[sc->data[SC__AUTOSHADOWSPELL]->val1].lv;
-					switch ( skill_get_casttype(r_skill) )
-					{
-						case CAST_GROUND:
-							skill_castend_pos2(src, target->x, target->y, r_skill, r_lv, tick, flag);
-							break;
-						case CAST_NODAMAGE:
-							skill_castend_nodamage_id(src, target, r_skill, r_lv, tick, flag);
-							break;
-						case CAST_DAMAGE:
-							skill_castend_damage_id(src, target, r_skill, r_lv, tick, flag);
-							break;
-					}
-				}
-			}
+		case CAST_GROUND:
+			skill_castend_pos2(src, target->x, target->y, r_skill, r_lv, tick, flag);
+			break;
+		case CAST_NODAMAGE:
+			skill_castend_nodamage_id(src, target, r_skill, r_lv, tick, flag);
+			break;
+		case CAST_DAMAGE:
+			skill_castend_damage_id(src, target, r_skill, r_lv, tick, flag);
+			break;
 		}
 	}
 
