@@ -5105,8 +5105,6 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 	{
 	case SC_DECREASEAGI:
 	case SC_SILENCE:
-		if( sc && sc->data[SC__UNLUCKY] )
-			return tick;
 	case SC_COMA:
 	case SC_INCREASEAGI:
 	case SC_BLESSING:
@@ -5141,14 +5139,18 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 	
 	sd = BL_CAST(BL_PC,bl);
 	status = status_get_status_data(bl);
+	sc = status_get_sc(bl);
+
 	switch (type)
 	{
-	case SC_STUN:
 	case SC_POISON:
-	case SC_DPOISON:
 	case SC_SILENCE:
+		if( sc && sc->data[SC__UNLUCKY] )
+			return tick;
+	case SC_STUN:
+	case SC_DPOISON:
 	case SC_BLEEDING:
-		sc_def = 3 +status->vit;
+		sc_def = 3 + status->vit;
 		break;
 	case SC_SLEEP:
 	case SC_DEEPSLEEP:
@@ -5259,8 +5261,7 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 		}
 	}
 	
-	sc = status_get_sc(bl);
-	if (sc && sc->count)
+	if( sc && sc->count )
 	{
 		if( sc->data[SC_SCRESIST] )
 			sc_def += sc->data[SC_SCRESIST]->val1; //Status resist

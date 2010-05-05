@@ -8971,7 +8971,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case SC_FEINTBOMB:
 		clif_skill_nodamage(src,src,skillid,skilllv,1);
 		skill_unitsetting(src,skillid,skilllv,x,y,0); // Set bomb on current Position
-		skill_blown(src,src,6,unit_getdir(src),0, true);
+		skill_blown(src,src,6,unit_getdir(src),0);
 		break;
 
 	case LG_OVERBRAND:
