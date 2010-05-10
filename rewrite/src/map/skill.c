@@ -2353,7 +2353,7 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 			else
 			{
 				clif_damage(s_bl,s_bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,dmg.type,dmg.damage2);
-				status_fix_damage(NULL, s_bl, damage, 0);
+				status_damage(bl, s_bl, damage, 0, 0, 32);
 			}
 		}
 	}

@@ -805,6 +805,7 @@ int status_charge(struct block_list* bl, int hp, int sp)
 //If flag&4, if killed, mob must not give exp/loot.
 //If flag&8, sp loss on dead target.
 //If flag&16, cancel casting on damage
+//If flag&32, damage redirected by ShadowForm.
 int status_damage(struct block_list *src,struct block_list *target,int hp, int sp, int walkdelay, int flag)
 {
 	struct status_data *status;
@@ -844,6 +845,16 @@ int status_damage(struct block_list *src,struct block_list *target,int hp, int s
 	sc = status_get_sc(target);
 	if( battle_config.invincible_nodamage && src && sc && sc->data[SC_INVINCIBLE] && !sc->data[SC_INVINCIBLEOFF] )
 		hp = 1;
+
+	if( hp && flag&32 )
+	{
+		if( sc && sc->data[SC_REFLECTDAMAGE] )
+		{
+			int rdamage = battle_calc_return_damage(src,target,&hp,BF_SHORT);
+			if( src != target )
+				map_foreachinrange(battle_damage_area,target,skill_get_splash(LG_REFLECTDAMAGE,1),BL_CHAR,gettick(),target,status_get_amotion(src),status_get_dmotion(src),rdamage,status->race);
+		}
+	}
 
 	if( hp && !(flag&(1|8)) ) {
 		if( sc ) {

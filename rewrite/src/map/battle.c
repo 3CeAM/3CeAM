@@ -3808,7 +3808,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			else
 			{
 				clif_damage(s_bl, s_bl, tick, wd.amotion, wd.dmotion, damage, wd.div_ , wd.type, wd.damage2);
-				status_fix_damage(NULL, s_bl, damage, 0);
+				status_damage(target, s_bl, damage, 0, 0, 32);
 			}
 		}
 	}

@@ -4151,7 +4151,7 @@ int clif_damage(struct block_list* src, struct block_list* dst, unsigned int tic
 		WBUFW(buf,22) = min(damage, SHRT_MAX);
 		WBUFW(buf,i + 27) = damage2;
 #else
-		WBUFL(buf,22) = min(damage, SHRT_MAX);
+		WBUFL(buf,22) = min(damage, INT_MAX);
 		WBUFL(buf,i+ 27) = damage2;
 #endif
 	}
