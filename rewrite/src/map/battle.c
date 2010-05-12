@@ -640,33 +640,35 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 	//SC effects from caster side.
 	sc = status_get_sc(src);
 
-	if (sc && sc->count)
+	if( sc && sc->count )
 	{
 		if( sc->data[SC_INVINCIBLE] && !sc->data[SC_INVINCIBLEOFF] )
 			damage += damage * 75 / 100;
+		if( sc->data[SC_POISONINGWEAPON] && skill_num != GC_VENOMPRESSURE && (flag&BF_WEAPON) && damage > 0 && rand()%100 < sc->data[SC_POISONINGWEAPON]->val3 )
+			sc_start(bl,sc->data[SC_POISONINGWEAPON]->val2,100,sc->data[SC_POISONINGWEAPON]->val1,skill_get_time2(GC_POISONINGWEAPON,sc->data[SC_POISONINGWEAPON]->val1));
 		if( sc->data[SC__DEADLYINFECT] && damage > 0 && rand()%100 < 20 )
 			status_change_spread(src, bl);
 	}
 
-	if( sc && sc->data[SC_POISONINGWEAPON] && skill_num != GC_VENOMPRESSURE && (flag&BF_WEAPON) && damage > 0 && rand()%100 < sc->data[SC_POISONINGWEAPON]->val3 )
-		sc_start(bl,sc->data[SC_POISONINGWEAPON]->val2,100,sc->data[SC_POISONINGWEAPON]->val1,skill_get_time2(GC_POISONINGWEAPON,sc->data[SC_POISONINGWEAPON]->val1));
-
-	if (battle_config.pk_mode && sd && bl->type == BL_PC && damage)
+	if( battle_config.pk_mode && sd && bl->type == BL_PC && damage )
   	{
-		if (flag & BF_SKILL) { //Skills get a different reduction than non-skills. [Skotlex]
-			if (flag&BF_WEAPON)
+		if( flag & BF_SKILL )
+		{ //Skills get a different reduction than non-skills. [Skotlex]
+			if( flag&BF_WEAPON )
 				damage = damage * battle_config.pk_weapon_damage_rate/100;
-			if (flag&BF_MAGIC)
+			if( flag&BF_MAGIC )
 				damage = damage * battle_config.pk_magic_damage_rate/100;
-			if (flag&BF_MISC)
+			if( flag&BF_MISC )
 				damage = damage * battle_config.pk_misc_damage_rate/100;
-		} else { //Normal attacks get reductions based on range.
-			if (flag & BF_SHORT)
+		}
+		else
+		{ //Normal attacks get reductions based on range.
+			if( flag&BF_SHORT )
 				damage = damage * battle_config.pk_short_damage_rate/100;
-			if (flag & BF_LONG)
+			if( flag&BF_LONG )
 				damage = damage * battle_config.pk_long_damage_rate/100;
 		}
-		if(!damage) damage  = 1;
+		if( !damage ) damage  = 1;
 	}
 
 	if(battle_config.skill_min_damage && damage > 0 && damage < div_)
