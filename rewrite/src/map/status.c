@@ -1435,14 +1435,13 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 	case BL_PC:
 		{
 			struct map_session_data *sd = (TBL_PC*) target;
-			if (pc_isinvisible(sd))
+			if( pc_isinvisible(sd) )
 				return 0;
-			if ( tsc->data[SC_CLOAKINGEXCEED] && !(status->mode&MD_BOSS) )
+			if( tsc->data[SC_CLOAKINGEXCEED] && !(status->mode&MD_BOSS) )
 				return 0;
-			if (tsc->option&hide_flag && !(status->mode&MD_BOSS) &&
-				(sd->special_state.perfect_hiding || !(status->mode&MD_DETECTOR)))
+			if( tsc->option&hide_flag && !(status->mode&MD_BOSS) && (sd->special_state.perfect_hiding || !(status->mode&MD_DETECTOR)))
 				return 0;
-			if ( tsc->data[SC_CAMOUFLAGE] && !skill_num && !(status->mode&MD_BOSS) && !(status->mode&MD_DETECTOR) )
+			if( tsc->data[SC_CAMOUFLAGE] && !(status->mode&(MD_BOSS|MD_DETECTOR)) && !skill_num )
 				return 0;
 			if( tsc->data[SC_STEALTHFIELD] )
 				return 0;
@@ -1501,15 +1500,13 @@ int status_check_visibility(struct block_list *src, struct block_list *target)
 	case BL_PC:
 		if( tsc->data[SC_CLOAKINGEXCEED] && !(status->mode&MD_BOSS) )
 				return 0;
-		if( (tsc->option&(OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK) || (tsc && tsc->data[SC__INVISIBILITY])) &&
-			!(status->mode&MD_BOSS) && (((TBL_PC*)target)->special_state.perfect_hiding || !(status->mode&MD_DETECTOR) ||
-			(tsc->data[SC_CAMOUFLAGE])) )
+		if( (tsc->option&(OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK) || tsc->data[SC__INVISIBILITY] || tsc->data[SC_CAMOUFLAGE]) && !(status->mode&MD_BOSS) &&
+			( ((TBL_PC*)target)->special_state.perfect_hiding || !(status->mode&MD_DETECTOR) ) )
 			return 0;
 		break;
 	default:
-		if (tsc && (tsc->option&(OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK) || (tsc->data[SC_CAMOUFLAGE])) &&
-			!(status->mode&(MD_BOSS|MD_DETECTOR)))
-				return 0;
+		if( tsc && (tsc->option&(OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK) || tsc->data[SC_CAMOUFLAGE]) && !(status->mode&(MD_BOSS|MD_DETECTOR)) )
+			return 0;
 	}
 
 	return 1;
@@ -5511,6 +5508,10 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		//if (sd && val1 < 3 && skill_check_cloaking(bl,NULL))
 		if( sd && pc_checkskill(sd, AS_CLOAKING) < 3 && !skill_check_cloaking(bl,NULL) )
 			return 0;
+	case SC_CLOAKINGEXCEED:
+	case SC_HIDING:
+		if( sc->data[SC_BITE] )
+			return 0; // Prevent Cloaking, Exceed and Hiding
 	break;
 	case SC_MODECHANGE:
 	{
@@ -8671,8 +8672,7 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 	case SC_CAMOUFLAGE:
 		if( --(sce->val2)>0 )
 		{
-			if( !status_charge(bl, 0, 7 - sce->val1) )
-			if( status->sp < 0 ) break;
+			status_charge(bl,0,7 - sce->val1);
 			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}

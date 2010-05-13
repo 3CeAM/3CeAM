@@ -142,6 +142,7 @@ struct map_session_data {
 		unsigned improv_flag : 1;
 		unsigned magicmushroom_flag : 1;
 		unsigned no_gemstone : 1; // If a skill have a partner near, it don't consume gemstone but SP from all (ADORAMUS, COMET)
+		unsigned fearbreeze : 4; // Arrows used on SC_FEARBREEZE
 	} state;
 	struct {
 		unsigned char no_weapon_damage, no_magic_damage, no_misc_damage;
