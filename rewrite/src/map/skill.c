@@ -351,7 +351,7 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, int skill
 	}
 
 	if( skill_id == AB_HIGHNESSHEAL )
-		hp = (int)(hp * (4 + 0.6 * (skill_lv - 1))) / 2;
+		hp = (hp * (20 + 3 * (skill_lv - 1))) / 10;
 
 	if( ( (target && target->type == BL_MER) || !heal ) && skill_id != NPC_EVILLAND )
 		hp >>= 1;
@@ -1006,9 +1006,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		skill_castend_nodamage_id(src,bl,skillid,skilllv,tick,BCT_ENEMY);
 		break;
 	case AB_ADORAMUS:
-		if( tsc && tsc->data[SC_DECREASEAGI] )
-			return 0; //Prevent duplicate agi-down effect.
-		else
+		if( tsc && !tsc->data[SC_DECREASEAGI] ) //Prevent duplicate agi-down effect.
 			sc_start(bl, SC_ADORAMUS, 100, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case WL_FROSTMISTY:
@@ -4331,11 +4329,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case AL_DECAGI:
-		if( tsc && tsc->data[SC_ADORAMUS] )
-			break; //Prevent duplicate agi-down effect.
 	case MER_DECAGI:
-		clif_skill_nodamage (src, bl, skillid, skilllv,
-			sc_start(bl, type, (40 + skilllv * 2 + (status_get_lv(src) + sstatus->int_)/5), skilllv, skill_get_time(skillid,skilllv)));
+		if( tsc && !tsc->data[SC_ADORAMUS] ) //Prevent duplicate agi-down effect.
+			clif_skill_nodamage (src, bl, skillid, skilllv,
+				sc_start(bl, type, (40 + skilllv * 2 + (status_get_lv(src) + sstatus->int_)/5), skilllv, skill_get_time(skillid,skilllv)));
 		break;
 
 	case AL_CRUCIS:
@@ -5591,6 +5588,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		//Nothing stripped.
 		if( sd && !i )
 			clif_skill_fail(sd,skillid,0,0,0);
+
+		if( skillid == SC_STRIPACCESSARY && i )
+			clif_status_change(src, SI_ACTIONDELAY, 1, 1000, 0, 0, 1);
 	}
 		break;
 
@@ -11406,7 +11406,7 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		break;
 	case AB_ANCILLA:
 		{
-			int count = 0, i;
+			int count = 0;
 			for( i = 0; i < MAX_INVENTORY; i ++ )
 				if( sd->status.inventory[i].nameid == ITEMID_ANCILLA )
 					count += sd->status.inventory[i].amount;
