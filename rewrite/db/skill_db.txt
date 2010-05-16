@@ -993,7 +993,7 @@
 2241,0,6,4,0,0,0,3,0,no,0,0,0,none,0,		RA_WUGRIDER,Warg Rider
 2242,0,6,4,0,0x2,1,1,0,no,0,0,0,weapon,0,	RA_WUGDASH,Warg Dash
 2243,9,8,1,-1,0,0,5,1,no,0,0,0,weapon,0,	RA_WUGSTRIKE,Warg Strike
-2244,9,8,1,0,0,0,5,1,no,0,0,0,weapon,0,		RA_WUGBITE,Warg Bite
+2244,9,8,1,-1,0,0,5,1,no,0,0,0,weapon,0,	RA_WUGBITE,Warg Bite
 2245,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		RA_TOOTHOFWUG,Tooth of Warg
 2246,0,6,4,0,0x2,3:4:5:6:7,5,0,no,0,0,0,weapon,0,	RA_SENSITIVEKEEN,Sensitive Keen
 2247,0,6,4,0,0x1,0,5,0,no,0,0,0,weapon,0,	RA_CAMOUFLAGE,Camouflage
@@ -1144,7 +1144,7 @@
 2443,0,6,4,3,0,0,5,-1,yes,0,0,0,magic,0,		SO_FIREWALK,Fire Walk
 2444,0,6,4,4,0,0,5,-1,yes,0,0,0,magic,0,		SO_ELECTRICWALK,Electric Walk
 2445,0,6,0,0,0x1,0,5,1,no,0,0,0,none,0,			SO_SPELLFIST,Spell Fist
-2446,9,6,2,2,0,0,5,3,yes,0,0,0,magic,0,			SO_EARTHGRAVE,Earth Grave
+2446,9,6,2,2,0,0,5,-3,yes,0,0,0,magic,0,			SO_EARTHGRAVE,Earth Grave
 2447,9,6,2,1,0,0,5,-1,yes,0,0,0,magic,0,		SO_DIAMONDDUST,Diamond Dust
 2448,9,6,1,5,0,0,5,-1,yes,0,0,0,magic,0,		SO_POISON_BUSTER,Poison Buster
 2449,9,8,2,0,0,3:3:4:4:5,5,-3:-4:-5:-6:-7,yes,0,0,0,magic,0,	SO_PSYCHIC_WAVE,Psychic Wave
