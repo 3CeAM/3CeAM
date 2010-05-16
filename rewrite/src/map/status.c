@@ -5786,9 +5786,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		status_change_end(bl,SC_BLESSING,-1);
 		status_change_end(bl,SC_INCREASEAGI,-1);
 		break;
-	case SC_ACCELERATION:
-		status_change_end(bl,SC_INCREASEAGI,-1);
-		break;
 	case SC_SWINGDANCE:
 	case SC_SYMPHONYOFLOVER:
 	case SC_MOONLITSERENADE:
@@ -6991,8 +6988,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			tick = 0;
 			break;
 		case SC_WARMER:
-			val4 = tick / 3000;
-			tick = 3000;
 			status_change_end(bl, SC_FREEZE, -1);
 			status_change_end(bl, SC_FREEZING, -1);
 			status_change_end(bl, SC_CRYSTALIZE, -1);
@@ -8694,15 +8689,6 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 			if( !status_charge(bl, 0, (status->sp * 10 - sce->val1) / 100) )// 10% - skilllv.
 				break;
 			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
-			return 0;
-		}
-		break;
-
-	case SC_WARMER:
-		if( --(sce->val4) >= 0 )
-		{
-			status_heal(bl, 130 * sce->val1, 0, 2);
-			sc_timer_next(3000 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}
 		break;

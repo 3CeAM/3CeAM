@@ -8636,11 +8636,8 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		map_foreachinarea(skill_graffitiremover,src->m,x-i,y-i,x+i,y+i,BL_SKILL);
 		break;
 	case SO_CLOUD_KILL:
-		flag|=4;
-		skill_unitsetting(src,skillid,skilllv,x,y,0);
-		break;
 	case SO_WARMER:
-		flag|=8;
+		flag|=(skillid == SO_WARMER)?8:4;
 		skill_unitsetting(src,skillid,skilllv,x,y,0);
 		break;
 
@@ -8886,10 +8883,9 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		break;
 
 	case AB_EPICLESIS:
-		sg = skill_unitsetting(src, skillid, skilllv, x, y, flag);
-		if( sg )
+		if( sg = skill_unitsetting(src, skillid, skilllv, x, y, 0) )
 		{
-			int i = sg->unit->range;
+			i = sg->unit->range;
 			map_foreachinarea(skill_area_sub, src->m, x - i, y - i, x + i, y + i, BL_CHAR, src, ALL_RESURRECTION, 1, tick, flag|BCT_NOENEMY|1,skill_castend_nodamage_id);
 		}
 		break;
@@ -9466,8 +9462,6 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 	case SA_VOLCANO:
 	case SA_DELUGE:
 	case SA_VIOLENTGALE:
-	case SO_CLOUD_KILL:
-	case SO_WARMER:
 	{
 		struct skill_unit_group *old_sg;
 		old_sg = skill_locate_element_field(src);
@@ -9481,17 +9475,9 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 				if (limit < 0)	//This can happen...
 					limit = skill_get_time(skillid,skilllv);
 			}
-			
+			skill_clear_group(src, 1);
 			/*TODO: Deluge, Volcano, Violentgale should not be casted on top of Warmer skill.
 					Warmer also should not be casted on top of Land Protector skill. */
-			switch( skillid )
-			{
-				case SO_CLOUD_KILL: skill_clear_group(src, 4); break;
-				case SO_WARMER: skill_clear_group(src, 8); break;
-				default:
-					skill_clear_group(src, 1);
-					break;
-			}
 		}
 		break;
 	}
@@ -9626,6 +9612,13 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 
 	case WM_REVERBERATION:
 		interval = limit;
+		break;
+
+	case SO_CLOUD_KILL:
+		skill_clear_group(src, 4);
+		break;
+	case SO_WARMER:
+		skill_clear_group(src, 8);
 		break;
 
 	case GN_WALLOFTHORN:
@@ -9875,7 +9868,6 @@ static int skill_unit_onplace (struct skill_unit *src, struct block_list *bl, un
 	case UNT_VOLCANO:
 	case UNT_DELUGE:
 	case UNT_VIOLENTGALE:
-	case UNT_WARMER:
 		if(!sce)
 			sc_start(bl,type,100,sg->skill_lv,sg->limit);
 		break;
@@ -10441,8 +10433,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 		case UNT_EPICLESIS:
 			if( bl->type == BL_PC && !battle_check_undead(tstatus->race, tstatus->def_ele) && tstatus->race != RC_DEMON )
 			{
-				int hp;
-				int sp;
+				int hp, sp;
 				switch( sg->skill_lv )
 				{
 					case 1: case 2: hp = 3; sp = 2; break;
@@ -10456,7 +10447,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 					clif_skill_nodamage(&src->bl, bl, AL_HEAL, hp, 1);
 				if( tstatus->sp != tstatus->max_sp )
 					clif_skill_nodamage(&src->bl, bl, MG_SRECOVERY, sp, 1);
-				sc_start(bl, SC_EPICLESIS, 100, sg->skill_lv, skill_get_time(sg->skill_id, sg->skill_lv));
+				sc_start(bl, type, 100, sg->skill_lv, sg->interval + 100);
 			}
 			/* Enable this if kRO fix the current skill. Currently no damage on undead and demon monster. [Jobbie]
 			else if( battle_check_target(ss, bl, BCT_ENEMY) > 0 && battle_check_undead(tstatus->race, tstatus->def_ele) )
@@ -10569,6 +10560,17 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			skill_attack(skill_get_type(sg->skill_id),ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
 			break;
 
+		case UNT_WARMER:
+			if( bl->type == BL_PC && !battle_check_undead(tstatus->race, tstatus->def_ele) && tstatus->race != RC_DEMON )
+			{
+				int hp = 130 * sg->skill_lv;
+				status_heal(bl, hp, 0, 0);
+				if( tstatus->hp != tstatus->max_hp )
+					clif_skill_nodamage(&src->bl, bl, AL_HEAL, hp, 1);
+				sc_start(bl, type, 100, sg->skill_lv, sg->interval + 100);
+			}
+			break;
+
 		case UNT_VACUUM_EXTREME:
 			sc_start(bl, SC_VACUUM_EXTREME, 100, sg->skill_lv, sg->limit);
 			break;
@@ -10619,8 +10621,10 @@ int skill_unit_onout (struct skill_unit *src, struct block_list *bl, unsigned in
 			status_change_end(bl,type,-1);
 		break;
 
+	case UNT_EPICLESIS:
 	case UNT_NEUTRALBARRIER:
 	case UNT_STEALTHFIELD:
+	case UNT_WARMER:
 		if( sce ) status_change_end(bl,type,-1);
 		break;
 
@@ -10697,7 +10701,6 @@ static int skill_unit_onleft (int skill_id, struct block_list *bl, unsigned int 
 		case NJ_SUITON:
 		case SC_MAELSTROM:
 		case SC_BLOODYLUST:
-		case SO_WARMER:
 			if (sce)
 				status_change_end(bl, type, -1);
 			break;
