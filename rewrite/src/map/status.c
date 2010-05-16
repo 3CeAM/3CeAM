@@ -8673,6 +8673,12 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		}
 		break;
 
+	case SC__REPRODUCE:
+		if(!status_charge(bl, 0, 1))
+			break;
+		sc_timer_next(1000+tick, status_change_timer, bl->id, data);
+		return 0;
+
 	case SC__SHADOWFORM:
 		if( --(sce->val4) >= 0 )
 		{

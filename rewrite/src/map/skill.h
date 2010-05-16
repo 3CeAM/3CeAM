@@ -224,6 +224,12 @@ struct s_skill_magicmushroom_db {
 
 extern struct s_skill_magicmushroom_db skill_magicmushroom_db[MAX_SKILL_MAGICMUSHROOM_DB];
 
+struct s_skill_reproduce_db {
+	int skillid;
+	int reproduce;
+};
+extern struct s_skill_reproduce_db skill_reproduce_db[MAX_SKILL_DB];
+
 extern int enchant_eff[5];
 extern int deluge_eff[5];
 

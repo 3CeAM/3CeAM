@@ -63,6 +63,7 @@ struct s_skill_abra_db skill_abra_db[MAX_SKILL_ABRA_DB];
 struct s_skill_spellbook_db skill_spellbook_db[MAX_SKILL_SPELLBOOK_DB];
 struct s_skill_improvise_db skill_improvise_db[MAX_SKILL_IMPROVISE_DB];
 struct s_skill_magicmushroom_db skill_magicmushroom_db[MAX_SKILL_MAGICMUSHROOM_DB];
+struct s_skill_reproduce_db skill_reproduce_db[MAX_SKILL_DB];
 
 struct s_skill_unit_layout skill_unit_layout[MAX_SKILL_UNIT_LAYOUT];
 int firewall_unit_pos;
@@ -362,8 +363,11 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, int skill
 // Making plagiarize check its own function [Aru]
 int can_copy (struct map_session_data *sd, int skillid, struct block_list* bl)
 {
+	int id;
 	struct status_change* sc;
 	sc = status_get_sc(bl);
+
+	id = skill_reproduce_db[skillid].reproduce;
 
 	// Never copy NPC/Wedding Skills
 	if (skill_get_inf2(skillid)&(INF2_NPC_SKILL|INF2_WEDDING_SKILL))
@@ -382,9 +386,15 @@ int can_copy (struct map_session_data *sd, int skillid, struct block_list* bl)
 	if ((skillid == AL_INCAGI || skillid == AL_BLESSING || skillid == CASH_BLESSING || skillid == CASH_INCAGI))
 		return 0;
 
-	// Couldn't preserve 3rd Class skills except only when using Reproduce skill. [Jobbie]
-	if ( sd && !(sd->sc.data[SC__REPRODUCE]) && (skillid >= RK_ENCHANTBLADE && skillid <= SR_RIDEINLIGHTNING))
-		return 0;
+	if( sd )
+	{
+		// Couldn't preserve 3rd Class skills except only when using Reproduce skill. [Jobbie]
+		if( !(sd->sc.data[SC__REPRODUCE]) && (skillid >= RK_ENCHANTBLADE && skillid <= SR_RIDEINLIGHTNING) )
+			return 0;
+		// Reproduce will only copy skills according on the list. [Jobbie]
+		if( sd->sc.data[SC__REPRODUCE] && !id )
+			return 0;
+	}
 
 	return 1;
 }
@@ -2121,11 +2131,9 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 		int copy_skill = skillid, copy_level = skilllv, skill;
 		switch( skillid )
 		{ // Skills that uses subskills to do damage
-		case WL_TETRAVORTEX_FIRE:
-		case WL_TETRAVORTEX_WATER:
-		case WL_TETRAVORTEX_WIND:
-		case WL_TETRAVORTEX_GROUND:
-			copy_skill = WL_TETRAVORTEX;
+		case AB_DUPLELIGHT_MELEE:
+		case AB_DUPLELIGHT_MAGIC:
+			copy_skill = AB_DUPLELIGHT;
 			break;
 		case WL_CHAINLIGHTNING_ATK:
 			copy_skill = WL_CHAINLIGHTNING;
@@ -2134,17 +2142,8 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 		case WM_REVERBERATION_MAGIC:
 			copy_skill = WM_REVERBERATION;
 			break;
-		case AB_DUPLELIGHT_MELEE:
-		case AB_DUPLELIGHT_MAGIC:
-			copy_skill = AB_DUPLELIGHT;
-			break;
 		case GN_CRAZYWEED_ATK:
 			copy_skill = GN_CRAZYWEED;
-			break;
-		case GN_FIRE_EXPANSION_SMOKE_POWDER:
-		case GN_FIRE_EXPANSION_TEAR_GAS:
-		case GN_FIRE_EXPANSION_ACID:
-			copy_skill = GN_FIRE_EXPANSION;
 			break;
 		case GN_HELLS_PLANT_ATK:
 			copy_skill = GN_HELLS_PLANT;
@@ -2157,8 +2156,9 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 		if( can_copy(tsd,copy_skill,bl) && (!tsd->status.skill[copy_skill].id || tsd->status.skill[copy_skill].flag >= 13) )
 		{
 			copy_level = cap_value(copy_level,1,10);
-			if( (skill = pc_checkskill(tsd,SC_REPRODUCE)) > 0 && sc && sc->data[SC__REPRODUCE] )
+			if( sc && sc->data[SC__REPRODUCE] && (skill = sc->data[SC__REPRODUCE]->val1) )
 			{
+				//Level dependent and limitation.
 				copy_level = min(skill,skill_get_max(copy_skill));
 				if( tsd->reproduceskill_id && tsd->status.skill[tsd->reproduceskill_id].flag == 13 )
 				{
@@ -6952,8 +6952,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				clif_skill_nodamage(bl, bl, skillid, skilllv, sc_start(bl,type,100,
 					(skillid == AB_CLEMENTIA)? bless_lv : (skillid == AB_CANTO)? agi_lv : skilllv, skill_get_time(skillid,skilllv)));
 			else if( sd )
-				party_foreachsamemap(skill_area_sub, sd, skill_get_splash(skillid, skilllv), src, skillid, 
-					(skillid == AB_CLEMENTIA)? bless_lv : (skillid == AB_CANTO)? agi_lv : skilllv, tick, flag|BCT_PARTY|1, skill_castend_nodamage_id);
+				party_foreachsamemap(skill_area_sub, sd, skill_get_splash(skillid, skilllv), src, skillid, skilllv, tick, flag|BCT_PARTY|1, skill_castend_nodamage_id);
 		}
 		break;
 
@@ -15435,6 +15434,19 @@ static bool skill_parse_row_nocastdb(char* split[], int columns, int current)
 	return true;
 }
 
+static bool skill_parse_row_reproducedb(char* split[], int column, int current)
+{
+	int skillid = atoi(split[0]);
+	
+	skillid = skill_get_index(skillid);
+	if( !skillid )
+		return false;
+
+	skill_reproduce_db[skillid].reproduce |= atoi(split[1]);
+
+	return true;
+}
+
 static bool skill_parse_row_unitdb(char* split[], int columns, int current)
 {// ID,unit ID,unit ID 2,layout,range,interval,target,flag
 	int i = atoi(split[0]);
@@ -15619,6 +15631,7 @@ static void skill_readdb(void)
 	memset(skill_abra_db,0,sizeof(skill_abra_db));
 	memset(skill_improvise_db,0,sizeof(skill_improvise_db));
 	memset(skill_magicmushroom_db,0,sizeof(skill_magicmushroom_db));
+	memset(skill_reproduce_db,0,sizeof(skill_reproduce_db));
 
 	// load skill databases
 	safestrncpy(skill_db[0].name, "UNKNOWN_SKILL", sizeof(skill_db[0].name));
@@ -15636,6 +15649,7 @@ static void skill_readdb(void)
 	sv_readdb(db_path, "spellbook_db.txt"      , ',',   3,  3, MAX_SKILL_SPELLBOOK_DB, skill_parse_row_spellbookdb);
 	sv_readdb(db_path, "improvise_db.txt"      , ',',   2,  2, MAX_SKILL_IMPROVISE_DB, skill_parse_row_improvisedb);
 	sv_readdb(db_path, "magicmushroom_db.txt"  , ',',   1,  1, MAX_SKILL_MAGICMUSHROOM_DB, skill_parse_row_magicmushroomdb);
+	sv_readdb(db_path, "skill_reproduce_db.txt", ',',   2,  2, MAX_SKILL_DB, skill_parse_row_reproducedb);
 }
 
 void skill_reload (void)
