@@ -472,6 +472,10 @@ typedef enum sc_type {
 	SC_STEALTHFIELD,
 	SC_MAGNETICFIELD,
 
+	SC_BANDING,
+	SC_BANDING_DEFENCE,
+	SC_SPELLFIST,
+
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
 
@@ -983,7 +987,7 @@ enum si_type {
 	SI_READING_SB_7 = 502,
 //	SI_ELEMENTAL_AGGRESSIVE = 503,
 //	SI_RETURN_TO_ELDICASTES = 504,
-//	SI_BANDING_DEFENCE = 505,
+	SI_BANDING_DEFENCE = 505,
 //	SI_SKELSCROLL = 506,
 //	SI_DISTRUCTIONSCROLL = 507,
 //	SI_ROYALSCROLL = 508,

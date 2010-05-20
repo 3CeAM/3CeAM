@@ -2790,7 +2790,13 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 				break;
 			default:
 			{
-				
+				if( skill_num == RK_ENCHANTBLADE )
+				{
+					if( sc && sc->data[SC_ENCHANTBLADE] )
+						ad.damage += sc->data[SC_ENCHANTBLADE]->val2;
+					else
+						return ad;
+				}
 				if(sc && sc->data[SC_RECOGNIZEDSPELL]) {
 					MATK_ADD(sstatus->matk_max);
 				}
@@ -3452,7 +3458,7 @@ struct Damage battle_calc_attack(int attack_type,struct block_list *bl,struct bl
 int battle_calc_return_damage(struct block_list *src, struct block_list *bl, int *damage, int flag)
 {
 	struct map_session_data* sd = NULL;
-	int rdamage = 0, max_damage = status_get_hp(bl);
+	int rdamage = 0, max_damage = status_get_max_hp(bl);
 	struct status_change *sc = status_get_sc(bl);
 	struct status_change *ssc = status_get_sc(src);
 
@@ -3493,7 +3499,6 @@ int battle_calc_return_damage(struct block_list *src, struct block_list *bl, int
 		}
 		if( sc && sc->data[SC_SHIELDSPELL_DEF] && sc->data[SC_SHIELDSPELL_DEF]->val1 == 2 )
 		{
-			max_damage = status_get_max_hp(bl);
 			rdamage += (*damage) * sc->data[SC_SHIELDSPELL_DEF]->val2 / 100;
 			rdamage = cap_value(rdamage,1,max_damage);
 		}

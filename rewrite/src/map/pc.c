@@ -1257,15 +1257,19 @@ int pc_calc_skillpoint(struct map_session_data* sd)
 
 	nullpo_retr(0, sd);
 
-	for(i=1;i<MAX_SKILL;i++){
-		if( (skill = pc_checkskill(sd,i)) > 0) {
+	for( i = 1; i < MAX_SKILL; i++ )
+	{
+		if( (skill = pc_checkskill(sd,i)) > 0 )
+		{
 			inf2 = skill_get_inf2(i);
-			if((!(inf2&INF2_QUEST_SKILL) || battle_config.quest_skill_learn) &&
+			if( (!(inf2&INF2_QUEST_SKILL) || battle_config.quest_skill_learn) &&
 				!(inf2&(INF2_WEDDING_SKILL|INF2_SPIRIT_SKILL)) //Do not count wedding/link skills. [Skotlex]
-				) {
-				if(!sd->status.skill[i].flag)
+				)
+			{
+				if( !sd->status.skill[i].flag )
 					skill_point += skill;
-				else if(sd->status.skill[i].flag > 2 && sd->status.skill[i].flag != 13) {
+				else if( sd->status.skill[i].flag > 2 && sd->status.skill[i].flag != 13 )
+				{
 					skill_point += (sd->status.skill[i].flag - 2);
 				}
 			}
