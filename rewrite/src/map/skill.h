@@ -1679,8 +1679,9 @@ enum {
 	UNT_FIRE_EXPANSION_TEAR_GAS,
 	UNT_HELLS_PLANT,
 	UNT_VACUUM_EXTREME,
+	UNT_BANDING,
 
-	UNT_MAX = 0xec
+	UNT_MAX = 0xed
 };
 
 enum gx_poison {
