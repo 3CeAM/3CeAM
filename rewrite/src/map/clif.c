@@ -10293,10 +10293,10 @@ void clif_parse_UseSkillToId(int fd, struct map_session_data *sd)
 	
 	if( sd->ud.skilltimer != -1 )
 	{
-		if( skillnum != SA_CASTCANCEL )
+		if( skillnum != SA_CASTCANCEL && skillnum != SO_SPELLFIST )
 			return;
 	}
-	else if( DIFF_TICK(tick, sd->ud.canact_tick) < 0 && skillnum != SO_SPELLFIST )
+	else if( DIFF_TICK(tick, sd->ud.canact_tick) < 0 )
 	{
 		if( sd->skillitem != skillnum )
 		{
