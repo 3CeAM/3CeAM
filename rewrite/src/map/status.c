@@ -507,7 +507,7 @@ void initChangeTables(void)
 	set_sc( WM_DANCE_WITH_WUG             , SC_DANCEWITHWUG            , SI_DANCEWITHWUG              , SCB_ASPD );
 	set_sc( WM_SATURDAY_NIGHT_FEVER       , SC_SATURDAYNIGHTFEVER      , SI_SATURDAYNIGHTFEVER        , SCB_BATK|SCB_DEF|SCB_FLEE|SCB_SPEED|SCB_ASPD|SCB_MAXHP|SCB_REGEN );
 	set_sc( WM_LERADS_DEW                 , SC_LERADSDEW               , SI_LERADSDEW                 , SCB_MAXHP );
-	set_sc( WM_MELODYOFSINK               , SC_MELODYOFSINK            , SI_MELODYOFSINK              , SCB_MATK|SCB_DEF2 );
+	set_sc( WM_MELODYOFSINK               , SC_MELODYOFSINK            , SI_MELODYOFSINK              , SCB_BATK|SCB_MATK );
 	set_sc( WM_BEYOND_OF_WARCRY           , SC_BEYONDOFWARCRY          , SI_WARCRYOFBEYOND            , SCB_BATK|SCB_MATK );
 	set_sc( WM_UNLIMITED_HUMMING_VOICE    , SC_UNLIMITEDHUMMINGVOICE   , SI_UNLIMITEDHUMMINGVOICE     , SCB_NONE );
 
