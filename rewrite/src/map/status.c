@@ -526,6 +526,7 @@ void initChangeTables(void)
 	set_sc( SO_VACUUM_EXTREME    , SC_VACUUM_EXTREME  , SI_VACUUM_EXTREME  , SCB_NONE );
 	set_sc( SO_STRIKING          , SC_STRIKING        , SI_STRIKING        , SCB_WATK|SCB_CRI );
 	set_sc( SO_ARRULLO           , SC_DEEPSLEEP       , SI_DEEPSLEEP       , SCB_NONE );
+	set_sc( SO_SPELLFIST         , SC_SPELLFIST       , SI_SPELLFIST       , SCB_NONE );
 
 	set_sc( HLIF_AVOID           , SC_AVOID           , SI_BLANK           , SCB_SPEED );
 	set_sc( HLIF_CHANGE          , SC_CHANGE          , SI_BLANK           , SCB_VIT|SCB_INT );
@@ -7131,6 +7132,9 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val4 = tick / 1000;
 			tick = 1000;
 			status_change_clear_buffs(bl,3); //Remove buffs/debuffs
+			break;
+		case SC_SPELLFIST:
+			val_flag |= 1|2|4;
 			break;
 
 		default:

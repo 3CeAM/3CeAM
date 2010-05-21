@@ -3755,6 +3755,16 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			wd.damage = wd.damage * sc->data[SC_EXEEDBREAK]->val1 / 100;
 			status_change_end(src,SC_EXEEDBREAK,-1);
 		}
+		if( sc->data[SC_SPELLFIST] )
+		{
+			if( --(sc->data[SC_SPELLFIST]->val1) >= 0 )
+			{
+				wd = battle_calc_attack(BF_MAGIC,src,target,sc->data[SC_SPELLFIST]->val3,sc->data[SC_SPELLFIST]->val4,flag);
+				wd.damage += (wd.damage / sc->data[SC_SPELLFIST]->val4) * sc->data[SC_SPELLFIST]->val2;
+			}
+			else
+				status_change_end(src,SC_SPELLFIST,-1);
+		}
 	}
 
 	if( sd && sc && sc->data[SC_THURISAZ] && wd.flag&(BF_WEAPON|BF_SHORT) && rand()%100 < pc_checkskill(sd,RK_RUNEMASTERY) )
