@@ -10291,16 +10291,17 @@ void clif_parse_UseSkillToId(int fd, struct map_session_data *sd)
 	if( sd->sc.data[SC_VOICEOFSIREN] && sd->sc.data[SC_VOICEOFSIREN]->val2 == target_id )
 		return;
 	
-	if( sd->ud.skilltimer != -1 )
+	if( sd->ud.skilltimer != INVALID_TIMER )
 	{
-		if( skillnum != SA_CASTCANCEL && skillnum != SO_SPELLFIST )
+		if( skillnum != SA_CASTCANCEL &&
+			!(skillnum == SO_SPELLFIST && (sd->ud.skillid == MG_FIREBOLT || sd->ud.skillid == MG_COLDBOLT || sd->ud.skillid == MG_LIGHTNINGBOLT)) )
 			return;
 	}
 	else if( DIFF_TICK(tick, sd->ud.canact_tick) < 0 )
 	{
 		if( sd->skillitem != skillnum )
 		{
-			clif_skill_fail(sd, skillnum, 4, 0, 0);
+			clif_skill_fail(sd, skillnum, 0x04, 0, 0);
 			return;
 		}
 	}
