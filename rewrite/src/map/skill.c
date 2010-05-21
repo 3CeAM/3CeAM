@@ -2249,6 +2249,7 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 			case WL_CRIMSONROCK: map_calc_dir(bl,skill_area_temp[4],skill_area_temp[5]);	break;
 			case SC_TRIANGLESHOT:  direction = unit_getdir(bl);	break; // backwards
 			case LG_OVERBRAND: direction = unit_getdir(bl); break;
+			case GN_WALLOFTHORN: direction = unit_getdir(bl); break;
 		}
 		if( skillid == LG_OVERBRAND )
 		{
@@ -7891,6 +7892,18 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 
+	case GN_WALLOFTHORN:
+		if( skill_unitsetting(bl, skillid, skilllv, bl->x, bl->y, 0) )
+		{
+			clif_skill_nodamage(src, src, skillid, skilllv, 1);
+		}
+		else if( sd )
+		{
+			clif_skill_fail(sd, skillid, 0, 0, 0);
+			return 0;
+		}
+		break;
+
 	case GN_MANDRAGORA:
 		if( flag&1 )
 		{
@@ -9059,7 +9072,6 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		if( skill_unitsetting(src, skillid, skilllv, src->x, src->y, 0) )
 		{
 			clif_skill_nodamage(src, src, skillid, skilllv, 1);
-			sc_start(src, status_skill2sc(skillid), 100, skilllv, skill_get_time(skillid, skilllv));
 		}
 		else if( sd )
 		{
@@ -10039,6 +10051,8 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			int count=0;
 			const int x = bl->x, y = bl->y;
 
+			if( sg->skill_id == GN_WALLOFTHORN && bl->type != BL_MOB && !map_flag_vs(bl->m) )
+				break;
 			//Take into account these hit more times than the timer interval can handle.
 			do
 				skill_attack(BF_MAGIC,ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick+count*sg->interval,0);
