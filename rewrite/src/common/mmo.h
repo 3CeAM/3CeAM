@@ -40,7 +40,7 @@
 // 20100414 - 2010-04-14aRagexeRE+ - 0x6b (Note: Add support to the new char slots managment.)
 #ifndef PACKETVER
 	//#define PACKETVER	20081126
-	#define PACKETVER 20100223
+	#define PACKETVER 20100518
 #endif
 // backward compatible PACKETVER 8 and 9
 #if PACKETVER == 8
