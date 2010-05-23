@@ -9831,8 +9831,10 @@ BUILDIN_FUNC(successremovecards)
 		item_tmp.id=0,item_tmp.nameid=sd->status.inventory[i].nameid;
 		item_tmp.equip=0,item_tmp.identify=1,item_tmp.refine=sd->status.inventory[i].refine;
 		item_tmp.attribute=sd->status.inventory[i].attribute,item_tmp.expire_time=sd->status.inventory[i].expire_time;
-		for (j = 0; j < MAX_SLOTS; j++)
+		for (j = 0; j < sd->inventory_data[i]->slot; j++)
 			item_tmp.card[j]=0;
+		for (j = sd->inventory_data[i]->slot; j < MAX_SLOTS; j++)
+			item_tmp.card[j]=sd->status.inventory[i].card[j];
 
 		//Logs items, got from (N)PC scripts [Lupus]
 		if(log_config.enable_logs&0x40)
@@ -9925,8 +9927,10 @@ BUILDIN_FUNC(failedremovecards)
 			if(log_config.enable_logs&0x40)
 				log_pick_pc(sd, "N", sd->status.inventory[i].nameid, -1, &sd->status.inventory[i]);
 
-			for (j = 0; j < MAX_SLOTS; j++)
+			for (j = 0; j < sd->inventory_data[i]->slot; j++)
 				item_tmp.card[j]=0;
+			for (j = sd->inventory_data[i]->slot; j < MAX_SLOTS; j++)
+				item_tmp.card[j]=sd->status.inventory[i].card[j];
 			pc_delitem(sd,i,1,0);
 
 			//Logs items, got from (N)PC scripts [Lupus]
@@ -10390,7 +10394,7 @@ BUILDIN_FUNC(getiteminfo)
 	n	= script_getnum(st,3);
 	i_data = itemdb_exists(item_id);
 
-	if (i_data && n>=0 && n<14) {
+	if (i_data && n>=0 && n<=14) {
 		item_arr = (int*)&i_data->value_buy;
 		script_pushint(st,item_arr[n]);
 	} else
@@ -10432,7 +10436,7 @@ BUILDIN_FUNC(setiteminfo)
 	value	= script_getnum(st,4);
 	i_data = itemdb_exists(item_id);
 
-	if (i_data && n>=0 && n<14) {
+	if (i_data && n>=0 && n<=14) {
 		item_arr = (int*)&i_data->value_buy;
 		item_arr[n] = value;
 		script_pushint(st,value);
