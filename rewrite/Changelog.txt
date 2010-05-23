@@ -5,6 +5,11 @@
 // 	- Details.
 //========================================
 
+05/23/2010
+	r403 [pakpil]
+	* Updated to eAthena r14293
+	* Fixed GN_WALLOFTHORN that was causing problems with repeating fire damages.
+
 04/29/2010
 	r376 [Rytech]
 	*Added purchase shop items to item_db2. Both items are %100 official coded.

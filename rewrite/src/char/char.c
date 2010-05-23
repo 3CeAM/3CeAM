@@ -1799,9 +1799,10 @@ int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p)
 int mmo_char_send006b(int fd, struct char_session_data* sd)
 {
 	int i, j, found_num, offset = 0;
-#if PACKETVER >= 20100414
-	offset = 3;
+#if PACKETVER >= 20100413
+	offset += 3;
 #endif
+
 	found_num = 0;
 	for(i = 0; i < char_num; i++) {
 		if (char_dat[i].status.account_id == sd->account_id) {
@@ -1816,7 +1817,7 @@ int mmo_char_send006b(int fd, struct char_session_data* sd)
 	j = 24 + offset; // offset
 	WFIFOHEAD(fd,j + found_num*MAX_CHAR_BUF);
 	WFIFOW(fd,0) = 0x6b;
-#if PACKETVER >= 20100414
+#if PACKETVER >= 20100413
 	WFIFOB(fd,4) = MAX_CHARS_SLOTS;	// Max available slots.
 	WFIFOB(fd,5) = MAX_CHARS;	// Available slots.
 	WFIFOB(fd,6) = MAX_CHARS;	// Premium slots.

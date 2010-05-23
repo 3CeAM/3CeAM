@@ -232,6 +232,7 @@ enum bl_type {
 	BL_SKILL = 0x040,
 	BL_NPC   = 0x080,
 	BL_CHAT  = 0x100,
+	BL_ELE   = 0x200,
 
 	BL_ALL   = 0xFFF,
 };

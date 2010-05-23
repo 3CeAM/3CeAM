@@ -3673,59 +3673,61 @@ void clif_tradestart(struct map_session_data* sd, uint8 type)
  *------------------------------------------*/
 void clif_tradeadditem(struct map_session_data* sd, struct map_session_data* tsd, int index, int amount)
 {
-	int fd, cmd = 0xe9, offset = 0;
+	int fd;
+	unsigned char *buf;
+#if PACKETVER < 20100223
+	const int cmd = 0xe9;
+#else
+	const int cmd = 0x80f;
+#endif 
 	nullpo_retv(sd);
 	nullpo_retv(tsd);
 
-#if PACKETVER >= 20100223
-	cmd = 0x80f;
-#endif
-
 	fd = tsd->fd;
-
+	buf = WFIFOP(fd,0);
 	WFIFOHEAD(fd,packet_len(cmd));
-	WFIFOW(fd,0) = cmd;
-
-#if PACKETVER < 20100223
-	WFIFOL(fd,2) = amount;
-	offset = 4;
-#endif
+	WBUFW(buf,0) = cmd;
 	if( index == 0 )
 	{
-		WFIFOW(fd, 2 + offset) = 0; // type id
-#if PACKETVER >= 20100223
-		WFIFOB(fd, 4) = 0;	// type
-		WFIFOL(fd, 5) = amount;	// amount
-		offset = 1;
+#if PACKETVER < 20100223 
+		WBUFL(buf,2) = amount; //amount
+		WBUFW(buf,6) = 0; // type id
 #else
-		offset = 0;
+		WBUFW(buf,2) = 0;      // type id
+		WBUFB(buf,4) = 0;      // item type
+		WBUFL(buf,5) = amount; // amount
+		buf = WBUFP(buf,1); //Advance 1B
 #endif
-		WFIFOB(fd, 8 + offset) = 0; //identify flag
-		WFIFOB(fd, 9 + offset) = 0; // attribute
-		WFIFOB(fd,10 + offset)= 0; //refine
-		WFIFOW(fd,11 + offset)= 0; //card (4w)
-		WFIFOW(fd,13 + offset)= 0; //card (4w)
-		WFIFOW(fd,15 + offset)= 0; //card (4w)
-		WFIFOW(fd,17 + offset)= 0; //card (4w)
+		WBUFB(buf,8) = 0; //identify flag
+		WBUFB(buf,9) = 0; // attribute
+		WBUFB(buf,10)= 0; //refine
+		WBUFW(buf,11)= 0; //card (4w)
+		WBUFW(buf,13)= 0; //card (4w)
+		WBUFW(buf,15)= 0; //card (4w)
+		WBUFW(buf,17)= 0; //card (4w) 
 	}
 	else
 	{
 		index -= 2; //index fix
+#if PACKETVER < 20100223
+		WBUFL(buf,2) = amount; //amount
 		if(sd->inventory_data[index] && sd->inventory_data[index]->view_id > 0)
-			WFIFOW(fd, 2 + offset) = sd->inventory_data[index]->view_id;
+			WBUFW(buf, 2 + offset) = sd->inventory_data[index]->view_id;
 		else
-			WFIFOW(fd, 2 + offset) = sd->status.inventory[index].nameid; // type id
-#if PACKETVER >= 20100223
-			WFIFOB(fd, 4) = itemdb_type(sd->status.inventory[index].nameid);	// type
-			WFIFOL(fd, 5) = amount;	// amount
-			offset = 1;
+			WBUFW(buf,6) = sd->status.inventory[index].nameid; // type id
 #else
-		offset = 0;
+		if(sd->inventory_data[index] && sd->inventory_data[index]->view_id > 0)
+			WBUFW(buf,2) = sd->inventory_data[index]->view_id;
+		else
+			WBUFW(buf,2) = sd->status.inventory[index].nameid;       // type id
+		WBUFB(buf,4) = sd->inventory_data[index]->type;          // item type
+		WBUFL(buf,5) = amount; // amount
+		buf = WBUFP(buf,1); //Advance 1B
 #endif
-		WFIFOB(fd, 8 + offset) = sd->status.inventory[index].identify; //identify flag
-		WFIFOB(fd, 9 + offset) = sd->status.inventory[index].attribute; // attribute
-		WFIFOB(fd,10 + offset)= sd->status.inventory[index].refine; //refine
-		clif_addcards(WFIFOP(fd,11 + offset), &sd->status.inventory[index]);
+		WBUFB(buf,8) = sd->status.inventory[index].identify; //identify flag
+		WBUFB(buf,9) = sd->status.inventory[index].attribute; // attribute
+		WBUFB(buf,10)= sd->status.inventory[index].refine; //refine
+		clif_addcards(WBUFP(buf, 11), &sd->status.inventory[index]);
 	}
 	WFIFOSET(fd,packet_len(cmd));
 }
@@ -3868,36 +3870,32 @@ void clif_updateguildstorageamount(struct map_session_data* sd, int amount)
 void clif_guildstorageitemadded(struct map_session_data* sd, struct item* i, int index, int amount)
 {
 	int view,fd;
+	unsigned char *buf;
+#if PACKETVER < 20090603
+	const int cmd = 0xf4;
+#else
+	const int cmd = 0x1c4;
+#endif
 
 	nullpo_retv(sd);
 	nullpo_retv(i);
 	fd=sd->fd;
-	view = itemdb_viewid(i->nameid);
-
-#if PACKETVER < 20100217
-	WFIFOHEAD(fd,packet_len(0xf4));
-	WFIFOW(fd, 0) = 0xf4; // Storage item added
-	WFIFOW(fd, 2) = index+1; // index
-	WFIFOL(fd, 4) = amount; // amount
-	WFIFOW(fd, 8) = ( view > 0 ) ? view : i->nameid; // id
-	WFIFOB(fd,10) = i->identify; //identify flag
-	WFIFOB(fd,11) = i->attribute; // attribute
-	WFIFOB(fd,12) = i->refine; //refine
-	clif_addcards(WFIFOP(fd,13), i);
-	WFIFOSET(fd,packet_len(0xf4));
-#else
-	WFIFOHEAD(fd,packet_len(0x1c4));
-	WFIFOW(fd, 0) = 0x1c4; // Storage item added
-	WFIFOW(fd, 2) = index+1; // index
-	WFIFOL(fd, 4) = amount; // amount
-	WFIFOW(fd, 8) = ( view > 0 ) ? view : i->nameid; // id
-	WFIFOB(fd,10) = itemdb_type(i->nameid); //type
-	WFIFOB(fd,11) = i->identify; //identify flag
-	WFIFOB(fd,12) = i->attribute; // attribute
-	WFIFOB(fd,13) = i->refine; //refine
-	clif_addcards(WFIFOP(fd,14), i);
-	WFIFOSET(fd,packet_len(0x1c4));
+	view = itemdb_viewid(i->nameid);buf = WFIFOP(fd,0);
+	
+	WFIFOHEAD(fd,packet_len(cmd));
+	WBUFW(buf, 0) = cmd; // Storage item added
+	WBUFW(buf, 2) = index+1; // index
+	WBUFL(buf, 4) = amount; // amount
+	WBUFW(buf, 8) = ( view > 0 ) ? view : i->nameid; // id
+#if PACKETVER >= 20090603
+	WBUFB(buf,10) = itemdb_type(i->nameid); //type
+	buf = WBUFP(buf,1); //Advance 1B
 #endif
+	WBUFB(buf,10) = i->identify; //identify flag
+	WBUFB(buf,11) = i->attribute; // attribute
+	WBUFB(buf,12) = i->refine; //refine
+	clif_addcards(WBUFP(buf,13), i);
+	WFIFOSET(fd,packet_len(cmd));
 }
 
 /*==========================================
@@ -5988,9 +5986,17 @@ void clif_closevendingboard(struct block_list* bl, int fd)
  *------------------------------------------*/
 void clif_vendinglist(struct map_session_data* sd, int id, struct s_vending* vending)
 {
-	int i,fd,cmd = 0x133,offset = 0;
+	int i,fd;
 	int count;
 	struct map_session_data* vsd;
+
+#if PACKETVER < 20100105
+	const int cmd = 0x133;
+	const int offset = 8;
+#else	
+	const int cmd = 0x800;
+	const int offset = 12;
+#endif
 	
 	nullpo_retv(sd);
 	nullpo_retv(vending);
@@ -5999,11 +6005,6 @@ void clif_vendinglist(struct map_session_data* sd, int id, struct s_vending* ven
 	fd = sd->fd;
 	
 	count = vsd->vend_num;
-
-#if PACKETVER >= 20100105
-	cmd = 0x800;
-	offset = 4;
-#endif
 	
 	WFIFOHEAD(fd, 8+count*22);
 	WFIFOW(fd,0) = cmd;
@@ -11050,10 +11051,12 @@ void clif_parse_PartyChangeOption(int fd, struct map_session_data *sd)
 	if( !p->party.member[i].leader )
 		return;
 
-	//The client no longer can change the item-field, therefore it always
-	//comes as zero. Here, resend the item data as it is.
-//	party_changeoption(sd, RFIFOW(fd,2), RFIFOW(fd,4));
+#if PACKETVER < 20090603 
+	//Client can't change the item-field
 	party_changeoption(sd, RFIFOW(fd,2), p->party.item);
+#else
+	party_changeoption(sd, RFIFOL(fd,2), ((RFIFOB(fd,6)?1:0)+(RFIFOB(fd,7)?2:0)));
+#endif
 }
 
 /*==========================================
@@ -11089,7 +11092,7 @@ void clif_parse_PartyMessage(int fd, struct map_session_data* sd)
 	party_send_message(sd, text, textlen);
 }
 
-/*
+/*==========================================
  * Changes Party Leader
  * S 07da <account ID>.L
  *------------------------------------------*/
@@ -11132,7 +11135,7 @@ void clif_parse_PurchaseReq(int fd, struct map_session_data* sd)
 
 /*==========================================
  * Shop item(s) purchase request
- * S 0134 <len>.w <AID>.l <CID>.l {<amount>.w <index>.w}.4B*
+ * S 0134/0801 <len>.w <AID>.l <CID>.l {<amount>.w <index>.w}.4B*
  *------------------------------------------*/
 void clif_parse_PurchaseReq2(int fd, struct map_session_data* sd)
 {
@@ -14360,9 +14363,9 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 #if PACKETVER <= 20081217
-	    0,  0,  0,  0, 55, 17,  3, 37,  46, -1, 23, -1,  3,110,  3,  2,
+	    0,  0,  0,  0, 55, 17,  3, 37, 46, -1, 23, -1,  3,110,  3,  2,
 #else
-	    0,  0,  0,  0, 55, 17,  3, 37,  46, -1, 23, -1,  3,114,  3,  2,
+	    0,  0,  0,  0, 55, 17,  3, 37, 46, -1, 23, -1,  3,114,  3,  2,
 #endif
 #if PACKETVER < 2
 	    3, 28, 19, 11,  3, -1,  9,  5, 52, 51, 56, 58, 41,  2,  6,  6,
@@ -14541,6 +14544,8 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0,  0,  0, 14, -1, -1, -1,  8, 25,  0,  0,  0,  0,
 	  //#0x0800
 	   -1, -1, 18,  4, 14, -1,  2,  4, 14, 50, 18,  6,  2,  0, 14, 20,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	};
 	struct {
