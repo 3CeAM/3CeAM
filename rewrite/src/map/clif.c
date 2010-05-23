@@ -853,8 +853,8 @@ static int clif_set_unit_idle(struct block_list* bl, unsigned char* buffer, bool
 
 	if( bl->type == BL_NPC && vd->class_ == FLAG_CLASS )
 	{	//The hell, why flags work like this?
-		WBUFL(buf,22) = status_get_guild_id(bl);
-		WBUFL(buf,26) = status_get_emblem_id(bl);
+		WBUFL(buf,22) = status_get_emblem_id(bl);
+		WBUFL(buf,26) = status_get_guild_id(bl);
 	}
 
 	WBUFW(buf,28) = vd->hair_color;
@@ -961,8 +961,8 @@ static int clif_set_unit_idle2(struct block_list* bl, unsigned char* buffer, boo
 	WBUFW(buf,31) = vd->head_mid;
 	if( bl->type == BL_NPC && vd->class_ == FLAG_CLASS )
 	{
-		WBUFL(buf,27) = status_get_guild_id(bl);
-		WBUFL(buf,31) = status_get_emblem_id(bl);
+		WBUFL(buf,27) = status_get_emblem_id(bl);
+		WBUFL(buf,31) = status_get_guild_id(bl);
 	}
 	WBUFW(buf,33) = vd->hair_color;
 	WBUFW(buf,35) = vd->cloth_color;
