@@ -519,8 +519,8 @@ void initChangeTables(void)
 	set_sc( GN_FIRE_EXPANSION_TEAR_GAS     , SC_TEARGAS         , SI_FIRE_EXPANSION_TEAR_GAS     , SCB_NONE );
 	set_sc( GN_MANDRAGORA                  , SC_MANDRAGORA      , SI_MANDRAGORA                  , SCB_INT );
 
-	add_sc( SO_FIREWALK          , SC_FIREWALK );
-	add_sc( SO_ELECTRICWALK      , SC_ELECTRICWALK );
+	set_sc( SO_FIREWALK          , SC_PROPERTYWALK    , SI_PROPERTYWALK    , SCB_NONE );
+	set_sc( SO_ELECTRICWALK      , SC_PROPERTYWALK    , SI_PROPERTYWALK    , SCB_NONE );
 	set_sc( SO_CLOUD_KILL        , SC_POISON          , SI_CLOUDKILL       , SCB_NONE );
 	set_sc( SO_WARMER            , SC_WARMER          , SI_WARMER          , SCB_NONE );
 	set_sc( SO_VACUUM_EXTREME    , SC_VACUUM_EXTREME  , SI_VACUUM_EXTREME  , SCB_NONE );
@@ -6983,10 +6983,9 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			else
 				val2 = 100;
 			break;
-		case SC_FIREWALK:
-		case SC_ELECTRICWALK:
-			val2 = 6 + 2 * val1;
-			tick = 0;
+		case SC_PROPERTYWALK:
+			val_flag |= 1|2;
+			val3 = 0;
 			break;
 		case SC_WARMER:
 			status_change_end(bl, SC_FREEZE, -1);
@@ -8726,16 +8725,6 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 			status_heal(src, damage, 0, 0);
 			clif_skill_nodamage(src, bl, GN_BLOOD_SUCKER, 0, 1);
 			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
-			return 0;
-		}
-		break;
-
-	case SC_FIREWALK:
-	case SC_ELECTRICWALK:
-		if( --(sce->val2) >= 0 )
-		{
-			skill_unitsetting(bl, type == SC_FIREWALK ? SO_FIREWALK : SO_ELECTRICWALK, sce->val1, bl->x, bl->y, 0);
-			sc_timer_next(250 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}
 		break;
