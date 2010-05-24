@@ -9122,7 +9122,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case SO_FIREWALK:
 	case SO_ELECTRICWALK:
 		clif_skill_nodamage(src, src ,skillid, skilllv,
-			sc_start(src, status_skill2sc(skillid), 100, skilllv, skill_get_time(skillid, skilllv)));
+			sc_start2(src, status_skill2sc(skillid), 100, skillid, skilllv, skill_get_time(skillid, skilllv)));
 		break;
 
 	default:
