@@ -344,7 +344,90 @@ int pc_delrageball(struct map_session_data *sd,int count)
 
 	return 0;
 }
+static int pc_check_banding( struct block_list *bl, va_list ap )
+{
+	int *c, *b_sd;
+	struct block_list *src;
+	struct map_session_data *tsd;
+	struct status_change *sc;
 
+	nullpo_retr(0, bl);
+	nullpo_retr(0, tsd = (struct map_session_data*)bl);
+	nullpo_retr(0, src = va_arg(ap,struct block_list *));
+	c = va_arg(ap,int *);
+	b_sd = va_arg(ap, int *);
+
+	if(pc_isdead(tsd))
+		return 0;
+
+	sc = status_get_sc(bl);
+
+	if( bl == src )
+		return 0;
+
+	if( sc && sc->data[SC_BANDING] )
+	{
+		b_sd[(*c)++] = tsd->bl.id;
+		return 1;
+	}
+
+	return 0;
+}
+
+int pc_banding(struct map_session_data *sd, short skill_lv)
+{
+	static int c;
+	static int b_sd[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // In case of a full Royal Guard party.
+	int i, j, per, tmp_per;
+	struct map_session_data *bsd;
+	struct status_change *sc;
+	int range = skill_get_splash(LG_BANDING,skill_lv);
+
+	nullpo_ret(sd);
+
+	c = 0;
+	tmp_per = per = 0;
+	memset(b_sd, 0, sizeof(b_sd));
+	i = party_foreachsamemap(pc_check_banding,sd,range,&sd->bl,&c,&b_sd);
+	if( c < 2 )
+	{	// No more Royal Guards in Banding found.
+		if( (sc = status_get_sc(&sd->bl)) != NULL  && sc->data[SC_BANDING] )
+		{
+			sc->data[SC_BANDING]->val2 = 0; // Reset the counter
+			status_calc_bl(&sd->bl,StatusChangeFlagTable[SC_BANDING]);
+	}
+		return 0;
+	}
+	// Get hp average.
+	for( j = 0; j < c; j++ )
+	{
+		bsd = map_id2sd(b_sd[j]);
+		if( bsd != NULL && bsd != sd )
+			tmp_per += status_get_hp(&bsd->bl) * 100 / status_get_max_hp(&bsd->bl);
+	}
+	if( tmp_per > 0 && (per = tmp_per / ( c + 1)) > 0)
+	{
+		// Set hp
+		if( per > 0 )
+		{
+			for( j = 0; j < c; j++ )
+			{
+				bsd = map_id2sd(b_sd[j]);
+				if( bsd != NULL )
+				{
+					status_set_hp(&bsd->bl,status_get_max_hp(&bsd->bl)*per/100,0);
+					if( (sc = status_get_sc(&bsd->bl)) != NULL  && sc->data[SC_BANDING] )
+					{
+						sc->data[SC_BANDING]->val2 = c-1; // Set the counter. Don't count your self.
+						status_calc_bl(&bsd->bl,StatusChangeFlagTable[SC_BANDING]);
+					}
+				}
+			}
+		}
+	}
+
+	return c;
+}
 
 // Increases a player's fame points and displays a notice to him
 void pc_addfame(struct map_session_data *sd,int count)

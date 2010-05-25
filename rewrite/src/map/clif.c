@@ -1286,6 +1286,8 @@ int clif_spawn(struct block_list *bl)
 				clif_font_area(sd);
 			if( sd->state.bg_id && map[sd->bl.m].flag.battleground )
 				clif_sendbgemblem_area(sd);
+			if( sd->sc.count && sd->sc.data[SC_BANDING] )
+				clif_status_change(&sd->bl,SI_BANDING,1,9999,sd->sc.data[SC_BANDING]->val1,0,0);
 		}
 		break;
 	case BL_MOB:
@@ -4005,6 +4007,8 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 				clif_font_single(sd->fd,tsd);
 			if( tsd->state.bg_id && map[tsd->bl.m].flag.battleground )
 				clif_sendbgemblem_single(sd->fd,tsd);
+			if( tsd->sc.count && tsd->sc.data[SC_BANDING] )
+				clif_display_banding(&sd->bl,&tsd->bl,tsd->sc.data[SC_BANDING]->val1);
 		}
 		break;
 	case BL_MER: // Devotion Effects
@@ -5248,7 +5252,7 @@ int clif_status_change(struct block_list *bl, int type, int flag, unsigned int t
 		type == SI_READYTURN || type == SI_READYCOUNTER || type == SI_DODGE ||
 		type == SI_DEVIL || type == SI_NIGHT || type == SI_INTRAVISION || type == SI_REPRODUCE ||
 		type == SI_BLOODYLUST || type == SI_FORCEOFVANGUARD || type == SI_WARMER || type == SI_NEUTRALBARRIER ||
-		type == SI_OVERHEAT)
+		type == SI_OVERHEAT || type == SI_BANDING)
 		tick=0;
 
 	if( battle_config.display_status_timers && tick>0 )
@@ -5266,6 +5270,36 @@ int clif_status_change(struct block_list *bl, int type, int flag, unsigned int t
 		WBUFL(buf,21)=val3;
 	}
 	clif_send(buf,packet_len(WBUFW(buf,0)),bl,AREA);
+	return 0;
+}
+
+
+/*==========================================
+ * Display Banding when someone under this
+ * status change walk into your view range.
+ *------------------------------------------*/
+int clif_display_banding(struct block_list *dst, struct block_list *bl, int val1)
+{
+	unsigned char buf[32];
+
+	nullpo_retr(0, bl);
+	nullpo_retr(0, dst);
+
+	if( battle_config.display_status_timers )
+		WBUFW(buf,0)=0x043f;
+	else
+		WBUFW(buf,0)=0x0196;
+	WBUFW(buf,2)=SI_BANDING;
+	WBUFL(buf,4)=bl->id;
+	WBUFB(buf,8)=1;
+	if( battle_config.display_status_timers )
+	{
+		WBUFL(buf,9)=0;
+		WBUFL(buf,13)=val1;
+		WBUFL(buf,17)=0;
+		WBUFL(buf,21)=0;
+	}
+	clif_send(buf,packet_len(WBUFW(buf,0)),dst,SELF);
 	return 0;
 }
 

@@ -489,6 +489,7 @@ void initChangeTables(void)
 	set_sc( LG_PRESTIGE          , SC_PRESTIGE           , SI_PRESTIGE          , SCB_DEF2 );
 	set_sc( LG_PIETY             , SC_BENEDICTIO         , SI_BENEDICTIO        , SCB_DEF_ELE );
 	set_sc( LG_EXEEDBREAK        , SC_EXEEDBREAK         , SI_EXEEDBREAK        , SCB_NONE );
+	set_sc( LG_BANDING           , SC_BANDING            , SI_BANDING           , SCB_DEF2|SCB_WATK );
 	set_sc( LG_INSPIRATION       , SC_INSPIRATION		 , SI_INSPIRATION       , SCB_MAXHP|SCB_WATK|SCB_HIT|SCB_VIT|SCB_AGI|SCB_STR|SCB_DEX|SCB_INT|SCB_LUK);
 	set_sc( LG_EARTHDRIVE        , SC_EARTHDRIVE         , SI_EARTHDRIVE        , SCB_DEF|SCB_ASPD );
 
@@ -721,6 +722,7 @@ void initChangeTables(void)
 
 	StatusChangeFlagTable[SC_SHIELDSPELL_DEF] |= SCB_WATK;
 	StatusChangeFlagTable[SC_SHIELDSPELL_REF] |= SCB_DEF2;
+	StatusChangeFlagTable[SC_BANDING_DEFENCE] |= SCB_SPEED;
 
 	if( !battle_config.display_hallucination ) //Disable Hallucination.
 		StatusIconChangeTable[SC_HALLUCINATION] = SI_BLANK;
@@ -3869,6 +3871,8 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += sc->data[SC_SHIELDSPELL_DEF]->val2;
 	if(sc->data[SC_INSPIRATION])
 		watk += sc->data[SC_INSPIRATION]->val2;
+	if( sc->data[SC_BANDING] && sc->data[SC_BANDING]->val2 > 0 )
+		watk += (10 + 10 * sc->data[SC_BANDING]->val1) * (sc->data[SC_BANDING]->val2);
 
 	return (unsigned short)cap_value(watk,0,USHRT_MAX);
 }
@@ -4133,6 +4137,8 @@ static signed short status_calc_def2(struct block_list *bl, struct status_change
 		def2 += def2 * sc->data[SC_PRESTIGE]->val1 / 100;
 	if( sc->data[SC_SHIELDSPELL_REF] && sc->data[SC_SHIELDSPELL_REF]->val1 == 1 )
 		def2 += sc->data[SC_SHIELDSPELL_REF]->val2;
+	if( sc->data[SC_BANDING] && sc->data[SC_BANDING]->val2 > 0 )
+		def2 += (5 + sc->data[SC_BANDING]->val1) * (sc->data[SC_BANDING]->val2);
 
 
 	return (short)cap_value(def2,1,SHRT_MAX);
@@ -4292,6 +4298,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 					val = max( val, sc->data[SC__GROOMY]->val2);
 				if( sc->data[SC_STEALTHFIELD_MASTER] )
 					val = max( val, 30 );
+				if( sc->data[SC_BANDING_DEFENCE] )
+					val = max( val, sc->data[SC_BANDING_DEFENCE]->val1 );
 
 				if( sd && sd->speed_rate + sd->speed_add_rate > 0 ) // permanent item-based speedup
 					val = max( val, sd->speed_rate + sd->speed_add_rate );
@@ -7113,6 +7121,10 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 				val1 += 10 * pc_checkskill(sd,CR_DEFENDER);
 			val_flag |= 1|2;
 			break;
+		case SC_BANDING:
+			tick = 5000;
+			val_flag |= 1;
+			break;
 		case SC_SHIELDSPELL_DEF:
 		case SC_SHIELDSPELL_MDEF:
 		case SC_SHIELDSPELL_REF:
@@ -7156,6 +7168,9 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			break;	
 		case SC_KAAHI:
 			val4 = -1;
+			break;
+		case SC_BANDING:
+			skill_unitsetting(bl,LG_BANDING,val1,bl->x,bl->y,0);
 			break;
 	}
 
@@ -7895,6 +7910,17 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 				struct skill_unit_group* group = skill_id2group(sce->val2);
 				sce->val2 = 0;
 				skill_delunitgroup(group);
+			}
+			break;
+		case SC_BANDING:
+			{
+				struct skill_unit_group *group;
+				if(sce->val4)
+				{
+					group = skill_id2group(sce->val4);
+					sce->val4 = 0;
+					skill_delunitgroup(group);
+				}
 			}
 			break;
 		}
@@ -8795,6 +8821,15 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 			break;
 		sc_timer_next(6000 + tick, status_change_timer, bl->id, data);
 		return 0;
+
+	case SC_BANDING:
+		if(status_charge(bl, 0, 7 - sce->val1))
+		{
+			pc_banding(sd, sce->val1);
+			sc_timer_next(5000 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
 
 	case SC_OVERHEAT_LIMITPOINT:
 		if( --(sce->val1) > 0 ) // Cooling
