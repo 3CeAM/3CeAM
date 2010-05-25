@@ -473,5 +473,6 @@ void clif_progressbar_abort(struct map_session_data * sd);
 
 void clif_equip_damaged(struct map_session_data *sd, int equip_index);
 void clif_millenniumshield(struct map_session_data *sd, short shields );
+int clif_display_banding(struct block_list *dst, struct block_list *bl, int val1);
 
 #endif /* _CLIF_H_ */
