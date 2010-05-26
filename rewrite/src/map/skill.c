@@ -9061,8 +9061,8 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		clif_skill_nodamage(src,src,skillid,skilllv,1);
 		if( sc && sc->data[SC_BANDING] )
 			status_change_end(src,SC_BANDING,-1);
-		else
-			skill_unitsetting(src,skillid,skilllv,src->x,src->y,0);
+		else if( (sg = skill_unitsetting(src,skillid,skilllv,src->x,src->y,0)) != NULL )
+			sc_start2(src,SC_BANDING,100,skilllv,sg->group_id,skill_get_time(skillid,skilllv));
 		break;
 
 	case WM_DOMINION_IMPULSE:
@@ -9688,14 +9688,6 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 			sd && group->state.song_dance&2 && skillid != CG_HERMODE //Hermod is a encore with a warp!
 		)
 			skill_check_pc_partner(sd, skillid, &skilllv, 1, 1);
-	}
-
-	if( skillid == LG_BANDING )
-	{
-		if( sc && sc->data[SC_BANDING] )
-			sc->data[SC_BANDING]->val4 = group->group_id;
-		else
-			sc_start4(src,SC_BANDING,100,skilllv,0,0,group->group_id,skill_get_time(skillid,skilllv));
 	}
 
 	limit = group->limit;
@@ -10614,7 +10606,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			break;
 
 		case UNT_BANDING:
-			if( battle_check_target(ss,bl,BCT_ENEMY) && !(status_get_mode(bl)&MD_BOSS) && !(tsc && tsc->data[SC_BANDING_DEFENCE]) )
+			if( battle_check_target(ss,bl,BCT_ENEMY) > 0 && !(status_get_mode(bl)&MD_BOSS) && !(tsc && tsc->data[SC_BANDING_DEFENCE]) )
 				sc_start(bl,SC_BANDING_DEFENCE,100,50,2000 * sg->skill_lv);
 			break;
 
@@ -13571,6 +13563,13 @@ int skill_delunitgroup (struct skill_unit_group *group)
 			status_change_end(src,SC_STEALTHFIELD_MASTER,-1);
 		}
 		break;
+	case LG_BANDING:
+		if( sc && sc->data[SC_BANDING] )
+		{
+			sc->data[SC_BANDING]->val4 = 0;
+			status_change_end(src,SC_BANDING,-1);
+		}
+		break;
 	}
 
 	if (src->type==BL_PC && group->state.ammo_consume)
@@ -13708,9 +13707,6 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 
 	nullpo_retr(0, group);
 
-	if( group->limit == -1 || unit->limit == -1 )
-		return 0;
-
 	// check for expiration
 	if( (DIFF_TICK(tick,group->tick) >= group->limit || DIFF_TICK(tick,group->tick) >= unit->limit) )
 	{// skill unit expired (inlined from skill_unit_onlimit())
@@ -13816,6 +13812,20 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 				if( src )
 					map_foreachinrange(skill_area_sub, &group->unit->bl, unit->range, splash_target(src), src, SC_FEINTBOMB, group->skill_lv, tick, BCT_ENEMY|1, skill_castend_damage_id);
 				skill_delunit(unit);
+			}
+			break;
+			case UNT_BANDING:
+			{
+				struct block_list *src = map_id2bl(group->src_id);
+				struct status_change *sc;
+				if( !src || (sc = status_get_sc(src)) == NULL || !sc->data[SC_BANDING] )
+				{
+					skill_delunit(unit);
+					break;
+				}
+				// This unit isn't removed while SC_BANDING is active.
+				group->limit = DIFF_TICK(tick+group->interval,group->tick);
+				unit->limit = DIFF_TICK(tick+group->interval,group->tick);
 			}
 			break;
 

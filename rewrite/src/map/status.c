@@ -7170,7 +7170,11 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val4 = -1;
 			break;
 		case SC_BANDING:
-			skill_unitsetting(bl,LG_BANDING,val1,bl->x,bl->y,0);
+			{
+				struct skill_unit_group *sg;
+				if( (sg = skill_unitsetting(bl,LG_BANDING,val1,bl->x,bl->y,0)) != NULL )
+					val4 = sg->group_id;
+			}
 			break;
 	}
 
