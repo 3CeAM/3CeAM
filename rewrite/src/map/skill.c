@@ -9062,7 +9062,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		if( sc && sc->data[SC_BANDING] )
 			status_change_end(src,SC_BANDING,-1);
 		else if( (sg = skill_unitsetting(src,skillid,skilllv,src->x,src->y,0)) != NULL )
-			sc_start2(src,SC_BANDING,100,skilllv,sg->group_id,skill_get_time(skillid,skilllv));
+			sc_start4(src,SC_BANDING,100,skilllv,0,0,sg->group_id,skill_get_time(skillid,skilllv));
 		break;
 
 	case WM_DOMINION_IMPULSE:
