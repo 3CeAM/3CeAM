@@ -634,6 +634,12 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 
 		if( sd && (sce = sc->data[SC_FORCEOFVANGUARD]) && flag&BF_WEAPON && rand()%100 < sce->val2 )
 			pc_addrageball(sd,skill_get_time(LG_FORCEOFVANGUARD,sce->val1),sce->val3);
+
+		if( (sce = sc->data[SC_GT_ENERGYGAIN]) && flag&BF_WEAPON && rand()%100 < 10 + 5 * sce->val1 )
+		{
+			int duration = skill_get_time2(MO_CALLSPIRITS, sce->val1);
+			if( sd ) pc_addspiritball(sd, duration, sce->val1);
+		}
 	}
 
 	if( sc && sc->data[SC__DEADLYINFECT] && damage > 0 && rand()%100 < 20 )
@@ -2097,6 +2103,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					break;
 				case LG_EARTHDRIVE:
 					skillratio = (skillratio + 100) * skill_lv * status_get_lv(src) / 100;
+					break;
+				case SR_GENTLETOUCH_QUIET:
+					skillratio += 100 * (skill_lv - 1) + sstatus->dex;
 					break;
 				case WM_METALICSOUND:
 					skillratio += 450 + (50 * skill_lv);
@@ -3744,6 +3753,12 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			else
 				skillid = AB_DUPLELIGHT_MAGIC;
 			skill_attack(skill_get_type(skillid), src, src, target, skillid, sc->data[SC_DUPLELIGHT]->val1, tick, SD_LEVEL);
+		}
+		if( sc->data[SC_GT_ENERGYGAIN] )
+		{
+			int duration = skill_get_time(MO_CALLSPIRITS, sc->data[SC_GT_ENERGYGAIN]->val1); 
+			if( sd && rand()%100 < 10 + sc->data[SC_GT_ENERGYGAIN]->val1 * 5 )
+				pc_addspiritball(sd, duration, sc->data[SC_GT_ENERGYGAIN]->val1);
 		}
 	}
 

@@ -476,6 +476,15 @@ typedef enum sc_type {
 	SC_BANDING_DEFENCE,
 	SC_SPELLFIST,
 
+//	SC_CRESCENTELBOW,
+//	SC_LIGHTNINGWALK,
+//	SC_CURSEDCIRCLE_ATKER,
+//	SC_CURSEDCIRCLE_TARGET,
+//	SC_RAISINGDRAGON,
+	SC_GT_ENERGYGAIN = 494,
+	SC_GT_CHANGE,
+	SC_GT_REVITALIZE,
+
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
 
