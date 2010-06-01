@@ -182,7 +182,7 @@
 
 // Sorcerer
 2443,1	// Fire Walk
-2445,1	// Electric Walk
+2444,1	// Electric Walk
 2449,1	// Psychic Wave
 2450,1	// Cloud Kill
 2448,1	// Poison Buster

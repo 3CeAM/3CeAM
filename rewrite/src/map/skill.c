@@ -7395,6 +7395,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			md = map_id2md(bl->id);
 			if( md && md->class_ >= 2042 && md->class_ <= 2046 )
 				status_kill(bl);
+			clif_skill_nodamage(src, bl, skillid, skilllv, 1);
 		}
 		break;
 
@@ -10625,7 +10626,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 				int hp = 130 * sg->skill_lv;
 				status_heal(bl, hp, 0, 0);
 				if( tstatus->hp != tstatus->max_hp )
-					clif_skill_nodamage(&src->bl, bl, AL_HEAL, hp, 1);
+					clif_skill_nodamage(&src->bl, bl, AL_HEAL, hp, 0);
 				sc_start(bl, type, 100, sg->skill_lv, sg->interval + 100);
 			}
 			break;
