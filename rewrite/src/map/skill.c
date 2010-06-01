@@ -1112,6 +1112,9 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		skill_break_equip(src, EQP_SHIELD, 500, BCT_SELF);
 		sc_start(bl, SC_EARTHDRIVE, 100, skilllv, skill_get_time(skillid, skilllv));
 		break;
+	case SR_GENTLETOUCH_QUIET:
+		sc_start(bl, SC_SILENCE, 2 * skilllv, skilllv, skill_get_time(skillid, skilllv));
+		break;
 	case WM_METALICSOUND:
 		sc_start(bl, SC_CHAOS, 20 + 5 * skilllv, skilllv, skill_get_time(skillid,skilllv));
 		break;
@@ -3159,6 +3162,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case LG_BANISHINGPOINT:
 	case LG_SHIELDPRESS:
 	case LG_RAGEBURST:
+	case SR_GENTLETOUCH_QUIET:
 	case WM_METALICSOUND:
 	case WM_SEVERE_RAINSTORM_MELEE:
 	case WM_GREAT_ECHO:
@@ -4698,6 +4702,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SC_DEADLYINFECT:
 	case LG_EXEEDBREAK:
 	case LG_PRESTIGE:
+	case SR_GENTLETOUCH_ENERGYGAIN:
+	case SR_GENTLETOUCH_CHANGE:
+	case SR_GENTLETOUCH_REVITALIZE:
 	case SO_STRIKING:
 	case GN_CARTBOOST:
 		clif_skill_nodamage(src,bl,skillid,skilllv,
@@ -7625,6 +7632,28 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			clif_skill_nodamage(bl,src,skillid,skilllv,
 				sc_start(bl, type, 100, skilllv, skill_get_time(skillid, skilllv)));
 		}
+		break;
+
+	case SR_GENTLETOUCH_CURE:
+		if( status_isimmune(bl) ) 
+		{
+			clif_skill_nodamage(src,bl,skillid,skilllv,0);
+			break;
+		}
+		if( (tsc && tsc->opt1) && rand()%100 < 5 * skilllv )
+		{
+			status_change_end(bl, SC_STONE, -1 );
+			status_change_end(bl, SC_FREEZE, -1 );
+			status_change_end(bl, SC_STUN, -1 );
+			status_change_end(bl, SC_POISON, -1 );
+			status_change_end(bl, SC_SILENCE, -1 );
+			status_change_end(bl, SC_BLIND, -1 );
+			status_change_end(bl, SC_HALLUCINATION, -1 );
+			status_change_end(bl, SC_BURNING, -1 );
+			status_change_end(bl, SC_FREEZING, -1 );
+			skill_castend_nodamage_id(src, bl, AL_HEAL, skilllv, tick, flag);
+		}
+		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		break;
 
 	case WA_SWING_DANCE:

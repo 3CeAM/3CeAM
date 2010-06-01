@@ -493,6 +493,10 @@ void initChangeTables(void)
 	set_sc( LG_INSPIRATION       , SC_INSPIRATION		 , SI_INSPIRATION       , SCB_MAXHP|SCB_WATK|SCB_HIT|SCB_VIT|SCB_AGI|SCB_STR|SCB_DEX|SCB_INT|SCB_LUK);
 	set_sc( LG_EARTHDRIVE        , SC_EARTHDRIVE         , SI_EARTHDRIVE        , SCB_DEF|SCB_ASPD );
 
+	set_sc( SR_GENTLETOUCH_ENERGYGAIN   , SC_GT_ENERGYGAIN        , SI_GENTLETOUCH_ENERGYGAIN   , SCB_NONE );
+	set_sc( SR_GENTLETOUCH_CHANGE       , SC_GT_CHANGE            , SI_GENTLETOUCH_CHANGE       , SCB_BATK|SCB_ASPD|SCB_DEF|SCB_MDEF );
+	set_sc( SR_GENTLETOUCH_REVITALIZE   , SC_GT_REVITALIZE        , SI_GENTLETOUCH_REVITALIZE   , SCB_VIT|SCB_MAXHP|SCB_DEF2|SCB_REGEN|SCB_ASPD|SCB_SPEED );
+
 	set_sc( WA_SWING_DANCE                , SC_SWINGDANCE              , SI_SWINGDANCE                , SCB_SPEED|SCB_ASPD );
 	set_sc( WA_SYMPHONY_OF_LOVER          , SC_SYMPHONYOFLOVER         , SI_SYMPHONYOFLOVERS          , SCB_MDEF );
 	set_sc( WA_MOONLIT_SERENADE           , SC_MOONLITSERENADE         , SI_MOONLITSERENADE           , SCB_MATK );
@@ -1255,7 +1259,7 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 
 	if(sc && sc->count)
 	{
-		if(sc->opt1 >0 && sc->opt1 != OPT1_BURNING)
+		if( sc->opt1 >0 && sc->opt1 != OPT1_BURNING && skill_num != SR_GENTLETOUCH_CURE )
 		{	//Stuned/Frozen/etc
 			if (flag != 1) //Can't cast, casted stuff can't damage. 
 				return 0;
@@ -3023,6 +3027,11 @@ void status_calc_regen_rate(struct block_list *bl, struct regen_data *regen, str
 	}
 	if( sc->data[SC_ISA] )
 		regen->flag &=~RGN_SP;
+	if( sc->data[SC_GT_REVITALIZE] )
+	{
+		const struct status_change_entry *sce = sc->data[SC_GT_REVITALIZE];
+		regen->rate.hp += sce->val3;
+	}
 }
 
 /// Recalculates parts of an object's battle status according to the specified flags.
@@ -3632,6 +3641,8 @@ static unsigned short status_calc_vit(struct block_list *bl, struct status_chang
 		vit += sc->data[SC_MINOR_BBQ]->val1;
 	if(sc->data[SC_INSPIRATION])
 		vit += sc->data[SC_INSPIRATION]->val3;
+	if(sc->data[SC_GT_REVITALIZE])
+		vit += sc->data[SC_GT_REVITALIZE]->val2;
 
 	return (unsigned short)cap_value(vit,0,USHRT_MAX);
 }
@@ -3814,6 +3825,8 @@ static unsigned short status_calc_batk(struct block_list *bl, struct status_chan
 		batk -= batk * sc->data[SC_MELODYOFSINK]->val3/100;
 	if(sc->data[SC_BEYONDOFWARCRY])
 		batk += batk * sc->data[SC_BEYONDOFWARCRY]->val3/100;
+	if(sc->data[SC_GT_CHANGE])
+		batk += batk * sc->data[SC_GT_CHANGE]->val3 / 100;
 
 	return (unsigned short)cap_value(batk,0,USHRT_MAX);
 }
@@ -4094,7 +4107,8 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 		def -= def * (10 + 10 * sc->data[SC_SATURDAYNIGHTFEVER]->val1) / 100;
 	if(sc->data[SC_EARTHDRIVE])
 		def -= def * 25 / 100;
-
+	if( sc->data[SC_GT_CHANGE] )
+		def -= def * sc->data[SC_GT_CHANGE]->val3 / 100;
 
 	return (signed char)cap_value(def,CHAR_MIN,CHAR_MAX);
 }
@@ -4139,7 +4153,8 @@ static signed short status_calc_def2(struct block_list *bl, struct status_change
 		def2 += sc->data[SC_SHIELDSPELL_REF]->val2;
 	if( sc->data[SC_BANDING] && sc->data[SC_BANDING]->val2 > 0 )
 		def2 += (5 + sc->data[SC_BANDING]->val1) * (sc->data[SC_BANDING]->val2);
-
+	if( sc->data[SC_GT_REVITALIZE] )
+		def2 += def2 * ( 50 + 10 * sc->data[SC_GT_REVITALIZE]->val1 ) / 100;
 
 	return (short)cap_value(def2,1,SHRT_MAX);
 }
@@ -4173,6 +4188,8 @@ static signed char status_calc_mdef(struct block_list *bl, struct status_change 
 		mdef -= mdef * ( 14 * sc->data[SC_ANALYZE]->val1 ) / 100;
 	if(sc->data[SC_SYMPHONYOFLOVER])
 		mdef += mdef * sc->data[SC_SYMPHONYOFLOVER]->val2 / 100;
+	if(sc->data[SC_GT_CHANGE])
+		mdef -= mdef * sc->data[SC_GT_CHANGE]->val3 / 100;
 
 	return (signed char)cap_value(mdef,CHAR_MIN,CHAR_MAX);
 }
@@ -4340,6 +4357,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				val = max( val, sc->data[SC_GN_CARTBOOST]->val2 );
 			if( sc->data[SC_SWINGDANCE] )
 				val = max( val, sc->data[SC_SWINGDANCE]->val3 );
+			if( sc->data[SC_GT_REVITALIZE] )
+				val = max( val, sc->data[SC_GT_REVITALIZE]->val2 );
 
 			//FIXME: official items use a single bonus for this [ultramage]
 			if( sc->data[SC_SPEEDUP0] ) // temporary item-based speedup
@@ -4492,6 +4511,10 @@ static short status_calc_aspd_rate(struct block_list *bl, struct status_change *
 		aspd_rate += aspd_rate * sc->data[SC_GLOOMYDAY]->val3 / 100;
 	if( sc->data[SC_EARTHDRIVE] )
 		aspd_rate += aspd_rate * 25 / 100;
+	if( sc->data[SC_GT_CHANGE] )
+		aspd_rate -= aspd_rate * (sc->data[SC_GT_CHANGE]->val2/200) / 100;
+	if( sc->data[SC_GT_REVITALIZE] )
+		aspd_rate -= aspd_rate * sc->data[SC_GT_REVITALIZE]->val2 / 100;
 
 	return (short)cap_value(aspd_rate,0,SHRT_MAX);
 }
@@ -4542,6 +4565,10 @@ static unsigned int status_calc_maxhp(struct block_list *bl, struct status_chang
 		maxhp += maxhp * 3 * sc->data[SC_FORCEOFVANGUARD]->val1 / 100;
 	if(sc->data[SC_INSPIRATION]) //Custom value.
 		maxhp += maxhp * 3 * sc->data[SC_INSPIRATION]->val1 / 100;
+	if(sc->data[SC_GT_CHANGE])
+		maxhp -= maxhp * (2 * sc->data[SC_GT_CHANGE]->val1) / 100;
+	if(sc->data[SC_GT_REVITALIZE])
+		maxhp += maxhp * (6 * sc->data[SC_GT_REVITALIZE]->val1) / 100;
 
 	return cap_value(maxhp,1,UINT_MAX);
 }
@@ -5850,6 +5877,18 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		status_change_end(bl,SC_SHIELDSPELL_MDEF,-1);
 		status_change_end(bl,SC_SHIELDSPELL_REF,-1);
 		break;
+	case SC_GT_ENERGYGAIN:
+		status_change_end(bl, SC_GT_CHANGE, -1);
+		status_change_end(bl, SC_GT_REVITALIZE, -1);
+		break;
+	case SC_GT_CHANGE:
+		status_change_end(bl, SC_GT_ENERGYGAIN, -1);
+		status_change_end(bl, SC_GT_REVITALIZE, -1);
+		break;
+	case SC_GT_REVITALIZE:
+		status_change_end(bl, SC_GT_ENERGYGAIN, -1);
+		status_change_end(bl, SC_GT_CHANGE, -1);
+		break;
 	}
 
 	//Check for overlapping fails
@@ -7146,6 +7185,14 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			break;
 		case SC_SPELLFIST:
 			val_flag |= 1|2|4;
+			break;
+		case SC_GT_CHANGE:
+			if( sd ) val2 = (13 * val1 / 2) * sd->status.agi; //Aspd - old formula.
+			val3 = 20 + 1 * val1; //Base Atk, Reduction to DEF & MDEF
+			break;
+		case SC_GT_REVITALIZE:
+			val2 = 5 * val1; //Custom value VIT, ASPD, SPEED bonus.
+			val3 = 60 + 40 * val1; //HP recovery
 			break;
 
 		default:

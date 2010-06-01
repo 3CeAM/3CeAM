@@ -10309,7 +10309,7 @@ void clif_parse_UseSkillToId(int fd, struct map_session_data *sd)
 	// Whether skill fails or not is irrelevant, the char ain't idle. [Skotlex]
 	sd->idletime = last_tick;
 
-	if( pc_cant_act(sd) )
+	if( pc_cant_act(sd) && skillnum != SR_GENTLETOUCH_CURE )
 		return;
 	if( pc_issit(sd) )
 		return;
