@@ -6342,7 +6342,7 @@ int clif_party_option(struct party_data *p,struct map_session_data *sd,int flag)
 /*==========================================
  * パーティ脱退（脱退前に呼ぶこと）
  *------------------------------------------*/
-int clif_party_leaved(struct party_data* p, struct map_session_data* sd, int account_id, const char* name, int flag)
+int clif_party_withdraw(struct party_data* p, struct map_session_data* sd, int account_id, const char* name, int flag)
 {
 	unsigned char buf[64];
 	int i;
@@ -6430,11 +6430,17 @@ int clif_party_xy_single(int fd, struct map_session_data *sd)
 int clif_party_hp(struct map_session_data *sd)
 {
 	unsigned char buf[16];
+#if PACKETVER < 20100414
+	const int cmd = 0x106;
+#else
+	const int cmd = 0x80e;
+#endif
 
 	nullpo_retr(0, sd);
 
-	WBUFW(buf,0)=0x106;
+	WBUFW(buf,0)=cmd;
 	WBUFL(buf,2)=sd->status.account_id;
+#if PACKETVER < 20100414
 	if (sd->battle_status.max_hp > SHRT_MAX) { //To correctly display the %hp bar. [Skotlex]
 		WBUFW(buf,6) = sd->battle_status.hp/(sd->battle_status.max_hp/100);
 		WBUFW(buf,8) = 100;
@@ -6442,7 +6448,16 @@ int clif_party_hp(struct map_session_data *sd)
 		WBUFW(buf,6) = sd->battle_status.hp;
 		WBUFW(buf,8) = sd->battle_status.max_hp;
 	}
-	clif_send(buf,packet_len(0x106),&sd->bl,PARTY_AREA_WOS);
+#else
+	if (sd->battle_status.max_hp > INT_MAX) { //To correctly display the %hp bar. [Skotlex]
+		WBUFL(buf, 6) = sd->battle_status.hp/(sd->battle_status.max_hp/100);
+		WBUFL(buf,10) = 100;
+	} else {
+		WBUFL(buf, 6) = sd->battle_status.hp;
+		WBUFL(buf,10) = sd->battle_status.max_hp;
+	}
+#endif
+	clif_send(buf,packet_len(cmd),&sd->bl,PARTY_AREA_WOS);
 	return 0;
 }
 
@@ -6451,9 +6466,15 @@ int clif_party_hp(struct map_session_data *sd)
  *------------------------------------------*/
 void clif_hpmeter_single(int fd, int id, unsigned int hp, unsigned int maxhp)
 {
-	WFIFOHEAD(fd,packet_len(0x106));
-	WFIFOW(fd,0) = 0x106;
+#if PACKETVER < 20100414
+	const int cmd = 0x106;
+#else
+	const int cmd = 0x80e;
+#endif
+	WFIFOHEAD(fd,packet_len(cmd));
+	WFIFOW(fd,0) = cmd;
 	WFIFOL(fd,2) = id;
+#if PACKETVER < 20100414
 	if( maxhp > SHRT_MAX )
 	{// To correctly display the %hp bar. [Skotlex]
 		WFIFOW(fd,6) = hp/(maxhp/100);
@@ -6462,7 +6483,73 @@ void clif_hpmeter_single(int fd, int id, unsigned int hp, unsigned int maxhp)
 		WFIFOW(fd,6) = hp;
 		WFIFOW(fd,8) = maxhp;
 	}
-	WFIFOSET(fd, packet_len(0x106));
+#else
+	if( maxhp > INT_MAX )
+	{// To correctly display the %hp bar. [Skotlex]
+		WFIFOL(fd, 6) = hp/(maxhp/100);
+		WFIFOL(fd,10) = 100;
+	} else {
+		WFIFOL(fd, 6) = hp;
+		WFIFOL(fd,10) = maxhp;
+	}
+#endif
+	WFIFOSET(fd, packet_len(cmd));
+}
+
+/*==========================================
+ *
+ *------------------------------------------*/
+int clif_hpmeter_sub(struct block_list *bl, va_list ap)
+{
+	struct map_session_data *sd, *tsd;
+	int level;
+#if PACKETVER < 20100414
+	const int cmd = 0x106;
+#else
+	const int cmd = 0x80e;
+#endif
+
+	sd = va_arg(ap, struct map_session_data *);
+	tsd = (TBL_PC *)bl;
+
+	nullpo_retr(0, sd);
+	nullpo_retr(0, tsd);
+
+	if( !tsd->fd )
+		return 0;
+
+	if( (level = pc_isGM(tsd)) >= battle_config.disp_hpmeter && level >= pc_isGM(sd) )
+	{
+		WFIFOHEAD(tsd->fd,cmd);
+		WFIFOW(tsd->fd,0) = cmd;
+		WFIFOL(tsd->fd,2) = sd->status.account_id;
+#if PACKETVER < 20100414
+		if( sd->battle_status.max_hp > SHRT_MAX )
+		{ //To correctly display the %hp bar. [Skotlex]
+			WFIFOW(tsd->fd,6) = sd->battle_status.hp/(sd->battle_status.max_hp/100);
+			WFIFOW(tsd->fd,8) = 100;
+		}
+		else
+		{
+			WFIFOW(tsd->fd,6) = sd->battle_status.hp;
+			WFIFOW(tsd->fd,8) = sd->battle_status.max_hp;
+		}
+
+#else
+		if( sd->battle_status.max_hp > INT_MAX )
+		{ //To correctly display the %hp bar. [Skotlex]
+			WFIFOL(tsd->fd, 6) = sd->battle_status.hp/(sd->battle_status.max_hp/100);
+			WFIFOL(tsd->fd,10) = 100;
+		}
+		else
+		{
+			WFIFOL(tsd->fd, 6) = sd->battle_status.hp;
+			WFIFOL(tsd->fd,10) = sd->battle_status.max_hp;
+		}
+#endif
+	WFIFOSET(tsd->fd,cmd);
+	}
+	return 0;
 }
 
 /*==========================================
@@ -6470,46 +6557,10 @@ void clif_hpmeter_single(int fd, int id, unsigned int hp, unsigned int maxhp)
  *------------------------------------------*/
 int clif_hpmeter(struct map_session_data *sd)
 {
-	struct map_session_data *sd2;
-	unsigned char buf[16];
-	int i, x0, y0, x1, y1;
-	int level;
-
 	nullpo_retr(0, sd);
 
-	x0 = sd->bl.x - AREA_SIZE;
-	y0 = sd->bl.y - AREA_SIZE;
-	x1 = sd->bl.x + AREA_SIZE;
-	y1 = sd->bl.y + AREA_SIZE;
-
-	WBUFW(buf,0) = 0x106;
-	WBUFL(buf,2) = sd->status.account_id;
-	if( sd->battle_status.max_hp > SHRT_MAX )
-	{ //To correctly display the %hp bar. [Skotlex]
-		WBUFW(buf,6) = sd->battle_status.hp/(sd->battle_status.max_hp/100);
-		WBUFW(buf,8) = 100;
-	}
-	else
-	{
-		WBUFW(buf,6) = sd->battle_status.hp;
-		WBUFW(buf,8) = sd->battle_status.max_hp;
-	}
-
-	//TODO: replace with map_foreachinarea?
-	for( i = 0; i < fd_max; i++ )
-	{
-		if( session[i] && session[i]->func_parse == clif_parse && (sd2 = (struct map_session_data*)session[i]->session_data) && sd != sd2 && sd2->state.active )
-		{
-			if( sd2->bl.m != sd->bl.m || sd2->bl.x < x0 || sd2->bl.y < y0 || sd2->bl.x > x1 || sd2->bl.y > y1 )
-				continue; // Not in the Visual Area
-			if( battle_config.disp_hpmeter && (level = pc_isGM(sd2)) >= battle_config.disp_hpmeter && level >= pc_isGM(sd) )
-			{
-				WFIFOHEAD(i,packet_len(0x106));
-				memcpy(WFIFOP(i,0),buf,packet_len(0x106));
-				WFIFOSET(i,packet_len(0x106));
-			}
-		}
-	}
+	if( battle_config.disp_hpmeter )
+		map_foreachinarea(clif_hpmeter_sub, sd->bl.m, sd->bl.x-AREA_SIZE, sd->bl.y-AREA_SIZE, sd->bl.x+AREA_SIZE, sd->bl.y+AREA_SIZE, BL_PC, sd);
 
 	return 0;
 }
@@ -8735,8 +8786,8 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 		clif_refreshlook(&sd->bl,sd->bl.id,LOOK_CLOTHES_COLOR,sd->vd.cloth_color,SELF);
 
 	// item
-	clif_inventorylist(sd);
 	pc_checkitem(sd);
+	clif_inventorylist(sd);
 	
 	// cart
 	if(pc_iscarton(sd)) {
@@ -13835,10 +13886,16 @@ void clif_readbook(int fd, int book_id, int page)
 int clif_bg_hp(struct map_session_data *sd)
 {
 	unsigned char buf[16];
+#if PACKETVER < 20100414
+	const int cmd = 0x106;
+#else
+	const int cmd = 0x80e;
+#endif
 	nullpo_retr(0, sd);
 
-	WBUFW(buf,0)=0x106;
+	WBUFW(buf,0)=cmd;
 	WBUFL(buf,2) = sd->status.account_id;
+#if PACKETVER < 20100414
 	if( sd->battle_status.max_hp > SHRT_MAX )
 	{ // To correctly display the %hp bar. [Skotlex]
 		WBUFW(buf,6) = sd->battle_status.hp/(sd->battle_status.max_hp/100);
@@ -13849,7 +13906,19 @@ int clif_bg_hp(struct map_session_data *sd)
 		WBUFW(buf,6) = sd->battle_status.hp;
 		WBUFW(buf,8) = sd->battle_status.max_hp;
 	}
-	clif_send(buf, packet_len(0x106), &sd->bl, BG_AREA_WOS);
+#else
+	if( sd->battle_status.max_hp > INT_MAX )
+	{ // To correctly display the %hp bar. [Skotlex]
+		WBUFL(buf, 6) = sd->battle_status.hp/(sd->battle_status.max_hp/100);
+		WBUFL(buf,10) = 100;
+	}
+	else
+	{
+		WBUFL(buf, 6) = sd->battle_status.hp;
+		WBUFL(buf,10) = sd->battle_status.max_hp;
+	}
+#endif
+	clif_send(buf, packet_len(cmd), &sd->bl, BG_AREA_WOS);
 	return 0;
 }
 

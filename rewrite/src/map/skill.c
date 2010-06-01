@@ -5857,7 +5857,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			if(sp < 0) sp = 0;
 			status_zap(src, 0, sp);
 			if( skillid == SO_SPELLFIST )
-				sc_start4(src,type,100,skilllv+1,skilllv,sd->skillid_old,sd->skilllv_old,skill_get_time(skillid,skilllv));
+				sc_start4(src,type,100,skilllv+1,skilllv,(sd->skillid_old)?sd->skillid_old:MG_FIREBOLT,(sd->skilllv_old)?sd->skilllv_old:skilllv,skill_get_time(skillid,skilllv));
 		}
 		break;
 	case SA_SPELLBREAKER:
