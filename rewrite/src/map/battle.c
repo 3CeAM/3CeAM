@@ -2144,7 +2144,19 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					skillratio += 400 + 100 * skill_lv;
 					break;
 			}
-
+			// Some skill under EDP status have been nerfed. http://www.eathena.ws/board/index.php?showtopic=234419&hl=enchant+deadly
+			if( sc && sc->data[SC_EDP] )
+			{
+				switch( skill_num )
+				{
+					case AS_SONICBLOW:
+					case ASC_BREAKER:
+					case GC_CROSSIMPACT:
+					case GC_COUNTERSLASH:
+						skillratio >>= 1;// Half skillratio.
+						break;
+				}
+			}
 			ATK_RATE(skillratio);
 
 			//Constant/misc additions from skills
@@ -2187,12 +2199,26 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 			if(sc->data[SC_TRUESIGHT])
 				ATK_ADDRATE(2*sc->data[SC_TRUESIGHT]->val1);
 
-			if(sc->data[SC_EDP] &&
-			  	skill_num != ASC_BREAKER &&
-				skill_num != ASC_METEORASSAULT &&
-				skill_num != AS_SPLASHER &&
-				skill_num != AS_VENOMKNIFE)
-				ATK_ADDRATE(sc->data[SC_EDP]->val3);
+			if(sc->data[SC_EDP] )
+			{
+				switch( skill_num )
+				{	
+					case ASC_METEORASSAULT:
+					case AS_SPLASHER:
+					case AS_VENOMKNIFE:
+					case AS_GRIMTOOTH: // Grimtooth skill no longer takes the effect of Enchant Deadly Poison.
+					// Skill effects nerfed, don't add EDP effects.
+					case GC_CROSSIMPACT:
+					case GC_COUNTERSLASH:
+					case ASC_BREAKER:
+					case AS_SONICBLOW:
+						break;
+					default:
+						ATK_ADDRATE(sc->data[SC_EDP]->val3);
+						break;
+				}
+			}
+			
 		}
 
 		switch (skill_num) {
