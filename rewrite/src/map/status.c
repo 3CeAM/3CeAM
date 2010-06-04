@@ -5398,7 +5398,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_SLOWDOWN:
 		case SC_MINDBREAKER:
 		case SC_WINKCHARM:
-		case SC_STOP:
+		//case SC_STOP: Some tests have determined that this status is not blocked by Nauthiz Rune
 		case SC_ORCISH:
 		case SC_STRIPWEAPON:
 		case SC_STRIPSHIELD:
