@@ -486,6 +486,7 @@ extern struct Battle_Config
 	int bg_flee_penalty;
 
 	int warg_can_falcon;
+	int renewal_edp;
 
 	// Casting Time Renewal Settings
 	int renewal_cast_enable;

@@ -2145,15 +2145,19 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					break;
 			}
 			// Some skill under EDP status have been nerfed. http://www.eathena.ws/board/index.php?showtopic=234419&hl=enchant+deadly
-			if( sc && sc->data[SC_EDP] )
+			if( battle_config.renewal_edp && sc && sc->data[SC_EDP] )
 			{
 				switch( skill_num )
 				{
 					case AS_SONICBLOW:
 					case ASC_BREAKER:
+						if( battle_config.renewal_edp&1 )
+							skillratio >>= 1;
+						break;
 					case GC_CROSSIMPACT:
 					case GC_COUNTERSLASH:
-						skillratio >>= 1;// Half skillratio.
+						if( battle_config.renewal_edp&2 )
+							skillratio >>= 1;// Half skillratio.
 						break;
 				}
 			}
@@ -2206,12 +2210,18 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					case ASC_METEORASSAULT:
 					case AS_SPLASHER:
 					case AS_VENOMKNIFE:
+					case ASC_BREAKER:
+						break;
 					case AS_GRIMTOOTH: // Grimtooth skill no longer takes the effect of Enchant Deadly Poison.
 					// Skill effects nerfed, don't add EDP effects.
+					case AS_SONICBLOW:
+						if( !(battle_config.renewal_edp&1) )							
+							ATK_ADDRATE(sc->data[SC_EDP]->val3);
+						break;
 					case GC_CROSSIMPACT:
 					case GC_COUNTERSLASH:
-					case ASC_BREAKER:
-					case AS_SONICBLOW:
+						if( !(battle_config.renewal_edp&2) )						
+							ATK_ADDRATE(sc->data[SC_EDP]->val3);
 						break;
 					default:
 						ATK_ADDRATE(sc->data[SC_EDP]->val3);
@@ -4720,6 +4730,7 @@ static const struct _battle_data {
 // Casting Time Renewal Settings
 	{ "renewal_cast_enable",                &battle_config.renewal_cast_enable,              1,     0,            1,        },
 	{ "warg_can_falcon",                    &battle_config.warg_can_falcon,                  0,     0,            1,        },
+	{ "renewal_edp",                        &battle_config.renewal_edp,                      0,     0,            3,        },
 };
 
 
