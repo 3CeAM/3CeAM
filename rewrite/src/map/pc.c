@@ -1017,22 +1017,17 @@ int pc_isequip(struct map_session_data *sd,int n)
 	//if(!(1<<((sd->class_&JOBL_THIRD)?3:(sd->class_&JOBL_BABY)?2:(sd->class_&JOBL_UPPER)?1:0)&item->class_upper))
 	//	return 0;
 
+	//As Jobbie told me that in kro items for 'trans classes only' are availbable for 3rd classes as well.
 	//Always do something with backward compatiblity. You needn't have done massive db modifications. [Inkfish]
+	while( 1 )
 	{
-		int i = 0;
-
-		// Well, you can uncomment this if you wanna make 1 mean 'Normal jobs' instead of 'All jobs'
-		// If so the upper column needs to be updated from 7 to 15 to mean 'All jobs'.
-		// Since there is usually no special treatmeant for 'Normal jobs', i suggest we leave it as it is to have compatibility with old eA DB.
-		if( battle_config.item_check_normal_job && !(sd->class_&MAPID_JOBMASK) ) 
-			i |= 1;
-
-		if( sd->class_&JOBL_UPPER && !(sd->class_&JOBL_THIRD) ) i |= 2;
-		if( sd->class_&JOBL_BABY && !(sd->class_&JOBL_THIRD) ) i |= 4;
-		if( sd->class_&JOBL_THIRD ) i |= 8;
-
-		if( !(i&item->class_upper) )
-			return 0;
+		if( item->class_upper&1 && !(sd->class_&(JOBL_UPPER|JOBL_THIRD|JOBL_BABY)) ) break;
+		if( item->class_upper&2 && sd->class_&(JOBL_UPPER|JOBL_THIRD) ) break;
+		if( item->class_upper&4 && sd->class_&JOBL_BABY ) break;
+		if( item->class_upper&8 && sd->class_&JOBL_THIRD ) break;
+		if( item->class_upper&16 && sd->class_&JOBL_THIRD && sd->class_&JOBL_UPPER ) break;
+		if( item->class_upper&24 && sd->class_&JOBL_THIRD && sd->class_&JOBL_BABY ) break;
+		return 0;
 	}
 
 	return 1;
@@ -3846,21 +3841,15 @@ int pc_isUseitem(struct map_session_data *sd,int n)
 		return 0;
 
 	//Always do something with backward compatiblity. You needn't have done massive db modifications. [Inkfish]
+	while( 1 )
 	{
-		int i = 0;
-
-		// Well, you can uncomment this if you wanna make 1 mean 'Normal jobs' instead of 'All jobs'
-		// If so the upper column needs to be updated from 7 to 15 to mean 'All jobs'.
-		// Since there is usually no special treatmeant for 'Normal jobs', i suggest we leave it as it is to have compatibility with old eA DB.
-		if( battle_config.item_check_normal_job && !(sd->class_&MAPID_JOBMASK) ) 
-			i |= 1;
-
-		if( sd->class_&JOBL_UPPER  && !(sd->class_&JOBL_THIRD) ) i |= 2;
-		if( sd->class_&JOBL_BABY  && !(sd->class_&JOBL_THIRD) ) i |= 4;
-		if( sd->class_&JOBL_THIRD ) i |= 8;
-
-		if( !(i&item->class_upper) )
-			return 0;
+		if( item->class_upper&1 && !(sd->class_&(JOBL_UPPER|JOBL_THIRD|JOBL_BABY)) ) break;
+		if( item->class_upper&2 && sd->class_&(JOBL_UPPER|JOBL_THIRD) ) break;
+		if( item->class_upper&4 && sd->class_&JOBL_BABY ) break;
+		if( item->class_upper&8 && sd->class_&JOBL_THIRD ) break;
+		if( item->class_upper&16 && sd->class_&JOBL_THIRD && sd->class_&JOBL_UPPER ) break;
+		if( item->class_upper&24 && sd->class_&JOBL_THIRD && sd->class_&JOBL_BABY ) break;
+		return 0;
 	}
 
 	//Dead Branch & Bloody Branch & Porings Box
