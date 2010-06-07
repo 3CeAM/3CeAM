@@ -1027,8 +1027,8 @@ int pc_isequip(struct map_session_data *sd,int n)
 		//if( !(sd->class_&MAPID_JOBMASK) ) 
 			i |= 1;
 
-		if( sd->class_&JOBL_UPPER ) i |= 2;
-		if( sd->class_&JOBL_BABY ) i |= 4;
+		if( sd->class_&JOBL_UPPER && !(sd->class_&JOBL_THIRD) ) i |= 2;
+		if( sd->class_&JOBL_BABY && !(sd->class_&JOBL_THIRD) ) i |= 4;
 		if( sd->class_&JOBL_THIRD ) i |= 8;
 
 		if( !(i&item->class_upper) )
@@ -3844,10 +3844,6 @@ int pc_isUseitem(struct map_session_data *sd,int n)
 		(item->class_base[sd->class_&JOBL_2_1?1:(sd->class_&JOBL_2_2?2:0)])
 	))
 		return 0;
-	
-	//Not equipable by upper class. [Skotlex]
-	//if(!(1<<((sd->class_&JOBL_THIRD)?3:(sd->class_&JOBL_BABY)?2:(sd->class_&JOBL_UPPER)?1:0)&item->class_upper))
-	//	return 0;
 
 	//Always do something with backward compatiblity. You needn't have done massive db modifications. [Inkfish]
 	{
@@ -3859,8 +3855,8 @@ int pc_isUseitem(struct map_session_data *sd,int n)
 		//if( !(sd->class_&MAPID_JOBMASK) ) 
 			i |= 1;
 
-		if( sd->class_&JOBL_UPPER ) i |= 2;
-		if( sd->class_&JOBL_BABY ) i |= 4;
+		if( sd->class_&JOBL_UPPER  && !(sd->class_&JOBL_THIRD) ) i |= 2;
+		if( sd->class_&JOBL_BABY  && !(sd->class_&JOBL_THIRD) ) i |= 4;
 		if( sd->class_&JOBL_THIRD ) i |= 8;
 
 		if( !(i&item->class_upper) )
