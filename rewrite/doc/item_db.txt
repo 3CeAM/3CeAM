@@ -69,14 +69,12 @@ Job: Equippable jobs. Uses the following bitmask table:
 	Dark Collect(2^28): 0x10000000
 
 Upper: Equippable upper-types. Uses the following bitmasks:
-	 1: All jobs
-	 2: Upper jobs
+	 1: Normal jobs
+	 2: Upper jobs or Third jobs
 	 4: Baby jobs
 	 8: Third jobs
-NOTE:	1 used to stand for Normal jobs, but why would there be such a limit that you can equip something when
-	you are a non-trans class and then you can't when you become a trans class? And there isn't such usage
-	in official script, so in order to have backward compatibility when doing 3rd jobs, I changed 1 to 
-	mean All jobs. [Inkfish]
+	16: Trans-3rd jobs
+	24: Baby 3rd jobs
 
 Gender: Gender restriction. 0 is female, 1 is male, 2 for both.
 

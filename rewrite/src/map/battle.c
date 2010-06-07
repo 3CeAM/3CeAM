@@ -4731,7 +4731,6 @@ static const struct _battle_data {
 	{ "renewal_cast_enable",                &battle_config.renewal_cast_enable,              1,     0,            1,        },
 	{ "warg_can_falcon",                    &battle_config.warg_can_falcon,                  0,     0,            1,        },
 	{ "renewal_edp",                        &battle_config.renewal_edp,                      0,     0,            3,        },
-	{ "item_check_normal_job",              &battle_config.item_check_normal_job,            0,     0,            1,        },
 };
 
 
