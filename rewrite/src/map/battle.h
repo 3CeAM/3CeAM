@@ -487,6 +487,7 @@ extern struct Battle_Config
 
 	int warg_can_falcon;
 	int renewal_edp;
+	int item_check_normal_job;
 
 	// Casting Time Renewal Settings
 	int renewal_cast_enable;
