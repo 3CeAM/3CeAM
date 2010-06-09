@@ -1,5 +1,40 @@
 Date		Added
 ======
+2010/06/05
+	* Rev. 14331 Corrected Brasilis Fruit Merchant. (bugreport:4278) [L0ne_W0lf]
+2010/06/01
+	* Rev. 14330 Actually applied the right update to the comodo weapon shop. [L0ne_W0lf]
+	* Rev. 14329 Actually added Manuk/Splendide shop files from r14327. [L0ne_W0lf]
+	* Rev. 14327 Added Splendide and Manuk merchants. [L0ne_W0lf]
+2010/05/30
+	* Rev. 14315 Shop update, and added Wanderer pet food maker NPC. [L0ne_W0lf]
+	- Added Trading merchants, (ninja& gunslinger) to Izlude and Alberta.
+	- Made Brasilis shop names unique, and uncommented.
+	- Changed the whip sold in comodo weapon shop. (1956 ->1960)
+	- Added Fire and Silver arrow to Einbroch tool dealer.
+	- Re-added Bill of Birds to Morroc Item Collectors.
+2010/05/29
+	* Rev. 14313 Updated F_CashPartyCall to use warpparty. Renamed original function to F_CashPartyCall2 and commented out. [L0ne_W0lf]
+	* Fixed an error in the monster race npcs calling a nonexistant OnEnable.
+	* Renamed 'Tabb' in the 13.1 Draco egg daily quest to 'Taab'.
+2010/05/26
+	* Rev. 14308 Added 13.2 daily quest 'Dragon Egg collection.' [L0ne_W0lf]
+2010/05/25
+	* Rev. 14307 Added 13.2 a minor access 'event' for Yggdrasil Dungeon floor 2. [L0ne_W0lf]
+	* Rev. 14306 Added 13.2 quests 'Midgard Ore' and 'Alfheim perfume'. [L0ne_W0lf]
+2010/05/24
+	* Rev. 14305 Some bug fixing :x Nothing to new today folks! Stay tuned. [L0ne_W0lf]
+	- Fixed input checks in the 'Ring of Wise King' quest. (bugreport:4147)
+	- Fixed some of the erros reported in the Oolnir scripts. (bugreport:4220)
+	- Added Azoi's giant flywing update to not warp dead players. (bugreport:4242)
+	- Fixed confusing inconsistancy in the nyd_dun mob spawn file. (bugreport:4246)
+	- Fixed the Manuk field 2 monsters spawning on Manul field 1. (bugreport:4248)
+2010/05/22
+	* Rev. 14304 Added the warps for Brasilis, not sure how they got missed :x [L0ne_W0lf]
+2010/05/20
+	* Rev. 14301 Added 13.2 quest 'Two Tribes' and mob spawns for Yggdrasil Dungeon. [L0ne_W0lf]
+	* Rev. 14300 Added more misc NPCs to Splendide and Manuk city files. [L0ne_W0lf]
+	* Rev. 14299 Added some Brasilis basic NPCs. [L0ne_W0lf]
 2010/03/23
 	* Rev. 14269 Fixed a couple bugs in the episode 13.x quests. [L0ne_W0lf]
 	- Fixed Half-buried Gem#1 not re-enabling. (bugreport:4129)

@@ -3078,7 +3078,7 @@ int clif_poison_list(struct map_session_data *sd, int skill_lv)
 /*==========================================
  * Magic Decoy Material List
  *------------------------------------------*/
-int clif_magicdecoy_list(struct map_session_data *sd, short x, short y)
+int clif_magicdecoy_list(struct map_session_data *sd, int skill_lv, short x, short y)
 {
 	int i, c;
 	int fd;
@@ -3100,7 +3100,7 @@ int clif_magicdecoy_list(struct map_session_data *sd, short x, short y)
 	if( c > 0 )
 	{
 		sd->menuskill_id = NC_MAGICDECOY;
-		sd->menuskill_val = c;
+		sd->menuskill_val = skill_lv;
 		sd->menuskill_itemused = (x<<16)|y;
 		WFIFOW(fd,2) = c * 2 + 4;
 		WFIFOSET(fd, WFIFOW(fd, 2));

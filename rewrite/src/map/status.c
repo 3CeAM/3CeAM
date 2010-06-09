@@ -396,6 +396,8 @@ void initChangeTables(void)
 	set_sc( CASH_INCAGI          , SC_INCREASEAGI     , SI_INCREASEAGI     , SCB_AGI|SCB_SPEED );
 	set_sc( CASH_ASSUMPTIO       , SC_ASSUMPTIO       , SI_ASSUMPTIO       , SCB_NONE );
 
+	//set_sc( ALL_PARTYFLEE        , SC_INCFLEE         , SI_PARTYFLEE       , SCB_NONE );
+
 	set_sc( CR_SHRINK            , SC_SHRINK          , SI_SHRINK          , SCB_NONE );
 	set_sc( RG_CLOSECONFINE      , SC_CLOSECONFINE2   , SI_CLOSECONFINE2   , SCB_NONE );
 	set_sc( RG_CLOSECONFINE      , SC_CLOSECONFINE    , SI_CLOSECONFINE    , SCB_FLEE );
@@ -601,6 +603,12 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_LUKFOOD] = SI_FOODLUK;
 	StatusIconChangeTable[SC_FLEEFOOD]= SI_FOODFLEE;
 	StatusIconChangeTable[SC_HITFOOD] = SI_FOODHIT;
+	StatusIconChangeTable[SC_MANU_ATK] = SI_MANU_ATK;
+	StatusIconChangeTable[SC_MANU_DEF] = SI_MANU_DEF;
+	StatusIconChangeTable[SC_SPL_ATK] = SI_SPL_ATK;
+	StatusIconChangeTable[SC_SPL_DEF] = SI_SPL_DEF;
+	StatusIconChangeTable[SC_MANU_MATK] = SI_MANU_MATK;
+	StatusIconChangeTable[SC_SPL_MATK] = SI_SPL_MATK;
 	//Cash Items
 	StatusIconChangeTable[SC_EXPBOOST] = SI_EXPBOOST;
 	StatusIconChangeTable[SC_ITEMBOOST] = SI_ITEMBOOST;
@@ -6837,6 +6845,16 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			break;
 		case SC_REBIRTH:
 			val2 = 20*val1; //% of life to be revived with
+			break;
+		case SC_MANU_DEF:
+		case SC_MANU_ATK:
+		case SC_MANU_MATK:
+			val2 = 1; // Manuk group
+			break;
+		case SC_SPL_DEF:
+		case SC_SPL_ATK:
+		case SC_SPL_MATK:
+			val2 = 2; // Splendide group
 			break;
 		case SC_FEAR:
 			val2 = 2;

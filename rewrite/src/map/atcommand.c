@@ -4378,6 +4378,17 @@ int atcommand_mapinfo(const int fd, struct map_session_data* sd, const char* com
 	sprintf(atcmd_output, "Map Name: %s | Players In Map: %d | NPCs In Map: %d | Chats In Map: %d", mapname, map[m_id].users, map[m_id].npc_num, chat_num);
 	clif_displaymessage(fd, atcmd_output);
 	clif_displaymessage(fd, "------ Map Flags ------");
+	if (map[m_id].flag.town)
+		clif_displaymessage(fd, "Town Map");
+
+	if (battle_config.autotrade_mapflag == map[m_id].flag.autotrade)
+		clif_displaymessage(fd, "Autotrade Enabled");
+	else
+		clif_displaymessage(fd, "Autotrade Disabled");
+	
+	if (map[m_id].flag.battleground)
+		clif_displaymessage(fd, "Battlegrounds ON");
+		
 	strcpy(atcmd_output,"PvP Flags: ");
 	if (map[m_id].flag.pvp)
 		strcat(atcmd_output, "Pvp ON | ");
@@ -4469,7 +4480,8 @@ int atcommand_mapinfo(const int fd, struct map_session_data* sd, const char* com
 		strcat(atcmd_output, "NoSkill | ");
 	if (map[m_id].flag.noicewall)
 		strcat(atcmd_output, "NoIcewall | ");
-		
+	if (map[m_id].flag.allowks)
+		strcat(atcmd_output, "AllowKS | ");
 	clif_displaymessage(fd, atcmd_output);
 
 	strcpy(atcmd_output,"Other Flags: ");
@@ -4488,7 +4500,6 @@ int atcommand_mapinfo(const int fd, struct map_session_data* sd, const char* com
 	if (map[m_id].flag.guildlock)
 		strcat(atcmd_output, "GuildLock | ");
 	clif_displaymessage(fd, atcmd_output);
-
 
 	switch (list) {
 	case 0:
@@ -6041,36 +6052,36 @@ int atcommand_changelook(const int fd, struct map_session_data* sd, const char* 
 }
 
 /*==========================================
- * @autotrade by durf (changed by Lupus)
+ * @autotrade by durf [Lupus] [Paradox924X]
  * Turns on/off Autotrade for a specific player
  *------------------------------------------*/
 int atcommand_autotrade(const int fd, struct map_session_data* sd, const char* command, const char* message)
 {
 	nullpo_retr(-1, sd);
-	if( sd->vender_id ) //check if player's vending
-	{
-		if( pc_isdead(sd) )
-		{
-			clif_displaymessage(fd, "Cannot Autotrade if you are dead.");
-			return -1;
-		}
-
-		if( map[sd->bl.m].flag.autotrade == battle_config.autotrade_mapflag )
-		{
-			sd->state.autotrade = 1;
-			if( battle_config.at_timeout )
-			{
-				int timeout = atoi(message);
-				status_change_start(&sd->bl, SC_AUTOTRADE, 10000, 0, 0, 0, 0, ((timeout > 0) ? min(timeout,battle_config.at_timeout) : battle_config.at_timeout) * 60000, 0);
-			}
-
-			clif_authfail_fd(fd, 15);
-		} else
-			clif_displaymessage(fd, "Autotrade is not allowed on this map.");
+	
+	if( map[sd->bl.m].flag.autotrade != battle_config.autotrade_mapflag ) {
+		clif_displaymessage(fd, "Autotrade is not allowed on this map.");
+		return -1;
 	}
-	else
-		clif_displaymessage(fd, msg_txt(549)); // You should be vending to use @Autotrade.
 
+	if( pc_isdead(sd) ) {
+		clif_displaymessage(fd, "Cannot Autotrade if you are dead.");
+		return -1;
+	}
+	
+	if( !sd->vender_id ) { //check if player is vending
+		clif_displaymessage(fd, msg_txt(549)); // You should be vending to use @Autotrade.
+		return -1;
+	}
+	
+	sd->state.autotrade = 1;
+	if( battle_config.at_timeout )
+	{
+		int timeout = atoi(message);
+		status_change_start(&sd->bl, SC_AUTOTRADE, 10000, 0, 0, 0, 0, ((timeout > 0) ? min(timeout,battle_config.at_timeout) : battle_config.at_timeout) * 60000, 0);
+	}
+	clif_authfail_fd(fd, 15);
+		
 	return 0;
 }
 
@@ -8925,7 +8936,7 @@ AtCommandInfo atcommand_info[] = {
 	{ "mobsearch",         10,10,     atcommand_mobsearch },
 	{ "cleanmap",          40,40,     atcommand_cleanmap },
 	{ "npctalk",           20,20,     atcommand_npctalk },
-	{ "npctalkc",           20,20,     atcommand_npctalk },
+	{ "npctalkc",          20,20,     atcommand_npctalk },
 	{ "pettalk",           10,10,     atcommand_pettalk },
 	{ "users",             40,40,     atcommand_users },
 	{ "reset",             40,40,     atcommand_reset },
