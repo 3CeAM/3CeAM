@@ -1883,6 +1883,16 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 	if (sc && sc->data[SC_TRICKDEAD] && !(sstatus->mode&MD_BOSS))
 		return 0;
 
+	if( (skillid == WL_JACKFROST || skillid == WL_CRIMSONROCK) && bl->type == BL_SKILL && battle_getcurrentskill(bl) == WZ_ICEWALL )
+	{
+		struct skill_unit *su = (struct skill_unit*)bl;
+		struct skill_unit_group *sg;
+		
+		if( su && su->alive && (sg = su->group) != NULL )
+			sg->limit = DIFF_TICK(tick,sg->tick)+300;
+		return 0;
+	}
+
 	dmg = battle_calc_attack(attack_type,src,bl,skillid,skilllv,flag&0xFFF);
 
 	//Skotlex: Adjusted to the new system
@@ -2305,7 +2315,7 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 				battle_delay_damage(tick, dmg.amotion,bl,src,0,0,0,rdamage,ATK_DEF,0);
 			else
 				status_fix_damage(bl,src,rdamage,0);
-			clif_damage(src,src,tick, dmg.amotion,0,rdamage,1,4,0);
+			clif_damage(src,src,tick, dmg.amotion,0,rdamage,dmg.div_>1?dmg.div_:1,4,0);
 			//Use Reflect Shield to signal this kind of skill trigger. [Skotlex]
 			if( tsd && src != bl )
 				battle_drain(tsd, src, rdamage, rdamage, sstatus->race, is_boss(src));
@@ -3435,7 +3445,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 				skill_area_temp[0] = map_foreachinrange(skill_area_sub, bl, (skillid == AS_SPLASHER)?1:skill_get_splash(skillid, skilllv), BL_CHAR, src, skillid, skilllv, tick, BCT_ENEMY, skill_area_sub_count);
 
 			// recursive invocation of skill_castend_damage_id() with flag|1
-			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), splash_target(src), src, skillid, skilllv, tick, flag|BCT_ENEMY|SD_SPLASH|1, skill_castend_damage_id);
+			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), (skillid == WL_CRIMSONROCK)?BL_CHAR|BL_SKILL:splash_target(src), src, skillid, skilllv, tick, flag|BCT_ENEMY|SD_SPLASH|1, skill_castend_damage_id);
 
 			//FIXME: Isn't EarthQuake a ground skill after all?
 			if( skillid == NPC_EARTHQUAKE )
@@ -7131,7 +7141,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 			skill_area_temp[1] = 0;
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
-			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), splash_target(src), 
+			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), BL_CHAR|BL_SKILL, 
 				src, skillid, skilllv, tick, flag|BCT_ENEMY|SD_SPLASH|1, skill_castend_damage_id);
 		}
 		break;
@@ -9004,7 +9014,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		break;
 
 	case NC_MAGICDECOY:
-		if( sd ) clif_magicdecoy_list(sd,x,y);
+		if( sd ) clif_magicdecoy_list(sd,skilllv,x,y);
 		break;
 
 	case SC_FEINTBOMB:
@@ -14742,7 +14752,7 @@ int skill_magicdecoy(struct map_session_data *sd, int nameid)
 	int x, y, i, class_, skill;
 	struct mob_data *md;
 	nullpo_retr(0, sd);
-	skill = pc_checkskill(sd,NC_MAGICDECOY);
+	skill = sd->menuskill_val;
 
 	if( nameid <= 0 || !itemdb_is_element(nameid) || (i = pc_search_inventory(sd,nameid)) < 0 || !skill )
 	{
@@ -14754,7 +14764,7 @@ int skill_magicdecoy(struct map_session_data *sd, int nameid)
 	pc_delitem(sd,i,1,0);
 	x = sd->menuskill_itemused>>16;
 	y = sd->menuskill_itemused&0xffff;
-	sd->menuskill_itemused = 0;
+	sd->menuskill_itemused = sd->menuskill_val = 0;
 
 	class_ = 2043 + nameid - 990;
 	md =  mob_once_spawn_sub(&sd->bl, sd->bl.m, x, y, sd->status.name, class_, "");

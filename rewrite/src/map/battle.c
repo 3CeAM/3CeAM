@@ -563,6 +563,23 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 				damage >>= 2; //75% reduction
 		}
 
+		// Compressed code, fixed by map.h [Epoque]
+		if (src->type == BL_MOB) {
+			int i;
+			if (sc->data[SC_MANU_DEF])
+				for (i=0;ARRAYLENGTH(mob_manuk)>i;i++)
+					if (mob_manuk[i]==((TBL_MOB*)src)->class_) {
+						damage -= sc->data[SC_MANU_DEF]->val1*damage/100;
+						break;
+					}
+			if (sc->data[SC_SPL_DEF])
+				for (i=0;ARRAYLENGTH(mob_splendide)>i;i++)
+					if (mob_splendide[i]==((TBL_MOB*)src)->class_) {
+						damage -= sc->data[SC_SPL_DEF]->val1*damage/100;
+						break;
+					}
+		}
+
 		if((sce=sc->data[SC_ARMOR]) && //NPC_DEFENDER
 			sce->val3&flag && sce->val4&flag)
 			damage -= damage*sc->data[SC_ARMOR]->val2/100;
@@ -652,6 +669,28 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 	{
 		if( sc->data[SC_INVINCIBLE] && !sc->data[SC_INVINCIBLEOFF] )
 			damage += damage * 75 / 100;
+		// [Epoque]
+		if (bl->type == BL_MOB)
+		{
+			int i;
+
+			if ( ((sce=sc->data[SC_MANU_ATK]) && (flag&BF_WEAPON)) ||
+				 ((sce=sc->data[SC_MANU_MATK]) && (flag&BF_MAGIC))
+				)
+				for (i=0;ARRAYLENGTH(mob_manuk)>i;i++)
+					if (((TBL_MOB*)bl)->class_==mob_manuk[i]) {
+						damage += damage*sce->val1/100;
+						break;
+					}
+			if ( ((sce=sc->data[SC_SPL_ATK]) && (flag&BF_WEAPON)) ||
+				 ((sce=sc->data[SC_SPL_MATK]) && (flag&BF_MAGIC))
+				)
+				for (i=0;ARRAYLENGTH(mob_splendide)>i;i++)
+					if (((TBL_MOB*)bl)->class_==mob_splendide[i]) {
+						damage += damage*sce->val1/100;
+						break;
+					}
+		}
 		if( sc->data[SC_POISONINGWEAPON] && skill_num != GC_VENOMPRESSURE && (flag&BF_WEAPON) && damage > 0 && rand()%100 < sc->data[SC_POISONINGWEAPON]->val3 )
 			sc_start(bl,sc->data[SC_POISONINGWEAPON]->val2,100,sc->data[SC_POISONINGWEAPON]->val1,skill_get_time2(GC_POISONINGWEAPON,sc->data[SC_POISONINGWEAPON]->val1));
 		if( sc->data[SC__DEADLYINFECT] && damage > 0 && rand()%100 < 20 )
@@ -4708,7 +4747,7 @@ static const struct _battle_data {
 	{ "at_timeout",                         &battle_config.at_timeout,                      0,      0,      INT_MAX,        },
 	{ "homunculus_autoloot",                &battle_config.homunculus_autoloot,             0,      0,      1,              },
 	{ "idle_no_autoloot",                   &battle_config.idle_no_autoloot,                0,      0,      INT_MAX,        },
-	{ "max_guild_alliance",                 &battle_config.max_guild_alliance,              3,      1,      3,              },
+	{ "max_guild_alliance",                 &battle_config.max_guild_alliance,              3,      0,      3,              },
 	{ "ksprotection",                       &battle_config.ksprotection,                    5000,   0,      INT_MAX,        },
 	{ "auction_feeperhour",                 &battle_config.auction_feeperhour,              12000,  0,      INT_MAX,        },
 	{ "auction_maximumprice",               &battle_config.auction_maximumprice,            500000000, 0,   MAX_ZENY,       },
