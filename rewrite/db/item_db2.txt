@@ -429,12 +429,12 @@
 
 // New Test Items
 2463,Wild_Boots,Wild Boots,5,10,,0,,12,,0,0xFFFFFFFF,7,2,64,,75,1,0,{ bonus bUnbreakableShoes,0; },{},{}
-2465,Dance_Shoes,Dance Shoes,5,1,1,300,,15,,0,0x00080000,8,0,64,,105,1,0,{ bonus bAgi,1; bonus bAspdRate,2; },{},{} //  bonus bUseSPrateOnSkill,-2,"WA_SWING_DANCE";
+2465,Dance_Shoes,Dance Shoes,5,10,,300,,15,,0,0x00080000,8,0,64,,105,1,0,{ bonus bAgi,1; bonus bAspdRate,2; },{},{} //  bonus bUseSPrateOnSkill,-2,"WA_SWING_DANCE";
 2564,Wild_Tail,Wild Tail,5,10,,0,,16,,0,0xFFFFFFFF,7,2,4,,75,1,0,{ bonus bUnbreakableGarment,0; },{},{}
 2843,Gold_Drops,Gold Drops,5,10,,100,,0,,0,0xFFFFFFFF,7,2,136,,75,0,0,{ bonus bMaxSP,50; },{},{}
 2844,Light_of_El_Dicastes,Light of El Dicastes,5,20,,100,,0,,0,0xFFFFFFFF,7,2,136,,80,0,0,{ skill "RETURN_TO_ELDICASTES",1; },{},{}
-2853,Kinetic_Of_Telemarketing,Kinetic Of Telemarketing,5,1,1,20,,2,,0,0xFFFFFFFE,8,2,136,,110,0,0,{ bonus bInt,3; bonus bMdef,1; bonus bMaxSP,30; },{},{}
-2854,Glove_Of_Alchemy,Glove Of Alchemy,5,1,1,100,,1,,0,0xFFFFFFFE,8,2,136,,125,0,0,{ bonus bInt,1; bonus bMdef,2; },{},{}
+2853,Kinetic_Of_Telemarketing,Kinetic Of Telemarketing,5,10,,20,,2,,0,0xFFFFFFFE,8,2,136,,110,0,0,{ bonus bInt,3; bonus bMdef,1; bonus bMaxSP,30; },{},{}
+2854,Glove_Of_Alchemy,Glove Of Alchemy,5,10,,100,,1,,0,0xFFFFFFFE,8,2,136,,125,0,0,{ bonus bInt,1; bonus bMdef,2; },{},{}
 4760,MagicalAttack1%,MATK+1%,6,20,,,,,,,,,,16,,,,,{ bonus bMatkRate,1; bonus bFixCastRate,-1; },{},{}
 4761,MagicalAttack2%,MATK+2%,6,20,,,,,,,,,,16,,,,,{ bonus bMatkRate,2; bonus bFixCastRate,-1; },{},{}
 4762,Flee6,FLEE+6,6,20,,,,,,,,,,16,,,,,{ bonus bFlee,6; },{},{}
