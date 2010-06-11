@@ -6518,7 +6518,7 @@ int clif_hpmeter_sub(struct block_list *bl, va_list ap)
 	if( !tsd->fd )
 		return 0;
 
-	if( (level = pc_isGM(tsd)) >= battle_config.disp_hpmeter && level >= pc_isGM(sd) )
+	if( battle_config.disp_hpmeter && (level = pc_isGM(tsd)) >= battle_config.disp_hpmeter && level >= pc_isGM(sd) )
 	{
 		WFIFOHEAD(tsd->fd,cmd);
 		WFIFOW(tsd->fd,0) = cmd;
@@ -6534,7 +6534,6 @@ int clif_hpmeter_sub(struct block_list *bl, va_list ap)
 			WFIFOW(tsd->fd,6) = sd->battle_status.hp;
 			WFIFOW(tsd->fd,8) = sd->battle_status.max_hp;
 		}
-
 #else
 		if( sd->battle_status.max_hp > INT_MAX )
 		{ //To correctly display the %hp bar. [Skotlex]
@@ -6547,7 +6546,7 @@ int clif_hpmeter_sub(struct block_list *bl, va_list ap)
 			WFIFOL(tsd->fd,10) = sd->battle_status.max_hp;
 		}
 #endif
-	WFIFOSET(tsd->fd,cmd);
+		WFIFOSET(tsd->fd,packet_len(cmd));
 	}
 	return 0;
 }
