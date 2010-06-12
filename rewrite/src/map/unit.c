@@ -1028,7 +1028,7 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 	if(skill_get_inf2(skill_num)&INF2_NO_TARGET_SELF && src->id == target_id)
 		return 0;
 
-	if(!status_check_skilluse(src, target, skill_num, 0))
+	if( !status_check_skilluse(src, target, skill_num, skill_lv, 0) )
 		return 0;
 
 	tstatus = status_get_status_data(target);
@@ -1319,7 +1319,7 @@ int unit_skilluse_pos2( struct block_list *src, short skill_x, short skill_y, sh
 			return 0;
 	}
 
-	if (!status_check_skilluse(src, NULL, skill_num, 0))
+	if( !status_check_skilluse(src, NULL, skill_num, skill_lv, 0) )
 		return 0;
 
 	if( map_getcell(src->m, skill_x, skill_y, CELL_CHKWALL) )
@@ -1475,7 +1475,7 @@ int unit_attack(struct block_list *src,int target_id,int continuous)
 		}
 	}
 
-	if( battle_check_target(src,target,BCT_ENEMY) <= 0 || !status_check_skilluse(src, target, 0, 0) )
+	if( battle_check_target(src,target,BCT_ENEMY) <= 0 || !status_check_skilluse(src, target, 0, 0, 0) )
 	{
 		unit_unattackable(src);
 		return 1;
@@ -1660,7 +1660,7 @@ static int unit_attack_timer_sub(struct block_list* src, int tid, unsigned int t
 	if( src == NULL || src->prev == NULL || target==NULL || target->prev == NULL )
 		return 0;
 
-	if( status_isdead(src) || status_isdead(target) || !status_check_skilluse(src, target, 0, 0) )
+	if( status_isdead(src) || status_isdead(target) || !status_check_skilluse(src, target, 0, 0, 0) )
 		return 0; // can't attack under these conditions
 
 	if( src->m != target->m )

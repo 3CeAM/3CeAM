@@ -145,7 +145,7 @@ int pet_target_check(struct map_session_data *sd,struct block_list *bl,int type)
 		!check_distance_bl(&pd->bl, bl, pd->db->range2))
 		return 0;
 
-	if (!status_check_skilluse(&pd->bl, bl, 0, 0))
+	if( !status_check_skilluse(&pd->bl, bl, 0, 0, 0) )
 		return 0;
 
 	if(!type) {
