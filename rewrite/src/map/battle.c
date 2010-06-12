@@ -312,14 +312,17 @@ int battle_attr_fix(struct block_list *src, struct block_list *target, int damag
 			struct skill_unit *su = (struct skill_unit*)target;
 			struct skill_unit_group *sg;
 			struct block_list *src;
-			
+			int x,y;
+						
 			if( !su || !su->alive || (sg = su->group) == NULL || !sg || sg->val3 == -1 ||
 				(src = map_id2bl(su->val2)) == NULL || status_isdead(src) )
 				return 0;
 			
 			if( sg->unit_id != UNT_FIREWALL )
 			{
-				skill_unitsetting(src,su->group->skill_id,su->group->skill_lv,src->x,src->y,1);
+				x = sg->val3 >> 16;
+				y = sg->val3 & 0xffff;
+				skill_unitsetting(src,su->group->skill_id,su->group->skill_lv,x,y,1);
 				sg->val3 = -1;
 				sg->limit = DIFF_TICK(gettick(),sg->tick)+300;
 			}
