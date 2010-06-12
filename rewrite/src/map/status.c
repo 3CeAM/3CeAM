@@ -1258,14 +1258,13 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 	}
 
 	//Should fail when used on top of Land Protector [Skotlex]
-	if (src && skill_num == AL_TELEPORT && map_getcell(src->m, src->x, src->y, CELL_CHKLANDPROTECTOR)
-		&& !(status->mode&MD_BOSS)
-		&& (src->type != BL_PC || ((TBL_PC*)src)->skillitem != skill_num))
+	if( src && skill_num == AL_TELEPORT && map_getcell(src->m, src->x, src->y, CELL_CHKLANDPROTECTOR)
+		&& !(status->mode&MD_BOSS) && (src->type != BL_PC || ((TBL_PC*)src)->skillitem != skill_num) )
 		return 0;
 
-	if (src) sc = status_get_sc(src);
+	if( src ) sc = status_get_sc(src);
 
-	if(sc && sc->count)
+	if( sc && sc->count )
 	{
 		if( sc->opt1 >0 && sc->opt1 != OPT1_BURNING && skill_num != SR_GENTLETOUCH_CURE )
 		{	//Stuned/Frozen/etc
@@ -1369,8 +1368,8 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 			}
 		}
 	}
-
-	if (sc && sc->option)
+	// Check for src's status changes
+	if( sc && sc->option )
 	{
 		if (sc->option&OPTION_HIDE)
 		switch (skill_num) { //Usable skills while hiding.
@@ -1403,9 +1402,9 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 				default:
 					return 0;
 			}
-		if (sc->option&OPTION_MADO && ((TBL_PC*)src)->skillitem != skill_num)
+		if( sc->option&OPTION_MADO && ((TBL_PC*)src)->skillitem != skill_num )
 		{
-			switch(skill_num)
+			switch( skill_num )
 			{ //Blacksmiths and Mastersmiths skills are unusable when Mado is equipped. [Jobbie]
 				case BS_REPAIRWEAPON:  case WS_MELTDOWN:
 				case BS_HAMMERFALL:    case WS_CARTBOOST:
@@ -1422,24 +1421,25 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 			}
 		}
 	}
-	if (target == NULL || target == src) //No further checking needed.
+	if( target == NULL || target == src ) //No further checking needed.
 		return 1;
 
 	tsc = status_get_sc(target);
 	
-	if(tsc && tsc->count)
+	// Check for target's status changes.
+	if( tsc && tsc->count )
 	{	
-		if(!skill_num && !(status->mode&MD_BOSS) && tsc->data[SC_TRICKDEAD])
+		if( !skill_num && !(status->mode&MD_BOSS) && tsc->data[SC_TRICKDEAD] )
 			return 0;
-		if((skill_num == WZ_STORMGUST || skill_num == NJ_HYOUSYOURAKU)
-			&& tsc->data[SC_FREEZE])
+		if( (skill_num == WZ_STORMGUST || skill_num == NJ_HYOUSYOURAKU)
+			&& tsc->data[SC_FREEZE] )
 			return 0;
-		if(skill_num == PR_LEXAETERNA && (tsc->data[SC_FREEZE] || (tsc->data[SC_STONE] && tsc->opt1 == OPT1_STONE)))
+		if( skill_num == PR_LEXAETERNA && (tsc->data[SC_FREEZE] || (tsc->data[SC_STONE] && tsc->opt1 == OPT1_STONE)) )
 			return 0;
 	}
 
 	//If targetting, cloak+hide protect you, otherwise only hiding does.
-	hide_flag = flag?OPTION_HIDE:(OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK);
+	hide_flag = flag ? OPTION_HIDE : (OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK);
 		
  	//You cannot hide from ground skills.
 	if( skill_get_ele(skill_num,1) == ELE_EARTH ) //TODO: Need Skill Lv here :/
@@ -1453,7 +1453,21 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 			if( pc_isinvisible(sd) )
 				return 0;
 			if( tsc->data[SC_CLOAKINGEXCEED] && !(status->mode&MD_BOSS) )
-				return 0;
+			{
+				if( !skill_num )
+					return 0;
+				switch( skill_num )
+				{
+					// Skill that deal damage in cloakingexceeded targets.
+					case RK_DRAGONBREATH:
+					case SC_FEINTBOMB:
+					case WM_REVERBERATION_MELEE:
+					case WM_SEVERE_RAINSTORM_MELEE:
+						break;
+					default:
+						return 0;
+				}
+			}
 			if( tsc->option&hide_flag && !(status->mode&MD_BOSS) && (sd->special_state.perfect_hiding || !(status->mode&MD_DETECTOR)))
 				return 0;
 			if( tsc->data[SC_CAMOUFLAGE] && !(status->mode&(MD_BOSS|MD_DETECTOR)) && !skill_num )
@@ -1464,7 +1478,7 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 		break;
 	case BL_ITEM:	//Allow targetting of items to pick'em up (or in the case of mobs, to loot them).
 		//TODO: Would be nice if this could be used to judge whether the player can or not pick up the item it targets. [Skotlex]
-		if (status->mode&MD_LOOTER)
+		if( status->mode&MD_LOOTER )
 			return 1;
 		return 0;
 	case BL_HOM: 

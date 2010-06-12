@@ -212,22 +212,23 @@ int deluge_eff[5] = { 5, 9, 12, 14, 15 };
 int skill_get_casttype (int id)
 {
 	int inf = skill_get_inf(id);
-	if (inf&(INF_GROUND_SKILL))
+	if( inf&(INF_GROUND_SKILL) )
 		return CAST_GROUND;
-	if (inf&INF_SUPPORT_SKILL)
+	if( inf&INF_SUPPORT_SKILL )
 		return CAST_NODAMAGE;
-	if (inf&INF_SELF_SKILL) {
-		if(skill_get_inf2(id)&INF2_NO_TARGET_SELF)
+	if( inf&INF_SELF_SKILL )
+	{
+		if( skill_get_inf2(id)&INF2_NO_TARGET_SELF )
 			return CAST_DAMAGE; //Combo skill.
 		return CAST_NODAMAGE;
 	}
-	if (skill_get_nk(id)&NK_NO_DAMAGE)
+	if( skill_get_nk(id)&NK_NO_DAMAGE )
 		return CAST_NODAMAGE;
 	return CAST_DAMAGE;
 };
 
 //Returns actual skill range taking into account attack range and AC_OWL [Skotlex]
-int skill_get_range2 (struct block_list *bl, int id, int lv)
+int skill_get_range2(struct block_list *bl, int id, int lv)
 {
 	int range;
 	if( bl->type == BL_MOB && battle_config.mob_ai&0x400 )
@@ -239,62 +240,62 @@ int skill_get_range2 (struct block_list *bl, int id, int lv)
 	{
 		if( battle_config.use_weapon_skill_range&bl->type )
 			return status_get_range(bl);
-		range *=-1;
+		range *= -1;
 	}
 
 	//TODO: Find a way better than hardcoding the list of skills affected by AC_VULTURE
 	switch( id )
 	{
-	case AC_SHOWER:			case MA_SHOWER:
-	case AC_DOUBLE:			case MA_DOUBLE:
-	case HT_BLITZBEAT:		case RA_ARROWSTORM:
-	case AC_CHARGEARROW:	case RA_AIMEDBOLT:
-	case MA_CHARGEARROW:	case RA_WUGBITE:
-	case SN_FALCONASSAULT:
-	case HT_POWER:
-		if( bl->type == BL_PC )
-			range += pc_checkskill((TBL_PC*)bl, AC_VULTURE);
-		else
-			range += 10; //Assume level 10?
-		break;
-	// added to allow GS skills to be effected by the range of Snake Eyes [Reddozen]
-	case GS_RAPIDSHOWER:
-	case GS_PIERCINGSHOT:
-	case GS_FULLBUSTER:
-	case GS_SPREADATTACK:
-	case GS_GROUNDDRIFT:
-		if (bl->type == BL_PC)
-			range += pc_checkskill((TBL_PC*)bl, GS_SNAKEEYE);
-		else
-			range += 10; //Assume level 10?
-		break;
-	case NJ_KIRIKAGE:
-		if (bl->type == BL_PC)
-			range = skill_get_range(NJ_SHADOWJUMP,pc_checkskill((TBL_PC*)bl,NJ_SHADOWJUMP));
-		break;
-	case WL_WHITEIMPRISON:		case WL_CRIMSONROCK:
-	case WL_SOULEXPANSION:		case WL_HELLINFERNO:
-	case WL_FROSTMISTY:			case WL_COMET:
-	case WL_JACKFROST:			case WL_CHAINLIGHTNING:
-	case WL_MARSHOFABYSS:		case WL_EARTHSTRAIN:
-	case WL_SIENNAEXECRATE:		case WL_TETRAVORTEX:
-	case WL_DRAINLIFE:			case WL_RELEASE:
-		if( bl->type == BL_PC )
-			range += pc_checkskill((TBL_PC*)bl, WL_RADIUS);
-		break;
-	//Added to allow increasing traps range
-	case HT_LANDMINE:		case RA_CLUSTERBOMB:
-	case HT_ANKLESNARE:		case RA_MAGENTATRAP:
-	case HT_SHOCKWAVE:		case RA_COBALTTRAP:
-	case HT_SANDMAN:		case RA_MAIZETRAP:
-	case HT_FLASHER:		case RA_VERDURETRAP:
-	case HT_FREEZINGTRAP:	case RA_FIRINGTRAP:
-	case HT_BLASTMINE:		case RA_ICEBOUNDTRAP:
-	case HT_CLAYMORETRAP:	
-	case HT_TALKIEBOX:
-		if( bl->type == BL_PC )
-			range += (1 + pc_checkskill((TBL_PC*)bl, RA_RESEARCHTRAP))/2;
-		break;
+		case AC_SHOWER:			case MA_SHOWER:
+		case AC_DOUBLE:			case MA_DOUBLE:
+		case HT_BLITZBEAT:		case RA_ARROWSTORM:
+		case AC_CHARGEARROW:	case RA_AIMEDBOLT:
+		case MA_CHARGEARROW:	case RA_WUGBITE:
+		case SN_FALCONASSAULT:
+		case HT_POWER:
+			if( bl->type == BL_PC )
+				range += pc_checkskill((TBL_PC*)bl, AC_VULTURE);
+			else
+				range += 10; //Assume level 10?
+			break;
+		// added to allow GS skills to be effected by the range of Snake Eyes [Reddozen]
+		case GS_RAPIDSHOWER:
+		case GS_PIERCINGSHOT:
+		case GS_FULLBUSTER:
+		case GS_SPREADATTACK:
+		case GS_GROUNDDRIFT:
+			if( bl->type == BL_PC )
+				range += pc_checkskill((TBL_PC*)bl, GS_SNAKEEYE);
+			else
+				range += 10; //Assume level 10?
+			break;
+		case NJ_KIRIKAGE:
+			if( bl->type == BL_PC)
+				range = skill_get_range(NJ_SHADOWJUMP,pc_checkskill((TBL_PC*)bl,NJ_SHADOWJUMP));
+			break;
+		case WL_WHITEIMPRISON:		case WL_CRIMSONROCK:
+		case WL_SOULEXPANSION:		case WL_HELLINFERNO:
+		case WL_FROSTMISTY:			case WL_COMET:
+		case WL_JACKFROST:			case WL_CHAINLIGHTNING:
+		case WL_MARSHOFABYSS:		case WL_EARTHSTRAIN:
+		case WL_SIENNAEXECRATE:		case WL_TETRAVORTEX:
+		case WL_DRAINLIFE:			case WL_RELEASE:
+			if( bl->type == BL_PC )
+				range += pc_checkskill((TBL_PC*)bl, WL_RADIUS);
+			break;
+		//Added to allow increasing traps range
+		case HT_LANDMINE:		case RA_CLUSTERBOMB:
+		case HT_ANKLESNARE:		case RA_MAGENTATRAP:
+		case HT_SHOCKWAVE:		case RA_COBALTTRAP:
+		case HT_SANDMAN:		case RA_MAIZETRAP:
+		case HT_FLASHER:		case RA_VERDURETRAP:
+		case HT_FREEZINGTRAP:	case RA_FIRINGTRAP:
+		case HT_BLASTMINE:		case RA_ICEBOUNDTRAP:
+		case HT_CLAYMORETRAP:	
+		case HT_TALKIEBOX:
+			if( bl->type == BL_PC )
+				range += (1 + pc_checkskill((TBL_PC*)bl, RA_RESEARCHTRAP))/2;
+			break;
 	}
 
 	if( !range && bl->type != BL_PC )
@@ -312,27 +313,27 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, int skill
 
 	switch( skill_id )
 	{
-	case BA_APPLEIDUN:
-		hp = 30 + 5 * skill_lv + 5 * (status->vit/10); // HP recovery
-		if( sd )
-			hp += 5 * pc_checkskill(sd,BA_MUSICALLESSON);
-		break;
-	case PR_SANCTUARY:
-		hp = (skill_lv > 6) ? 777 : skill_lv * 100;
-		break;
-	case NPC_EVILLAND:
-		hp = (skill_lv > 6) ? 666 : skill_lv * 100;
-		break;
-	default:
-		if (skill_lv >= battle_config.max_heal_lv)
-			return battle_config.max_heal;
+		case BA_APPLEIDUN:
+			hp = 30 + 5 * skill_lv + 5 * (status->vit / 10); // HP recovery
+			if( sd )
+				hp += 5 * pc_checkskill(sd,BA_MUSICALLESSON);
+			break;
+		case PR_SANCTUARY:
+			hp = (skill_lv > 6) ? 777 : skill_lv * 100;
+			break;
+		case NPC_EVILLAND:
+			hp = (skill_lv > 6) ? 666 : skill_lv * 100;
+			break;
+		default:
+			if( skill_lv >= battle_config.max_heal_lv )
+				return battle_config.max_heal;
 
-		hp = ( status_get_lv(src) + status->int_ ) / 8 * (4 + ( skill_id == AB_HIGHNESSHEAL ? ( sd ? pc_checkskill(sd,AL_HEAL) : 10 ) : skill_lv ) * 8);
-		if( sd && ((skill = pc_checkskill(sd, HP_MEDITATIO)) > 0) )
-			hp += hp * skill * 2 / 100;
-		else if( src->type == BL_HOM && (skill = merc_hom_checkskill(((TBL_HOM*)src), HLIF_BRAIN)) > 0 )
-			hp += hp * skill * 2 / 100;
-		break;
+			hp = ( status_get_lv(src) + status->int_ ) / 8 * (4 + ( skill_id == AB_HIGHNESSHEAL ? ( sd ? pc_checkskill(sd,AL_HEAL) : 10 ) : skill_lv ) * 8);
+			if( sd && ((skill = pc_checkskill(sd, HP_MEDITATIO)) > 0) )
+				hp += hp * skill * 2 / 100;
+			else if( src->type == BL_HOM && (skill = merc_hom_checkskill(((TBL_HOM*)src), HLIF_BRAIN)) > 0 )
+				hp += hp * skill * 2 / 100;
+			break;
 	}
 
 	if( sd && (skill = pc_skillheal_bonus(sd,skill_id)) )
@@ -354,14 +355,14 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, int skill
 	if( skill_id == AB_HIGHNESSHEAL )
 		hp = (hp * (20 + 3 * (skill_lv - 1))) / 10;
 
-	if( ( (target && target->type == BL_MER) || !heal ) && skill_id != NPC_EVILLAND )
+	if( ((target && target->type == BL_MER) || !heal) && skill_id != NPC_EVILLAND )
 		hp >>= 1;
 
 	return hp;
 }
 
 // Making plagiarize check its own function [Aru]
-int can_copy (struct map_session_data *sd, int skillid, struct block_list* bl)
+int can_copy(struct map_session_data *sd, int skillid, struct block_list* bl)
 {
 	int id;
 	struct status_change* sc;
@@ -383,7 +384,7 @@ int can_copy (struct map_session_data *sd, int skillid, struct block_list* bl)
 	}
 
 	//Added so plagarize can't copy agi/bless if you're undead since it damages you
-	if ((skillid == AL_INCAGI || skillid == AL_BLESSING || skillid == CASH_BLESSING || skillid == CASH_INCAGI))
+	if( (skillid == AL_INCAGI || skillid == AL_BLESSING || skillid == CASH_BLESSING || skillid == CASH_INCAGI) )
 		return 0;
 
 	if( sd )
@@ -400,7 +401,7 @@ int can_copy (struct map_session_data *sd, int skillid, struct block_list* bl)
 }
 
 // [MouseJstr] - skill ok to cast? and when?
-int skillnotok (int skillid, struct map_session_data *sd)
+int skillnotok(int skillid, struct map_session_data *sd)
 {
 	int i,m;
 	nullpo_retr (1, sd);
@@ -1844,7 +1845,7 @@ static int skill_magic_reflect(struct block_list* src, struct block_list* bl, in
  * flag&0x2000 is used to signal that the skilllv should be passed as -1 to the
  *      client (causes player characters to not scream skill name)
  *-------------------------------------------------------------------------*/
-int skill_attack (int attack_type, struct block_list* src, struct block_list *dsrc, struct block_list *bl, int skillid, int skilllv, unsigned int tick, int flag)
+int skill_attack(int attack_type, struct block_list* src, struct block_list *dsrc, struct block_list *bl, int skillid, int skilllv, unsigned int tick, int flag)
 {
 	struct Damage dmg;
 	struct status_data *sstatus, *tstatus;
@@ -1852,19 +1853,22 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 	struct map_session_data *sd, *tsd;
 	int type,damage,rdamage=0;
 
-	if(skillid > 0 && skilllv <= 0) return 0;
+	if( skillid > 0 && skilllv <= 0 ) return 0; // Wrong skill level.
 
 	nullpo_retr(0, src);	//Source is the master behind the attack (player/mob/pet)
-	nullpo_retr(0, dsrc); //dsrc is the actual originator of the damage, can be the same as src, or a skill casted by src.
-	nullpo_retr(0, bl); //Target to be attacked.
+	nullpo_retr(0, dsrc);	//dsrc is the actual originator of the damage, can be the same as src, or a skill casted by src.
+	nullpo_retr(0, bl);		//Target to be attacked.
 
-	if (src != dsrc) {
+	if( src != dsrc )
+	{
 		//When caster is not the src of attack, this is a ground skill, and as such, do the relevant target checking. [Skotlex]
-		if (!status_check_skilluse(battle_config.skill_caster_check?src:NULL, bl, skillid, 2))
+		if( !status_check_skilluse(battle_config.skill_caster_check?src:NULL, bl, skillid, 2) )
 			return 0;
-	} else if ((flag&SD_ANIMATION) && skill_get_nk(skillid)&NK_SPLASH) {
+	}
+	else if( (flag&SD_ANIMATION) && skill_get_nk(skillid)&NK_SPLASH )
+	{
 		//Note that splash attacks often only check versus the targetted mob, those around the splash area normally don't get checked for being hidden/cloaked/etc. [Skotlex]
-		if (!status_check_skilluse(src, bl, skillid, 2))
+		if( !status_check_skilluse(src, bl, skillid, 2) )
 			return 0;
 	}
 
@@ -1873,14 +1877,14 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 
 	sstatus = status_get_status_data(src);
 	tstatus = status_get_status_data(bl);
-	sc= status_get_sc(bl);
-	if (sc && !sc->count) sc = NULL; //Don't need it.
+	sc = status_get_sc(bl);
+	if( sc && !sc->count ) sc = NULL; //Don't need it.
 
 	// Is this check really needed? FrostNova won't hurt you if you step right where the caster is?
-	if(skillid == WZ_FROSTNOVA && dsrc->x == bl->x && dsrc->y == bl->y)
+	if( skillid == WZ_FROSTNOVA && dsrc->x == bl->x && dsrc->y == bl->y )
 		return 0;
 	 //Trick Dead protects you from damage, but not from buffs and the like, hence it's placed here.
-	if (sc && sc->data[SC_TRICKDEAD] && !(sstatus->mode&MD_BOSS))
+	if( sc && sc->data[SC_TRICKDEAD] && !(sstatus->mode&MD_BOSS) )
 		return 0;
 
 	if( (skillid == WL_JACKFROST || skillid == WL_CRIMSONROCK) && bl->type == BL_SKILL && battle_getcurrentskill(bl) == WZ_ICEWALL )
@@ -1896,20 +1900,20 @@ int skill_attack (int attack_type, struct block_list* src, struct block_list *ds
 	dmg = battle_calc_attack(attack_type,src,bl,skillid,skilllv,flag&0xFFF);
 
 	//Skotlex: Adjusted to the new system
-	if(src->type==BL_PET)
+	if( src->type == BL_PET )
 	{ // [Valaris]
 		struct pet_data *pd = (TBL_PET*)src;
-		if (pd->a_skill && pd->a_skill->div_ && pd->a_skill->id == skillid)
+		if( pd->a_skill && pd->a_skill->div_ && pd->a_skill->id == skillid )
 		{
 			int element = skill_get_ele(skillid, skilllv);
-			if (skillid == -1)
+			if( skillid == -1 )
 				element = sstatus->rhw.ele;
-			if (element != ELE_NEUTRAL || !(battle_config.attack_attr_none&BL_PET))
-				dmg.damage=battle_attr_fix(src, bl, skilllv, element, tstatus->def_ele, tstatus->ele_lv);
+			if( element != ELE_NEUTRAL || !(battle_config.attack_attr_none&BL_PET) )
+				dmg.damage = battle_attr_fix(src, bl, skilllv, element, tstatus->def_ele, tstatus->ele_lv);
 			else
-				dmg.damage= skilllv;
-			dmg.damage2=0;
-			dmg.div_= pd->a_skill->div_;
+				dmg.damage = skilllv;
+			dmg.damage2 = 0;
+			dmg.div_ = pd->a_skill->div_;
 		}
 	}
 
@@ -2409,7 +2413,7 @@ int skill_area_sub (struct block_list *bl, va_list ap)
 	flag=va_arg(ap,int);
 	func=va_arg(ap,SkillFunc);
 
-	if(battle_check_target(src,bl,flag) > 0)
+	if( battle_check_target(src,bl,flag) > 0 )
 	{
 		// several splash skills need this initial dummy packet to display correctly
 		if (flag&SD_PREAMBLE && skill_area_temp[2] == 0)
@@ -3028,34 +3032,34 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	struct status_data *tstatus;
 	struct status_change *sc;
 
-	if (skillid > 0 && skilllv <= 0) return 0;
+	if( skillid > 0 && skilllv <= 0 ) return 0;	// Wrong skill level.
 
 	nullpo_retr(1, src);
 	nullpo_retr(1, bl);
 
-	if (src->m != bl->m)
+	if( src->m != bl->m )
 		return 1;
 
-	if (bl->prev == NULL)
+	if( bl->prev == NULL )
 		return 1;
 
 	sd = BL_CAST(BL_PC, src);
 	tsd = BL_CAST(BL_PC, bl);
 
-	if (status_isdead(bl))
+	if( status_isdead(bl) )
 		return 1;
 
-	if (skillid && skill_get_type(skillid) == BF_MAGIC && status_isimmune(bl) == 100)
+	if( skillid && skill_get_type(skillid) == BF_MAGIC && status_isimmune(bl) == 100 )
 	{	//GTB makes all targetted magic display miss with a single bolt.
 		sc_type sct = status_skill2sc(skillid);
-		if(sct != SC_NONE)
+		if( sct != SC_NONE )
 			status_change_end(bl, sct, -1);
 		clif_skill_damage(src, bl, tick, status_get_amotion(src), status_get_dmotion(bl), 0, 1, skillid, skilllv, skill_get_hit(skillid));
 		return 1;
 	}
 
 	sc = status_get_sc(src);
-	if (sc && !sc->count)
+	if( sc && !sc->count )
 		sc = NULL; //Unneeded
 
 	tstatus = status_get_status_data(bl);
@@ -9675,6 +9679,7 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 	case GN_WALLOFTHORN:
 		if( flag&1 )
 			limit = 3000;
+		val3 = (x<<16)|y;
 		break;
 	}
 

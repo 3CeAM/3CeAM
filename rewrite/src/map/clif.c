@@ -6518,6 +6518,9 @@ int clif_hpmeter_sub(struct block_list *bl, va_list ap)
 	if( !tsd->fd )
 		return 0;
 
+	if( bl->id == sd->bl.id )
+		return 0; // Don't send it to your self.
+
 	if( battle_config.disp_hpmeter && (level = pc_isGM(tsd)) >= battle_config.disp_hpmeter && level >= pc_isGM(sd) )
 	{
 		WFIFOHEAD(tsd->fd,cmd);
