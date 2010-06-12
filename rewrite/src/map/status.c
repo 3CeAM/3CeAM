@@ -1227,7 +1227,7 @@ int status_revive(struct block_list *bl, unsigned char per_hp, unsigned char per
  * target MAY Be null, in which case the checks are only to see 
  * whether the source can cast or not the skill on the ground.
  *------------------------------------------*/
-int status_check_skilluse(struct block_list *src, struct block_list *target, int skill_num, int flag)
+int status_check_skilluse(struct block_list *src, struct block_list *target, int skill_num, int skill_lv, int flag)
 {
 	struct status_data *status;
 	struct status_change *sc=NULL, *tsc;
@@ -1442,7 +1442,7 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 	hide_flag = flag ? OPTION_HIDE : (OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK);
 		
  	//You cannot hide from ground skills.
-	if( skill_get_ele(skill_num,1) == ELE_EARTH ) //TODO: Need Skill Lv here :/
+	if( skill_get_ele(skill_num, (skill_lv) ? skill_lv : 1) == ELE_EARTH )
 		hide_flag &= ~OPTION_HIDE;
 
 	switch( target->type )
@@ -9019,8 +9019,8 @@ int status_change_timer_sub(struct block_list* bl, va_list ap)
 		}
 		break;
 	case SC_SIGHTBLASTER:
-		if (battle_check_target( src, bl, BCT_ENEMY ) > 0 &&
-			status_check_skilluse(src, bl, WZ_SIGHTBLASTER, 2))
+		if( battle_check_target( src, bl, BCT_ENEMY ) > 0 &&
+			status_check_skilluse(src, bl, WZ_SIGHTBLASTER, sce->val1, 2) )
 		{
 			skill_attack(BF_MAGIC,src,src,bl,WZ_SIGHTBLASTER,1,tick,0);
 			if (sce) sce->val2 = 0; //This signals it to end.
