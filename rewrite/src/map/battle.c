@@ -3076,12 +3076,10 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						skillratio += -100 + 300 * ( status_get_lv(src) * 3 / 100 );
 						break;
 					case SO_EARTHGRAVE:
-						skillratio += -100 + 200 * ( sd ? pc_checkskill(sd, SA_SEISMICWEAPON) : 1 ) 
-									+ ( sstatus->int_ * skill_lv * status_get_lv(src) / 100 );
+						skillratio += -100 + 200 * (sd ? pc_checkskill(sd, SA_SEISMICWEAPON) : 1 + sstatus->int_ * skill_lv) * status_get_lv(src) / 100;
 						break;
 					case SO_DIAMONDDUST:
-						skillratio += -100 + 200 * ( sd ? pc_checkskill(sd, SA_FROSTWEAPON) : 1 )
-									+ ( sstatus->int_ * skill_lv * status_get_lv(src) / 100 );
+						skillratio += -100 + 200 * (sd ? pc_checkskill(sd, SA_FROSTWEAPON) : 1 + sstatus->int_ * skill_lv) * status_get_lv(src) / 100;
 						break;
 					case SO_POISON_BUSTER:	// Need official formula. [LimitLine]
 						skillratio += 300 + 100 * skill_lv;
@@ -3563,7 +3561,7 @@ int battle_calc_return_damage(struct block_list *src, struct block_list *bl, int
 		if( rdamage > max_damage ) rdamage = max_damage;
 	}
 	//Bounces back part of the damage.
-	else if (flag & BF_SHORT) {
+	else if( (flag&(BF_SHORT|BF_MAGIC)) == BF_SHORT ) {
 		if (sd && sd->short_weapon_damage_return)
 		{
 			rdamage += (*damage) * sd->short_weapon_damage_return / 100;

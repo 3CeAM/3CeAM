@@ -2114,6 +2114,8 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 		break;
 	case WL_SOULEXPANSION:
 	case WL_COMET:
+	case SO_EARTHGRAVE:
+	case SO_DIAMONDDUST:
 		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,skillid,skilllv,8);
 		break;
 	case WL_CHAINLIGHTNING_ATK:
@@ -3574,6 +3576,8 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case AB_HIGHNESSHEAL:
 	case AB_DUPLELIGHT_MAGIC:
 	case WL_HELLINFERNO:
+	case SO_EARTHGRAVE:
+	case SO_DIAMONDDUST:
 		skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
@@ -8651,8 +8655,6 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case WM_REVERBERATION:
 	case WM_SEVERE_RAINSTORM:
 	case WM_POEMOFNETHERWORLD:
-	case SO_EARTHGRAVE:
-	case SO_DIAMONDDUST:
 	case SO_PSYCHIC_WAVE:
 	case SO_VACUUM_EXTREME:
 	case GN_WALLOFTHORN:
@@ -8920,6 +8922,8 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case NC_ARMSCANNON:
 	case RK_DRAGONBREATH:
 	case WM_LULLABY_DEEPSLEEP:
+	case SO_EARTHGRAVE:
+	case SO_DIAMONDDUST:
 		i = skill_get_splash(skillid,skilllv);
 		map_foreachinarea(skill_area_sub,src->m,x-i,y-i,x+i,y+i,BL_CHAR,
 			src,skillid,skilllv,tick,flag|BCT_ENEMY|1,

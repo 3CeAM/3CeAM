@@ -121,8 +121,6 @@
 2419,0xde,    ,  0, 3,1000,enemy, 0x010  //WM_POEMOFNETHERWORLD
 2443,0xdc,    ,  0, 1,1000,enemy, 0x008	//SO_FIREWALK
 2444,0xdd,    ,  0, 1,1000,enemy, 0x008	//SO_ELECTRICWALK
-2446,0x86,    ,  0, 3:3:3:4:4,1000,enemy,0x000	//SO_EARTHGRAVE
-2447,0x86,    ,  0, 3:3:3:4:4,1000,enemy,0x000	//SO_DIAMONDDUST
 2449,0xdf,    ,  0, 3:3:4:4:5, 500,enemy,0x000	//SO_PSYCHIC_WAVE
 2450,0xe0,    ,  0, 3, 300,enemy, 0x010	//SO_CLOUD_KILL
 2452,0xe4,    ,  0, 3,3000,all, 0x010	//SO_WARMER
