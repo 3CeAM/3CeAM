@@ -1602,10 +1602,9 @@ void clif_changemapserver(struct map_session_data* sd, unsigned short map_index,
 }
 
 void clif_blown(struct block_list *bl)
-{
-//Aegis packets says fixpos, but it's unsure whether slide works better or not.
-//	clif_fixpos(bl);
+{ // Official servers send both packets.
 	clif_slide(bl, bl->x, bl->y);
+	clif_fixpos(bl);
 }
 
 /*==========================================
