@@ -122,7 +122,7 @@
 2443,0xdc,    ,  0, 1,1000,enemy, 0x008	//SO_FIREWALK
 2444,0xdd,    ,  0, 1,1000,enemy, 0x008	//SO_ELECTRICWALK
 2449,0xdf,    ,  0, 3:3:4:4:5, 500,enemy,0x000	//SO_PSYCHIC_WAVE
-2450,0xe0,    ,  0, 3, 300,enemy, 0x010	//SO_CLOUD_KILL
+2450,0xe0,    ,  0, 3, 500,enemy, 0x010	//SO_CLOUD_KILL
 2452,0xe4,    ,  0, 3,3000,all, 0x010	//SO_WARMER
 2453,0xeb,    ,  0, 1:1:2:2:3,1000,enemy,0x010	//SO_VACUUM_EXTREME
 2479,0xe5,    ,  0, 1,1000,enemy, 0x000	//GN_THORNS_TRAP

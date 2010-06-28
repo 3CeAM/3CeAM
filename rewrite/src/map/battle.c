@@ -2185,6 +2185,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				case GN_CRAZYWEED_ATK:
 					skillratio += 400 + 100 * skill_lv;
 					break;
+				case SO_VARETYR_SPEAR: //Assumed Formula.
+					skillratio += -100 + 200 * ( sd ? pc_checkskill(sd, SA_LIGHTNINGLOADER) : 1 );
+					break;
 			}
 			// Some skill under EDP status have been nerfed. http://www.eathena.ws/board/index.php?showtopic=234419&hl=enchant+deadly
 			if( battle_config.renewal_edp && sc && sc->data[SC_EDP] )
@@ -3081,15 +3084,14 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					case SO_DIAMONDDUST:
 						skillratio += -100 + 200 * (sd ? pc_checkskill(sd, SA_FROSTWEAPON) : 1 + sstatus->int_ * skill_lv) * status_get_lv(src) / 100;
 						break;
-					case SO_POISON_BUSTER:	// Need official formula. [LimitLine]
-						skillratio += 300 + 100 * skill_lv;
+					case SO_POISON_BUSTER:
+						skillratio += 165 * skill_lv;
 						break;
 					case SO_PSYCHIC_WAVE:
 						skillratio += -100 + skill_lv * 70 + ( sstatus->int_ * 3 * status_get_lv(src) / 100 );
 						break;
 					case SO_VARETYR_SPEAR: //Assumed Formula.
-						skillratio += -100 + 200 * ( sd ? pc_checkskill(sd, SA_LIGHTNINGLOADER) : 1 )
-									+ ( sstatus->int_ * skill_lv * status_get_lv(src) / 100 );
+						skillratio += -100 + (sstatus->int_ * skill_lv * status_get_lv(src) / 100);
 						break;
 					case SO_CLOUD_KILL:
 						skillratio += -100 + skill_lv * 40 * status_get_lv(src) / 100;
@@ -3251,6 +3253,12 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 	{ // Calculates Shadow Element Extra
 		struct Damage md = battle_calc_magic_attack(src,target,skill_num,-skill_lv,mflag);
 		ad.damage += md.damage;
+	}
+
+	if( skill_num == SO_VARETYR_SPEAR )
+	{ // Physical damage.
+		struct Damage wd = battle_calc_weapon_attack(src,target,skill_num,skill_lv,mflag);
+		ad.damage += wd.damage;
 	}
 
 	return ad;
