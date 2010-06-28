@@ -9849,8 +9849,8 @@ static int skill_unit_onplace (struct skill_unit *src, struct block_list *bl, un
 	sc = status_get_sc(bl);
 	ssc = status_get_sc(ss);
 
-	if (sc && sc->option&OPTION_HIDE && sg->skill_id != WZ_HEAVENDRIVE && sg->skill_id != WL_EARTHSTRAIN && sg->skill_id != RA_ARROWSTORM && sg->skill_id != SO_EARTHGRAVE )
-		return 0; //Hidden characters are immune to AoE skills except Heaven's Drive and Earth Strain. [Skotlex], Include Arrow Storm and Earth Grave. [Jobbie]
+	if (sc && sc->option&OPTION_HIDE && sg->skill_id != WZ_HEAVENDRIVE && sg->skill_id != WL_EARTHSTRAIN && sg->skill_id != RA_ARROWSTORM )
+		return 0; //Hidden characters are immune to AoE skills except Heaven's Drive and Earth Strain. [Skotlex], include Arrow Storm. [Jobbie]
 	
 	type = status_skill2sc(sg->skill_id);
 	sce = (sc && type != -1)?sc->data[type]:NULL;
