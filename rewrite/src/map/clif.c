@@ -3185,6 +3185,32 @@ int clif_skill_select_request(struct map_session_data *sd)
 	return 1;
 }
 
+/*===========================================
+ * Skill list for Four Elemental Analysis
+ *------------------------------------------*/
+int clif_skill_itemlistwindow( struct map_session_data *sd, int skill_id, int skill_lv )
+{
+#if PACKETVER >= 20090922
+	int fd, val = 1;
+
+	nullpo_retr(0,sd);
+
+	sd->menuskill_id = skill_id; // To prevent hacking.
+	sd->menuskill_val = skill_lv;
+
+	fd = sd->fd;
+	WFIFOHEAD(fd,packet_len(0x7e3));
+	WFIFOW(fd,0) = 0x7e3;
+	WFIFOL(fd,2) = skill_lv;
+	WFIFOL(fd,4) = val;
+	WFIFOSET(fd,packet_len(0x7e3));
+
+#endif
+
+	return 1;
+
+}
+
 /*==========================================
  *
  *------------------------------------------*/
@@ -14255,6 +14281,38 @@ void clif_displayexp(struct map_session_data *sd, unsigned int exp, char type, b
     return;
 }
 
+
+/// S 07e4 <length>.w <option>.l <val>.l {<index>.w <amount>.w).4b*
+void clif_parse_ItemListWindowSelected(int fd, struct map_session_data* sd)
+{
+	int n = (RFIFOW(fd,2)-12) / 4;
+	int type = RFIFOL(fd,4);
+	int flag = RFIFOL(fd,8); // Button clicked: 0 = Cancel, 1 = OK
+	unsigned short* item_list = (unsigned short*)RFIFOP(fd,12);
+
+	if( sd->state.trading || sd->npc_shopid || n == 0)
+		return;
+
+	if( flag == 0 )
+	{		
+		sd->menuskill_id = sd->menuskill_val = 0;
+		return; // Canceled by player.
+	}
+
+	if( sd->menuskill_id != SO_EL_ANALYSIS || sd->menuskill_val != type )
+		return; // Prevent hacking.
+
+	switch( type )
+	{
+		case 1:	// Level 1: Pure to Rough
+		case 2:	// Level 2: Rough to Pure
+			skill_elementalanalysis(sd,n,type,item_list);
+			break;
+	}
+	sd->menuskill_id = sd->menuskill_val = 0;
+	return;
+}
+
 /*==========================================
  * パケットデバッグ
  *------------------------------------------*/
@@ -14645,10 +14703,10 @@ static int packetdb_readdb(void)
 #else // 0x7d9 changed
 	    6,  2, -1,  4,  4,  4,  4,  8,  8,268,  6,  8,  6, 54, 30, 54,
 #endif
-	    0,  0,  8,  0,  0,  8,  8, 32, -1,  5,  0,  0,  0,  0,  0,  0,
+	    0,  0,  8,  6, -1,  8,  8, 32, -1,  5,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0, 14, 93, 86, 87,  8, 25,  0,  0,  0,  0,
 	  //#0x0800
-	   -1, -1, 18,  4, 14, -1,  2,  4, 14, 50, 18,  6,  2,  0, 14, 20,
+	   -1, -1, 18,  4, 14, -1,  2,  4, 14, 50, 18,  6,  2,  3, 14, 20,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -14834,6 +14892,7 @@ static int packetdb_readdb(void)
 		{clif_parse_mercenary_action,"mermenu"},
 		{clif_parse_progressbar,"progressbar"},
 		{clif_parse_SkillSelectMenu,"skillselectmenu"},
+		{clif_parse_ItemListWindowSelected,"itemlistwindowselected"},
 		{NULL,NULL}
 	};
 
