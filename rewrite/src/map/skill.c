@@ -7927,6 +7927,14 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 
+	case SO_EL_ANALYSIS:
+		if( sd )
+		{
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+			clif_skill_itemlistwindow(sd,skillid,skilllv);
+		}
+		break;
+
 	case GN_BLOOD_SUCKER:
 		if( skill_unitsetting(src, skillid, skilllv, bl->x, bl->y, 0) )
 		{
@@ -11112,21 +11120,26 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		return 1;
 	}
 
-	if( sd->menuskill_id == AM_PHARMACY )
+	if( sd->menuskill_id )
 	{
-		switch( skill )
+		if( sd->menuskill_id == AM_PHARMACY )
 		{
-		case AM_PHARMACY:
-		case AC_MAKINGARROW:
-		case BS_REPAIRWEAPON:
-		case AM_TWILIGHT1:
-		case AM_TWILIGHT2:
-		case AM_TWILIGHT3:
-		case GN_MIX_COOKING:
-		case GN_MAKEBOMB:
-		case GN_S_PHARMACY:
-			return 0;
+			switch( skill )
+			{
+			case AM_PHARMACY:
+			case AC_MAKINGARROW:
+			case BS_REPAIRWEAPON:
+			case AM_TWILIGHT1:
+			case AM_TWILIGHT2:
+			case AM_TWILIGHT3:
+			case GN_MIX_COOKING:
+			case GN_MAKEBOMB:
+			case GN_S_PHARMACY:
+				return 0;
+			}
 		}
+		else if( sd->menuskill_id == skill )
+			return 0;
 	}
 
 	status = &sd->battle_status;
@@ -11780,21 +11793,26 @@ int skill_check_condition_castend(struct map_session_data* sd, short skill, shor
 		return 1;
 	}
 
-	if( sd->menuskill_id == AM_PHARMACY )
+	if( sd->menuskill_id )
 	{ // Cast start or cast end??
-		switch( skill )
+		if( sd->menuskill_id == AM_PHARMACY )
 		{
-		case AM_PHARMACY:
-		case AC_MAKINGARROW:
-		case BS_REPAIRWEAPON:
-		case AM_TWILIGHT1:
-		case AM_TWILIGHT2:
-		case AM_TWILIGHT3:
-		case GN_MIX_COOKING:
-		case GN_MAKEBOMB:
-		case GN_S_PHARMACY:
-			return 0;
+			switch( skill )
+			{
+			case AM_PHARMACY:
+			case AC_MAKINGARROW:
+			case BS_REPAIRWEAPON:
+			case AM_TWILIGHT1:
+			case AM_TWILIGHT2:
+			case AM_TWILIGHT3:
+			case GN_MIX_COOKING:
+			case GN_MAKEBOMB:
+			case GN_S_PHARMACY:
+				return 0;
+			}
 		}
+		else if( sd->menuskill_id == skill )
+			return 0;
 	}
 	
 	if( sd->skillitem == skill ) // Casting finished (Item skill or Hocus-Pocus)
@@ -14846,6 +14864,83 @@ int skill_select_menu(struct map_session_data *sd,int flag,int skill_id)
 	lv = min(lv,sd->status.skill[skill_id].lv);
 
 	sc_start4(&sd->bl,SC__AUTOSHADOWSPELL,100,id,lv,(32 - 2 * aslvl),0,skill_get_time(SC_AUTOSHADOWSPELL,aslvl));
+	return 0;
+}
+
+int skill_elementalanalysis(struct map_session_data* sd, int n, int skill_lv, unsigned short* item_list)
+{
+	int i;
+
+	nullpo_retr(0, sd);
+	nullpo_retr(0, item_list);
+
+	if( n <= 0 )
+		return 1;
+
+	for( i = 0; i < n; i++ )
+	{
+		int nameid, add_amount, del_amount, idx, product, flag;
+		struct item tmp_item;
+
+		idx = item_list[i*2+0]-2;
+		del_amount = item_list[i*2+1];
+
+		if( skill_lv == 2 )
+			del_amount -= (del_amount % 10);
+		add_amount = (skill_lv == 1) ? del_amount * (5 + rand()%5) : del_amount / 10 ;
+
+		if( (nameid = sd->status.inventory[idx].nameid) <= 0 || del_amount > sd->status.inventory[idx].amount )
+		{
+			clif_skill_fail(sd,SO_EL_ANALYSIS,0,0,0);
+			return 1;
+		}
+
+		switch( nameid )
+		{
+			// Level 1
+			case 994: product = 990; break;	// Flame Heart -> Red Blood.
+			case 995: product = 991; break;	// Mystic Frozen -> Crystal Blue.
+			case 996: product = 992; break; // Rough Wind -> Wind of Verdure.
+			case 997: product = 993; break; // Great Nature -> Green Live.
+			// Level 2
+			case 990: product = 994; break;	// Red Blood -> Flame Heart.
+			case 991: product = 995; break;	// Crystal Blue -> Mystic Frozen.
+			case 992: product = 996; break; // Wind of Verdure -> Rough Wind.
+			case 993: product = 997; break; // Green Live -> Great Nature.
+			default:
+				clif_skill_fail(sd,SO_EL_ANALYSIS,0,0,0);
+				return 1;
+		}
+
+		if( pc_delitem(sd,idx,del_amount,0) )
+		{
+			clif_skill_fail(sd,SO_EL_ANALYSIS,0,0,0);
+			return 1;
+		}
+
+		if( skill_lv == 2 && rand()%100 < 25 )
+		{	// At level 2 have a fail chance. You loose your items if it fails.
+			clif_skill_fail(sd,SO_EL_ANALYSIS,0,0,0);
+			return 1;
+		}
+
+
+		memset(&tmp_item,0,sizeof(tmp_item));
+		tmp_item.nameid = product;
+		tmp_item.amount = add_amount;
+		tmp_item.identify = 1;
+
+		if( tmp_item.amount )
+		{
+			if( (flag = pc_additem(sd,&tmp_item,tmp_item.amount)) )
+			{
+				clif_additem(sd,0,0,flag);
+				map_addflooritem(&tmp_item,tmp_item.amount,sd->bl.m,sd->bl.x,sd->bl.y,0,0,0,0);
+			}
+		}
+
+	}
+
 	return 0;
 }
 

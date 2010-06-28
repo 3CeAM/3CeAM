@@ -1391,8 +1391,8 @@ packet_ver: 25
 0x07e2,8
 
 //2009-08-18aRagexeRE
-//0x07e3,6
-//0x07e4,-1
+0x07e3,6
+0x07e4,-1,itemlistwindowselected,2:4:8
 0x07e6,8
 
 //2009-08-25aRagexeRE
@@ -1401,7 +1401,7 @@ packet_ver: 25
 
 //2009-09-22aRagexeRE
 0x07e5,8
-//0x07e6,8
+0x07e6,8
 0x07e7,32
 0x07e8,-1
 0x07e9,5
