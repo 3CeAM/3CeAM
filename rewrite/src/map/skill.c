@@ -3182,7 +3182,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case WM_METALICSOUND:
 	case WM_SEVERE_RAINSTORM_MELEE:
 	case WM_GREAT_ECHO:
-	case GN_CRAZYWEED_ATK:
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
@@ -4102,6 +4101,20 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		{
 			clif_skill_nodamage(src, bl, skillid, 0, 1);
 			skill_addtimerskill(src, gettick() + skill_get_time(skillid, skilllv) - 1000, bl->id, 0, 0, skillid, skilllv, 0, 0);
+		}
+		break;
+
+	case GN_CRAZYWEED:
+		if( rand()%100 < 75 )
+		{
+			if( bl->type == BL_SKILL )
+			{	// Still need confirm what units can remove this.
+				struct skill_unit *su = (struct skill_unit *)bl;
+				if( su && (su->group->skill_id == GN_WALLOFTHORN || (skill_get_inf2(su->group->skill_id)&INF2_TRAP)) )
+					skill_delunit(su);
+			}
+			else
+				skill_attack(BF_WEAPON,src,src,bl,GN_CRAZYWEED_ATK,skilllv,tick,flag);
 		}
 		break;
 
@@ -8057,7 +8070,8 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 	sd = BL_CAST(BL_PC,  src);
 	md = BL_CAST(BL_MOB, src);
 
-	if( src->prev == NULL ) {
+	if( src->prev == NULL )
+	{
 		ud->skilltimer = INVALID_TIMER;
 		return 0;
 	}
@@ -8065,7 +8079,8 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 	if(ud->skillid != SA_CASTCANCEL  &&
 			!(ud->skillid == SO_SPELLFIST && (sd && sd->skillid_old == MG_FIREBOLT || sd->skillid_old == MG_COLDBOLT || sd->skillid_old == MG_LIGHTNINGBOLT)) )
 	{// otherwise handled in unit_skillcastcancel()
-		if( ud->skilltimer != tid ) {
+		if( ud->skilltimer != tid )
+		{
 			ShowError("skill_castend_id: Timer mismatch %d!=%d!\n", ud->skilltimer, tid);
 			ud->skilltimer = INVALID_TIMER;
 			return 0;
@@ -8080,18 +8095,20 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 		ud->skilltimer = INVALID_TIMER;
 	}
 
-	if (ud->skilltarget == id)
+	if( ud->skilltarget == id )
 		target = src;
 	else
 		target = map_id2bl(ud->skilltarget);
 
 	// Use a do so that you can break out of it when the skill fails.
-	do {
-		if(!target || target->prev==NULL) break;
+	do
+	{
+		if( !target || target->prev==NULL ) break;
 
-		if(src->m != target->m || status_isdead(src)) break;
+		if( src->m != target->m || status_isdead(src) ) break;
 
-		switch (ud->skillid) {
+		switch( ud->skillid )
+		{
 			//These should become skill_castend_pos
 			case WE_CALLPARTNER:
 			case WE_CALLPARENT:
@@ -8109,18 +8126,17 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 				ud->skilltimer=tid;
 				return skill_castend_pos(tid,tick,id,data);
 			case GN_WALLOFTHORN:
-				inf2 = skill_get_splash(ud->skillid, ud->skilllv);
 				ud->skillx = target->x;
 				ud->skilly = target->y;
-				ud->skilltimer=tid;
+				ud->skilltimer = tid;
 				return skill_castend_pos(tid,tick,id,data);
 		}
 
-		if(ud->skillid == RG_BACKSTAP) {
+		if( ud->skillid == RG_BACKSTAP )
+		{
 			int dir = map_calc_dir(src,target->x,target->y),t_dir = unit_getdir(target);
-			if(check_distance_bl(src, target, 0) || map_check_dir(dir,t_dir)) {
+			if( check_distance_bl(src, target, 0) || map_check_dir(dir,t_dir) )
 				break;
-			}
 		}
 
 		if( ud->skillid == PR_TURNUNDEAD )
@@ -8667,7 +8683,6 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case SO_VACUUM_EXTREME:
 	case GN_WALLOFTHORN:
 	case GN_THORNS_TRAP:
-	case GN_CRAZYWEED:
 	case GN_DEMONIC_FIRE:
 	case GN_HELLS_PLANT:
 		flag|=1;//Set flag to 1 to prevent deleting ammo (it will be deleted on group-delete).
@@ -9125,6 +9140,13 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case WM_GREAT_ECHO:
 		flag|=1; // Should counsume 1 item per skill usage.
 		map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid,skilllv),BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY, skill_castend_damage_id);
+		break;
+
+	case GN_CRAZYWEED:
+		i = skill_get_splash(skillid,skilllv);
+		map_foreachinarea(skill_area_sub,src->m,x-i,y-i,x+i,y+i,BL_CHAR|BL_SKILL,
+			src,skillid,skilllv,tick,flag|BCT_ENEMY|1,
+			skill_castend_damage_id);
 		break;
 
 	case GN_FIRE_EXPANSION:
@@ -10018,6 +10040,16 @@ static int skill_unit_onplace (struct skill_unit *src, struct block_list *bl, un
 			break;
 		skill_blown(ss,bl,skill_get_blewcount(sg->skill_id,sg->skill_lv),unit_getdir(bl),0);
 		break;
+
+	case UNT_WALLOFTHORN:
+		if( status_get_mode(bl)&MD_BOSS )
+			break;	// iRO Wiki says that this skill don't affect to Boss monsters.
+		if( battle_check_target(ss,bl,BCT_ENEMY) <= 0 )
+			skill_blown(&src->bl,bl,skill_get_blewcount(sg->skill_id,sg->skill_lv),unit_getdir(bl),0);
+		else
+			skill_attack(skill_get_type(sg->skill_id), ss, &src->bl, bl, sg->skill_id, sg->skill_lv, tick, 0);
+		break;
+
 	}
 	return skillid;
 }
@@ -10103,7 +10135,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			int count=0;
 			const int x = bl->x, y = bl->y;
 
-			if( sg->skill_id == GN_WALLOFTHORN && bl->type != BL_MOB && !map_flag_vs(bl->m) )
+			if( sg->skill_id == GN_WALLOFTHORN && !map_flag_vs(bl->m) )
 				break;
 			//Take into account these hit more times than the timer interval can handle.
 			do
@@ -10211,10 +10243,6 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 					if (rand()%100 < src->val1)
 						skill_attack(BF_WEAPON,ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
 				break;
-
-				case GN_CRAZYWEED:
-					skill_castend_damage_id(ss, bl, GN_CRAZYWEED_ATK, sg->skill_lv, tick, SD_LEVEL|SD_ANIMATION);
-					break;
 
 				default:
 					skill_attack(skill_get_type(sg->skill_id),ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
@@ -10583,14 +10611,6 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			}
 			break;
 
-		case UNT_WALLOFTHORN:
-			if( tstatus->mode&MD_BOSS )
-				break;	// iRO Wiki says that this skill don't affect to Boss monsters.
-			if( bl->type != BL_MOB && !map_flag_vs(bl->m) )
-				break;	// Don't deal damage to non-monsters out of vs maps.
-			skill_attack(skill_get_type(sg->skill_id), ss, &src->bl, bl, sg->skill_id, sg->skill_lv, tick, 0);
-			break;
-
 		case UNT_DEMONIC_FIRE:
 			{
 				switch( sg->val2 )
@@ -10633,11 +10653,12 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 		case UNT_WARMER:
 			if( bl->type == BL_PC && !battle_check_undead(tstatus->race, tstatus->def_ele) && tstatus->race != RC_DEMON )
 			{
-				int hp = 130 * sg->skill_lv;
+				int hp = 125 * sg->skill_lv; // Officially is 125 * skill_lv.
 				status_heal(bl, hp, 0, 0);
 				if( tstatus->hp != tstatus->max_hp )
 					clif_skill_nodamage(&src->bl, bl, AL_HEAL, hp, 0);
-				sc_start(bl, type, 100, sg->skill_lv, sg->interval + 100);
+				if( (tsc = status_get_sc(bl)) && (tsc->data[SC_FREEZE] || tsc->data[SC_FREEZING]) ) // It only affects if the target is under Freeze or Freezing status.
+					sc_start(bl, type, 100, sg->skill_lv, sg->interval + 100);
 			}
 			break;
 
@@ -13902,9 +13923,8 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 			case UNT_ANKLESNARE:
 			case UNT_ELECTRICSHOCKER:
 			case UNT_CLUSTERBOMB:
-			case UNT_WALLOFTHORN:
 				if( unit->val1 <= 0 ) {
-					if( ((group->unit_id == UNT_ANKLESNARE || group->unit_id == UNT_ELECTRICSHOCKER) && group->val2 > 0) || group->unit_id == UNT_WALLOFTHORN )
+					if( (group->unit_id == UNT_ANKLESNARE || group->unit_id == UNT_ELECTRICSHOCKER) && group->val2 > 0 )
 						skill_delunit(unit);
 					else {
 						group->unit_id = UNT_USED_TRAPS;
@@ -13915,6 +13935,13 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 			case UNT_REVERBERATION:
 				if( unit->val1 <= 0 )
 					unit->limit = DIFF_TICK(tick+700,group->tick);
+				break;
+			case UNT_WALLOFTHORN:
+				if( unit->val1 <= 0 )
+				{
+					group->unit_id = UNT_USED_TRAPS;
+					group->limit = DIFF_TICK(tick, group->tick) + 1500;
+				}
 				break;
 		}
 	}

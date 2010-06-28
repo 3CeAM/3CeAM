@@ -1179,8 +1179,8 @@
 2479,6,6,2,0,0x1,0,5,1,yes,0,0x80,0,magic,0,	GN_THORNS_TRAP,Thorn Trap
 2480,9,6,1,0,0x1,0,5,0,no,0,0,3,weapon,0,	GN_BLOOD_SUCKER,Blood Sucker
 2481,9,6,1,0,0,3:5:7:9:11,5,1,yes,0,0,0,magic,0,	GN_SPORE_EXPLOSION,Spore Explosion
-2482,6,6,16,0,0x1,0,5,1,yes,0,0,1,weapon,1,	GN_WALLOFTHORN,Wall of Thorns
-2483,9,6,2,0,0,0,10,1,yes,0,0,0,weapon,0,	GN_CRAZYWEED,Crazy Weed
+2482,6,6,16,0,0x1,0,5,-1,yes,0,0,1,weapon,2,	GN_WALLOFTHORN,Wall of Thorns
+2483,9,6,2,0,0x2,3,10,1,yes,0,0,0,weapon,0,	GN_CRAZYWEED,Crazy Weed
 2484,0,6,1,2,0,0,10,0,no,0,0,0,weapon,0,	GN_CRAZYWEED_ATK,Crazy Weed Attack
 2485,9,6,2,3,0,0,5,1,yes,0,0,0,magic,0,		GN_DEMONIC_FIRE,Demonic Fire
 2486,9,6,2,0,0,0,5,1,yes,0,0,0,weapon,0,	GN_FIRE_EXPANSION,Fire Expansion
