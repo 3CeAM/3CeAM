@@ -1257,6 +1257,9 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 		return 1;
 	}
 
+	if( skill_num == GN_WALLOFTHORN && target && status_isdead(target) )
+		return 0;
+
 	//Should fail when used on top of Land Protector [Skotlex]
 	if( src && skill_num == AL_TELEPORT && map_getcell(src->m, src->x, src->y, CELL_CHKLANDPROTECTOR)
 		&& !(status->mode&MD_BOSS) && (src->type != BL_PC || ((TBL_PC*)src)->skillitem != skill_num) )
@@ -1452,22 +1455,6 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 			struct map_session_data *sd = (TBL_PC*) target;
 			if( pc_isinvisible(sd) )
 				return 0;
-			if( tsc->data[SC_CLOAKINGEXCEED] && !(status->mode&MD_BOSS) )
-			{
-				if( !skill_num )
-					return 0;
-				switch( skill_num )
-				{
-					// Skill that deal damage in cloakingexceeded targets.
-					case RK_DRAGONBREATH:
-					case SC_FEINTBOMB:
-					case WM_REVERBERATION_MELEE:
-					case WM_SEVERE_RAINSTORM_MELEE:
-						break;
-					default:
-						return 0;
-				}
-			}
 			if( tsc->option&hide_flag && !(status->mode&MD_BOSS) && (sd->special_state.perfect_hiding || !(status->mode&MD_DETECTOR)))
 				return 0;
 			if( tsc->data[SC_CAMOUFLAGE] && !(status->mode&(MD_BOSS|MD_DETECTOR)) && !skill_num )
