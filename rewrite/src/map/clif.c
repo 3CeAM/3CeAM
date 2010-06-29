@@ -5195,10 +5195,28 @@ int clif_skill_produce_mix_list(struct map_session_data *sd, int skill_num, int 
 	return 0;
 }
 
+void clif_cooking_fail(struct map_session_data *sd, int skill_id, int val, int list_type, int fails)
+{
+#if PACKETVER >= 20090922
+	int fd;
+
+	nullpo_retv(sd);
+
+	fd = sd->fd;
+	WFIFOHEAD(fd, packet_len(0x7e6));
+	WFIFOW(fd,0) = 0x7e6;
+	WFIFOW(fd,2) = skill_id;
+	WFIFOB(fd,4) = val;
+	WFIFOW(fd,5) = list_type;
+	WFIFOB(fd,7) = (fails) ? 1 : 0;
+	WFIFOSET(fd, packet_len(0x7e6));
+#endif
+
+}
 /*==========================================
  *
  *------------------------------------------*/
-void clif_cooking_list(struct map_session_data *sd, int trigger)
+void clif_cooking_list(struct map_session_data *sd, int trigger, int skill_id, int qty, int list_type)
 {
 	int fd;
 	int i, c;
@@ -5209,30 +5227,44 @@ void clif_cooking_list(struct map_session_data *sd, int trigger)
 
 	WFIFOHEAD(fd, 6 + 2*MAX_SKILL_PRODUCE_DB);
 	WFIFOW(fd,0) = 0x25a;
-	WFIFOW(fd,4) = 1; // list type
+	WFIFOW(fd,4) = list_type; // list type
 
 	c = 0;
 	for( i = 0; i < MAX_SKILL_PRODUCE_DB; i++ )
 	{
-		if( !skill_can_produce_mix(sd,skill_produce_db[i].nameid,trigger, 1) )
+		if( !skill_can_produce_mix(sd,skill_produce_db[i].nameid,trigger, qty) )
 			continue;
 
 		if( (view = itemdb_viewid(skill_produce_db[i].nameid)) > 0 )
-			WFIFOW(fd, 6+2*c)= view;
+			WFIFOW(fd, 6+2*c) = view;
 		else
-			WFIFOW(fd, 6+2*c)= skill_produce_db[i].nameid;
+			WFIFOW(fd, 6+2*c) = skill_produce_db[i].nameid;
 
 		c++;
 	}
 
-	WFIFOW(fd,2) = 6 + 2*c;
-	WFIFOSET(fd,WFIFOW(fd,2));
+	if( skill_id == AM_PHARMACY )
+	{	// Only send it while Cooking else check for c.
+		WFIFOW(fd,2) = 6 + 2*c;
+		WFIFOSET(fd,WFIFOW(fd,2));
+	}
 
-	//TODO: replace with proper solution
 	if( c > 0 )
 	{
-		sd->menuskill_id = AM_PHARMACY;
+		sd->menuskill_id = skill_id;
 		sd->menuskill_val = trigger;
+		if( skill_id != AM_PHARMACY )
+		{
+			sd->menuskill_itemused = 1; // amount.
+			WFIFOW(fd,2) = 6 + 2*c;
+			WFIFOSET(fd,WFIFOW(fd,2));
+		}
+	}
+	else
+	{
+		sd->menuskill_id = sd->menuskill_val = sd->menuskill_itemused = 0;
+		if( skill_id != AM_PHARMACY ) // AM_PHARMACY is used to Cooking.
+			clif_cooking_fail(sd,skill_id,0x25,list_type,0);
 	}
 }
 
@@ -9909,7 +9941,10 @@ void clif_parse_EquipItem(int fd,struct map_session_data *sd)
 	}
 	
 	//Client doesn't send the position for ammo.
-	if(sd->inventory_data[index]->type == IT_AMMO)
+	if( sd->inventory_data[index]->type == IT_AMMO ||
+		sd->inventory_data[index]->type == IT_THROWWEAPON ||
+		sd->inventory_data[index]->type == IT_CANNONBALL
+	   )
 		pc_equipitem(sd,index,EQP_AMMO);
 	else
 		pc_equipitem(sd,index,RFIFOW(fd,4));
@@ -10620,7 +10655,7 @@ void clif_parse_ProduceMix(int fd,struct map_session_data *sd)
 	// -1 is used by produce script command.
 	if (sd->menuskill_id != -1 && sd->menuskill_id != AM_PHARMACY && sd->menuskill_id != SA_CREATECON &&
 		sd->menuskill_id != RK_RUNEMASTERY && sd->menuskill_id != GC_CREATENEWPOISON &&
-		sd->menuskill_id != GN_MIX_COOKING && sd->menuskill_id != GN_MAKEBOMB && sd->menuskill_id != GN_S_PHARMACY)
+		sd->menuskill_id != GN_S_PHARMACY)
 		return;
 	
 	if (pc_istrading(sd)) {
@@ -10655,8 +10690,12 @@ void clif_parse_SkillSelectMenu(int fd, struct map_session_data *sd)
  *------------------------------------------*/
 void clif_parse_Cooking(int fd,struct map_session_data *sd)
 {
-	//int type = RFIFOW(fd,2); // '1' for cooking, but what do other values mean?
+	int type = RFIFOW(fd,2);
 	int nameid = RFIFOW(fd,4);
+	int amount = 1;
+
+	if( type == 6 && sd->menuskill_id != GN_MIX_COOKING )
+		return;
 
 	if (pc_istrading(sd)) {
 		//Make it fail to avoid shop exploits where you sell something different than you see.
@@ -10664,8 +10703,8 @@ void clif_parse_Cooking(int fd,struct map_session_data *sd)
 		sd->menuskill_val = sd->menuskill_id = 0;
 		return;
 	}
-	skill_produce_mix(sd,0,nameid,0,0,0,1);
-	sd->menuskill_val = sd->menuskill_id = 0;
+	skill_produce_mix(sd,sd->menuskill_id,nameid,0,0,0,sd->menuskill_itemused);
+	sd->menuskill_val = sd->menuskill_id = sd->menuskill_itemused = 0;
 }
 /*==========================================
  * ïêäÌèCóù
