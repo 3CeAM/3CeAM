@@ -1006,6 +1006,8 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl,SC_FEAR,3+2*skilllv,skilllv,skill_get_time(skillid,skilllv));
 		break;
 	case RK_HUNDREDSPEAR:
+		if( !sd || pc_checkskill(sd,skillid) == 0 )
+			break; // Spear Boomerang auto cast chance only works if you have mastered Spear Boomerang.
 		rate = 10 + 3 * skilllv;
 		if( rand()%100 < rate )
 			skill_castend_damage_id(src,bl,KN_SPEARBOOMERANG,1,tick,0);

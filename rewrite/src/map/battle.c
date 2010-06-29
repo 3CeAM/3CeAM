@@ -1587,7 +1587,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					ATK_ADD(50 + 5 * sc->data[SC_GLOOMYDAY_SK]->val1);
 				break;
 			case RK_DRAGONBREATH:
-				wd.damage = (status_get_hp(src) * 80 / 1000) + (status_get_sp(src) * 180 / 100);
+				wd.damage = (status_get_hp(src) * 16 / 1000) + (status_get_sp(src) * 192 / 1000);
 				if( sd )
 					wd.damage += wd.damage * (5 * pc_checkskill(sd,RK_DRAGONTRAINING)-1) / 100;
 				break;
@@ -1987,22 +1987,28 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				case NPC_VAMPIRE_GIFT:
 					skillratio += ((skill_lv-1)%5+1)*100;
 					break;
-				case RK_SONICWAVE:
-					skillratio += 400 + (100 * skill_lv) + (status_get_lv(src) * 5 / 3);
+				case RK_SONICWAVE: // Sugested formula from irowiki. 
+					skillratio += 400 + (100 * skill_lv); // Base skillratio.
+					skillratio *= (1 + (s_level-100) / 20); // Bonus by base level.
 					break;
-				case RK_HUNDREDSPEAR:
-					skillratio += 500 + (40 * skill_lv) + (status_get_lv(src) * 5 / 3);
-					if( sd )
-						skillratio += 50 * pc_checkskill(sd,LK_SPIRALPIERCE);
+				case RK_HUNDREDSPEAR: // Sugested formula from irowiki.
+					skillratio += 500 + (40 * skill_lv); // Base skillratio.
+					skillratio *= (1 + (s_level-100) / 20); // Bonus by base level.
 					break;
-				case RK_WINDCUTTER:
-					skillratio += 100 + 50 * skill_lv;
+				case RK_WINDCUTTER: // Sugested formula from irowiki.
+					skillratio += 50 * skill_lv; // Base skillratio
+					skillratio *= (1 + (s_level-50) / 20); // Bonus by base level.
 					break;
-				case RK_IGNITIONBREAK:
-					i = distance_bl(src,target);
-					 skillratio += 100 * (4 - cap_value(i,1,3)) * skill_lv;
+				case RK_IGNITIONBREAK: // Sugested formula from irowiki. 
+					i = distance_bl(src,target) / 2;
+					skillratio += 100 + (200 * skill_lv) - (100 * i); // Base skillratio
+					if( i > 1 ) skillratio -= 100 * (skill_lv - 1); // Less damage at 4 or 5 cells.
+					skillratio *= (1 + (s_level-100) / 20); // Bonus by base level.
 					if( sstatus->rhw.ele == ELE_FIRE )
 						skillratio +=  skillratio / 2;
+					break;
+				case RK_DRAGONBREATH: // Sugested formula from irowiki.
+					skillratio *= skill_lv * s_level / 100;
 					break;
 				case RK_CRUSHSTRIKE:
 					skillratio += 1400;
@@ -2010,8 +2016,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				case RK_STORMBLAST:
 					skillratio += sstatus->int_ * (sd ? pc_checkskill(sd,RK_RUNEMASTERY) : 1);
 					break;
-				case RK_PHANTOMTHRUST:
+				case RK_PHANTOMTHRUST: // TODO: Check if the damage is increased by Spear Mastery and how much.
 					skillratio += 20 * (skill_lv - 1);
+					skillratio *= (1 + (s_level-100) / 20); // Bonus by base level. Still need confirm it.
 					break;
 				case GC_CROSSIMPACT:
 					skillratio += 1050 + 50 * skill_lv;
