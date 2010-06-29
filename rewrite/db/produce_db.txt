@@ -444,12 +444,25 @@
 // Genetic Item Creation
 //==============================================
 //----- Change Material ---- ItemLV=26 ---------
-//-- Thorny Seed <-- GN_CHANGEMATERIAL & Plant Genetic Cultivation Guide &
-6210,26,2494,1,6284,0
-//-- Vampire Plant Seed <-- GN_CHANGEMATERIAL & Plant Genetic Cultivation Guide &
-6211,26,2494,1,6284,0
-//-- Bomb Mushroom Seed <-- GN_CHANGEMATERIAL & Plant Genetic Cultivation Guide &
-6212,26,2494,1,6284,0
+//-- Unknown item 1 <-- GN_CHANGEMATERIAL Lv1, 45 Frog Egg Squid Ink Soup, 40 Glass Bead
+//UNKNOWN_1,26,2425,1,12056,45,746,40
+//-- Unknown item 2 <-- GN_CHANGEMATERIAL Lv1, 40 Chrysalis, 10 Clam Flesh
+//UNKNOWN_2,26,2425,1,915,40,066,10
+//-- Unknown item 3 <-- GN_CHANGEMATERIAL Lv1, 45 ????, 25 Feather of Birds
+//UNKNOWN_3,26,2425,1,????,45,916,25
+//-- Maneater Root <-- GN_CHANGEMATERIAL Lv1, 25 Talon, 20 Zenorc's Fang
+1033,26,2425,1,917,25,1044,20
+//-- Unknown item 5 <-- GN_CHANGEMATERIAL Lv1, 45 Frog Egg Squid Ink Soup, 40 Glass Bead
+//UNKNOWN_5,26,2425,1,12056,45,746,40
+//-- Unknown item 6 <-- GN_CHANGEMATERIAL Lv1, 45 Frog Egg Squid Ink Soup, 40 Glass Bead
+//UNKNOWN_6,26,2425,1,12056,45,746,40
+//-- Unknown item 7 <-- GN_CHANGEMATERIAL Lv1, 45 Frog Egg Squid Ink Soup, 40 Glass Bead
+//UNKNOWN_7,26,2425,1,12056,45,746,40
+//-- Unknown item 8 <-- GN_CHANGEMATERIAL Lv1, 45 Frog Egg Squid Ink Soup, 40 Glass Bead
+//UNKNOWN_8,26,2425,1,12056,45,746,40
+//-- Unknown item 9 <-- GN_CHANGEMATERIAL Lv1, 45 Frog Egg Squid Ink Soup, 40 Glass Bead
+//UNKNOWN_9,26,2425,1,12056,45,746,40
+
 //6213 <-- Possible item to create with this skill
 //6214 <-- Possible item to create with this skill
 //6215 <-- Possible item to create with this skill
@@ -457,8 +470,8 @@
 //6217 <-- Possible item to create with this skill
 
 //----- Mix Cooking ---- ItemLV=27 -------------
-//-- Savage Full Roast <-- GN_MIX_COOKING & Mix Cooking Ingredient Book & 1 Savage Meat, 1 Iron Cooking Skewer, 1 Bituminous Coal
-12429,27,2495,1,11022,0,6249,1,6250,1,6251,1
+//-- Savage Full Roast <-- GN_MIX_COOKING & Mix Cooking Ingredient Book & 1 Chowder Pot, 1 Savage Meat, 1 Iron Cooking Skewer, 1 Black Charcoal
+12429,27,2495,1,11022,0,6248,1,6249,1,6250,1,6251,1
 //-- Cocktail Warg Blood <-- GN_MIX_COOKING & Mix Cooking Ingredient Book & 3 Wolf's Blood, 2 Cold Ice
 12430,27,2495,1,11022,0,6252,3,6253,2
 //-- Minor Stew <-- GN_MIX_COOKING & Mix Cooking Ingredient Book & 1 Comodo Tropical Fruit, 2 Seasoned Tough Meat, 1 Large Pan
@@ -501,4 +514,10 @@
 12436,29,2497,1,6285,0,1092,10,514,10,518,10,510,10
 //-- Concentrated Ceromain Soup <-- GN_S_PHARMACY & & Improved Potion Creation Manual 10 Test Tube, 6 Awakening Potion, 5 Concentration Potion, 5 Spicy Sauce
 12437,29,2497,1,6285,0,1092,10,645,5,656,6,7455,5
+//-- Thorny Seed <-- GN_S_PHARMACY & Plant Genetic Cultivation Guide & 10 Prickly Fruit
+6210,29,2497,1,6284,0,576,10
+//-- Bloodsucker Seed <-- GN_S_PHARMACY & Plant Genetic Cultivation Guide & 10 Maneater Root
+6211,29,2497,1,6284,0,1033,10
+//-- Bomb Mushroom Seed <-- GN_S_PHARMACY & Plant Genetic Cultivation Guide & 10 Mushroom Spore, 5 Poison Mushroom Spore, 2 Black Powder
+6212,29,2497,1,6284,0,921,10,7033,5,6245,2
 //===============================================

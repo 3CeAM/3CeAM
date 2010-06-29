@@ -1173,7 +1173,7 @@
 // Genetic
 2474,0,0,0,0,0,0,5,0,no,0,0,0,weapon,0,		GN_TRAINING_SWORD,Sword Training
 2475,0,0,0,0,0,0,5,0,no,0,0,0,weapon,0,		GN_REMODELING_CART,Cart Remodeling
-2476,0,6,4,0,0x02,2,5,1,no,0,0,0,weapon,2,	GN_CART_TORNADO,Cart Tornado
+2476,0,6,4,-1,0x02,2,5,1,no,0,0,0,weapon,2,	GN_CART_TORNADO,Cart Tornado
 2477,7,6,1,0,0,2,5,0,yes,0,0,0,weapon,0,	GN_CARTCANNON,Cart Cannon
 2478,0,6,4,0,0x1,0,5,1,no,0,0,0,weapon,0,	GN_CARTBOOST,Cart Boost
 2479,6,6,2,0,0x1,0,5,1,yes,0,0x80,0,magic,0,	GN_THORNS_TRAP,Thorn Trap

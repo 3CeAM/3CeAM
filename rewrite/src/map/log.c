@@ -44,7 +44,7 @@ int should_log_item(int filter, int nameid, int amount)
 	if ((item_data= itemdb_exists(nameid)) == NULL) return 0;
 	if ((filter&1) || // Filter = 1, we log any item
 		(filter&2 && item_data->type == IT_HEALING ) ||
-		(filter&4 && (item_data->type == IT_ETC || item_data->type == IT_AMMO) ) ||
+		(filter&4 && (item_data->type == IT_ETC || item_data->type == IT_AMMO || item_data->type == IT_THROWWEAPON || item_data->type == IT_CANNONBALL) ) ||
 		(filter&8 && item_data->type == IT_USABLE ) ||
 		(filter&16 && item_data->type == IT_WEAPON ) ||
 		(filter&32 && item_data->type == IT_ARMOR ) ||
