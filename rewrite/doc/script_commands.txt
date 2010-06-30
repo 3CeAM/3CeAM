@@ -2530,7 +2530,12 @@ correctly handle an NPC trader for carded and named items who could resell them
 - since NPC objects cannot own items, so they have to store item data in 
 variables and recreate the items.
 
-Notice that the variables this command generates are all local and numeric. 
+Notice that the variables this command generates are all temporary, attached to 
+the character, and integer.
+
+Be sure to use @inventorylist_count to go through these arrays, and not 
+'getarraysize', because the arrays are not automatically cleared between runs 
+of 'getinventorylist'.
 
 ---------------------------------------
 
@@ -4977,7 +4982,7 @@ invoking character.
 
 Timeout is the time in milliseconds the summon lives, and is set default 
 to 60000 (1 minute). Note that also the value 0 will set the timer to default,
-and it is not possible to create a spawn that lastst forever.
+and it is not possible to create a spawn that lasts forever.
 If an event label is given, upon the monster being killed, the event label will
 run as if by 'donpcevent'.
 
@@ -5987,7 +5992,7 @@ A full list of pet IDs can be found inside 'db/pet_db.txt'
 
 ---------------------------------------
 
-*emotion <emotion number>{, target};
+*emotion <emotion number>{,<target>}{,"<target name>"};
 
 This command makes an object display an emoticon sprite above their own as 
 if they were doing that emotion. For a full list of emotion numbers, 
@@ -5997,6 +6002,9 @@ and 'e_gasp' (the exclamation mark).
 The optional target parameter specifies who will get the emotion on top of
 their head. If 0 (the default if omitted), the NPC in current use will show
 the emotion, if 1, the player that is running the script will display it.
+
+Target name parameter allows to display emotion on top of other NPC/PC without
+event labels. If specified name is not found, command does nothing.
 
 ---------------------------------------
 
@@ -6032,6 +6040,25 @@ It's certain that giving 0 for the number will play sound files from 'data/wav',
 but where the other numbers will read from is unclear.
 
 You can add your own effects this way, naturally.
+
+---------------------------------------
+
+*playBGM "<BGM filename>"
+*playBGMall "<BGM filename>",{,"<map name>"}{,<x0>,<y0>,<x1>,<y1>}
+
+These two commands will play a Background Music to either the invoking character 
+only ('playBGM') or multiple characters ('playBGMall'). If the running 
+code does not have an object ID (a 'floating' npc) or is not running from an NPC 
+object at all (an item script) the sound will be centered on the character who's 
+RID got attached to the script, if any. If it does, it will be centered on that 
+object. (an NPC sprite)
+
+BGM filename is the filename in /BGM/ folder. It has to be in .mp3 extension.
+
+It's not required to specify the extension inside the script.
+If coordinates are omitted, BGM will be broadcasted on the entire map.
+
+You can add your own BGMs this way, naturally.
 
 ---------------------------------------
 

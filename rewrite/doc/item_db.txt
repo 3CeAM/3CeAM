@@ -134,6 +134,8 @@ View: For normal items, defines a replacement view-sprite for the item (eg:
 		5: Grenades
 		6: Shuriken
 		7: Kunai
+		8: Cannonball
+		9: Throwweapon
 
 Script: Script to execute when the item is used/equipped.
 

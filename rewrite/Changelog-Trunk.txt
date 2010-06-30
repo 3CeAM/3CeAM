@@ -3,6 +3,23 @@ Date	Added
 AS OF SVN REV. 5091, WE ARE NOW USING TRUNK.  ALL UNTESTED BUGFIXES/FEATURES GO INTO TRUNK.
 IF YOU HAVE A WORKING AND TESTED BUGFIX PUT IT INTO STABLE AS WELL AS TRUNK.
 
+2010/06/18
+	* Added support for NPC/PC names in 'emotion' script command. [Gepard]
+2010/06/14
+	* Rev. 13442 Blocked being able to use the skill CR_DEVOTION on players under the status SC_HELLPOWER. [L0ne_W0lf]
+	- Additionally, users afflicted by the status can also no longer use Token of Siegfried to self-res.
+	* Added Manuk, Splendide and SC_HELLPOWER statuses to the status effects that can't be dispelled.
+	* Changed SC_SPEEDUP0 to use the correct status icon SI_MOVHASTE_HORSE.
+	* Changed SI_SPEEDUP1 to use the correct status icon SI_SPEEDPOTION1.
+2010/06/13
+	* 'clif_hpmeter' shouldn't send the packet to the player himself. [Inkfish]
+2010/06/10
+	* Rev. 14336 Updated SC_ITEMBOOST to work similar to how it used to in r11351. [L0ne_W0lf]
+	- Will not boost drop rates past 90%, but ignores those already greater than.
+	- Now uses val2 in the sc_start as the drop rate modifier, see item_db for example.
+2010/06/09
+	* Added support for packet 0x7fe which changes the bgm temporarily for a single player [Rikter/Yommy]
+	* Added 2 script commands, playBGM and playBGMall, documented use in doc/script_commands.txt [Rikter/Yommy]
 2010/06/01
 	* Rev. 14329 Corrected warnings (and errors on some compilers) from r14327. [L0ne_W0lf]
 	* Rev. 14327 Implemented the Manuk and Splendide item status effects, thanks to Epoque. [L0ne_W0lf]
