@@ -1202,6 +1202,8 @@
 2516,0,0,1,-1,0x2,5,5,0,no,0,0,0,weapon,0,		WM_SEVERE_RAINSTORM_MELEE,Severe Rainstorm Melee
 2517,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		SR_HOWLINGOFLION,Howling of Lion
 2518,3,6,0,-1,0x2,2:2:3:4:4,5,1,no,0,0,0,weapon,0,	SR_RIDEINLIGHTNING,Ride In Lightening
+2519,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_OVERBRAND_BRANDISH,Overbrand Brandish
+2520,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_OVERBRAND_PLUSATK,Overbrand Plus Attack
 
 2533,0,0,4,0,0x1,0,1,0,no,0,0,0,none,0,		ALL_ODINS_RECALL,Odin's Recall
 2534,0,0,4,0,0x1,0,1,0,yes,0,0,0,none,0,	RETURN_TO_ELDICASTES,Return To Eldicastes
