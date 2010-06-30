@@ -3159,6 +3159,9 @@ int clif_skill_select_request(struct map_session_data *sd)
 	fd = sd->fd;
 	if( !fd ) return 0;
 
+	if( sd->menuskill_id == SC_AUTOSHADOWSPELL )
+		return 0;
+
 	WFIFOHEAD(fd, 2 * 6 + 4);
 	WFIFOW(fd,0) = 0x442;
 	for( i = 0, c = 0; i < MAX_SKILL; i++ )

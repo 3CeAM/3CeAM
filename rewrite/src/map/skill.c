@@ -10645,7 +10645,8 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			break;
 
 		case UNT_HELLS_PLANT:
-			skill_attack(skill_get_type(GN_HELLS_PLANT_ATK), ss, &src->bl, bl, GN_HELLS_PLANT_ATK, sg->skill_lv, tick, 0);
+			if( skill_attack(skill_get_type(GN_HELLS_PLANT_ATK), ss, &src->bl, bl, GN_HELLS_PLANT_ATK, sg->skill_lv, tick, 0) )
+				sg->limit = DIFF_TICK(tick, sg->tick) + 100;
 			break;
 
 		case UNT_CLOUD_KILL:
@@ -11145,23 +11146,27 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		return 1;
 	}
 
-	if( sd->menuskill_id )
+	switch( sd->menuskill_id )
 	{
-		if( sd->menuskill_id == AM_PHARMACY )
-		{
+		case AM_PHARMACY:
 			switch( skill )
 			{
-			case AM_PHARMACY:
-			case AC_MAKINGARROW:
-			case BS_REPAIRWEAPON:
-			case AM_TWILIGHT1:
-			case AM_TWILIGHT2:
-			case AM_TWILIGHT3:
-				return 0;
+				case AM_PHARMACY:
+				case AC_MAKINGARROW:
+				case BS_REPAIRWEAPON:
+				case AM_TWILIGHT1:
+				case AM_TWILIGHT2:
+				case AM_TWILIGHT3:
+					return 0;
 			}
-		}
-		else if( sd->menuskill_id == skill )
-			return 0;
+			break;
+		case GN_MIX_COOKING:
+		case GN_MAKEBOMB:
+		case GN_S_PHARMACY:
+		case GN_CHANGEMATERIAL:
+			if( sd->menuskill_id != skill )
+				return 0;
+			break;
 	}
 
 	status = &sd->battle_status;
@@ -11815,23 +11820,27 @@ int skill_check_condition_castend(struct map_session_data* sd, short skill, shor
 		return 1;
 	}
 
-	if( sd->menuskill_id )
+	switch( sd->menuskill_id )
 	{ // Cast start or cast end??
-		if( sd->menuskill_id == AM_PHARMACY )
-		{
+		case AM_PHARMACY:
 			switch( skill )
 			{
-			case AM_PHARMACY:
-			case AC_MAKINGARROW:
-			case BS_REPAIRWEAPON:
-			case AM_TWILIGHT1:
-			case AM_TWILIGHT2:
-			case AM_TWILIGHT3:
-				return 0;
+				case AM_PHARMACY:
+				case AC_MAKINGARROW:
+				case BS_REPAIRWEAPON:
+				case AM_TWILIGHT1:
+				case AM_TWILIGHT2:
+				case AM_TWILIGHT3:
+					return 0;
 			}
-		}
-		else if( sd->menuskill_id == skill )
-			return 0;
+			break;
+		case GN_MIX_COOKING:
+		case GN_MAKEBOMB:
+		case GN_S_PHARMACY:
+		case GN_CHANGEMATERIAL:
+			if( sd->menuskill_id != skill )
+				return 0;
+			break;
 	}
 	
 	if( sd->skillitem == skill ) // Casting finished (Item skill or Hocus-Pocus)
@@ -11879,20 +11888,26 @@ int skill_check_condition_castend(struct map_session_data* sd, short skill, shor
 	case NC_SILVERSNIPER:
 	case NC_MAGICDECOY:
 		{
-			int c = 0;
+			int c = 0, j;
 			int maxcount = skill_get_maxcount(skill,lv);
 			int mob_class = 2042;
 			if( skill == NC_MAGICDECOY )
-				mob_class = -2042;
+				mob_class = 2043;
 
 			if( battle_config.land_skill_limit && maxcount > 0 && ( battle_config.land_skill_limit&BL_PC ) )
 			{
-				i = map_foreachinmap(skill_check_condition_mob_master_sub, sd->bl.m, BL_MOB, sd->bl.id, mob_class, skill, &c);
+				if( skill == NC_MAGICDECOY )
+				{
+					for( j = mob_class; j <= 2046; j++ )
+						i = map_foreachinmap(skill_check_condition_mob_master_sub, sd->bl.m, BL_MOB, sd->bl.id, j, skill, &c);
+				}
+				else
+					i = map_foreachinmap(skill_check_condition_mob_master_sub, sd->bl.m, BL_MOB, sd->bl.id, mob_class, skill, &c);
 				if( c >= maxcount )
-					{
-						clif_skill_fail(sd , skill, 0, 0, 0);
-						return 0;
-					}
+				{
+					clif_skill_fail(sd , skill, 0, 0, 0);
+					return 0;
+				}
 			}
 		}
 		break;
