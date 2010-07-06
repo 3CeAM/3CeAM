@@ -7886,7 +7886,7 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 			break;
 		case SC_WARM:
 		case SC__MANHOLE:
-			if (sce->val4)
+			if( sce->val4 )
 			{ //Clear the group.
 				struct skill_unit_group* group = skill_id2group(sce->val4);
 				sce->val4 = 0;

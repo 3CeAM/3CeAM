@@ -1021,7 +1021,7 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 	if( tsc && tsc->data[SC__MANHOLE] )
 		return 0;
 	
-	if(ud->skilltimer != -1 && skill_num != SA_CASTCANCEL &&
+	if( ud->skilltimer != -1 && skill_num != SA_CASTCANCEL &&
 		!(skill_num == SO_SPELLFIST && (ud->skillid == MG_FIREBOLT || ud->skillid == MG_COLDBOLT || ud->skillid == MG_LIGHTNINGBOLT)) )
 		return 0;
 
