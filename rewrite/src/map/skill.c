@@ -1955,7 +1955,7 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 
 		if( sc )
 		{
-			if( sc->data[SC_MAGICROD] && src == dsrc)
+			if( sc->data[SC_MAGICROD] && src == dsrc )
 			{
 				int sp = skill_get_sp(skillid,skilllv);
 				dmg.damage = dmg.damage2 = 0;
@@ -2130,11 +2130,15 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,1,WL_TETRAVORTEX_FIRE,skilllv,type);
 		break;
 	case WM_SEVERE_RAINSTORM_MELEE:
-		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,1,WM_SEVERE_RAINSTORM,skilllv,5);
+		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,WM_SEVERE_RAINSTORM,skilllv,5);
 		break;
 	case WM_REVERBERATION_MELEE:
 	case WM_REVERBERATION_MAGIC:
-		dmg.dmotion = clif_skill_damage(src, bl, tick, dmg.amotion, dmg.dmotion, damage, 1, WM_REVERBERATION, -2, 6);
+		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,WM_REVERBERATION,-2,6);
+		break;
+	case LG_OVERBRAND_BRANDISH:
+	case LG_OVERBRAND_PLUSATK:
+		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,skillid,-1,5);
 		break;
 
 	default:
@@ -2274,13 +2278,13 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 		}
 		if( skillid == LG_OVERBRAND )
 		{
-			if( skill_blown(dsrc,bl,dmg.blewcount,direction,0) && !(flag&4) )
+			if( skill_blown(dsrc,bl,dmg.blewcount,direction,0) )
 			{
 				short dir_x, dir_y;
 				dir_x = dirx[(direction+4)%8];
 				dir_y = diry[(direction+4)%8];
 				if( map_getcell(bl->m, bl->x+dir_x, bl->y+dir_y, CELL_CHKNOPASS) != 0 )
-					skill_addtimerskill(src, tick + 300 * ((flag&2) ? 1 : 2), bl->id, 0, 0, skillid, skilllv, BF_WEAPON, flag|4);	
+					skill_addtimerskill(src, tick + 600, bl->id, 0, 0, LG_OVERBRAND_PLUSATK, skilllv, BF_WEAPON, flag );	
 			}
 		}
 		else
@@ -2863,7 +2867,8 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 						}
 					}
 					break;
-				case LG_OVERBRAND:
+				case LG_OVERBRAND_BRANDISH:
+				case LG_OVERBRAND_PLUSATK:
 					skill_attack(BF_WEAPON, src, src, target, skl->skill_id, skl->skill_lv, tick, skl->flag|SD_LEVEL);
 					break;
 				case GN_SPORE_EXPLOSION:
@@ -4069,10 +4074,11 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		break;
 
 	case LG_OVERBRAND:
-		if( flag&1 )
-			skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv, tick, flag|SD_LEVEL);
-		else
-			skill_addtimerskill(src, tick + 300, bl->id, 0, 0, skillid, skilllv, BF_WEAPON, flag|SD_LEVEL|2);
+		skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv, tick, flag|SD_LEVEL);
+		break;
+
+	case LG_OVERBRAND_BRANDISH:
+		skill_addtimerskill(src, tick + 300, bl->id, 0, 0, skillid, skilllv, BF_WEAPON, flag|SD_LEVEL);
 		break;
 
 	case WM_LULLABY_DEEPSLEEP:
@@ -9113,7 +9119,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 				{
 					x1_2 = x1_1 + (ax * c) + (bx * l);
 					y1_2 = y1_1 + (ay * c) + (by * l);
-					map_foreachincell(skill_area_sub, src->m, x1_2, y1_2, BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY|1,skill_castend_damage_id);	
+					map_foreachincell(skill_area_sub, src->m, x1_2, y1_2, BL_CHAR, src, LG_OVERBRAND_BRANDISH, skilllv, tick, flag|BCT_ENEMY,skill_castend_damage_id);	
 				}
 			}
 			// Second area.
@@ -9123,7 +9129,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 				{
 					x2_2 = x2_1 + (ax * c) + (bx * l);
 					y2_2 = y2_1 + (ay * c) + (by * l);
-					map_foreachincell(skill_area_sub, src->m, x2_2, y2_2, BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY|2,skill_castend_damage_id);
+					map_foreachincell(skill_area_sub, src->m, x2_2, y2_2, BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY,skill_castend_damage_id);
 				}
 			}
 		}
