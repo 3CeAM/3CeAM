@@ -5486,10 +5486,35 @@ static int pc_setstat(struct map_session_data* sd, int type, int val)
 	return val;
 }
 
-/// Returns the number of stat points needed to raise the specified stat by 1.
+/*======================================================
+ * Returns the number of stat points needed to raise
+ * the specified stat by 1.
+ * Old formula : (1 + (pc_getstat(sd,type) + 9) / 10)
+ * Renewal formula : (2 + (stat - 1) / 10)
+ * Stat required list:
+ *	  1 ~  10 ->  2
+ *	 11 ~  20 ->  3
+ *	 21 ~  30 ->  4
+ *	 31 ~  40 ->  5
+ *	 41 ~  50 ->  6
+ *	 51 ~  60 ->  7
+ *	 61 ~  70 ->  8
+ *	 71 ~  80 ->  9
+ *	 81 ~  90 -> 10
+ *	 91 ~  99 -> 11
+ *	100 ~ 104 -> 16
+ *	105 ~ 109 -> 20
+ *	110 ~ 114 -> 24
+ *	115 ~ 119 -> 28 
+------------------------------------------------------*/
 int pc_need_status_point(struct map_session_data* sd, int type)
 {
-	return ( 1 + (pc_getstat(sd,type) + 9) / 10 );
+	int stat = pc_getstat(sd, type);
+
+	if( stat >= pc_maxparameter(sd) )
+		return 0;
+
+	return (stat < 100) ? (2 + (stat - 1) / 10) : (16 + 4 * ((stat - 100) / 5));
 }
 
 /// Raises a stat by 1.
