@@ -5198,24 +5198,6 @@ int clif_skill_produce_mix_list(struct map_session_data *sd, int skill_num, int 
 	return 0;
 }
 
-void clif_cooking_fail(struct map_session_data *sd, int skill_id, int val, int list_type, int fails)
-{
-#if PACKETVER >= 20090922
-	int fd;
-
-	nullpo_retv(sd);
-
-	fd = sd->fd;
-	WFIFOHEAD(fd, packet_len(0x7e6));
-	WFIFOW(fd,0) = 0x7e6;
-	WFIFOW(fd,2) = skill_id;
-	WFIFOB(fd,4) = val;
-	WFIFOW(fd,5) = list_type;
-	WFIFOB(fd,7) = (fails) ? 1 : 0;
-	WFIFOSET(fd, packet_len(0x7e6));
-#endif
-
-}
 /*==========================================
  *
  *------------------------------------------*/
@@ -5258,7 +5240,7 @@ void clif_cooking_list(struct map_session_data *sd, int trigger, int skill_id, i
 		sd->menuskill_val = trigger;
 		if( skill_id != AM_PHARMACY )
 		{
-			sd->menuskill_itemused = 1; // amount.
+			sd->menuskill_itemused = qty; // amount.
 			WFIFOW(fd,2) = 6 + 2*c;
 			WFIFOSET(fd,WFIFOW(fd,2));
 		}
@@ -5267,7 +5249,19 @@ void clif_cooking_list(struct map_session_data *sd, int trigger, int skill_id, i
 	{
 		sd->menuskill_id = sd->menuskill_val = sd->menuskill_itemused = 0;
 		if( skill_id != AM_PHARMACY ) // AM_PHARMACY is used to Cooking.
-			clif_cooking_fail(sd,skill_id,0x25,list_type,0);
+		{	// It fails.
+#if PACKETVER >= 20090922
+			WFIFOW(fd,0) = 0x7e6;
+			WFIFOW(fd,2) = skill_id;
+			WFIFOB(fd,4) = 0x25;
+			WFIFOW(fd,5) = list_type;
+			WFIFOB(fd,7) = 0;
+			WFIFOSET(fd, packet_len(0x7e6));
+#else
+			WFIFOW(fd,2) = 6 + 2*c;
+			WFIFOSET(fd,WFIFOW(fd,2));
+#endif
+		}
 	}
 }
 

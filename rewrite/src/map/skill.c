@@ -7987,8 +7987,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		if( sd )
 		{
 			sd->menuskill_id = skillid;
-			sd->menuskill_itemused = skilllv;
-			clif_cooking_list(sd,27,skillid,(skilllv==2)?10:1,6);
+			sd->menuskill_itemused = (skilllv == 2) ? 10 : 1;
+			clif_cooking_list(sd,27,skillid,sd->menuskill_itemused,6);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
 		break;
@@ -7997,8 +7997,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		if( sd )
 		{
 			sd->menuskill_id = skillid;
-			sd->menuskill_val = skilllv;
-			clif_cooking_list(sd,28,skillid,(skilllv==2)?10:1,5);
+			sd->menuskill_val = (skilllv==2)?10:1;
+			clif_cooking_list(sd,28,skillid,sd->menuskill_itemused,5);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
 		break;
@@ -8006,8 +8006,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case GN_S_PHARMACY:
 		if( sd )
 		{
-			sd->menuskill_itemused = skilllv;
-			clif_cooking_list(sd,skillid,29,1,6);
+			sd->menuskill_itemused = 1;
+			clif_cooking_list(sd,skillid,29,sd->menuskill_itemused,6);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
 		break;
@@ -10582,7 +10582,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			sg->limit = DIFF_TICK(gettick(),sg->tick) + 1500;
 			sg->val1 = 0;
 			clif_changetraplook(&src->bl,UNT_USED_TRAPS);
-			skill_castend_damage_id(ss,&sg->unit->bl, sg->skill_id, sg->skill_lv, tick, SD_LEVEL|BCT_ENEMY);
+			skill_castend_damage_id(ss, bl, sg->skill_id, sg->skill_lv, tick, SD_LEVEL|BCT_ENEMY);
 			sg->unit_id = UNT_USED_TRAPS;
 			break;
 
@@ -14329,8 +14329,6 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 
 	if( qty < 1 )
 		qty = 1;
-	if( skill_id == GN_MIX_COOKING || skill_id == GN_MAKEBOMB )
-		qty = (qty == 2) ? 10 : 1; // At level 2 produces 10 items at a time and consume every required items to each item produced.
 
 	temp_qty = qty;
 
