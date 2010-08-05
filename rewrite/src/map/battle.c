@@ -546,36 +546,37 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 		if( sc->data[SC_ASSUMPTIO] )
 		{
 			if( map_flag_vs(bl->m) )
-				damage = damage*2/3; //Receive 66% damage
+				damage = damage * 2 / 3; //Receive 66% damage
 			else
 				damage >>= 1; //Receive 50% damage
 		}
 
-		if(sc->data[SC_DEFENDER] &&
-			(flag&(BF_LONG|BF_WEAPON)) == (BF_LONG|BF_WEAPON))
-			damage=damage*(100-sc->data[SC_DEFENDER]->val2)/100;
+		if( sc->data[SC_DEFENDER] && (flag&(BF_LONG|BF_WEAPON)) == (BF_LONG|BF_WEAPON) )
+			damage = damage * (100 - sc->data[SC_DEFENDER]->val2) / 100;
 
-		if(sc->data[SC_ADJUSTMENT] &&
-			(flag&(BF_LONG|BF_WEAPON)) == (BF_LONG|BF_WEAPON))
-			damage -= 20*damage/100;
+		if( sc->data[SC_ADJUSTMENT] && (flag&(BF_LONG|BF_WEAPON)) == (BF_LONG|BF_WEAPON) )
+			damage -= 20 * damage / 100;
 
-		if(sc->data[SC_FOGWALL]) {
-			if(flag&BF_SKILL) //25% reduction
-				damage -= 25*damage/100;
-			else if ((flag&(BF_LONG|BF_WEAPON)) == (BF_LONG|BF_WEAPON))
+		if( sc->data[SC_FOGWALL] )
+		{
+			if( flag&BF_SKILL ) //25% reduction
+				damage -= 25 * damage / 100;
+			else if( (flag&(BF_LONG|BF_WEAPON)) == (BF_LONG|BF_WEAPON) )
 				damage >>= 2; //75% reduction
 		}
 
 		// Compressed code, fixed by map.h [Epoque]
-		if (src->type == BL_MOB) {
+		if( src->type == BL_MOB )
+		{
 			int i;
-			if (sc->data[SC_MANU_DEF])
-				for (i=0;ARRAYLENGTH(mob_manuk)>i;i++)
-					if (mob_manuk[i]==((TBL_MOB*)src)->class_) {
-						damage -= sc->data[SC_MANU_DEF]->val1*damage/100;
+			if( sc->data[SC_MANU_DEF] )
+				for( i = 0; ARRAYLENGTH(mob_manuk) > i; i++ )
+					if( mob_manuk[i] == ((TBL_MOB*)src)->class_ )
+					{
+						damage -= sc->data[SC_MANU_DEF]->val1 * damage / 100;
 						break;
 					}
-			if (sc->data[SC_SPL_DEF])
+			if( sc->data[SC_SPL_DEF] )
 				for (i=0;ARRAYLENGTH(mob_splendide)>i;i++)
 					if (mob_splendide[i]==((TBL_MOB*)src)->class_) {
 						damage -= sc->data[SC_SPL_DEF]->val1*damage/100;
@@ -1288,6 +1289,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 	}
 	else if( s_ele == -2 ) //Use enchantment's element
 		s_ele = s_ele_ = status_get_attack_sc_element(src,sc);
+	else if( s_ele == -3 ) //Use random element
+		s_ele = s_ele_ = rand()%ELE_MAX;
 	switch( skill_num )
 	{
 		case GS_GROUNDDRIFT:
@@ -1768,7 +1771,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 						skillratio += 100; //Max damage for non players.
 					break;
 				case NPC_RANDOMATTACK:
-					skillratio += rand()%150-50;
+					skillratio += 100 * skill_lv;
 					break;
 				case NPC_WATERATTACK:
 				case NPC_GROUNDATTACK:
@@ -2180,15 +2183,15 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				case GN_CART_TORNADO:
 					skillratio += 50 * skill_lv;
 					if( sd )
-						skillratio += pc_checkskill(sd, GN_REMODELING_CART) * 60;	// Need official value. [LimitLine]
+						skillratio += pc_checkskill(sd, GN_REMODELING_CART) * 60;
 					break;
 				case GN_CARTCANNON:
-					skillratio += 250 + 50 * skill_lv + status_get_int(src) * 2;	// Need official value. [LimitLine]
+					skillratio += 200 + (25 * skill_lv-1);
 					if( sd )
-						skillratio += pc_checkskill(sd, GN_REMODELING_CART) * 60;	// Need official value. [LimitLine]
+						skillratio += pc_checkskill(sd, GN_REMODELING_CART);
 					break;
 				case GN_THORNS_TRAP:
-					skillratio += 10 * skill_lv;	// Taken from pakpil's version. Where did he get this from? [LimitLine]
+					skillratio += 10 * skill_lv;
 					break;
 				case GN_CRAZYWEED_ATK:
 					skillratio += 400 + 100 * skill_lv;
@@ -2819,6 +2822,8 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 			s_ele = sstatus->rhw.ele;
 		else if( s_ele == -2 )
 			s_ele = status_get_attack_sc_element(src,status_get_sc(src));
+		else if( s_ele == -3 ) //Use random element
+			s_ele = rand()%ELE_MAX;
 	}
 
 	ad.div_=skill_get_num(skill_num,skill_lv);
@@ -3012,7 +3017,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							struct status_change *tsc = status_get_sc(target);
 							skillratio += 300 + 100 * skill_lv;
 							if( tsc && tsc->data[SC_WHITEIMPRISON] )
-								skillratio *= 2;
+								skillratio <<= 1;
 						}
 						break;
 					case WL_FROSTMISTY:
@@ -3025,11 +3030,12 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							if( tsc && tsc->data[SC_FREEZING] )
 								skillratio = (skillratio + 900 + (300 * skill_lv)) * status_get_lv(src) / 100;
 							else
-								skillratio = (skillratio + 500) * (1 + (status_get_lv(src) / 100));
+								skillratio = (skillratio + 100) * ((1 + ((sd) ? sd->status.job_level : 0)) / 100);
 						}
 						break;
 					case WL_DRAINLIFE:
 						skillratio += 400 + 100 * skill_lv;
+						skillratio = skillratio * sstatus->int_ / 1000; // Revisar.
 						break;
 					case WL_CRIMSONROCK:
 						skillratio += 1200 + 300 * skill_lv;
@@ -3312,8 +3318,10 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 	}
 
 	s_ele = skill_get_ele(skill_num, skill_lv);
-	if (s_ele < 0) //Attack that takes weapon's element for misc attacks? Make it neutral [Skotlex]
+	if (s_ele < 0 && s_ele != -3) //Attack that takes weapon's element for misc attacks? Make it neutral [Skotlex]
 		s_ele = ELE_NEUTRAL;
+	else if (s_ele == -3) //Use random element
+		s_ele = rand()%ELE_MAX;
 
 	//Skill Range Criteria
 	md.flag |= battle_range_type(src, target, skill_num, skill_lv);
@@ -4769,12 +4777,13 @@ static const struct _battle_data {
 	{ "auction_feeperhour",                 &battle_config.auction_feeperhour,              12000,  0,      INT_MAX,        },
 	{ "auction_maximumprice",               &battle_config.auction_maximumprice,            500000000, 0,   MAX_ZENY,       },
 	{ "gm_viewequip_min_lv",                &battle_config.gm_viewequip_min_lv,             0,      0,      99,             },
-	{ "homunculus_auto_vapor",              &battle_config.homunculus_auto_vapor,           0,      0,      1,              },
+	{ "homunculus_auto_vapor",              &battle_config.homunculus_auto_vapor,           1,      0,      1,              },
 	{ "display_status_timers",              &battle_config.display_status_timers,           1,      0,      1,              },
 	{ "skill_add_heal_rate",                &battle_config.skill_add_heal_rate,             7,      0,      INT_MAX,        },
 	{ "eq_single_target_reflectable",       &battle_config.eq_single_target_reflectable,    1,      0,      1,              },
 	{ "invincible.nodamage",                &battle_config.invincible_nodamage,             0,      0,      1,              },
 	{ "mob_slave_keep_target",              &battle_config.mob_slave_keep_target,           0,      0,      1,              },
+	{ "autospell_check_range",              &battle_config.autospell_check_range,           0,      0,      1,              },
 // BattleGround Settings
 	{ "bg_update_interval",                 &battle_config.bg_update_interval,              1000,   100,    INT_MAX,        },
 	{ "bg_short_attack_damage_rate",        &battle_config.bg_short_damage_rate,            80,     0,      INT_MAX,        },

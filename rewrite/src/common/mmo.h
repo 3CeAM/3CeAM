@@ -21,7 +21,7 @@
 // 20070821 - 2007-08-21aSakexe+   - 0x2c5
 // 20070918 - 2007-09-18aSakexe+   - 0x2d7, 0x2d9, 0x2da
 // 20071106 - 2007-11-06aSakexe+   - 0x78, 0x7c, 0x22c
-// 20080102 - 2008-01-02aSakexe+   - 0x2ed, 0x2ee
+// 20080102 - 2008-01-02aSakexe+   - 0x2ec, 0x2ed , 0x2ee
 // 20081126 - 2008-11-26aSakexe+   - 0x1a2, 0x441
 // 20081210 - 2008-12-10aSakexe+   - 0x442
 // 20090408 - 2009-04-08aSakexe+   - 0x44a (dont use as it overlaps with RE client packets)
@@ -35,12 +35,17 @@
 // 20091103 - 2009-11-03aRagexeRE+ - 0x7f7, 0x7f8, 0x7f9, 0x7fb
 // 20091110 - 2009-11-10aRagexeRE+ - 0x7f6
 // 20100105 - 2010-01-05aRagexeRE+ - 0x133, 0x800, 0x801
+// 20100126 - 2010-01-26aRagexeRE+ - 0x80e
 // 20100217 - 2010-02-17aRagexeRE+ - 0xf4 -> 0x1c4 (guildsotrage)
 // 20100223 - 2010-02-23aRagexeRE+ - 0x80f
-// 20100414 - 2010-04-14aRagexeRE+ - 0x6b (Note: Add support to the new char slots managment.)
+// 20100413 - 2010-04-13aRagexeRE+ - 0x6b (Note: Add support to the new char slots managment.)
+// 20100629 - 2010-06-29aRagexeRE+ - 0x2d0, 0xaa, 0x2d1, 0x2d2
+// 20100721 - 2010-07-21aRagexeRE+ - 0x6b, 0x6d
+// 20100727 - 2010-07-27aRagexeRE+ - 0x6b, 0x6d
+
 #ifndef PACKETVER
 	//#define PACKETVER	20081126
-	#define PACKETVER 20100518
+	#define PACKETVER 20100629
 #endif
 // backward compatible PACKETVER 8 and 9
 #if PACKETVER == 8
@@ -176,8 +181,8 @@
 
 //Mercenary System
 #define MC_SKILLBASE 8201
-#define MAX_MERCSKILL 37
-#define MAX_MERCENARY_CLASS 36
+#define MAX_MERCSKILL 40
+#define MAX_MERCENARY_CLASS 38
 
 enum item_types {
 	IT_HEALING = 0,				//IT_HEAL				= 0x00
