@@ -1007,6 +1007,7 @@ From here on, we will have the commands sorted as follow:
 5.- Mob / NPC -related commands.
 6.- Other commands.
 7.- Instance Commands.
+8.- Quest Log Commands.
 
 =====================
 |1.- Basic commands.|
@@ -1124,6 +1125,7 @@ of 'end' stops this, and ends the script.
 ---------------------------------------
 
 *set <variable>,<expression>;
+*set(<variable>,<expression>)
 
 This command will set a variable to the value that the expression results in. 
 This is the only way to set a variable directly.
@@ -2240,7 +2242,7 @@ Example:
 
 ---------------------------------------
 
-*getpartyleader(<party id>{,<type>});
+*getpartyleader(<party id>{,<type>})
 
 This function returns some information about the given party-id's leader.
 When type is ommitted, the default information retrieved is the leader's name.
@@ -2584,6 +2586,11 @@ and return the number of slots this kind of items has - 0 if they are not
 slotted. It will also be 0 for all non-equippable items, naturally, unless 
 someone messed up the item database. It will return -1 if there is no such item.
 
+Example(s):
+
+//@slots now has the amount of slots of the item with ID 1205.
+	set @slots, getItemSlots(1205);
+
 ---------------------------------------
 
 *getiteminfo(<item ID>,<type>)
@@ -2598,13 +2605,13 @@ Valid types are:
 		if = 0, then monsters don't drop it at all (rare or a quest item)
 		if = 10000, then this item is sold in NPC shops only
 	4 - sex; 5 - equip; 6 - weight; 7 - atk; 8 - def; 9 - range;
-	10 - slot; 11 - look; 12 - elv; 13 - wlv; 14 - view id;
+	10 - slot; 11 - look; 12 - elv; 13 - wlv; 14 - view id
 
 Check sample in nps\sample\getiteminfo.txt
 
 ---------------------------------------
 
-*getequipcardid (<equipment slot>,<card slot>);
+*getequipcardid(<equipment slot>,<card slot>)
 
 Returns value from equipped item slot in the indicated slot:
 
@@ -2618,18 +2625,7 @@ This func returns CARD ID, 255,254,-255 (for card 0, if the item is produced) it
 when you want to check item cards or if it's signed. Useful for such quests as 
 "Sign this refined item with players name" etc;
 	Hat[0] +4 -> Player's Hat[0] +4
-	
----------------------------------------
 
-*getitemslots (<item id>);
-
-Returns the amount of slots the item has.
-
-Example(s):
-
-//@slots now has the amount of slots of the item with ID 1205.
-	set @slots, getItemSlots(1205);
-	
 ---------------------------------------
 //
 2,1.- End of item-related commands.
@@ -2917,7 +2913,7 @@ the specified event as in a 'doevent' call.
 
 ---------------------------------------
 
-*getmapguildusers <mapname>,<guild id>;
+*getmapguildusers(<mapname>,<guild id>)
 
 Returns the amount of persons from the given guild that are on the given map.
 Example(s):
@@ -2925,7 +2921,7 @@ Example(s):
 //Will set the @persons variable to the amount of persons from the guild
 //which ID's = 10 and are at prontera.
 
-	set @persons,getMapGuildUsers "prontera",10;
+	set @persons,getMapGuildUsers("prontera",10);
 
 ---------------------------------------
 //
@@ -4561,7 +4557,7 @@ character.
 
 ---------------------------------------
 
-*specialeffect <effect number>{,<send_target>};
+*specialeffect <effect number>{,<send_target>}{,"<NPC Name>"};
 
 This command will display special effect with the given number, centered on the 
 specified NPCs coordinates, if any. For a full list of special effect numbers 
@@ -4569,12 +4565,30 @@ known see 'doc/effect_list.txt'. Some effect numbers are known not to work in
 some client releases. (Notably, rain is absent from any client executables 
 released after April 2005.)
 
+<NPC name> parameter will display <effect number> on another NPC. If the NPC
+specified does not exist, the command will do nothing. When specifying an NPC,
+<send_target> must be specified when specifying an <NPC Name>, specifying AREA 
+will retain the default behavior of the command.
+
+	// this will make the NPC "John Doe#1"
+	// show the effect "EF_HIT1" specified by
+	// Jane Doe. I wonder what John did...
+	mes "[Jane Doe]";
+	mes "Well, I never!";
+	specialeffect EF_HIT1,AREA,"John Doe#1";
+	close;
+
 ---------------------------------------
 
-*specialeffect2 <effect number>{,<send_target>};
+*specialeffect2 <effect number>{,<send_target>}{,"<Player Name>"};
 
 This command behaves identically to the 'specialeffect', but the effect will be 
 centered on the invoking character's sprite.
+
+<Player name> parameter will display <effect number> on another Player than the
+one currently attached to the script. Like with specialeffect, when specifying
+a player, <send_target> must be supplied, specifying AREA will retain the default 
+behavior of the command.
 
 ---------------------------------------
 
@@ -6273,20 +6287,20 @@ Example 1:
 
 *setiteminfo(<item id>,<type>,<value>)
 
-This function will set some value of an item. 
-Returns the new value on success, or -1 on fail (item_id not found or invalid type). 
+This function will set some value of an item.
+Returns the new value on success, or -1 on fail (item_id not found or invalid type).
 
-Valid types are: 
-	0 - Buy Price; 1 - Sell Price; 2 - Item Type; 
-	3 - maxchance (Max drop chance of this item e.g. 1 = 0.01% , etc.. 
-		if = 0, then monsters don't drop it at all (rare or a quest item) 
-		if = 10000, then this item is sold in NPC shops only 
-	4 - sex; 5 - equip; 6 - weight; 7 - atk; 8 - def; 9 - range; 
-	10 - slot; 11 - look; 12 - elv; 13 - wlv; 14 - view id 
- 
-Example: 
+Valid types are:
+	0 - Buy Price; 1 - Sell Price; 2 - Item Type;
+	3 - maxchance (Max drop chance of this item e.g. 1 = 0.01% , etc..
+		if = 0, then monsters don't drop it at all (rare or a quest item)
+		if = 10000, then this item is sold in NPC shops only
+	4 - sex; 5 - equip; 6 - weight; 7 - atk; 8 - def; 9 - range;
+	10 - slot; 11 - look; 12 - elv; 13 - wlv; 14 - view id
 
-setiteminfo 7049,6,999; // Stone now weighs 999 
+Example:
+
+setiteminfo 7049,6,999; // Stone now weighs 999
 
 ---------------------------------------
 
@@ -6537,7 +6551,8 @@ Example:
 
 Creates an invisible wall, an array of "setcell" starting from x,y and doing a
 line of the given size in the given direction. The difference with setcell is
-this one update client part too to avoid the glith problem.
+this one update client part too to avoid the glith problem. Directions are the 
+same as NPC sprite facing directions: 0=north, 1=northwest, 2=west, etc.
 
 ---------------------------------------
 

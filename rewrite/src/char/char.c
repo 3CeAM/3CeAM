@@ -790,7 +790,7 @@ int mmo_char_fromstr(char *str, struct mmo_charstatus *p, struct global_reg *reg
 			p->inventory[i].refine = tmp_int[5];
 			p->inventory[i].attribute = tmp_int[6];
 
-			for(j = 0; j < MAX_SLOTS && tmp_str[0] && sscanf(tmp_str[0], ",%d%[0-9,-]",&tmp_int[0], tmp_str[0]) > 0; j++)
+			for(j = 0; j < MAX_SLOTS && tmp_str[0][0] && sscanf(tmp_str[0], ",%d%[0-9,-]",&tmp_int[0], tmp_str[0]) > 0; j++)
 				p->inventory[i].card[j] = tmp_int[0];
 
 			next += len;
@@ -814,7 +814,7 @@ int mmo_char_fromstr(char *str, struct mmo_charstatus *p, struct global_reg *reg
 			p->cart[i].refine = tmp_int[5];
 			p->cart[i].attribute = tmp_int[6];
 			
-			for(j = 0; j < MAX_SLOTS && tmp_str && sscanf(tmp_str[0], ",%d%[0-9,-]",&tmp_int[0], tmp_str[0]) > 0; j++)
+			for(j = 0; j < MAX_SLOTS && tmp_str[0][0] && sscanf(tmp_str[0], ",%d%[0-9,-]",&tmp_int[0], tmp_str[0]) > 0; j++)
 				p->cart[i].card[j] = tmp_int[0];
 			
 			next += len;
@@ -1789,6 +1789,10 @@ int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p)
 #if PACKETVER >= 20061023
 	WBUFW(buf,106) = ( p->rename > 0 ) ? 0 : 1;
 	offset += 2;
+#endif
+#if PACKETVER >= 20100721
+	mapindex_getmapname_ext(mapindex_id2name(p->last_point.map), (char*)WBUFP(buf,108));
+	offset += 16;
 #endif
 	return 106+offset;
 }

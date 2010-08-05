@@ -4,8 +4,9 @@
 //           if range is < 5, the skill is considered melee-range)
 // 03 hit (8- repeated hitting, 6- single-hit)
 // 04 inf (0- passive, 1- enemy, 2- place, 4- self, 16- friend, 32- trap)
-// 05 element (0- neutral, 1- water, 2- earth, 3- fire, 4- wind, 5- poison,
-//             6- holy, 7- dark, 8- ghost, 9- undead, -1- use weapon element)
+// 05 element (0 - neutral, 1 - water, 2 - earth, 3 - fire, 4 - wind, 5 - poison,
+//             6 - holy, 7 - dark, 8 - ghost, 9 - undead, -1 - use weapon element
+//             -2 - use endowed element, -3 - use random element.)
 // 06 nk (skill damage properties):
 //    0x01 - No damage skill
 //    0x02 - Has splash area
@@ -1280,9 +1281,9 @@
 8235,0,6,4,0,0x1,0,1,1,yes,0,0,0,none,0,	MER_SCAPEGOAT,Scapegoat
 8236,5,6,1,0,0x1,0,10,0,yes,0,0,0,magic,0,	MER_LEXDIVINA,Lex_Divina
 8237,9,6,1,0,0x1,0,1,1,yes,0,0,0,magic,0,	MER_ESTIMATION,Sense
-//8238,0,0,0,0,0,0,10,0,no,0,0,0,none,0,	MER_KYRIE,Kyrie Eleison
-//8239,0,0,0,0,0,0,10,0,no,0,0,0,none,0,	MER_BLESSING,Blessing
-//8240,0,0,0,0,0,0,10,0,no,0,0,0,none,0,	MER_INCAGI,Increase AGI
+8238,9,6,16,0,0x1,0,10,1,yes,0,0,0,magic,0,	MER_KYRIE,Kyrie Eleison
+8239,9,6,16,0,0x1,0,10,1,yes,0,0,0,magic,0,	MER_BLESSING,Blessing
+8240,9,6,16,0,0x1,0,10,1,yes,0,0,0,magic,0,	MER_INCAGI,Increase Agility
 
 // Elemental Spirits Skills
 //8401,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		EL_CIRCLE_OF_FIRE,Circle of Fire

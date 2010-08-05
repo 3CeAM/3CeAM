@@ -11059,7 +11059,14 @@ BUILDIN_FUNC(specialeffect)
 	if(bl==NULL)
 		return 0;
 
-	clif_specialeffect(bl, type, target);
+	if( script_hasdata(st,4) )
+	{
+		TBL_NPC *nd = npc_name2id(script_getstr(st,4));
+		if(nd)
+			clif_specialeffect(&nd->bl, type, target);
+	}
+	else
+		clif_specialeffect(bl, type, target);
 
 	return 0;
 }
@@ -11070,10 +11077,11 @@ BUILDIN_FUNC(specialeffect2)
 	int type = script_getnum(st,2);
 	enum send_target target = script_hasdata(st,3) ? (send_target)script_getnum(st,3) : AREA;
 
-	if(sd==NULL)
-		return 0;
+	if( script_hasdata(st,4) )
+		sd = map_nick2sd(script_getstr(st,4));
 
-	clif_specialeffect(&sd->bl, type, target);
+	if (sd)
+		clif_specialeffect(&sd->bl, type, target);
 
 	return 0;
 }
