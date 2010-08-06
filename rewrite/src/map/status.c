@@ -5243,7 +5243,7 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 		break;
 	case SC_SLEEP:
 	case SC_DEEPSLEEP:
-		tick_def = status->int_ / 10; // Seems to be -1 sec every 10 int and -5% chance every 10 int.
+		tick_def = status->int_ / 10 + status_get_lv(bl) * 65 / 1000; // Seems to be -1 sec every 10 int and -5% chance every 10 int.
 		sc_def = 5 * status->int_ /10;
 		break;
 	case SC_DECREASEAGI:
@@ -7098,10 +7098,10 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val2 = 25 + 10 * val1;
 			if( sd )
 			{
-				val2 += pc_checkskill(sd, SA_FLAMELAUNCHER);
-				val2 += pc_checkskill(sd, SA_FROSTWEAPON);
-				val2 += pc_checkskill(sd, SA_LIGHTNINGLOADER);
-				val2 += pc_checkskill(sd, SA_SEISMICWEAPON);
+				val2 += pc_checkskill(sd, SA_FLAMELAUNCHER) * 5;
+				val2 += pc_checkskill(sd, SA_FROSTWEAPON) * 5;
+				val2 += pc_checkskill(sd, SA_LIGHTNINGLOADER) * 5;
+				val2 += pc_checkskill(sd, SA_SEISMICWEAPON) * 5;
 			}
 			val4 = tick / 1000;
 			tick = 1000;
