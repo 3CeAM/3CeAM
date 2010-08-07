@@ -488,6 +488,7 @@ extern struct Battle_Config
 
 	int warg_can_falcon;
 	int renewal_edp;
+	int use_renewal_statpoints;
 
 	// Casting Time Renewal Settings
 	int renewal_cast_enable;
