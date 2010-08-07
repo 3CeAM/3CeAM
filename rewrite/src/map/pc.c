@@ -5514,7 +5514,10 @@ int pc_need_status_point(struct map_session_data* sd, int type)
 	if( stat >= pc_maxparameter(sd) )
 		return 0;
 
-	return (stat < 100) ? (2 + (stat - 1) / 10) : (16 + 4 * ((stat - 100) / 5));
+	if( battle_config.use_renewal_statpoints )
+		return (1 + (stat + 9) / 10); // Old mechanic
+	else
+		return (stat < 100) ? (2 + (stat - 1) / 10) : (16 + 4 * ((stat - 100) / 5)); // Renewal machanic.
 }
 
 /// Raises a stat by 1.
@@ -8824,7 +8827,10 @@ int pc_readdb(void)
 	memset(statp,0,sizeof(statp));
 	i=1;
 	stat = 45;	// base points
-	sprintf(line, "%s/statpoint.txt", db_path);
+	if( battle_config.use_renewal_statpoints )
+		sprintf(line, "%s/statpoint_renewal.txt", db_path); // Renewal mechanic
+	else
+		sprintf(line, "%s/statpoint.txt", db_path); // Old mechanic.
 	fp=fopen(line,"r");
 	if(fp == NULL){
 		ShowStatus("Can't read '"CL_WHITE"%s"CL_RESET"'... Generating DB.\n",line);
