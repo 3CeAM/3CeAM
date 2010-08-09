@@ -15542,20 +15542,6 @@ void skill_init_nounit_layout (void)
 
 	memset(skill_nounit_layout,0,sizeof(skill_nounit_layout));
 
-	// standard square layouts go first
-	for( i = 0; i <= MAX_SQUARE_LAYOUT; i++ )
-	{
-		size = i * 2 + 1;
-		skill_nounit_layout[i].count = size * size;
-		for( j = 0; j < size * size; j++ )
-		{
-			skill_nounit_layout[i].dx[j] = (j%size-i);
-			skill_nounit_layout[i].dy[j] = (j/size-i);
-		}
-	}
-
-	pos = i;
-
 	windcutter_nounit_pos = pos;
 	for( i = 0; i < 8; i++ )
 	{
