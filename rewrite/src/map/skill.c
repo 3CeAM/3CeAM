@@ -70,6 +70,9 @@ int firewall_unit_pos;
 int icewall_unit_pos;
 int earthstrain_unit_pos;
 
+struct s_skill_nounit_layout skill_nounit_layout[MAX_SKILL_UNIT_LAYOUT];
+int windcutter_nounit_pos;
+
 //Since only mob-casted splash skills can hit ice-walls
 #define splash_target(bl) (bl->type==BL_MOB?BL_SKILL|BL_CHAR:BL_CHAR)
 
@@ -541,6 +544,15 @@ struct s_skill_unit_layout* skill_get_unit_layout (int skillid, int skilllv, str
 
 	ShowError("skill_get_unit_layout: unknown unit layout for skill %d (level %d)\n", skillid, skilllv);
 	return &skill_unit_layout[0]; // default 1x1 layout
+}
+
+struct s_skill_nounit_layout* skill_get_nounit_layout (int skillid, int skilllv, struct block_list* src, int x, int y, int dir)
+{
+	if( skillid == RK_WINDCUTTER )
+		return &skill_nounit_layout[windcutter_nounit_pos + dir];
+
+	ShowError("skill_get_nounit_layout: unknown no-unit layout for skill %d (level %d)\n", skillid, skilllv);
+	return &skill_nounit_layout[0];
 }
 
 /*==========================================
@@ -8968,7 +8980,15 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		break;
 
 	case RK_WINDCUTTER:
-		clif_skill_damage(src,src,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
+		{
+			int dir = map_calc_dir(src, x, y);
+			struct s_skill_nounit_layout *layout = skill_get_nounit_layout(skillid,skilllv,src,x,y,dir);
+			clif_skill_damage(src,src,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
+			for( i = 0; i < layout->count; i++ )
+				map_foreachincell(skill_area_sub, src->m, x+layout->dx[i], y+layout->dy[i], BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY,skill_castend_damage_id);
+		}
+		break;
+
 	case NC_COLDSLOWER:
 	case NC_ARMSCANNON:
 	case RK_DRAGONBREATH:
@@ -15515,6 +15535,68 @@ void skill_init_unit_layout (void)
 	}
 }
 
+
+void skill_init_nounit_layout (void)
+{
+	int i, j, size, pos = 0;
+
+	memset(skill_nounit_layout,0,sizeof(skill_nounit_layout));
+
+	// standard square layouts go first
+	for( i = 0; i <= MAX_SQUARE_LAYOUT; i++ )
+	{
+		size = i * 2 + 1;
+		skill_nounit_layout[i].count = size * size;
+		for( j = 0; j < size * size; j++ )
+		{
+			skill_nounit_layout[i].dx[j] = (j%size-i);
+			skill_nounit_layout[i].dy[j] = (j/size-i);
+		}
+	}
+
+	pos = i;
+
+	windcutter_nounit_pos = pos;
+	for( i = 0; i < 8; i++ )
+	{
+		if( i&1 )
+		{
+			skill_nounit_layout[pos].count = 13;
+			if( i&0x2 )
+			{
+				int dx[] = {-2,-2,-1,-1,-1, 0, 0, 0, 1, 1, 1, 2, 2};
+				int dy[] = { 2, 1, 2, 1, 0, 1, 0,-1, 0,-1,-2,-1,-2};
+				memcpy(skill_nounit_layout[pos].dx,dx,sizeof(dx));
+				memcpy(skill_nounit_layout[pos].dy,dy,sizeof(dy));
+			}
+			else
+			{
+				int dx[] = { 2, 2, 1, 1, 1, 0, 0, 0,-1,-1,-1,-2,-2};
+				int dy[] = { 2, 1, 2, 1, 0, 1, 0,-1, 0,-1,-2,-1,-2};
+				memcpy(skill_nounit_layout[pos].dx,dx,sizeof(dx));
+				memcpy(skill_nounit_layout[pos].dy,dy,sizeof(dy));
+			}
+		} else {
+			skill_nounit_layout[pos].count = 15;
+			if( i%4 == 0 )
+			{
+				int dx[] = {-2,-2,-2,-1,-1,-1, 0, 0, 0, 1, 1, 1, 2, 2, 2};
+				int dy[] = { 1, 0,-1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1};
+				memcpy(skill_nounit_layout[pos].dx,dx,sizeof(dx));
+				memcpy(skill_nounit_layout[pos].dy,dy,sizeof(dy));
+			}
+			else
+			{
+				int dx[] = {-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1};
+				int dy[] = { 2, 1, 0,-1,-2, 2, 1, 0,-1,-2, 2, 1, 0,-1,-2};
+				memcpy(skill_nounit_layout[pos].dx,dx,sizeof(dx));
+				memcpy(skill_nounit_layout[pos].dy,dy,sizeof(dy));
+			}
+		}
+		pos++;
+	}
+}
+
 // Stasis skill usage check. [LimitLine]
 int skill_stasis_check(struct block_list *bl, int src_id, int skillid)
 {
@@ -15932,6 +16014,7 @@ static void skill_readdb(void)
 	sv_readdb(db_path, "skill_nocast_db.txt"   , ',',   2,  2, MAX_SKILL_DB, skill_parse_row_nocastdb);
 	sv_readdb(db_path, "skill_unit_db.txt"     , ',',   8,  8, MAX_SKILL_DB, skill_parse_row_unitdb);
 	skill_init_unit_layout();
+	skill_init_nounit_layout();
 	sv_readdb(db_path, "produce_db.txt"        , ',',   4,  4+2*MAX_PRODUCE_RESOURCE, MAX_SKILL_PRODUCE_DB, skill_parse_row_producedb);
 	sv_readdb(db_path, "create_arrow_db.txt"   , ',', 1+2,  1+2*MAX_ARROW_RESOURCE, MAX_SKILL_ARROW_DB, skill_parse_row_createarrowdb);
 	sv_readdb(db_path, "abra_db.txt"           , ',',   4,  4, MAX_SKILL_ABRA_DB, skill_parse_row_abradb);

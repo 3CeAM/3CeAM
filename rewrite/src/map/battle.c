@@ -1992,7 +1992,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					break;
 				case RK_SONICWAVE: // Sugested formula from irowiki. 
 					skillratio += 400 + (100 * skill_lv); // Base skillratio.
-					skillratio *= (1 + (s_level-100) / 20); // Bonus by base level.
+					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case RK_HUNDREDSPEAR: // Sugested formula from irowiki.
 					skillratio += 500 + (40 * skill_lv); // Base skillratio.
@@ -2002,13 +2002,13 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					skillratio += 50 * skill_lv; // Base skillratio
 					skillratio *= (1 + (s_level-50) / 20); // Bonus by base level.
 					break;
-				case RK_IGNITIONBREAK: // Sugested formula from irowiki. 
+				case RK_IGNITIONBREAK: // Sugested formula from irowiki.
 					i = distance_bl(src,target) / 2;
-					skillratio += 100 + (200 * skill_lv) - (100 * i); // Base skillratio
-					if( i > 1 ) skillratio -= 100 * (skill_lv - 1); // Less damage at 4 or 5 cells.
-					skillratio *= (1 + (s_level-100) / 20); // Bonus by base level.
-					if( sstatus->rhw.ele == ELE_FIRE )
-						skillratio +=  skillratio / 2;
+					skillratio += ( 100 * skill_lv );
+					if( i < 4 ) skillratio += (100 * skill_lv);
+					if( i < 2 ) skillratio += 100;
+					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( sstatus->rhw.ele == ELE_FIRE )	skillratio +=  skillratio / 2;	// Bonus by fire element endow.
 					break;
 				case RK_DRAGONBREATH: // Sugested formula from irowiki.
 					skillratio *= skill_lv * s_level / 100;
