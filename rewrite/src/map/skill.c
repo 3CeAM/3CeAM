@@ -72,6 +72,8 @@ int earthstrain_unit_pos;
 
 struct s_skill_nounit_layout skill_nounit_layout[MAX_SKILL_UNIT_LAYOUT];
 int windcutter_nounit_pos;
+int overbrand_nounit_pos;
+int overbrand_brandish_nounit_pos;
 
 //Since only mob-casted splash skills can hit ice-walls
 #define splash_target(bl) (bl->type==BL_MOB?BL_SKILL|BL_CHAR:BL_CHAR)
@@ -550,6 +552,11 @@ struct s_skill_nounit_layout* skill_get_nounit_layout (int skillid, int skilllv,
 {
 	if( skillid == RK_WINDCUTTER )
 		return &skill_nounit_layout[windcutter_nounit_pos + dir];
+	else if( skillid == LG_OVERBRAND )
+		return &skill_nounit_layout[overbrand_nounit_pos + dir];
+	else if( skillid == LG_OVERBRAND_BRANDISH )
+		return &skill_nounit_layout[overbrand_brandish_nounit_pos + dir];
+
 
 	ShowError("skill_get_nounit_layout: unknown no-unit layout for skill %d (level %d)\n", skillid, skilllv);
 	return &skill_nounit_layout[0];
@@ -9099,75 +9106,15 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 
 	case LG_OVERBRAND:
 		{
-			int x1_1 = 0, x1_2 = 0, y1_1 = 0, y1_2 = 0; // First area
-			int x2_1 = 0, x2_2 = 0, y2_1 = 0, y2_2 = 0; // Second area
-			short c, l, dir, ax = 0, ay = 0, bx = 0, by = 0; // a = colum, b = line.
-			i = skill_get_splash(skillid,skilllv);
-			dir = map_calc_dir(src, x, y);
-			switch( dir )
-			{
-				case 0:
-					ax = 0; ay = 1; bx = 1; by = 0;
-					x1_1 = src->x - i; y1_1 = src->y;
-					x2_1 = src->x - 1; y2_1 = src->y;
-					break;
-				case 1:
-					ax = -1; ay = 1; bx = 1; by = 1;
-					x1_1 = src->x - i; y1_1 = src->y - i;
-					x2_1 = src->x - 1; y2_1 = src->y - 1;
-					break;
-				case 2:
-					ax = -1; ay = 0; bx = 0; by = 1;
-					x1_1 = src->x; y1_1 = src->y - i;
-					x2_1 = src->x; y2_1 = src->y - 1;
-					break;
-				case 3:
-					ax = -1; ay = -1; bx = -1; by = 1;
-					x1_1 = src->x + i; y1_1 = src->y - i;
-					x2_1 = src->x + 1; y2_1 = src->y - 1;
-					break;
-				case 4:
-					ax = 0; ay = -1; bx = -1; by = 0;
-					x1_1 = src->x + i; y1_1 = src->y;
-					x2_1 = src->x + 1; y2_1 = src->y;
-					break;
-				case 5:
-					ax = 1; ay = -1; bx = -1; by = -1;
-					x1_1 = src->x + i; y1_1 = src->y + i;
-					x2_1 = src->x + 1; y2_1 = src->y + 1;
-					break;
-				case 6:
-					ax = 1; ay = 0; bx = 0; by = -1;
-					x1_1 = src->x; y1_1 = src->y + i;
-					x2_1 = src->x; y2_1 = src->y + 1;
-					break;
-				case 7:
-					ax = 1; ay = 1; bx = 1; by = -1;
-					x1_1 = src->x - i; y1_1 = src->y + i;
-					x2_1 = src->x - 1; y2_1 = src->y + 1;
-					break;
-
-			}
-			// First area
-			for( c = 0; c < 4; c++ )
-			{
-				for( l = 0; l < 11; l++ )
-				{
-					x1_2 = x1_1 + (ax * c) + (bx * l);
-					y1_2 = y1_1 + (ay * c) + (by * l);
-					map_foreachincell(skill_area_sub, src->m, x1_2, y1_2, BL_CHAR, src, LG_OVERBRAND_BRANDISH, skilllv, tick, flag|BCT_ENEMY,skill_castend_damage_id);	
-				}
-			}
-			// Second area.
-			for( c = 0; c < 7; c++ )
-			{
-				for( l = 0; l < 3; l++ )
-				{
-					x2_2 = x2_1 + (ax * c) + (bx * l);
-					y2_2 = y2_1 + (ay * c) + (by * l);
-					map_foreachincell(skill_area_sub, src->m, x2_2, y2_2, BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY,skill_castend_damage_id);
-				}
-			}
+			int dir = map_calc_dir(src, x, y);	
+			struct mob_data *md;
+			int class_;
+			struct s_skill_nounit_layout *layout = skill_get_nounit_layout(skillid,skilllv,src,x,y,dir);
+			for( i = 0; i < layout->count; i++ )
+				map_foreachincell(skill_area_sub, src->m, x+layout->dx[i], y+layout->dy[i], BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY,skill_castend_damage_id);
+			layout = skill_get_nounit_layout(LG_OVERBRAND_BRANDISH,skilllv,src,x,y,dir);
+			for( i = 0; i < layout->count; i++ )
+				map_foreachincell(skill_area_sub, src->m, x+layout->dx[i], y+layout->dy[i], BL_CHAR, src, LG_OVERBRAND_BRANDISH, skilllv, tick, flag|BCT_ENEMY,skill_castend_damage_id);
 		}
 		break;
 
@@ -15538,7 +15485,7 @@ void skill_init_unit_layout (void)
 
 void skill_init_nounit_layout (void)
 {
-	int i, j, size, pos = 0;
+	int i, pos = 0;
 
 	memset(skill_nounit_layout,0,sizeof(skill_nounit_layout));
 
@@ -15577,6 +15524,194 @@ void skill_init_nounit_layout (void)
 				int dy[] = { 2, 1, 0,-1,-2, 2, 1, 0,-1,-2, 2, 1, 0,-1,-2};
 				memcpy(skill_nounit_layout[pos].dx,dx,sizeof(dx));
 				memcpy(skill_nounit_layout[pos].dy,dy,sizeof(dy));
+			}
+		}
+		pos++;
+	}
+
+	overbrand_brandish_nounit_pos = pos;
+	for( i = 0; i < 8; i++ )
+	{
+		if( i&1 )
+		{
+			skill_nounit_layout[pos].count = 74;
+			if( i&2 )
+			{
+				if( i&4 )
+				{	// 7
+					int dx[] = {-2,-1, 0, 1, 2, 3, 4, 5, 6, 7, 8,-2,-1, 0, 1, 2, 3, 4, 5, 6, 7,
+								-3,-2,-1, 0, 1, 2, 3, 4, 5, 6, 7,-3,-2,-1,-0, 1, 2, 3, 4, 5, 6,
+								-4,-3,-2,-1, 0, 1, 2, 3, 4, 5, 6,-4,-3,-2,-1,-0, 1, 2, 3, 4, 5,
+								-5,-4,-3,-2,-1, 0, 1, 2, 3, 4, 5};
+					int dy[] = { 8, 7, 6, 5, 4, 3, 2, 1, 0,-1,-2, 7, 6, 5, 4, 3, 2, 1, 0,-1,-2,
+								 7, 6, 5, 4, 3, 2, 1, 0,-1,-2,-3, 6, 5, 4, 3, 2, 1, 0,-1,-2,-3,
+								 6, 5, 4, 3, 2, 1, 0,-1,-2,-3,-4, 5, 4, 3, 2, 1, 0,-1,-2,-3,-4,
+								 5, 4, 3, 2, 1, 0,-1,-2,-3,-4,-5};
+					memcpy(skill_nounit_layout[pos].dx,dx,sizeof(dx));
+					memcpy(skill_nounit_layout[pos].dy,dy,sizeof(dy));
+				}
+				else
+				{	// 3
+					int dx[] = { 2, 1, 0,-1,-2,-3,-4,-5,-6,-7,-8, 2, 1, 0,-1,-2,-3,-4,-5,-6,-7,
+								 3, 2, 1, 0,-1,-2,-3,-4,-5,-6,-7, 3, 2, 1, 0,-1,-2,-3,-4,-5,-6,
+								 4, 3, 2, 1, 0,-1,-2,-3,-4,-5,-6, 4, 3, 2, 1, 0,-1,-2,-3,-4,-5,
+								 5, 4, 3, 2, 1, 0,-1,-2,-3,-4,-5};
+					int dy[] = {-8,-7,-6,-5,-4,-3,-2,-1, 0, 1, 2,-7,-6,-5,-4,-3,-2,-1, 0, 1, 2,
+								-7,-6,-5,-4,-3,-2,-1, 0, 1, 2, 3,-6,-5,-4,-3,-2,-1, 0, 1, 2, 3,
+								-6,-5,-4,-3,-2,-1, 0, 1, 2, 3, 4,-5,-4,-3,-2,-1, 0, 1, 2, 3, 4,
+								-5,-4,-3,-2,-1, 0, 1, 2, 3, 4, 5};
+					memcpy(skill_nounit_layout[pos].dx,dx,sizeof(dx));
+					memcpy(skill_nounit_layout[pos].dy,dy,sizeof(dy));
+				}
+			}
+			else
+			{
+				if( i&4 )
+				{	// 5
+					int dx[] = { 8, 7, 6, 5, 4, 3, 2, 1, 0,-1,-2, 7, 6, 5, 4, 3, 2, 1, 0,-1,-2,
+								 7, 6, 5, 4, 3, 2, 1, 0,-1,-2,-3, 6, 5, 4, 3, 2, 1, 0,-1,-2,-3,
+								 6, 5, 4, 3, 2, 1, 0,-1,-2,-3,-4, 5, 4, 3, 2, 1, 0,-1,-2,-3,-4,
+								 5, 4, 3, 2, 1, 0,-1,-2,-3,-4,-5};
+					int dy[] = { 2, 1, 0,-1,-2,-3,-4,-5,-6,-7,-8, 2, 1, 0,-1,-2,-3,-4,-5,-6,-7,
+								 3, 2, 1, 0,-1,-2,-3,-4,-5,-6,-7, 3, 2, 1, 0,-1,-2,-3,-4,-5,-6,
+								 4, 3, 2, 1, 0,-1,-2,-3,-4,-5,-6, 4, 3, 2, 1, 0,-1,-2,-3,-4,-5,
+								 5, 4, 3, 2, 1, 0,-1,-2,-3,-4,-5};
+					memcpy(skill_nounit_layout[pos].dx,dx,sizeof(dx));
+					memcpy(skill_nounit_layout[pos].dy,dy,sizeof(dy));
+				}
+				else
+				{	// 1
+					int dx[] = {-8,-7,-6,-5,-4,-3,-2,-1, 0, 1, 2,-7,-6,-5,-4,-3,-2,-1, 0, 1, 2,
+								-7,-6,-5,-4,-3,-2,-1, 0, 1, 2, 3,-6,-5,-4,-3,-2,-1, 0, 1, 2, 3,
+								-6,-5,-4,-3,-2,-1, 0, 1, 2, 3, 4,-5,-4,-3,-2,-1, 0, 1, 2, 3, 4,
+								-5,-4,-3,-2,-1, 0, 1, 2, 3, 4, 5};
+					int dy[] = {-2,-1, 0, 1, 2, 3, 4, 5, 6, 7, 8,-2,-1, 0, 1, 2, 3, 4, 5, 6, 7,
+								-3,-2,-1, 0, 1, 2, 3, 4, 5, 6, 7,-3,-2,-1, 0, 1, 2, 3, 4, 5, 6,
+								-4,-3,-2,-1, 0, 1, 2, 3, 4, 5, 6,-4,-3,-2,-1, 0, 1, 2, 3, 4, 5,
+								-5,-4,-3,-2,-1, 0, 1, 2, 3, 4, 5};
+					memcpy(skill_nounit_layout[pos].dx,dx,sizeof(dx));
+					memcpy(skill_nounit_layout[pos].dy,dy,sizeof(dy));
+				}
+			}
+		}
+		else
+		{
+			skill_nounit_layout[pos].count = 44;
+			if( i&2 )
+			{
+				if( i&4 )
+				{	// 6
+					int dx[] = { 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3};
+					int dy[] = { 5, 5, 5, 5, 4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2, 1, 1, 1, 1, 0, 0, 0, 0,-1,-1,-1,-1,-2,-2,-2,-2,-3,-3,-3,-3,-4,-4,-4,-4,-5,-5,-5,-5};
+					memcpy(skill_nounit_layout[pos].dx,dx,sizeof(dx));
+					memcpy(skill_nounit_layout[pos].dy,dy,sizeof(dy));
+				}
+				else
+				{	// 2
+					int dx[] = {-3,-2,-1, 0,-3,-2,-1, 0,-3,-2,-1, 0,-3,-2,-1, 0,-3,-2,-1, 0,-3,-2,-1, 0,-3,-2,-1, 0,-3,-2,-1, 0,-3,-2,-1, 0,-3,-2,-1, 0,-3,-2,-1, 0};
+					int dy[] = { 5, 5, 5, 5, 4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2, 1, 1, 1, 1, 0, 0, 0, 0,-1,-1,-1,-1,-2,-2,-2,-2,-3,-3,-3,-3,-4,-4,-4,-4,-5,-5,-5,-5};
+					memcpy(skill_nounit_layout[pos].dx,dx,sizeof(dx));
+					memcpy(skill_nounit_layout[pos].dy,dy,sizeof(dy));
+				}
+			}
+			else
+			{
+				if( i&4 )
+				{	// 4
+					int dx[] = { 5, 4, 3, 2, 1, 0,-1,-2,-3,-4,-5, 5, 4, 3, 2, 1, 0,-1,-2,-3,-4,-5, 5, 4, 3, 2, 1, 0,-1,-2,-3,-4,-5, 5, 4, 3, 2, 1, 0,-1,-2,-3,-4,-5};
+					int dy[] = {-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+					memcpy(skill_nounit_layout[pos].dx,dx,sizeof(dx));
+					memcpy(skill_nounit_layout[pos].dy,dy,sizeof(dy));
+				}
+				else
+				{	// 0
+					int dx[] = {-5,-4,-3,-2,-1, 0, 1, 2, 3, 4, 5,-5,-4,-3,-2,-1, 0, 1, 2, 3, 4, 5,-5,-4,-3,-2,-1, 0, 1, 2, 3, 4, 5,-5,-4,-3,-2,-1, 0, 1, 2, 3, 4, 5};
+					int dy[] = { 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+					memcpy(skill_nounit_layout[pos].dx,dx,sizeof(dx));
+					memcpy(skill_nounit_layout[pos].dy,dy,sizeof(dy));
+				}
+			}
+		}
+		pos++;
+	}
+
+	overbrand_nounit_pos = pos;
+	for( i = 0; i < 8; i++ )
+	{
+		if( i&1 )
+		{
+			skill_nounit_layout[pos].count = 33;
+			if( i&2 )
+			{
+				if( i&4 )
+				{	// 7
+					int dx[] = { 5, 6, 7, 5, 6, 4, 5, 6, 4, 5, 3, 4, 5, 3, 4, 2, 3, 4, 2, 3, 1, 2, 3, 1, 2, 0, 1, 2, 0, 1,-1, 0, 1};
+					int dy[] = { 7, 6, 5, 6, 5, 6, 5, 4, 5, 4, 5, 4, 3, 4, 3, 4, 3, 2, 3, 2, 3, 2, 1, 2, 1, 2, 1, 0, 1, 0, 1, 0,-1};
+					memcpy(skill_nounit_layout[pos].dx,dx,sizeof(dx));
+					memcpy(skill_nounit_layout[pos].dy,dy,sizeof(dy));
+				}
+				else
+				{	// 3
+					int dx[] = {-5,-6,-7,-5,-6,-4,-5,-6,-4,-5,-3,-4,-5,-3,-4,-2,-3,-4,-2,-3,-1,-2,-3,-1,-2, 0,-1,-2, 0,-1, 1, 0,-1};
+					int dy[] = {-7,-6,-5,-6,-5,-6,-5,-4,-5,-4,-5,-4,-3,-4,-3,-4,-3,-2,-3,-2,-3,-2,-1,-2,-1,-2,-1, 0,-1, 0,-1, 0, 1};
+					memcpy(skill_nounit_layout[pos].dx,dx,sizeof(dx));
+					memcpy(skill_nounit_layout[pos].dy,dy,sizeof(dy));
+				}
+			}
+			else
+			{
+				if( i&4 )
+				{	// 5
+					int dx[] = { 7, 6, 5, 6, 5, 6, 5, 4, 5, 4, 5, 4, 3, 4, 3, 4, 3, 2, 3, 2, 3, 2, 1, 2, 1, 2, 1, 0, 1, 0, 1, 0,-1};
+					int dy[] = {-5,-6,-7,-5,-6,-4,-5,-6,-4,-5,-3,-4,-5,-3,-4,-2,-3,-4,-2,-3,-1,-2,-3,-1,-2, 0,-1,-2, 0,-1, 1, 0,-1};
+					memcpy(skill_nounit_layout[pos].dx,dx,sizeof(dx));
+					memcpy(skill_nounit_layout[pos].dy,dy,sizeof(dy));
+				}
+				else
+				{	// 1
+					int dx[] = {-7,-6,-5,-6,-5,-6,-5,-4,-5,-4,-5,-4,-3,-4,-3,-4,-3,-2,-3,-2,-3,-2,-1,-2,-1,-2,-1, 0,-1, 0,-1, 0, 1};
+					int dy[] = { 5, 6, 7, 5, 6, 4, 5, 6, 4, 5, 3, 4, 5, 3, 4, 2, 3, 4, 2, 3, 1, 2, 3, 1, 2, 0, 1, 2, 0, 1,-1, 0, 1};
+					memcpy(skill_nounit_layout[pos].dx,dx,sizeof(dx));
+					memcpy(skill_nounit_layout[pos].dy,dy,sizeof(dy));
+				}
+			}
+		}
+		else
+		{
+			skill_nounit_layout[pos].count = 21;
+			if( i&2 )
+			{
+				if( i&4 )
+				{	// 6
+					int dx[] = { 0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6};
+					int dy[] = { 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1};
+					memcpy(skill_nounit_layout[pos].dx,dx,sizeof(dx));
+					memcpy(skill_nounit_layout[pos].dy,dy,sizeof(dy));
+				}
+				else
+				{	// 2
+					int dx[] = {-6,-5,-4,-3,-2,-1, 0,-6,-5,-4,-3,-2,-1, 0,-6,-5,-4,-3,-2,-1, 0};
+					int dy[] = { 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1};
+					memcpy(skill_nounit_layout[pos].dx,dx,sizeof(dx));
+					memcpy(skill_nounit_layout[pos].dy,dy,sizeof(dy));
+				}
+			}
+			else
+			{
+				if( i&4 )
+				{	// 4
+					int dx[] = {-1, 0, 1,-1, 0, 1,-1, 0, 1,-1, 0, 1,-1, 0, 1,-1, 0, 1,-1, 0, 1};
+					int dy[] = { 0, 0, 0,-1,-1,-1,-2,-2,-2,-3,-3,-3,-4,-4,-4,-5,-5,-5,-6,-6,-6};
+					memcpy(skill_nounit_layout[pos].dx,dx,sizeof(dx));
+					memcpy(skill_nounit_layout[pos].dy,dy,sizeof(dy));
+				}
+				else
+				{	// 0
+					int dx[] = {-1, 0, 1,-1, 0, 1,-1, 0, 1,-1, 0, 1,-1, 0, 1,-1, 0, 1,-1, 0, 1};
+					int dy[] = { 6, 6, 6, 5, 5, 5, 4, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1, 1, 0, 0, 0};
+					memcpy(skill_nounit_layout[pos].dx,dx,sizeof(dx));
+					memcpy(skill_nounit_layout[pos].dy,dy,sizeof(dy));
+				}
 			}
 		}
 		pos++;
