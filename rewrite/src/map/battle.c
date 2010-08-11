@@ -1996,7 +1996,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					break;
 				case RK_HUNDREDSPEAR: // Sugested formula from irowiki.
 					skillratio += 500 + (40 * skill_lv); // Base skillratio.
-					skillratio *= (1 + (s_level-100) / 20); // Bonus by base level.
+					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case RK_WINDCUTTER: // Sugested formula from irowiki.
 					skillratio += 50 * skill_lv; // Base skillratio
@@ -2019,9 +2019,10 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				case RK_STORMBLAST:
 					skillratio += sstatus->int_ * (sd ? pc_checkskill(sd,RK_RUNEMASTERY) : 1);
 					break;
-				case RK_PHANTOMTHRUST: // TODO: Check if the damage is increased by Spear Mastery and how much.
+				case RK_PHANTOMTHRUST: // TODO: How much Spear Mastery affects?.
 					skillratio += 20 * (skill_lv - 1);
-					skillratio *= (1 + (s_level-100) / 20); // Bonus by base level. Still need confirm it.
+					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( sd ) skillratio += pc_checkskill(sd, KN_SPEARMASTERY) * 10; // Temporary value.
 					break;
 				case GC_CROSSIMPACT:
 					skillratio += 1050 + 50 * skill_lv;
@@ -3015,7 +3016,8 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					case WL_SOULEXPANSION:
 						{
 							struct status_change *tsc = status_get_sc(target);
-							skillratio += 300 + 100 * skill_lv;
+							skillratio += 300 + 100 * skill_lv + status_get_int(src);	//Revisar
+							skillratio *= status_get_lv(src) / 100;
 							if( tsc && tsc->data[SC_WHITEIMPRISON] )
 								skillratio <<= 1;
 						}
@@ -3063,7 +3065,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							skillratio += 2400 + 500 * skill_lv; // Monsters maybe...
 						break;
 					case WL_CHAINLIGHTNING_ATK:
-						skillratio += 300 + 100 * skill_lv;
+						skillratio += 100 + 300 * skill_lv * status_get_lv(src) / 100;
 						break;
 					case WL_EARTHSTRAIN:
 						skillratio += 1900 + 100 * skill_lv;
@@ -3599,7 +3601,7 @@ int battle_calc_return_damage(struct block_list *src, struct block_list *bl, int
 			if( distance_bl(src,bl) <= 0 || !map_check_dir(dir,t_dir) )
 			{
 				rd1 = min((*damage),max_damage) * sc->data[SC_DEATHBOUND]->val2 / 100; // Amplify damage.
-				(*damage) = rd1 / 2;
+				(*damage) = rd1 * 30 / 100; // Received damge = 30% of amplifly damage.
 				clif_skill_damage(src,bl,gettick(), status_get_amotion(src), 0, -30000, 1, RK_DEATHBOUND, sc->data[SC_DEATHBOUND]->val1,6);
 				status_change_end(bl,SC_DEATHBOUND,-1);
 				rdamage += rd1;
@@ -3897,7 +3899,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 	{
 		
 		if( tsc && tsc->data[SC_DEATHBOUND] && (sstatus->mode&MD_BOSS)  )
-			rdamage = 0;
+			rdamage = 0; // Does not work on boss monsters.
 		else
 			rdamage = battle_calc_return_damage(src, target, &damage, wd.flag);
 

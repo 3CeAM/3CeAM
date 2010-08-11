@@ -893,7 +893,7 @@
 2005,1,6,2,4,0x2,2,5,1,yes,0,0,0,weapon,3,	RK_WINDCUTTER,Wind Cutter
 2006,0,6,4,0,0x2,5,0,0,no,0,0,0,weapon,0,	RK_IGNITIONBREAK,Ignition Break
 2007,0,0,0,0,0,0,5,0,no,0,0,0,weapon,0,		RK_DRAGONTRAINING,Dragon Training
-2008,10,6,2,3,0x8A,1:1:1:2:2:2:3:3:4:4,10,1,no,0,0,0,weapon,0,	RK_DRAGONBREATH,Dragon Breath
+2008,9,6,2,3,0x4A,1:1:1:2:2:2:3:3:4:4,10,1,no,0,0,0,weapon,0,	RK_DRAGONBREATH,Dragon Breath
 2009,0,8,4,0,0x3,3:4:5:6:7,5,0,yes,0,0,0,weapon,0,	RK_DRAGONHOWLING,Dragon Howling
 2010,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		RK_RUNEMASTERY,Rune Mastery
 2011,0,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	RK_MILLENNIUMSHIELD,Millenium Shield
@@ -902,7 +902,7 @@
 2014,9,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	RK_GIANTGROWTH,Giant Growth
 2015,9,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	RK_STONEHARDSKIN,Stone Hard Skin
 2016,9,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	RK_VITALITYACTIVATION,Vitality Activation
-2017,0,6,4,-1,0x2,3,1,1,no,0,0,0,weapon,4,	RK_STORMBLAST,Storm Blast
+2017,0,6,4,-1,0x2,3,1,1,no,0,0,0,weapon,7,	RK_STORMBLAST,Storm Blast
 2018,0,6,4,0,0x3,-1,1,1,yes,0,0,0,magic,0,	RK_FIGHTINGSPIRIT,Fighting Spirit
 2019,9,6,4,6,0x1,0,1,1,yes,0,0,0,magic,0,	RK_ABUNDANCE,Abundance
 2020,5:6:7:8:9,6,1,0,0,0,5,1,yes,0,0,0,weapon,0,	RK_PHANTOMTHRUST,Phantom Thrust
@@ -1071,7 +1071,7 @@
 2314,2,6,1,-1,0,0,1,1,yes,0,0,0,weapon,0,		LG_RAGEBURST,Rage Burst
 2315,0,6,4,0,0x1,3,3,1,yes,0,0,0,none,2,		LG_SHIELDSPELL,Shield Spell
 2316,0,6,4,0,0x1,0,5,1,yes,0,0,0,none,0,		LG_EXEEDBREAK,Exceed Break
-2317,-1,6,2,-1,0x2,5,5,1,yes,0,0,0,none,3:4:5:6:7,		LG_OVERBRAND,Over Brand
+2317,0,6,2,-1,0x2,5,5,1,yes,0,0,0,none,3:4:5:6:7,		LG_OVERBRAND,Over Brand
 2318,0,6,4,0,0x1,0,5,1,yes,0,0,0,none,0,		LG_PRESTIGE,Prestige
 2319,0,6,4,0,0x01,3,5,1,no,0,0,0,weapon,0,		LG_BANDING,Banding
 2320,0,6,4,-1,0x2,3,5,1,yes,0,0,0,weapon,0,		LG_MOONSLASHER,Moon Slasher
