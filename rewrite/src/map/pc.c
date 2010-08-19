@@ -5515,9 +5515,9 @@ int pc_need_status_point(struct map_session_data* sd, int type)
 		return 0;
 
 	if( battle_config.use_renewal_statpoints )
-		return (1 + (stat + 9) / 10); // Old mechanic
-	else
 		return (stat < 100) ? (2 + (stat - 1) / 10) : (16 + 4 * ((stat - 100) / 5)); // Renewal machanic.
+	else
+		return (1 + (stat + 9) / 10); // Old mechanic
 }
 
 /// Raises a stat by 1.
