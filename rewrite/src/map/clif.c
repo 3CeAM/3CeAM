@@ -5290,7 +5290,7 @@ void clif_cooking_list(struct map_session_data *sd, int trigger, int skill_id, i
 	nullpo_retv(sd);
 	fd = sd->fd;
 
-	WFIFOHEAD(fd, 6 + 2*MAX_SKILL_PRODUCE_DB);
+	WFIFOHEAD(fd, 6 + 2 * MAX_SKILL_PRODUCE_DB);
 	WFIFOW(fd,0) = 0x25a;
 	WFIFOW(fd,4) = list_type; // list type
 
@@ -5301,16 +5301,16 @@ void clif_cooking_list(struct map_session_data *sd, int trigger, int skill_id, i
 			continue;
 
 		if( (view = itemdb_viewid(skill_produce_db[i].nameid)) > 0 )
-			WFIFOW(fd, 6+2*c) = view;
+			WFIFOW(fd, 6 + 2 * c) = view;
 		else
-			WFIFOW(fd, 6+2*c) = skill_produce_db[i].nameid;
+			WFIFOW(fd, 6 + 2 * c) = skill_produce_db[i].nameid;
 
 		c++;
 	}
 
 	if( skill_id == AM_PHARMACY )
 	{	// Only send it while Cooking else check for c.
-		WFIFOW(fd,2) = 6 + 2*c;
+		WFIFOW(fd,2) = 6 + 2 * c;
 		WFIFOSET(fd,WFIFOW(fd,2));
 	}
 
@@ -5321,7 +5321,7 @@ void clif_cooking_list(struct map_session_data *sd, int trigger, int skill_id, i
 		if( skill_id != AM_PHARMACY )
 		{
 			sd->menuskill_itemused = qty; // amount.
-			WFIFOW(fd,2) = 6 + 2*c;
+			WFIFOW(fd,2) = 6 + 2 * c;
 			WFIFOSET(fd,WFIFOW(fd,2));
 		}
 	}
@@ -5338,7 +5338,7 @@ void clif_cooking_list(struct map_session_data *sd, int trigger, int skill_id, i
 			WFIFOB(fd,7) = 0;
 			WFIFOSET(fd, packet_len(0x7e6));
 #else
-			WFIFOW(fd,2) = 6 + 2*c;
+			WFIFOW(fd,2) = 6 + 2 * c;
 			WFIFOSET(fd,WFIFOW(fd,2));
 #endif
 		}
@@ -10733,12 +10733,12 @@ void clif_parse_RequestMemo(int fd,struct map_session_data *sd)
 void clif_parse_ProduceMix(int fd,struct map_session_data *sd)
 {
 	// -1 is used by produce script command.
-	if (sd->menuskill_id != -1 && sd->menuskill_id != AM_PHARMACY && sd->menuskill_id != SA_CREATECON &&
-		sd->menuskill_id != RK_RUNEMASTERY && sd->menuskill_id != GC_CREATENEWPOISON &&
-		sd->menuskill_id != GN_S_PHARMACY)
+	if( sd->menuskill_id != -1 && sd->menuskill_id != AM_PHARMACY && sd->menuskill_id != SA_CREATECON &&
+		sd->menuskill_id != RK_RUNEMASTERY && sd->menuskill_id != GC_CREATENEWPOISON )
 		return;
 	
-	if (pc_istrading(sd)) {
+	if( pc_istrading(sd) )
+	{
 		//Make it fail to avoid shop exploits where you sell something different than you see.
 		clif_skill_fail(sd,sd->ud.skillid,0,0,0);
 		sd->menuskill_val = sd->menuskill_id = sd->menuskill_itemused = 0;
@@ -10774,7 +10774,7 @@ void clif_parse_Cooking(int fd,struct map_session_data *sd)
 	int nameid = RFIFOW(fd,4);
 	int amount = 1;
 
-	if( type == 6 && sd->menuskill_id != GN_MIX_COOKING )
+	if( type == 6 && sd->menuskill_id != GN_MIX_COOKING && sd->menuskill_id != GN_S_PHARMACY )
 		return;
 
 	if (pc_istrading(sd)) {

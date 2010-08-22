@@ -1546,6 +1546,8 @@ int status_base_amotion_pc(struct map_session_data* sd, struct status_data* stat
 	
 	// raw delay adjustment from bAspd bonus
 	amotion+= sd->aspd_add;
+
+	amotion += amotion * pc_checkskill(sd, GN_TRAINING_SWORD) / 100;
 	
  	return amotion;
 }

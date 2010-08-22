@@ -913,7 +913,7 @@ int battle_addmastery(struct map_session_data *sd,struct block_list *target,int 
 			if((skill = pc_checkskill(sd,SM_SWORD)) > 0)
 				damage += (skill * 4);
 			if((skill = pc_checkskill(sd,GN_TRAINING_SWORD)) > 0)
-				damage += skill * 5;
+				damage += skill * 10;
 			break;
 		case W_2HSWORD:
 			if((skill = pc_checkskill(sd,SM_TWOHAND)) > 0)
@@ -1489,7 +1489,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				case GN_CART_TORNADO:
 				case GN_CARTCANNON:
 					if( sd && pc_checkskill(sd, GN_REMODELING_CART) )
-						hitrate += hitrate * (pc_checkskill(sd, GN_REMODELING_CART) * 4) / 100;
+						hitrate += pc_checkskill(sd, GN_REMODELING_CART) * 4;
 					break;
 				case GC_VENOMPRESSURE:
 					hitrate += 10 + 4 * skill_lv;
@@ -1505,7 +1505,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 
 			if( sd && (sd->status.weapon == W_1HSWORD || sd->status.weapon == W_DAGGER) && 
 				(skill = pc_checkskill(sd, GN_TRAINING_SWORD))>0 )
-				hitrate += hitrate * ( 3 * skill ) / 100;
+				hitrate += hitrate * 3 * skill;
 		}
 
 		hitrate = cap_value(hitrate, battle_config.min_hitrate, battle_config.max_hitrate); 
@@ -2184,7 +2184,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				case GN_CART_TORNADO:
 					skillratio += 50 * skill_lv;
 					if( sd )
-						skillratio += pc_checkskill(sd, GN_REMODELING_CART) * 60;
+						skillratio += pc_checkskill(sd, GN_REMODELING_CART) * 50;
+					skillratio += skillratio * s_level / 100;
 					break;
 				case GN_CARTCANNON:
 					skillratio += 200 + (25 * skill_lv-1);

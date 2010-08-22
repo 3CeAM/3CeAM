@@ -1150,9 +1150,6 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 	case SO_VARETYR_SPEAR:
 		sc_start(bl, SC_STUN, 20, skilllv, skill_get_time2(skillid, skilllv));
 		break;
-	case GN_CART_TORNADO:
-		sc_start(bl, SC_STUN, 1000000, skilllv, skill_get_time2(skillid, skilllv));	// Need official rate. [LimitLine]
-		break;
 	case GN_HELLS_PLANT_ATK:
 		sc_start(bl, SC_STUN, 5 + 5 * skilllv, skilllv, skill_get_time(skillid, skilllv));
 		sc_start(bl, SC_BLEEDING, 20 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
@@ -8021,9 +8018,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case GN_MIX_COOKING:
 		if( sd )
 		{
-			sd->menuskill_id = skillid;
-			sd->menuskill_itemused = (skilllv == 2) ? 10 : 1;
-			clif_cooking_list(sd,27,skillid,sd->menuskill_itemused,6);
+			clif_cooking_list(sd,27,skillid,(skilllv == 2) ? 10 : 1,6);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
 		break;
@@ -8031,9 +8026,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case GN_MAKEBOMB:
 		if( sd )
 		{
-			sd->menuskill_id = skillid;
-			sd->menuskill_val = (skilllv==2) ? 10 : 1;
-			clif_cooking_list(sd,28,skillid,sd->menuskill_itemused,5);
+			clif_cooking_list(sd,28,skillid,(skilllv==2) ? 10 : 1,5);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
 		break;
@@ -8041,8 +8034,14 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case GN_S_PHARMACY:
 		if( sd )
 		{
-			sd->menuskill_itemused = skilllv;
-			clif_cooking_list(sd,skillid,29,1,6);
+			switch( skilllv )
+			{
+				case 6: case 7: case 8: i = 3; break; //3 items to make at once.
+				case 9: i = 3 + rand()%3; break; //3~5 items to make at once.
+				case 10: i = 4 + rand()%3; break; //4~6 items to make at once.
+				default: i = 2; //2 item to make at once.
+			}
+			clif_cooking_list(sd,29,skillid,i,6);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
 		break;
@@ -9106,9 +9105,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 
 	case LG_OVERBRAND:
 		{
-			int dir = map_calc_dir(src, x, y);	
-			struct mob_data *md;
-			int class_;
+			int dir = map_calc_dir(src, x, y);
 			struct s_skill_nounit_layout *layout = skill_get_nounit_layout(skillid,skilllv,src,x,y,dir);
 			for( i = 0; i < layout->count; i++ )
 				map_foreachincell(skill_area_sub, src->m, x+layout->dx[i], y+layout->dy[i], BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY,skill_castend_damage_id);
@@ -14489,21 +14486,11 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 				break;
 			case GN_MIX_COOKING:
 			case GN_MAKEBOMB:
-				// 	TODO: finde a proper chance.
+				// 	TODO: find a proper chance.
 				make_per = (5000 + 50*status->dex + 30*status->luk); //Custom rate value.
 				break;
 			case GN_S_PHARMACY:
-				{
-					i = sd->menuskill_itemused;
-					make_per = 100000; //100% success rate.
-					switch( i )
-					{
-						case 6: case 7: case 8: qty = 3; break; //3 items to make at once.
-						case 9: qty = 3 + rand()%3; break; //3~5 items to make at once.
-						case 10: qty = 4 + rand()%3; break; //4~6 items to make at once.
-						default: qty = 2; //2 item to make at once.
-					}
-				}
+				make_per = 100000; //100% success rate.
 				break;
 			default:
 				if( sd->menuskill_id ==	AM_PHARMACY && sd->menuskill_val > 10 && sd->menuskill_val <= 20 )
