@@ -1192,7 +1192,7 @@
 2491,0,6,1,0,0,0,5,1,no,0,0,0,weapon,0,		GN_HELLS_PLANT_ATK,Hell's Plant Attack
 2492,0,6,4,0,0x3,9,5,0,yes,0,0,0,none,0,		GN_MANDRAGORA,Howling of Mandragora
 2493,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		GN_SLINGITEM,Sling Item
-2494,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		GN_CHANGEMATERIAL,Change Material
+2494,0,6,4,0,0x1,0,1,0,no,0,0,0,none,0,		GN_CHANGEMATERIAL,Change Material
 2495,0,6,4,0,0x1,0,2,0,no,0,0,0,none,0,		GN_MIX_COOKING,Mix Cooking
 2496,0,6,4,0,0x1,0,2,0,no,0,0,0,none,0,		GN_MAKEBOMB,Create Bomb
 2497,0,6,4,0,0x1,0,10,0,no,0,0,0,none,0,	GN_S_PHARMACY,Special Pharmacy
