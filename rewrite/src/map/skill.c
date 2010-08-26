@@ -15042,14 +15042,12 @@ int skill_changematerial(struct map_session_data *sd, int n, int type, unsigned 
 				else
 					break;	// No more items required
 			}
-			if( n != j || c != n )
-			{	// Item list doesn't match.
-				clif_skill_fail(sd,GN_CHANGEMATERIAL,0,0,0);
-				break;
+			if( n == j && c == n )
+			{
+				// Item found, go to produce it!!
+				skill_produce_mix(sd,GN_CHANGEMATERIAL,skill_produce_db[i].nameid,0,0,0,1);
+				return 1;
 			}
-			// Item found, go to produce it!!
-			skill_produce_mix(sd,GN_CHANGEMATERIAL,skill_produce_db[i].nameid,0,0,0,1);
-			break;
 		}
 	}
 
