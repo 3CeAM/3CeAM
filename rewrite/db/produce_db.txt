@@ -444,30 +444,10 @@
 // Genetic Item Creation
 //==============================================
 //----- Change Material ---- ItemLV=26 ---------
-//-- Unknown item 1 <-- GN_CHANGEMATERIAL Lv1, 45 Frog Egg Squid Ink Soup, 40 Glass Bead
-//UNKNOWN_1,26,2425,1,12056,45,746,40
-//-- Unknown item 2 <-- GN_CHANGEMATERIAL Lv1, 40 Chrysalis, 10 Clam Flesh
-//UNKNOWN_2,26,2425,1,915,40,066,10
-//-- Unknown item 3 <-- GN_CHANGEMATERIAL Lv1, 45 ????, 25 Feather of Birds
-//UNKNOWN_3,26,2425,1,????,45,916,25
-//-- Maneater Root <-- GN_CHANGEMATERIAL Lv1, 25 Talon, 20 Zenorc's Fang
-1033,26,2425,1,917,25,1044,20
-//-- Unknown item 5 <-- GN_CHANGEMATERIAL Lv1, 45 Frog Egg Squid Ink Soup, 40 Glass Bead
-//UNKNOWN_5,26,2425,1,12056,45,746,40
-//-- Unknown item 6 <-- GN_CHANGEMATERIAL Lv1, 45 Frog Egg Squid Ink Soup, 40 Glass Bead
-//UNKNOWN_6,26,2425,1,12056,45,746,40
-//-- Unknown item 7 <-- GN_CHANGEMATERIAL Lv1, 45 Frog Egg Squid Ink Soup, 40 Glass Bead
-//UNKNOWN_7,26,2425,1,12056,45,746,40
-//-- Unknown item 8 <-- GN_CHANGEMATERIAL Lv1, 45 Frog Egg Squid Ink Soup, 40 Glass Bead
-//UNKNOWN_8,26,2425,1,12056,45,746,40
-//-- Unknown item 9 <-- GN_CHANGEMATERIAL Lv1, 45 Frog Egg Squid Ink Soup, 40 Glass Bead
-//UNKNOWN_9,26,2425,1,12056,45,746,40
-
-//6213 <-- Possible item to create with this skill
-//6214 <-- Possible item to create with this skill
-//6215 <-- Possible item to create with this skill
-//6216 <-- Possible item to create with this skill
-//6217 <-- Possible item to create with this skill
+//-- Phracon [8] <-- GN_CHANGEMATERIAL Lv1, 40 Spawn, 40 Glass Bead
+1010,26,2494,1,908,40,746,40
+//-- Witch Starsand [2] <-- GN_CHANGEMATERIAL Lv1, 10 Insect Feeler, 15 Chung Jah
+1061,26,2494,1,928,10,735,15
 
 //----- Mix Cooking ---- ItemLV=27 -------------
 //-- Savage Full Roast <-- GN_MIX_COOKING & Mix Cooking Ingredient Book & 1 Chowder Pot, 1 Savage Meat, 1 Iron Cooking Skewer, 1 Black Charcoal

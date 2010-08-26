@@ -7982,6 +7982,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 
+	case GN_CHANGEMATERIAL:
 	case SO_EL_ANALYSIS:
 		if( sd )
 		{
@@ -14489,6 +14490,12 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 				// 	TODO: find a proper chance.
 				make_per = (5000 + 50*status->dex + 30*status->luk); //Custom rate value.
 				break;
+			case GN_CHANGEMATERIAL:
+				switch( nameid )
+				{
+					case 1010: qty = 8; break;
+					case 1061: qty = 2; break;
+				}
 			case GN_S_PHARMACY:
 				make_per = 100000; //100% success rate.
 				break;
@@ -14998,6 +15005,52 @@ int skill_elementalanalysis(struct map_session_data* sd, int n, int skill_lv, un
 			}
 		}
 
+	}
+
+	return 0;
+}
+
+int skill_changematerial(struct map_session_data *sd, int n, int type, unsigned short *item_list)
+{
+	int i, j, k, c, nameid, amount;
+	
+	nullpo_retr(0, sd);
+	nullpo_retr(0, item_list);
+
+	// Search for objects that can be created.
+	for( i = 0; i < MAX_SKILL_PRODUCE_DB; i++ )
+	{
+		if( skill_produce_db[i].itemlv == 26 )
+		{
+			c = 0;
+			
+			// Verification of overlap between the objects required and the list submitted.
+			for( j = 0; j < MAX_PRODUCE_RESOURCE; j++ )
+			{
+				if( skill_produce_db[i].mat_id[j] > 0 )
+				{
+					for( k = 0; k < MAX_PRODUCE_RESOURCE; k++ )
+					{
+						int idx = item_list[k*2+0]-2;
+						nameid = sd->status.inventory[idx].nameid;
+						amount = item_list[k*2+1];
+
+						if( nameid == skill_produce_db[i].mat_id[j] && amount == skill_produce_db[i].mat_amount[j] )
+							c++; // match
+					}
+				}
+				else
+					break;	// No more items required
+			}
+			if( n != j || c != n )
+			{	// Item list doesn't match.
+				clif_skill_fail(sd,GN_CHANGEMATERIAL,0,0,0);
+				break;
+			}
+			// Item found, go to produce it!!
+			skill_produce_mix(sd,GN_CHANGEMATERIAL,skill_produce_db[i].nameid,0,0,0,1);
+			break;
+		}
 	}
 
 	return 0;

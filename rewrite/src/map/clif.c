@@ -3262,6 +3262,7 @@ int clif_skill_select_request(struct map_session_data *sd)
 
 /*===========================================
  * Skill list for Four Elemental Analysis
+ * and Change Material skills.
  *------------------------------------------*/
 int clif_skill_itemlistwindow( struct map_session_data *sd, int skill_id, int skill_lv )
 {
@@ -3270,6 +3271,12 @@ int clif_skill_itemlistwindow( struct map_session_data *sd, int skill_id, int sk
 
 	nullpo_retr(0,sd);
 
+	if( skill_id == GN_CHANGEMATERIAL )
+	{
+		skill_lv = 0; // Changematerial
+		val = 0;
+	}
+	
 	sd->menuskill_id = skill_id; // To prevent hacking.
 	sd->menuskill_val = skill_lv;
 
@@ -14404,26 +14411,33 @@ void clif_parse_ItemListWindowSelected(int fd, struct map_session_data* sd)
 	int flag = RFIFOL(fd,8); // Button clicked: 0 = Cancel, 1 = OK
 	unsigned short* item_list = (unsigned short*)RFIFOP(fd,12);
 
-	if( sd->state.trading || sd->npc_shopid || n == 0)
+	if( sd->state.trading || sd->npc_shopid )
 		return;
-
-	if( flag == 0 )
-	{		
-		sd->menuskill_id = sd->menuskill_val = 0;
+	
+	if( flag == 0 || n == 0)
+	{
+		sd->menuskill_id = sd->menuskill_val = sd->menuskill_itemused = 0;
 		return; // Canceled by player.
 	}
 
-	if( sd->menuskill_id != SO_EL_ANALYSIS || sd->menuskill_val != type )
+	if( sd->menuskill_id != SO_EL_ANALYSIS && sd->menuskill_id != GN_CHANGEMATERIAL )
+	{		
+		sd->menuskill_id = sd->menuskill_val = sd->menuskill_itemused = 0;
 		return; // Prevent hacking.
-
+	}
+	
 	switch( type )
 	{
 		case 1:	// Level 1: Pure to Rough
 		case 2:	// Level 2: Rough to Pure
 			skill_elementalanalysis(sd,n,type,item_list);
 			break;
+		case 0: // Change Material
+			skill_changematerial(sd,n,type,item_list);
+			break;
 	}
-	sd->menuskill_id = sd->menuskill_val = 0;
+	sd->menuskill_id = sd->menuskill_val = sd->menuskill_itemused = 0;
+	
 	return;
 }
 

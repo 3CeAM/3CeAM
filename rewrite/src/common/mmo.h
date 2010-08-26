@@ -36,7 +36,7 @@
 // 20091110 - 2009-11-10aRagexeRE+ - 0x7f6
 // 20100105 - 2010-01-05aRagexeRE+ - 0x133, 0x800, 0x801
 // 20100126 - 2010-01-26aRagexeRE+ - 0x80e
-// 20100217 - 2010-02-17aRagexeRE+ - 0xf4 -> 0x1c4 (guildsotrage)
+// 20100217 - 2010-02-17aRagexeRE+ - 0xf4 -> 0x1c4 (guildstorage)
 // 20100223 - 2010-02-23aRagexeRE+ - 0x80f
 // 20100413 - 2010-04-13aRagexeRE+ - 0x6b (Note: Add support to the new char slots managment.)
 // 20100629 - 2010-06-29aRagexeRE+ - 0x2d0, 0xaa, 0x2d1, 0x2d2
