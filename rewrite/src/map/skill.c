@@ -4150,10 +4150,34 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		if( rand()%100 < 75 )
 		{
 			if( bl->type == BL_SKILL )
-			{	// Still need confirm what units can remove this.
+			{
 				struct skill_unit *su = (struct skill_unit *)bl;
-				if( su && (su->group->skill_id == GN_WALLOFTHORN || (skill_get_inf2(su->group->skill_id)&INF2_TRAP)) )
+				if( !su )
+					break;
+				if( skill_get_inf2(su->group->skill_id)&INF2_TRAP )
+				{	// Still need confirm it.
 					skill_delunit(su);
+					break;
+				}
+
+				switch( su->group->skill_id )
+				{	// Unconfirmed list, based on info from irowiki.
+					case GN_WALLOFTHORN:
+					case GN_THORNS_TRAP:
+					case SC_BLOODYLUST:
+					case SC_CHAOSPANIC:
+					case SC_MAELSTROM:
+					case WZ_FIREPILLAR:
+					case SA_LANDPROTECTOR:
+					case SA_VOLCANO:
+					case SA_DELUGE:
+					case SA_VIOLENTGALE:
+					case MG_SAFETYWALL:
+					case AL_PNEUMA:
+						skill_delunit(su);
+						break;
+				}
+				break;
 			}
 			else
 				skill_attack(BF_WEAPON,src,src,bl,GN_CRAZYWEED_ATK,skilllv,tick,flag);
