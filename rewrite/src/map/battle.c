@@ -1594,9 +1594,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				if( sd )
 					wd.damage += wd.damage * (5 * pc_checkskill(sd,RK_DRAGONTRAINING)-1) / 100;
 				break;
-			case RK_CRUSHSTRIKE:
-				wd.damage = sstatus->rhw.atk * 10; // Still need official value. [pakpil]
-				break;
 			case NC_AXEBOOMERANG:
 				//TODO: Need to get official value of weight % as addition to skill damage. [Jobbie]
 				if (sd) {
@@ -2013,11 +2010,20 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				case RK_DRAGONBREATH: // Sugested formula from irowiki.
 					skillratio *= skill_lv * s_level / 100;
 					break;
-				case RK_CRUSHSTRIKE:
-					skillratio += 1400;
+				case RK_CRUSHSTRIKE:	// Sugested formula fro irowiki.
+					skillratio += 550;
+					if( sd )
+					{
+						short index = sd->equip_index[EQI_HAND_R];
+						if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_WEAPON )
+						{
+							skillratio += 100 * sd->inventory_data[index]->wlv; // Increased by weapon level.
+							skillratio *= sd->status.inventory[index].refine;	// Increased by weapon refine.
+						}
+					}
 					break;
 				case RK_STORMBLAST:
-					skillratio += sstatus->int_ * (sd ? pc_checkskill(sd,RK_RUNEMASTERY) : 1);
+					skillratio += -100 + 100 * (sd ? pc_checkskill(sd,RK_RUNEMASTERY) : 1) +  sstatus->int_ / 4;
 					break;
 				case RK_PHANTOMTHRUST: // TODO: How much Spear Mastery affects?.
 					skillratio += 20 * (skill_lv - 1);
