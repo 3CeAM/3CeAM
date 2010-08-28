@@ -7816,11 +7816,11 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case WM_GLOOMYDAY:
-		if( sd )
+		if( dstsd )
 		{
-			if( pc_checkskill(sd,KN_BRANDISHSPEAR) || pc_checkskill(sd,LK_SPIRALPIERCE) ||
-				pc_checkskill(sd,CR_SHIELDCHARGE) || pc_checkskill(sd,CR_SHIELDBOOMERANG) ||
-				pc_checkskill(sd,PA_SHIELDCHAIN) || pc_checkskill(sd,LG_SHIELDPRESS) )
+			if( pc_checkskill(dstsd,KN_BRANDISHSPEAR) || pc_checkskill(dstsd,LK_SPIRALPIERCE) ||
+				pc_checkskill(dstsd,CR_SHIELDCHARGE) || pc_checkskill(dstsd,CR_SHIELDBOOMERANG) ||
+				pc_checkskill(dstsd,PA_SHIELDCHAIN) || pc_checkskill(dstsd,LG_SHIELDPRESS) )
 			{
 				sc_start(bl,SC_GLOOMYDAY_SK,100,skilllv,skill_get_time(skillid,skilllv));
 			}
@@ -15053,7 +15053,7 @@ int skill_changematerial(struct map_session_data *sd, int n, int type, unsigned 
 			{
 				if( skill_produce_db[i].mat_id[j] > 0 )
 				{
-					for( k = 0; k < MAX_PRODUCE_RESOURCE; k++ )
+					for( k = 0; k < n; k++ )
 					{
 						int idx = item_list[k*2+0]-2;
 						nameid = sd->status.inventory[idx].nameid;
