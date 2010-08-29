@@ -276,12 +276,12 @@
 12419,Manaplus,Manaplus,3,10,,10,,,,,,,,,,,,,{},{},{}
 12420,Muramura_M,Muramura M,3,10,,10,,,,,,,,,,,,,{},{},{}
 12421,Falmons_F,Falmons F,3,10,,10,,,,,,,,,,,,,{},{},{}
-12422,HP_Increase_Potion_(Small),HP Increase Potion (Small),0,10,,10,,,,,0xFFFFFFFF,8,2,,,,,,{},{},{}
-12423,HP_Increase_Potion_(Medium),HP Increase Potion (Medium),0,10,,10,,,,,0xFFFFFFFF,8,2,,,,,,{},{},{}
-12424,HP_Increase_Potion_(Large),HP Increase Potion (Large),0,10,,10,,,,,0xFFFFFFFF,8,2,,,,,,{},{},{}
-12425,SP_Increase_Potion_(Small),SP Increase Potion (Small),0,10,,10,,,,,0xFFFFFFFF,8,2,,,,,,{},{},{}
-12426,SP_Increase_Potion_(Medium),SP Increase Potion (Medium),0,10,,10,,,,,0xFFFFFFFF,8,2,,,,,,{},{},{}
-12427,SP_Increase_Potion_(Large),SP Increase Potion (Large),0,10,,10,,,,,0xFFFFFFFF,8,2,,,,,,{},{},{}
+12422,HP_Increase_Potion_(Small),HP Increase Potion (Small),0,10,,10,,,,,0xFFFFFFFF,8,2,,,,,,{ sc_start SC_INCMHPRATE,500000,1; itemheal 840,0; },{},{}
+12423,HP_Increase_Potion_(Medium),HP Increase Potion (Medium),0,10,,10,,,,,0xFFFFFFFF,8,2,,,,,,{ sc_start SC_INCMHPRATE,500000,2; itemheal 1040,0; },{},{}
+12424,HP_Increase_Potion_(Large),HP Increase Potion (Large),0,10,,10,,,,,0xFFFFFFFF,8,2,,,,,,{ sc_start SC_INCMHPRATE,500000,5; itemheal 1240,0; },{},{}
+12425,SP_Increase_Potion_(Small),SP Increase Potion (Small),0,10,,10,,,,,0xFFFFFFFF,8,2,,,,,,{ sc_start SC_INCMSPRATE,500000,2; itemheal 0,200; },{},{}
+12426,SP_Increase_Potion_(Medium),SP Increase Potion (Medium),0,10,,10,,,,,0xFFFFFFFF,8,2,,,,,,{ sc_start SC_INCMSPRATE,500000,4; itemheal 0,300; },{},{}
+12427,SP_Increase_Potion_(Large),SP Increase Potion (Large),0,10,,10,,,,,0xFFFFFFFF,8,2,,,,,,{ sc_start SC_INCMSPRATE,500000,8; itemheal 0,400; },{},{}
 12428,Concentrated_White_Potion_Z,Concentrated White Potion Z,0,10,,10,,,,,0xFFFFFFFF,8,2,,,,,,{},{},{}
 12429,Savage_Full_Roast,Savage Full Roast,2,,,50,,,,,0xFFFFFFFF,8,2,,,,,,{ sc_start SC_SAVAGE_STEAK, 1800000, 20; },{},{}
 12430,Cocktail_Warg_Blood,Cocktail Warg Blood,2,,,50,,,,,0xFFFFFFFF,8,2,,,,,,{ sc_start SC_COCKTAIL_WARG_BLOOD, 1800000, 20; },{},{}
@@ -335,28 +335,28 @@
 13268,Mysterious_Powder,Mysterious Powder,11,10,,100,100,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
 
 // Generic Created Throwable Booster Items
-13269,Throwing_Boost_500,Throwing Boost 500,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13270,Throwing_Full_Swing_K,Throwing Full Swing K,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13271,Throwing_Manaplus,Throwing Manaplus,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13272,Throwing_Cure_Free,Throwing Cure Free,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13273,Throwing_Muramura_M,Throwing Muramura M,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13274,Throwing_Falmons_F,Throwing Falmons F,11,17,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13275,Throwing_Increase_HP_Potion_(Small),Throwing Increase HP Potion (Small),17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13276,Throwing_Increase_HP_Potion_(Medium),Throwing Increase HP Potion (Medium),17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13277,Throwing_Increase_HP_Potion_(Large),Throwing Increase HP Potion (Large),17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13278,Throwing_Increase_SP_Potion_(Small),Throwing Increase SP Potion (Small),17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13279,Throwing_Increase_SP_Potion_(Medium),Throwing Increase SP Potion (Medium),17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13280,Throwing_Increase_SP_Potion_(Large),Throwing Increase SP Potion (Large),17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13281,Throwing_Concentrated_White_Potion_Z,Throwing Concentrated White Potion Z,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13282,Throwing_Vitata_500,Throwing Vitata 500,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13283,Throwing_Ceromain_Soup,Throwing Ceromain Soup,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13284,Throwing_Savage_Full_Roast,Throwing Savage Full Roast,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13285,Throwing_Cocktail_Warg_Blood,Throwing Cocktail Warg Blood,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13286,Throwing_Minor_Stew,Throwing Minor Stew,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13287,Throwing_Siroma_Iced_Tea,Throwing Siroma Iced Tea,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13288,Throwing_Drosera_Herb_Salad,Throwing Drosera Herb Salad,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13289,Throwing_Petite_Tail_Soup,Throwing Petite Tail Soup,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13290,Throwing_Black_Mass,Throwing Black Mass,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13269,Throwing_Boost_500,Throwing Boost 500,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13270,Throwing_Full_Swing_K,Throwing Full Swing K,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13271,Throwing_Manaplus,Throwing Manaplus,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13272,Throwing_Cure_Free,Throwing Cure Free,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13273,Throwing_Muramura_M,Throwing Muramura M,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13274,Throwing_Falmons_F,Throwing Falmons F,11,17,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13275,Throwing_Increase_HP_Potion_(Small),Throwing Increase HP Potion (Small),17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13276,Throwing_Increase_HP_Potion_(Medium),Throwing Increase HP Potion (Medium),17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13277,Throwing_Increase_HP_Potion_(Large),Throwing Increase HP Potion (Large),17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13278,Throwing_Increase_SP_Potion_(Small),Throwing Increase SP Potion (Small),17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13279,Throwing_Increase_SP_Potion_(Medium),Throwing Increase SP Potion (Medium),17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13280,Throwing_Increase_SP_Potion_(Large),Throwing Increase SP Potion (Large),17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13281,Throwing_Concentrated_White_Potion_Z,Throwing Concentrated White Potion Z,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13282,Throwing_Vitata_500,Throwing Vitata 500,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13283,Throwing_Ceromain_Soup,Throwing Ceromain Soup,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13284,Throwing_Savage_Full_Roast,Throwing Savage Full Roast,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13285,Throwing_Cocktail_Warg_Blood,Throwing Cocktail Warg Blood,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13286,Throwing_Minor_Stew,Throwing Minor Stew,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13287,Throwing_Siroma_Iced_Tea,Throwing Siroma Iced Tea,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13288,Throwing_Drosera_Herb_Salad,Throwing Drosera Herb Salad,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13289,Throwing_Petite_Tail_Soup,Throwing Petite Tail Soup,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13290,Throwing_Black_Mass,Throwing Black Mass,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
 
 // Unknown Item. Rune Knight Armor???
 15002,Rune_Plate,Rune Plate,3,10,,10,,,,,,,,,,,,,{},{},{}
@@ -372,11 +372,11 @@
 //16265,High_Density_Kalunium(10),
 
 // Mechanic Mado Gear Cannonball Ammo
-18000,Cannon_Ball,Cannon Ball,10,100,,10,100,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-18001,Holy_Cannon_Ball,Holy Cannon Ball,10,200,,10,120,,,,0xFFFFFFFF,8,2,32768,,1,,8,{ bonus bAtkEle,Ele_Holy; },{},{}
-18002,Dark_Cannon_Ball,Dark Cannon Ball,10,200,,10,120,,,,0xFFFFFFFF,8,2,32768,,1,,8,{ bonus bAtkEle,Ele_Dark; },{},{}
-18003,Soul_Cannon_Ball,Soul Cannon Ball,10,200,,10,120,,,,0xFFFFFFFF,8,2,32768,,1,,8,{ bonus bAtkEle,Ele_Ghost; },{},{}
-18004,Iron_Cannon_Ball,Iron Cannon Ball,10,500,,10,250,,,,0xFFFFFFFF,8,2,32768,,1,,8,{ bonus bAtkEle,Ele_Neutral; },{},{}
+18000,Cannon_Ball,Cannon Ball,19,100,,19,100,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+18001,Holy_Cannon_Ball,Holy Cannon Ball,19,200,,10,120,,,,0xFFFFFFFF,8,2,32768,,1,,8,{ bonus bAtkEle,Ele_Holy; },{},{}
+18002,Dark_Cannon_Ball,Dark Cannon Ball,19,200,,10,120,,,,0xFFFFFFFF,8,2,32768,,1,,8,{ bonus bAtkEle,Ele_Dark; },{},{}
+18003,Soul_Cannon_Ball,Soul Cannon Ball,19,200,,10,120,,,,0xFFFFFFFF,8,2,32768,,1,,8,{ bonus bAtkEle,Ele_Ghost; },{},{}
+18004,Iron_Cannon_Ball,Iron Cannon Ball,19,500,,10,250,,,,0xFFFFFFFF,8,2,32768,,1,,8,{ bonus bAtkEle,Ele_Neutral; },{},{}
 
 // New Weapons In Work And Testing
 1196,Chrome_Metal_Two-Hand_Sword,Chrome Metal Two-Hand Sword,4,10,,400,280,,1,0,0x00004080,8,2,34,3,110,1,3,{},{},{}

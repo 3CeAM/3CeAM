@@ -6021,7 +6021,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_SAVAGE_STEAK:			case SC_COCKTAIL_WARG_BLOOD:	case SC_MINOR_BBQ:
 				case SC_SIROMA_ICE_TEA:			case SC_DROCERA_HERB_STEAMED:	case SC_PUTTI_TAILS_NOODLES:
 				case SC_NEUTRALBARRIER_MASTER:	case SC_NEUTRALBARRIER:			case SC_STEALTHFIELD_MASTER:
-				case SC_STEALTHFIELD:
+				case SC_STEALTHFIELD:			case SC_THURISAZ:				case SC_BERKANA:
+				case SC_NAUTHIZ:				case SC_HAGALAZ:				case SC_ISA:
+				case SC_OTHILA:					case SC_URUZ:
 					continue;
 				case SC_ASSUMPTIO:
 					if( bl->type == BL_MOB )
