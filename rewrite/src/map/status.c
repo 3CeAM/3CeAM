@@ -495,6 +495,10 @@ void initChangeTables(void)
 	set_sc( LG_INSPIRATION       , SC_INSPIRATION		 , SI_INSPIRATION       , SCB_MAXHP|SCB_WATK|SCB_HIT|SCB_VIT|SCB_AGI|SCB_STR|SCB_DEX|SCB_INT|SCB_LUK);
 	set_sc( LG_EARTHDRIVE        , SC_EARTHDRIVE         , SI_EARTHDRIVE        , SCB_DEF|SCB_ASPD );
 
+	set_sc( SR_CRESCENTELBOW            , SC_CRESCENTELBOW        , SI_CRESCENTELBOW            , SCB_NONE );
+	set_sc( SR_CURSEDCIRCLE             , SC_CURSEDCIRCLE_TARGET  , SI_CURSEDCIRCLE_TARGET      , SCB_NONE );
+	set_sc( SR_LIGHTNINGWALK            , SC_LIGHTNINGWALK        , SI_LIGHTNINGWALK            , SCB_NONE );
+	set_sc( SR_RAISINGDRAGON            , SC_RAISINGDRAGON        , SI_RAISINGDRAGON            , SCB_MAXHP|SCB_MAXSP|SCB_ASPD );
 	set_sc( SR_GENTLETOUCH_ENERGYGAIN   , SC_GT_ENERGYGAIN        , SI_GENTLETOUCH_ENERGYGAIN   , SCB_NONE );
 	set_sc( SR_GENTLETOUCH_CHANGE       , SC_GT_CHANGE            , SI_GENTLETOUCH_CHANGE       , SCB_BATK|SCB_ASPD|SCB_DEF|SCB_MDEF );
 	set_sc( SR_GENTLETOUCH_REVITALIZE   , SC_GT_REVITALIZE        , SI_GENTLETOUCH_REVITALIZE   , SCB_VIT|SCB_MAXHP|SCB_DEF2|SCB_REGEN|SCB_ASPD|SCB_SPEED );
@@ -948,6 +952,8 @@ int status_damage(struct block_list *src,struct block_list *target,int hp, int s
 			sc_start4(target,SC_PROVOKE,100,10,1,0,0,0);
 		if (sc->data[SC_BERSERK] && status->hp <= 100)
 			status_change_end(target, SC_BERSERK, -1);
+		if( sc->data[SC_RAISINGDRAGON] && status->hp <= 1000 )
+			status_change_end(target, SC_RAISINGDRAGON, -1);
 		if (sc->data[SC_SATURDAYNIGHTFEVER] && status->hp <= 100)
 			status_change_end(target, SC_SATURDAYNIGHTFEVER, -1);
 	}
@@ -1347,7 +1353,8 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 				sc->data[SC__INVISIBILITY] ||
 				sc->data[SC_CRYSTALIZE] ||
 				sc->data[SC__IGNORANCE] || // Target afflicted with this debuff cannot use skills or magic.
-				sc->data[SC_DEEPSLEEP]
+				sc->data[SC_DEEPSLEEP] ||
+				sc->data[SC_CURSEDCIRCLE_TARGET]
 			))
 				return 0;
 
@@ -1463,6 +1470,8 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 			if( tsc->data[SC_CAMOUFLAGE] && !(status->mode&(MD_BOSS|MD_DETECTOR)) && !skill_num )
 				return 0;
 			if( tsc->data[SC_STEALTHFIELD] )
+				return 0;
+			if( sc && sc->data[SC_CURSEDCIRCLE_TARGET] )
 				return 0;
 		}
 		break;
@@ -3033,6 +3042,7 @@ void status_calc_regen_rate(struct block_list *bl, struct regen_data *regen, str
 		|| sc->data[SC_TRICKDEAD]
 		|| sc->data[SC_BLEEDING]
 		|| sc->data[SC_MAGICMUSHROOM]
+		|| sc->data[SC_RAISINGDRAGON]
 		|| sc->data[SC_SATURDAYNIGHTFEVER]
 	)	//No regen
 		regen->flag = 0;
@@ -4558,6 +4568,8 @@ static short status_calc_aspd_rate(struct block_list *bl, struct status_change *
 		aspd_rate += aspd_rate * sc->data[SC_GLOOMYDAY]->val3 / 100;
 	if( sc->data[SC_EARTHDRIVE] )
 		aspd_rate += aspd_rate * 25 / 100;
+	if( sc->data[SC_RAISINGDRAGON] )
+		aspd_rate -= 100; //FIXME: Need official ASPD bonus of this status. [Jobbie]
 	if( sc->data[SC_GT_CHANGE] )
 		aspd_rate -= aspd_rate * (sc->data[SC_GT_CHANGE]->val2/200) / 100;
 	if( sc->data[SC_GT_REVITALIZE] )
@@ -4631,6 +4643,8 @@ static unsigned int status_calc_maxsp(struct block_list *bl, struct status_chang
 		maxsp += maxsp * sc->data[SC_SERVICE4U]->val2/100;
 	if(sc->data[SC_MERC_SPUP])
 		maxsp += maxsp * sc->data[SC_MERC_SPUP]->val2/100;
+	if(sc->data[SC_RAISINGDRAGON])
+		maxsp += maxsp / 100 * (2 + sc->data[SC_RAISINGDRAGON]->val1);
 
 	return cap_value(maxsp,1,UINT_MAX);
 }
@@ -7243,6 +7257,10 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_SPELLFIST:
 			val_flag |= 1|2|4;
 			break;
+		case SC_RAISINGDRAGON:
+			val3 = tick / 5000;
+			tick = 5000;
+			break;
 		case SC_GT_CHANGE:
 			if( sd ) val2 = (13 * val1 / 2) * sd->status.agi; //Aspd - old formula.
 			val3 = 20 + 1 * val1; //Base Atk, Reduction to DEF & MDEF
@@ -7313,6 +7331,8 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_CRYSTALIZE:
 		case SC_WHITEIMPRISON:
 		case SC_VACUUM_EXTREME:
+		case SC_CURSEDCIRCLE_ATKER:
+		case SC_CURSEDCIRCLE_TARGET:
 			unit_stop_walking(bl,1);
 		break;
 		case SC_HIDING:
@@ -7386,6 +7406,8 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			opt_flag = 0;
 			break;
 		case SC_BLADESTOP:
+		case SC_CURSEDCIRCLE_ATKER:
+		case SC_CURSEDCIRCLE_TARGET:
 			sc->opt3 |= OPT3_BLADESTOP;
 			opt_flag = 0;
 			break;
@@ -7557,6 +7579,9 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 				if( ud )
 					ud->state.running = unit_wugdash(bl, sd);
 			}
+			break;
+		case SC_RAISINGDRAGON:
+			sce->val2 = status->max_hp / 100;// Officially tested its 1%hp drain. [Jobbie]
 			break;
 	}
 
@@ -8031,6 +8056,23 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 				}
 			}
 			break;
+		case SC_CURSEDCIRCLE_ATKER:
+			{
+				int range = skill_get_splash(SR_CURSEDCIRCLE, sce->val1);
+				map_foreachinarea(status_change_timer_sub, 
+					bl->m, bl->x-range, bl->y-range, bl->x+range, bl->y+range, BL_CHAR, bl, sce, SC_CURSEDCIRCLE_TARGET, gettick());
+			}
+			break;
+		case SC_RAISINGDRAGON:
+			if( sd && sce->val2 && !pc_isdead(sd) )
+			{
+				int i;
+				pc_delspiritball(sd, sd->spiritball, 0);
+				status_change_end(bl, SC_EXPLOSIONSPIRITS, -1);
+				for( i = 0; i < 5; i++ )
+					pc_addspiritball(sd, skill_get_time(MO_CALLSPIRITS, sce->val1), 5);
+			}
+			break;
 		}
 
 	opt_flag = 1;
@@ -8129,6 +8171,8 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 		opt_flag = 0;
 		break;
 	case SC_BLADESTOP:
+	case SC_CURSEDCIRCLE_ATKER:
+	case SC_CURSEDCIRCLE_TARGET:
 		sc->opt3 &= ~OPT3_BLADESTOP;
 		opt_flag = 0;
 		break;
@@ -8993,6 +9037,16 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		}
 		break;
 
+	case SC_RAISINGDRAGON:
+		// 1% every 5 seconds [Jobbie]
+		if( --(sce->val3)>0 && status_charge(bl, sce->val2, 0) )
+		{
+			if( !sc->data[type] ) return 0;
+			sc_timer_next(5000 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
+
 	}
 
 	// default for all non-handled control paths is to end the status
@@ -9056,6 +9110,13 @@ int status_change_timer_sub(struct block_list* bl, va_list ap)
 		if (tsc && tsc->data[SC_CLOSECONFINE2] && tsc->data[SC_CLOSECONFINE2]->val2 == src->id) {
 			tsc->data[SC_CLOSECONFINE2]->val2 = 0;
 			status_change_end(bl, SC_CLOSECONFINE2, -1);
+		}
+		break;
+	case SC_CURSEDCIRCLE_TARGET:
+		if( tsc && tsc->data[SC_CURSEDCIRCLE_TARGET] && tsc->data[SC_CURSEDCIRCLE_TARGET]->val2 == src->id )
+		{
+			status_change_end(bl, type, -1);			
+			clif_bladestop(src, bl->id, 0);
 		}
 		break;
 	}
@@ -9125,6 +9186,8 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC_SIROMA_ICE_TEA:
 			case SC_DROCERA_HERB_STEAMED:
 			case SC_PUTTI_TAILS_NOODLES:
+			case SC_CURSEDCIRCLE_ATKER:
+			case SC_CURSEDCIRCLE_TARGET:
 				continue;
 				
 			//Debuffs that can be removed.

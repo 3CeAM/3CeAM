@@ -1135,8 +1135,29 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		skill_break_equip(src, EQP_SHIELD, 500, BCT_SELF);
 		sc_start(bl, SC_EARTHDRIVE, 100, skilllv, skill_get_time(skillid, skilllv));
 		break;
+	case SR_DRAGONCOMBO:
+		sc_start(bl, SC_STUN, 1 + 1 * skilllv, skilllv, skill_get_time(skillid, skilllv));
+		break;
+	case SR_FALLENEMPIRE:
+		sc_start(bl, SC_STOP, 100, skilllv, skill_get_time(skillid, skilllv));
+		break;
+	case SR_TIGERCANNON:
+		status_percent_damage(src, bl, 0, 5+1*skilllv, false);
+		break;
+	case SR_WINDMILL:
+		if( dstsd && !pc_issit(dstsd) )
+		{
+			pc_setsit(dstsd);
+			clif_sitting(&dstsd->bl);
+		}
+		if( dstmd && !is_boss(bl) )
+			sc_start(bl, SC_STUN, 100, skilllv, 1000 + 1000 * (rand()%3));
+		break;
 	case SR_GENTLETOUCH_QUIET:
 		sc_start(bl, SC_SILENCE, 2 * skilllv, skilllv, skill_get_time(skillid, skilllv));
+		break;
+	case SR_HOWLINGOFLION:
+		sc_start(bl, SC_FEAR, 5 + 5 * skilllv, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case WM_METALICSOUND:
 		sc_start(bl, SC_CHAOS, 20 + 5 * skilllv, skilllv, skill_get_time(skillid,skilllv));
@@ -2051,24 +2072,24 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 		switch(skillid)
 		{
 			case MO_TRIPLEATTACK:
-				if (pc_checkskill(sd, MO_CHAINCOMBO) > 0)
-					flag=1;
+				if( pc_checkskill(sd, MO_CHAINCOMBO) > 0 || pc_checkskill(sd, SR_DRAGONCOMBO) > 0 )
+					flag = 1;
 				break;
 			case MO_CHAINCOMBO:
-				if(pc_checkskill(sd, MO_COMBOFINISH) > 0 && sd->spiritball > 0)
-					flag=1;
+				if( pc_checkskill(sd, MO_COMBOFINISH) > 0 && sd->spiritball > 0)
+					flag = 1;
 				break;
 			case MO_COMBOFINISH:
-				if (sd->status.party_id>0) //bonus from SG_FRIEND [Komurka]
+				if( sd->status.party_id > 0 ) //bonus from SG_FRIEND [Komurka]
 					party_skill_check(sd, sd->status.party_id, MO_COMBOFINISH, skilllv);
-				if (pc_checkskill(sd, CH_TIGERFIST) > 0 && sd->spiritball > 0)
-					flag=1;
+				if( pc_checkskill(sd, CH_TIGERFIST) > 0 && sd->spiritball > 0 )
+					flag = 1;
 			case CH_TIGERFIST:
-				if (!flag && pc_checkskill(sd, CH_CHAINCRUSH) > 0 && sd->spiritball > 1)
-					flag=1;
+				if( !flag && pc_checkskill(sd, CH_CHAINCRUSH) > 0 && sd->spiritball > 1 )
+					flag = 1;
 			case CH_CHAINCRUSH:
-				if (!flag && pc_checkskill(sd, MO_EXTREMITYFIST) > 0 && sd->spiritball > 0 && sd->sc.data[SC_EXPLOSIONSPIRITS])
-					flag=1;
+				if( !flag && pc_checkskill(sd, MO_EXTREMITYFIST) > 0 && sd->spiritball > 0 && sd->sc.data[SC_EXPLOSIONSPIRITS] )
+					flag = 1;
 				break;
 			case AC_DOUBLE:
 				if( (tstatus->race == RC_BRUTE || tstatus->race == RC_INSECT) && pc_checkskill(sd, HT_POWER))
@@ -2087,12 +2108,20 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 				break;
 			case SL_STIN:
 			case SL_STUN:
-				if (skilllv >= 7 && !sd->sc.data[SC_SMA])
+				if( skilllv >= 7 && !sd->sc.data[SC_SMA] )
 					sc_start(src,SC_SMA,100,skilllv,skill_get_time(SL_SMA, skilllv));
 				break;
 			case GS_FULLBUSTER:
 				//Can't attack nor use items until skill's delay expires. [Skotlex]
 				sd->ud.attackabletime = sd->canuseitem_tick = sd->ud.canact_tick;
+				break;
+			case SR_DRAGONCOMBO:
+				if( pc_checkskill(sd, SR_FALLENEMPIRE) > 0 )
+					flag = 1;
+				break;
+			case SR_FALLENEMPIRE:
+				if( pc_checkskill(sd, SR_TIGERCANNON) > 0 || pc_checkskill(sd, SR_GATEOFHELL) > 0 )
+					flag = 1;
 				break;
 		}	//Switch End
 		if (flag) { //Possible to chain
@@ -2298,11 +2327,23 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 			case PR_SANCTUARY:
 			case SC_TRIANGLESHOT:
 			case LG_OVERBRAND:
+			case SR_KNUCKLEARROW:
 			case GN_WALLOFTHORN:
 				direction = unit_getdir(bl);	// backward
 				break;
 		}
-		if( skillid == LG_OVERBRAND )
+		if( skillid == SR_KNUCKLEARROW )
+		{
+			if( skill_blown(dsrc,bl,dmg.blewcount,direction,0) && !(flag&4) )
+			{
+				short dir_x, dir_y;
+				dir_x = dirx[(direction+4)%8];
+				dir_y = diry[(direction+4)%8];
+				if( map_getcell(bl->m, bl->x+dir_x, bl->y+dir_y, CELL_CHKNOPASS) != 0 )
+					skill_addtimerskill(src, tick + 300 * ((flag&2) ? 1 : 2), bl->id, 0, 0, skillid, skilllv, BF_WEAPON, flag|4);	
+			}
+		}
+		else if( skillid == LG_OVERBRAND )
 		{
 			if( skill_blown(dsrc,bl,dmg.blewcount,direction,0) )
 			{
@@ -2895,6 +2936,7 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 					break;
 				case LG_OVERBRAND_BRANDISH:
 				case LG_OVERBRAND_PLUSATK:
+				case SR_KNUCKLEARROW:
 					skill_attack(BF_WEAPON, src, src, target, skl->skill_id, skl->skill_lv, tick, skl->flag|SD_LEVEL);
 					break;
 				case GN_SPORE_EXPLOSION:
@@ -3065,7 +3107,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 {
 	struct map_session_data *sd = NULL, *tsd = NULL;
 	struct status_data *tstatus;
-	struct status_change *sc;
+	struct status_change *sc, *tsc;
 
 	if( skillid > 0 && skilllv <= 0 ) return 0;	// Wrong skill level.
 
@@ -3094,8 +3136,11 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	}
 
 	sc = status_get_sc(src);
+	tsc = status_get_sc(bl);
 	if( sc && !sc->count )
 		sc = NULL; //Unneeded
+	if( tsc && !tsc->count )
+		tsc = NULL;
 
 	tstatus = status_get_status_data(bl);
 
@@ -3211,6 +3256,12 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case LG_BANISHINGPOINT:
 	case LG_SHIELDPRESS:
 	case LG_RAGEBURST:
+	case SR_DRAGONCOMBO:
+	case SR_SKYNETBLOW:
+	case SR_FALLENEMPIRE:
+	case SR_RAMPAGEBLASTER:
+	case SR_CRESCENTELBOW_AUTOSPELL:
+	case SR_GATEOFHELL:
 	case SR_GENTLETOUCH_QUIET:
 	case WM_METALICSOUND:
 	case WM_SEVERE_RAINSTORM_MELEE:
@@ -3431,6 +3482,9 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case NC_AXETORNADO:
 	case LG_MOONSLASHER:
 	case LG_EARTHDRIVE:
+	case SR_WINDMILL:
+	case SR_RIDEINLIGHTNING:
+	case SR_TIGERCANNON:
 	case WM_REVERBERATION:
 	case SO_VARETYR_SPEAR:
 	case GN_CART_TORNADO:
@@ -4115,29 +4169,76 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		skill_addtimerskill(src, tick + 300, bl->id, 0, 0, skillid, skilllv, BF_WEAPON, flag|SD_LEVEL);
 		break;
 
+	case SR_KNUCKLEARROW:
+		{
+			if( !map_flag_gvg(src->m) && !map[src->m].flag.battleground && unit_movepos(src, bl->x, bl->y, 1, 1) )
+			{
+				clif_slide(src,bl->x,bl->y);
+				clif_fixpos(src); // Aegis send this packet too.
+			}
+
+			if( flag&1 )
+				skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv, tick, flag|SD_LEVEL);
+			else
+				skill_addtimerskill(src, tick + 300, bl->id, 0, 0, skillid, skilllv, BF_WEAPON, flag|SD_LEVEL|2);
+		}
+		break;
+
+	case SR_HOWLINGOFLION:
+		{
+			status_change_end(bl, SC_SWINGDANCE, -1);
+			status_change_end(bl, SC_SYMPHONYOFLOVER, -1);
+			status_change_end(bl, SC_MOONLITSERENADE, -1);
+			status_change_end(bl, SC_RUSHWINDMILL, -1);
+			status_change_end(bl, SC_ECHOSONG, -1);
+			status_change_end(bl, SC_HARMONIZE, -1);
+			status_change_end(bl, SC_SIRCLEOFNATURE, -1);
+			status_change_end(bl, SC_SATURDAYNIGHTFEVER, -1);
+			status_change_end(bl, SC_DANCEWITHWUG, -1);
+			status_change_end(bl, SC_LERADSDEW, -1);
+			status_change_end(bl, SC_MELODYOFSINK, -1);
+			status_change_end(bl, SC_BEYONDOFWARCRY, -1);
+			status_change_end(bl, SC_UNLIMITEDHUMMINGVOICE, -1);
+			skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv, tick, flag);
+		}
+		break;
+
+	case SR_EARTHSHAKER:
+		if( flag&1 )
+		{
+			if( tsc && (tsc->data[SC_HIDING] || tsc->data[SC_CHASEWALK] || tsc->data[SC_CLOAKING] || tsc->data[SC_CLOAKINGEXCEED]) )
+			{
+				status_change_end(bl, SC_HIDING, -1);
+				status_change_end(bl, SC_CLOAKING, -1);
+				status_change_end(bl, SC_CHASEWALK, -1);
+				status_change_end(bl, SC_CLOAKINGEXCEED, -1);
+				skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv+4, tick, flag);
+			}
+			else
+				skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv, tick, flag);
+		}
+		else
+			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), splash_target(src), src, skillid, skilllv, tick, flag|BCT_ENEMY|SD_SPLASH|1, skill_castend_damage_id);
+		clif_skill_damage(src, src, tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
+		break;
+
 	case WM_LULLABY_DEEPSLEEP:
 		if( rand()%100 < 88 + 2 * skilllv )
 			sc_start(bl,status_skill2sc(skillid),100,skilllv,skill_get_time(skillid,skilllv));
 		break;
 
 	case SO_POISON_BUSTER:
+		if( tsc && tsc->data[SC_POISON] )
 		{
-			struct status_change *tsc = status_get_sc(bl);
-			if( tsc && tsc->data[SC_POISON] )
-			{
-				skill_attack(skill_get_type(skillid), src, src, bl, skillid, skilllv, tick, flag);
-				status_change_end(bl, SC_POISON, -1);
-			}
-			else if( sd )
-			{
-				clif_skill_fail(sd, skillid, 0, 0, 0);
-				break;
-			}
+			skill_attack(skill_get_type(skillid), src, src, bl, skillid, skilllv, tick, flag);
+			status_change_end(bl, SC_POISON, -1);
 		}
+		else if( sd )
+			clif_skill_fail(sd, skillid, 0, 0, 0);
 		break;
 
 	case GN_SPORE_EXPLOSION:
-		if( flag & 1 )
+		if( flag&1 )
 			skill_attack(skill_get_type(skillid), src, src, bl, skillid, skilllv, tick, flag);
 		else
 		{
@@ -4802,6 +4903,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SC_DEADLYINFECT:
 	case LG_EXEEDBREAK:
 	case LG_PRESTIGE:
+	case SR_CRESCENTELBOW:
+	case SR_LIGHTNINGWALK:
 	case SR_GENTLETOUCH_ENERGYGAIN:
 	case SR_GENTLETOUCH_CHANGE:
 	case SR_GENTLETOUCH_REVITALIZE:
@@ -5022,12 +5125,23 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case CH_SOULCOLLECT:
-		if(sd) {
-			clif_skill_nodamage(src,bl,skillid,skilllv,1);
-			for (i = 0; i < 5; i++)
-				pc_addspiritball(sd,skill_get_time(skillid,skilllv),5);
-		}
-		break;
+		if( sd )
+		{
+			if( !sd->sc.data[SC_RAISINGDRAGON] )
+			{
+				for( i = 0; i < 5; i++ )
+					pc_addspiritball(sd, skill_get_time(skillid, skilllv), 5);
+			}
+			else
+			{ //Soul Collect will directly summon 15 spiritballs if RD status is Level 10. [Jobbie]
+				short rd_lvl = dstsd->sc.data[SC_RAISINGDRAGON]->val1;
+				short max = ( rd_lvl == 10 ) ? 15 : 5;
+				for( i = 0; i < max; i++ )
+					pc_addspiritball(sd, skill_get_time(skillid, skilllv), (rd_lvl == 10) ? 15 : 5 + rd_lvl );
+			}
+			clif_skill_nodamage(src, bl, skillid, skilllv, 1);
+ 		}
+ 		break;
 
 	case MO_KITRANSLATION:
 		if(dstsd && (dstsd->class_&MAPID_BASEMASK)!=MAPID_GUNSLINGER) {
@@ -5106,6 +5220,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case GS_SPREADATTACK:
 	case RK_STORMBLAST:
 	case NC_AXETORNADO:
+	case SR_SKYNETBLOW:
+	case SR_RAMPAGEBLASTER:
+	case SR_HOWLINGOFLION:
 		skill_area_temp[1] = 0;
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), splash_target(src), 
@@ -5117,6 +5234,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 	case NC_INFRAREDSCAN:
 	case GC_COUNTERSLASH:
+	case SR_EARTHSHAKER:
+	case SR_WINDMILL:
 	case GN_CART_TORNADO:
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 	case NPC_EARTHQUAKE:
@@ -7732,6 +7851,79 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 
+	case SR_TIGERCANNON:
+		{
+			int hp = sstatus->max_hp*(10 + 2 * skilllv) / 100;
+			int sp = sstatus->max_sp*(5 + 1 * skilllv) / 100;
+			if( sstatus->hp <= hp )
+				hp = sstatus->hp - 1;//Prevent to kill the source.
+			status_zap(src, hp, sp);
+		}
+		clif_skill_damage(src, bl, tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
+		map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), splash_target(src), src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_damage_id);
+		break;
+
+	case SR_CURSEDCIRCLE:
+		if( flag&1 )
+		{
+			if( is_boss(bl) ) break;
+			if( sc_start2(bl, type, 100, skilllv, src->id, skill_get_time(skillid, skilllv)))
+			{
+				clif_bladestop(src, bl->id, 1);
+				map_freeblock_unlock();
+				return 1;
+			}
+		}
+		else
+		{
+			int count = 0;
+			clif_skill_nodamage(src, src, skillid, skilllv,	sc_start(src, SC_CURSEDCIRCLE_ATKER, 100, skilllv, skill_get_time(skillid,skilllv)));
+			count = map_forcountinrange(skill_area_sub, src, skill_get_splash(skillid,skilllv), sd->spiritball_old, BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
+			if( sd ) pc_delspiritball(sd, count, 0);
+		}
+		break;
+
+	case SR_RAISINGDRAGON:
+		if( sd )
+		{
+			short max = 5 + skilllv;
+			clif_skill_nodamage(src, bl, skillid, skilllv, sc_start(bl, type, 100, skilllv,skill_get_time(skillid, skilllv)));
+			sc_start(bl, SC_EXPLOSIONSPIRITS, 100, skilllv, skill_get_time(skillid, skilllv));				
+			for( i = 0; i < max; i++ ) // Don't call more than max available spheres.
+				pc_addspiritball(sd, skill_get_time(skillid, skilllv), max);
+		}
+		break;
+
+	case SR_ASSIMILATEPOWER:
+		if( flag&1 )
+		{
+			i = 0;
+			if( dstsd && dstsd->spiritball && (sd == dstsd || map_flag_vs(src->m)) && (dstsd->class_&MAPID_BASEMASK)!=MAPID_GUNSLINGER )
+			{
+				i = dstsd->spiritball; //1%sp per spiritball.
+				pc_delspiritball(dstsd, dstsd->spiritball, 0);
+			}
+			if( i ) status_percent_heal(src, 0, i); 
+			clif_skill_nodamage(src, bl, skillid, skilllv, i ? 1:0);
+		}
+		else
+			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), splash_target(src), src, skillid, skilllv, tick, flag|BCT_ENEMY|SD_SPLASH|1, skill_castend_nodamage_id);
+		break;
+
+	case SR_POWERVELOCITY:
+		if( !dstsd )
+			break;
+		if( sd && dstsd->spiritball <= 5 )
+		{
+			for(i = 0; i <= 5; i++)
+			{
+				pc_addspiritball(dstsd, skill_get_time(MO_CALLSPIRITS, skilllv), i);
+				pc_delspiritball(sd, sd->spiritball, 0);
+			}
+		}
+		clif_skill_nodamage(src, bl, skillid, skilllv, 1);
+		break;
+
 	case SR_GENTLETOUCH_CURE:
 		if( status_isimmune(bl) ) 
 		{
@@ -8345,8 +8537,13 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 		map_freeblock_lock();
 
 		sc = status_get_sc(src);
-		if( sc && sc->data[SC_CAMOUFLAGE] )
-			status_change_end(src,SC_CAMOUFLAGE,-1);
+		if( sc )
+		{ //Status end during cast end.
+			if( sc->data[SC_CAMOUFLAGE] )
+				status_change_end(src,SC_CAMOUFLAGE,-1);
+			if( sc->data[SC_CURSEDCIRCLE_ATKER] )
+				status_change_end(src,SC_CURSEDCIRCLE_ATKER,-1);
+		}
 
 		if( skill_get_casttype(ud->skillid) == CAST_NODAMAGE )
 			skill_castend_nodamage_id(src,target,ud->skillid,ud->skilllv,tick,flag);
@@ -8601,8 +8798,13 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	type = status_skill2sc(skillid);
 	sce = (sc && type != -1)?sc->data[type]:NULL;
 
-	if( sc && sc->data[SC_CAMOUFLAGE] )
-		status_change_end(src,SC_CAMOUFLAGE,-1);
+	if( sc )
+	{ //Status end during cast end.
+		if( sc->data[SC_CAMOUFLAGE] )
+			status_change_end(src,SC_CAMOUFLAGE,-1);
+		if( sc->data[SC_CURSEDCIRCLE_ATKER] )
+			status_change_end(src,SC_CURSEDCIRCLE_ATKER,-1);
+	}
 
 	switch (skillid) { //Skill effect.
 		case WZ_METEOR:
@@ -8649,6 +8851,12 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		if(battle_config.traps_setting&1)
 		map_foreachinarea( skill_reveal_trap,
 			src->m, x-i, y-i, x+i,y+i,BL_SKILL);
+		break;
+
+	case SR_RIDEINLIGHTNING:
+		i = skill_get_splash(skillid, skilllv);
+		map_foreachinarea(skill_area_sub, src->m, x-i, y-i, x+i, y+i, BL_CHAR, 
+			src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_damage_id);
 		break;
 
 	case SA_VOLCANO:
@@ -9020,6 +9228,8 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		}
 		break;
 
+	case SR_WINDMILL:
+ 		clif_skill_damage(src,src,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
 	case NC_COLDSLOWER:
 	case NC_ARMSCANNON:
 	case RK_DRAGONBREATH:
@@ -9028,8 +9238,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case SO_DIAMONDDUST:
 		i = skill_get_splash(skillid,skilllv);
 		map_foreachinarea(skill_area_sub,src->m,x-i,y-i,x+i,y+i,BL_CHAR,
-			src,skillid,skilllv,tick,flag|BCT_ENEMY|1,
-			skill_castend_damage_id);
+			src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
 		break;		
 
 	case GC_POISONSMOKE:
@@ -11268,6 +11477,8 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		break;
 	case MO_FINGEROFFENSIVE:
 	case GS_FLING:
+	case SR_RAMPAGEBLASTER:
+	case SR_RIDEINLIGHTNING:
 		if( sd->spiritball > 0 && sd->spiritball < require.spiritball )
 			sd->spiritball_old = require.spiritball = sd->spiritball;
 		else
@@ -11298,7 +11509,7 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 	case MO_EXTREMITYFIST:
 //		if(sc && sc->data[SC_EXTREMITYFIST]) //To disable Asura during the 5 min skill block uncomment this...
 //			return 0;
-		if( sc && sc->data[SC_BLADESTOP] )
+		if( sc && (sc->data[SC_BLADESTOP] || sc->data[SC_CURSEDCIRCLE_ATKER]) )
 			break;
 		if( sc && sc->data[SC_COMBO] )
 		{
@@ -11645,6 +11856,30 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			return 0;
 		}
 		sd->rageball_old = require.spiritball = sd->rageball;
+		break;
+	case SR_FALLENEMPIRE:
+		if( !(sc && sc->data[SC_COMBO] && sc->data[SC_COMBO]->val1 == SR_DRAGONCOMBO) )
+			return 0;
+		break;
+	case SR_CRESCENTELBOW:
+		if( sc && sc->data[SC_CRESCENTELBOW] )
+		{
+			clif_skill_fail(sd,skill,0,0,0);
+			return 0;
+		}
+		break;
+	case SR_CURSEDCIRCLE:
+		if( sd->spiritball > 0 )
+			sd->spiritball_old = require.spiritball = sd->spiritball;
+		else
+		{
+			clif_skill_fail(sd,skill,0,0,0);
+			return 0;
+		}
+		break;
+	case SR_GATEOFHELL:
+		if( sd->spiritball > 0 )
+			sd->spiritball_old = require.spiritball;
 		break;
 	case SC_MANHOLE:
 	case SC_DIMENSIONDOOR:
@@ -12234,9 +12469,18 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 					}
 				}
 			}
+			else if( sc->data[SC_RAISINGDRAGON] ) //Only Asura will consume all remaining balls under RD status. [Jobbie]
+					req.spiritball = sd->spiritball?sd->spiritball:15;
 			break;
 		case LG_RAGEBURST:
 			req.spiritball = sd->rageball?sd->rageball:1;
+			break;
+		case SR_RAMPAGEBLASTER:
+			req.spiritball = sd->spiritball?sd->spiritball:15;
+			break;
+		case SR_GATEOFHELL:
+			if( sc && sc->data[SC_COMBO] && sc->data[SC_COMBO]->val1 == SR_FALLENEMPIRE )
+				req.sp -= req.sp * 10 / 100;
 			break;
 
 	}
@@ -12413,6 +12657,8 @@ int skill_delayfix (struct block_list *bl, int skill_id, int skill_lv)
 	case MO_COMBOFINISH:
 	case CH_TIGERFIST:
 	case CH_CHAINCRUSH:
+	case SR_DRAGONCOMBO:
+	case SR_FALLENEMPIRE:
 		time -= 4*status_get_agi(bl) - 2*status_get_dex(bl);
 		break;
 	case HP_BASILICA:
