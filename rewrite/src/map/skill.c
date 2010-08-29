@@ -14519,6 +14519,10 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 				{
 					case 1010: qty = 8; break;
 					case 1061: qty = 2; break;
+					// Throwable potions
+					case 13275: case 13278:
+						qty = 10;
+						break;
 				}
 			case GN_S_PHARMACY:
 				make_per = 100000; //100% success rate.
