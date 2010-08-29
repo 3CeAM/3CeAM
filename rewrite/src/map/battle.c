@@ -645,6 +645,32 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 				status_change_end(bl, SC_KYRIE, -1);
 		}
 
+		if( (sce = sc->data[SC_CRESCENTELBOW]) && flag&BF_WEAPON && !is_boss(bl) && damage > 0 )
+		{
+			if( rand()%100 < 94 + 1 * sce->val1 )
+			{
+				int hp_loss = damage * 10 / 100;
+				status_zap(src, hp_loss, 0);
+				skill_castend_damage_id(bl, src, SR_CRESCENTELBOW_AUTOSPELL, sce->val1, 0, 0);
+				status_change_end(bl, SC_CRESCENTELBOW, -1);
+			}
+		}
+
+		if( (sce = sc->data[SC_LIGHTNINGWALK]) && flag&BF_LONG && damage > 0 )
+		{
+			if( rand()%100 < 88 + 2 * sce->val1 )
+			{
+				short x, y;
+				damage = 0;
+				map_search_freecell(src, 0, &x, &y, 1, 1, 0);
+				unit_movepos(bl, x, y, 1, 1);
+				clif_slide(bl, x, y);
+				clif_fixpos(bl);
+				map_moveblock(bl, x, y, gettick());
+				status_change_end(bl, SC_LIGHTNINGWALK, -1);
+			}
+		}
+
 		if (!damage) return 0;
 
 		//Probably not the most correct place, but it'll do here
@@ -1264,6 +1290,11 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				if( tsc && (tsc->data[SC_BITE] || tsc->data[SC_ANKLE] || tsc->data[SC_ELECTRICSHOCKER]) )
 					wd.div_ = tstatus->size + 2;
  				break;
+
+			case SR_GATEOFHELL:
+				if( sd )
+					wd.div_ = sd->spiritball_old + 2; // 7 Consecutive hits.
+				break;
 		}
 	} else //Range for normal attacks.
 		wd.flag |= flag.arrow?BF_LONG:BF_SHORT;
@@ -1606,6 +1637,10 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					wd.damage = sstatus->rhw.atk2*2;
 				i=100+(40*(skill_lv-1));
 				ATK_ADDRATE(i);
+				break;
+			case SR_CRESCENTELBOW_AUTOSPELL:
+				wd.damage = tstatus->max_hp * 30 / 100;
+				wd.damage2 = 0;
 				break;
 			case HFLI_SBR44:	//[orn]
 				if(src->type == BL_HOM) {
@@ -2164,8 +2199,64 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				case LG_EARTHDRIVE:
 					skillratio = (skillratio + 100) * skill_lv * status_get_lv(src) / 100;
 					break;
+				case SR_DRAGONCOMBO:
+					skillratio += 40 * skill_lv;
+					break;
+				case SR_SKYNETBLOW:
+					skillratio += 50 + 50 * skill_lv + ( sstatus->agi * 4 );
+					break;
+				case SR_EARTHSHAKER:
+					skillratio += 50 * (skill_lv -1);
+					break;
+				case SR_FALLENEMPIRE:
+					if( tsd && tsd->weight )
+						skillratio = (100 + 150 * skill_lv) * tsd->weight / 10000;
+					else if( !sd )
+						skillratio = (100 + 150 * skill_lv) * 600 / 100;
+					break;
+				case SR_TIGERCANNON:
+					skillratio = 2000 + ( sstatus->hp * ( 10 + 2 * skill_lv ) / 100 );
+					break;
+				case SR_RAMPAGEBLASTER:
+					if( sd && sd->spiritball_old > 0 )
+						skillratio = 50 * skill_lv * sd->spiritball_old; //250% at Lv 5 * # of spiritballs
+					if( sc && sc->data[SC_EXPLOSIONSPIRITS] ) //assumed chance percentage to deal x2~x3 damage if in fury state. [Jobbie]
+						skillratio = skillratio * ( (rand()%100 < 35) ? 3 : 2 );
+					break;
+				case SR_KNUCKLEARROW:
+					if( wflag&4 )
+						skillratio = 150 * skill_lv; //+Knockback Damage
+					else
+						skillratio += 400 + (100 * skill_lv);
+					break;
+				case SR_WINDMILL:
+					skillratio += 150;
+					break;
+				case SR_GATEOFHELL:
+					{ //TODO: Fill up with correct formula. Although this calculation is close to official but still its custom. [Jobbie]
+						int hp_rate = sstatus->hp * 100 / sstatus->max_hp;
+
+						if( hp_rate <= 100 && hp_rate >= 80 )
+							skillratio = 50 * skill_lv + ( sstatus->max_hp * 2 / 100 );
+						else if( hp_rate <= 79 && hp_rate >= 60 )
+							skillratio = 50 * skill_lv + ( sstatus->max_hp * 4 / 100 );
+						else if( hp_rate <= 59 && hp_rate >= 40 )
+							skillratio = 50 * skill_lv + ( sstatus->max_hp * 6 / 100 );
+						else if( hp_rate <= 39 && hp_rate >= 20 )
+							skillratio = 50 * skill_lv + ( sstatus->max_hp * 8 / 100 );
+						else
+							skillratio = 50 * skill_lv + ( sstatus->max_hp * 10 / 100 );
+					}
+					break;
 				case SR_GENTLETOUCH_QUIET:
 					skillratio += 100 * (skill_lv - 1) + sstatus->dex;
+					break;
+				case SR_HOWLINGOFLION:
+					skillratio += 300 * skill_lv - 100;
+					break;
+				case SR_RIDEINLIGHTNING:
+					if( sd && sd->spiritball_old > 0 )
+						skillratio += (100 * skill_lv) + sstatus->dex * sd->spiritball_old;
 					break;
 				case WM_METALICSOUND:
 					skillratio += 450 + (50 * skill_lv);
@@ -2321,6 +2412,14 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				ATK_ADDRATE(status_get_lv(src)/6);//Should led up to 1.25 times the normal damage if Blevel is 150. [Jobbie]
 				if( skill_num == NC_AXETORNADO && ((sstatus->rhw.ele) == ELE_WIND || (sstatus->lhw.ele) == ELE_WIND) )
 					ATK_ADDRATE(50);
+				break;
+			case SR_EARTHSHAKER:
+				if( tsc && (tsc->data[SC_HIDING] || tsc->data[SC_CLOAKING] || tsc->data[SC_CHASEWALK] || tsc->data[SC_CLOAKINGEXCEED]) )
+					ATK_ADDRATE(150+150*skill_lv);
+				break;
+			case SR_RIDEINLIGHTNING:
+				if( (sstatus->rhw.ele) == ELE_WIND || (sstatus->lhw.ele) == ELE_WIND )
+					ATK_ADDRATE(20);
 				break;
 		}
 		
