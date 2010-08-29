@@ -212,7 +212,7 @@
 6284,Plant_Genetic_Cultivation_Guide,Plant Genetic Cultivation Guide,3,1500,,10,,,,,,,,,,,,,{},{},{}
 6285,Improved_Potion_Creation_Manual,Improved Potion Creation Manual,3,1000,,10,,,,,,,,,,,,,{},{},{}
 
-6297,Empty_Potion_Bottle,Empty Potion Bottle,3,10,,10,,,,,,,,,,,,,{},{},{}
+6297,Throwing_Bottle,Throwing Bottle,3,10,,10,,,,,,,,,,,,,{},{},{}
 
 // Sorcerer Elemental Points
 6360,Scarlet_Point,Scarlet Point,3,100,,5,,,,,,,,,,,,,{},{},{}
@@ -335,28 +335,28 @@
 13268,Mysterious_Powder,Mysterious Powder,11,10,,100,100,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
 
 // Generic Created Throwable Booster Items
-13269,Throwing_Boost_500,Throwing Boost 500,11,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13270,Throwing_Full_Swing_K,Throwing Full Swing K,11,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13271,Throwing_Manaplus,Throwing Manaplus,11,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13272,Throwing_Cure_Free,Throwing Cure Free,11,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13273,Throwing_Muramura_M,Throwing Muramura M,11,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13274,Throwing_Falmons_F,Throwing Falmons F,11,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13275,Throwing_Increase_HP_Potion_(Small),Throwing Increase HP Potion (Small),11,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13276,Throwing_Increase_HP_Potion_(Medium),Throwing Increase HP Potion (Medium),11,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13277,Throwing_Increase_HP_Potion_(Large),Throwing Increase HP Potion (Large),11,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13278,Throwing_Increase_SP_Potion_(Small),Throwing Increase SP Potion (Small),11,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13279,Throwing_Increase_SP_Potion_(Medium),Throwing Increase SP Potion (Medium),11,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13280,Throwing_Increase_SP_Potion_(Large),Throwing Increase SP Potion (Large),11,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13281,Throwing_Concentrated_White_Potion_Z,Throwing Concentrated White Potion Z,11,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13282,Throwing_Vitata_500,Throwing Vitata 500,11,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13283,Throwing_Ceromain_Soup,Throwing Ceromain Soup,11,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13284,Throwing_Savage_Full_Roast,Throwing Savage Full Roast,11,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13285,Throwing_Cocktail_Warg_Blood,Throwing Cocktail Warg Blood,11,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13286,Throwing_Minor_Stew,Throwing Minor Stew,11,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13287,Throwing_Siroma_Iced_Tea,Throwing Siroma Iced Tea,11,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13288,Throwing_Drosera_Herb_Salad,Throwing Drosera Herb Salad,11,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13289,Throwing_Petite_Tail_Soup,Throwing Petite Tail Soup,11,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13290,Throwing_Black_Mass,Throwing Black Mass,11,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13269,Throwing_Boost_500,Throwing Boost 500,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13270,Throwing_Full_Swing_K,Throwing Full Swing K,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13271,Throwing_Manaplus,Throwing Manaplus,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13272,Throwing_Cure_Free,Throwing Cure Free,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13273,Throwing_Muramura_M,Throwing Muramura M,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13274,Throwing_Falmons_F,Throwing Falmons F,11,17,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13275,Throwing_Increase_HP_Potion_(Small),Throwing Increase HP Potion (Small),17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13276,Throwing_Increase_HP_Potion_(Medium),Throwing Increase HP Potion (Medium),17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13277,Throwing_Increase_HP_Potion_(Large),Throwing Increase HP Potion (Large),17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13278,Throwing_Increase_SP_Potion_(Small),Throwing Increase SP Potion (Small),17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13279,Throwing_Increase_SP_Potion_(Medium),Throwing Increase SP Potion (Medium),17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13280,Throwing_Increase_SP_Potion_(Large),Throwing Increase SP Potion (Large),17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13281,Throwing_Concentrated_White_Potion_Z,Throwing Concentrated White Potion Z,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13282,Throwing_Vitata_500,Throwing Vitata 500,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13283,Throwing_Ceromain_Soup,Throwing Ceromain Soup,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13284,Throwing_Savage_Full_Roast,Throwing Savage Full Roast,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13285,Throwing_Cocktail_Warg_Blood,Throwing Cocktail Warg Blood,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13286,Throwing_Minor_Stew,Throwing Minor Stew,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13287,Throwing_Siroma_Iced_Tea,Throwing Siroma Iced Tea,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13288,Throwing_Drosera_Herb_Salad,Throwing Drosera Herb Salad,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13289,Throwing_Petite_Tail_Soup,Throwing Petite Tail Soup,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13290,Throwing_Black_Mass,Throwing Black Mass,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
 
 // Unknown Item. Rune Knight Armor???
 15002,Rune_Plate,Rune Plate,3,10,,10,,,,,,,,,,,,,{},{},{}
