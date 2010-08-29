@@ -2633,7 +2633,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	if( pc_isriding(sd,OPTION_RIDING) && !(sd->class_&JOBL_THIRD) )
 		status->aspd_rate += 500 - 100 * pc_checkskill(sd,KN_CAVALIERMASTERY);
 	if( pc_isriding(sd,OPTION_RIDING_DRAGON) && (sd->class_&JOBL_THIRD) && (skill = pc_checkskill(sd,RK_DRAGONTRAINING)) > 0 )
-		status->aspd_rate += 500-100*pc_checkskill(sd,RK_DRAGONTRAINING);
+		status->aspd_rate += 500 - 100 * pc_checkskill(sd,RK_DRAGONTRAINING);
 
 	status->adelay = 2 * status->amotion;
 
@@ -2653,7 +2653,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	if( pc_isriding(sd,OPTION_RIDING) && pc_checkskill(sd,KN_RIDING) > 0 )
 		sd->max_weight += 10000; // Same in gryphons
 	if( pc_isriding(sd,OPTION_RIDING_DRAGON) && (skill = pc_checkskill(sd,RK_DRAGONTRAINING)) > 0 )
-		sd->max_weight += sd->max_weight * (30 + skill) / 100;
+		sd->max_weight += 500  + 200 * skill; // 700(Lv1) ~ 1500(Lv5)
 	if( sd->sc.option&OPTION_MADO )
 		sd->max_weight += 20000;
 	if( sc->data[SC_KNOWLEDGE] )
@@ -9179,6 +9179,13 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC_ELECTRICSHOCKER:
 			case SC__MANHOLE:
 			case SC__MAELSTROM:
+			case SC_THURISAZ:
+			case SC_BERKANA:
+			case SC_NAUTHIZ:
+			case SC_HAGALAZ:
+			case SC_ISA:
+			case SC_OTHILA:
+			case SC_URUZ:
 			// Extra large skills cooldowns
 			case SC_SAVAGE_STEAK:
 			case SC_COCKTAIL_WARG_BLOOD:
