@@ -5134,7 +5134,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			}
 			else
 			{ //Soul Collect will directly summon 15 spiritballs if RD status is Level 10. [Jobbie]
-				short rd_lvl = dstsd->sc.data[SC_RAISINGDRAGON]->val1;
+				short rd_lvl = sd->sc.data[SC_RAISINGDRAGON]->val1;
 				short max = ( rd_lvl == 10 ) ? 15 : 5;
 				for( i = 0; i < max; i++ )
 					pc_addspiritball(sd, skill_get_time(skillid, skilllv), (rd_lvl == 10) ? 15 : 5 + rd_lvl );
@@ -12470,9 +12470,9 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 							break;
 					}
 				}
-			}
-			else if( sc->data[SC_RAISINGDRAGON] ) //Only Asura will consume all remaining balls under RD status. [Jobbie]
+				else if( sc->data[SC_RAISINGDRAGON] ) //Only Asura will consume all remaining balls under RD status. [Jobbie]
 					req.spiritball = sd->spiritball?sd->spiritball:15;
+			}
 			break;
 		case LG_RAGEBURST:
 			req.spiritball = sd->rageball?sd->rageball:1;
