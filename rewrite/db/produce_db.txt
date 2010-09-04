@@ -471,11 +471,11 @@
 //-- Apple Bomb <-- GN_MAKEBOMB & Apple Bomb Guide & Apple & Scell & Dark Powder & Detonator
 13260,28,2496,1,6279,0,512,1,911,1,6244,1,1051,1
 //-- Coconut Bomb <-- GN_MAKEBOMB & Coconut Bomb Guide & Coconut & 2 Dark Powder & Detonator
-13261,28,2496,1,6280,0,6263,1,6244,2,1051,1
+13261,28,2496,1,6281,0,6263,1,6244,2,1051,1
 //-- Melon Bomb <-- GN_MAKEBOMB & Melon Bomb Guide & Melon & Sticky Mucus & 2 Dark Powder & Detonator
-13262,28,2496,1,6281,0,6264,1,938,1,6244,2,1051,1
+13262,28,2496,1,6282,0,6264,1,938,1,6244,2,1051,1
 //-- Pineapple Bomb <-- GN_MAKEBOMB & Pineapple Bomb Guide & Pineapple & Cactus Needle & 3 Dark Powder & Detonator
-13263,28,2496,1,6282,0,6265,1,952,1,6244,3,1051,1
+13263,28,2496,1,6280,0,6265,1,952,1,6244,3,1051,1
 //-- Banana Bomb <-- GN_MAKEBOMB & Banana Bomb Guide & Banana & 4 Dark Powder & Detonator & (missing item mold powder?)
 13264,28,2496,1,6283,0,513,1,6244,4,1051,1
 
