@@ -85,7 +85,7 @@ int pc_class2idx(int class_) {
 
 int pc_isGM(struct map_session_data* sd)
 {
-	return sd->gmlevel;
+	return (sd) ? sd->gmlevel : 0;
 }
 
 static int pc_invincible_timer(int tid, unsigned int tick, int id, intptr data)

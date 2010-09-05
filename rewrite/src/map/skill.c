@@ -8087,10 +8087,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		{
 			sc_start2(bl,type,100,skilllv,skill_area_temp[0],skill_get_time(skillid,skilllv));
 		}
-		else if( sd )
+		else
 		{	// These affect to all targets arround the caster.
 			short lv = (short)skilllv;
-			skill_area_temp[0] = skill_check_pc_partner(sd,skillid,&lv,skill_get_splash(skillid,skilllv),1);
+			skill_area_temp[0] = (sd) ? skill_check_pc_partner(sd,skillid,&lv,skill_get_splash(skillid,skilllv),1) : 50; // 50% chance in non BL_PC (clones).
 			map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid,skilllv),BL_PC, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
@@ -8134,7 +8134,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		else
 		{
 			short lv = (short)skilllv;
-			skill_area_temp[0] = skill_check_pc_partner(sd,skillid,&lv,skill_get_splash(skillid,skilllv),1);
+			skill_area_temp[0] = (sd) ? skill_check_pc_partner(sd,skillid,&lv,skill_get_splash(skillid,skilllv),1) : 50; // 50% chance in non BL_PC (clones).
 			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid,skilllv),BL_PC, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
@@ -8448,11 +8448,10 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 				if( ((TBL_MOB*)target)->class_ == MOBID_EMPERIUM )
 					break;
 			}
-			else if( ud->skillid == RK_PHANTOMTHRUST && sd && sd->status.party_id && target->type == BL_PC )
-			{	// You can use Phantom Thurst on party members in normal maps too. [pakpil]
-				struct map_session_data *tsd = BL_CAST(BL_PC,target);
-				if( !(tsd && tsd->status.party_id && tsd->status.party_id == sd->status.party_id) )
-					break;
+			else if( ud->skillid == RK_PHANTOMTHRUST && target->type != BL_MOB )
+			{
+				if( !map_flag_vs(src->m) && battle_check_target(src,target,BCT_PARTY) <= 0 )
+					break; 	// You can use Phantom Thurst on party members in normal maps too. [pakpil]
 			}
 			else if( ud->skillid != SC_SHADOWFORM && inf && battle_check_target(src, target, inf) <= 0 )
 				break;
@@ -11248,6 +11247,8 @@ int skill_check_pc_partner(struct map_session_data *sd, short skill_id, short* s
 	static int c = 0;
 	static int p_sd[MAX_PARTY] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	int i;
+
+	nullpo_retr(0,sd);
 
 	if( !battle_config.player_skill_partner_check || (battle_config.gm_skilluncond && pc_isGM(sd) >= battle_config.gm_skilluncond) )
 		return 99; //As if there were infinite partners.
