@@ -2151,22 +2151,22 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					skillratio += 100 + 100 * skill_lv;
 					break;
 				case LG_CANNONSPEAR:// Stimated formula. Still need confirm it.
-					skillratio += -100 + (50 * skill_lv) * ( sstatus->str / 50 ) * (status_get_lv(src) / 100);
+					skillratio += -100 + ((50  + sstatus->str) * skill_lv * s_level / 100);
 					break;
 				case LG_BANISHINGPOINT:
-					skillratio = ((50 * skill_lv) + (30 * ((sd)?pc_checkskill(sd,SM_BASH):1))) * status_get_lv(src) / 100;
+					skillratio += -100 + (((50 * skill_lv) + (30 * ((sd)?pc_checkskill(sd,SM_BASH):1))) * s_level / 100);
 					break;
 				case LG_SHIELDPRESS:
-					skillratio += 60 + 43 * skill_lv * status_get_lv(src) / 100;
+					skillratio += 60 + 43 * skill_lv * s_level / 100;
 					if( sc && sc->data[SC_GLOOMYDAY_SK] )
 						skillratio += 80 + (5 * sc->data[SC_GLOOMYDAY_SK]->val1);
 					break;
 				case LG_PINPOINTATTACK:
-					skillratio = ((100 * skill_lv) + (10 * status_get_agi(src)) ) * status_get_lv(src) / 100;
+					skillratio = ((100 * skill_lv) + (10 * status_get_agi(src)) ) * s_level / 100;
 					break;
 				case LG_RAGEBURST:
 					if( sd && sd->rageball_old )
-						skillratio = sd->rageball_old * 200 * status_get_lv(src) / 100;
+						skillratio += -100 + (sd->rageball_old * 200 * s_level / 100);
 					break;
 				case LG_SHIELDSPELL:
 					if( wflag&1 )
@@ -2185,19 +2185,19 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 						skillratio += (sd) ? sd->shieldmdef * 20 : 1000;
 					break;
 				case LG_MOONSLASHER:
-					skillratio = ((skillratio + 20) * skill_lv + ((sd) ? pc_checkskill(sd,LG_OVERBRAND) : 5) * 20) * (status_get_lv(src) / 100);
+					skillratio += -100 + (120 * skill_lv + ((sd) ? pc_checkskill(sd,LG_OVERBRAND) : 5) * 80) * s_level / 100;
 					break;
 				case LG_OVERBRAND:
-					skillratio += ((2567 * skill_lv / 10) + ((sd) ? pc_checkskill(sd,CR_SPEARQUICKEN): 1)) * (status_get_lv(src) / 100);
+					skillratio += ((2567 * skill_lv / 10) + ((sd) ? pc_checkskill(sd,CR_SPEARQUICKEN): 1)) * s_level / 100;
 					break;
 				case LG_OVERBRAND_BRANDISH:
-					skillratio = ((200 * skill_lv) +  (2 * (status_get_str(src) + status_get_dex(src)) / 3)) * status_get_lv(src) / 100;
+					skillratio += -100 + ((200 * skill_lv) +  (2 * (status_get_str(src) + status_get_dex(src)) / 3)) * s_level / 100;
 					break;
 				case LG_OVERBRAND_PLUSATK:
-					skillratio = 160 * skill_lv * status_get_lv(src) / 100;
+					skillratio = 160 * skill_lv * s_level / 100;
 					break;
 				case LG_EARTHDRIVE:
-					skillratio = (skillratio + 100) * skill_lv * status_get_lv(src) / 100;
+					skillratio = (skillratio + 100) * skill_lv * s_level / 100;
 					break;
 				case SR_DRAGONCOMBO:
 					skillratio += 40 * skill_lv;

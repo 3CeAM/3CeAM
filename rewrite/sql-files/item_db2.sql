@@ -95,7 +95,8 @@ CREATE TABLE `item_db2` (
 
 # ========================================================================
 # ================ 3rd Job Related Item database =========================
-# ========================================================================REPLACE INTO `item_db2` VALUES (1191,'Alcabringer','Alcabringer',4,20,NULL,3400,280,NULL,1,0,0x00004080,8,2,34,3,100,1,3,'','','');
+# ========================================================================
+REPLACE INTO `item_db2` VALUES (1191,'Alcabringer','Alcabringer',4,20,NULL,3400,280,NULL,1,0,0x00004080,8,2,34,3,100,1,3,'','','');
 REPLACE INTO `item_db2` VALUES (1287,'Dulga','Dulga',4,20,NULL,1200,190,NULL,1,1,0x00001000,8,2,34,3,100,1,16,'','','');
 REPLACE INTO `item_db2` VALUES (1649,'Lapine_Staff','Lapine Staff',4,20,NULL,500,30,NULL,1,0,0x00018300,8,2,2,3,100,1,10,'bonus bMatkRate,30; bonus bFixCastRate,-getrefine();','','');
 REPLACE INTO `item_db2` VALUES (1746,'Elven_Bow','Elven Bow',4,20,NULL,1500,160,NULL,5,1,0x00080800,8,2,34,3,100,1,11,'','','');

@@ -5862,7 +5862,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		status_change_end(bl,SC_ASSUMPTIO,-1);
 		break;
 	case SC_CARTBOOST:
-		if(sc->data[SC_DECREASEAGI] && sc->data[SC_ADORAMUS])
+		if(sc->data[SC_DECREASEAGI] || sc->data[SC_ADORAMUS])
 		{	//Cancel Decrease Agi, but take no further effect [Skotlex]
 			status_change_end(bl,SC_DECREASEAGI,-1);
 			status_change_end(bl,SC_ADORAMUS,-1);
