@@ -65,12 +65,10 @@
 // ================ 3rd Job Related Item database =========================
 
 // 3rd Class Weapons
-// Weapons needing bonuses scripts
-// Alcabringer - Every 2 refines add +1 ASPD
-1191,Alcabringer,Alcabringer,4,20,,3400,280,,1,0,0x00004080,8,2,34,3,100,1,3,{},{},{}
+1191,Alcabringer,Alcabringer,4,20,,3400,280,,1,0,0x00004080,8,2,34,3,100,1,3,{ bonus bAspd,getrefine()/2; },{},{}
 1287,Dulga,Dulga,4,20,,1200,190,,1,1,0x00001000,8,2,34,3,100,1,16,{},{},{}
 1649,Lapine_Staff,Lapine Staff,4,20,,500,30,,1,0,0x00018300,8,2,2,3,100,1,10,{ bonus bMatkRate,30; bonus bFixCastRate,-getrefine(); },{},{}
-1746,Elven_Bow,Elven Bow,4,20,,1500,160,,5,1,0x00080800,8,2,34,3,100,1,11,{},{},{}
+1746,Elven_Bow,Elven Bow,4,20,,1500,160,,5,1,0x00080800,8,2,34,3,100,1,11,{ bonus bDex,2; },{},{}
 16003,Kalga_Mace,Kalga Mace,4,20,,1500,175,,1,2,0x0004C580,8,2,2,3,100,1,8,{},{},{}
 
 // Mechanic Mado Weapons
@@ -379,8 +377,8 @@
 18004,Iron_Cannon_Ball,Iron Cannon Ball,19,500,,10,250,,,,0xFFFFFFFF,8,2,32768,,1,,8,{ bonus bAtkEle,Ele_Neutral; },{},{}
 
 // New Weapons In Work And Testing
-1196,Chrome_Metal_Two-Hand_Sword,Chrome Metal Two-Hand Sword,4,10,,400,280,,1,0,0x00004080,8,2,34,3,110,1,3,{},{},{}
-1433,Imperial_Spear,Imperial Spear,4,10,,1800,180,,3,1,0x00004000,8,2,2,3,102,1,2,{},{},{}
+1196,Chrome_Metal_Two-Hand_Sword,Chrome Metal Two-Hand Sword,4,10,,400,280,,1,0,0x00004080,8,2,34,3,110,1,3,{ bonus bAgi,3; bonus bMaxHPrate,-10; },{},{}
+1433,Imperial_Spear,Imperial Spear,4,10,,1800,180,,3,1,0x00004000,8,2,2,3,102,1,2,{ bonus2 bSkillAtk,"LG_CANNONSPEAR",20+getrefine()*3/2; bonus2 bSkillAtk,"LG_BANISHINGPOINT",20+getrefine()*3/2; if( isequipped(2153,2372) ) bonus2 bSkillAtk,"LG_RAYOFGENESIS",10; },{},{}
 1654,Mental_Stick,Mental Stick,4,10,,500,40,,1,1,0x00010000,8,2,2,3,102,1,10,{},{},{}
 1830,Great_King's_Dance,Great King's Dance,4,10,,500,142,,1,1,0x00008000,8,2,2,3,102,1,12,{},{},{}
 1930,Green_Whistle,Green Whistle,4,10,,800,170,,1,1,0x00080000,8,1,2,3,102,1,13,{},{},{}
