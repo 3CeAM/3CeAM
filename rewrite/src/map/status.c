@@ -4624,6 +4624,8 @@ static unsigned int status_calc_maxhp(struct block_list *bl, struct status_chang
 		maxhp += maxhp * 3 * sc->data[SC_FORCEOFVANGUARD]->val1 / 100;
 	if(sc->data[SC_INSPIRATION]) //Custom value.
 		maxhp += maxhp * 3 * sc->data[SC_INSPIRATION]->val1 / 100;
+	if(sc->data[SC_RAISINGDRAGON])
+		maxhp += maxhp / 100 * (2 + sc->data[SC_RAISINGDRAGON]->val1);
 	if(sc->data[SC_GT_CHANGE])
 		maxhp -= maxhp * (2 * sc->data[SC_GT_CHANGE]->val1) / 100;
 	if(sc->data[SC_GT_REVITALIZE])
