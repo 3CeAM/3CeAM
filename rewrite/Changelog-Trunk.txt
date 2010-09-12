@@ -3,6 +3,58 @@ Date	Added
 AS OF SVN REV. 5091, WE ARE NOW USING TRUNK.  ALL UNTESTED BUGFIXES/FEATURES GO INTO TRUNK.
 IF YOU HAVE A WORKING AND TESTED BUGFIX PUT IT INTO STABLE AS WELL AS TRUNK.
 
+2010/09/12
+	* All direct damages such as reflected damage or Tarot Card damage should not be redirected. (follow up to r14400)[Inkfish]
+2010/09/08
+	* All mobs whose display sprites are those of a job id will now appropriately be identified to the client as players, not mobs. [Paradox924X]
+	* Updated License from GNU GPLv2 to GNU GPLv3. [Paradox924X]
+2010/09/07
+	* Added MD_TARGETWEAK to list of modes not to give a player when calculating player data.
+	- This makes evilclones aggressive towards players. (bugreport:3280) [Paradox924X]
+	* Ensure a pointer is valid within map_readfromcache() before attempting to access its members. [Paradox924X]
+2010/09/06
+	* Rev. 14400 Implemented Icescope's fix for devotion, reflect damage is no longer absorbed by the devoter. (bugreport:3189) [L0ne_W0lf]
+	* As a folow up to r14301, increased MAX_REG_NUM to 256, to prevent possible data loss.
+2010/08/28
+	* Force a map_quit() call on the session data after a block/ban/changesex/acc deletion to remove leftovers of a player's session
+	  caused by when the fd has already been set to eof (player is not connected) but session data is kept (e.g. autotrading). [Paradox924X]
+	* Replaced a map_moveblock() call with a call to unit_movepos() to prevent an exploit. [Paradox924X]
+2010/08/26
+	* Rev. 14395 instance_npcname will now error if the NPC being looked up is not found, care of ramsey. [L0ne_W0lf]
+	* delitem/2 will now send the close button when failing to find all neccecary items to delete.
+	- Still do to, items should not be deleted as-found, and should be deleted once counted
+	  and in the event of delitem failure, nothing should be consumed. This is a design flaw
+	  in eathena, and should be fixed as soon as possible.
+2010/08/21
+	* Rev. 14393 Follow up to r14392, forgot to remove the old snprintf. [L0ne_W0lf]
+	* Rev. 14392 Mob chat now strips "#unique" names off monsters, curtosy of Daegaladh. [L0ne_W0lf]
+2010/08/20
+	* Rev. 14390 Commented out code from r14388, as this breaks NPCs that rely on running global events in duplicates. (IE: WoE scripts) [L0ne_W0lf]
+	* Removed processing for undocumented and unused event 'OnCharIfInit' which is essentially an alias for event 'OnInterIfInit'. [Paradox924X]
+	* Made it so global events don't get executed in duplicates to prevent unnecessary reprocessing of events that only need to be run once.
+	  This potentially reduces the total number of global events by hundreds, even thousands. [Paradox924X]
+	* Added a few missing updates to the last packet update to properly support player clones and disguising. [Skotlex]
+2010/08/19
+	* Rev. 14384 Follow up to r14383, changed use of clif_font_area to clif_font, seems Skotlex forgot them. [L0ne_W0lf]
+	* Added support for packets 0x7fa, 0x7f7, 0x7f8, 0x7f9. These are for renewal
+	  clients and fixes deletion of ammo/displaying of Homunculus HP/SP bars on recent RE clients. [Skotlex]
+2010/08/18
+	* Rev. 14381 Added bonus3 bAdd/SubEle, which allows you to specify a battle flag as well! Dun dun dun! [L0ne_W0lf]
+	- The bonuses are addititive to existing bAdd/SubEles, as that's how it appears to work.
+2010/08/16
+	* Fixed an exploit where unauthorized GMs can give zeny through auction. [Inkfish]
+	* Rev. 14378 Attempting to tackle, and fix some simple errors in skills. [L0ne_W0lf]
+	- Stormgust hit counter no longer resets under new casts of stormgust.
+	- RG_STEALCOIN will now cause the monster to aggro player on success. (bugreport:3547)
+	- SL_WIZARD will now consume one crystal fragment per reflected hit. (bugreport:3603)
+	- WZ_FROSTNOVA will now ignore targets in area that are already frozen. (bugreport:3980)
+	- SL_KAAHI will no longer use SP if player has full health already. (bugreport:3918)
+	- CG_TAROTCARD "The Lovers" will heal source player instead of target. (bugreport:4171)
+	* Merged Shinryo's patch which speeds up map-cache loading (with a few changes, see eA forum thread #253218 for details) [Skotlex]
+2010/08/14
+	* Rev. 14373 Quest log kill count now updated properly. (Added from topic 253813) [L0ne_W0lf]
+2010/08/11
+	* Documented Battleground commands with as much information as I've got. [L0ne_W0lf]
 2010/08/03
 	* Merged quite a bit of the RagexeRE eA Compatibility patch (eA topic 222623) to support the more recent clients. [Skotlex]
 2010/07/27

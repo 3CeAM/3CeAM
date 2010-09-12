@@ -48,7 +48,7 @@ struct unit_data* unit_bl2ud(struct block_list *bl)
 	if( bl->type == BL_NPC) return &((struct npc_data*)bl)->ud;
 	if( bl->type == BL_HOM) return &((struct homun_data*)bl)->ud;
 	if( bl->type == BL_MER) return &((struct mercenary_data*)bl)->ud;
-	if( bl->type == BL_ELE) return &((struct elemental_data*)bl)->ud;
+	if( bl->type == BL_ELEM) return &((struct elemental_data*)bl)->ud;
 	return NULL;
 }
 
@@ -2121,7 +2121,7 @@ int unit_remove_map_(struct block_list *bl, int clrtype, const char* file, int l
 		}
 		break;
 	}
-	case BL_ELE:
+	case BL_ELEM:
 	{
 		struct elemental_data *ed = (struct elemental_data *)bl;
 		ud->canact_tick = ud->canmove_tick;
@@ -2392,9 +2392,9 @@ int unit_free(struct block_list *bl, int clrtype)
 			merc_contract_stop(md);
 			break;
 		}
-		case BL_ELE:
+		case BL_ELEM:
 		{
-			struct elemental_data *ed = (TBL_ELE*)bl;
+			struct elemental_data *ed = (TBL_ELEM*)bl;
 			struct map_session_data *sd = ed->master;
 			if( clrtype >= 0 )
 			{

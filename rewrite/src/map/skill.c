@@ -1983,15 +1983,11 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 
 			//Spirit of Wizard blocks Kaite's reflection
 			if( type == 2 && sc && sc->data[SC_SPIRIT] && sc->data[SC_SPIRIT]->val2 == SL_WIZARD )
-			{	//It should only consume once per skill casted. Val3 is the skill id and val4 is the ID of the damage src.
+			{	//Consume one Fragment per hit of the casted skill. Val3 is the skill id and val4 is the ID of the damage src.
 				//This should account for ground spells (and single target spells will be completed on castend_id) [Skotlex]
-				if (tsd && !(sc->data[SC_SPIRIT]->val3 == skillid && sc->data[SC_SPIRIT]->val4 == dsrc->id) )
-				{	//Check if you have stone to consume.
-				  	type = pc_search_inventory (tsd, 7321);
-					if (type >= 0)
-						pc_delitem(tsd, type, 1, 0);
-				} else
-					type = 0;
+			  	type = pc_search_inventory (tsd, 7321);
+				if (type >= 0)
+					pc_delitem(tsd, type, 1, 0, 1);
 
 				if (type >= 0) {
 					dmg.damage = dmg.damage2 = 0;
@@ -2031,6 +2027,23 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 	if( damage > 0 && ((dmg.flag&BF_WEAPON && src != bl && ( src == dsrc || ( dsrc->type == BL_SKILL && ( skillid == SG_SUN_WARM || skillid == SG_MOON_WARM || skillid == SG_STAR_WARM ) ) )
 		&& skillid != WS_CARTTERMINATION) || (sc && sc->data[SC_REFLECTDAMAGE])) )
 		rdamage = battle_calc_return_damage(src, bl, &damage, dmg.flag);
+
+	if( sc && sc->data[SC_DEVOTION] && skillid != PA_PRESSURE )
+	{
+		struct status_change_entry *sce = sc->data[SC_DEVOTION];
+		struct block_list *d_bl = map_id2bl(sce->val1);
+
+		if( d_bl && (
+			(d_bl->type == BL_MER && ((TBL_MER*)d_bl)->master && ((TBL_MER*)d_bl)->master->bl.id == bl->id) ||
+			(d_bl->type == BL_PC && ((TBL_PC*)d_bl)->devotion[sce->val2] == bl->id)
+			) && check_distance_bl(bl, d_bl, sce->val3) )
+		{
+			clif_damage(d_bl, d_bl, gettick(), 0, 0, damage, 0, 0, 0);
+			status_fix_damage(NULL, d_bl, damage, 0);
+		}
+		else
+			status_change_end(bl, SC_DEVOTION, -1);
+	}
 
 	//Skill hit type
 	type=(skillid==0)?5:skill_get_hit(skillid);
@@ -2303,7 +2316,8 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 
 	if( !dmg.amotion )
 	{ //Instant damage
-		status_fix_damage(src,bl,damage,dmg.dmotion); //Deal damage before knockback to allow stuff like firewall+storm gust combo.
+		if( !sc || !sc->data[SC_DEVOTION] )
+			status_fix_damage(src,bl,damage,dmg.dmotion); //Deal damage before knockback to allow stuff like firewall+storm gust combo.
 		if( !status_isdead(bl) )
 			skill_additional_effect(src,bl,skillid,skilllv,dmg.flag,dmg.dmg_lv,tick);
 		if( damage > 0 ) //Counter status effects [Skotlex]
@@ -2772,7 +2786,7 @@ static int skill_check_condition_mercenary(struct block_list *bl, int skill, int
 	// Consume items
 	for( i = 0; i < ARRAYLENGTH(itemid); i++ )
 	{
-		if( index[i] >= 0 ) pc_delitem(sd, index[i], amount[i], 0);
+		if( index[i] >= 0 ) pc_delitem(sd, index[i], amount[i], 0, 1);
 	}
 
 	if( type&2 )
@@ -4361,7 +4375,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	hd = BL_CAST(BL_HOM, src);
 	md = BL_CAST(BL_MOB, src);
 	mer = BL_CAST(BL_MER, src);
-	ele = BL_CAST(BL_ELE, src);
+	ele = BL_CAST(BL_ELEM, src);
 
 	dstsd = BL_CAST(BL_PC, bl);
 	dstmd = BL_CAST(BL_MOB, bl);
@@ -5528,7 +5542,12 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case RG_STEALCOIN:
 		if(sd) {
 			if(pc_steal_coin(sd,bl))
+			{
+				dstmd->state.provoke_flag = src->id;
+				mob_target(dstmd, src, skill_get_range2(src,skillid,skilllv));
 				clif_skill_nodamage(src,bl,skillid,skilllv,1);
+
+			} 
 			else
 				clif_skill_fail(sd,skillid,0,0,0);
 		}
@@ -6675,7 +6694,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 					sc_start(bl,SC_INCATKRATE,100,-50,skill_get_time2(skillid,skilllv));
 					break;
 				case 5:	// 2000HP heal, random teleported
-					status_heal(bl, 2000, 0, 0);
+					status_heal(src, 2000, 0, 0);
 					if( !map_flag_vs(bl->m) )
 						unit_warp(bl, -1,-1,-1, 3);
 					break;
@@ -10542,15 +10561,9 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 						++count < SKILLUNITTIMER_INTERVAL/sg->interval && !status_isdead(bl) );
 				}
 				break;
-				case WZ_STORMGUST:
-					if (tsc)
-					{	//Reset hit counter when under new storm gust.
-						if (tsc->sg_id != sg->group_id) {
-							tsc->sg_id = sg->group_id;
-							tsc->sg_counter = 0;
-						}
+				case WZ_STORMGUST: //SG counter does not reset per stormgust. IE: One hit from a SG and two hits from another will freeze you.
+					if (tsc) 
 						tsc->sg_counter++; //SG hit counter.
-					}
 					if (skill_attack(skill_get_type(sg->skill_id),ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0) <= 0 && tsc)
 						tsc->sg_counter=0; //Attack absorbed.
 				break;
@@ -10589,7 +10602,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 					const struct TimerData* td = tsc->data[type]?get_timer(tsc->data[type]->timer):NULL; 
 					if( td )
 						sec = DIFF_TICK(td->tick, tick);
-					map_moveblock(bl, src->bl.x, src->bl.y, tick);
+					unit_movepos(bl, src->bl.x, src->bl.y, 0, 0);
 					clif_fixpos(bl);
 					sg->val2 = bl->id;
 				}
@@ -11513,7 +11526,7 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			if( skill == WZ_EARTHSPIKE && sc && sc->data[SC_EARTHSCROLL] && rand()%100 > sc->data[SC_EARTHSCROLL]->val2 ) // [marquis007]
 				; //Do not consume item.
 			else if( sd->status.inventory[i].expire_time == 0 )
-				pc_delitem(sd,i,1,0); // Rental usable items are not consumed until expiration
+				pc_delitem(sd,i,1,0,0); // Rental usable items are not consumed until expiration
 		}
 		return 1;
 	}
@@ -12369,7 +12382,7 @@ int skill_consume_requirement( struct map_session_data *sd, short skill, short l
 				continue; //Gemstones are checked, but not substracted from inventory.
 
 			if( (n = pc_search_inventory(sd,req.itemid[i])) >= 0 )
-				pc_delitem(sd,n,req.amount[i],0);
+				pc_delitem(sd,n,req.amount[i],0,1);
 		}
 
 		sd->state.no_gemstone = 0;
@@ -12993,7 +13006,7 @@ void skill_repairweapon (struct map_session_data *sd, int idx)
 	clif_skill_nodamage(&sd->bl,&target_sd->bl,sd->menuskill_id,1,1);
 	item->attribute=0;
 	clif_equiplist(target_sd);
-	pc_delitem(sd,pc_search_inventory(sd,material),1,0);
+	pc_delitem(sd,pc_search_inventory(sd,material),1,0,0);
 	clif_item_repaireffect(sd,item->nameid,0);
 	if(sd!=target_sd)
 		clif_item_repaireffect(target_sd,item->nameid,0);
@@ -13047,7 +13060,7 @@ void skill_weaponrefine (struct map_session_data *sd, int idx)
 			per = percentrefinery [ditem->wlv][(int)item->refine];
 			per += (((signed int)sd->status.job_level)-50)/2; //Updated per the new kro descriptions. [Skotlex]
 
-			pc_delitem(sd, i, 1, 0);
+			pc_delitem(sd, i, 1, 0, 0);
 			if (per > rand() % 100) {
 				item->refine++;
 				if(item->equip) {
@@ -13055,7 +13068,7 @@ void skill_weaponrefine (struct map_session_data *sd, int idx)
 					pc_unequipitem(sd,idx,3);
 				}
 				clif_refine(sd->fd,0,idx,item->refine);
-				clif_delitem(sd,idx,1);
+				clif_delitem(sd,idx,1,3);
 				clif_additem(sd,idx,1,0);
 				if (ep)
 					pc_equipitem(sd,idx,ep);
@@ -13081,7 +13094,7 @@ void skill_weaponrefine (struct map_session_data *sd, int idx)
 				if(item->equip)
 					pc_unequipitem(sd,idx,3);
 				clif_refine(sd->fd,1,idx,item->refine);
-				pc_delitem(sd,idx,1,0);
+				pc_delitem(sd,idx,1,0,2);
 				clif_misceffect(&sd->bl,2);
 				clif_emotion(&sd->bl, 23);
 			}
@@ -14707,15 +14720,13 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 		j = pc_search_inventory(sd,slot[i]);
 		if( j < 0 )
 			continue;
-		if( slot[i] == 1000 )
-		{	/* Star Crumb */
-			pc_delitem(sd,j,1,1);
+		if(slot[i]==1000){	/* Star Crumb */
+			pc_delitem(sd,j,1,1,0);
 			sc++;
 		}
-		if( slot[i] >= 994 && slot[i] <= 997 && ele == 0 )
-		{	/* Flame Heart . . . Great Nature */
+		if(slot[i]>=994 && slot[i]<=997 && ele==0){	/* Flame Heart . . . Great Nature */
 			static const int ele_table[4]={3,1,4,2};
-			pc_delitem(sd,j,1,1);
+			pc_delitem(sd,j,1,1,0);
 			ele=ele_table[slot[i]-994];
 		}
 	}
@@ -14754,7 +14765,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 			{
 				y = sd->status.inventory[j].amount;
 				if( y > x )y = x;
-				pc_delitem(sd,j,y,0);
+				pc_delitem(sd,j,y,0,0);
 			}
 			else
 				ShowError("skill_produce_mix: material item error\n");
@@ -15145,7 +15156,7 @@ int skill_arrow_create (struct map_session_data *sd, int nameid)
 	if(index < 0 || (j = pc_search_inventory(sd,nameid)) < 0)
 		return 1;
 
-	pc_delitem(sd,j,1,0);
+	pc_delitem(sd,j,1,0,0);
 	for(i=0;i<MAX_ARROW_RESOURCE;i++) {
 		memset(&tmp_item,0,sizeof(tmp_item));
 		tmp_item.identify = 1;
@@ -15178,7 +15189,7 @@ int skill_poisoningweapon( struct map_session_data *sd, int nameid)
 		clif_skill_fail(sd,GC_POISONINGWEAPON,0,0,0);
 		return 0;
 	}
-	pc_delitem(sd,i,1,0);
+	pc_delitem(sd,i,1,0,0);
 	switch( nameid )
 	{ // t_lv used to take duration from skill_get_time2
 		case PO_PARALYSE:      type = SC_PARALYSE;      t_lv = 1; break;
@@ -15215,7 +15226,7 @@ int skill_magicdecoy(struct map_session_data *sd, int nameid)
 	}
 
 	// Spawn Position
-	pc_delitem(sd,i,1,0);
+	pc_delitem(sd,i,1,0,0);
 	x = sd->menuskill_itemused>>16;
 	y = sd->menuskill_itemused&0xffff;
 	sd->menuskill_itemused = sd->menuskill_val = 0;
@@ -15358,7 +15369,7 @@ int skill_elementalanalysis(struct map_session_data* sd, int n, int skill_lv, un
 				return 1;
 		}
 
-		if( pc_delitem(sd,idx,del_amount,0) )
+		if( pc_delitem(sd,idx,del_amount,0,0) )
 		{
 			clif_skill_fail(sd,SO_EL_ANALYSIS,0,0,0);
 			return 1;
