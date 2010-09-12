@@ -263,6 +263,14 @@ SOURCE=..\src\map\date.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\map\elemental.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\map\elemental.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\map\guild.c
 # End Source File
 # Begin Source File

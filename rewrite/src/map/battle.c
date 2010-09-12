@@ -17,6 +17,7 @@
 #include "skill.h"
 #include "homunculus.h"
 #include "mercenary.h"
+#include "elemental.h"
 #include "mob.h"
 #include "itemdb.h"
 #include "clif.h"
@@ -102,6 +103,7 @@ int battle_gettarget(struct block_list* bl)
 		case BL_PET: return ((struct pet_data*)bl)->target_id;
 		case BL_HOM: return ((struct homun_data*)bl)->ud.target;
 		case BL_MER: return ((struct mercenary_data*)bl)->ud.target;
+		case BL_ELE: return ((struct elemental_data*)bl)->ud.target;
 	}
 	return 0;
 }
@@ -4513,6 +4515,10 @@ struct block_list* battle_get_master(struct block_list *src)
 				if (((TBL_MER*)src)->master)
 					src = (struct block_list*)((TBL_MER*)src)->master;
 				break;
+			case BL_ELE:
+				if (((TBL_ELE*)src)->master)
+					src = (struct block_list*)((TBL_ELE*)src)->master;
+				break;
 			case BL_SKILL:
 				if (((TBL_SKILL*)src)->group && ((TBL_SKILL*)src)->group->src_id)
 					src = map_id2bl(((TBL_SKILL*)src)->group->src_id);
@@ -4603,6 +4609,7 @@ int battle_check_target( struct block_list *src, struct block_list *target,int f
 		//Valid targets with no special checks here.
 		case BL_MER:
 		case BL_HOM:
+		case BL_ELE:
 			break;
 		//All else not specified is an invalid target.
 		default:	

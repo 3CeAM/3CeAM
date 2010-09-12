@@ -40,6 +40,7 @@
 #include "homunculus.h"
 #include "instance.h"
 #include "mercenary.h"
+#include "elemental.h"
 #include "atcommand.h"
 #include "log.h"
 #ifndef TXT_ONLY
@@ -3809,6 +3810,7 @@ int do_init(int argc, char *argv[])
 	do_init_pet();
 	do_init_merc();
 	do_init_mercenary();
+	do_init_elemental();
 	do_init_quest();
 	do_init_npc();
 	do_init_unit();

@@ -15,6 +15,7 @@
 #include "homunculus.h"
 #include "instance.h"
 #include "mercenary.h"
+#include "elemental.h"
 #include "skill.h"
 #include "clif.h"
 #include "npc.h"
@@ -47,6 +48,7 @@ struct unit_data* unit_bl2ud(struct block_list *bl)
 	if( bl->type == BL_NPC) return &((struct npc_data*)bl)->ud;
 	if( bl->type == BL_HOM) return &((struct homun_data*)bl)->ud;
 	if( bl->type == BL_MER) return &((struct mercenary_data*)bl)->ud;
+	if( bl->type == BL_ELE) return &((struct elemental_data*)bl)->ud;
 	return NULL;
 }
 
@@ -1497,7 +1499,7 @@ int unit_attack(struct block_list *src,int target_id,int continuous)
 
 	if(DIFF_TICK(ud->attackabletime, gettick()) > 0)
 		//Do attack next time it is possible. [Skotlex]
-		ud->attacktimer=add_timer(ud->attackabletime,unit_attack_timer,src->id,0);
+		ud->attacktimer = add_timer(ud->attackabletime,unit_attack_timer,src->id,0);
 	else //Attack NOW.
 		unit_attack_timer(-1,gettick(),src->id,0);
 
@@ -1576,7 +1578,7 @@ bool unit_can_reach_bl(struct block_list *bl,struct block_list *tbl, int range, 
 	return path_search(NULL,bl->m,bl->x,bl->y,tbl->x-dx,tbl->y-dy,easy,CELL_CHKNOREACH);
 }
 /*==========================================
- * Calculates position of Pet/Mercenary/Homunculus
+ * Calculates position of Pet/Mercenary/Homunculus/Elemental
  *------------------------------------------*/
 int	unit_calc_pos(struct block_list *bl, int tx, int ty, int dir)
 {
@@ -2119,6 +2121,20 @@ int unit_remove_map_(struct block_list *bl, int clrtype, const char* file, int l
 		}
 		break;
 	}
+	case BL_ELE:
+	{
+		struct elemental_data *ed = (struct elemental_data *)bl;
+		ud->canact_tick = ud->canmove_tick;
+		if( elemental_get_lifetime(ed) <= 0 && !(ed->master && !ed->master->state.active) )
+		{
+			clif_clearunit_area(bl,clrtype);
+			map_delblock(bl);
+			unit_free(bl,0);
+			map_freeblock_unlock();
+			return 0;
+		}
+		break;
+	}
 	default: ;// do nothing
 	}
 
@@ -2140,6 +2156,8 @@ void unit_remove_map_pc(struct map_session_data *sd, int clrtype)
 		unit_remove_map(&sd->hd->bl, clrtype);
 	if(sd->md)
 		unit_remove_map(&sd->md->bl, clrtype);
+	if(sd->ed)
+		unit_remove_map(&sd->ed->bl, clrtype);
 }
 
 void unit_free_pc(struct map_session_data *sd)
@@ -2147,6 +2165,7 @@ void unit_free_pc(struct map_session_data *sd)
 	if (sd->pd) unit_free(&sd->pd->bl,0);
 	if (sd->hd) unit_free(&sd->hd->bl,0);
 	if (sd->md) unit_free(&sd->md->bl,0);
+	if (sd->ed) unit_free(&sd->ed->bl,0);
 	unit_free(&sd->bl,3);
 }
 
@@ -2371,6 +2390,27 @@ int unit_free(struct block_list *bl, int clrtype)
 				sd->md = NULL;
 
 			merc_contract_stop(md);
+			break;
+		}
+		case BL_ELE:
+		{
+			struct elemental_data *ed = (TBL_ELE*)bl;
+			struct map_session_data *sd = ed->master;
+			if( clrtype >= 0 )
+			{
+				if( elemental_get_lifetime(ed) > 0 )
+					elemental_save(ed);
+				else
+				{
+					intif_elemental_delete(ed->elemental.elemental_id);
+					if( sd )
+						sd->status.ele_id = 0;
+				}
+			}
+			if( sd )
+				sd->ed = NULL;
+
+			ele_summon_stop(ed);
 			break;
 		}
 	}

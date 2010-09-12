@@ -1,0 +1,1 @@
+//ElementalID,SkillID,SkillLevel,ReqMode
