@@ -44,6 +44,7 @@ struct item_data;
 #define MAX_DROP_PER_MAP 48
 #define MAX_IGNORE_LIST 20 // official is 14
 #define MAX_VENDING 12
+#define MAX_MAP_SIZE 512*512 // Wasn't there something like this already? Can't find it.. [Shinryo]
 #define MOBID_EMPERIUM 1288
 // Added definitions for WoESE objects. [L0ne_W0lf]
 #define MOBID_BARRICADE1 1905
@@ -232,13 +233,13 @@ enum bl_type {
 	BL_SKILL = 0x040,
 	BL_NPC   = 0x080,
 	BL_CHAT  = 0x100,
-	BL_ELE   = 0x200,
+	BL_ELEM   = 0x200,
 
 	BL_ALL   = 0xFFF,
 };
 
 //For common mapforeach calls. Since pets cannot be affected, they aren't included here yet.
-#define BL_CHAR (BL_PC|BL_MOB|BL_HOM|BL_MER|BL_ELE)
+#define BL_CHAR (BL_PC|BL_MOB|BL_HOM|BL_MER|BL_ELEM)
 
 enum npc_subtype { WARP, SHOP, SCRIPT, CASHSHOP };
 
@@ -702,7 +703,7 @@ typedef struct skill_unit       TBL_SKILL;
 typedef struct pet_data         TBL_PET;
 typedef struct homun_data       TBL_HOM;
 typedef struct mercenary_data   TBL_MER;
-typedef struct elemental_data	TBL_ELE;
+typedef struct elemental_data	TBL_ELEM;
 
 #define BL_CAST(type_, bl) \
 	( ((bl) == (struct block_list*)NULL || (bl)->type != (type_)) ? (T ## type_ *)NULL : (T ## type_ *)(bl) )

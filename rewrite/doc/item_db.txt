@@ -60,13 +60,10 @@ Job: Equippable jobs. Uses the following bitmask table:
 	Bard/Dancer (2^19): 0x00080000
 	Unused      (2^20): 0x00100000
 	Taekwon     (2^21): 0x00200000
-	Star Glad   (2^22): 0x00400000
+	StarGladi   (2^22): 0x00400000
 	Soul Linker (2^23): 0x00800000
 	Gunslinger  (2^24): 0x01000000
 	Ninja       (2^25): 0x02000000
-	Gangsi      (2^26): 0x04000000
-	Death Knight(2^27): 0x08000000
-	Dark Collect(2^28): 0x10000000
 
 Upper: Equippable upper-types. Uses the following bitmasks:
 	 1: Normal jobs

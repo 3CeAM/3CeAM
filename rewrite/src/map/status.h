@@ -1283,9 +1283,9 @@ enum scb_flag
 };
 
 //Define to determine who gets HP/SP consumed on doing skills/etc. [Skotlex]
-#define BL_CONSUME (BL_PC|BL_HOM|BL_MER|BL_ELE)
+#define BL_CONSUME (BL_PC|BL_HOM|BL_MER|BL_ELEM)
 //Define to determine who has regen
-#define BL_REGEN (BL_PC|BL_HOM|BL_MER|BL_ELE)
+#define BL_REGEN (BL_PC|BL_HOM|BL_MER|BL_ELEM)
 
 
 //Basic damage info of a weapon

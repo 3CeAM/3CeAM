@@ -109,7 +109,7 @@ int npc_ontouch_event(struct map_session_data *sd, struct npc_data *nd)
 
 	if( nd->touching_id )
 		return 0; // Attached a player already. Can't trigger on anyone else.
-	
+
 	if( pc_ishiding(sd) )
 		return 1; // Can't trigger 'OnTouch_'. try 'OnTouch' later.
 
@@ -151,6 +151,7 @@ int npc_enable_sub(struct block_list *bl, va_list ap)
 		{ // failed to run OnTouch event, so just click the npc
 			if (sd->npc_id != 0)
 				return 0;
+
 			pc_stop_walking(sd,1);
 			npc_click(sd,nd);
 		}
@@ -281,7 +282,7 @@ int npc_event_doall_sub(DBKey key, void* data, va_list ap)
 	rid = va_arg(ap, int);
 
 	p = strchr(p, ':'); // match only the event name
-	if( p && strcmpi(name, p) == 0 )
+	if( p && strcmpi(name, p) == 0 /* && !ev->nd->src_id */ ) // Do not run on duplicates. [Paradox924X]
 	{
 		if(rid) // a player may only have 1 script running at the same time
 			npc_event_sub(map_id2sd(rid),ev,key.str);
@@ -1405,7 +1406,7 @@ int npc_selllist(struct map_session_data* sd, int n, unsigned short* item_list)
 			pc_setreg(sd,add_str("@sold_nameid")+(i<<24),(int)sd->status.inventory[idx].nameid);
 			pc_setreg(sd,add_str("@sold_quantity")+(i<<24),qty);
 		}
-		pc_delitem(sd,idx,qty,0);
+		pc_delitem(sd,idx,qty,0,6);
 	}
 
 	if (z > MAX_ZENY) z = MAX_ZENY;
@@ -3332,7 +3333,6 @@ int npc_reload(void)
 	ShowStatus("Event '"CL_WHITE"OnInit"CL_RESET"' executed with '"CL_WHITE"%d"CL_RESET"' NPCs.\n",npc_event_doall("OnInit"));
 	// Execute rest of the startup events if connected to char-server. [Lance]
 	if(!CheckForCharServer()){
-		ShowStatus("Event '"CL_WHITE"OnCharIfInit"CL_RESET"' executed with '"CL_WHITE"%d"CL_RESET"' NPCs.\n", npc_event_doall("OnCharIfInit"));
 		ShowStatus("Event '"CL_WHITE"OnInterIfInit"CL_RESET"' executed with '"CL_WHITE"%d"CL_RESET"' NPCs.\n", npc_event_doall("OnInterIfInit"));
 		ShowStatus("Event '"CL_WHITE"OnInterIfInitOnce"CL_RESET"' executed with '"CL_WHITE"%d"CL_RESET"' NPCs.\n", npc_event_doall("OnInterIfInitOnce"));
 	}

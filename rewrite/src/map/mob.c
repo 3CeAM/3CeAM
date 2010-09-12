@@ -1887,9 +1887,9 @@ void mob_log_damage(struct mob_data *md, struct block_list *src, int damage)
 				md->attacked_id = src->id;
 			break;
 		}
-		case BL_ELE:
+		case BL_ELEM:
 		{
-			struct elemental_data *ele = (TBL_ELE*)src;
+			struct elemental_data *ele = (TBL_ELEM*)src;
 			if( ele->master )
 				char_id = ele->master->status.char_id;
 			if( damage )
@@ -3014,10 +3014,13 @@ int mobskill_use(struct mob_data *md, unsigned int tick, int event)
 		if (ms[i].msg_id){ //Display color message [SnakeDrak]
 			struct mob_chat *mc = mob_chat(ms[i].msg_id);
 			char temp[CHAT_SIZE_MAX];
-			snprintf(temp, sizeof temp,"%s : %s", md->name, mc->msg);
+ 			char name[NAME_LENGTH];
+ 			snprintf(name, sizeof name,"%s", md->name);
+ 			strtok(name, "#"); // discard extra name identifier if present [Daegaladh]
+ 			snprintf(temp, sizeof temp,"%s : %s", name, mc->msg);
 			clif_messagecolor(&md->bl, mc->color, temp);
 		}
-
+		
 		//Execute skill	
 		if (skill_get_casttype(ms[i].skill_id) == CAST_GROUND)
 		{	//Ground skill.
@@ -4003,7 +4006,7 @@ static void mob_readchatdb(void)
 	}
 	fclose(fp);
 	ShowStatus("Done reading '"CL_WHITE"%s"CL_RESET"'.\n", arc);
- }
+}
 
 /*==========================================
  * processes one mob_skill_db entry

@@ -1,5 +1,55 @@
 Date		Added
 ======
+2010/09/06
+	* Rev. 14400 Touched up the endless tower script slightly. [L0ne_W0lf]
+	- Added ends to several NPCs which would allow you to restart timers.
+	- Added some missing stopnpctimers to npcs. (bugreport:4418)
+2010/08/28
+	* Rev. 14397 Removed a disablenpc from #102FShadowDust1. (bugreport:4415) [L0ne_W0lf]
+2010/08/26
+	* Rev. 14395 Implemented the Endless Tower instance. [L0ne_W0lf]
+	* Updated announces and dialogs in KVM.
+2010/08/21
+	* Rev. 14392 Touched up the Airship scripts. Fixed up some content based on official files. [L0ne_W0lf]
+	* Rev. 14391 Fixed silly copy paste errors in Tierra Gorge entrance npcs. (bugreport:4401) [L0ne_W0lf]
+2010/08/20
+	* Rev. 14385 Fixed wrong events being called for flavius02 BG waiting rooms. (bugreport:4395) [L0ne_W0lf]
+	* Fixed the setwalls in Tierra gorge, again. Removed extra mapflags.
+	* Moved overlapping guild flags outside arug_cas05 to proper points.
+2010/08/18
+	* Rev. 14380 Fixed level 4 weapon quest deleting wrong items. (bugreport:4390) [L0ne_W0lf]
+2010/08/16
+	* Rev. 14376 Fixed Flavius only needing 1 person on either side to start. [L0ne_W0lf]
+	* Updated the level 4 weapon quest to aegis conversion.
+	* Corrected a variable typo in the dts_warper script.
+	* Fixed a script hang in Hugel Temple Excavation quest.
+	* Fixed Cat Hand Agent checks, and mysterious rock#31.
+	* Corrected the two hour time limit for Sealed Shrine.
+	* Corrected a few other minor issues in Sealed Shrine.
+2010/08/14
+	* Rev. 14375 Fixed error in bg_common, and duplicate warp names. [L0ne_W0lf]
+	* Rev. 14374 More battleground editing, and some bug fixes. [L0ne_W0lf]
+	- * ALL BATTLEGROUNDS ARE NOW ACTIVE BY DEFAULT. PLEASE CONTINUE TESTING *
+	- Rewrote the Badge Exchange NPC in bg_common.txt, is official now.
+	- Other changes to the bg_common folder, including disabled GM NPC.
+	- Completely rewrote Flavius for the most part, from ground up.
+	- Moved old Flavius battlegrounds to /custom/battleground folder.
+	- Restored original bg_common, and KVM to /custom/battleground
+	- Fixed wall bugs in Tierra Gorge, and added an oninit to the timers.
+	- Other minor tweaks to both Tierra Gorge and KVM scripts.
+	- Fixed the pseudo-cooldown on KVM not working properly, I hope.
+	- Added global time2str function which will be used later in Endless tower.
+	* Applied Epoque's mapflag clean up, which removes flags from scripts.
+2010/08/11
+	* Rev. 14373 Another rather large overhaul of the battlegrounds. [L0ne_W0lf]
+	- in bg_common.txt, stripped out several more NPCs, split them off.
+	- Most of the NPCs in bg_common.txt are now official Aegis versions.
+	- Completely rewrote Tierra Gorge for the most part, from ground up.
+	- Moved old Tierra Valley battlegrounds to /custom/battleground.
+	- Added Tierra scripts, Flavius, and bg_common to scripts_athena.
+	- Tierra, KvM, and bg_common scripts are now enabled by default.
+	- To use custom Flavius, you must enable /flavius/flavius_enter.txt
+	- * TIERRA GORGE AND KVM BOTH REQUIRE TESTING *
 2010/07/29
 	* Rev. 14369 A rather large overhaul of the battlegrounds. [L0ne_W0lf]
 	- in bg_common.txt, stripped out KvM npcs, fixed coordinates.
