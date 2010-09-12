@@ -35,6 +35,7 @@
 #include "homunculus.h"
 #include "instance.h"
 #include "mercenary.h"
+#include "elemental.h"
 #include "log.h"
 #include "clif.h"
 #include "mail.h"
@@ -8175,6 +8176,8 @@ int clif_refresh(struct map_session_data *sd)
 		clif_mercenary_info(sd);
 		clif_mercenary_skillblock(sd);
 	}
+	if( sd->ed )
+		clif_elemental_info(sd);
 	map_foreachinrange(clif_getareachar,&sd->bl,AREA_SIZE,BL_ALL,sd);
 	clif_weather_check(sd);
 	if( pc_issit(sd) )
@@ -8266,6 +8269,9 @@ int clif_charnameack (int fd, struct block_list *bl)
 		break;
 	case BL_MER:
 		memcpy(WBUFP(buf,6), ((TBL_MER*)bl)->db->name, NAME_LENGTH);
+		break;
+	case BL_ELE:
+		memcpy(WBUFP(buf,6), ((TBL_ELE*)bl)->db->name, NAME_LENGTH);
 		break;
 	case BL_PET:
 		memcpy(WBUFP(buf,6), ((TBL_PET*)bl)->pet.name, NAME_LENGTH);
@@ -9052,6 +9058,16 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 		clif_spawn(&sd->md->bl);
 		clif_mercenary_info(sd);
 		clif_mercenary_skillblock(sd);
+	}
+
+	if( sd->ed )
+	{
+		map_addblock(&sd->ed->bl);
+		clif_spawn(&sd->ed->bl);
+		clif_elemental_info(sd);
+		clif_elemental_updatestatus(sd,SP_HP);
+		clif_hpmeter_single(sd->fd,sd->ed->bl.id,sd->ed->battle_status.hp,sd->ed->battle_status.matk_max);
+		clif_elemental_updatestatus(sd,SP_SP);
 	}
 
 	if(sd->state.connect_new) {
@@ -14445,6 +14461,62 @@ void clif_parse_ItemListWindowSelected(int fd, struct map_session_data* sd)
 }
 
 /*==========================================
+ * Elemental System
+ *==========================================*/
+void clif_elemental_updatestatus(struct map_session_data *sd, int type)
+{
+	struct elemental_data *ed;
+	struct status_data *status;
+	int fd;
+	if( sd == NULL || (ed = sd->ed) == NULL )
+		return;
+
+	fd = sd->fd;
+	status = &ed->battle_status;
+	WFIFOHEAD(fd,8);
+	WFIFOW(fd,0) = 0x81e;
+	WFIFOW(fd,2) = type;
+	switch( type )
+	{
+		case SP_HP:
+			WFIFOL(fd,4) = status->hp;
+			break;
+		case SP_MAXHP:
+			WFIFOL(fd,4) = status->max_hp;
+			break;
+		case SP_SP:
+			WFIFOL(fd,4) = status->sp;
+			break;
+		case SP_MAXSP:
+			WFIFOL(fd,4) = status->max_sp;
+			break;
+	}
+	WFIFOSET(fd,8);
+}
+
+void clif_elemental_info(struct map_session_data *sd)
+{
+	int fd;
+	struct elemental_data *ed;
+	struct status_data *status;
+
+	if( sd == NULL || (ed = sd->ed) == NULL )
+		return;
+
+	fd = sd->fd;
+	status = &ed->battle_status;
+
+	WFIFOHEAD(fd,22);
+	WFIFOW(fd, 0) = 0x81d;
+	WFIFOL(fd, 2) = ed->bl.id;
+	WFIFOL(fd, 6) = status->hp;
+	WFIFOL(fd,10) = status->max_hp;
+	WFIFOL(fd,14) = status->sp;
+	WFIFOL(fd,18) = status->max_sp;
+	WFIFOSET(fd,22);
+}
+
+/*==========================================
  * パケットデバッグ
  *------------------------------------------*/
 void clif_parse_debug(int fd,struct map_session_data *sd)
@@ -14842,7 +14914,7 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0,  0,  0, 14, 93, 86, 87,  8, 25,  0,  0, 26,  0,
 	  //#0x0800
 	   -1, -1, 18,  4, 14, -1,  2,  4, 14, 50, 18,  6,  2,  3, 14, 20,
-	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 22,  8,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	};

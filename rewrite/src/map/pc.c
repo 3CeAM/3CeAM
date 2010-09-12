@@ -27,6 +27,7 @@
 #include "homunculus.h"
 #include "instance.h"
 #include "mercenary.h"
+#include "elemental.h"
 #include "mob.h" // MAX_MOB_RACE_DB
 #include "npc.h" // fake_nd
 #include "pet.h" // pet_unlocktarget()
@@ -1303,6 +1304,8 @@ int pc_reg_received(struct map_session_data *sd)
 		intif_homunculus_requestload(sd->status.account_id, sd->status.hom_id);
 	if( sd->status.mer_id > 0 )
 		intif_mercenary_request(sd->status.mer_id, sd->status.char_id);
+	if( sd->status.ele_id > 0 )
+		intif_elemental_request(sd->status.ele_id, sd->status.char_id);
 
 	map_addiddb(&sd->bl);
 	map_delnickdb(sd->status.char_id, sd->status.name);
@@ -4436,6 +4439,14 @@ int pc_setpos(struct map_session_data* sd, unsigned short mapindex, int x, int y
 		sd->md->ud.dir = sd->ud.dir;
 	}
 
+	if( sd->ed )
+	{
+		sd->ed->bl.m = m;
+		sd->ed->bl.x = sd->ed->ud.to_x = x;
+		sd->ed->bl.y = sd->ed->ud.to_y = y;
+		sd->ed->ud.dir = sd->ud.dir;
+	}
+
 	return 0;
 }
 
@@ -6125,6 +6136,9 @@ void pc_damage(struct map_session_data *sd,struct block_list *src,unsigned int h
 
 	if( sd->status.pet_id > 0 && sd->pd && battle_config.pet_damage_support )
 		pet_target_check(sd,src,1);
+	
+	if( sd->status.ele_id > 0 )
+		elemental_set_target(sd,src);
 
 	sd->canlog_tick = gettick();
 }
@@ -6177,6 +6191,9 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 
 	if( sd->md )
 		merc_delete(sd->md, 3); // Your mercenary soldier has ran away.
+
+	if( sd->ed )
+		ele_delete(sd->ed, 0);
 
 	// Leave duel if you die [LuzZza]
 	if(battle_config.duel_autoleave_when_die) {

@@ -602,6 +602,14 @@
 				RelativePath="..\src\map\vending.h"
 				>
 			</File>
+			<File
+				RelativePath="..\src\map\elemental.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\map\elemental.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

@@ -203,6 +203,14 @@ SOURCE=..\src\char_sql\int_auction.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\char_sql\int_elemental.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\char_sql\int_elemental.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\char_sql\int_guild.c
 # End Source File
 # Begin Source File

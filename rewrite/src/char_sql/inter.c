@@ -16,6 +16,7 @@
 #include "int_pet.h"
 #include "int_homun.h"
 #include "int_mercenary.h"
+#include "int_elemental.h"
 #include "int_mail.h"
 #include "int_auction.h"
 #include "int_quest.h"
@@ -52,7 +53,7 @@ int inter_recv_packet_length[] = {
 	 5, 9, 0, 0,  0, 0, 0, 0,  7, 6,10,10, 10,-1,  0, 0,	// 3040-
 	-1,-1,10,10,  0,-1, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0,	// 3050-  Auction System [Zephyrus]
 	 6,-1, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0,	// 3060-  Quest system [Kevin] [Inkfish]
-	-1,10, 6,-1,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0,	// 3070-  Mercenary packets [Zephyrus]
+	-1,10, 6,-1,  0, 0, 0, 0,  0, 0, 0, 0, -1,10,  6,-1,	// 3070-  Mercenary packets [Zephyrus], Elemental packets [pakpil]
 	48,14,-1, 6,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0,	// 3080-
 	-1,10,-1, 6,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0,	// 3090-  Homunculus packets [albator]
 };
@@ -299,6 +300,7 @@ int inter_init_sql(const char *file)
 	inter_pet_sql_init();
 	inter_homunculus_sql_init();
 	inter_mercenary_sql_init();
+	inter_elemental_sql_init();
 	inter_accreg_sql_init();
 	inter_mail_sql_init();
 	inter_auction_sql_init();
@@ -319,6 +321,7 @@ void inter_final(void)
 	inter_pet_sql_final();
 	inter_homunculus_sql_final();
 	inter_mercenary_sql_final();
+	inter_elemental_sql_final();
 	inter_mail_sql_final();
 	inter_auction_sql_final();
 	
@@ -729,6 +732,7 @@ int inter_parse_frommap(int fd)
 		  || inter_pet_parse_frommap(fd)
 		  || inter_homunculus_parse_frommap(fd)
 		  || inter_mercenary_parse_frommap(fd)
+		  || inter_elemental_parse_frommap(fd)
 		  || inter_mail_parse_frommap(fd)
 		  || inter_auction_parse_frommap(fd)
 		  || inter_quest_parse_frommap(fd)

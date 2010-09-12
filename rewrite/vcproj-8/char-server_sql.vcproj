@@ -347,6 +347,13 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\char_sql\int_elemental.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\char_sql\int_elemental.h"
+				>
+			<File
 				RelativePath="..\src\char_sql\int_guild.c"
 				>
 			</File>
