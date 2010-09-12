@@ -43,12 +43,15 @@
 #define SKILLUNITTIMER_INTERVAL	100
 
 // ranges reserved for mapping skill ids to skilldb offsets
-#define GD_SKILLRANGEMIN 900
-#define GD_SKILLRANGEMAX GD_SKILLRANGEMIN+MAX_GUILDSKILL
-#define MC_SKILLRANGEMIN 800
-#define MC_SKILLRANGEMAX MC_SKILLRANGEMIN+MAX_MERCSKILL
+//WARNING all this shouldn't be higher than 999!!!
 #define HM_SKILLRANGEMIN 700
-#define HM_SKILLRANGEMAX HM_SKILLRANGEMIN+MAX_HOMUNSKILL
+#define HM_SKILLRANGEMAX HM_SKILLRANGEMIN + MAX_HOMUNSKILL
+#define MC_SKILLRANGEMIN HM_SKILLRANGEMAX + 1
+#define MC_SKILLRANGEMAX MC_SKILLRANGEMIN + MAX_MERCSKILL
+#define EL_SKILLRANGEMIN MC_SKILLRANGEMAX + 1
+#define EL_SKILLRANGEMAX EL_SKILLRANGEMIN + MAX_ELEMENTALSKILL
+#define GD_SKILLRANGEMIN EL_SKILLRANGEMAX + 1
+#define GD_SKILLRANGEMAX GD_SKILLRANGEMIN + MAX_GUILDSKILL
 
 static struct eri *skill_unit_ers = NULL; //For handling skill_unit's [Skotlex]
 static struct eri *skill_timer_ers = NULL; //For handling skill_timerskills [Skotlex]
@@ -94,7 +97,8 @@ int skill_name2id(const char* name)
 int skill_get_index( int id )
 {
 	// avoid ranges reserved for mapping guild/homun/mercenary skills
-	if( (id >= GD_SKILLRANGEMIN && id <= GD_SKILLRANGEMAX)
+	if( (id >= EL_SKILLRANGEMIN && id <= EL_SKILLRANGEMAX)
+	||	(id >= GD_SKILLRANGEMIN && id <= GD_SKILLRANGEMAX)
 	||  (id >= HM_SKILLRANGEMIN && id <= HM_SKILLRANGEMAX)
 	||  (id >= MC_SKILLRANGEMIN && id <= MC_SKILLRANGEMAX) )
 		return 0;
@@ -108,6 +112,9 @@ int skill_get_index( int id )
 	else
 	if( id >= HM_SKILLBASE )
 		id = HM_SKILLRANGEMIN + id - HM_SKILLBASE;
+	else
+	if( id >= EL_SKILLBASE )
+		id = EL_SKILLRANGEMIN + id - EL_SKILLBASE;
 	else
 		; // identity
 
@@ -16071,7 +16078,8 @@ static bool skill_parse_row_skilldb(char* split[], int columns, int current)
 {// id,range,hit,inf,element,nk,splash,max,list_num,castcancel,cast_defence_rate,inf2,maxcount,skill_type,blow_count,name,description
 	int id = atoi(split[0]);
 	int i;
-	if( (id >= GD_SKILLRANGEMIN && id <= GD_SKILLRANGEMAX)
+	if( (id >= EL_SKILLRANGEMIN && id <= EL_SKILLRANGEMAX)
+	||	(id >= GD_SKILLRANGEMIN && id <= GD_SKILLRANGEMAX)
 	||  (id >= HM_SKILLRANGEMIN && id <= HM_SKILLRANGEMAX)
 	||  (id >= MC_SKILLRANGEMIN && id <= MC_SKILLRANGEMAX) )
 	{
