@@ -258,6 +258,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\map\elemental.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\map\elemental.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\map\guild.c"
 				>
 			</File>
