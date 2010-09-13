@@ -1160,14 +1160,14 @@
 2458,0,6,4,0,0x01,0,3,1,no,0,0,0,none,0,		SO_SUMMON_AQUA,Summon Water Spirit Aqua
 2459,0,6,4,0,0x01,0,3,1,no,0,0,0,none,0,		SO_SUMMON_VENTUS,Summon Wind Spirit Ventus
 2460,0,6,4,0,0x01,0,3,1,no,0,0,0,none,0,		SO_SUMMON_TERA,Summon Wind Spirit Tera
-2461,9,6,1,0,0x01,0,1,1,no,0,0,0,none,0,		SO_EL_ACTION,Elemental Action
+2461,9,6,0,0,0x01,0,1,1,no,0,0,0,none,0,		SO_EL_ACTION,Elemental Action
 2462,0,6,4,0,0x01,0,2,1,no,0,0,0,none,0,		SO_EL_ANALYSIS,Four Spirit Analysis
 2463,0,0,0,0,0,0,5,0,no,0,0,0,none,0,			SO_EL_SYMPATHY,Spirit Sympathy
 2464,0,6,4,0,0x01,0,1,1,no,0,0,0,none,0,		SO_EL_CURE,Spirit Recovery
-2465,9,6,2,3,0x01,0,3,1,no,0,0,0,none,0,		SO_FIRE_INSIGNIA,Fire Insignia
-2466,9,6,2,1,0x01,0,3,1,no,0,0,0,none,0,		SO_WATER_INSIGNIA,Water Insignia
-2467,9,6,2,4,0x01,0,3,1,no,0,0,0,none,0,		SO_WIND_INSIGNIA,Wind Insignia
-2468,9,6,2,2,0x01,0,3,1,no,0,0,0,none,0,		SO_EARTH_INSIGNIA,Earth Insignia
+2465,9,6,0,3,0x01,0,3,1,no,0,0,0,none,0,		SO_FIRE_INSIGNIA,Fire Insignia
+2466,9,6,0,1,0x01,0,3,1,no,0,0,0,none,0,		SO_WATER_INSIGNIA,Water Insignia
+2467,9,6,0,4,0x01,0,3,1,no,0,0,0,none,0,		SO_WIND_INSIGNIA,Wind Insignia
+2468,9,6,0,2,0x01,0,3,1,no,0,0,0,none,0,		SO_EARTH_INSIGNIA,Earth Insignia
 
 2472,0,0,0,0,0,0,1,0,no,0,0,0,none,0,			SO_ENDMARK,End Mark
 
