@@ -3196,24 +3196,21 @@ int clif_skill_select_request(struct map_session_data *sd)
 int clif_skill_itemlistwindow( struct map_session_data *sd, int skill_id, int skill_lv )
 {
 #if PACKETVER >= 20090922
-	int fd, val = 1;
+	int fd;
 
 	nullpo_retr(0,sd);
-
-	if( skill_id == GN_CHANGEMATERIAL )
-	{
-		skill_lv = 0; // Changematerial
-		val = 0;
-	}
 	
 	sd->menuskill_id = skill_id; // To prevent hacking.
 	sd->menuskill_val = skill_lv;
+
+	if( skill_id == GN_CHANGEMATERIAL )
+		skill_lv = 0; // Changematerial
 
 	fd = sd->fd;
 	WFIFOHEAD(fd,packet_len(0x7e3));
 	WFIFOW(fd,0) = 0x7e3;
 	WFIFOL(fd,2) = skill_lv;
-	WFIFOL(fd,4) = val;
+	WFIFOL(fd,4) = 0;
 	WFIFOSET(fd,packet_len(0x7e3));
 
 #endif
@@ -14367,15 +14364,15 @@ void clif_parse_ItemListWindowSelected(int fd, struct map_session_data* sd)
 		sd->menuskill_id = sd->menuskill_val = sd->menuskill_itemused = 0;
 		return; // Prevent hacking.
 	}
-	
+
 	switch( type )
 	{
+		case 0: // Change Material
+			skill_changematerial(sd,n,item_list);
+			break;
 		case 1:	// Level 1: Pure to Rough
 		case 2:	// Level 2: Rough to Pure
 			skill_elementalanalysis(sd,n,type,item_list);
-			break;
-		case 0: // Change Material
-			skill_changematerial(sd,n,type,item_list);
 			break;
 	}
 	sd->menuskill_id = sd->menuskill_val = sd->menuskill_itemused = 0;

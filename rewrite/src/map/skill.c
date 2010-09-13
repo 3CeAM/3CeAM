@@ -8450,7 +8450,7 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 	}
 
 	if(ud->skillid != SA_CASTCANCEL  &&
-			!(ud->skillid == SO_SPELLFIST && (sd && sd->skillid_old == MG_FIREBOLT || sd->skillid_old == MG_COLDBOLT || sd->skillid_old == MG_LIGHTNINGBOLT)) )
+			!(ud->skillid == SO_SPELLFIST && (sd && (sd->skillid_old == MG_FIREBOLT || sd->skillid_old == MG_COLDBOLT || sd->skillid_old == MG_LIGHTNINGBOLT))) )
 	{// otherwise handled in unit_skillcastcancel()
 		if( ud->skilltimer != tid )
 		{
@@ -14777,7 +14777,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 
 	if( (equip = itemdb_isequip(nameid)) )
 		wlv = itemdb_wlv(nameid);
-	if( !equip )
+	if( !equip || skill_id == GN_CHANGEMATERIAL )
 	{
 		switch( skill_id )
 		{
@@ -14937,7 +14937,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 		tmp_item.nameid = nameid;
 		tmp_item.amount = 1;
 		tmp_item.identify = 1;
-		if( equip )
+		if( equip && skill_id != GN_CHANGEMATERIAL )
 		{
 			tmp_item.card[0] = CARD0_FORGE;
 			tmp_item.card[1] = ((sc*5)<<8)+ele;
@@ -14991,7 +14991,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 //			log_produce(sd,nameid,slot1,slot2,slot3,1);
 //TODO update PICKLOG
 
-		if( equip )
+		if( equip && skill_id != GN_CHANGEMATERIAL )
 		{
 			clif_produceeffect(sd,0,nameid);
 			clif_misceffect(&sd->bl,3);
@@ -15091,7 +15091,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 //		log_produce(sd,nameid,slot1,slot2,slot3,0);
 //TODO update PICKLOG
 
-	if( equip )
+	if( equip && skill_id != GN_CHANGEMATERIAL )
 	{
 		clif_produceeffect(sd,1,nameid);
 		clif_misceffect(&sd->bl,2);
@@ -15401,7 +15401,7 @@ int skill_elementalanalysis(struct map_session_data* sd, int n, int skill_lv, un
 	return 0;
 }
 
-int skill_changematerial(struct map_session_data *sd, int n, int type, unsigned short *item_list)
+int skill_changematerial(struct map_session_data *sd, int n, unsigned short *item_list)
 {
 	int i, j, k, c, nameid, amount;
 	
