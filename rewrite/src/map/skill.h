@@ -372,7 +372,7 @@ int skill_magicdecoy( struct map_session_data *sd, int nameid);
 int skill_spellbook( struct map_session_data *sd, int nameid);	// Warlock Spellbooks. [LimitLine]
 int skill_select_menu( struct map_session_data *sd, int flag, int skill_id); // Shadow Cheser Auto Shadow Spell [pakpil]
 int skill_elementalanalysis(struct map_session_data *sd, int n, int type, unsigned short *item_list); // Sorcerer Four Elemental Analisys.
-int skill_changematerial(struct map_session_data *sd, int n, int type, unsigned short *item_list);	// Genetic Change Material.
+int skill_changematerial(struct map_session_data *sd, int n, unsigned short *item_list);	// Genetic Change Material.
 
 int skill_stasis_check(struct block_list *bl, int src_id, int skillid);	// Stasis skill usage check. [LimitLine]
 int skill_get_elemental_type(int skill_id, int skill_lv);
