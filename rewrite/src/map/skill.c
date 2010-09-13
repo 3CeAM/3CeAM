@@ -14693,7 +14693,7 @@ int skill_can_produce_mix(struct map_session_data *sd, int nameid, int trigger, 
 int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int slot1, int slot2, int slot3, int qty)
 {
 	int slot[3];
-	int i,sc,ele,idx,equip,wlv,make_per,flag,skill_lv,temp_qty;
+	int i,sc,ele,idx,equip,wlv=0,make_per,flag,skill_lv,temp_qty;
 	int num = -1; // exclude the recipe
 	struct status_data *status;
 
