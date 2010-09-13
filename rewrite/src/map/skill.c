@@ -8307,7 +8307,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 
-
 	case GN_CHANGEMATERIAL:
 	case SO_EL_ANALYSIS:
 		if( sd )
@@ -12498,6 +12497,13 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 			if( i < 5 )
 				continue;
 			break;
+		case SO_SUMMON_AGNI:
+		case SO_SUMMON_AQUA:
+		case SO_SUMMON_VENTUS:
+		case SO_SUMMON_TERA:
+			if( i < 3 )
+				continue;
+			break;
 		}
 
 		req.itemid[i] = skill_db[j].itemid[i];
@@ -12517,7 +12523,8 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 			}
 		}
 	}
-	if( skill == NC_SHAPESHIFT || skill == GN_FIRE_EXPANSION )
+	if( skill == NC_SHAPESHIFT || skill == GN_FIRE_EXPANSION || skill == SO_SUMMON_AGNI ||
+		skill == SO_SUMMON_AQUA || skill == SO_SUMMON_VENTUS || skill == SO_SUMMON_TERA )
 	{		
 		req.itemid[lv-1] = skill_db[j].itemid[lv-1];
 		req.amount[lv-1] = skill_db[j].amount[lv-1];
