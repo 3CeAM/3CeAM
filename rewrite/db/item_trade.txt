@@ -1522,3 +1522,12 @@
 6121,127,100	// Makeup_Brush
 6122,127,100	// Paint_Brush
 12333,127,100	// Ancilla (need confirm this)
+12725,83,100	// Nauthiz Rune
+12726,83,100	// Raido Rune
+12727,83,100	// Berkana Rune
+12728,83,100	// Isa Rune
+12729,83,100	// Othila Rune
+12730,83,100	// Uruz Rune
+12731,83,100	// Thurisaz Rune
+12732,83,100	// Wyrd Rune
+12733,83,100	// Hagalaz Rune
