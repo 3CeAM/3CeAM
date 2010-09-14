@@ -462,6 +462,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			clif_skill_nodamage(bl, bl, RK_MILLENNIUMSHIELD, 1, 1);
 			sce->val3 -= damage; // absorb damage
 			d->dmg_lv = ATK_BLOCK;
+			sc_start(bl,SC_STUN,15,0,skill_get_time2(RK_MILLENNIUMSHIELD,sce->val1)); // There is a chance to be stuned when one shield is broken.
 			if( sce->val3 <= 0 ) // Shield Down
 			{
 				sce->val2--;
@@ -610,7 +611,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 		if( (sce = sc->data[SC_HAGALAZ]) && flag&BF_WEAPON && damage > 0 )
 		{
 			sce->val2 -= damage;
-			skill_break_equip(src,EQP_WEAPON,(25 + pc_checkskill(sd,RK_RUNEMASTERY))*100,BCT_SELF);
+			skill_break_equip(src,EQP_WEAPON,2500,BCT_SELF);
 
 			if( sce->val2 <= 0 ) status_change_end(bl, SC_HAGALAZ, -1);
 		}
@@ -1635,8 +1636,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					wd.damage = (battle_config.skillsbonus_maxhp_RK * 16 / 1000) + (status_get_sp(src) * 192 / 1000);
 				else
 					wd.damage = (status_get_hp(src) * 16 / 1000) + (status_get_sp(src) * 192 / 1000);
-				if( sd )
-					wd.damage += wd.damage * (5 * pc_checkskill(sd,RK_DRAGONTRAINING)-1) / 100;
 				break;
 			case NC_AXEBOOMERANG:
 				//TODO: Need to get official value of weight % as addition to skill damage. [Jobbie]
@@ -2036,7 +2035,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					skillratio += ((skill_lv-1)%5+1)*100;
 					break;
 				case RK_SONICWAVE: // Sugested formula from irowiki. 
-					skillratio += 400 + (100 * skill_lv); // Base skillratio.
+					skillratio += 400 + 100 * skill_lv; // Base skillratio.
 					if( battle_config.max_highlvl_nerf ) // [Pinky]
 					{
 						if( s_level > 100 && s_level <= battle_config.max_highlvl_nerf)
@@ -2068,17 +2067,17 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					if( battle_config.max_highlvl_nerf ) // [Pinky]
 					{
 						if(s_level <= battle_config.max_highlvl_nerf)
-							skillratio *= (1 + (s_level-50) / 20); // Bonus by base level.
+							skillratio *= 1 + (s_level-50) / 20; // Bonus by base level.
 						else
-							skillratio *= (1 + (battle_config.max_highlvl_nerf-50) / 20); // Bonus by base level.
+							skillratio *= 1 + (battle_config.max_highlvl_nerf-50) / 20; // Bonus by base level.
 					}
 					else
 						skillratio *= (1 + (s_level-50) / 20); // Bonus by base level.
 					break;
 				case RK_IGNITIONBREAK: // Sugested formula from irowiki.
 					i = distance_bl(src,target) / 2;
-					skillratio += ( 100 * skill_lv );
-					if( i < 4 ) skillratio += (100 * skill_lv);
+					skillratio += 100 * skill_lv;
+					if( i < 4 ) skillratio += 100 * skill_lv;
 					if( i < 2 ) skillratio += 100;
 					if( battle_config.max_highlvl_nerf ) // [Pinky]
 					{
@@ -2652,6 +2651,10 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				ATK_ADDRATE(status_get_lv(src)/6);//Should led up to 1.25 times the normal damage if Blevel is 150. [Jobbie]
 				if( skill_num == NC_AXETORNADO && ((sstatus->rhw.ele) == ELE_WIND || (sstatus->lhw.ele) == ELE_WIND) )
 					ATK_ADDRATE(50);
+				break;
+			case RK_DRAGONBREATH:
+				if( sd && (i = pc_checkskill(sd,RK_DRAGONTRAINING)-1) > 0 )
+					ATK_ADDRATE(5 * i);
 				break;
 			case SR_EARTHSHAKER:
 				if( tsc && (tsc->data[SC_HIDING] || tsc->data[SC_CLOAKING] || tsc->data[SC_CHASEWALK] || tsc->data[SC_CLOAKINGEXCEED]) )
@@ -4403,8 +4406,8 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		}
 	}
 
-	if( sd && sc && sc->data[SC_THURISAZ] && wd.flag&(BF_WEAPON|BF_SHORT) && rand()%100 < pc_checkskill(sd,RK_RUNEMASTERY) )
-		wd.damage *= 3; // Triple Damage - Rate is a suggestion
+	if( sd && sc && sc->data[SC_THURISAZ] && wd.flag&(BF_WEAPON|BF_SHORT) && rand()%100 < sc->data[SC_THURISAZ]->val2 )
+		wd.damage *= 3; // Triple Damage
 
 	if (sd && sd->state.arrow_atk) //Consume arrow.
 		battle_consume_ammo(sd, 0, 0);
