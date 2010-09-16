@@ -5,6 +5,10 @@
 // 	- Details.
 //========================================
 
+09/16/2010
+	r491 [pakpil]
+	* Updated to eAthena r14407.
+
 09/12/2010
 	r483 [pakpil]
 	* Updated to eAthena r14406.
