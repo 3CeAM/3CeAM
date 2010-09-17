@@ -207,7 +207,7 @@ int ele_data_received(struct s_elemental *ele, bool flag)
 		status_calc_elemental(ed,1);
 		ed->last_thinktime = gettick();
 		ed->summon_timer = INVALID_TIMER;
-		ed->battle_status.mode = ele->mode; // Initial mode.
+		ed->battle_status.mode = ele->mode = EL_MODE_PASSIVE; // Initial mode.
 		ele_summon_init(ed);
 	}
 	else
@@ -232,8 +232,8 @@ int ele_data_received(struct s_elemental *ele, bool flag)
 }
 
 /*===============================================================
- * Acción que realiza un elemental despues de un cambio de modo.
- * Activa una de las skills del modo al que ha cambiado.
+ * Action that elemental perform after changing mode.
+ * Activates one of the skills of the new mode.
  *-------------------------------------------------------------*/
 int elemental_change_mode_ack(struct elemental_data *ed, int mode)
 {
@@ -242,7 +242,7 @@ int elemental_change_mode_ack(struct elemental_data *ed, int mode)
 }
 
 /*===============================================================
- * Cambia el modo en el que se encuentra un elemental.
+ * Change elemental mode.
  *-------------------------------------------------------------*/
 int elemental_change_mode(struct elemental_data *ed, int mode)
 {
@@ -457,7 +457,7 @@ static int elemental_ai_sub_timer(struct elemental_data *ed, struct map_session_
 		target = map_id2bl(ed->ud.target);
 
 		if( !target )
-			map_foreachinrange(elemental_ai_sub_timer_activesearch, &ed->bl, view_range, BL_CHAR, ed, &target, status_get_mode(&ed->bl));
+			map_foreachinrange(elemental_ai_sub_timer_activesearch, &ed->bl, ed->base_status.rhw.range, BL_CHAR, ed, &target, status_get_mode(&ed->bl));
 
 		if( !target )
 		{ //No targets available.
@@ -655,8 +655,12 @@ int read_elemental_skilldb(void)
 			skillmode = EL_SKILLMODE_PASIVE;
 			continue;
 		}
-
-		i = skillid - EL_SKILLBASE;
+		ARR_FIND( 0, MAX_ELESKILLTREE, i, db->skill[i].id == 0 || db->skill[i].id == skillid );
+		if( i == MAX_ELESKILLTREE )
+		{
+			ShowWarning("Unable to load skill %d into Elemental %d's tree. Maximum number of skills per elemental has been reached.\n", skillid, class_);
+			continue;
+		}
 		db->skill[i].id = skillid;
 		db->skill[i].lv = skilllv;
 		db->skill[i].mode = skillmode;
