@@ -8268,7 +8268,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			{	// Select mode bassed on skill level used.
 				case 1: mode = EL_MODE_PASSIVE; break;
 				case 2: mode = EL_MODE_ASSIST; break;
-				case 3: mode = EL_MODE_AGRESSIVE; break;
+				case 3: mode = EL_MODE_AGGRESSIVE; break;
 			}
 			if( !elemental_change_mode(sd->ed,mode) )
 			{
@@ -12124,6 +12124,11 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			return 0;
 		}
 		break;
+	case ST_ELEMENTALSPIRIT:
+		if(!sd->ed) {
+			clif_skill_fail(sd,skill,0,0,0x4f);
+			return 0;
+		}
 	}
 
 	if(require.mhp > 0 && get_percentage(status->hp, status->max_hp) > require.mhp) {
@@ -16364,6 +16369,7 @@ static bool skill_parse_row_requiredb(char* split[], int columns, int current)
 	else if( strcmpi(split[10],"warg")==0 ) skill_db[i].state = ST_WUG;
 	else if( strcmpi(split[10],"ridingwarg")==0 ) skill_db[i].state = ST_RIDINGWUG;
 	else if( strcmpi(split[10],"mado")==0 ) skill_db[i].state = ST_MADO;
+	else if( strcmpi(split[10],"elementalspirit")==0 ) skill_db[i].state = ST_ELEMENTALSPIRIT;
 	else skill_db[i].state = ST_NONE;
 
 	skill_split_atoi(split[11],skill_db[i].spiritball);

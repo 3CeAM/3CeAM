@@ -412,6 +412,7 @@ enum {
 	ST_RIDINGWUG,
 	ST_MADO,
 	//ST_POISONINGWEAPON,
+	ST_ELEMENTALSPIRIT,
 };
 
 enum e_skill {
