@@ -452,7 +452,7 @@ static int elemental_ai_sub_timer(struct elemental_data *ed, struct map_session_
 				ed->target_id = mtbl->id;
 		}
 	}
-	else if( mode == EL_MODE_AGRESSIVE )
+	else if( mode == EL_MODE_AGGRESSIVE )
 	{
 		target = map_id2bl(ed->ud.target);
 

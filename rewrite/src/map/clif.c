@@ -174,7 +174,7 @@ static inline unsigned char clif_bl_type(struct block_list *bl) {
 	case BL_PET:   return 0x7; //NPC_PET_TYPE
 	case BL_HOM:   return 0x8; //NPC_HOM_TYPE
 	case BL_MER:   return 0x9; //NPC_MERSOL_TYPE
-	case BL_ELEM:  return 0xA; //NPC_ELEMENTAL_TYPE
+	case BL_ELEM:  return 0xa; //NPC_ELEMENTAL_TYPE
 	default:       return 0x1; //NPC_TYPE
 	}
 }
