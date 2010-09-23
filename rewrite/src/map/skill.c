@@ -2461,6 +2461,9 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 				status_damage(bl, s_bl, damage, 0, 0, 32);
 			}
 		}
+		// Just show damage in target.
+		clif_damage(src, bl, tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, dmg.type, dmg.damage2 );
+		return ATK_NONE;
 	}
 
 	if (!(flag&2) &&
@@ -11365,7 +11368,12 @@ int skill_check_pc_partner(struct map_session_data *sd, short skill_id, short* s
 	nullpo_retr(0,sd);
 
 	if( !battle_config.player_skill_partner_check || (battle_config.gm_skilluncond && pc_isGM(sd) >= battle_config.gm_skilluncond) )
-		return 99; //As if there were infinite partners.
+	{
+		if( skill_get_inf2(skill_id)&INF2_CHORUS_SKILL )
+			return MAX_PARTY; // To avoid extremly high effects in skills that use the amount of party members as damage multiplier.
+		else
+			return 99; //As if there were infinite partners.
+	}
 
 	if( cast_flag == 0 || cast_flag == 2 )
 	{ // Search for Partners
