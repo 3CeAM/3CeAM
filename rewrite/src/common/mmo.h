@@ -30,6 +30,7 @@
 // 20081218 - 2008-12-17bRagexeRE+ - 0x6d (Note: From this one client use new Char Info Packet Structure)
 // 20090603 - 2009-06-03aRagexeRE+ - 0x7d7, 0x7d8, 0x7d9, 0x7da
 // 20090617 - 2009-06-17aRagexeRE+ - 0x7d9
+// 20090715 - 2009-07-15aRagexeRE+ - 0x7e1
 // 20090805 - 2009-08-05aRagexeRE+ - 0x7e2
 // 20090922 - 2009-09-22aRagexeRE+ - 0x7e5, 0x7e7, 0x7e8, 0x7e9
 // 20091103 - 2009-11-03aRagexeRE+ - 0x7f7, 0x7f8, 0x7f9, 0x7fb

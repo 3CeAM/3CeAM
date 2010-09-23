@@ -196,7 +196,7 @@ int clif_class_change(struct block_list *bl,int class_,int type);
 #define clif_mob_class_change(md, class_) clif_class_change(&md->bl, class_, 1)
 int clif_mob_equip(struct mob_data *md,int nameid); // [Valaris]
 
-int clif_skillinfo(struct map_session_data *sd,int skillid,int type,int range);
+int clif_skillupdateinfo(struct map_session_data *sd,int skillid,int type,int range);
 int clif_skillinfoblock(struct map_session_data *sd);
 int clif_skillup(struct map_session_data *sd,int skill_num);
 int clif_addskill(struct map_session_data *sd, int skill);

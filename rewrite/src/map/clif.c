@@ -4533,39 +4533,48 @@ int clif_insight(struct block_list *bl,va_list ap)
 
 /*==========================================
  *
- *------------------------------------------
-int clif_skillinfo(struct map_session_data *sd,int skillid,int type,int range)
+ *------------------------------------------*/
+int clif_skillupdateinfo(struct map_session_data *sd,int skillid,int type,int range)
 {
-	int fd,id;
+	int fd, id, cmd, offset = 0;
 
 	nullpo_retr(0, sd);
 
-	fd=sd->fd;
+#if PACKETVER < 20090715
+	cmd = 0x147;
+#else
+	cmd = 0x7e1;
+#endif
+
+	fd = sd->fd;
 	if( (id=sd->status.skill[skillid].id) <= 0 )
 		return 0;
-	WFIFOHEAD(fd,packet_len(0x147));
-	WFIFOW(fd,0)=0x147;
+	WFIFOHEAD(fd,packet_len(cmd));
+	WFIFOW(fd,0) = cmd;
 	WFIFOW(fd,2) = id;
-	if(type < 0)
-		WFIFOW(fd,4) = skill_get_inf(id);
+	if( type )
+		WFIFOL(fd,4) = type;
 	else
-		WFIFOW(fd,4) = type;
-	WFIFOW(fd,6) = 0;
+		WFIFOL(fd,4) = skill_get_inf(id);
 	WFIFOW(fd,8) = sd->status.skill[skillid].lv;
 	WFIFOW(fd,10) = skill_get_sp(id,sd->status.skill[skillid].lv);
-	if(range < 0)
-		range = skill_get_range2(&sd->bl, id,sd->status.skill[skillid].lv);
-
-	WFIFOW(fd,12)= range;
-	safestrncpy((char*)WFIFOP(fd,14), skill_get_name(id), NAME_LENGTH);
-	if(sd->status.skill[skillid].flag ==0)
-		WFIFOB(fd,38)= (sd->status.skill[skillid].lv < skill_tree_get_max(id, sd->status.class_))? 1:0;
+	if( range )
+		WFIFOW(fd,12) = range;
 	else
-		WFIFOB(fd,38) = 0;
-	WFIFOSET(fd,packet_len(0x147));
+		WFIFOW(fd,12) = skill_get_range2(&sd->bl, id,sd->status.skill[skillid].lv);
+
+#if PACKETVER < 20090715
+	safestrncpy((char*)WFIFOP(fd,14), skill_get_name(id), NAME_LENGTH);
+	offset = 24;
+#endif
+	if(sd->status.skill[skillid].flag ==0)
+		WFIFOB(fd,14+offset)= (sd->status.skill[skillid].lv < skill_tree_get_max(id, sd->status.class_))? 1:0;
+	else
+		WFIFOB(fd,14+offset) = 0;
+	WFIFOSET(fd,packet_len(cmd));
 
 	return 0;
-}*/
+}
 
 /*==========================================
  * スキルリストを送信する
@@ -14830,7 +14839,7 @@ static int packetdb_readdb(void)
 #else // 0x7d9 changed
 	    6,  2, -1,  4,  4,  4,  4,  8,  8,268,  6,  8,  6, 54, 30, 54,
 #endif
-	    0,  0,  8,  6, -1,  8,  8, 32, -1,  5,  0,  0,  0,  0,  0,  0,
+	    0, 15,  8,  6, -1,  8,  8, 32, -1,  5,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0, 14, -1, -1, -1,  8, 25,  0,  0, 26,  0,
 	  //#0x0800
 	   -1, -1, 18,  4, 14, -1,  2,  4, 14, 50, 18,  6,  2,  3, 14, 20,
