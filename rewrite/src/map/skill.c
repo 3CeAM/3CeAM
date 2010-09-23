@@ -7264,9 +7264,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				status_change_end(bl, SC_FREEZE, -1);
 				status_change_end(bl, SC_STONE, -1);
 				status_change_end(bl, SC_BLIND, -1);
-				clif_skill_nodamage(bl, bl, skillid, skilllv,
-					sc_start(bl, type, 100, skilllv, skill_get_time(skillid, skilllv)));
 			}
+			// Success rate only applies to the curing effect and not stat bonus.
+			clif_skill_nodamage(bl, bl, skillid, skilllv,
+				sc_start(bl, type, 100, skilllv, skill_get_time(skillid, skilllv)));
 		}
 		else if( sd )
 			party_foreachsamemap(skill_area_sub, sd, skill_get_splash(skillid, skilllv),
@@ -7282,9 +7283,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				status_change_end(bl, SC_SLEEP, -1);
 				status_change_end(bl, SC_STUN, -1);
 				status_change_end(bl, SC_SILENCE, -1);
-				clif_skill_nodamage(bl, bl, skillid, skilllv,
-					sc_start(bl, type, 100, skilllv, skill_get_time(skillid, skilllv)));
 			}
+			clif_skill_nodamage(bl, bl, skillid, skilllv,
+				sc_start(bl, type, 100, skilllv, skill_get_time(skillid, skilllv)));
+			//Success rate only applies to the curing effect and not stat bonus.
 		}
 		else if( sd )
 			party_foreachsamemap(skill_area_sub, sd, skill_get_splash(skillid, skilllv),
@@ -10869,14 +10871,23 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 					case 3: case 4: hp = 4; sp = 3; break;
 					case 5: default: hp = 5; sp = 4; break;
 				}
-				hp = tstatus->max_hp / 100 * hp;
-				sp = tstatus->max_sp / 100 * sp;
+				hp = tstatus->max_hp * hp / 100;
+				sp = tstatus->max_sp * sp / 100;
 				status_heal(bl, hp, sp, 0);
-				if( tstatus->hp != tstatus->max_hp )
+				if( tstatus->hp < tstatus->max_hp )
 					clif_skill_nodamage(&src->bl, bl, AL_HEAL, hp, 1);
-				if( tstatus->sp != tstatus->max_sp )
+				if( tstatus->sp < tstatus->max_sp )
 					clif_skill_nodamage(&src->bl, bl, MG_SRECOVERY, sp, 1);
 				sc_start(bl, type, 100, sg->skill_lv, sg->interval + 100);
+				sg->val2++;
+				// Reveal hidden players every 5 seconds.
+				if( sg->val2 >= 5 )
+				{
+					sg->val2 = 0;
+					// TODO: check if other hidden status can be removed.
+					status_change_end(bl,SC_HIDING,-1);
+					status_change_end(bl,SC_CLOAKING,-1);
+				}
 			}
 			/* Enable this if kRO fix the current skill. Currently no damage on undead and demon monster. [Jobbie]
 			else if( battle_check_target(ss, bl, BCT_ENEMY) > 0 && battle_check_undead(tstatus->race, tstatus->def_ele) )
@@ -11308,7 +11319,7 @@ static int skill_check_condition_char_sub (struct block_list *bl, va_list ap)
 		}
 		case AB_ADORAMUS:
 		{ // Adoramus does not consume Blue Gemstone when there is at least 1 Priest class next to the caster
-			if( tsd->status.sp >= 10+lv && (tsd->class_&MAPID_UPPERMASK) == MAPID_PRIEST )
+			if( tsd->status.sp >= 2*lv && (tsd->class_&MAPID_UPPERMASK) == MAPID_PRIEST )
 				p_sd[(*c)++] = tsd->bl.id;
 			return 1;
 		}
@@ -11397,7 +11408,7 @@ int skill_check_pc_partner(struct map_session_data *sd, short skill_id, short* s
 			case AB_ADORAMUS:
 				if( c > 0 && (tsd = map_id2sd(p_sd[0])) != NULL )
 				{
-					i = 10 + (*skill_lv);
+					i = 2 * (*skill_lv);
 					status_charge(&tsd->bl, 0, i);
 				}
 				break;
@@ -11896,6 +11907,13 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		{
 			clif_skill_fail(sd,skill,0,0,0);
 			return 0;
+		}
+		break;
+	case AB_HIGHNESSHEAL:
+		if( sd && pc_checkskill(sd,AL_HEAL) == 0 )
+		{
+				clif_skill_fail(sd,skill,0,0,0);
+				return 0;
 		}
 		break;
 	case GC_COUNTERSLASH:

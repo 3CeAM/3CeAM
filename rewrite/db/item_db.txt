@@ -4502,7 +4502,7 @@
 12330,Recall_FemaleGM,Summon Female GameMaster Scroll,2,0,,0,,,,,0xFFFFFFFF,7,2,,,,,,{ mercenary_create 2001,1800000; },{},{}
 12331,Ginseng,Ginseng,2,0,,0,,,,,0xFFFFFFFF,7,2,,,,,,{ percentheal 6,0; },{},{}
 12332,Fruit_Juice,Fruit Juice,2,0,,0,,,,,0xFFFFFFFF,7,2,,,,,,{ percentheal 0,6; },{},{}
-12333,Ansila,Ancilla,2,0,,0,,,,,0xFFFFFFFF,7,2,,,,,,{},{},{}
+12333,Ancilla,Ancilla,0,100,,10,,,,,0x00000100,8,2,,,,,,{ percentheal 0,15; },{},{}
 12334,Cherish_Box,Treasure Edition Helm Box,2,0,,0,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem groupranditem(IG_Cherish_Box),1; },{},{}
 12335,Yummy_Skewered_Dish,Grilled Delicious Skewer,2,0,,0,,,,,0xFFFFFFFF,7,2,,,,,,{ percentheal 60,60; },{},{}
 12336,Baked_Mushroom,Grilled Mushroom,2,0,,0,,,,,0xFFFFFFFF,7,2,,,,,,{ percentheal 30,30; },{},{}

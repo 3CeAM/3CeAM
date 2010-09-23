@@ -2719,6 +2719,12 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 			signed char def1 = status_get_def(target); //Don't use tstatus->def1 due to skill timer reductions.
 			short def2 = (short)tstatus->def2;
 
+			if( sc && sc->data[SC_EXPIATIO] )
+			{ // Deffense bypass 5 * skilllv
+				def1 -= def1 * 5 * sc->data[SC_EXPIATIO]->val1 / 100;
+				def2 -= def2 * 5 * sc->data[SC_EXPIATIO]->val1 / 100;
+			}
+
 			if( sd )
 			{
 				i = sd->ignore_def[is_boss(target)?RC_BOSS:RC_NONBOSS];
@@ -3423,8 +3429,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						skillratio += 100 +100*skill_lv +100*(skill_lv/2);
 						break;
 					case AB_JUDEX:
-						skillratio += (skill_lv == 5) ? 300 : 180 + 20 * skill_lv;
-						skillratio = skillratio * status_get_lv(src) / 100;
+						skillratio = (skillratio + (skill_lv == 5) ? 300 : 180 + 20 * skill_lv) * s_level / 100;
 						break;
 					case AB_ADORAMUS:
 						skillratio += 400 + 100 * skill_lv;
@@ -4373,15 +4378,6 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		if (sc->data[SC_MAGICALATTACK])
 			//FIXME: invalid return type!
 			return (damage_lv)skill_attack(BF_MAGIC,src,src,target,NPC_MAGICALATTACK,sc->data[SC_MAGICALATTACK]->val1,tick,0);
-		if( sc->data[SC_DUPLELIGHT] && rand()%100 <= 25 )//Chance of activation for either physical and magical is 25%
-		{
-			int skillid;
-			if( rand()%2 == 1 )
-				skillid = AB_DUPLELIGHT_MELEE;
-			else
-				skillid = AB_DUPLELIGHT_MAGIC;
-			skill_attack(skill_get_type(skillid), src, src, target, skillid, sc->data[SC_DUPLELIGHT]->val1, tick, SD_LEVEL);
-		}
 		if( sc->data[SC_GT_ENERGYGAIN] )
 		{
 			int duration = skill_get_time(MO_CALLSPIRITS, sc->data[SC_GT_ENERGYGAIN]->val1); 
@@ -4424,6 +4420,16 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 	if( damage > 0 && src != target )
 	{
 		
+		if( sc && sc->data[SC_DUPLELIGHT] && wd.flag&(BF_WEAPON|BF_SHORT) && rand()%100 <= 25 )//Chance of activation for either physical and magical is 25%
+		{	// Activates it only from melee damage
+			int skillid;
+			if( rand()%2 == 1 )
+				skillid = AB_DUPLELIGHT_MELEE;
+			else
+				skillid = AB_DUPLELIGHT_MAGIC;
+			skill_attack(skill_get_type(skillid), src, src, target, skillid, sc->data[SC_DUPLELIGHT]->val1, tick, SD_LEVEL);
+		}
+
 		if( tsc && tsc->data[SC_DEATHBOUND] && (sstatus->mode&MD_BOSS)  )
 			rdamage = 0; // Does not work on boss monsters.
 		else
