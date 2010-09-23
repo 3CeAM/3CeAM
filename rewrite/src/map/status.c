@@ -600,6 +600,7 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_ASPDPOTION3] = SI_ASPDPOTIONINFINITY;
 	StatusIconChangeTable[SC_SPEEDUP0] = SI_MOVHASTE_HORSE;
 	StatusIconChangeTable[SC_SPEEDUP1] = SI_SPEEDPOTION1;
+	StatusIconChangeTable[SC_COMBO] = SI_COMBOATTACK;
 	StatusIconChangeTable[SC_INCSTR] = SI_INCSTR;
 	StatusIconChangeTable[SC_MIRACLE] = SI_SPIRIT;
 	StatusIconChangeTable[SC_INTRAVISION] = SI_INTRAVISION;
@@ -6702,6 +6703,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 				case MO_COMBOFINISH:
 				case CH_TIGERFIST:
 				case CH_CHAINCRUSH:
+				case SR_DRAGONCOMBO:
 					if( sd )
 					{
 						sd->state.combo = 1;

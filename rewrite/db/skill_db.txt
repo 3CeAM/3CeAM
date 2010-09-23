@@ -1085,7 +1085,7 @@
 2326,4,8,1,-1,0,0,10,2,yes,0,0,0,weapon,0,		SR_DRAGONCOMBO,Dragon Combo
 2327,0,6,4,-1,0x2,2,5,1,no,0,0,0,weapon,3,		SR_SKYNETBLOW,Sky Net Blow
 2328,0,6,4,-1,0x2,5,5,1,no,0,0,0,weapon,0,		SR_EARTHSHAKER,Earth Shaker
-2329,4,8,1,-1,0x2,0,5,3,yes,0,0,0,weapon,0,		SR_FALLENEMPIRE,Fallen Empire
+2329,4,8,4,-1,0x2,0,5,3,yes,0,0x200,0,weapon,0,		SR_FALLENEMPIRE,Fallen Empire
 2330,0,6,4,0,0x42,1:1:1:1:1:2:2:2:2:2,10,0,yes,0,0,0,weapon,0,	SR_TIGERCANNON,Tiger Canon
 //2331,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		SR_HELLGATE,Hell Gate
 2332,5,6,4,-1,0x2,3,5,1,no,0,0,0,weapon,0,		SR_RAMPAGEBLASTER,Rampage Blaster

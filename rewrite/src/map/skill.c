@@ -2141,6 +2141,9 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 			flag = DIFF_TICK(sd->ud.canact_tick, tick);
 			if (flag < 0) flag = 0;
 			flag += 300 * battle_config.combo_delay_rate/100;
+			// Dragon Combo must change into self skill and auto-select target when used as combo skill.
+			if( skillid == MO_TRIPLEATTACK && pc_checkskill(sd, SR_DRAGONCOMBO) > 0 )
+				clif_skillupdateinfo(sd,SR_DRAGONCOMBO,INF_SELF_SKILL,0);
 			sc_start(src,SC_COMBO,100,skillid,flag);
 			clif_combo_delay(src, flag);
 		}
@@ -3270,7 +3273,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case LG_BANISHINGPOINT:
 	case LG_SHIELDPRESS:
 	case LG_RAGEBURST:
-	case SR_DRAGONCOMBO:
 	case SR_SKYNETBLOW:
 	case SR_FALLENEMPIRE:
 	case SR_RAMPAGEBLASTER:
@@ -4185,6 +4187,12 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 
 	case LG_OVERBRAND_BRANDISH:
 		skill_addtimerskill(src, tick + 300, bl->id, 0, 0, skillid, skilllv, BF_WEAPON, flag|SD_LEVEL);
+		break;
+
+	case SR_DRAGONCOMBO:
+		if( sd ) // Dragon Combo must back to target-selectable skill after use it as combo.
+			clif_skillupdateinfo(sd,SR_DRAGONCOMBO,0,0);
+		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
 	case SR_KNUCKLEARROW:
@@ -8527,8 +8535,8 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 			inf = skill_get_inf(ud->skillid);
 			inf2 = skill_get_inf2(ud->skillid);
 
-			if(inf&INF_ATTACK_SKILL ||
-				(inf&INF_SELF_SKILL && inf2&INF2_NO_TARGET_SELF)) //Combo skills
+			if(inf&INF_ATTACK_SKILL || (inf&INF_SELF_SKILL && inf2&INF2_NO_TARGET_SELF) || //Combo skills
+				ud->skillid == SR_DRAGONCOMBO && src == target)	// Casted through combo.
 				inf = BCT_ENEMY; //Offensive skill.
 			else if(inf2&INF2_NO_ENEMY)
 				inf = BCT_NOENEMY;
