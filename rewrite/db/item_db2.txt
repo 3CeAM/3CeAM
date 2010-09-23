@@ -243,10 +243,7 @@
 11513,Cough_Drop,Cough Drop,3,200,,10,,,,,,,,,,,,,{},{},{}
 
 // Genetic Cure Free
-//11518,Cure_Free,Cure Free,3,10,,10,,,,,,,,,,,,,{},{},{}
-
-// Arch Bishop Ancilla
-12333,Ancilla,Ancilla,0,100,,10,,,,,0x00000100,8,2,,,,,,{ percentheal 0,15; },{},{}
+11518,Cure_Free,Cure Free,3,10,,10,,,,,,,,,,,,,{},{},{}
 
 // Ranger Special Alloy Trap Box
 12341,Special_Alloy_Trap_Box,Special Alloy Trap Box,2,,,10,,,,,0xFFFFFFFF,8,2,,,,,,{ getitem 7940,100; },{},{}

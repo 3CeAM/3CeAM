@@ -4647,7 +4647,7 @@ static unsigned int status_calc_maxhp(struct block_list *bl, struct status_chang
 		maxhp += maxhp * sc->data[SC_MERC_HPUP]->val2/100;
 
 	if(sc->data[SC_EPICLESIS])
-		maxhp += maxhp / 100 * 5 * sc->data[SC_EPICLESIS]->val1;
+		maxhp += maxhp * 5 * sc->data[SC_EPICLESIS]->val1 / 100;
 	if(sc->data[SC_VENOMBLEED])
 		maxhp -= maxhp * 15 / 100;
 	if(sc->data[SC__WEAKNESS])
@@ -6183,11 +6183,13 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val2 = val1*20; //SP gained
 			break;
 		case SC_KYRIE:
-			val2 = status->max_hp * (val1 * 2 + 10) / 100; //%Max HP to absorb
 			if( !val4 )	// val4 signals it as Praefatio, which has a different # of hits formula. [LimitLine]
 				val3 = (val1 / 2 + 5); //Hits
 			else
 				val3 = 6 + val1;
+			// The MaxHP limit depends on one's Skill level of Kyrie Eleison for effectiveness.
+			if( sd ) val1 = min(val1,pc_checkskill(sd,PR_KYRIE));
+			val2 = status->max_hp * (val1 * 2 + 10) / 100; //%Max HP to absorb
 			break;
 		case SC_MAGICPOWER:
 			//val1: Skill lv
@@ -8860,7 +8862,7 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 	case SC_RENOVATIO:
 		if( --(sce->val4) >= 0 )
 		{
-			status_heal(bl, status->max_hp / 100 * 3, 0, 2);
+			status_heal(bl, status->max_hp * 3 / 100, 0, 2);
 			sc_timer_next(5000 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}
