@@ -6276,7 +6276,7 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 		merc_delete(sd->md, 3); // Your mercenary soldier has ran away.
 
 	if( sd->ed )
-		ele_delete(sd->ed, 0);
+		elemental_delete(sd->ed, 0);
 
 	// Leave duel if you die [LuzZza]
 	if(battle_config.duel_autoleave_when_die) {

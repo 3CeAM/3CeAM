@@ -2411,7 +2411,7 @@ int unit_free(struct block_list *bl, int clrtype)
 			if( sd )
 				sd->ed = NULL;
 
-			ele_summon_stop(ed);
+			elemental_summon_stop(ed);
 			break;
 		}
 	}

@@ -1476,7 +1476,7 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 			return 0; // Can't use support skills on Homunculus (only Master/Self)
 		if( target->type == BL_MER && (skill_num == PR_ASPERSIO || (skill_num >= SA_FLAMELAUNCHER && skill_num <= SA_SEISMICWEAPON)) && battle_get_master(target) != src )
 			return 0; // Can't use Weapon endow skills on Mercenary (only Master)
-		if( target->type == BL_MER && skill_num == AM_POTIONPITCHER )
+		if( (target->type == BL_MER || target->type == BL_ELEM) && skill_num == AM_POTIONPITCHER )
 			return 0; // Can't use Potion Pitcher on Mercenaries
 	default:
 		//Check for chase-walk/hiding/cloaking opponents.
@@ -2876,19 +2876,34 @@ int status_calc_elemental_(struct elemental_data *ed, bool first)
 {
 	struct status_data *status = &ed->base_status;
 	struct s_elemental *ele = &ed->elemental;
+	struct map_session_data *sd = ed->master;
+	
+	if( !sd )
+		return 0;
 
 	if( first )
 	{
 		memcpy(status, &ed->db->status, sizeof(struct status_data));
 		status->mode = MD_CANMOVE|MD_CANATTACK;
+		status->max_hp += 4000 + 500 * pc_checkskill(sd,SO_EL_SYMPATHY);
+		status->max_sp += 300 + 50 * pc_checkskill(sd,SO_EL_SYMPATHY);
 		status->hp = status->max_hp;
 		status->sp = status->max_sp;
-		ed->battle_status.hp = ele->hp;
-		ed->battle_status.sp = ele->sp;
-	}
+		status->str += sd->base_status.str * 25 / 100;
+		status->agi += sd->base_status.agi * 25 / 100;
+		status->vit += sd->base_status.vit * 25 / 100;
+		status->int_ += sd->base_status.int_ * 25 / 100;
+		status->def += sd->base_status.dex * 25 / 100;
+		status->luk += sd->base_status.luk * 25 / 100;
 
-	status_calc_misc(&ed->bl, status, ed->db->lv);
-	status_cpy(&ed->battle_status, status);
+		status_calc_misc(&ed->bl, status, ed->db->lv);
+		memcpy(&ed->battle_status,status,sizeof(struct status_data));
+	}
+	else
+	{
+		status_calc_misc(&ed->bl, status, ed->db->lv);
+		status_cpy(&ed->battle_status, status);
+	}
 
 	return 0;
 }
@@ -5072,8 +5087,8 @@ void status_set_viewdata(struct block_list *bl, int class_)
 		vd = merc_get_hom_viewdata(class_);
 	else if (merc_class(class_))
 		vd = merc_get_viewdata(class_);
-	else if (ele_class(class_))
-		vd = ele_get_viewdata(class_);
+	else if (elemental_class(class_))
+		vd = elemental_get_viewdata(class_);
 	else
 		vd = NULL;
 

@@ -335,7 +335,7 @@
 13271,Throwing_Manaplus,Throwing Manaplus,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
 13272,Throwing_Cure_Free,Throwing Cure Free,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
 13273,Throwing_Muramura_M,Throwing Muramura M,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
-13274,Throwing_Falmons_F,Throwing Falmons F,11,17,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13274,Throwing_Falmons_F,Throwing Falmons F,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
 13275,Throwing_Increase_HP_Potion_(Small),Throwing Increase HP Potion (Small),17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
 13276,Throwing_Increase_HP_Potion_(Medium),Throwing Increase HP Potion (Medium),17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
 13277,Throwing_Increase_HP_Potion_(Large),Throwing Increase HP Potion (Large),17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
