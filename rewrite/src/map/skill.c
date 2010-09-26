@@ -108,14 +108,14 @@ int skill_get_index( int id )
 	if( id >= GD_SKILLBASE )
 		id = GD_SKILLRANGEMIN + id - GD_SKILLBASE;
 	else
+	if( id >= EL_SKILLBASE )
+		id = EL_SKILLRANGEMIN + id - EL_SKILLBASE;
+	else
 	if( id >= MC_SKILLBASE )
 		id = MC_SKILLRANGEMIN + id - MC_SKILLBASE;
 	else
 	if( id >= HM_SKILLBASE )
 		id = HM_SKILLRANGEMIN + id - HM_SKILLBASE;
-	else
-	if( id >= EL_SKILLBASE )
-		id = EL_SKILLRANGEMIN + id - EL_SKILLBASE;
 	else
 		; // identity
 
@@ -8244,16 +8244,16 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SO_SUMMON_TERA:
 		if( sd )
 		{
-			int ele_class = skill_get_elemental_type(skillid,skilllv);
+			int elemental_class = skill_get_elemental_type(skillid,skilllv);
 
 			// Remove previous elemental fisrt.
-			if( sd->ed && ele_delete(sd->ed,0) )
+			if( sd->ed && elemental_delete(sd->ed,0) )
 			{
 				clif_skill_fail(sd,skillid,0,0,0);
 				break;
 			}
 			// Summoning the new one.
-			if( !ele_create(sd,ele_class,skill_get_time(skillid,skilllv)) )
+			if( !elemental_create(sd,elemental_class,skill_get_time(skillid,skilllv)) )
 			{
 				clif_skill_fail(sd,skillid,0,0,0);
 				break;
@@ -8273,7 +8273,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			}
 			if( skilllv == 4 )
 			{	// At level 4 delete elementals.
-				if( ele_delete(sd->ed, 0) )
+				if( elemental_delete(sd->ed, 0) )
 					clif_skill_fail(sd,skillid,0,0,0);
 				break;
 			}

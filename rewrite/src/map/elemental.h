@@ -19,7 +19,7 @@
 #define EL_SKILLMODE_ASSIST 0x2
 #define EL_SKILLMODE_AGGRESSIVE 0x4
 
-struct ele_skill {
+struct elemental_skill {
 	unsigned short id, lv;
 	short mode;
 };
@@ -31,7 +31,7 @@ struct s_elemental_db {
 	short range2, range3;
 	struct status_data status;
 	struct view_data vd;
-	struct ele_skill skill[MAX_ELESKILLTREE];
+	struct elemental_skill skill[MAX_ELESKILLTREE];
 };
 
 extern struct s_elemental_db elemental_db[MAX_ELEMENTAL_CLASS];
@@ -57,11 +57,11 @@ struct elemental_data {
 	int target_id, attacked_id;
 };
 
-bool ele_class(int class_);
-struct view_data * ele_get_viewdata(int class_);
+bool elemental_class(int class_);
+struct view_data * elemental_get_viewdata(int class_);
 
-int ele_create(struct map_session_data *sd, int class_, unsigned int lifetime);
-int ele_data_received(struct s_elemental *ele, bool flag);
+int elemental_create(struct map_session_data *sd, int class_, unsigned int lifetime);
+int elemental_data_received(struct s_elemental *ele, bool flag);
 int elemental_save(struct elemental_data *ed);
 
 int elemental_change_mode_ack(struct elemental_data *ed, int mode);
@@ -71,8 +71,8 @@ void elemental_damage(struct elemental_data *ed, struct block_list *src, int hp,
 void elemental_heal(struct elemental_data *ed, int hp, int sp);
 int elemental_dead(struct elemental_data *ed, struct block_list *src);
 
-int ele_delete(struct elemental_data *ed, int reply);
-void ele_summon_stop(struct elemental_data *ed);
+int elemental_delete(struct elemental_data *ed, int reply);
+void elemental_summon_stop(struct elemental_data *ed);
 
 int elemental_get_lifetime(struct elemental_data *ed);
 
@@ -82,8 +82,10 @@ int elemental_set_target( struct map_session_data *sd, struct block_list *bl );
 #define elemental_stop_walking(ed, type) unit_stop_walking(&(ed)->bl, type)
 #define elemental_stop_attack(ed) unit_stop_attack(&(ed)->bl)
 
+int read_elemental_skilldb(void);
+void reload_elementaldb(void);
+void reload_elemental_skilldb(void);
 int do_init_elemental(void);
-void read_eledb(void);
-void ele_skill_reload(void);
+void do_final_elemental(void);
 
 #endif /* _ELEMENTAL_H_ */
