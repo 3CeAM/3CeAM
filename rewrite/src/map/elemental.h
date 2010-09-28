@@ -12,7 +12,7 @@
 #define MAX_ELEDISTANCE 6
 
 #define EL_MODE_AGGRESSIVE (MD_CANMOVE|MD_AGGRESSIVE|MD_CANATTACK)
-#define EL_MODE_ASSIST (MD_CANMOVE|MD_ASSIST|MD_CANATTACK)
+#define EL_MODE_ASSIST (MD_CANMOVE|MD_ASSIST)
 #define EL_MODE_PASSIVE MD_CANMOVE
 
 #define EL_SKILLMODE_PASIVE 0x1
@@ -77,7 +77,11 @@ void elemental_summon_stop(struct elemental_data *ed);
 int elemental_get_lifetime(struct elemental_data *ed);
 
 int elemental_unlocktarget(struct elemental_data *ed);
+int elemental_skillnotok(int skillid, struct elemental_data *ed);
 int elemental_set_target( struct map_session_data *sd, struct block_list *bl );
+int elemental_clean_single_effect(struct elemental_data *ed, int skill_num);
+int elemental_clean_effect(struct elemental_data *ed);
+int elemental_action(struct elemental_data *ed, struct block_list *bl, unsigned int tick);
 
 #define elemental_stop_walking(ed, type) unit_stop_walking(&(ed)->bl, type)
 #define elemental_stop_attack(ed) unit_stop_attack(&(ed)->bl)

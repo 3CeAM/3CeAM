@@ -336,8 +336,8 @@ struct s_elemental {
 	int char_id;
 	short class_;
 	int mode;
-	int hp, sp;
-	unsigned int life_time;
+	int hp, sp, max_hp, max_sp, str, agi, vit, int_, dex, luk;
+	int life_time;
 };
 
 struct s_friend {
