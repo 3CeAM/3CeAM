@@ -134,6 +134,7 @@ int elemental_delete(struct elemental_data *ed, int reply)
 	ed->elemental.life_time = 0;
 	ed->summon_timer = INVALID_TIMER;
 
+	elemental_clean_effect(ed);
 	elemental_summon_stop(ed);
 
 	if( !sd )
@@ -228,13 +229,225 @@ int elemental_data_received(struct s_elemental *ele, bool flag)
 	return 1;
 }
 
+int elemental_clean_single_effect(struct elemental_data *ed, int skill_num)
+{
+	struct block_list *bl;
+	sc_type type = status_skill2sc(skill_num);
+
+	nullpo_retr(0,ed);
+
+	bl = battle_get_master(&ed->bl);
+	
+	if( type )
+	{
+		switch( type )
+		{
+			// Just remove status change.
+			case SC_PYROTECHNIC_OPTION:
+			case SC_HEATER_OPTION:
+			case SC_TROPIC_OPTION:
+			case SC_FIRE_CLOAK_OPTION:
+			case SC_AQUAPLAY_OPTION:
+			case SC_WATER_SCREEN_OPTION:
+			case SC_COOLER_OPTION:
+			case SC_CHILLY_AIR_OPTION:
+			case SC_GUST_OPTION:
+			case SC_WIND_STEP_OPTION:
+			case SC_BLAST_OPTION:
+			case SC_WATER_DROP_OPTION:
+			case SC_WIND_CURTAIN_OPTION:
+			case SC_WILD_STORM_OPTION:
+			case SC_PETROLOGY_OPTION:
+			case SC_SOLID_SKIN_OPTION:
+			case SC_CURSED_SOIL_OPTION:
+			case SC_STONE_SHIELD_OPTION:
+			case SC_UPHEAVAL_OPTION:				
+			case SC_TIDAL_WEAPON_OPTION:
+				if( bl ) status_change_end(bl,type,-1);	// Master
+				status_change_end(&ed->bl,type-1,-1);	// Elemental Spirit
+				break;
+			case SC_ZEPHYR:
+				if( bl ) status_change_end(bl,type,-1);
+				break;
+		}
+	}
+	if( skill_get_unit_id(skill_num,0) )
+		skill_clear_unitgroup(&ed->bl);
+
+	return 1;
+}
+
+int elemental_clean_effect(struct elemental_data *ed)
+{
+	struct map_session_data *sd;
+
+	nullpo_retr(0,ed);
+
+	// Elemental side
+	status_change_end(&ed->bl,SC_TROPIC,-1);
+	status_change_end(&ed->bl,SC_HEATER,-1);
+	status_change_end(&ed->bl,SC_AQUAPLAY,-1);
+	status_change_end(&ed->bl,SC_COOLER,-1);
+	status_change_end(&ed->bl,SC_CHILLY_AIR,-1);
+	status_change_end(&ed->bl,SC_PYROTECHNIC,-1);
+	status_change_end(&ed->bl,SC_FIRE_CLOAK,-1);
+	status_change_end(&ed->bl,SC_WATER_DROP,-1);
+	status_change_end(&ed->bl,SC_WATER_SCREEN,-1);
+	status_change_end(&ed->bl,SC_GUST,-1);
+	status_change_end(&ed->bl,SC_WIND_STEP,-1);
+	status_change_end(&ed->bl,SC_BLAST,-1);
+	status_change_end(&ed->bl,SC_WIND_CURTAIN,-1);
+	status_change_end(&ed->bl,SC_WILD_STORM,-1);
+	status_change_end(&ed->bl,SC_PETROLOGY,-1);
+	status_change_end(&ed->bl,SC_SOLID_SKIN,-1);
+	status_change_end(&ed->bl,SC_CURSED_SOIL,-1);
+	status_change_end(&ed->bl,SC_STONE_SHIELD,-1);
+	status_change_end(&ed->bl,SC_UPHEAVAL,-1);
+	status_change_end(&ed->bl,SC_TIDAL_WEAPON,-1);
+
+	skill_clear_unitgroup(&ed->bl);
+
+	if( (sd = ed->master) == NULL )
+		return 0;	
+
+	// Master side
+	status_change_end(&ed->bl,SC_TROPIC_OPTION,-1);
+	status_change_end(&ed->bl,SC_HEATER_OPTION,-1);
+	status_change_end(&ed->bl,SC_AQUAPLAY_OPTION,-1);
+	status_change_end(&ed->bl,SC_COOLER_OPTION,-1);
+	status_change_end(&ed->bl,SC_CHILLY_AIR_OPTION,-1);
+	status_change_end(&ed->bl,SC_PYROTECHNIC_OPTION,-1);
+	status_change_end(&ed->bl,SC_FIRE_CLOAK_OPTION,-1);
+	status_change_end(&ed->bl,SC_WATER_DROP_OPTION,-1);
+	status_change_end(&ed->bl,SC_WATER_SCREEN_OPTION,-1);
+	status_change_end(&ed->bl,SC_GUST_OPTION,-1);
+	status_change_end(&ed->bl,SC_WIND_STEP_OPTION,-1);
+	status_change_end(&sd->bl,SC_BLAST_OPTION,-1);
+	status_change_end(&sd->bl,SC_WATER_DROP_OPTION,-1);
+	status_change_end(&sd->bl,SC_WIND_CURTAIN_OPTION,-1);
+	status_change_end(&sd->bl,SC_WILD_STORM_OPTION,-1);
+	status_change_end(&sd->bl,SC_ZEPHYR,-1);
+	status_change_end(&sd->bl,SC_WIND_STEP_OPTION,-1);
+	status_change_end(&sd->bl,SC_PETROLOGY_OPTION,-1);
+	status_change_end(&sd->bl,SC_SOLID_SKIN_OPTION,-1);
+	status_change_end(&sd->bl,SC_CURSED_SOIL_OPTION,-1);
+	status_change_end(&sd->bl,SC_STONE_SHIELD_OPTION,-1);
+	status_change_end(&sd->bl,SC_UPHEAVAL_OPTION,-1);
+	status_change_end(&ed->bl,SC_TIDAL_WEAPON_OPTION,-1);
+
+	return 1;
+}
+
+int elemental_action(struct elemental_data *ed, struct block_list *bl, unsigned int tick)
+{
+	short skillnum, skilllv;
+	int i;
+
+	nullpo_retr(0,ed);
+	nullpo_retr(0,bl);
+
+	if( !ed->master )
+		return 0;
+
+	if( ed->target_id )
+		elemental_unlocktarget(ed);	// Remove previous target.
+	
+	ARR_FIND(0, MAX_ELESKILLTREE, i, ed->db->skill[i].id && (ed->db->skill[i].mode&EL_SKILLMODE_AGGRESSIVE));
+	if( i == MAX_ELESKILLTREE )
+		return 0;
+	
+	skillnum = ed->db->skill[i].id;
+	skilllv = ed->db->skill[i].lv;
+
+	if( elemental_skillnotok(skillnum, ed) )
+		return 0;
+
+	if( ed->ud.skilltimer != -1 )
+		return 0;
+	else if( DIFF_TICK(tick, ed->ud.canact_tick) < 0 )
+		return 0;
+
+	ed->target_id = ed->ud.skilltarget = bl->id;	// Set new target
+	ed->last_thinktime = tick;
+
+	// Not in skill range.
+	if( !battle_check_range(&ed->bl,bl,skill_get_range(skillnum,skilllv)) )
+	{
+		// Try to walk to the target.
+		if( !unit_walktobl(&ed->bl, bl, skill_get_range(skillnum,skilllv), 2) )
+			elemental_unlocktarget(ed);
+		else
+		{
+			// Walking, waiting to be in range. Client don't handle it, then we must handle it here.
+			int walk_dist = distance_bl(&ed->bl,bl) - skill_get_range(skillnum,skilllv);
+			ed->ud.skillid = skillnum;
+			ed->ud.skilllv = skilllv;
+
+			if( skill_get_inf(skillnum) & INF_GROUND_SKILL )
+				ed->ud.skilltimer = add_timer( tick+status_get_speed(&ed->bl)*walk_dist, skill_castend_pos, ed->bl.id, 0 );
+			else
+				ed->ud.skilltimer = add_timer( tick+status_get_speed(&ed->bl)*walk_dist, skill_castend_id, ed->bl.id, 0 );
+		}
+		return 1;
+
+	}
+	//Otherwise, just cast the skill.
+	map_freeblock_lock();
+	if( skill_get_inf(skillnum) & INF_GROUND_SKILL )
+		unit_skilluse_pos(&ed->bl, bl->x, bl->y, skillnum, skilllv);
+	else
+		unit_skilluse_id(&ed->bl, bl->id, skillnum, skilllv);
+	map_freeblock_unlock();
+
+	// Reset target.
+	ed->target_id = 0;
+
+	return 1;
+}
+
 /*===============================================================
  * Action that elemental perform after changing mode.
  * Activates one of the skills of the new mode.
  *-------------------------------------------------------------*/
 int elemental_change_mode_ack(struct elemental_data *ed, int mode)
 {
+	struct block_list *bl = &ed->master->bl;
+	short skillnum, skilllv;
+	int i;
+
 	nullpo_retr(0,ed);
+	
+	if( !bl )
+		return 0;
+
+	// Select a skill.
+	ARR_FIND(0, MAX_ELESKILLTREE, i, ed->db->skill[i].id && (ed->db->skill[i].mode&mode));
+	if( i == EL_MODE_AGGRESSIVE )
+		return 0;
+
+	skillnum = ed->db->skill[i].id;
+	skilllv = ed->db->skill[i].lv;
+
+	if( elemental_skillnotok(skillnum, ed) )
+		return 0;
+
+	if( ed->ud.skilltimer != -1 )
+		return 0;
+	else if( DIFF_TICK(gettick(), ed->ud.canact_tick) < 0 )
+		return 0;
+
+	ed->target_id = bl->id;	// Set new target
+	ed->last_thinktime = gettick();
+	
+	map_freeblock_lock();
+	if( skill_get_inf(skillnum) & INF_GROUND_SKILL )
+		unit_skilluse_pos(&ed->bl, bl->x, bl->y, skillnum, skilllv);
+	else
+		unit_skilluse_id(&ed->bl,(skill_get_inf(skillnum)&INF_SELF_SKILL?ed->master->bl.id:bl->id),skillnum,skilllv);
+	map_freeblock_unlock();
+	
+	ed->target_id = 0;	// Reset target after casting the skill  to avoid continious attack.
+
 	return 1;
 }
 
@@ -247,9 +460,19 @@ int elemental_change_mode(struct elemental_data *ed, int mode)
 
 	// Remove target
 	elemental_unlocktarget(ed);
+
+	// Removes the effects of the previous mode.
+	if(ed->elemental.mode != mode ) elemental_clean_effect(ed);
 	
 	ed->battle_status.mode = ed->elemental.mode = mode;
-	//TODO: elemental_changemode_ack(ed,mode);
+
+	// Normalize elemental mode to elemental skill mode.
+	if( mode == EL_MODE_AGGRESSIVE ) mode = EL_SKILLMODE_AGGRESSIVE;	// Aggressive spirit mode -> Aggressive spirit skill.
+	else if( mode == EL_MODE_ASSIST ) mode = EL_SKILLMODE_ASSIST;		// Assist spirit mode -> Assist spirit skill.
+	else mode = EL_SKILLMODE_PASIVE;									// Passive spirit mode -> Passive spirit skill.
+
+	// Use a skill inmediately after every change mode.
+	elemental_change_mode_ack(ed,mode);
 	return 1;
 }
 
@@ -283,6 +506,20 @@ int elemental_unlocktarget(struct elemental_data *ed)
 	elemental_stop_attack(ed);
 	elemental_stop_walking(ed,1);
 	return 0;
+}
+
+int elemental_skillnotok(int skillid, struct elemental_data *ed)
+{
+	int i = skill_get_index(skillid);
+	nullpo_retr(1,ed);
+
+	if (i == 0)
+		return 1; // invalid skill id
+
+	if( ed->blockskill[i] > 0 )
+		return 1;
+
+	return skillnotok(skillid, ed->master);
 }
 
 int elemental_set_target( struct map_session_data *sd, struct block_list *bl )
@@ -365,6 +602,9 @@ static int elemental_ai_sub_timer(struct elemental_data *ed, struct map_session_
 
 	if( ed->ud.walktimer != -1 && ed->ud.walkpath.path_pos <= 2 )
 		return 0; //No thinking when you just started to walk.
+	
+	if(ed->ud.walkpath.path_pos < ed->ud.walkpath.path_len && ed->ud.target == sd->bl.id)
+		return 0; //No thinking until be near the master.
 
 	if( ed->sc.count && ed->sc.data[SC_BLIND] )
 		view_range = 3;
@@ -393,64 +633,8 @@ static int elemental_ai_sub_timer(struct elemental_data *ed, struct map_session_
 			&& unit_walktoxy(&ed->bl, x, y, 0) )
 		return 0;
 	}
-
-	// Choose an action based on elemental mode
-	if( mode == EL_MODE_ASSIST )
-	{
-		if( ed->target_id )
-		{
-			target = map_id2bl(ed->target_id);
-
-			if( sd->ud.target && sd->ud.state.attack_continue )
-				mtbl = map_id2bl(sd->ud.target);
-			else if( sd->ud.skilltarget )
-			{
-				mtbl = map_id2bl(sd->ud.target);
-				if( mtbl && battle_check_target(&ed->bl, mtbl, BCT_ENEMY) <= 0 )
-					mtbl = NULL;
-			}
-
-			if( !target || ( mtbl && mtbl->id != target->id) )
-			{
-				elemental_unlocktarget(ed);
-				return 0;
-			}
-
-			//Attempt to attack.
-			//At this point we know the target is attackable, we just gotta check if the range matches.
-			if( ed->ud.target == target->id && ed->ud.attacktimer != -1 ) //Already locked.
-				return 1;
 	
-			if( battle_check_range(&ed->bl, target, ed->base_status.rhw.range) )
-			{	//Target within range, engage
-				unit_attack(&ed->bl,target->id,1);
-				return 1;
-			}
-
-			//Follow up if possible.
-			else if( !unit_walktobl(&ed->bl, target, ed->base_status.rhw.range, 2) )
-				elemental_unlocktarget(ed);
-
-		}
-		else
-		{
-			if( DIFF_TICK(ed->last_linktime, tick) >= MIN_MOBLINKTIME )
-				return 0;
-			
-			if( sd->ud.target && sd->ud.state.attack_continue )
-				mtbl = map_id2bl(sd->ud.target);
-			else if( sd->ud.skilltarget )
-			{
-				mtbl = map_id2bl(sd->ud.target);
-				if( mtbl && battle_check_target(&sd->bl, mtbl, BCT_ENEMY) <= 0 )
-					mtbl = NULL;
-			}
-
-			if( mtbl )
-				ed->target_id = mtbl->id;
-		}
-	}
-	else if( mode == EL_MODE_AGGRESSIVE )
+	if( mode == EL_MODE_AGGRESSIVE )
 	{
 		target = map_id2bl(ed->ud.target);
 
@@ -461,6 +645,12 @@ static int elemental_ai_sub_timer(struct elemental_data *ed, struct map_session_
 		{ //No targets available.
 			elemental_unlocktarget(ed);
 			return 1;
+		}
+		
+		if( battle_check_range(&ed->bl,target,ed->db->range2) && rand()%100 < 2 ) // 2% chance to cast attack skill.
+		{
+			if(	elemental_action(ed,target,tick) )
+				return 1;
 		}
 	
 		//Attempt to attack.
