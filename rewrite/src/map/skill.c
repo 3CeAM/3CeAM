@@ -297,15 +297,10 @@ int skill_get_range2(struct block_list *bl, int id, int lv)
 				range += pc_checkskill((TBL_PC*)bl, WL_RADIUS);
 			break;
 		//Added to allow increasing traps range
-		case HT_LANDMINE:		case RA_CLUSTERBOMB:
-		case HT_ANKLESNARE:		case RA_MAGENTATRAP:
-		case HT_SHOCKWAVE:		case RA_COBALTTRAP:
-		case HT_SANDMAN:		case RA_MAIZETRAP:
-		case HT_FLASHER:		case RA_VERDURETRAP:
-		case HT_FREEZINGTRAP:	case RA_FIRINGTRAP:
-		case HT_BLASTMINE:		case RA_ICEBOUNDTRAP:
-		case HT_CLAYMORETRAP:	
-		case HT_TALKIEBOX:
+		case HT_LANDMINE:		case HT_FREEZINGTRAP:
+		case HT_BLASTMINE:		case HT_CLAYMORETRAP:
+		case RA_CLUSTERBOMB:	case RA_FIRINGTRAP:
+		case RA_ICEBOUNDTRAP:
 			if( bl->type == BL_PC )
 				range += (1 + pc_checkskill((TBL_PC*)bl, RA_RESEARCHTRAP))/2;
 			break;
@@ -8492,6 +8487,24 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
 		break;
 
+	case GN_SLINGITEM:
+		if( sd )
+		{
+			struct script_code *script;
+			i = sd->equip_index[EQI_AMMO];
+			if( i <= 0 )
+				break; // No ammo.
+			script = sd->inventory_data[i]->script;
+			if( !script )
+				break;
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+			if( dstsd )
+				run_script(script,0,dstsd->bl.id,fake_nd->bl.id);
+			else
+				run_script(script,0,src->id,0);
+		}
+		break;
+
 	case GN_MIX_COOKING:
 		if( sd )
 		{
@@ -15525,7 +15538,14 @@ int skill_magicdecoy(struct map_session_data *sd, int nameid)
 	y = sd->menuskill_itemused&0xffff;
 	sd->menuskill_itemused = sd->menuskill_val = 0;
 
-	class_ = 2043 + nameid - 990;
+	switch( nameid )
+	{
+		case 990: class_ = 2043; break;
+		case 991: class_ = 2044; break;
+		case 992: class_ = 2046; break;
+		case 993: class_ = 2045; break;
+	}
+
 	md =  mob_once_spawn_sub(&sd->bl, sd->bl.m, x, y, sd->status.name, class_, "");
 	if( md )
 	{
@@ -15960,7 +15980,7 @@ void skill_init_unit_layout (void)
 			continue;
 		if( i >= HM_SKILLRANGEMIN && i <= EL_SKILLRANGEMAX )
 		{
-			int skill;
+			int skill = i;
 			/*if( i >= GD_SKILLRANGEMIN && i <= GD_SKILLRANGEMAX )
 				skill  = GD_SKILLBASE + i - GD_SKILLRANGEMIN ;
 			else if( i >= MC_SKILLRANGEMIN && i <= MC_SKILLRANGEMAX )
