@@ -3026,7 +3026,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list *target,int skill_num,int skill_lv,int mflag)
 {
 	int i, nk, s_level;
-	short s_ele;
+	short s_ele = skill_get_ele(skill_num, skill_lv);
 	unsigned int skillratio = 100;	//Skill dmg modifiers.
 
 	struct map_session_data *sd, *tsd;
@@ -4387,13 +4387,13 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 	}
 	if( sd && sc && (sc->data[SC_TROPIC_OPTION] || sc->data[SC_CHILLY_AIR_OPTION] || sc->data[SC_WILD_STORM_OPTION] || sc->data[SC_UPHEAVAL_OPTION]) )
 	{	// Autocast one Bolt depending on status change.
-		int skillid;
+		int skillid = 0;
 		if( sc->data[SC_TROPIC_OPTION] ) skillid = sc->data[SC_TROPIC_OPTION]->val3;
 		else if( sc->data[SC_CHILLY_AIR_OPTION] ) skillid = sc->data[SC_CHILLY_AIR_OPTION]->val3;
 		else if( sc->data[SC_WILD_STORM_OPTION] ) skillid = sc->data[SC_WILD_STORM_OPTION]->val2;
 		else if( sc->data[SC_UPHEAVAL_OPTION] ) skillid = sc->data[SC_UPHEAVAL_OPTION]->val2;
 
-		if( rand()%100 < 5 )
+		if( skillid && rand()%100 < 5 )
 			skill_castend_damage_id(src, target, skillid, pc_checkskill(sd,skillid), tick, flag);
 	}
 
