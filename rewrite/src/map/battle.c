@@ -432,7 +432,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			return 0;
 		}
 		
-		if( sc->data[SC__MAELSTROM] && (flag&BF_MAGIC) && skill_num && (skill_get_inf(skill_num)&INF_GROUND_SKILL) )
+		if( map_getcell(bl->m,bl->x,bl->y,CELL_CHKMAELSTROM) && (flag&BF_MAGIC) && skill_num && (skill_get_inf(skill_num)&INF_GROUND_SKILL) )
 		{
 			int sp = damage * 20 / 100; // Steel need official value.
 			status_heal(bl,0,sp,3);

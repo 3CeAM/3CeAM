@@ -484,7 +484,7 @@ void initChangeTables(void)
 	set_sc( SC_STRIPACCESSARY    , SC__STRIPACCESSORY    , SI_STRIPACCESSORY    , SCB_DEX|SCB_INT|SCB_LUK );
 	set_sc( SC_MANHOLE           , SC__MANHOLE           , SI_MANHOLE           , SCB_NONE );
 	add_sc( SC_CHAOSPANIC        , SC_CHAOS );
-	add_sc( SC_MAELSTROM         , SC__MAELSTROM );
+	//add_sc( SC_MAELSTROM         , SC__MAELSTROM );
 	set_sc( SC_BLOODYLUST        , SC__BLOODYLUST        , SI_BLOODYLUST        , SCB_DEF|SCB_DEF2|SCB_BATK|SCB_WATK );
 	
 	add_sc( LG_REFLECTDAMAGE     , SC_REFLECTDAMAGE );
@@ -9520,7 +9520,6 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC_MATKFOOD:
 			case SC_ELECTRICSHOCKER:
 			case SC__MANHOLE:
-			case SC__MAELSTROM:
 			case SC_THURISAZ:
 			case SC_BERKANA:
 			case SC_NAUTHIZ:
