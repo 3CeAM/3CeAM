@@ -3771,11 +3771,11 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 			for( y = src->y - range; y <= src->y + range; ++y )
 				for( x = src->x - range; x <= src->x + range; ++x )
 				{
-					if( !map_find_skill_unit_oncell(src,x,y,SA_LANDPROTECTOR,NULL) )
+					if( !map_find_skill_unit_oncell(src,x,y,SA_LANDPROTECTOR,NULL,1) )
 					{
 						if( src->type != BL_PC || map_getcell(src->m,x,y,CELL_CHKWATER) ) // non-players bypass the water requirement
 							count++; // natural water cell
-						else if( (unit = map_find_skill_unit_oncell(src,x,y,SA_DELUGE,NULL)) != NULL || (unit = map_find_skill_unit_oncell(src,x,y,NJ_SUITON,NULL)) != NULL )
+						else if( (unit = map_find_skill_unit_oncell(src,x,y,SA_DELUGE,NULL,1)) != NULL || (unit = map_find_skill_unit_oncell(src,x,y,NJ_SUITON,NULL,1)) != NULL )
 						{
 							count++; // skill-induced water cell
 							skill_delunit(unit); // consume cell
@@ -4367,14 +4367,14 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case EL_HURRICANE:
 	case EL_TYPOON_MIS:
 		if( flag&1 )
-				skill_attack(skill_get_type(skillid),src,src,bl,skillid,skilllv,tick,flag);
+				skill_attack(skill_get_type(skillid+1),src,src,bl,skillid+1,skilllv,tick,flag);
 		else
 		{
 			int i = skill_get_splash(skillid,skilllv);
 			clif_skill_nodamage(src,battle_get_master(src),skillid,skilllv,1);
 			clif_skill_damage(src, src, tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
 			if( rand()%100 < 30 )
-				map_foreachinrange(skill_area_sub,bl,i,BL_CHAR,src,skillid+1,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
+				map_foreachinrange(skill_area_sub,bl,i,BL_CHAR,src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
 			else
 				skill_attack(skill_get_type(skillid),src,src,bl,skillid,skilllv,tick,flag);
 		}
@@ -4398,7 +4398,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 			clif_skill_nodamage(src,battle_get_master(src),skillid,skilllv,1);
 			clif_skill_damage(src, src, tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
 			if( rand()%100 < 30 )
-				map_foreachinrange(skill_area_sub,bl,i,BL_CHAR,src,skillid+1,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
+				map_foreachinrange(skill_area_sub,bl,i,BL_CHAR,src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
 			else
 				skill_attack(skill_get_type(skillid),src,src,bl,skillid,skilllv,tick,flag);
 		}
@@ -8620,7 +8620,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 					// This not heals at the end.
 					clif_skill_damage(src, src, tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
 					sc_start(src,type2,100,skilllv,skill_get_time(skillid,skilllv));
-					sc_start(&sd->bl,type,100,bl->id,skill_get_time(skillid,skilllv));
+					sc_start(bl,type,100,src->id,skill_get_time(skillid,skilllv));
 				}
 			}
 			break;
@@ -9763,8 +9763,10 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 
 	case SO_FIREWALK:
 	case SO_ELECTRICWALK:
+		if( sc && sc->data[type] )
+			status_change_end(src,type,-1);
 		clif_skill_nodamage(src, src ,skillid, skilllv,
-			sc_start2(src, status_skill2sc(skillid), 100, skillid, skilllv, skill_get_time(skillid, skilllv)));
+			sc_start2(src, type, 100, skillid, skilllv, skill_get_time(skillid, skilllv)));
 		break;
 
 	default:
@@ -12281,7 +12283,15 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 				require.sp -= require.sp * 20 * count / 100; //  -20% each W/M in the party.
 			break;
 		}
-
+	case SO_FIREWALK:
+	case SO_ELECTRICWALK:	// Can't be casted until you've walked all cells.
+		if( sc && sc->data[SC_PROPERTYWALK] &&
+			sc->data[SC_PROPERTYWALK]->val3 < skill_get_maxcount(sc->data[SC_PROPERTYWALK]->val1,sc->data[SC_PROPERTYWALK]->val2) )
+		{
+			clif_skill_fail(sd,skill,0x0,0,0);
+			return 0;
+		}
+		break;
 	case SO_EL_CONTROL:
 		if( !sd->status.ele_id || !sd->ed )
 		{
@@ -15544,13 +15554,8 @@ int skill_magicdecoy(struct map_session_data *sd, int nameid)
 	y = sd->menuskill_itemused&0xffff;
 	sd->menuskill_itemused = sd->menuskill_val = 0;
 
-	switch( nameid )
-	{
-		case 990: class_ = 2043; break;
-		case 991: class_ = 2044; break;
-		case 992: class_ = 2046; break;
-		case 993: class_ = 2045; break;
-	}
+	class_ = (nameid == 990 || nameid == 991) ? 2043 + nameid - 990 : (nameid == 992) ? 2045 : 2046;
+
 
 	md =  mob_once_spawn_sub(&sd->bl, sd->bl.m, x, y, sd->status.name, class_, "");
 	if( md )
