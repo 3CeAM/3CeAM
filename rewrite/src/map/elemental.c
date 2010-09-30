@@ -130,7 +130,11 @@ static int elemental_summon_end(int tid, unsigned int tick, int id, intptr data)
 
 int elemental_delete(struct elemental_data *ed, int reply)
 {
-	struct map_session_data *sd = ed->master;
+	struct map_session_data *sd;
+
+	nullpo_retr(0,ed);
+	
+	sd = ed->master;
 	ed->elemental.life_time = 0;
 	ed->summon_timer = INVALID_TIMER;
 
@@ -308,20 +312,20 @@ int elemental_clean_effect(struct elemental_data *ed)
 	skill_clear_unitgroup(&ed->bl);
 
 	if( (sd = ed->master) == NULL )
-		return 0;	
+		return 0;
 
 	// Master side
-	status_change_end(&ed->bl,SC_TROPIC_OPTION,-1);
-	status_change_end(&ed->bl,SC_HEATER_OPTION,-1);
-	status_change_end(&ed->bl,SC_AQUAPLAY_OPTION,-1);
-	status_change_end(&ed->bl,SC_COOLER_OPTION,-1);
-	status_change_end(&ed->bl,SC_CHILLY_AIR_OPTION,-1);
-	status_change_end(&ed->bl,SC_PYROTECHNIC_OPTION,-1);
-	status_change_end(&ed->bl,SC_FIRE_CLOAK_OPTION,-1);
-	status_change_end(&ed->bl,SC_WATER_DROP_OPTION,-1);
-	status_change_end(&ed->bl,SC_WATER_SCREEN_OPTION,-1);
-	status_change_end(&ed->bl,SC_GUST_OPTION,-1);
-	status_change_end(&ed->bl,SC_WIND_STEP_OPTION,-1);
+	status_change_end(&sd->bl,SC_TROPIC_OPTION,-1);
+	status_change_end(&sd->bl,SC_HEATER_OPTION,-1);
+	status_change_end(&sd->bl,SC_AQUAPLAY_OPTION,-1);
+	status_change_end(&sd->bl,SC_COOLER_OPTION,-1);
+	status_change_end(&sd->bl,SC_CHILLY_AIR_OPTION,-1);
+	status_change_end(&sd->bl,SC_PYROTECHNIC_OPTION,-1);
+	status_change_end(&sd->bl,SC_FIRE_CLOAK_OPTION,-1);
+	status_change_end(&sd->bl,SC_WATER_DROP_OPTION,-1);
+	status_change_end(&sd->bl,SC_WATER_SCREEN_OPTION,-1);
+	status_change_end(&sd->bl,SC_GUST_OPTION,-1);
+	status_change_end(&sd->bl,SC_WIND_STEP_OPTION,-1);
 	status_change_end(&sd->bl,SC_BLAST_OPTION,-1);
 	status_change_end(&sd->bl,SC_WATER_DROP_OPTION,-1);
 	status_change_end(&sd->bl,SC_WIND_CURTAIN_OPTION,-1);
@@ -333,7 +337,7 @@ int elemental_clean_effect(struct elemental_data *ed)
 	status_change_end(&sd->bl,SC_CURSED_SOIL_OPTION,-1);
 	status_change_end(&sd->bl,SC_STONE_SHIELD_OPTION,-1);
 	status_change_end(&sd->bl,SC_UPHEAVAL_OPTION,-1);
-	status_change_end(&ed->bl,SC_TIDAL_WEAPON_OPTION,-1);
+	status_change_end(&sd->bl,SC_TIDAL_WEAPON_OPTION,-1);
 
 	return 1;
 }
@@ -392,12 +396,10 @@ int elemental_action(struct elemental_data *ed, struct block_list *bl, unsigned 
 
 	}
 	//Otherwise, just cast the skill.
-	map_freeblock_lock();
 	if( skill_get_inf(skillnum) & INF_GROUND_SKILL )
 		unit_skilluse_pos(&ed->bl, bl->x, bl->y, skillnum, skilllv);
 	else
 		unit_skilluse_id(&ed->bl, bl->id, skillnum, skilllv);
-	map_freeblock_unlock();
 
 	// Reset target.
 	ed->target_id = 0;
@@ -422,7 +424,7 @@ int elemental_change_mode_ack(struct elemental_data *ed, int mode)
 
 	// Select a skill.
 	ARR_FIND(0, MAX_ELESKILLTREE, i, ed->db->skill[i].id && (ed->db->skill[i].mode&mode));
-	if( i == EL_MODE_AGGRESSIVE )
+	if( i == MAX_ELESKILLTREE )
 		return 0;
 
 	skillnum = ed->db->skill[i].id;
@@ -439,12 +441,10 @@ int elemental_change_mode_ack(struct elemental_data *ed, int mode)
 	ed->target_id = bl->id;	// Set new target
 	ed->last_thinktime = gettick();
 	
-	map_freeblock_lock();
 	if( skill_get_inf(skillnum) & INF_GROUND_SKILL )
 		unit_skilluse_pos(&ed->bl, bl->x, bl->y, skillnum, skilllv);
 	else
-		unit_skilluse_id(&ed->bl,(skill_get_inf(skillnum)&INF_SELF_SKILL?ed->master->bl.id:bl->id),skillnum,skilllv);
-	map_freeblock_unlock();
+		unit_skilluse_id(&ed->bl,bl->id,skillnum,skilllv);
 	
 	ed->target_id = 0;	// Reset target after casting the skill  to avoid continious attack.
 
@@ -472,7 +472,8 @@ int elemental_change_mode(struct elemental_data *ed, int mode)
 	else mode = EL_SKILLMODE_PASIVE;									// Passive spirit mode -> Passive spirit skill.
 
 	// Use a skill inmediately after every change mode.
-	elemental_change_mode_ack(ed,mode);
+	if( mode != EL_SKILLMODE_AGGRESSIVE )
+		elemental_change_mode_ack(ed,mode);
 	return 1;
 }
 
