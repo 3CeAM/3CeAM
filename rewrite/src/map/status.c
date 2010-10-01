@@ -1504,6 +1504,8 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 			struct map_session_data *sd = (TBL_PC*) target;
 			if( pc_isinvisible(sd) )
 				return 0;
+			if( tsc->data[SC_CLOAKINGEXCEED] && !(status->mode&MD_BOSS) )
+				return 0;
 			if( tsc->option&hide_flag && !(status->mode&MD_BOSS) && (sd->special_state.perfect_hiding || !(status->mode&MD_DETECTOR)))
 				return 0;
 			if( tsc->data[SC_CAMOUFLAGE] && !(status->mode&(MD_BOSS|MD_DETECTOR)) && !skill_num )
