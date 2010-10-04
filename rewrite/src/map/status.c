@@ -4087,7 +4087,7 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 	if( sc->data[SC_PYROTECHNIC_OPTION] )
 		watk += sc->data[SC_PYROTECHNIC_OPTION]->val2;	
 	if( sc && sc->data[SC_TIDAL_WEAPON] )
-		watk += watk * sc->data[SC_TIDAL_WEAPON_OPTION]->val2 / 100;
+		watk += watk * sc->data[SC_TIDAL_WEAPON]->val2 / 100;
 
 	return (unsigned short)cap_value(watk,0,USHRT_MAX);
 }
