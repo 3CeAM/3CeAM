@@ -647,9 +647,9 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 		//Finally added to remove the status of immobile when aimedbolt is used. [Jobbie]
 		if( skill_num == RA_AIMEDBOLT && tsc && (tsc->data[SC_BITE] || tsc->data[SC_ANKLE] || tsc->data[SC_ELECTRICSHOCKER]) )
 		{
-				status_change_end(bl, SC_BITE, -1);
-				status_change_end(bl, SC_ANKLE, -1);
-				status_change_end(bl, SC_ELECTRICSHOCKER, -1);
+			status_change_end(bl, SC_BITE, -1);
+			status_change_end(bl, SC_ANKLE, -1);
+			status_change_end(bl, SC_ELECTRICSHOCKER, -1);
 		}
 
 		//Finally Kyrie because it may, or not, reduce damage to 0.
@@ -1294,6 +1294,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				break;
 
 			case NPC_CRITICALSLASH:
+			case LG_PINPOINTATTACK:
 				flag.cri = 1; //Always critical skill.
 				break;
 
@@ -1437,8 +1438,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 			cri = cri*(100-tsd->critical_def)/100;
 		if (rand()%1000 < cri) // Steel need confirm if critical def reduce it.
 			flag.cri= 1;
-		if( skill_num == LG_PINPOINTATTACK )
-			flag.cri = 1;
 	}
 	if (flag.cri)
 	{
@@ -2061,7 +2060,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				case RK_DRAGONBREATH: // Sugested formula from irowiki.
 					skillratio *= skill_lv * s_level / 100;
 					break;
-				case RK_CRUSHSTRIKE:	// Sugested formula fro irowiki.
+				case RK_CRUSHSTRIKE:	// Sugested formula from irowiki.
 					skillratio += 550;
 					if( sd )
 					{
@@ -2138,11 +2137,11 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					break;
 				case NC_ARMSCANNON:
 					switch( tstatus->size )
-						{
-							case 0: skillratio += 100 + 500 * skill_lv; break;//small
-							case 1: skillratio += 100 + 400 * skill_lv; break;//medium
-							case 2: skillratio += 100 + 300 * skill_lv; break;//large
-						}
+					{
+						case 0: skillratio += 100 + 500 * skill_lv; break;//small
+						case 1: skillratio += 100 + 400 * skill_lv; break;//medium
+						case 2: skillratio += 100 + 300 * skill_lv; break;//large
+					}
 					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case NC_AXEBOOMERANG:
@@ -2321,6 +2320,12 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					break;
 				case GN_CRAZYWEED_ATK:
 					skillratio += 400 + 100 * skill_lv;
+					break;
+				case GN_SLINGITEM_RANGEMELEEATK:
+					if( wflag >= 6 )	// Temporary formula.
+						skillratio += wflag * 20;	// Lump / Powder.
+					else
+						skillratio += 300;	// Bombs
 					break;
 				case SO_VARETYR_SPEAR: //Assumed Formula.
 					skillratio += -100 + 200 * ( sd ? pc_checkskill(sd, SA_LIGHTNINGLOADER) : 1 );
@@ -3175,7 +3180,8 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						ShowError("0 enemies targeted by %d:%s, divide per 0 avoided!\n", skill_num, skill_get_name(skill_num));
 				}
 
-				switch(skill_num){
+				switch( skill_num )
+				{
 					case MG_NAPALMBEAT:
 					case MG_FIREBALL:
 						skillratio += skill_lv*10-30;
@@ -3871,14 +3877,15 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 struct Damage battle_calc_attack(int attack_type,struct block_list *bl,struct block_list *target,int skill_num,int skill_lv,int count)
 {
 	struct Damage d;
-	switch(attack_type) {
-	case BF_WEAPON: d = battle_calc_weapon_attack(bl,target,skill_num,skill_lv,count); break;
-	case BF_MAGIC:  d = battle_calc_magic_attack(bl,target,skill_num,skill_lv,count);  break;
-	case BF_MISC:   d = battle_calc_misc_attack(bl,target,skill_num,skill_lv,count);   break;
-	default:
-		ShowError("battle_calc_attack: unknown attack type! %d\n",attack_type);
-		memset(&d,0,sizeof(d));
-		break;
+	switch( attack_type )
+	{
+		case BF_WEAPON: d = battle_calc_weapon_attack(bl,target,skill_num,skill_lv,count); break;
+		case BF_MAGIC:  d = battle_calc_magic_attack(bl,target,skill_num,skill_lv,count);  break;
+		case BF_MISC:   d = battle_calc_misc_attack(bl,target,skill_num,skill_lv,count);   break;
+		default:
+			ShowError("battle_calc_attack: unknown attack type! %d\n",attack_type);
+			memset(&d,0,sizeof(d));
+			break;
 	}
 	if( d.damage + d.damage2 < 1 )
 	{	//Miss/Absorbed
@@ -3910,8 +3917,9 @@ int battle_calc_return_damage(struct block_list *src, struct block_list *bl, int
 		if( rdamage > max_damage ) rdamage = max_damage;
 	}
 	//Bounces back part of the damage.
-	else if( (flag&(BF_SHORT|BF_MAGIC)) == BF_SHORT ) {
-		if (sd && sd->short_weapon_damage_return)
+	else if( (flag&(BF_SHORT|BF_MAGIC)) == BF_SHORT )
+	{
+		if( sd && sd->short_weapon_damage_return )
 		{
 			rdamage += (*damage) * sd->short_weapon_damage_return / 100;
 			if(rdamage < 1) rdamage = 1;

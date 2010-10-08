@@ -4640,15 +4640,15 @@ int clif_addskill(struct map_session_data *sd, int id )
  	WFIFOW(fd,6) = 0;
 	WFIFOW(fd,8) = sd->status.skill[id].lv;
 	WFIFOW(fd,10) = skill_get_sp(id,sd->status.skill[id].lv);
-    WFIFOW(fd,12)= skill_get_range2(&sd->bl, id,sd->status.skill[id].lv);
-    safestrncpy((char*)WFIFOP(fd,14), skill_get_name(id), NAME_LENGTH);
-    if( sd->status.skill[id].flag == 0 )
-        WFIFOB(fd,38) = (sd->status.skill[id].lv < skill_tree_get_max(id, sd->status.class_))? 1:0;
-    else
-        WFIFOB(fd,38) = 0;
-    WFIFOSET(fd,packet_len(0x111));
+	WFIFOW(fd,12) = skill_get_range2(&sd->bl, id,sd->status.skill[id].lv);
+	safestrncpy((char*)WFIFOP(fd,14), skill_get_name(id), NAME_LENGTH);
+	if( sd->status.skill[id].flag == 0 )
+		WFIFOB(fd,38) = (sd->status.skill[id].lv < skill_tree_get_max(id, sd->status.class_))? 1:0;
+	else
+		WFIFOB(fd,38) = 0;
+	WFIFOSET(fd,packet_len(0x111));
 
-    return 1;
+	return 1;
 }
 
 int clif_deleteskill(struct map_session_data *sd, int id)
@@ -5214,6 +5214,22 @@ int clif_skill_produce_mix_list(struct map_session_data *sd, int skill_num, int 
 	return 0;
 }
 
+void clif_skill_msg(struct map_session_data *sd, int skill_id, int msg)
+{
+#if PACKETVER >= 20090922
+	int fd;
+
+	nullpo_retv(sd);
+
+	fd = sd->fd;
+	WFIFOHEAD(fd,packet_len(0x7e6));
+	WFIFOW(fd,0) = 0x7e6;
+	WFIFOW(fd,2) = skill_id;
+	WFIFOL(fd,4) = msg;
+	WFIFOSET(fd, packet_len(0x7e6));
+#endif
+}
+
 /*==========================================
  *
  *------------------------------------------*/
@@ -5267,12 +5283,7 @@ void clif_cooking_list(struct map_session_data *sd, int trigger, int skill_id, i
 		if( skill_id != AM_PHARMACY ) // AM_PHARMACY is used to Cooking.
 		{	// It fails.
 #if PACKETVER >= 20090922
-			WFIFOW(fd,0) = 0x7e6;
-			WFIFOW(fd,2) = skill_id;
-			WFIFOB(fd,4) = 0x25;
-			WFIFOW(fd,5) = list_type;
-			WFIFOB(fd,7) = 0;
-			WFIFOSET(fd, packet_len(0x7e6));
+			clif_skill_msg(sd,skill_id,SKMSG_MATERIAL_FAIL);
 #else
 			WFIFOW(fd,2) = 6 + 2 * c;
 			WFIFOSET(fd,WFIFOW(fd,2));

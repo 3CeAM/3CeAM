@@ -1196,7 +1196,7 @@
 2495,0,6,4,0,0x1,0,2,0,no,0,0,0,none,0,		GN_MIX_COOKING,Mix Cooking
 2496,0,6,4,0,0x1,0,2,0,no,0,0,0,none,0,		GN_MAKEBOMB,Create Bomb
 2497,0,6,4,0,0x1,0,10,0,no,0,0,0,none,0,	GN_S_PHARMACY,Special Pharmacy
-2498,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		GN_SLINGITEM_RANGEMELEEATK,Sling Item Attack
+2498,11,6,1,0,0,0,1,1,no,0,0,0,weapon,0,		GN_SLINGITEM_RANGEMELEEATK,Sling Item Attack
 
 // More 3rd Job Skills
 2515,9,6,16,0,0x1,0,5,1,yes,0,0,0,magic,0,	AB_SECRAMENT,Sacrament

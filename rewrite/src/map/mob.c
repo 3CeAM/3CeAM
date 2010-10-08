@@ -123,11 +123,13 @@ int mobdb_searchname_array(struct mob_db** data, int size, const char *str)
 {
 	int count = 0, i;
 	struct mob_db* mob;
-	for(i=0;i<=MAX_MOB_DB;i++){
+	for( i = 0; i <= MAX_MOB_DB; i++ )
+	{
 		mob = mob_db(i);
-		if (mob == mob_dummy)
+		if( mob == mob_dummy )
 			continue;
-		if (!mobdb_searchname_array_sub(mob, str)) {
+		if( !mobdb_searchname_array_sub(mob, str) )
+		{
 			if (count < size)
 				data[count] = mob;
 			count++;	
@@ -1305,18 +1307,18 @@ static bool mob_ai_sub_hard(struct mob_data *md, unsigned int tick)
 	int search_size;
 	int view_range, can_move;
 
-	if(md->bl.prev == NULL || md->status.hp <= 0)
+	if( md->bl.prev == NULL || md->status.hp <= 0 )
 		return false;
 		
-	if (DIFF_TICK(tick, md->last_thinktime) < MIN_MOBTHINKTIME)
+	if( DIFF_TICK(tick, md->last_thinktime) < MIN_MOBTHINKTIME )
 		return false;
 
 	md->last_thinktime = tick;
 
-	if (md->ud.skilltimer != -1)
+	if( md->ud.skilltimer != -1 )
 		return false;
 
-	if(md->ud.walktimer != -1 && md->ud.walkpath.path_pos <= 3)
+	if( md->ud.walktimer != -1 && md->ud.walkpath.path_pos <= 3 )
 		return false;
 
 	// Abnormalities
@@ -2113,11 +2115,12 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 			if (per > 2) per = 2; // prevents unlimited exp gain
 		}
 	
-		if (count>1 && battle_config.exp_bonus_attacker) {
+		if( count > 1 && battle_config.exp_bonus_attacker )
+		{
 			//Exp bonus per additional attacker.
-			if (count > battle_config.exp_bonus_max_attacker)
+			if( count > battle_config.exp_bonus_max_attacker )
 				count = battle_config.exp_bonus_max_attacker;
-			per += per*((count-1)*battle_config.exp_bonus_attacker)/100.;
+			per += per*((count-1)*battle_config.exp_bonus_attacker) / 100;
 		}
 
 		// change experience for different sized monsters [Valaris]
@@ -2243,12 +2246,12 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 				drop_rate = (int)(drop_rate*1.25); // pk_mode increase drops if 20 level difference [Valaris]
 
 			// Increase drop rate if user has SC_ITEMBOOST
-			if (sd && sd->sc.data[SC_ITEMBOOST]) // now rig the drop rate to never be over 90% unless it is originally >90%.
+			if( sd && sd->sc.data[SC_ITEMBOOST] ) // now rig the drop rate to never be over 90% unless it is originally >90%.
 				drop_rate = max(drop_rate,cap_value((int)(0.5+drop_rate*(sd->sc.data[SC_ITEMBOOST]->val1)/100.),0,9000));
 
 			// attempt to drop the item
-			if (rand() % 10000 >= drop_rate)
-					continue;
+			if( rand() % 10000 >= drop_rate )
+				continue;
 
 			ditem = mob_setdropitem(md->db->dropitem[i].nameid, 1);
 
@@ -2345,7 +2348,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 			exp =1; 
 		else {
 			exp = md->db->mexp;
-			if (count > 1)
+			if( count > 1 )
 				exp += exp*(battle_config.exp_bonus_attacker*(count-1))/100.; //[Gengar]
 		}
 		
@@ -4084,7 +4087,7 @@ static bool mob_parse_row_mobskilldb(char** str, const char* source, int line, i
 
 	struct mob_skill *ms, gms;
 	int mob_id;
-	int i =0, j, tmp;
+	int i = 0, j, tmp;
 
 	mob_id = atoi(str[0]);
 

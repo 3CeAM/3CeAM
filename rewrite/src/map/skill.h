@@ -1742,6 +1742,15 @@ enum gx_poison {
 	PO_PYREXIA,
 	PO_MAGICMUSHROOM,
 	PO_VENOMBLEED
-}; 
+};
+
+// msgstringtable
+// To use with clif_skill_msg();
+enum skill_msg {
+  SKMSG_MATERIAL_FAIL =  0x625,
+  SKMSG_MATERIAL_NO_EXIST =  0x626,
+  SKMSG_SUCCESS =  0x627,
+  SKMSG_FAIL_MATERIAL_DESTROY =  0x628
+};
 
 #endif /* _SKILL_H_ */

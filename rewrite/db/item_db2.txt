@@ -243,7 +243,7 @@
 11513,Cough_Drop,Cough Drop,3,200,,10,,,,,,,,,,,,,{},{},{}
 
 // Genetic Cure Free
-11518,Cure_Free,Cure Free,3,10,,10,,,,,,,,,,,,,{},{},{}
+11518,Cure_Free,Cure Free,0,10,,30,,,,,0xFFFFFFFF,7,2,,,,,,{ itemheal rand(1000,1200),0; sc_end SC_Silence; sc_end SC_Bleeding; sc_end SC_Curse; },{},{}
 
 // Ranger Special Alloy Trap Box
 12341,Special_Alloy_Trap_Box,Special Alloy Trap Box,2,,,10,,,,,0xFFFFFFFF,8,2,,,,,,{ getitem 7940,100; },{},{}
@@ -319,15 +319,15 @@
 12738,Runstone_Rare,Rare Rune,0,2,,100,,,,,0xFFFFFFFF,8,2,,,,,,{ makerune 5; },{},{}
 
 // Genetic Created Bombs And Lumps
-13260,Apple_Bomb,Apple Bomb,11,10,,100,100,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13261,Coconut_Bomb,Coconut Bomb,11,10,,100,100,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13262,Melon_Bomb,Melon Bomb,11,10,,100,100,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13263,Pineapple_Bomb,Pineapple Bomb,11,10,,100,100,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13264,Banana_Bomb,Banana Bomb,11,10,,100,100,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13265,Black_Lump,Black Lump,11,10,,100,100,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13266,Hard_Black_Lump,Hard Black Lump,11,10,,100,100,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13267,Extremely_Hard_Black_Lump,Extremely Hard Black Lump,11,10,,100,100,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
-13268,Mysterious_Powder,Mysterious Powder,11,10,,100,100,,,,0xFFFFFFFF,8,2,32768,,1,,8,{},{},{}
+13260,Apple_Bomb,Apple Bomb,17,10,,1,100,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13261,Coconut_Bomb,Coconut Bomb,17,1,,10,100,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13262,Melon_Bomb,Melon Bomb,17,10,,1,100,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13263,Pineapple_Bomb,Pineapple Bomb,17,10,,1,100,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13264,Banana_Bomb,Banana Bomb,17,10,,1,100,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13265,Black_Lump,Black Lump,17,10,,50,100,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13266,Hard_Black_Lump,Hard Black Lump,17,10,,50,100,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13267,Extremely_Hard_Black_Lump,Extremely Hard Black Lump,17,10,,50,100,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
+13268,Mysterious_Powder,Mysterious Powder,17,10,,10,100,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}
 
 // Generic Created Throwable Booster Items
 13269,Throwing_Boost_500,Throwing Boost 500,17,10,,100,0,,,,0xFFFFFFFF,8,2,32768,,1,,9,{},{},{}

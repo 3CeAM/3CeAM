@@ -2235,6 +2235,9 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 	case EL_TYPOON_MIS_ATK:
 		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,skillid,-1,5);
 		break;
+	case GN_SLINGITEM_RANGEMELEEATK:
+		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,GN_SLINGITEM,-2,6);
+		break;
 	case EL_STONE_RAIN:
 		dmg.dmotion = clif_skill_damage(dsrc,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,skillid,-1,(flag&1)?8:5);
 		break;
@@ -4135,7 +4138,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 				skill_delunit(su);
 			}
 		}
-		break;		
+		break;
 
 	case WL_FROSTMISTY:
 		if( path_search(NULL,src->m,src->x,src->y,bl->x,bl->y,1,CELL_CHKWALL) )
@@ -5582,7 +5585,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			map_freeblock_unlock();
 			return 0;
 		}
-		clif_skill_nodamage(src,bl,skillid,-1,sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));		
+		clif_skill_nodamage(src,bl,skillid,-1,sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
 		break;
 	case TK_RUN:
 		if (tsce)
@@ -8490,18 +8493,28 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case GN_SLINGITEM:
 		if( sd )
 		{
-			struct script_code *script;
+			short ammo_id;
 			i = sd->equip_index[EQI_AMMO];
 			if( i <= 0 )
 				break; // No ammo.
-			script = sd->inventory_data[i]->script;
-			if( !script )
-				break;
+			ammo_id = sd->inventory_data[i]->nameid;
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
-			if( dstsd )
-				run_script(script,0,dstsd->bl.id,fake_nd->bl.id);
+			if( ammo_id <= 0 )
+				break;
+			if( itemdb_is_GNbomb(ammo_id) )
+			{
+				skill_attack(BF_WEAPON,src,src,bl,GN_SLINGITEM_RANGEMELEEATK,skilllv,tick,ammo_id-13260+1);
+			}
 			else
-				run_script(script,0,src->id,0);
+			{
+				struct script_code *script = sd->inventory_data[i]->script;
+				if( !script )
+					break;
+				if( dstsd )
+					run_script(script,0,dstsd->bl.id,fake_nd->bl.id);
+				else
+					run_script(script,0,src->id,0);
+			}
 		}
 		break;
 
@@ -15385,8 +15398,10 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 					clif_produceeffect(sd,2,nameid);
 					clif_misceffect(&sd->bl,5);
 					break;
-				case GN_MIX_COOKING:
 				case GN_MAKEBOMB:
+					clif_skill_msg(sd,skill_id,SKMSG_SUCCESS);
+					break;
+				case GN_MIX_COOKING:
 				case GN_S_PHARMACY:
 					break;	// No effects here.
 				default: //Those that don't require a skill?
@@ -15445,9 +15460,11 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 				clif_misceffect(&sd->bl,6);
 				break;
 			case GN_MIX_COOKING:
-			case GN_MAKEBOMB:
 			case GN_S_PHARMACY:
 				break;	// No effects here.
+			case GN_MAKEBOMB:
+				clif_skill_msg(sd,skill_id,SKMSG_FAIL_MATERIAL_DESTROY);
+				break;
 			default:
 				if( skill_produce_db[idx].itemlv > 10 && skill_produce_db[idx].itemlv <= 20 )
 				{ //Cooking items.

@@ -1504,7 +1504,7 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 			struct map_session_data *sd = (TBL_PC*) target;
 			if( pc_isinvisible(sd) )
 				return 0;
-			if( tsc->data[SC_CLOAKINGEXCEED] && !(status->mode&MD_BOSS) )
+			if( tsc->data[SC_CLOAKINGEXCEED] && !(status->mode&MD_BOSS) && (((TBL_PC*)target)->special_state.perfect_hiding || (status->mode&MD_DETECTOR)))
 				return 0;
 			if( tsc->option&hide_flag && !(status->mode&MD_BOSS) && (sd->special_state.perfect_hiding || !(status->mode&MD_DETECTOR)))
 				return 0;
@@ -1568,7 +1568,7 @@ int status_check_visibility(struct block_list *src, struct block_list *target)
 	switch (target->type)
 	{	//Check for chase-walk/hiding/cloaking opponents.
 	case BL_PC:
-		if( tsc->data[SC_CLOAKINGEXCEED] && !(status->mode&MD_BOSS) )
+		if( tsc->data[SC_CLOAKINGEXCEED] && !(status->mode&MD_BOSS) && (((TBL_PC*)target)->special_state.perfect_hiding || (status->mode&MD_DETECTOR)))
 				return 0;
 		if( (tsc->option&(OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK) || tsc->data[SC__INVISIBILITY] || tsc->data[SC_CAMOUFLAGE]) && !(status->mode&MD_BOSS) &&
 			( ((TBL_PC*)target)->special_state.perfect_hiding || !(status->mode&MD_DETECTOR) ) )
@@ -2227,7 +2227,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 			struct weapon_data *wd;
 			struct weapon_atk *wa;
 			
-			if( wlv >= MAX_REFINE_BONUS ) 
+			if( wlv >= MAX_REFINE_BONUS )
 				wlv = MAX_REFINE_BONUS - 1;
 			if( i == EQI_HAND_L && sd->status.inventory[index].equip == EQP_HAND_L )
 			{
@@ -2306,7 +2306,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	status->def += (refinedef + 50) / 100;
 
 	//Parse Cards
-	for( i = 0; i < EQI_MAX - 1 ; i++ )
+	for( i = 0; i < EQI_MAX - 1; i++ )
 	{
 		current_equip_item_index = index = sd->equip_index[i]; //We pass INDEX to current_equip_item_index - for EQUIP_SCRIPT (new cards solution) [Lupus]
 		if( index < 0 )
@@ -2326,9 +2326,9 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 			//Card script execution.
 			if( itemdb_isspecial(sd->status.inventory[index].card[0]) )
 				continue;
-			for( j = 0 ; j < MAX_SLOTS; j++ )
+			for( j = 0; j < MAX_SLOTS; j++ )
 			{ // Uses MAX_SLOTS to support Soul Bound system [Inkfish]
-				current_equip_card_id= c= sd->status.inventory[index].card[j];
+				current_equip_card_id = c = sd->status.inventory[index].card[j];
 				if( !c )
 					continue;
 				data = itemdb_exists(c);
@@ -2348,7 +2348,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 						continue;
 					if( map[sd->bl.m].flag.pvp && data->flag.no_equip & 1 )
 						continue;
-					if( map_flag_gvg(sd->bl.m) && data->flag.no_equip & 2 ) 
+					if( map_flag_gvg(sd->bl.m) && data->flag.no_equip & 2 )
 						continue;
 				}
 				if( i == EQI_HAND_L && sd->status.inventory[index].equip == EQP_HAND_L )
@@ -2743,7 +2743,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	if( (skill = pc_checkskill(sd,BS_SKINTEMPER)) > 0 )
 	{
 		sd->subele[ELE_NEUTRAL] += skill;
-		sd->subele[ELE_FIRE] += skill*4;
+		sd->subele[ELE_FIRE] += skill * 4;
 	}
 	if( (skill = pc_checkskill(sd,SA_DRAGONOLOGY)) > 0 )
 	{
@@ -3176,27 +3176,27 @@ void status_calc_regen_rate(struct block_list *bl, struct regen_data *regen, str
 	)	//No natural SP regen
 		regen->flag &=~RGN_SP;
 
-	if(
-		sc->data[SC_TENSIONRELAX]
-	  ) {
+	if( sc->data[SC_TENSIONRELAX] )
+	{
 		regen->rate.hp += 2;
 		if (regen->sregen)
 			regen->sregen->rate.hp += 3;
 	}
-	if (sc->data[SC_MAGNIFICAT])
+	if( sc->data[SC_MAGNIFICAT] )
 	{
 		regen->rate.hp += 1;
 		regen->rate.sp += 1;
 	}
-	if (sc->data[SC_REGENERATION])
+	if( sc->data[SC_REGENERATION] )
 	{
 		const struct status_change_entry *sce = sc->data[SC_REGENERATION];
-		if (!sce->val4)
+		if( !sce->val4 )
 		{
 			regen->rate.hp += sce->val2;
 			regen->rate.sp += sce->val3;
-		} else
-			regen->flag&=~sce->val4; //Remove regen as specified by val4
+		}
+		else
+			regen->flag &=~ sce->val4; //Remove regen as specified by val4
 	}
 	if( sc->data[SC_DEATHHURT] )
 	{
@@ -3222,10 +3222,11 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 	TBL_PC *sd = BL_CAST(BL_PC,bl);
 	int temp;
 
-	if (!b_status || !status)
+	if( !b_status || !status )
 		return;
 
-	if((!(bl->type&BL_REGEN)) && (!sc || !sc->count)) { //No difference.
+	if( (!(bl->type&BL_REGEN)) && (!sc || !sc->count) )
+	{ //No difference.
 		status_cpy(status, b_status);
 		return;
 	}
@@ -3383,32 +3384,35 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 			status->cri = status_calc_critical(bl, sc, b_status->cri + 3*(status->luk - b_status->luk));
 	}
 
-	if(flag&SCB_FLEE2 && b_status->flee2) {
-		if (status->luk == b_status->luk)
+	if( flag&SCB_FLEE2 && b_status->flee2 )
+	{
+		if( status->luk == b_status->luk )
 			status->flee2 = status_calc_flee2(bl, sc, b_status->flee2);
 		else
 			status->flee2 = status_calc_flee2(bl, sc, b_status->flee2 +(status->luk - b_status->luk));
 	}
 
-	if(flag&SCB_ATK_ELE) {
+	if( flag&SCB_ATK_ELE )
+	{
 		status->rhw.ele = status_calc_attack_element(bl, sc, b_status->rhw.ele);
-		if (sd) sd->state.lr_flag = 1;
+		if( sd ) sd->state.lr_flag = 1;
 		status->lhw.ele = status_calc_attack_element(bl, sc, b_status->lhw.ele);
-		if (sd) sd->state.lr_flag = 0;
+		if( sd ) sd->state.lr_flag = 0;
 	}
 
-	if(flag&SCB_DEF_ELE) {
+	if( flag&SCB_DEF_ELE )
+	{
 		status->def_ele = status_calc_element(bl, sc, b_status->def_ele);
 		status->ele_lv = status_calc_element_lv(bl, sc, b_status->ele_lv);
 	}
 
-	if(flag&SCB_MODE)
+	if( flag&SCB_MODE )
 	{
 		status->mode = status_calc_mode(bl, sc, b_status->mode);
 		//Since mode changed, reset their state.
-		if (!(status->mode&MD_CANATTACK))
+		if( !(status->mode&MD_CANATTACK) )
 			unit_stop_attack(bl);
-		if (!(status->mode&MD_CANMOVE))
+		if( !(status->mode&MD_CANMOVE) )
 			unit_stop_walking(bl,1);
 	}
 
@@ -3417,7 +3421,8 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 // if(flag&SCB_RACE)
 // if(flag&SCB_RANGE)
 
-	if(flag&SCB_MAXHP) {
+	if( flag&SCB_MAXHP )
+	{
 		if( bl->type&BL_PC )
 		{
 			status->max_hp = status_base_pc_maxhp(sd,status);
@@ -3440,7 +3445,8 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 		}
 	}
 
-	if(flag&SCB_MAXSP) {
+	if( flag&SCB_MAXSP )
+	{
 		if( bl->type&BL_PC )
 		{
 			status->max_sp = status_base_pc_maxsp(sd,status);
@@ -3463,7 +3469,8 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 		}
 	}
 
-	if(flag&SCB_MATK) {
+	if( flag&SCB_MATK )
+	{
 		//New matk
 		status->matk_min = status_base_matk_min(status);
 		status->matk_max = status_base_matk_max(status);
@@ -3488,7 +3495,8 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 
 	}
 
-	if(flag&SCB_ASPD) {
+	if( flag&SCB_ASPD )
+	{
 		int amotion;
 		if( bl->type&BL_PC )
 		{
@@ -3502,8 +3510,7 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 			
 			status->adelay = 2*status->amotion;
 		}
-		else
-		if( bl->type&BL_HOM )
+		else if( bl->type&BL_HOM )
 		{
 			amotion = (1000 -4*status->agi -status->dex) * ((TBL_HOM*)bl)->homunculusDB->baseASPD/1000;			
 			status->aspd_rate = status_calc_aspd_rate(bl, sc, b_status->aspd_rate);
@@ -3530,23 +3537,24 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 		}
 	}
 
-	if(flag&SCB_DSPD) {
+	if( flag&SCB_DSPD )
+	{
 		int dmotion;
 		if( bl->type&BL_PC )
 		{
-			if (b_status->agi == status->agi)
+			if( b_status->agi == status->agi )
 				status->dmotion = status_calc_dmotion(bl, sc, b_status->dmotion);
-			else {
+			else
+			{
 				dmotion = 800-status->agi*4;
 				status->dmotion = cap_value(dmotion, 400, 800);
-				if(battle_config.pc_damage_delay_rate != 100)
+				if( battle_config.pc_damage_delay_rate != 100 )
 					status->dmotion = status->dmotion*battle_config.pc_damage_delay_rate/100;
 				//It's safe to ignore b_status->dmotion since no bonus affects it.
 				status->dmotion = status_calc_dmotion(bl, sc, status->dmotion);
 			}
 		}
-		else
-		if( bl->type&BL_HOM )
+		else if( bl->type&BL_HOM )
 		{
 			dmotion = 800-status->agi*4;
 			status->dmotion = cap_value(dmotion, 400, 800);
@@ -3558,10 +3566,10 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 		}
 	}
 
-	if(flag&(SCB_VIT|SCB_MAXHP|SCB_INT|SCB_MAXSP) && bl->type&BL_REGEN)
+	if( flag&(SCB_VIT|SCB_MAXHP|SCB_INT|SCB_MAXSP) && bl->type&BL_REGEN )
 		status_calc_regen(bl, status, status_get_regen_data(bl));
 
-	if(flag&SCB_REGEN && bl->type&BL_REGEN)
+	if( flag&SCB_REGEN && bl->type&BL_REGEN )
 		status_calc_regen_rate(bl, status_get_regen_data(bl), sc);
 }
 
@@ -3690,8 +3698,7 @@ void status_calc_bl_(struct block_list* bl, enum scb_flag flag, bool first)
 		if( b_status.sp != status->sp )
 			clif_mercenary_updatestatus(md->master, SP_SP);
 	}
-	else
-	if( bl->type == BL_ELEM )
+	else if( bl->type == BL_ELEM )
 	{
 		TBL_ELEM* ed = BL_CAST(BL_ELEM, bl);
 		if( b_status.max_hp != status->max_hp )
@@ -4454,11 +4461,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 			if( sc->data[SC_FUSION] )
 				val = 25;
 			else
-			if( sd && pc_isriding(sd, OPTION_RIDING) )
-			{
-				if( sd->class_&JOBL_THIRD ) val = 25;
-				else val = 25;
-			}
+			if( sd && pc_isriding(sd,OPTION_RIDING) )
+				val = 25;
 			else
 			if( sd && pc_isriding(sd, OPTION_RIDING_DRAGON) )
 				val = 25;
@@ -4620,95 +4624,87 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 static short status_calc_aspd_rate(struct block_list *bl, struct status_change *sc, int aspd_rate)
 {
 	int i;
-	if(!sc || !sc->count)
+	if( !sc || !sc->count )
 		return cap_value(aspd_rate,0,SHRT_MAX);
 
-	if(!sc->data[SC_QUAGMIRE])
+	if( !sc->data[SC_QUAGMIRE] )
 	{
 		int max = 0;
-		if(sc->data[SC_STAR_COMFORT])
+		if( sc->data[SC_STAR_COMFORT] )
 			max = sc->data[SC_STAR_COMFORT]->val2;
 
-		if(sc->data[SC_TWOHANDQUICKEN] &&
-			max < sc->data[SC_TWOHANDQUICKEN]->val2)
+		if( sc->data[SC_TWOHANDQUICKEN] && max < sc->data[SC_TWOHANDQUICKEN]->val2 )
 			max = sc->data[SC_TWOHANDQUICKEN]->val2;
 
-		if(sc->data[SC_ONEHAND] &&
-			max < sc->data[SC_ONEHAND]->val2)
+		if( sc->data[SC_ONEHAND] && max < sc->data[SC_ONEHAND]->val2 )
 			max = sc->data[SC_ONEHAND]->val2;
 
-		if(sc->data[SC_MERC_QUICKEN] &&
-			max < sc->data[SC_MERC_QUICKEN]->val2)
+		if( sc->data[SC_MERC_QUICKEN] && max < sc->data[SC_MERC_QUICKEN]->val2 )
 			max = sc->data[SC_MERC_QUICKEN]->val2;
 
-		if(sc->data[SC_ADRENALINE2] &&
-			max < sc->data[SC_ADRENALINE2]->val3)
+		if( sc->data[SC_ADRENALINE2] && max < sc->data[SC_ADRENALINE2]->val3 )
 			max = sc->data[SC_ADRENALINE2]->val3;
 		
-		if(sc->data[SC_ADRENALINE] &&
-			max < sc->data[SC_ADRENALINE]->val3)
+		if( sc->data[SC_ADRENALINE] && max < sc->data[SC_ADRENALINE]->val3 )
 			max = sc->data[SC_ADRENALINE]->val3;
 		
-		if(sc->data[SC_SPEARQUICKEN] &&
-			max < sc->data[SC_SPEARQUICKEN]->val2)
+		if( sc->data[SC_SPEARQUICKEN] && max < sc->data[SC_SPEARQUICKEN]->val2 )
 			max = sc->data[SC_SPEARQUICKEN]->val2;
 
-		if(sc->data[SC_GATLINGFEVER] &&
-			max < sc->data[SC_GATLINGFEVER]->val2)
+		if( sc->data[SC_GATLINGFEVER] && max < sc->data[SC_GATLINGFEVER]->val2 )
 			max = sc->data[SC_GATLINGFEVER]->val2;
 		
-		if(sc->data[SC_FLEET] &&
-			max < sc->data[SC_FLEET]->val2)
+		if( sc->data[SC_FLEET] && max < sc->data[SC_FLEET]->val2 )
 			max = sc->data[SC_FLEET]->val2;
 
-		if(sc->data[SC_ASSNCROS] &&
-			max < sc->data[SC_ASSNCROS]->val2)
+		if( sc->data[SC_ASSNCROS] && max < sc->data[SC_ASSNCROS]->val2 )
 		{
-			if (bl->type!=BL_PC)
+			if( bl->type != BL_PC )
 				max = sc->data[SC_ASSNCROS]->val2;
 			else
-			switch(((TBL_PC*)bl)->status.weapon)
-			{
-				case W_BOW:
-				case W_REVOLVER:
-				case W_RIFLE:
-				case W_GATLING:
-				case W_SHOTGUN:
-				case W_GRENADE:
-					break;
-				default:
-					max = sc->data[SC_ASSNCROS]->val2;
-			}
+				switch(((TBL_PC*)bl)->status.weapon)
+				{
+					case W_BOW:
+					case W_REVOLVER:
+					case W_RIFLE:
+					case W_GATLING:
+					case W_SHOTGUN:
+					case W_GRENADE:
+						break;
+					default:
+						max = sc->data[SC_ASSNCROS]->val2;
+				}
 		}
 		aspd_rate -= max;
 
 	  	//These stack with the rest of bonuses.
-		if(sc->data[SC_BERSERK] || sc->data[SC_SATURDAYNIGHTFEVER])
+		if( sc->data[SC_BERSERK] || sc->data[SC_SATURDAYNIGHTFEVER] )
 			aspd_rate -= 300;
-		else if(sc->data[SC_MADNESSCANCEL])
+		else if( sc->data[SC_MADNESSCANCEL] )
 			aspd_rate -= 200;
 	}
 
-	if(sc->data[i=SC_ASPDPOTION3] ||
+	if( sc->data[i=SC_ASPDPOTION3] ||
 		sc->data[i=SC_ASPDPOTION2] ||
 		sc->data[i=SC_ASPDPOTION1] ||
 		sc->data[i=SC_ASPDPOTION0])
 		aspd_rate -= sc->data[i]->val2;
-	if(sc->data[SC_DONTFORGETME])
+	if( sc->data[SC_DONTFORGETME] )
 		aspd_rate += 10 * sc->data[SC_DONTFORGETME]->val2;
-	if(sc->data[SC_LONGING])
+	if( sc->data[SC_LONGING] )
 		aspd_rate += sc->data[SC_LONGING]->val2;
-	if(sc->data[SC_STEELBODY])
+	if( sc->data[SC_STEELBODY] )
 		aspd_rate += 250;
-	if(sc->data[SC_SKA])
+	if( sc->data[SC_SKA] )
 		aspd_rate += 250;
-	if(sc->data[SC_DEFENDER])
+	if( sc->data[SC_DEFENDER] )
 		aspd_rate += sc->data[SC_DEFENDER]->val4;
-	if(sc->data[SC_GOSPEL] && sc->data[SC_GOSPEL]->val4 == BCT_ENEMY)
+	if( sc->data[SC_GOSPEL] && sc->data[SC_GOSPEL]->val4 == BCT_ENEMY )
 		aspd_rate += 250;
-	if(sc->data[SC_GRAVITATION])
+	if( sc->data[SC_GRAVITATION] )
 		aspd_rate += sc->data[SC_GRAVITATION]->val2;
-	if(sc->data[SC_JOINTBEAT]) {
+	if( sc->data[SC_JOINTBEAT] )
+	{
 		if( sc->data[SC_JOINTBEAT]->val2&BREAK_WRIST )
 			aspd_rate += 250;
 		if( sc->data[SC_JOINTBEAT]->val2&BREAK_KNEE )
@@ -6319,7 +6315,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			break;
 		case SC_EDP:	// [Celest]
 			val2 = val1 + 2; //Chance to Poison enemies.
-			val3 = 50*(val1+1); //Damage increase (+50 +50*lv%)
+			val3 = 50 * (val1+1); //Damage increase (+50 +50*lv%)
 			break;
 		case SC_POISONREACT:
 			val2=(val1+1)/2 + val1/10; // Number of counters [Skotlex]
@@ -9638,7 +9634,7 @@ int status_change_spread( struct block_list *src, struct block_list *bl )
 			case SC_TOXIN:
 			case SC_OBLIVIONCURSE:
 			case SC_LEECHESEND:
-				if (sc->data[i]->timer != -1)
+				if( sc->data[i]->timer != -1 )
 				{
 					timer = get_timer(sc->data[i]->timer);
 					if (timer == NULL || timer->func != status_change_timer || DIFF_TICK(timer->tick,tick) < 0)
