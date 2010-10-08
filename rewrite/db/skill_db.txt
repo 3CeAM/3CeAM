@@ -728,7 +728,7 @@
 //574,9,6,16,0,0x1,0,5,1,yes,0,0x200,0,magic,0,		SL_NINJA,
 //575,9,6,16,0,0x1,0,5,1,yes,0,0x200,0,magic,0,		SL_GUNNER,
 //576,0,6,4,0,0x1,0,1,0,no,0,0x8,0,none,0,		AM_TWILIGHT4,
-
+//577,0,0,0,0,0,0,1,0,no,0,0,0,none,0,			DA_RESET,
 //578,0,0,0,0,0,0,1,0,no,0,0x8,0,none,0,		DE_BERSERKAIZER,
 //579,0,0,0,0,0,0,1,0,no,0,0x8,0,none,0,		DA_DARKPOWER,
 
@@ -789,7 +789,7 @@
 //631,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DA_RUNNER,
 //632,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DA_TRANSFER,
 //633,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		DA_WALL,
-
+//634,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DA_ZENY,
 //635,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DA_REVENGE,
 //636,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DA_EARPLUG,
 //637,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DA_CONTRACT,
@@ -1169,8 +1169,6 @@
 2467,9,6,0,4,0x01,0,3,1,no,0,0,0,none,0,		SO_WIND_INSIGNIA,Wind Insignia
 2468,9,6,0,2,0x01,0,3,1,no,0,0,0,none,0,		SO_EARTH_INSIGNIA,Earth Insignia
 
-2472,0,0,0,0,0,0,1,0,no,0,0,0,none,0,			SO_ENDMARK,End Mark
-
 // Genetic
 2474,0,0,0,0,0,0,5,0,no,0,0,0,weapon,0,		GN_TRAINING_SWORD,Sword Training
 2475,0,0,0,0,0,0,5,0,no,0,0,0,weapon,0,		GN_REMODELING_CART,Cart Remodeling
@@ -1232,33 +1230,33 @@
 8016,4,6,4,-1,0xD2,4,3,1,no,0,0,0,misc,0,        HVAN_EXPLOSION,Bio Explosion
 
 // Mutated Homunculus Skills
-//8017,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MUTATION_BASEJOB,
-//8018,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_SUMMON_LEGION,
-//8019,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_NEEDLE_OF_PARALYZE,
-//8020,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_POISON_MIST,
-//8021,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_PAIN_KILLER,
-//8022,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_LIGHT_OF_REGENE,
-//8023,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_OVERED_BOOST,
-//8024,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_ERASER_CUTTER,
-//8025,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_XENO_SLASHER,
-//8026,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_SILENT_BREEZE,
-//8027,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_STYLE_CHANGE,
-//8028,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_SONIC_CRAW,
-//8029,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_SILVERVEIN_RUSH,
-//8030,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_MIDNIGHT_FRENZY,
-//8031,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_STAHL_HORN,
-//8032,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_GOLDENE_FERSE,
-//8033,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_STEINWAND,
-//8034,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_HEILIGE_STANGE,
-//8035,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_ANGRIFFS_MODUS,
-//8036,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_TINDER_BREAKER,
-//8037,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_CBC,
-//8038,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_EQC,
-//8039,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_MAGMA_FLOW,
-//8040,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_GRANITIC_ARMOR,
-//8041,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_LAVA_SLIDE,
-//8042,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_PYROCLASTIC,
-//8043,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		MH_VOLCANIC_ASH,
+8017,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		MUTATION_BASEJOB,Mutation Base Job
+8018,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_SUMMON_LEGION,Summon Legion
+8019,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_NEEDLE_OF_PARALYZE,Needle of Paralyze
+8020,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_POISON_MIST,Poison Mist
+8021,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_PAIN_KILLER,Pain Killer
+8022,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_LIGHT_OF_REGENE,Light of Regene
+8023,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_OVERED_BOOST,Overed Boost
+8024,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_ERASER_CUTTER,Eraser Cutter
+8025,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_XENO_SLASHER,Xeno Slasher
+8026,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_SILENT_BREEZE,Silent Breeze
+8027,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		MH_STYLE_CHANGE,Style Change
+8028,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_SONIC_CRAW,Sonic Claw
+8029,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_SILVERVEIN_RUSH,Silver Bain Rush
+8030,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_MIDNIGHT_FRENZY,Midnight Frenzy
+8031,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_STAHL_HORN,Steel Horn
+8032,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_GOLDENE_FERSE,Golden Heel
+8033,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_STEINWAND,Stone Wall
+8034,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_HEILIGE_STANGE,Holy Pole
+8035,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_ANGRIFFS_MODUS,Attack Mode
+8036,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_TINDER_BREAKER,Tinder Breaker
+8037,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_CBC,Continual Break Combo
+8038,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_EQC,Eternal Quick Combo
+8039,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_MAGMA_FLOW,Magma Flow
+8040,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_GRANITIC_ARMOR,Granitic Armor
+8041,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_LAVA_SLIDE,Lava Slide
+8042,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_PYROCLASTIC,Pyroclastic
+8043,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MH_VOLCANIC_ASH,Volcanic Ash
 
 // Mercenary Skills
 8201,-1,6,1,-1,0,0,10,1,no,0,0,0,weapon,0,	MS_BASH,Bash
@@ -1305,7 +1303,7 @@
 // Elemental Spirits Skills
 8401,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_CIRCLE_OF_FIRE,Circle of Fire
 8402,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_FIRE_CLOAK,Fire Cloak
-8403,0,6,4,0,0x1,0,3,1,no,0,0,3,magic,2,		EL_FIRE_MANTLE,Fire Mantle
+8403,0,6,4,0,0x1,0,3,1,no,0,0,3,magic,2,	EL_FIRE_MANTLE,Fire Mantle
 8404,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_WATER_SCREEN,Water Screen
 8405,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_WATER_DROP,Water Drop
 8406,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_WATER_BARRIER,Water Barrier
@@ -1362,4 +1360,4 @@
 10012,0,0,4,0,0x3,15,1,0,yes,0,0x10,0,none,0,    GD_RESTORE,Restoration
 10013,0,0,4,0,0x3,0,1,0,yes,0,0x10,0,none,0,     GD_EMERGENCYCALL,Urgent Call
 10014,0,0,0,0,0,0,1,0,no,0,0x10,0,none,0,        GD_DEVELOPMENT,Permanent Development
-//10015,0,0,0,0,0,0,1,0,no,0,0x10,0,none,0,        GD_ITEMEMERGENCYCALL,Unknown Skill
+//10015,0,0,0,0,0,0,1,0,no,0,0x10,0,none,0,      GD_ITEMEMERGENCYCALL,Unknown Skill
