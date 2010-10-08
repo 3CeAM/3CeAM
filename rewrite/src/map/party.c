@@ -594,7 +594,7 @@ int party_optionchanged(int party_id,int account_id,int exp,int item,int flag)
 		return 0;
 
 	//Flag&1: Exp change denied. Flag&2: Item change denied.
-	if(!(flag&0x01) && p->party.exp != exp)
+	if( !(flag&0x01) && p->party.exp != exp )
 		p->party.exp=exp;
 	if(!(flag&0x10) && p->party.item != item) {
 		p->party.item=item;
@@ -883,19 +883,20 @@ int party_exp_share(struct party_data* p, struct block_list* src, unsigned int b
 	nullpo_retr(0, p);
 
 	// count the number of players eligible for exp sharing
-	for (i = c = 0; i < MAX_PARTY; i++) {
+	for( i = c = 0; i < MAX_PARTY; i++ )
+	{
 		if( (sd[c] = p->data[i].sd) == NULL || sd[c]->bl.m != src->m || pc_isdead(sd[c]) || (battle_config.idle_no_share && pc_isidle(sd[c])) )
 			continue;
 		c++;
 	}
-	if (c < 1)
+	if( c < 1 )
 		return 0;
 
-	base_exp/=c;	
-	job_exp/=c;
-	zeny/=c;
+	base_exp /= c;	
+	job_exp /= c;
+	zeny /= c;
 
-	if (battle_config.party_even_share_bonus && c > 1)
+	if( battle_config.party_even_share_bonus && c > 1 )
 	{
 		double bonus = 100 + battle_config.party_even_share_bonus*(c-1);
 		if (base_exp)
@@ -906,10 +907,10 @@ int party_exp_share(struct party_data* p, struct block_list* src, unsigned int b
 			zeny = (unsigned int) cap_value(zeny * bonus/100, INT_MIN, INT_MAX);
 	}
 
-	for (i = 0; i < c; i++)
+	for( i = 0; i < c; i++ )
 	{
 		pc_gainexp(sd[i], src, base_exp, job_exp, false);
-		if (zeny) // zeny from mobs [Valaris]
+		if( zeny ) // zeny from mobs [Valaris]
 			pc_getzeny(sd[i],zeny);
 	}
 	return 0;

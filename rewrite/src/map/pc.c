@@ -1270,7 +1270,7 @@ int pc_reg_received(struct map_session_data *sd)
 			sd->status.skill[sd->cloneskill_id].lv = pc_readglobalreg(sd,"CLONE_SKILL_LV");
 			if (i < sd->status.skill[sd->cloneskill_id].lv)
 				sd->status.skill[sd->cloneskill_id].lv = i;
-			sd->status.skill[sd->cloneskill_id].flag = 13;	//cloneskill flag			
+			sd->status.skill[sd->cloneskill_id].flag = 13;	//cloneskill flag
 		}
 	}
 	if ((i = pc_checkskill(sd,SC_REPRODUCE)) > 0) {
@@ -4422,11 +4422,10 @@ int pc_setpos(struct map_session_data* sd, unsigned short mapindex, int x, int y
 			if (sd->sc.data[SC_CURSEDCIRCLE_ATKER])
 				status_change_end(&sd->bl,SC_CURSEDCIRCLE_ATKER,-1);
 		}
-		if (sd->shadowform_id)
+		if( sd->shadowform_id )
 		{
 			struct block_list *s_bl = map_id2bl(sd->shadowform_id);
-			if( s_bl )
-				status_change_end(s_bl,SC__SHADOWFORM,-1);
+			if( s_bl ) status_change_end(s_bl,SC__SHADOWFORM,-1);
 			sd->shadowform_id = 0;
 		}
 		if (battle_config.clear_unit_onwarp&BL_PC)
@@ -5411,16 +5410,16 @@ static void pc_calcexp(struct map_session_data *sd, unsigned int *base_exp, unsi
 /*==========================================
  * ??’lŽæ“¾
  *------------------------------------------*/
-int pc_gainexp(struct map_session_data *sd, struct block_list *src, unsigned int base_exp,unsigned int job_exp,bool quest)
+int pc_gainexp(struct map_session_data *sd, struct block_list *src, unsigned int base_exp,unsigned int job_exp, bool quest)
 {
 	float nextbp=0, nextjp=0;
 	unsigned int nextb=0, nextj=0;
 	nullpo_retr(0, sd);
 
-	if(sd->bl.prev == NULL || pc_isdead(sd))
+	if( sd->bl.prev == NULL || pc_isdead(sd) )
 		return 0;
 
-	if(!battle_config.pvp_exp && map[sd->bl.m].flag.pvp)  // [MouseJstr]
+	if( !battle_config.pvp_exp && map[sd->bl.m].flag.pvp )  // [MouseJstr]
 		return 0; // no exp on pvp maps
 
 	if(sd->status.guild_id>0)
@@ -5752,7 +5751,8 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 	i = pc_calc_skilltree_normalize_job(sd);
 	c = pc_mapid2jobid(i, sd->status.sex);
 
-	if( c == -1 ) { //Unable to normalize job??
+	if( c == -1 )
+	{ //Unable to normalize job??
 		ShowError("pc_skillup: Unable to normalize job %d for character %s (%d:%d)\n", i, sd->status.name, sd->status.account_id, sd->status.char_id);
 		return 0;
 	}
@@ -5766,13 +5766,13 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 
 	if( !pc_isSkillFromJob(c, skill_num) && (sd->class_&JOBL_2) && (sd->class_&MAPID_UPPERMASK) != MAPID_SUPER_NOVICE )
 	{
-		if( sd->status.skill_point >= sd->status.job_level && (sd->change_level[0] > 0 ? ( skill_point < sd->change_level[0]+8 ): (skill_point < 58)) )
+		if( sd->status.skill_point >= sd->status.job_level && (sd->change_level[0] > 0 ? ( skill_point < sd->change_level[0] + 8 ) : (skill_point < 58)) )
 		{	// 1st job skills are not used.	
-			i = (sd->change_level[0] > 0 ? sd->change_level[0]+8:58) - skill_point;		
+			i = (sd->change_level[0] > 0 ? sd->change_level[0] + 8 : 58) - skill_point;
 			clif_msgtable_num(sd->fd,1566,i);
 			return 0;
-		}		
-		if( (sd->class_&JOBL_THIRD) && (skill_num >= RK_ENCHANTBLADE && skill_num <= SR_RIDEINLIGHTNING) &&
+		}
+		if( sd->class_&JOBL_THIRD && (skill_num >= RK_ENCHANTBLADE && skill_num <= SR_RIDEINLIGHTNING) &&
 			skill_point < (sd->change_level[1] > 0 ? sd->change_level[0] + sd->change_level[1] + 7 : (sd->class_&JOBL_UPPER) ? 127 : 107) )
 		{	// 2nd job skill not usd.
 			i = (sd->change_level[1] > 0 ? sd->change_level[0] + sd->change_level[1] + 7 : (sd->class_&JOBL_UPPER) ? 127 : 107) - skill_point;
@@ -6245,7 +6245,7 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 		sd->shadowform_id = 0;
 	}
 
-	if( sd->sc.count && sd->sc.data[SC__SHADOWFORM] )
+	if( sd->sc.data[SC__SHADOWFORM] )
 	{
 		struct map_session_data *s_sd = map_id2sd(sd->sc.data[SC__SHADOWFORM]->val2);
 		if( s_sd ) s_sd->shadowform_id = 0 ;
@@ -7974,7 +7974,8 @@ int pc_unequipitem(struct map_session_data *sd,int n,int flag)
 	int i;
 	nullpo_retr(0, sd);
 
-	if( n < 0 || n >= MAX_INVENTORY ) {
+	if( n < 0 || n >= MAX_INVENTORY )
+	{
 		clif_unequipitemack(sd,0,0,0);
 		return 0;
 	}
@@ -7986,44 +7987,57 @@ int pc_unequipitem(struct map_session_data *sd,int n,int flag)
 		return 0;
 	}
 
-	if(battle_config.battle_log)
+	if( battle_config.battle_log )
 		ShowInfo("unequip %d %x:%x\n",n,pc_equippoint(sd,n),sd->status.inventory[n].equip);
 
-	if(!sd->status.inventory[n].equip){ //Nothing to unequip
+	if( !sd->status.inventory[n].equip )
+	{ // Nothing to unequip
 		clif_unequipitemack(sd,n,0,0);
 		return 0;
 	}
-	for(i=0;i<EQI_MAX;i++) {
-		if(sd->status.inventory[n].equip & equip_pos[i])
+
+	for( i = 0; i < EQI_MAX; i++ )
+	{
+		if( sd->status.inventory[n].equip & equip_pos[i] )
 			sd->equip_index[i] = -1;
 	}
 
-	if(sd->status.inventory[n].equip & EQP_HAND_R) {
+	if( sd->status.inventory[n].equip & EQP_HAND_R )
+	{
 		sd->weapontype1 = 0;
 		sd->status.weapon = sd->weapontype2;
 		pc_calcweapontype(sd);
 		clif_changelook(&sd->bl,LOOK_WEAPON,sd->status.weapon);
-		if(sd->sc.data[SC_DANCING]) //When unequipping, stop dancing. [Skotlex]
+		if( sd->sc.data[SC_DANCING] ) //When unequipping, stop dancing. [Skotlex]
 			status_change_end(&sd->bl, SC_DANCING, -1);
 	}
-	if(sd->status.inventory[n].equip & EQP_HAND_L) {
+
+	if( sd->status.inventory[n].equip & EQP_HAND_L )
+	{
 		sd->status.shield = sd->weapontype2 = sd->special_state.checkshieldmdef = 0;
 		pc_calcweapontype(sd);
 		clif_changelook(&sd->bl,LOOK_SHIELD,sd->status.shield);
 	}
-	if(sd->status.inventory[n].equip & EQP_HEAD_LOW) {
+
+	if( sd->status.inventory[n].equip & EQP_HEAD_LOW )
+	{
 		sd->status.head_bottom = 0;
 		clif_changelook(&sd->bl,LOOK_HEAD_BOTTOM,sd->status.head_bottom);
 	}
-	if(sd->status.inventory[n].equip & EQP_HEAD_TOP) {
+
+	if( sd->status.inventory[n].equip & EQP_HEAD_TOP )
+	{
 		sd->status.head_top = 0;
 		clif_changelook(&sd->bl,LOOK_HEAD_TOP,sd->status.head_top);
 	}
-	if(sd->status.inventory[n].equip & EQP_HEAD_MID) {
+
+	if( sd->status.inventory[n].equip & EQP_HEAD_MID )
+	{
 		sd->status.head_mid = 0;
 		clif_changelook(&sd->bl,LOOK_HEAD_MID,sd->status.head_mid);
 	}
-	if(sd->status.inventory[n].equip & EQP_SHOES)
+
+	if( sd->status.inventory[n].equip & EQP_SHOES )
 		clif_changelook(&sd->bl,LOOK_SHOES,0);
 
 	clif_unequipitemack(sd,n,sd->status.inventory[n].equip,1);
