@@ -34,13 +34,14 @@
 
 //Thief
 52,1	// Envenom
-152,1	// Stone Fling
+
+// Resurrection
+54,1	// Resurrection
 
 // Knight
 62,1	// Bowling Bash
 
 // Priest
-54,1	// Resurrection
 68,1	// Asperio
 69,1	// B.S Sacramenti
 70,1	// Sanctuary
@@ -48,6 +49,7 @@
 79,1	// Magnus Exorcismus
 
 // Wizard
+80,1	// Fire Pillar
 81,1	// Sightrasher
 83,1	// Meteor Storm
 84,1	// Jupitel Thunder
@@ -55,6 +57,7 @@
 86,1	// Water Ball
 88,1	// Frost Nova
 89,1	// Storm Gust
+90,1	// Earth Spike
 91,1	// Heaven's Drive
 
 // Hunter
@@ -65,6 +68,11 @@
 
 // Assassin
 141,1	// Venom Splasher
+
+// 1st Job Quest Skills
+148,1	// Arrow Repel
+152,1	// Stone Fling
+156,1	// Holy Light
 
 // Rogue
 212,1	// Backstab
@@ -86,18 +94,8 @@
 271,1	// Guillotine Fist
 272,1	// Raging Quadruple Blow
 
-// Wizard/Sage
-80,1	// Fire Pillar
-90,1	// Earth Spike
-
-// Quest Skill of certain Jobs
-148,1	// Arrow Repel
-156,1	// Holy Light
-1001,1	// Charge Attack
-1004,1	// Venom Knife
-1006,1	// Sight Blaster
-1009,1	// Phantasmic Arrow
-1015,1	// Excruciating Palm
+// Item Skill
+337,1	// Tomahawk Throwing
 
 // TaeKwon Kid
 421,1	// Flying Kick
@@ -116,6 +114,13 @@
 541,1	// Lightning Jolt
 542,1	// First Wind
 
+// 2nd Job Quest Skills
+1001,1	// Charge Attack
+1004,1	// Venom Knife
+1006,1	// Sight Blaster
+1009,1	// Phantasmic Arrow
+1015,1	// Excruciating Palm
+
 // Rune Knight
 2002,1	// Sonic Wave
 2005,1	// Ignition Break
@@ -133,13 +138,13 @@
 2054,1	// Duple Light
 
 // Warlock
-2210,1	// Drain Life
 2202,1	// Soul Expansion
+2203,1	// Frosty Misty
+2204,1	// Jack Frost
+2210,1	// Drain Life
 2211,1	// Crimson Rock
 2212,1	// Hell Inferno
 2213,1	// Comet
-2203,1	// Frosty Misty
-2204,1	// Jack Frost
 2214,1	// Chain Lightning
 2216,1	// Earth Strain
 
@@ -157,10 +162,10 @@
 
 // Royal Guard
 2310,1	// Shield Press
+2315,1	// Shield Spell
+2316,1	// Exceed Break
 2320,1	// Moon Slasher
 2323,1	// Earth Drive
-2316,1	// Exceed Break
-2315,1	// Shield Spell
 
 // Sura
 2326,1	// Dragon Combo
@@ -183,11 +188,11 @@
 // Sorcerer
 2443,1	// Fire Walk
 2444,1	// Electric Walk
-2449,1	// Psychic Wave
-2450,1	// Cloud Kill
-2448,1	// Poison Buster
 2446,1	// Earth Grave
 2447,1	// Diamond Dust
+2448,1	// Poison Buster
+2449,1	// Psychic Wave
+2450,1	// Cloud Kill
 2454,1	// Varetyr Spear
 
 // Genetic
@@ -197,6 +202,3 @@
 2482,1	// Wall of Thorns
 2483,1	// Crazy Weed
 2490,1	// Hell's Plant
-
-// Other
-337,1	// Tomahawk Throwing
