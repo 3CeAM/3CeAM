@@ -29,7 +29,9 @@
 
 
 static DBMap* party_db; // int party_id -> struct party_data*
+static DBMap* party_booking_db; // Party Booking [Spiria]
 int party_send_xy_timer(int tid, unsigned int tick, int id, intptr data);
+bool check_party_leader(struct map_session_data *sd, struct party_data *p); // Party Booking [Spiria]
 
 /*==========================================
  * Fills the given party_member structure according to the sd provided. 
@@ -84,11 +86,13 @@ static TBL_PC* party_sd_check(int party_id, int account_id, int char_id)
 void do_final_party(void)
 {
 	party_db->destroy(party_db,NULL);
+	party_booking_db->destroy(party_booking_db,NULL); // Party Booking [Spiria]
 }
 // ‰Šú‰»
 void do_init_party(void)
 {
 	party_db = idb_alloc(DB_OPT_RELEASE_DATA);
+	party_booking_db = idb_alloc(DB_OPT_RELEASE_DATA); // Party Booking [Spiria]
 	add_timer_func_list(party_send_xy_timer, "party_send_xy_timer");
 	add_timer_interval(gettick()+battle_config.party_update_interval, party_send_xy_timer, 0, 0, battle_config.party_update_interval);
 }
@@ -181,7 +185,7 @@ int party_check_member(struct party *p)
 	struct map_session_data *sd;
 	struct s_mapiterator* iter;
 
-	nullpo_retr(0, p);
+	nullpo_ret(p);
 
 	iter = mapit_getallusers();
 	for( sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter) )
@@ -258,7 +262,7 @@ int party_recv_info(struct party *sp)
 	int i;
 	bool party_new = false;
 	
-	nullpo_retr(0, sp);
+	nullpo_ret(sp);
 
 	p = (struct party_data*)idb_ensure(party_db, sp->party_id, create_party);
 	if (!p->party.party_id) //party just received.
@@ -296,7 +300,7 @@ int party_invite(struct map_session_data *sd,struct map_session_data *tsd)
 	struct party_data *p=party_search(sd->status.party_id);
 	int i,flag=0;
 	
-	nullpo_retr(0, sd);
+	nullpo_ret(sd);
 	if( p == NULL )
 		return 0;
 	if( tsd == NULL) {	//TODO: Find the correct reply packet.
@@ -511,6 +515,11 @@ int party_leave(struct map_session_data *sd)
 	if( i == MAX_PARTY )
 		return 0;
 
+	if( check_party_leader(sd, p) ){ // when party leader leaves party, cancel booking.
+		party_booking_delete(sd,true);
+		clif_PartyBookingDeleteAck(sd,0);
+	}
+
 	intif_party_leave(p->party.party_id,sd->status.account_id,sd->status.char_id);
 	return 1;
 }
@@ -578,7 +587,7 @@ int party_broken(int party_id)
 
 int party_changeoption(struct map_session_data *sd,int exp,int item)
 {
-	nullpo_retr(0, sd);
+	nullpo_ret(sd);
 
 	if( sd->status.party_id==0)
 		return 0;
@@ -596,7 +605,8 @@ int party_optionchanged(int party_id,int account_id,int exp,int item,int flag)
 	//Flag&1: Exp change denied. Flag&2: Item change denied.
 	if( !(flag&0x01) && p->party.exp != exp )
 		p->party.exp=exp;
-	if(!(flag&0x10) && p->party.item != item) {
+	if( !(flag&0x10) && p->party.item != item )
+	{
 		p->party.item=item;
 #if PACKETVER<20090603
 		//item changes aren't updated by clif_party_option for older clients.
@@ -656,6 +666,8 @@ bool party_changeleader(struct map_session_data *sd, struct map_session_data *ts
 	//Update info.
 	intif_party_leaderchange(p->party.party_id,p->party.member[tmi].account_id,p->party.member[tmi].char_id);
 	clif_party_info(p,NULL);
+	party_booking_delete(sd, true); // Party Booking [Spiria]
+	clif_PartyBookingDeleteAck(sd, 0); // Close small window
 	return true;
 }
 
@@ -863,7 +875,7 @@ int party_send_xy_clear(struct party_data *p)
 {
 	int i;
 
-	nullpo_retr(0, p);
+	nullpo_ret(p);
 
 	for(i=0;i<MAX_PARTY;i++){
 		if(!p->data[i].sd) continue;
@@ -880,7 +892,7 @@ int party_exp_share(struct party_data* p, struct block_list* src, unsigned int b
 	struct map_session_data* sd[MAX_PARTY];
 	unsigned int i, c;
 
-	nullpo_retr(0, p);
+	nullpo_ret(p);
 
 	// count the number of players eligible for exp sharing
 	for( i = c = 0; i < MAX_PARTY; i++ )
@@ -1018,7 +1030,7 @@ int party_foreachsamemap(int (*func)(struct block_list*,va_list),struct map_sess
 	int blockcount=0;
 	int total = 0; //Return value.
 	
-	nullpo_retr(0,sd);
+	nullpo_ret(sd);
 	
 	if((p=party_search(sd->status.party_id))==NULL)
 		return 0;
@@ -1054,4 +1066,143 @@ int party_foreachsamemap(int (*func)(struct block_list*,va_list),struct map_sess
 	map_freeblock_unlock();
 
 	return total;
+}
+
+/*==========================================
+ * Party Booking in KRO [Spiria]
+ *------------------------------------------*/
+
+static struct party_booking_ad_info* create_party_booking_data(int party_id)
+{
+	struct party_booking_ad_info *pb_ad;
+	CREATE(pb_ad, struct party_booking_ad_info, 1);
+	pb_ad->index = party_id;
+	return pb_ad;
+}
+
+struct party_booking_ad_info* party_booking_getdata(unsigned long index)
+{
+	struct party_booking_ad_info *pb_ad;
+	pb_ad = (struct party_booking_ad_info*)idb_get(party_booking_db, index);
+	return pb_ad;
+}
+
+bool check_party_leader(struct map_session_data *sd, struct party_data *p)
+{
+	int i;
+
+	if (!sd || !sd->status.party_id) return false;
+
+	if( p == NULL ) return false;
+
+	ARR_FIND(0, MAX_PARTY, i, p->party.member[i].leader && p->party.member[i].online && p->data[i].sd == sd);
+	if(i == MAX_PARTY) return false;
+
+	return true;
+}
+
+void party_booking_register(struct map_session_data *sd, short level, short mapid, short* job)
+{
+	struct party_booking_ad_info *pb_ad;
+	struct party_data *p=party_search(sd->status.party_id);
+	int i;
+
+	if (!check_party_leader(sd, p)) {
+		clif_PartyBookingRegisterAck(sd, 1);
+		return;
+	}
+	
+	pb_ad = (struct party_booking_ad_info*)idb_get(party_booking_db, p->party.party_id);
+
+	if( pb_ad == NULL )
+	{
+		pb_ad = create_party_booking_data(p->party.party_id);
+		idb_put(party_booking_db, pb_ad->index, pb_ad);
+	}
+	
+	memcpy(pb_ad->charname,sd->status.name,NAME_LENGTH);
+	pb_ad->starttime = (int)time(NULL);
+	pb_ad->p_detail.level = level;
+	pb_ad->p_detail.mapid = mapid;
+
+	for(i=0;i<6;i++)
+		if(job[i] != 0xFF)
+			pb_ad->p_detail.job[i] = job[i];
+		else pb_ad->p_detail.job[i] = -1;
+
+	clif_PartyBookingRegisterAck(sd, 0);
+	clif_PartyBookingInsertNotify(sd, pb_ad); // Notice
+	clif_PartyBookingSearchAck(sd->fd, &pb_ad->index, 1, false); // Update Client!
+	return;
+}
+
+void party_booking_update(struct map_session_data *sd, short* job)
+{
+	int i;
+	struct party_data *p=party_search(sd->status.party_id);
+	struct party_booking_ad_info *pb_ad;
+
+	if (!check_party_leader(sd, p)) {
+		return;
+	}
+
+	pb_ad = (struct party_booking_ad_info*)idb_get(party_booking_db, p->party.party_id);
+	
+	if( pb_ad == NULL )
+		return;
+	
+	pb_ad->starttime = (int)time(NULL);// Update time.
+
+	for(i=0;i<6;i++)
+		if(job[i] != 0xFF)
+			pb_ad->p_detail.job[i] = job[i];
+		else pb_ad->p_detail.job[i] = -1;
+
+	clif_PartyBookingUpdateNotify(sd, pb_ad);
+	return;
+}
+
+void party_booking_search(struct map_session_data *sd, short level, short mapid, short job, unsigned long lastindex, short resultcount)
+{
+	struct party_booking_ad_info *pb_ad;
+	int i, count=0;
+	unsigned long index_list[10];
+	bool more_result = false;
+	DBIterator* iter = party_booking_db->iterator(party_booking_db);
+	
+	memset(index_list, 0, sizeof(index_list));
+	
+	for( pb_ad = (struct party_booking_ad_info*)iter->first(iter,NULL);	iter->exists(iter);	pb_ad = (struct party_booking_ad_info*)iter->next(iter,NULL) )
+	{
+		if (pb_ad->index < lastindex || (pb_ad->p_detail.level < level || pb_ad->p_detail.level-15 > level))
+			continue;
+		if (count >= 10){
+			more_result = true;
+			break;
+		}
+		if (mapid == 0 && job == -1)
+			index_list[count] = pb_ad->index;
+		else if (mapid == 0) {
+			for(i=0; i<6; i++)
+				if (pb_ad->p_detail.job[i] == job && job != -1)
+					index_list[count] = pb_ad->index;
+		} else if (job == -1){
+			if (pb_ad->p_detail.mapid == mapid)
+				index_list[count] = pb_ad->index;
+		}
+		count++;
+	}
+	iter->destroy(iter);
+	clif_PartyBookingSearchAck(sd->fd, index_list, count, more_result);
+}
+
+bool party_booking_delete(struct map_session_data *sd, bool force_delete)
+{
+	struct party_data *p=party_search(sd->status.party_id);
+	if (!check_party_leader(sd, p) && !force_delete) {
+		return false;
+	}
+	clif_PartyBookingDeleteNotify(sd, sd->status.party_id);
+	idb_remove(party_booking_db,sd->status.party_id);
+	return true;
 }

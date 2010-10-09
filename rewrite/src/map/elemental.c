@@ -132,7 +132,7 @@ int elemental_delete(struct elemental_data *ed, int reply)
 {
 	struct map_session_data *sd;
 
-	nullpo_retr(0,ed);
+	nullpo_ret(ed);
 	
 	sd = ed->master;
 	ed->elemental.life_time = 0;
@@ -238,7 +238,7 @@ int elemental_clean_single_effect(struct elemental_data *ed, int skill_num)
 	struct block_list *bl;
 	sc_type type = status_skill2sc(skill_num);
 
-	nullpo_retr(0,ed);
+	nullpo_ret(ed);
 
 	bl = battle_get_master(&ed->bl);
 	
@@ -285,7 +285,7 @@ int elemental_clean_effect(struct elemental_data *ed)
 {
 	struct map_session_data *sd;
 
-	nullpo_retr(0,ed);
+	nullpo_ret(ed);
 
 	// Elemental side
 	status_change_end(&ed->bl,SC_TROPIC,-1);
@@ -347,8 +347,8 @@ int elemental_action(struct elemental_data *ed, struct block_list *bl, unsigned 
 	short skillnum, skilllv;
 	int i;
 
-	nullpo_retr(0,ed);
-	nullpo_retr(0,bl);
+	nullpo_ret(ed);
+	nullpo_ret(bl);
 
 	if( !ed->master )
 		return 0;
@@ -417,7 +417,7 @@ int elemental_change_mode_ack(struct elemental_data *ed, int mode)
 	short skillnum, skilllv;
 	int i;
 
-	nullpo_retr(0,ed);
+	nullpo_ret(ed);
 	
 	if( !bl )
 		return 0;
@@ -456,7 +456,7 @@ int elemental_change_mode_ack(struct elemental_data *ed, int mode)
  *-------------------------------------------------------------*/
 int elemental_change_mode(struct elemental_data *ed, int mode)
 {
-	nullpo_retr(0,ed);
+	nullpo_ret(ed);
 
 	// Remove target
 	elemental_unlocktarget(ed);
@@ -501,7 +501,7 @@ int elemental_dead(struct elemental_data *ed, struct block_list *src)
 
 int elemental_unlocktarget(struct elemental_data *ed)
 {
-	nullpo_retr(0, ed);
+	nullpo_ret(ed);
 
 	ed->target_id = 0;
 	elemental_stop_attack(ed);
@@ -527,8 +527,8 @@ int elemental_set_target( struct map_session_data *sd, struct block_list *bl )
 {
 	struct elemental_data *ed = sd->ed;
 
-	nullpo_retr(0,ed);
-	nullpo_retr(0,bl);
+	nullpo_ret(ed);
+	nullpo_ret(bl);
 
 	if( ed->bl.m != bl->m || !check_distance_bl(&ed->bl, bl, ed->db->range2) )
 		return 0;
@@ -548,7 +548,7 @@ static int elemental_ai_sub_timer_activesearch(struct block_list *bl, va_list ap
 	struct block_list **target;
 	int dist;
 
-	nullpo_retr(0, bl);
+	nullpo_ret(bl);
 
 	ed = va_arg(ap,struct elemental_data *);
 	target = va_arg(ap,struct block_list**);
@@ -587,8 +587,8 @@ static int elemental_ai_sub_timer(struct elemental_data *ed, struct map_session_
 	struct block_list *mtbl = NULL;
 	int master_dist, view_range, mode;
 
-	nullpo_retr(0,ed);
-	nullpo_retr(0,sd);
+	nullpo_ret(ed);
+	nullpo_ret(sd);
 
 	if( ed->bl.prev == NULL || sd == NULL || sd->bl.prev == NULL )
 		return 0;

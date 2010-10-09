@@ -161,7 +161,7 @@ void clif_emotion(struct block_list *bl,int type);
 void clif_talkiebox(struct block_list* bl, const char* talkie);
 void clif_wedding_effect(struct block_list *bl);
 void clif_divorced(struct map_session_data* sd, const char* name);
-//void clif_callpartner(struct map_session_data *sd);
+void clif_callpartner(struct map_session_data *sd);
 void clif_playBGM(struct map_session_data* sd, struct block_list* bl, const char* name);
 void clif_soundeffect(struct map_session_data* sd, struct block_list* bl, const char* name, int type);
 int clif_soundeffectall(struct block_list* bl, const char *name, int type, enum send_target coverage);
@@ -474,6 +474,13 @@ void clif_party_show_picker(struct map_session_data * sd, struct item * item_dat
 // Progress Bar [Inkfish]
 void clif_progressbar(struct map_session_data * sd, unsigned long color, unsigned int second);
 void clif_progressbar_abort(struct map_session_data * sd);
+
+void clif_PartyBookingRegisterAck(struct map_session_data *sd, int flag);
+void clif_PartyBookingDeleteAck(struct map_session_data* sd, int flag);
+void clif_PartyBookingSearchAck(int fd, unsigned long *index, int count, bool more_result);
+void clif_PartyBookingUpdateNotify(struct map_session_data* sd, struct party_booking_ad_info* pb_ad);
+void clif_PartyBookingDeleteNotify(struct map_session_data* sd, int index);
+void clif_PartyBookingInsertNotify(struct map_session_data* sd, struct party_booking_ad_info* pb_ad);
 
 void clif_equip_damaged(struct map_session_data *sd, int equip_index);
 void clif_millenniumshield(struct map_session_data *sd, short shields );

@@ -201,13 +201,11 @@ int battle_delay_damage_sub(int tid, unsigned int tick, int id, intptr data)
 		(target->type != BL_PC || ((TBL_PC*)target)->invincible_timer == -1) &&
 		check_distance_bl(dat->src, target, dat->distance)) //Check to see if you haven't teleported. [Skotlex]
 	{
-		struct status_change *sc = status_get_sc(target);
 		map_freeblock_lock();
-		if( !sc || !sc->data[SC_DEVOTION] )
-			status_fix_damage(dat->src, target, dat->damage, dat->delay);
+		status_fix_damage(dat->src, target, dat->damage, dat->delay);
 		if( dat->attack_type && !status_isdead(target) )
 			skill_additional_effect(dat->src,target,dat->skill_id,dat->skill_lv,dat->attack_type,dat->dmg_lv,tick);
-		if( dat->damage > 0 && dat->attack_type )
+		if( dat->dmg_lv > ATK_BLOCK && dat->attack_type )
 			skill_counter_additional_effect(dat->src,target,dat->skill_id,dat->skill_lv,dat->attack_type,tick);
 		map_freeblock_unlock();
 	}
@@ -218,17 +216,20 @@ int battle_delay_damage_sub(int tid, unsigned int tick, int id, intptr data)
 int battle_delay_damage (unsigned int tick, int amotion, struct block_list *src, struct block_list *target, int attack_type, int skill_id, int skill_lv, int damage, enum damage_lv dmg_lv, int ddelay)
 {
 	struct delay_damage *dat;
-	nullpo_retr(0, src);
-	nullpo_retr(0, target);
+	struct status_change *sc;
+	nullpo_ret(src);
+	nullpo_ret(target);
+
+	sc = status_get_sc(target);
+	if( sc && sc->data[SC_DEVOTION] && damage > 0 )
+		damage = 0;
 
 	if (!battle_config.delay_battle_damage) {
-		struct status_change *sc = status_get_sc(target);
 		map_freeblock_lock();
-		if( !sc || !sc->data[SC_DEVOTION] )
-			status_fix_damage(src, target, damage, ddelay); // We have to seperate here between reflect damage and others [icescope]
+		status_fix_damage(src, target, damage, ddelay); // We have to seperate here between reflect damage and others [icescope]
 		if( attack_type && !status_isdead(target) )
 			skill_additional_effect(src, target, skill_id, skill_lv, attack_type, dmg_lv, gettick());
-		if( damage > 0 && attack_type )
+		if( dmg_lv > ATK_BLOCK && attack_type )
 			skill_counter_additional_effect(src, target, skill_id, skill_lv, attack_type, gettick());
 		map_freeblock_unlock();
 		return 0;
@@ -358,7 +359,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 	struct status_change_entry *sce;
 	int div_ = d->div_, flag = d->flag;
 
-	nullpo_retr(0, bl);
+	nullpo_ret(bl);
 
 	if( !damage )
 		return 0;
@@ -914,7 +915,7 @@ int battle_addmastery(struct map_session_data *sd,struct block_list *target,int 
 	int weapon;
 	damage = dmg;
 
-	nullpo_retr(0, sd);
+	nullpo_ret(sd);
 
 	if((skill = pc_checkskill(sd,AL_DEMONBANE)) > 0 &&
 		target->type == BL_MOB && //This bonus doesnt work against players.
@@ -4021,7 +4022,7 @@ int battle_damage_area( struct block_list *bl, va_list ap)
 	int amotion, dmotion, damage;
 	struct block_list *src;
 
-	nullpo_retr(0, bl);
+	nullpo_ret(bl);
 	
 	tick=va_arg(ap, unsigned int);
 	src=va_arg(ap,struct block_list *);
@@ -4511,8 +4512,8 @@ int battle_check_target( struct block_list *src, struct block_list *target,int f
 	int strip_enemy = 1; //Flag which marks whether to remove the BCT_ENEMY status if it's also friend/ally.
 	struct block_list *s_bl = src, *t_bl = target;
 
-	nullpo_retr(0, src);
-	nullpo_retr(0, target);
+	nullpo_ret(src);
+	nullpo_ret(target);
 
 	m = target->m;
 
