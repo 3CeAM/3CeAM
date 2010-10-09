@@ -290,7 +290,7 @@ int map_addblock(struct block_list* bl)
 {
 	int m, x, y, pos;
 
-	nullpo_retr(0, bl);
+	nullpo_ret(bl);
 
 	if (bl->prev != NULL) {
 		ShowError("map_addblock: bl->prev != NULL\n");
@@ -338,7 +338,7 @@ int map_addblock(struct block_list* bl)
 int map_delblock(struct block_list* bl)
 {
 	int pos;
-	nullpo_retr(0, bl);
+	nullpo_ret(bl);
 
 	// ?‚Éblocklist‚©‚ç?‚¯‚Ä‚¢‚é
 	if (bl->prev == NULL) {
@@ -1580,7 +1580,7 @@ int map_addflooritem(struct item *item_data,int amount,int m,int x,int y,int fir
 	int r;
 	struct flooritem_data *fitem=NULL;
 
-	nullpo_retr(0, item_data);
+	nullpo_ret(item_data);
 
 	if(!map_searchrandfreecell(m,&x,&y,flags&2?1:0))
 		return 0;
@@ -1860,6 +1860,7 @@ int map_quit(struct map_session_data *sd)
 		}
 	}	
 
+	party_booking_delete(sd, true); // Party Booking [Spiria]
 	pc_makesavestatus(sd);
 	pc_clean_skilltree(sd);
 	chrif_save(sd,1);
@@ -2266,7 +2267,7 @@ bool mapit_exists(struct s_mapiterator* mapit)
  *------------------------------------------*/
 bool map_addnpc(int m,struct npc_data *nd)
 {
-	nullpo_retr(0, nd);
+	nullpo_ret(nd);
 
 	if( m < 0 || m >= map_num )
 		return false;
@@ -2325,7 +2326,7 @@ void map_spawnmobs(int m)
 int map_removemobs_sub(struct block_list *bl, va_list ap)
 {
 	struct mob_data *md = (struct mob_data *)bl;
-	nullpo_retr(0, md);
+	nullpo_ret(md);
 
 	//When not to remove mob:
 	// doesn't respawn and is not a slave
@@ -2455,7 +2456,7 @@ uint8 map_calc_dir(struct block_list* src, int x, int y)
 	unsigned char dir = 0;
 	int dx, dy;
 	
-	nullpo_retr(0, src);
+	nullpo_ret(src);
 	
 	dx = x-src->x;
 	dy = y-src->y;
@@ -3552,7 +3553,7 @@ int nick_db_final(DBKey key, void *data, va_list args)
 
 int cleanup_sub(struct block_list *bl, va_list ap)
 {
-	nullpo_retr(0, bl);
+	nullpo_ret(bl);
 
 	switch(bl->type) {
 		case BL_PC:
