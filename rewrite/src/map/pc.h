@@ -811,4 +811,9 @@ bool pc_isSkillFromJob( int job_id, int skill_num );
 
 int pc_banding(struct map_session_data *sd, short skill_lv);
 
+enum pc_msg {
+	MSG_UPGRADESKER_FIRSTJOB	=  0x61e,
+	MSG_UPGRADESKER_SECONDJOB	=  0x61f
+};
+
 #endif /* _PC_H_ */

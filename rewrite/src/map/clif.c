@@ -181,38 +181,23 @@ static inline unsigned char clif_bl_type(struct block_list *bl) {
 #endif
 
 // msgstringtable.txt
-// This message must be normalized
-// using "unsigned char msg[a][b]"
-// so that it can be displayed correctly.
+// 0x291 <line>.W
 void clif_msgtable(int fd, int line)
 {
-	int a,b;
-
-	b = line / 255;
-	a = line - ( b * 255 ) - b;
-
 	WFIFOHEAD(fd, packet_len(0x291));
 	WFIFOW(fd, 0) = 0x291;
-	WFIFOB(fd, 2) = a;
-    WFIFOB(fd, 3) = b;
+	WFIFOW(fd, 2) = line;
 	WFIFOSET(fd, packet_len(0x291));
 }
 
 // msgstringtable.txt
-// This message must be normalized
-// using "unsigned char msg[a][b]"
-// so that it can be displayed correctly.
+// 0x7e2 <line>.W <value>.L
 void clif_msgtable_num(int fd, int line, int num)
 {
 #if PACKETVER >= 20090805
-	int a,b;
-	b = line / 255;
-	a = line - ( b * 255 ) - b;
-
 	WFIFOHEAD(fd, packet_len(0x7e2));
 	WFIFOW(fd, 0) = 0x7e2;
-	WFIFOB(fd, 2) = a;
-    WFIFOB(fd, 3) = b;
+	WFIFOW(fd, 2) = line;
 	WFIFOL(fd, 4) = num;
 	WFIFOSET(fd, packet_len(0x7e2));
 #endif
@@ -13970,7 +13955,7 @@ void clif_parse_mercenary_action(int fd, struct map_session_data* sd)
  *------------------------------------------*/
 void clif_mercenary_message(int fd, int message)
 {
-	clif_msgtable(fd, 1266 + message);
+	clif_msgtable(fd, MSG_MER_FINISH + message);
 }
 
 /*------------------------------------------

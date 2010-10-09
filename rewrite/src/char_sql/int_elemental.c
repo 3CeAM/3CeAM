@@ -22,8 +22,9 @@ bool mapif_elemental_save(struct s_elemental* ele)
 	if( ele->elemental_id == 0 )
 	{ // Create new DB entry
 		if( SQL_ERROR == Sql_Query(sql_handle,
-			"INSERT INTO `elemental` (`char_id`,`class`,`mode`,`hp`,`sp`,`life_time`) VALUES ('%d','%d','%d','%d','%d','%u')",
-			ele->char_id, ele->class_, ele->mode, ele->hp, ele->sp, ele->life_time) )
+			"INSERT INTO `elemental` (`char_id`,`class`,`mode`,`hp`,`sp`,`max_hp`,`max_sp`,`str`,`agi`,`vit`,`int`,`dex`,`luk`,`life_time`)"
+			"VALUES ('%d','%d','%d','%d','%d','%d','%d','%d','%d','%d','%d','%d','%d','%u')",
+			ele->char_id, ele->class_, ele->mode, ele->hp, ele->sp, ele->max_hp, ele->max_sp, ele->str, ele->agi, ele->vit, ele->int_, ele->dex, ele->luk, ele->life_time) )
 		{
 			Sql_ShowDebug(sql_handle);
 			flag = false;
@@ -32,8 +33,11 @@ bool mapif_elemental_save(struct s_elemental* ele)
 			ele->elemental_id = (int)Sql_LastInsertId(sql_handle);
 	}
 	else if( SQL_ERROR == Sql_Query(sql_handle,
-		"UPDATE `elemental` SET `char_id` = '%d', `class` = '%d', `mode` = '%d', `hp` = '%d', `sp` = '%d', `life_time` = '%u' WHERE `ele_id` = '%d'",
-		ele->char_id, ele->class_, ele->mode, ele->hp, ele->sp, ele->life_time, ele->elemental_id) )
+		"UPDATE `elemental` SET `char_id` = '%d', `class` = '%d', `mode` = '%d', `hp` = '%d', `sp` = '%d',"
+		"`max_hp` = '%d', `max_sp` = '%d', `str` = '%d', `agi` = '%d', `vit` = '%d', `int` = '%d', `dex` = '%d',"
+		"`luk` = '%d', `life_time` = '%u' WHERE `ele_id` = '%d'",
+		ele->char_id, ele->class_, ele->mode, ele->hp, ele->sp, ele->max_hp, ele->max_sp, ele->str, ele->agi,
+		ele->vit, ele->int_, ele->dex, ele->luk, ele->life_time, ele->elemental_id) )
 	{ // Update DB entry
 		Sql_ShowDebug(sql_handle);
 		flag = false;
@@ -49,7 +53,9 @@ bool mapif_elemental_load(int ele_id, int char_id, struct s_elemental *ele)
 	ele->elemental_id = ele_id;
 	ele->char_id = char_id;
 
-	if( SQL_ERROR == Sql_Query(sql_handle, "SELECT `class`, `mode`, `hp`, `sp`, `life_time` FROM `elemental` WHERE `ele_id` = '%d' AND `char_id` = '%d'", ele_id, char_id) )
+	if( SQL_ERROR == Sql_Query(sql_handle, "SELECT `class`, `mode`, `hp`, `sp`, `max_hp`, `max_sp`, `str`, `agi`, `vit`, `int`, `dex`,"
+		"`luk`, `life_time` FROM `elemental` WHERE `ele_id` = '%d' AND `char_id` = '%d'",
+		ele_id, char_id) )
 	{
 		Sql_ShowDebug(sql_handle);
 		return false;
@@ -65,7 +71,15 @@ bool mapif_elemental_load(int ele_id, int char_id, struct s_elemental *ele)
 	Sql_GetData(sql_handle,  1, &data, NULL); ele->mode = atoi(data);
 	Sql_GetData(sql_handle,  2, &data, NULL); ele->hp = atoi(data);
 	Sql_GetData(sql_handle,  3, &data, NULL); ele->sp = atoi(data);
-	Sql_GetData(sql_handle,  4, &data, NULL); ele->life_time = atoi(data);
+	Sql_GetData(sql_handle,  4, &data, NULL); ele->max_hp = atoi(data);
+	Sql_GetData(sql_handle,  5, &data, NULL); ele->max_sp = atoi(data);
+	Sql_GetData(sql_handle,  6, &data, NULL); ele->str = atoi(data);
+	Sql_GetData(sql_handle,  7, &data, NULL); ele->agi = atoi(data);
+	Sql_GetData(sql_handle,  8, &data, NULL); ele->vit = atoi(data);
+	Sql_GetData(sql_handle,  9, &data, NULL); ele->int_ = atoi(data);
+	Sql_GetData(sql_handle, 10, &data, NULL); ele->dex = atoi(data);
+	Sql_GetData(sql_handle, 11, &data, NULL); ele->luk = atoi(data);
+	Sql_GetData(sql_handle, 12, &data, NULL); ele->life_time = atoi(data);
 	Sql_FreeResult(sql_handle);
 	if( save_log )
 		ShowInfo("Elemental loaded (%d - %d).\n", ele->elemental_id, ele->char_id);

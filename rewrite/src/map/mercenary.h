@@ -69,6 +69,13 @@ int mercenary_kills(struct mercenary_data *md);
 
 int mercenary_checkskill(struct mercenary_data *md, int skill_id);
 
+enum merc_msg {  
+  MSG_MER_FINISH 	= 0x4f2,
+  MSG_MER_DIE 		= 0x4f3,
+  MSG_MER_RETIRE 	= 0x4f4,
+  MSG_MER_RUNAWAY 	= 0x4f5,
+};
+
 int do_init_mercenary(void);
 
 #endif /* _MERCENARY_H_ */
