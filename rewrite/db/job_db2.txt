@@ -167,12 +167,16 @@
 // Note: All 3rd class jobs go up to job level 50. Also, Gangsi job tree job levels will be set
 // the same as the Taekwon job tree until we can get some official info. (Rytech)
 //
+// Note 2: Gangsi is currently using Acolyte settings, Death Knight using Knight settings and Dark Collector
+// is using Sage settings. Its mainly like this for these 3 jobs because of the temp sprite that shows when
+// changeing to their job ID's.
+//
 // Gangsi (Bongun/Munak)
-4050,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+4050,0,6,0,0,0,3,0,0,0,4,0,0,0,5,0,0,0,6,0,0,0,2,0,0,0,1,0,0,0,3,0,0,4,0,0,5,0,6,0,2,0,1,0,3,0,4,5,0,1,6
 // Death Knight
-4051,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+4051,3,0,3,1,6,0,0,3,0,1,5,3,2,0,1,0,3,3,5,6,1,0,3,0,0,0,1,6,3,0,5,0,1,0,0,3,6,2,0,5,0,0,3,0,0,1,1,5,5,0
 // Dark Collector
-4052,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+4052,4,0,2,3,0,2,0,4,0,0,3,0,2,0,4,0,6,3,0,5,0,2,0,4,5,0,5,0,0,4,0,5,2,0,6,0,4,4,5,6,0,1,0,1,4,1,1,1,0,4
 // Rune Knight	(Base 2nd to 3rd)
 4054,4,4,5,3,4,0,0,0,0,1,1,4,4,3,5,0,0,0,5,2,2,4,3,5,0,0,0,0,0,4,5,3,1,0,0,0,0,0,4,5,2,0,0,5,3,4,6,6,6,4
 // Warlock	(Base 2nd to 3rd)
