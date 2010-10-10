@@ -522,6 +522,19 @@ typedef enum sc_type {
 	SC_ROCK_CRUSHER,
 	SC_ROCK_CRUSHER_ATK,
 
+	SC_WHITE_POTION_Z,
+	SC_VITATA_500,
+	SC_SALAMINE_JUICE,
+	SC_BOOST500,
+	SC_FULL_SWING_K,
+	SC_MANA_PLUS,
+	SC_MUSTLE_M,
+	SC_LIFE_FORCE_F,
+	SC_MELON_BOMB,
+	SC_BANANA_BOMB,
+	SC_BANANA_BOMB_SITDOWN,
+	SC_STOMACHACHE,
+
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
 

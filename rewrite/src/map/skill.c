@@ -3952,7 +3952,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 			if( sd && sd->status.base_level >= 99 )
 				rate += rate * (1 + sd->status.job_level) / 50 ;
 
-			heal *= 8 * skilllv * status_get_lv(src) / 100;
+			heal = heal * 8 * skilllv * status_get_lv(src) / 10000;
 
 			if( bl->type == BL_SKILL )
 				heal = 0;	// Don't absorb heal from Ice Walls or other skill units.
@@ -15218,6 +15218,8 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 				qty = rand()%(skill_lv+1);
 				break;
 			case GN_MIX_COOKING:
+				make_per = 3000; //As I can see this is not affectd by dex or int
+				break;
 			case GN_MAKEBOMB:
 				// 	TODO: find a proper chance.
 				make_per = (5000 + 50*status->dex + 30*status->luk); //Custom rate value.
@@ -15469,6 +15471,26 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 				clif_misceffect(&sd->bl,6);
 				break;
 			case GN_MIX_COOKING:
+				{
+					struct item tmp_item;
+					const int products[5][2] = {{13265,6500},{13266,4000},{13267,3000},{13268,500},{12435,500}};
+					memset(&tmp_item,0,sizeof(tmp_item));
+					tmp_item.nameid = nameid;
+					do
+					{
+						i = rand()%5;
+						tmp_item.nameid = products[i][0];
+					}
+					while( rand()%10000 >= products[i][1] );
+					tmp_item.amount = (skill_lv == 2)?10:1; // TODO: Find the proper value to it.
+					tmp_item.identify = 1;
+					if( pc_additem(sd,&tmp_item,tmp_item.amount) )
+					{
+						clif_additem(sd,0,0,flag);
+						map_addflooritem(&tmp_item,tmp_item.amount,sd->bl.m,sd->bl.x,sd->bl.y,0,0,0,0);
+					}
+				}
+				break;
 			case GN_S_PHARMACY:
 				break;	// No effects here.
 			case GN_MAKEBOMB:

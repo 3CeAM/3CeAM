@@ -698,6 +698,7 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_SIROMA_ICE_TEA] = SI_SIROMA_ICE_TEA;
 	StatusIconChangeTable[SC_DROCERA_HERB_STEAMED] = SI_DROCERA_HERB_STEAMED;
 	StatusIconChangeTable[SC_PUTTI_TAILS_NOODLES] = SI_PUTTI_TAILS_NOODLES;
+	StatusIconChangeTable[SC_STOMACHACHE] = SI_STOMACHACHE;
 
 	StatusIconChangeTable[SC_SHIELDSPELL_DEF] = SI_SHIELDSPELL_DEF;
 	StatusIconChangeTable[SC_SHIELDSPELL_MDEF] = SI_SHIELDSPELL_MDEF;
@@ -790,6 +791,7 @@ void initChangeTables(void)
 	StatusChangeFlagTable[SC_SIROMA_ICE_TEA] |= SCB_DEX;
 	StatusChangeFlagTable[SC_DROCERA_HERB_STEAMED] |= SCB_AGI;
 	StatusChangeFlagTable[SC_PUTTI_TAILS_NOODLES] |= SCB_LUK;
+	StatusChangeFlagTable[SC_STOMACHACHE] |= SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK;
 
 	StatusChangeFlagTable[SC_SHIELDSPELL_DEF] |= SCB_WATK;
 	StatusChangeFlagTable[SC_SHIELDSPELL_REF] |= SCB_DEF2;
@@ -3758,6 +3760,8 @@ static unsigned short status_calc_str(struct block_list *bl, struct status_chang
 		str += sc->data[SC_SAVAGE_STEAK]->val1;
 	if(sc->data[SC_INSPIRATION])
 		str += sc->data[SC_INSPIRATION]->val3;
+	if(sc->data[SC_STOMACHACHE])
+		str -= sc->data[SC_STOMACHACHE]->val1;
 
 	return (unsigned short)cap_value(str,0,USHRT_MAX);
 }
@@ -3803,6 +3807,8 @@ static unsigned short status_calc_agi(struct block_list *bl, struct status_chang
 		agi += sc->data[SC_DROCERA_HERB_STEAMED]->val1;
 	if(sc->data[SC_INSPIRATION])
 		agi += sc->data[SC_INSPIRATION]->val3;
+	if(sc->data[SC_STOMACHACHE])
+		agi -= sc->data[SC_STOMACHACHE]->val1;
 
 	return (unsigned short)cap_value(agi,0,USHRT_MAX);
 }
@@ -3842,6 +3848,8 @@ static unsigned short status_calc_vit(struct block_list *bl, struct status_chang
 		vit += sc->data[SC_INSPIRATION]->val3;
 	if(sc->data[SC_GT_REVITALIZE])
 		vit += sc->data[SC_GT_REVITALIZE]->val2;
+	if(sc->data[SC_STOMACHACHE])
+		vit -= sc->data[SC_STOMACHACHE]->val1;
 
 	return (unsigned short)cap_value(vit,0,USHRT_MAX);
 }
@@ -3889,6 +3897,8 @@ static unsigned short status_calc_int(struct block_list *bl, struct status_chang
 		int_ += sc->data[SC_COCKTAIL_WARG_BLOOD]->val1;
 	if(sc->data[SC_INSPIRATION])
 		int_ += sc->data[SC_INSPIRATION]->val3;
+	if(sc->data[SC_STOMACHACHE])
+		int_ -= sc->data[SC_STOMACHACHE]->val1;
 
 	return (unsigned short)cap_value(int_,0,USHRT_MAX);
 }
@@ -3937,6 +3947,8 @@ static unsigned short status_calc_dex(struct block_list *bl, struct status_chang
 		dex += sc->data[SC_SIROMA_ICE_TEA]->val1;
 	if(sc->data[SC_INSPIRATION])
 		dex += sc->data[SC_INSPIRATION]->val3;
+	if(sc->data[SC_STOMACHACHE])
+		dex -= sc->data[SC_STOMACHACHE]->val1;
 
 	return (unsigned short)cap_value(dex,0,USHRT_MAX);
 }
@@ -3974,6 +3986,8 @@ static unsigned short status_calc_luk(struct block_list *bl, struct status_chang
 		luk += sc->data[SC_PUTTI_TAILS_NOODLES]->val1;
 	if(sc->data[SC_INSPIRATION])
 		luk += sc->data[SC_INSPIRATION]->val3;
+	if(sc->data[SC_STOMACHACHE])
+		luk -= sc->data[SC_STOMACHACHE]->val1;
 
 	return (unsigned short)cap_value(luk,0,USHRT_MAX);
 }
