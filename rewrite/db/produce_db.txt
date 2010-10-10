@@ -464,7 +464,7 @@
 12432,27,2495,1,11022,0,6258,1,6256,3,6257,2
 //-- Drosera Tentacle <-- GN_MIX_COOKING & Mix Cooking Ingredient Book & 3 Drosera Tentacle, 3 Red Herb, 3 Blue Herb, 3 White Herb, 1 Large Pan
 12433,27,2495,1,11022,0,6259,3,507,3,509,3,510,3,6255,1
-//-- Petite Tail Noodles <-- GN_MIX_COOKING & Mix Cooking Ingredient Book & 2 Petite Tail, 1 Fine Noodles, 1 Cold Broth
+//-- Petite Tail Noodles <-- GN_MIX_COOKING & Mix Cooking Ingredient Book & 2 Petite Tail, 1 Fine Noodles, 1 Cold Noodles Soup
 12434,27,2495,1,11022,0,6260,2,6261,1,6262,1
 
 //----- Create Bomb ---- ItemLV=28 -------------
