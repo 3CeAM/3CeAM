@@ -1173,6 +1173,26 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl, SC_STUN, 5 + 5 * skilllv, skilllv, skill_get_time(skillid, skilllv));
 		sc_start(bl, SC_BLEEDING, 20 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
 		break;
+	case GN_SLINGITEM_RANGEMELEEATK:
+		if( sd )
+		{
+			switch( sd->itemid )
+			{	// Starting SCs here instead of do it in skill_additional_effect to simplify the code.
+				case 13261:
+					sc_start(bl, SC_STUN, 100, skilllv, skill_get_time2(GN_SLINGITEM, skilllv));
+					sc_start(bl, SC_BLEEDING, 100, skilllv, skill_get_time2(GN_SLINGITEM, skilllv));
+					break;
+				case 13262:					
+					sc_start(bl, SC_MELON_BOMB, 100, skilllv, skill_get_time(GN_SLINGITEM, skilllv));	// Reduces ASPD and moviment speed
+					break;
+				case 13264:
+					sc_start(bl, SC_BANANA_BOMB, 100, skilllv, skill_get_time(GN_SLINGITEM, skilllv));	// Reduces LUK ¿?Needed confirm it, may be it's bugged in kRORE?
+					sc_start(bl, SC_BANANA_BOMB_SITDOWN, 75, skilllv, skill_get_time(GN_SLINGITEM_RANGEMELEEATK,skilllv)); // Sitdown for 3 seconds.
+					break;
+			}
+			sd->itemid = -1;
+		}
+		break;
 	case EL_WIND_SLASH:	// Non confirmed rate.
 		sc_start(bl, SC_BLEEDING, 25, skilllv, skill_get_time(skillid,skilllv));
 		break;
@@ -3335,6 +3355,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case WM_METALICSOUND:
 	case WM_SEVERE_RAINSTORM_MELEE:
 	case WM_GREAT_ECHO:
+	case GN_SLINGITEM_RANGEMELEEATK:
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
@@ -7887,7 +7908,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			int duration = (sd) ? sd->shieldmdef * 2000 : 10000;
 			sc_start(bl,SC_SILENCE,100,skilllv,duration);
 		}
-		else
+		else if( sd )
 		{
 			int opt = skilllv;
 			int rate = rand()%100;
@@ -8506,12 +8527,15 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			if( i <= 0 )
 				break; // No ammo.
 			ammo_id = sd->inventory_data[i]->nameid;
-			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 			if( ammo_id <= 0 )
 				break;
+			sd->itemid = ammo_id;
 			if( itemdb_is_GNbomb(ammo_id) )
 			{
-				skill_attack(BF_WEAPON,src,src,bl,GN_SLINGITEM_RANGEMELEEATK,skilllv,tick,ammo_id-13260+1);
+				if( ammo_id == 13263 )
+					map_foreachincell(skill_area_sub,bl->m,bl->x,bl->y,BL_CHAR,src,GN_SLINGITEM_RANGEMELEEATK,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
+				else
+					skill_attack(BF_WEAPON,src,src,bl,GN_SLINGITEM_RANGEMELEEATK,skilllv,tick,flag);
 			}
 			else
 			{
@@ -8524,6 +8548,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 					run_script(script,0,src->id,0);
 			}
 		}
+		clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		clif_skill_nodamage(src,bl,skillid,skilllv,1);// This packet is received twice actually, I think it is to show the animation.
 		break;
 
 	case GN_MIX_COOKING:

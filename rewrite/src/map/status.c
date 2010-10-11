@@ -698,7 +698,6 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_SIROMA_ICE_TEA] = SI_SIROMA_ICE_TEA;
 	StatusIconChangeTable[SC_DROCERA_HERB_STEAMED] = SI_DROCERA_HERB_STEAMED;
 	StatusIconChangeTable[SC_PUTTI_TAILS_NOODLES] = SI_PUTTI_TAILS_NOODLES;
-	StatusIconChangeTable[SC_STOMACHACHE] = SI_STOMACHACHE;
 
 	StatusIconChangeTable[SC_SHIELDSPELL_DEF] = SI_SHIELDSPELL_DEF;
 	StatusIconChangeTable[SC_SHIELDSPELL_MDEF] = SI_SHIELDSPELL_MDEF;
@@ -725,6 +724,14 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_WIND_CURTAIN] = SI_WIND_CURTAIN;
 	StatusIconChangeTable[SC_SOLID_SKIN] = SI_SOLID_SKIN;
 	StatusIconChangeTable[SC_STONE_SHIELD] = SI_STONE_SHIELD;
+
+	StatusIconChangeTable[SC_BOOST500] |= SI_BOOST500;
+	StatusIconChangeTable[SC_MELON_BOMB] = SI_MELON_BOMB;
+	StatusIconChangeTable[SC_BANANA_BOMB] = SI_BANANA_BOMB;
+	StatusIconChangeTable[SC_BANANA_BOMB_SITDOWN] = SI_BANANA_BOMB_SITDOWN_POSTDELAY;
+	StatusIconChangeTable[SC_LIFE_FORCE_F] |= SI_LIFE_FORCE_F;
+	StatusIconChangeTable[SC_STOMACHACHE] = SI_STOMACHACHE;
+	StatusIconChangeTable[SC_MYSTERIOUS_POWDER] = SI_MYSTERIOUS_POWDER;
 
 	//Other SC which are not necessarily associated to skills.
 	StatusChangeFlagTable[SC_ASPDPOTION0] = SCB_ASPD;
@@ -791,11 +798,16 @@ void initChangeTables(void)
 	StatusChangeFlagTable[SC_SIROMA_ICE_TEA] |= SCB_DEX;
 	StatusChangeFlagTable[SC_DROCERA_HERB_STEAMED] |= SCB_AGI;
 	StatusChangeFlagTable[SC_PUTTI_TAILS_NOODLES] |= SCB_LUK;
-	StatusChangeFlagTable[SC_STOMACHACHE] |= SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK;
 
 	StatusChangeFlagTable[SC_SHIELDSPELL_DEF] |= SCB_WATK;
 	StatusChangeFlagTable[SC_SHIELDSPELL_REF] |= SCB_DEF2;
 	StatusChangeFlagTable[SC_BANDING_DEFENCE] |= SCB_SPEED;
+
+	StatusChangeFlagTable[SC_BOOST500] |= SCB_ASPD;
+	StatusChangeFlagTable[SC_MELON_BOMB] |= SCB_SPEED|SCB_ASPD;
+	StatusChangeFlagTable[SC_BANANA_BOMB] = SCB_LUK;
+	StatusChangeFlagTable[SC_STOMACHACHE] |= SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK;
+	StatusChangeFlagTable[SC_MYSTERIOUS_POWDER] |= SCB_MAXHP;
 
 	if( !battle_config.display_hallucination ) //Disable Hallucination.
 		StatusIconChangeTable[SC_HALLUCINATION] = SI_BLANK;
@@ -3988,6 +4000,8 @@ static unsigned short status_calc_luk(struct block_list *bl, struct status_chang
 		luk += sc->data[SC_INSPIRATION]->val3;
 	if(sc->data[SC_STOMACHACHE])
 		luk -= sc->data[SC_STOMACHACHE]->val1;
+	if(sc->data[SC_BANANA_BOMB])
+		luk -= luk * sc->data[SC_BANANA_BOMB]->val1 / 100;
 
 	return (unsigned short)cap_value(luk,0,USHRT_MAX);
 }
@@ -4558,6 +4572,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 					val = max( val, sc->data[SC_ROCK_CRUSHER_ATK]->val2 );
 				if( sc->data[SC_POWER_OF_GAIA] )
 					val = max( val, sc->data[SC_POWER_OF_GAIA]->val2 );
+				if( sc->data[SC_MELON_BOMB] )
+					val = max( val, sc->data[SC_MELON_BOMB]->val1 );
 
 				if( sd && sd->speed_rate + sd->speed_add_rate > 0 ) // permanent item-based speedup
 					val = max( val, sd->speed_rate + sd->speed_add_rate );
@@ -4752,6 +4768,10 @@ static short status_calc_aspd_rate(struct block_list *bl, struct status_change *
 		aspd_rate -= aspd_rate * (sc->data[SC_GT_CHANGE]->val2/200) / 100;
 	if( sc->data[SC_GT_REVITALIZE] )
 		aspd_rate -= aspd_rate * sc->data[SC_GT_REVITALIZE]->val2 / 100;
+	if( sc->data[SC_BOOST500] )
+		aspd_rate -= aspd_rate * sc->data[SC_BOOST500]->val2 / 100;
+	if( sc->data[SC_MELON_BOMB] )
+		aspd_rate += aspd_rate * sc->data[SC_MELON_BOMB]->val1 / 100;
 
 	return (short)cap_value(aspd_rate,0,SHRT_MAX);
 }
@@ -4812,6 +4832,8 @@ static unsigned int status_calc_maxhp(struct block_list *bl, struct status_chang
 		maxhp += 2000;// Fix amount.
 	if(sc->data[SC_POWER_OF_GAIA])
 		maxhp += 3000;
+	if(sc->data[SC_MYSTERIOUS_POWDER])
+		maxhp -= sc->data[SC_MYSTERIOUS_POWDER]->val1 / 100;
 
 	return cap_value(maxhp,1,UINT_MAX);
 }
@@ -7410,7 +7432,8 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val2 = 3 + 2 * val1; // Flee reduction.
 			val3 = 3 * val1; // ASPD reduction.
 			break;
-		case SC_SITDOWN_FORCE:			
+		case SC_SITDOWN_FORCE:
+		case SC_BANANA_BOMB_SITDOWN:
 			if( sd && !pc_issit(sd) )
 			{
 				pc_setsit(sd);
@@ -7601,6 +7624,13 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_ROCK_CRUSHER_ATK:
 		case SC_POWER_OF_GAIA:
 			val2 = 33;
+			break;
+		case SC_BOOST500:
+			val2 = 20;
+			break;
+		case SC_MELON_BOMB:
+		case SC_BANANA_BOMB:
+			val1 = 15;
 			break;
 
 		default:
