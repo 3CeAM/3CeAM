@@ -2323,8 +2323,24 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					skillratio += 400 + 100 * skill_lv;
 					break;
 				case GN_SLINGITEM_RANGEMELEEATK:
-					if( wflag >= 6 )	// Temporary formula.
-						skillratio += wflag * 20;	// Lump / Powder.
+					if( sd )
+					{
+						switch( sd->itemid )
+						{
+							case 13260: // Apple Bomob
+							case 13261: // Coconut Bomb
+							case 13262: // Melon Bomb
+							case 13263: // Pinapple Bomb
+								skillratio += 400;	// Unconfirded
+								break;
+							case 13264: // Banana Bomb 2000%
+								skillratio += 2000;
+								break;
+							case 13265: skillratio -= 75; break; // Black Lump 25%
+							case 13266: skillratio -= 25; break; // Hard Black Lump 75%
+							case 13267: skillratio += 100; break; // Extremely Hard Black Lump 200%
+						}
+					}
 					else
 						skillratio += 300;	// Bombs
 					break;

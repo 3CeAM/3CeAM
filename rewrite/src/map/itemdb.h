@@ -126,7 +126,7 @@ struct item_data* itemdb_exists(int nameid);
 #define itemdb_is_poison(n) (n >= 12717 && n <= 12724)
 #define itemdb_is_spellbook(n) (n > 6188 && n < 6205)
 #define itemdb_is_element(n) (n >= 990 && n <= 993)
-#define itemdb_is_GNbomb(n) (n >= 13260 && n <= 13268)
+#define itemdb_is_GNbomb(n) (n >= 13260 && n <= 13267)
 
 int itemdb_group_bonus(struct map_session_data* sd, int itemid);
 int itemdb_searchrandomid(int flags);

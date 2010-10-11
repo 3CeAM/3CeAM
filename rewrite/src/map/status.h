@@ -534,6 +534,7 @@ typedef enum sc_type {
 	SC_BANANA_BOMB,
 	SC_BANANA_BOMB_SITDOWN,
 	SC_STOMACHACHE,
+	SC_MYSTERIOUS_POWDER,
 
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
