@@ -469,7 +469,8 @@ int skillnotok(int skillid, struct map_session_data *sd)
 			return 0; // always allowed
 		case WZ_ICEWALL:
 			// noicewall flag [Valaris]
-			if (map[m].flag.noicewall) {
+			if( map[m].flag.noicewall )
+			{
 				clif_skill_fail(sd,skillid,0,0,0);
 				return 1;
 			}
@@ -4060,6 +4061,11 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 					status_change_end(&sd->bl,SC_READING_SB,-1);
 
 				status_change_end(src,SC_MAGICPOWER,-1);
+
+				clif_skill_nodamage(src,bl,skillid,skilllv,1);
+				if( !skill_check_condition_castbegin(sd,rsb_skillid,rsb_skilllv) )
+					break;
+
 				switch( skill_get_casttype(rsb_skillid) )
 				{
 					case CAST_GROUND:
@@ -12178,7 +12184,7 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 	case AB_ADORAMUS:
 		if( skill_check_pc_partner(sd,skill,&lv,1,0) <= 0 && ((i = pc_search_inventory(sd,require.itemid[0])) < 0 || sd->status.inventory[i].amount < require.amount[0]) )
 		{
-			clif_skill_fail(sd,skill,0x4,0,0);
+			clif_skill_fail(sd,skill,0x47,2,0x2cc);
 			return 0;
 		}
 		break;
@@ -15664,7 +15670,7 @@ int skill_spellbook (struct map_session_data *sd, int nameid)
 	ARR_FIND(0,MAX_SPELLBOOK,j,sd->rsb[j].skillid == 0); // Search for a free slot
 	if( j == MAX_SPELLBOOK )
 	{ // No more free slots
-		clif_skill_fail(sd,WL_READING_SB,0x04,0,0);
+		clif_skill_fail(sd,WL_READING_SB,0x35,0,0);
 		return 0;
 	}
 
