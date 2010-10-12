@@ -5347,29 +5347,28 @@ int clif_status_change(struct block_list *bl, int type, int flag, unsigned int t
  * Display Banding when someone under this
  * status change walk into your view range.
  *------------------------------------------*/
-int clif_display_banding(struct block_list *dst, struct block_list *bl, int val1)
+void clif_display_banding(struct block_list *dst, struct block_list *bl, int val1)
 {
 	unsigned char buf[32];
 
-	nullpo_ret(bl);
-	nullpo_ret(dst);
+	nullpo_retv(bl);
+	nullpo_retv(dst);
 
 	if( battle_config.display_status_timers )
-		WBUFW(buf,0)=0x043f;
+		WBUFW(buf, 0) = 0x043f;
 	else
-		WBUFW(buf,0)=0x0196;
-	WBUFW(buf,2)=SI_BANDING;
-	WBUFL(buf,4)=bl->id;
-	WBUFB(buf,8)=1;
+		WBUFW(buf, 0)= 0x0196;
+	WBUFW(buf, 2) = SI_BANDING;
+	WBUFL(buf, 4) = bl->id;
+	WBUFB(buf, 8) = 1;
 	if( battle_config.display_status_timers )
 	{
-		WBUFL(buf,9)=0;
-		WBUFL(buf,13)=val1;
-		WBUFL(buf,17)=0;
-		WBUFL(buf,21)=0;
+		WBUFL(buf, 9) = 0;
+		WBUFL(buf,13) = val1;
+		WBUFL(buf,17) = 0;
+		WBUFL(buf,21) = 0;
 	}
 	clif_send(buf,packet_len(WBUFW(buf,0)),dst,SELF);
-	return 0;
 }
 
 /*==========================================
@@ -5381,12 +5380,14 @@ int clif_displaymessage(const int fd, const char* mes)
 	nullpo_retr(-1, mes);
 	
 	//Scrapped, as these are shared by disconnected players =X [Skotlex]
-	if (fd == 0)
+	if( fd == 0 )
 		return 0;
-	else {
+	else
+	{
 		int len_mes = strlen(mes);
 
-		if (len_mes > 0) { // don't send a void message (it's not displaying on the client chat). @help can send void line.
+		if( len_mes > 0 )
+		{ // don't send a void message (it's not displaying on the client chat). @help can send void line.
 			WFIFOHEAD(fd, 5 + len_mes);
 			WFIFOW(fd,0) = 0x8e;
 			WFIFOW(fd,2) = 5 + len_mes; // 4 + len + NULL teminate
@@ -5399,13 +5400,12 @@ int clif_displaymessage(const int fd, const char* mes)
 }
 
 /*==========================================
- * ìVÇÃê∫ÇëóêMÇ∑ÇÈ
  * Send broadcast message in yellow or blue (without font formatting).
  * S 009A <len>.W <message>.?B
  *------------------------------------------*/
 int clif_broadcast(struct block_list* bl, const char* mes, int len, int type, enum send_target target)
 {
-	int            lp  = type ? 4 : 0;
+	int lp  = type ? 4 : 0;
 	unsigned char *buf = (unsigned char*)aMallocA((4 + lp + len)*sizeof(unsigned char));
 
 	WBUFW(buf,0) = 0x9a;
@@ -5452,17 +5452,18 @@ void clif_MainChatMessage(const char* message)
 	char buf[200];
 	int len;
 	
-	if(!message)
+	if( !message )
 		return;
 		
 	len = strlen(message)+1;
-	if (len+8 > sizeof(buf)) {
+	if( len + 8 > sizeof(buf) )
+	{
 		ShowDebug("clif_MainChatMessage: Received message too long (len %d): %s\n", len, message);
 		len = sizeof(buf)-8;
 	}
-	WBUFW(buf,0)=0x8d;
-	WBUFW(buf,2)=len+8;
-	WBUFL(buf,4)=0;
+	WBUFW(buf,0) = 0x8d;
+	WBUFW(buf,2) = len+8;
+	WBUFL(buf,4) = 0;
 	strncpy((char *) WBUFP(buf,8),message,len);
 	clif_send((unsigned char *) buf,WBUFW(buf,2),NULL,CHAT_MAINCHAT);
 }
@@ -5481,16 +5482,16 @@ int clif_broadcast2(struct block_list* bl, const char* mes, int len, unsigned lo
 #else
 	WBUFW(buf,0)  = 0x40c;
 #endif
-	WBUFW(buf,2)  = len + 16;
-	WBUFL(buf,4)  = fontColor;
-	WBUFW(buf,8)  = fontType;
+	WBUFW(buf, 2) = len + 16;
+	WBUFL(buf, 4) = fontColor;
+	WBUFW(buf, 8) = fontType;
 	WBUFW(buf,10) = fontSize;
 	WBUFW(buf,12) = fontAlign;
 	WBUFW(buf,14) = fontY;
 	memcpy(WBUFP(buf,16), mes, len);
 	clif_send(buf, WBUFW(buf,2), bl, target);
 
-	if (buf)
+	if( buf )
 		aFree(buf);
 	return 0;
 }
@@ -5500,9 +5501,9 @@ int clif_broadcast2(struct block_list* bl, const char* mes, int len, unsigned lo
 int clif_heal(int fd,int type,int val)
 {
 	WFIFOHEAD(fd,packet_len(0x13d));
-	WFIFOW(fd,0)=0x13d;
-	WFIFOW(fd,2)=type;
-	WFIFOW(fd,4)=cap_value(val,0,SHRT_MAX);
+	WFIFOW(fd,0) = 0x13d;
+	WFIFOW(fd,2) = type;
+	WFIFOW(fd,4) = cap_value(val,0,SHRT_MAX);
 	WFIFOSET(fd,packet_len(0x13d));
 
 	return 0;
@@ -5517,12 +5518,12 @@ int clif_resurrection(struct block_list *bl,int type)
 
 	nullpo_ret(bl);
 
-	WBUFW(buf,0)=0x148;
-	WBUFL(buf,2)=bl->id;
-	WBUFW(buf,6)=type;
+	WBUFW(buf,0) = 0x148;
+	WBUFL(buf,2) = bl->id;
+	WBUFW(buf,6) = type;
 
-	clif_send(buf,packet_len(0x148),bl,type==1 ? AREA : AREA_WOS);
-	if (disguised(bl))
+	clif_send(buf,packet_len(0x148),bl,type == 1 ? AREA : AREA_WOS);
+	if( disguised(bl) )
 		clif_spawn(bl);
 
 	return 0;
@@ -5544,8 +5545,8 @@ void clif_set0199(struct map_session_data* sd, int mode)
 
 	fd=sd->fd;
 	WFIFOHEAD(fd,packet_len(0x199));
-	WFIFOW(fd,0)=0x199;
-	WFIFOW(fd,2)=mode;
+	WFIFOW(fd,0) = 0x199;
+	WFIFOW(fd,2) = mode;
 	WFIFOSET(fd,packet_len(0x199));
 }
 
@@ -5570,10 +5571,10 @@ void clif_set01D6(struct map_session_data* sd, int mode)
 
 	nullpo_retv(sd);
 
-	fd=sd->fd;
+	fd = sd->fd;
 	WFIFOHEAD(fd,packet_len(0x1D6));
-	WFIFOW(fd,0)=0x1D6;
-	WFIFOW(fd,2)=mode;
+	WFIFOW(fd,0) = 0x1D6;
+	WFIFOW(fd,2) = mode;
 	WFIFOSET(fd,packet_len(0x1D6));
 }
 
@@ -8922,9 +8923,11 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 			clif_bg_updatescore_single(sd);
 	}
 
-	if(map[sd->bl.m].flag.pvp) {
-		if(!battle_config.pk_mode) { // remove pvp stuff for pk_mode [Valaris]
-			if (!map[sd->bl.m].flag.pvp_nocalcrank)
+	if( map[sd->bl.m].flag.pvp )
+	{
+		if( !battle_config.pk_mode )
+		{ // remove pvp stuff for pk_mode [Valaris]
+			if( !map[sd->bl.m].flag.pvp_nocalcrank )
 				sd->pvp_timer = add_timer(gettick()+200, pc_calc_pvprank_timer, sd->bl.id, 0);
 			sd->pvp_rank = 0;
 			sd->pvp_lastusers = 0;
@@ -8933,12 +8936,11 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 			sd->pvp_lost = 0;
 		}
 		clif_set0199(sd,1);
-	} else
-	// set flag, if it's a duel [LuzZza]
-	if(sd->duel_group)
+	}
+	else if(sd->duel_group)	// set flag, if it's a duel [LuzZza]	
 		clif_set0199(sd,1);
 
-	if (map[sd->bl.m].flag.gvg_dungeon)
+	if( map[sd->bl.m].flag.gvg_dungeon )
 		clif_set0199(sd,1); //TODO: Figure out the real packet to send here.
 
 	if( map_flag_gvg(sd->bl.m) )
@@ -8949,14 +8951,15 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 	map_foreachinarea(clif_getareachar, sd->bl.m, sd->bl.x-AREA_SIZE, sd->bl.y-AREA_SIZE, sd->bl.x+AREA_SIZE, sd->bl.y+AREA_SIZE, BL_ALL, sd);
 
 	//TODO: merge it with the code below
-	if (battle_config.pet_no_gvg && map_flag_gvg(sd->bl.m) && sd->pd)
+	if( battle_config.pet_no_gvg && map_flag_gvg(sd->bl.m) && sd->pd )
 	{	//Return the pet to egg. [Skotlex]
 		clif_displaymessage(sd->fd, "Pets are not allowed in Guild Wars.");
 		pet_menu(sd, 3); //Option 3 is return to egg.
 	}
 
 	// pet
-	if(sd->pd) {
+	if( sd->pd )
+	{
 		map_addblock(&sd->pd->bl);
 		clif_spawn(&sd->pd->bl);
 		clif_send_petdata(sd,sd->pd,0,0);
@@ -8997,7 +9000,8 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 		clif_elemental_updatestatus(sd,SP_SP);
 	}
 
-	if(sd->state.connect_new) {
+	if( sd->state.connect_new )
+	{
 		int lv;
 		sd->state.connect_new = 0;
 		clif_skillinfoblock(sd);
@@ -9007,33 +9011,32 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 		clif_updatestatus(sd,SP_SKILLPOINT);
 		clif_initialstatus(sd);
 
-		if (sd->sc.option&OPTION_FALCON)
+		if( sd->sc.option&OPTION_FALCON )
 			clif_status_load(&sd->bl, SI_FALCON, 1);
 
-		if (sd->sc.option&OPTION_RIDING || sd->sc.option&(OPTION_RIDING_DRAGON))
+		if( sd->sc.option&OPTION_RIDING || sd->sc.option&(OPTION_RIDING_DRAGON) )
 			clif_status_load(&sd->bl, SI_RIDING, 1);
 
-		if (sd->sc.option&OPTION_RIDING_WUG)
+		if( sd->sc.option&OPTION_RIDING_WUG )
 			clif_status_load(&sd->bl, SI_WUGMOUNT, 1);
 
-		if(sd->status.manner < 0)
+		if( sd->status.manner < 0 )
 			sc_start(&sd->bl,SC_NOCHAT,100,0,0);
 
 		//Auron reported that This skill only triggers when you logon on the map o.O [Skotlex]
-		if ((lv = pc_checkskill(sd,SG_KNOWLEDGE)) > 0) {
-			if(sd->bl.m == sd->feel_map[0].m
-				|| sd->bl.m == sd->feel_map[1].m
-				|| sd->bl.m == sd->feel_map[2].m)
+		if( (lv = pc_checkskill(sd,SG_KNOWLEDGE)) > 0 )
+		{
+			if( sd->bl.m == sd->feel_map[0].m || sd->bl.m == sd->feel_map[1].m || sd->bl.m == sd->feel_map[2].m )
 				sc_start(&sd->bl, SC_KNOWLEDGE, 100, lv, skill_get_time(SG_KNOWLEDGE, lv));
 		}
 
-		if(sd->pd && sd->pd->pet.intimate > 900)
+		if( sd->pd && sd->pd->pet.intimate > 900 )
 			clif_pet_emotion(sd->pd,(sd->pd->pet.class_ - 100)*100 + 50 + pet_hungry_val(sd->pd));
 
-		if(merc_is_hom_active(sd->hd))
+		if( merc_is_hom_active(sd->hd) )
 			merc_hom_init_timers(sd->hd);
 
-		if (night_flag && map[sd->bl.m].flag.nightenabled)
+		if( night_flag && map[sd->bl.m].flag.nightenabled )
 		{
 			sd->state.night = 1;
 			clif_status_load(&sd->bl, SI_NIGHT, 1);
@@ -9044,7 +9047,9 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 
 		//Login Event
 		npc_script_event(sd, NPCE_LOGIN);
-	} else {
+	}
+	else
+	{
 		//For some reason the client "loses" these on warp/map-change.
 		clif_updatestatus(sd,SP_STR);
 		clif_updatestatus(sd,SP_AGI);
@@ -9101,32 +9106,32 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 	mail_clear(sd);
 #endif
 
-	if(map[sd->bl.m].flag.loadevent) // Lance
+	if( map[sd->bl.m].flag.loadevent ) // Lance
 		npc_script_event(sd, NPCE_LOADMAP);
 
-	if (pc_checkskill(sd, SG_DEVIL) && !pc_nextjobexp(sd))
+	if( pc_checkskill(sd, SG_DEVIL) && !pc_nextjobexp(sd) )
 		clif_status_load(&sd->bl, SI_DEVIL, 1);  //blindness [Komurka]
 
-	if (sd->sc.opt2) //Client loses these on warp.
+	if( sd->sc.opt2 ) //Client loses these on warp.
 		clif_changeoption(&sd->bl);
 
 	clif_weather_check(sd);
 	
 	// For automatic triggering of NPCs after map loading (so you don't need to walk 1 step first)
-	if (map_getcell(sd->bl.m,sd->bl.x,sd->bl.y,CELL_CHKNPC))
+	if( map_getcell(sd->bl.m,sd->bl.x,sd->bl.y,CELL_CHKNPC) )
 		npc_touch_areanpc(sd,sd->bl.m,sd->bl.x,sd->bl.y);
 	else
 		sd->areanpc_id = 0;
 
   	// If player is dead, and is spawned (such as @refresh) send death packet. [Valaris]
-	if(pc_isdead(sd))
+	if( pc_isdead(sd) )
 		clif_clearunit_area(&sd->bl, 1);
 // Uncomment if you want to make player face in the same direction he was facing right before warping. [Skotlex]
 //	else
 //		clif_changed_dir(&sd->bl, SELF);
 
 //	Trigger skill effects if you appear standing on them
-	if(!battle_config.pc_invincible_time)
+	if( !battle_config.pc_invincible_time )
 		skill_unit_move(&sd->bl,gettick(),1);
 }
 
@@ -9138,8 +9143,8 @@ void clif_parse_TickSend(int fd, struct map_session_data *sd)
 	sd->client_tick = RFIFOL(fd,packet_db[sd->packet_ver][RFIFOW(fd,0)].pos[0]);
 
 	WFIFOHEAD(fd, packet_len(0x7f));
-	WFIFOW(fd,0)=0x7f;
-	WFIFOL(fd,2)=gettick();
+	WFIFOW(fd,0) = 0x7f;
+	WFIFOL(fd,2) = gettick();
 	WFIFOSET(fd,packet_len(0x7f));
 	// removed until the socket problems are fixed. [FlavioJS]
 	//flush_fifo(fd); // try to send immediatly so the client gets more accurate "pings"
@@ -9508,21 +9513,22 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 		return;
 	}
 
-	if (sd->sc.count &&
-		(sd->sc.data[SC_TRICKDEAD] ||
+	if( sd->sc.count && (
+		sd->sc.data[SC_TRICKDEAD] ||
 	 	sd->sc.data[SC_AUTOCOUNTER] ||
 	 	sd->sc.data[SC_DEATHBOUND] ||
 		sd->sc.data[SC_BLADESTOP] ||
-		sd->sc.data[SC_CURSEDCIRCLE_TARGET]))
+		sd->sc.data[SC_CURSEDCIRCLE_TARGET]
+	))
 		return;
 
 	pc_stop_walking(sd, 1);
 	pc_stop_attack(sd);
 
-	if(target_id<0 && -target_id == sd->bl.id) // for disguises [Valaris]
+	if( target_id < 0 && -target_id == sd->bl.id ) // for disguises [Valaris]
 		target_id = sd->bl.id;
 
-	switch(action_type)
+	switch( action_type )
 	{
 	case 0x00: // once attack
 	case 0x07: // continuous attack
@@ -14467,6 +14473,7 @@ void clif_millenniumshield(struct map_session_data *sd, short shields )
  *-----------------------------------------*/
 void clif_displayexp(struct map_session_data *sd, unsigned int exp, char type, bool quest)
 {
+#if PACKETVER >= 20091027
 	int fd;
 
 	nullpo_retv(sd);
@@ -14480,6 +14487,7 @@ void clif_displayexp(struct map_session_data *sd, unsigned int exp, char type, b
 	WFIFOW(fd,10) = type;
 	WFIFOW(fd,12) = quest?1:0;// Normal exp is shown in yellow, quest exp is shown in purple.
 	WFIFOSET(fd,packet_len(0x7f6));
+#endif
 
     return;
 }

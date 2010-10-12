@@ -1071,6 +1071,7 @@ bool pc_authok(struct map_session_data *sd, int login_id2, time_t expiration_tim
 	sd->pvp_timer = INVALID_TIMER;
 	
 	sd->canuseitem_tick = tick;
+	sd->canusecashfood_tick = tick;
 	sd->canequip_tick = tick;
 	sd->cantalk_tick = tick;
 	sd->cansendmail_tick = tick;
@@ -3983,7 +3984,9 @@ int pc_useitem(struct map_session_data *sd,int n)
 		return 0;
 
 	 //Prevent mass item usage. [Skotlex]
-	if( DIFF_TICK(sd->canuseitem_tick, tick) > 0 )
+	if( DIFF_TICK(sd->canuseitem_tick, tick) > 0 ||
+		(itemdb_iscashfood(sd->status.inventory[n].nameid) && DIFF_TICK(sd->canusecashfood_tick, tick) > 0)
+	)
 		return 0;
 
 	if( sd->sc.count && (
@@ -4052,7 +4055,11 @@ int pc_useitem(struct map_session_data *sd,int n)
 			 potion_flag = 3; //Even more effective potions.
 	}
 
-	sd->canuseitem_tick= tick + battle_config.item_use_interval; //Update item use time.
+	//Update item use time.
+	sd->canuseitem_tick = tick + battle_config.item_use_interval;
+	if( itemdb_iscashfood(sd->status.inventory[n].nameid) )
+		sd->canusecashfood_tick = tick + battle_config.cashfood_use_interval;
+
 	run_script(script,0,sd->bl.id,fake_nd->bl.id);
 	potion_flag = 0;
 	return 1;
@@ -5411,8 +5418,8 @@ static void pc_calcexp(struct map_session_data *sd, unsigned int *base_exp, unsi
  *------------------------------------------*/
 int pc_gainexp(struct map_session_data *sd, struct block_list *src, unsigned int base_exp,unsigned int job_exp, bool quest)
 {
-	float nextbp=0, nextjp=0;
-	unsigned int nextb=0, nextj=0;
+	float nextbp = 0, nextjp = 0;
+	unsigned int nextb = 0, nextj = 0;
 	nullpo_ret(sd);
 
 	if( sd->bl.prev == NULL || pc_isdead(sd) )
@@ -5421,40 +5428,45 @@ int pc_gainexp(struct map_session_data *sd, struct block_list *src, unsigned int
 	if( !battle_config.pvp_exp && map[sd->bl.m].flag.pvp )  // [MouseJstr]
 		return 0; // no exp on pvp maps
 
-	if(sd->status.guild_id>0)
-		base_exp-=guild_payexp(sd,base_exp);
+	if( sd->status.guild_id > 0 )
+		base_exp -= guild_payexp(sd,base_exp);
 
-	if(src) pc_calcexp(sd, &base_exp, &job_exp, src);
+	if( src ) pc_calcexp(sd, &base_exp, &job_exp, src);
 
 	nextb = pc_nextbaseexp(sd);
 	nextj = pc_nextjobexp(sd);
 		
-	if(sd->state.showexp || battle_config.max_exp_gain_rate){
-		if (nextb > 0)
+	if( sd->state.showexp || battle_config.max_exp_gain_rate )
+	{
+		if( nextb > 0 )
 			nextbp = (float) base_exp / (float) nextb;
-		if (nextj > 0)
+		if( nextj > 0 )
 			nextjp = (float) job_exp / (float) nextj;
 
-		if(battle_config.max_exp_gain_rate) {
-			if (nextbp > battle_config.max_exp_gain_rate/1000.) {
+		if( battle_config.max_exp_gain_rate )
+		{
+			if( nextbp > battle_config.max_exp_gain_rate / 1000. )
+			{
 				//Note that this value should never be greater than the original
 				//base_exp, therefore no overflow checks are needed. [Skotlex]
-				base_exp = (unsigned int)(battle_config.max_exp_gain_rate/1000.*nextb);
-				if (sd->state.showexp)
+				base_exp = (unsigned int)(battle_config.max_exp_gain_rate / 1000. * nextb);
+				if( sd->state.showexp )
 					nextbp = (float) base_exp / (float) nextb;
 			}
-			if (nextjp > battle_config.max_exp_gain_rate/1000.) {
-				job_exp = (unsigned int)(battle_config.max_exp_gain_rate/1000.*nextj);
-				if (sd->state.showexp)
+			if( nextjp > battle_config.max_exp_gain_rate/1000. )
+			{
+				job_exp = (unsigned int)(battle_config.max_exp_gain_rate / 1000. * nextj);
+				if( sd->state.showexp )
 					nextjp = (float) job_exp / (float) nextj;
 			}
 		}
 	}
 	
 	//Cap exp to the level up requirement of the previous level when you are at max level, otherwise cap at UINT_MAX (this is required for some S. Novice bonuses). [Skotlex]
-	if (base_exp) {
-		nextb = nextb?UINT_MAX:pc_thisbaseexp(sd);
-		if(sd->status.base_exp > nextb - base_exp)
+	if( base_exp )
+	{
+		nextb = nextb ? UINT_MAX : pc_thisbaseexp(sd);
+		if( sd->status.base_exp > nextb - base_exp )
 			sd->status.base_exp = nextb;
 		else
 			sd->status.base_exp += base_exp;
@@ -5462,9 +5474,10 @@ int pc_gainexp(struct map_session_data *sd, struct block_list *src, unsigned int
 		clif_updatestatus(sd,SP_BASEEXP);
 	}
 
-	if (job_exp) {
-		nextj = nextj?UINT_MAX:pc_thisjobexp(sd);
-		if(sd->status.job_exp > nextj - job_exp)
+	if( job_exp )
+	{
+		nextj = nextj ? UINT_MAX : pc_thisjobexp(sd);
+		if( sd->status.job_exp > nextj - job_exp )
 			sd->status.job_exp = nextj;
 		else
 			sd->status.job_exp += job_exp;
@@ -5472,11 +5485,12 @@ int pc_gainexp(struct map_session_data *sd, struct block_list *src, unsigned int
 		clif_updatestatus(sd,SP_JOBEXP);
 	}
 
-	if(sd->state.showexp){
+	if( sd->state.showexp )
+	{
 #if PACKETVER >= 20091027
-		if(base_exp)
+		if( base_exp )
 			clif_displayexp(sd, base_exp, 1, quest);
-		if(job_exp)
+		if( job_exp )
 			clif_displayexp(sd, job_exp,  2, quest);
 #else
 		char output[256];

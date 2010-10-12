@@ -5,6 +5,11 @@
 // 	- Details.
 //========================================
 
+10/12/2010
+	r516 [pakpil]
+	* Updated to eAthena r14427
+	* Fixed some warnings while compiling.
+
 10/09/2010
 	r511 [pakpil]
 	* Updated to eAthena r14414.

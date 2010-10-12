@@ -7498,7 +7498,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_INTOABYSS:	 case SC_SIEGFRIED:	  case SC_WHISTLE:
 				case SC_ASSNCROS:	 case SC_POEMBRAGI:	  case SC_APPLEIDUN:
 				case SC_HUMMING:	 case SC_DONTFORGETME: case SC_FORTUNE:
-				case SC_SERVICE4U:   case SC_ELECTRICSHOCKER: case SC_BITE:
+				case SC_SERVICE4U:	 case SC_FOOD_STR_CASH:	case SC_FOOD_AGI_CASH:
+				case SC_FOOD_VIT_CASH:	case SC_FOOD_DEX_CASH:	case SC_FOOD_INT_CASH:
+				case SC_FOOD_LUK_CASH:   case SC_ELECTRICSHOCKER: case SC_BITE:
 				case SC__STRIPACCESSORY: case SC__ENERVATION: case SC__GROOMY:
 				case SC__IGNORANCE:  case SC__LAZINESS:   case SC__UNLUCKY:
 				case SC__WEAKNESS:   case SC_SAVAGE_STEAK:  case SC_COCKTAIL_WARG_BLOOD:
@@ -13972,6 +13974,9 @@ static int skill_trap_splash (struct block_list *bl, va_list ap)
 	unit = (struct skill_unit *)src;
 	tick = va_arg(ap,int);
 
+	if( !unit->alive || bl->prev == NULL )
+		return 0;
+
 	nullpo_ret(sg = unit->group);
 	nullpo_ret(ss = map_id2bl(sg->src_id));
 
@@ -15063,7 +15068,7 @@ int skill_can_produce_mix(struct map_session_data *sd, int nameid, int trigger, 
 int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int slot1, int slot2, int slot3, int qty)
 {
 	int slot[3];
-	int i,sc,ele,idx,equip,wlv=0,make_per,flag,skill_lv,temp_qty;
+	int i,sc,ele,idx,equip,wlv = 0,make_per,flag = 0,skill_lv = 0,temp_qty;
 	int num = -1; // exclude the recipe
 	struct status_data *status;
 
@@ -15085,26 +15090,28 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 	if( skill_id == GC_RESEARCHNEWPOISON )
 		skill_id = GC_CREATENEWPOISON;
 
-	slot[0]=slot1;
-	slot[1]=slot2;
-	slot[2]=slot3;
+	slot[0] = slot1;
+	slot[1] = slot2;
+	slot[2] = slot3;
 
 	for( i = 0, sc = 0, ele = 0; i < 3; i++ )
 	{ //Note that qty should always be one if you are using these!
 		int j;
-		if( slot[i]<=0 )
+		if( slot[i] <= 0 )
 			continue;
 		j = pc_search_inventory(sd,slot[i]);
 		if( j < 0 )
 			continue;
-		if(slot[i]==1000){	/* Star Crumb */
+		if( slot[i]==1000 )
+		{	/* Star Crumb */
 			pc_delitem(sd,j,1,1,0);
 			sc++;
 		}
-		if(slot[i]>=994 && slot[i]<=997 && ele==0){	/* Flame Heart . . . Great Nature */
-			static const int ele_table[4]={3,1,4,2};
+		if( slot[i] >= 994 && slot[i] <= 997 && ele == 0 )
+		{	/* Flame Heart . . . Great Nature */
+			static const int ele_table[4] = {3,1,4,2};
 			pc_delitem(sd,j,1,1,0);
-			ele=ele_table[slot[i]-994];
+			ele = ele_table[slot[i]-994];
 		}
 	}
 
@@ -15134,14 +15141,15 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 			continue;
 		num++;
 		x = qty * skill_produce_db[idx].mat_amount[i];
-		do{
-			int y=0;
+		do
+		{
+			int y = 0;
 			j = pc_search_inventory(sd,id);
 
 			if( j >= 0 )
 			{
 				y = sd->status.inventory[j].amount;
-				if( y > x )y = x;
+				if( y > x ) y = x;
 				pc_delitem(sd,j,y,0,0);
 			}
 			else
@@ -15191,37 +15199,37 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 			case AM_TWILIGHT1:
 			case AM_TWILIGHT2:
 			case AM_TWILIGHT3:
-				make_per = pc_checkskill(sd,AM_LEARNINGPOTION)*50
-					+ pc_checkskill(sd,AM_PHARMACY)*300 + sd->status.job_level*20
-					+ (status->int_/2)*10 + status->dex*10+status->luk*10;
+				make_per = pc_checkskill(sd,AM_LEARNINGPOTION) * 50
+					+ pc_checkskill(sd,AM_PHARMACY) * 300 + sd->status.job_level * 20
+					+ (status->int_/2) * 10 + status->dex * 10 + status->luk * 10;
 				if( merc_is_hom_active(sd->hd) )
 				{	//Player got a homun
 					int skill;
 					if( (skill = merc_hom_checkskill(sd->hd,HVAN_INSTRUCT)) > 0 ) //His homun is a vanil with instruction change
-						make_per += skill*100; //+1% bonus per level
+						make_per += skill * 100; //+1% bonus per level
 				}
 				switch( nameid )
 				{
 					case 501: // Red Potion
 					case 503: // Yellow Potion
 					case 504: // White Potion
-						make_per += (1+rand()%100)*10 + 2000;
+						make_per += (1+rand()%100) * 10 + 2000;
 						break;
 					case 970: // Alcohol
-						make_per += (1+rand()%100)*10 + 1000;
+						make_per += (1+rand()%100) * 10 + 1000;
 						break;
 					case 7135: // Bottle Grenade
 					case 7136: // Acid Bottle
 					case 7137: // Plant Bottle
 					case 7138: // Marine Sphere Bottle
-						make_per += (1+rand()%100)*10;
+						make_per += (1+rand()%100) * 10;
 						break;
 					case 546: // Condensed Yellow Potion
-						make_per -= (1+rand()%50)*10;
+						make_per -= (1+rand()%50) * 10;
 						break;
 					case 547: // Condensed White Potion
 					case 7139: // Glistening Coat
-						make_per -= (1+rand()%100)*10;
+						make_per -= (1+rand()%100) * 10;
 					    break;
 					//Common items, recieve no bonus or penalty, listed just because they are commonly produced
 					case 505: // Blue Potion
