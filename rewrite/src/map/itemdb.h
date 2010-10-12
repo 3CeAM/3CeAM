@@ -20,6 +20,7 @@
 #define ITEMID_TRAP_ALLOY 7940
 #define ITEMID_STONE 7049
 #define ITEMID_SKULL_ 7420
+#define itemdb_iscashfood(id) ( (id) >= 12202 && (id) <= 12207 )
 #define ITEMID_FACEPAINTS 6120
 #define ITEMID_MAKEUPBRUSH 6121
 #define ITEMID_PAINTBRUSH 6122

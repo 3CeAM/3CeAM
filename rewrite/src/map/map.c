@@ -1998,7 +1998,7 @@ struct mob_data * map_getmob_boss(int m)
 
 struct mob_data * map_id2boss(int id)
 {
-	if (id <= 0) return NULL;
+	if( id <= 0 ) return NULL;
 	return (struct mob_data*)idb_get(bossid_db,id);
 }
 
@@ -2905,7 +2905,7 @@ int map_readfromcache(struct map_data *m, char *buffer, char *decode_buffer)
 {
 	int i;
 	struct map_cache_main_header *header = (struct map_cache_main_header *)buffer;
-	struct map_cache_map_info *info;
+	struct map_cache_map_info *info = NULL;
 	unsigned char *p = buffer + sizeof(struct map_cache_main_header);
 
 	for(i = 0; i < header->map_count; i++) {
@@ -3090,7 +3090,7 @@ int map_readallmaps (void)
 	int i;
 	FILE* fp=NULL;
 	int maps_removed = 0;
-	unsigned char *map_cache_buffer; // Has the uncompressed gat data of all maps, so just one allocation has to be made
+	unsigned char *map_cache_buffer = NULL; // Has the uncompressed gat data of all maps, so just one allocation has to be made
 	unsigned char map_cache_decode_buffer[MAX_MAP_SIZE];
 
 	if( enable_grf )

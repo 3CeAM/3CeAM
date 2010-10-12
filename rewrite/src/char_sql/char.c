@@ -1514,7 +1514,7 @@ int delete_char_sql(int char_id)
 		Sql_ShowDebug(sql_handle);
 	*/
 
-	if( SQL_ERROR == Sql_Query(sql_handle, "SELECT `guild_id` FROM `%s` WHERE `master` = '%s'", guild_db, esc_name) )
+	if( SQL_ERROR == Sql_Query(sql_handle, "SELECT `guild_id` FROM `%s` WHERE `char_id` = '%d'", guild_db, char_id) )
 		Sql_ShowDebug(sql_handle);
 	else if( Sql_NumRows(sql_handle) > 0 )
 		mapif_parse_BreakGuild(0,guild_id);
@@ -1613,12 +1613,10 @@ int mmo_char_send006b(int fd, struct char_session_data* sd)
 	offset += 3;
 #endif
 
-
 	if (save_log)
 		ShowInfo("Loading Char Data ("CL_BOLD"%d"CL_RESET")\n",sd->account_id);
 
 	j = 24 + offset; // offset
-
 	WFIFOHEAD(fd,j + MAX_CHARS*MAX_CHAR_BUF);
 	WFIFOW(fd,0) = 0x6b;
 #if PACKETVER >= 20100413

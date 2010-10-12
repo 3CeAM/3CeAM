@@ -25,6 +25,7 @@ struct party_data;
 struct guild;
 struct battleground_data;
 struct quest;
+struct party_booking_ad_info;
 #include <stdarg.h>
 // packet DB
 #define MAX_PACKET_DB		0x900
@@ -484,10 +485,12 @@ void clif_PartyBookingInsertNotify(struct map_session_data* sd, struct party_boo
 
 void clif_equip_damaged(struct map_session_data *sd, int equip_index);
 void clif_millenniumshield(struct map_session_data *sd, short shields );
-int clif_display_banding(struct block_list *dst, struct block_list *bl, int val1);
+void clif_display_banding(struct block_list *dst, struct block_list *bl, int val1);
 
+#ifndef TXT_ONLY
 // Elementals
 void clif_elemental_info(struct map_session_data *sd);
 void clif_elemental_updatestatus(struct map_session_data *sd, int type);
+#endif
 
 #endif /* _CLIF_H_ */
