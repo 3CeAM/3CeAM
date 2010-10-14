@@ -16088,7 +16088,10 @@ void skill_init_unit_layout (void)
 				skill = HM_SKILLBASE + i - HM_SKILLRANGEMIN;
 			else */
 			if( i >= EL_SKILLRANGEMIN && i <= EL_SKILLRANGEMAX )
-				skill = i - EL_SKILLRANGEMIN + EL_SKILLBASE - 116; //WHY¿?
+			{
+				skill -= EL_SKILLRANGEMIN;
+				skill += EL_SKILLBASE;
+			}
 			switch( skill )
 			{
 				case EL_FIRE_MANTLE:

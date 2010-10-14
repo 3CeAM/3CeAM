@@ -3332,10 +3332,10 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							struct status_change *tsc = status_get_sc(target);
 							if( tsc && tsc->data[SC_FREEZING] )
 							{
-								skillratio = (skillratio + 900 + (300 * skill_lv)) * s_level / 100;
+								skillratio = (skillratio + 900 + 300 * skill_lv) * s_level / 100;
 							}
 							else
-								skillratio = (skillratio + 100) * ((1 + ((sd) ? sd->status.job_level : 0)) / 100);
+								skillratio = (skillratio + 100 * skill_lv) * (1 + ((sd) ? sd->status.job_level : 0) / 100);
 						}
 						break;
 					case WL_DRAINLIFE:
