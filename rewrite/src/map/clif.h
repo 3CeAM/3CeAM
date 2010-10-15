@@ -487,10 +487,8 @@ void clif_equip_damaged(struct map_session_data *sd, int equip_index);
 void clif_millenniumshield(struct map_session_data *sd, short shields );
 void clif_display_banding(struct block_list *dst, struct block_list *bl, int val1);
 
-#ifndef TXT_ONLY
 // Elementals
 void clif_elemental_info(struct map_session_data *sd);
 void clif_elemental_updatestatus(struct map_session_data *sd, int type);
-#endif
 
 #endif /* _CLIF_H_ */
