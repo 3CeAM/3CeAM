@@ -106,9 +106,6 @@
 6122,Paint_Brush,Paint Brush,3,20,,10,,,,,,,,,,,,,{},{},{}
 6123,Surface_Paint,Surface Paint,3,200,,10,,,,,,,,,,,,,{},{},{}
 
-// Ranger Flute
-6124,Wolf_Flute,Wolf Flute,3,250,,10,,,,,,,,,,,,,{},{},{}
-
 // Guillotine Cross Poison Antidote
 6128,Antidote,Antidote,3,1,,10,,,,,,,,,,,,,{},{},{}
 
@@ -266,7 +263,7 @@
 12394,Repair_C,Repair C,0,1100,,70,,,,,0x00000400,8,2,,,,,,{ itemheal rand(400,500),0; },{},{}
 
 // Genetic Created Boosting Items
-12417,Boost_500,Boost 500,2,,,50,,,,,0xFFFFFFFF,7,2,,,,,,{ sc_start SC_BOOST500,500000,20; },{},{}
+12417,Boost_500,Boost 500,2,,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ sc_start SC_BOOST500,500000,20; },{},{}
 12418,Full_Swing_K,Full Swing K,3,10,,10,,,,,,,,,,,,,{},{},{}
 12419,Manaplus,Manaplus,3,10,,10,,,,,,,,,,,,,{},{},{}
 12420,Muramura_M,Muramura M,3,10,,10,,,,,,,,,,,,,{},{},{}
