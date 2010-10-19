@@ -1428,19 +1428,27 @@ int atcommand_jobchange(const int fd, struct map_session_data* sd, const char* c
 			clif_displaymessage(fd, "4102 Baby Royal Guard    4103 Baby Sorcerer       4104 Baby Minstrel");
 			clif_displaymessage(fd, "4105 Baby Wanderer       4106 Baby Sura           4107 Baby Genetic");
 			clif_displaymessage(fd, "4108 Baby Shadow Chaser");
-			clif_displaymessage(fd, "---- Mounts, Modes, And Others ----");
-			clif_displaymessage(fd, "  13 Knight (Peco)    21 Crusader (Peco)  22 Wedding          26 Christmas");
-			clif_displaymessage(fd, "  27 Summer 4014 Lord Knight (Peco) 4022 Paladin (Peco)  4036 Baby Knight (Peco)");
-			clif_displaymessage(fd, "4044 Baby Crusader (Peco) 4048 Star Gladiator (Union) 4080 Rune Knight (Dragon)");
-			clif_displaymessage(fd, "4081 Rune Knight Trans (Dragon) 4082 Royal Guard (Gryphon)");
+			clif_displaymessage(fd, "---- Modes, And Others ----");
+			clif_displaymessage(fd, "  22 Wedding          26 Christmas");
+			clif_displaymessage(fd, "4048 Star Gladiator (Union)   27 Summer");
+			clif_displaymessage(fd, "---- Mounts (Not Allowed) ----");
+			clif_displaymessage(fd, "  13 Knight (Peco)          21 Crusader (Peco)");
+			clif_displaymessage(fd, "4014 Lord Knight (Peco)   4022 Paladin (Peco)       4036 Baby Knight (Peco)");
+			clif_displaymessage(fd, "4044 Baby Crusader (Peco) 4080 Rune Knight (Dragon)");
+			clif_displaymessage(fd, "4081 Rune Knight Trans (Dragon)  4082 Royal Guard (Gryphon)");
 			clif_displaymessage(fd, "4083 Royal Guard Trans (Gryphon) 4084 Ranger (Warg) 4085 Ranger Trans (Warg)");
-			clif_displaymessage(fd, "4086 Mechanic (Mado) 4087 Mechanic Trans (Mado)");
+			clif_displaymessage(fd, "4086 Mechanic (Mado)      4087 Mechanic Trans (Mado)");
 			return -1;
 		}
 	}
 
-	if (job == 37 ||job == 45)
-		return 0;
+	switch( job )
+	{
+ 		case   13: case   21: case 4014: case 4022: case 4036:
+		case 4044: case 4080: case 4081: case 4082: case 4083:
+		case 4084: case 4085: case 4086: case 4087:
+			return 0; // Deny direct transformation into dummy jobs
+	}
 
 	if (pcdb_checkid(job))
 	{
@@ -1494,13 +1502,16 @@ int atcommand_jobchange(const int fd, struct map_session_data* sd, const char* c
 		clif_displaymessage(fd, "4102 Baby Royal Guard    4103 Baby Sorcerer       4104 Baby Minstrel");
 		clif_displaymessage(fd, "4105 Baby Wanderer       4106 Baby Sura           4107 Baby Genetic");
 		clif_displaymessage(fd, "4108 Baby Shadow Chaser");
-		clif_displaymessage(fd, "---- Mounts, Modes, And Others ----");
-		clif_displaymessage(fd, "  13 Knight (Peco)    21 Crusader (Peco)  22 Wedding          26 Christmas");
-		clif_displaymessage(fd, "  27 Summer 4014 Lord Knight (Peco) 4022 Paladin (Peco)  4036 Baby Knight (Peco)");
-		clif_displaymessage(fd, "4044 Baby Crusader (Peco) 4048 Star Gladiator (Union) 4080 Rune Knight (Dragon)");
-		clif_displaymessage(fd, "4081 Rune Knight Trans (Dragon) 4082 Royal Guard (Gryphon)");
+		clif_displaymessage(fd, "---- Modes, And Others ----");
+		clif_displaymessage(fd, "  22 Wedding          26 Christmas");
+		clif_displaymessage(fd, "4048 Star Gladiator (Union)   27 Summer");
+		clif_displaymessage(fd, "---- Mounts (Not Allowed) ----");
+		clif_displaymessage(fd, "  13 Knight (Peco)          21 Crusader (Peco)");
+		clif_displaymessage(fd, "4014 Lord Knight (Peco)   4022 Paladin (Peco)       4036 Baby Knight (Peco)");
+		clif_displaymessage(fd, "4044 Baby Crusader (Peco) 4080 Rune Knight (Dragon)");
+		clif_displaymessage(fd, "4081 Rune Knight Trans (Dragon)  4082 Royal Guard (Gryphon)");
 		clif_displaymessage(fd, "4083 Royal Guard Trans (Gryphon) 4084 Ranger (Warg) 4085 Ranger Trans (Warg)");
-		clif_displaymessage(fd, "4086 Mechanic (Mado) 4087 Mechanic Trans (Mado)");
+		clif_displaymessage(fd, "4086 Mechanic (Mado)      4087 Mechanic Trans (Mado)");
 		return -1;
 	}
 
@@ -2957,7 +2968,7 @@ int atcommand_statuspoint(const int fd, struct map_session_data* sd, const char*
 	if (point < 0 && sd->status.status_point < -point)
 		new_status_point = 0;
 	else
-		new_status_point = sd->status.status_point + point;
+		new_status_point = cap_value(sd->status.status_point + point, 0, INT_MAX);
 
 	if (new_status_point != (int)sd->status.status_point) {
 		sd->status.status_point = new_status_point;
@@ -2990,7 +3001,7 @@ int atcommand_skillpoint(const int fd, struct map_session_data* sd, const char* 
 	if (point < 0 && sd->status.skill_point < -point)
 		new_skill_point = 0;
 	else
-		new_skill_point = sd->status.skill_point + point;
+		new_skill_point = cap_value(sd->status.skill_point + point, 0, INT_MAX);
 	
 	if (new_skill_point != (int)sd->status.skill_point) {
 		sd->status.skill_point = new_skill_point;
