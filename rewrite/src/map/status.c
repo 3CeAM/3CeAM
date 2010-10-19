@@ -484,7 +484,6 @@ void initChangeTables(void)
 	set_sc( SC_STRIPACCESSARY    , SC__STRIPACCESSORY    , SI_STRIPACCESSORY    , SCB_DEX|SCB_INT|SCB_LUK );
 	set_sc( SC_MANHOLE           , SC__MANHOLE           , SI_MANHOLE           , SCB_NONE );
 	add_sc( SC_CHAOSPANIC        , SC_CHAOS );
-	//add_sc( SC_MAELSTROM         , SC__MAELSTROM );
 	set_sc( SC_BLOODYLUST        , SC__BLOODYLUST        , SI_BLOODYLUST        , SCB_DEF|SCB_DEF2|SCB_BATK|SCB_WATK );
 	
 	add_sc( LG_REFLECTDAMAGE     , SC_REFLECTDAMAGE );
@@ -708,6 +707,7 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_SHIELDSPELL_DEF] = SI_SHIELDSPELL_DEF;
 	StatusIconChangeTable[SC_SHIELDSPELL_MDEF] = SI_SHIELDSPELL_MDEF;
 	StatusIconChangeTable[SC_SHIELDSPELL_REF] = SI_SHIELDSPELL_REF;
+	StatusIconChangeTable[SC_BANDING_DEFENCE] = SI_BANDING_DEFENCE;
 
 	// Elemental Spirit's 'side' status change icons.
 	StatusIconChangeTable[SC_PYROTECHNIC] = SI_PYROTECHNIC;;
@@ -1043,7 +1043,8 @@ int status_damage(struct block_list *src,struct block_list *target,int hp, int s
 	//Non-zero: Standard death. Clear status, cancel move/attack, etc
 	//&2: Also remove object from map.
 	//&4: Also delete object from memory.
-	switch (target->type) {
+	switch( target->type )
+	{
 		case BL_PC:  flag = pc_dead((TBL_PC*)target,src); break;
 		case BL_MOB: flag = mob_dead((TBL_MOB*)target, src, flag&4?3:0); break;
 		case BL_HOM: flag = merc_hom_dead((TBL_HOM*)target,src); break;
@@ -1788,7 +1789,7 @@ int status_calc_mob_(struct mob_data* md, bool first)
 			md->special_state.ai = 0;
 		if( ud )
 		{	// different levels of HP according to skill level
-			if (ud->skillid == AM_SPHEREMINE)
+			if( ud->skillid == AM_SPHEREMINE )
 				status->max_hp = 2000 + 400*ud->skilllv;
 			else
 			{ //AM_CANNIBALIZE
@@ -1960,17 +1961,17 @@ int status_calc_pet_(struct pet_data *pd, bool first)
 /// Helper function for status_base_pc_maxhp(), used to pre-calculate the hp_sigma_val[] array
 static void status_calc_sigma(void)
 {
-	int i,j;
+	int i, j;
 
-	for(i = 0; i < CLASS_COUNT; i++)
+	for( i = 0; i < CLASS_COUNT; i++ )
 	{
 		unsigned int k = 0;
 		hp_sigma_val[i][0] = hp_sigma_val[i][1] = 0;
-		for(j = 2; j <= MAX_LEVEL; j++)
+		for( j = 2; j <= MAX_LEVEL; j++ )
 		{
-			k += (hp_coefficient[i]*j + 50) / 100;
+			k += (hp_coefficient[i] * j + 50) / 100;
 			hp_sigma_val[i][j] = k;
-			if (k >= INT_MAX)
+			if( k >= INT_MAX )
 				break; //Overflow protection. [Skotlex]
 		}
 		for(; j <= MAX_LEVEL; j++)
@@ -2032,7 +2033,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	struct s_skill b_skill[MAX_SKILL]; // previous skill tree
 	int b_weight, b_max_weight; // previous weight
 	int i,index;
-	int skill,refinedef=0;
+	int skill, refinedef = 0;
 
 	if( ++calculating > 10 ) //Too many recursive calls!
 		return -1;
@@ -2120,7 +2121,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		clif_status_load(&sd->bl, SI_INTRAVISION, 0);
 
 	memset(&sd->special_state, 0, sizeof(sd->special_state));
-	memset(&status->max_hp, 0, sizeof(struct status_data)-(sizeof(status->hp)+sizeof(status->sp)));
+	memset(&status->max_hp, 0, sizeof(struct status_data) - (sizeof(status->hp) + sizeof(status->sp)));
 
 	//FIXME: Most of these stuff should be calculated once, but how do I fix the memset above to do that? [Skotlex]
 	status->speed = DEFAULT_WALK_SPEED;
@@ -2315,7 +2316,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	{
 		index = sd->equip_index[EQI_AMMO];
 		if( sd->inventory_data[index] )
-		{		// Arrows
+		{	// Arrows
 			sd->arrow_atk += sd->inventory_data[index]->atk;
 			sd->state.lr_flag = 2;
 			if( sd->inventory_data[index]->look != A_THROWWEAPON )
@@ -2426,7 +2427,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	sd->left_weapon.atkmods[1] = atkmods[1][sd->weapontype2];
 	sd->left_weapon.atkmods[2] = atkmods[2][sd->weapontype2];
 
-	if( pc_isriding(sd,OPTION_RIDING ) && (sd->status.weapon == W_1HSPEAR || sd->status.weapon == W_2HSPEAR) )
+	if( pc_isriding(sd,OPTION_RIDING) && (sd->status.weapon == W_1HSPEAR || sd->status.weapon == W_2HSPEAR) )
 	{	//When Riding with spear, damage modifier to mid-class becomes 
 		//same as versus large size.
 		sd->right_weapon.atkmods[1] = sd->right_weapon.atkmods[2];
@@ -4327,7 +4328,7 @@ static signed short status_calc_flee2(struct block_list *bl, struct status_chang
 
 static signed char status_calc_def(struct block_list *bl, struct status_change *sc, int def)
 {
-	if(!sc || !sc->count)
+	if( !sc || !sc->count )
 		return (signed char)cap_value(def,CHAR_MIN,CHAR_MAX);
 
 	if(sc->data[SC_BERSERK])
@@ -4590,7 +4591,7 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				if( sc->data[SC_STEALTHFIELD_MASTER] )
 					val = max( val, 30 );
 				if( sc->data[SC_BANDING_DEFENCE] )
-					val = max( val, sc->data[SC_BANDING_DEFENCE]->val1 );
+					val = max( val, sc->data[SC_BANDING_DEFENCE]->val1 );//+90% walking speed.
 				if( sc->data[SC_ROCK_CRUSHER_ATK] )
 					val = max( val, sc->data[SC_ROCK_CRUSHER_ATK]->val2 );
 				if( sc->data[SC_POWER_OF_GAIA] )
@@ -6319,6 +6320,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC_LERADSDEW:
 				if( sc && sc->data[SC_BERSERK] )
 					return 0;
+				break;
 			default:
 				if(sce->val1 > val1)
 					return 1; //Return true to not mess up skill animations. [Skotlex]
@@ -9241,7 +9243,7 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		break;
 
 	case SC_CAMOUFLAGE:
-		if( --(sce->val2)>0 )
+		if( --(sce->val2) > 0 )
 		{
 			status_charge(bl,0,7 - sce->val1);
 			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);

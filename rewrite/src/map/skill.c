@@ -2452,7 +2452,7 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 			skill_addtimerskill(bl,tick + 800,0,skill_area_temp[4],skill_area_temp[5],skillid,skilllv,0,flag);
 	}
 
-	if(skillid == CR_GRANDCROSS || skillid == NPC_GRANDDARKNESS)
+	if( skillid == CR_GRANDCROSS || skillid == NPC_GRANDDARKNESS )
 		dmg.flag |= BF_WEAPON;
 
 	if( sd && dmg.flag&BF_WEAPON && src != bl && ( src == dsrc || ( dsrc->type == BL_SKILL && ( skillid == SG_SUN_WARM || skillid == SG_MOON_WARM || skillid == SG_STAR_WARM ) ) )  && damage > 0 )
@@ -6470,7 +6470,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		{
 			// or does it increase casting rate? just a guess xD
 			int i = SC_ASPDPOTION0 + skilllv - 1;
-			if (i > SC_ASPDPOTION3)
+			if( i > SC_ASPDPOTION3 )
 				i = SC_ASPDPOTION3;
 			clif_skill_nodamage(src,bl,skillid,skilllv,
 				sc_start(bl,(sc_type)i,100,skilllv,skilllv * 60000));
@@ -6789,7 +6789,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			}
 			if(hp > 0)
 				clif_skill_nodamage(NULL,bl,AL_HEAL,hp,1);
-			if(sp > 0)
+			if( sp > 0 )
 				clif_skill_nodamage(NULL,bl,MG_SRECOVERY,sp,1);
 			status_heal(bl,hp,sp,0);
 		}
@@ -9760,11 +9760,11 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		break;
 
 	case LG_BANDING:
-		clif_skill_nodamage(src,src,skillid,skilllv,1);
 		if( sc && sc->data[SC_BANDING] )
 			status_change_end(src,SC_BANDING,-1);
 		else if( (sg = skill_unitsetting(src,skillid,skilllv,src->x,src->y,0)) != NULL )
 			sc_start4(src,SC_BANDING,100,skilllv,0,0,sg->group_id,skill_get_time(skillid,skilllv));
+		clif_skill_nodamage(src,src,skillid,skilllv,1);
 		break;
 
 	case WM_DOMINION_IMPULSE:
@@ -10761,7 +10761,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			ts->tick += sg->interval*(map_count_oncell(bl->m,bl->x,bl->y,BL_CHAR)-1);
 	}
 	//Temporarily set magic power to have it take effect. [Skotlex]
-	if (sg->state.magic_power && sc && !sc->data[SC_MAGICPOWER])
+	if( sg->state.magic_power && sc && !sc->data[SC_MAGICPOWER] )
 	{	//Store previous values.
 		swap(sstatus->matk_min, sc->mp_matk_min);
 		swap(sstatus->matk_max, sc->mp_matk_max);
@@ -11315,7 +11315,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 
 		case UNT_BANDING:
 			if( battle_check_target(ss,bl,BCT_ENEMY) > 0 && !(status_get_mode(bl)&MD_BOSS) && !(tsc && tsc->data[SC_BANDING_DEFENCE]) )
-				sc_start(bl,SC_BANDING_DEFENCE,100,50,2000 * sg->skill_lv);
+				sc_start(bl,SC_BANDING_DEFENCE,100,90,skill_get_time(sg->skill_id,sg->skill_lv));
 			break;
 
 		case UNT_FIRE_MANTLE:
@@ -11765,7 +11765,7 @@ static int skill_check_condition_mob_master_sub (struct block_list *bl, va_list 
 	if( md->master_id != src_id || md->special_state.ai != (unsigned)(skill == AM_SPHEREMINE?2:3) )
 		return 0; //Non alchemist summoned mobs have nothing to do here.
 
-	if(md->class_==mob_class)
+	if( md->class_ == mob_class )
 		(*c)++;
 
 	return 1;

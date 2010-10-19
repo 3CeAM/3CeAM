@@ -932,7 +932,7 @@ int battle_addmastery(struct map_session_data *sd,struct block_list *target,int 
 	if( (skill = pc_checkskill(sd, RA_RANGERMAIN)) > 0 && (status->race == RC_BRUTE || status->race == RC_PLANT || status->race == RC_FISH) )
 		damage += (skill * 5);
 
-	if((skill = pc_checkskill(sd,NC_RESEARCHFE)) > 0 && (status->def_ele == ELE_FIRE || status->def_ele == ELE_EARTH) )
+	if( (skill = pc_checkskill(sd,NC_RESEARCHFE)) > 0 && (status->def_ele == ELE_FIRE || status->def_ele == ELE_EARTH) )
 		damage += (skill * 10);
 	
 	if( pc_isriding(sd, OPTION_MADO) )
@@ -1020,14 +1020,14 @@ int battle_addmastery(struct map_session_data *sd,struct block_list *target,int 
  */
 static int battle_calc_base_damage(struct status_data *status, struct weapon_atk *wa, struct status_change *sc, unsigned short t_size, struct map_session_data *sd, int flag)
 {
-	unsigned short atkmin=0, atkmax=0;
+	unsigned short atkmin = 0, atkmax = 0;
 	short type = 0;
 	int damage = 0;
 
-	if (!sd)
+	if( !sd )
 	{	//Mobs/Pets
-		if(flag&4)
-		{		  
+		if( flag&4 )
+		{
 			atkmin = status->matk_min;
 			atkmax = status->matk_max;
 		} else {
@@ -1164,7 +1164,7 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 /*==========================================
  * battle_calc_weapon_attack (by Skotlex)
  *------------------------------------------*/
-static struct Damage battle_calc_weapon_attack(struct block_list *src,struct block_list *target,int skill_num,int skill_lv,int wflag)
+static struct Damage battle_calc_weapon_attack(struct block_list *src, struct block_list *target, int skill_num, int skill_lv, int wflag)
 {
 	unsigned int skillratio = 100;	//Skill dmg modifiers.
 	short skill=0;
@@ -1536,7 +1536,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 					hitrate += hitrate * 5 * skill_lv / 100;
 					break;
 				case AS_SONICBLOW:
-					if(sd && pc_checkskill(sd,AS_SONICACCEL)>0)
+					if( sd && pc_checkskill(sd,AS_SONICACCEL) > 0 )
 						hitrate += hitrate * 50 / 100;
 					break;
 				case MC_CARTREVOLUTION:
@@ -1648,7 +1648,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				break;
 			case NC_AXEBOOMERANG:
 				//TODO: Need to get official value of weight % as addition to skill damage. [Jobbie]
-				if (sd) {
+				if( sd )
+				{
 					short index = sd->equip_index[EQI_HAND_R];
 					if (index >= 0 &&
 						sd->inventory_data[index] &&
@@ -1695,9 +1696,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 				}
 
 				//Add any bonuses that modify the base baseatk+watk (pre-skills)
-				if(sd)
+				if( sd )
 				{
-					if (sd->atk_rate != 100)
+					if( sd->atk_rate != 100 )
 						ATK_RATE(sd->atk_rate);
 
 					if(flag.cri && sd->crit_atk_rate)
@@ -1708,7 +1709,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 						ATK_ADDRATE(40);
 					*/
 
-					if(sd->status.party_id && (skill=pc_checkskill(sd,TK_POWER)) > 0){
+					if( sd->status.party_id && (skill=pc_checkskill(sd,TK_POWER)) > 0 )
+					{
 						if( (i = party_foreachsamemap(party_sub_count, sd, 0)) > 1 ) // exclude the player himself [Inkfish]
 							ATK_ADDRATE(2*skill*i);
 					}
@@ -2949,39 +2951,43 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 		{	//Move lh damage to the rh
 			wd.damage = wd.damage2;
 			wd.damage2 = 0;
-			flag.rh=1;
-			flag.lh=0;
+			flag.rh = 1;
+			flag.lh = 0;
 		}
 		else if( flag.rh && flag.lh )
 		{	//Dual-wield
 			if( wd.damage )
 			{
 				skill = pc_checkskill(sd,AS_RIGHT);
-				wd.damage = wd.damage * (50 + (skill * 10))/100;
-				if(wd.damage < 1) wd.damage = 1;
+				wd.damage = wd.damage * (50 + (skill * 10)) / 100;
+				if( wd.damage < 1 )
+					wd.damage = 1;
 			}
 			if( wd.damage2 )
 			{
 				skill = pc_checkskill(sd,AS_LEFT);
-				wd.damage2 = wd.damage2 * (30 + (skill * 10))/100;
-				if(wd.damage2 < 1) wd.damage2 = 1;
+				wd.damage2 = wd.damage2 * (30 + (skill * 10)) / 100;
+				if( wd.damage2 < 1 )
+					wd.damage2 = 1;
 			}
 		}
 		else if( sd->status.weapon == W_KATAR && !skill_num )
 		{ //Katars (offhand damage only applies to normal attacks, tested on Aegis 10.2)
 			skill = pc_checkskill(sd,TF_DOUBLE);
-			wd.damage2 = wd.damage * (1 + (skill * 2))/100;
+			wd.damage2 = wd.damage * (1 + (skill * 2)) / 100;
 
-			if( wd.damage && !wd.damage2 ) wd.damage2 = 1;
+			if( wd.damage && !wd.damage2 )
+				wd.damage2 = 1;
+
 			flag.lh = 1;
 		}
 	}
 
 	if( !flag.rh && wd.damage )
-		wd.damage=0;
+		wd.damage = 0;
 
 	if( !flag.lh && wd.damage2 )
-		wd.damage2=0;
+		wd.damage2 = 0;
 
 	if( wd.damage + wd.damage2 )
 	{	//There is a total damage value
@@ -3010,15 +3016,17 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src,struct blo
 	}
 
 	//SG_FUSION hp penalty [Komurka]
-	if (sc && sc->data[SC_FUSION])
+	if( sc && sc->data[SC_FUSION] )
 	{
-		int hp= sstatus->max_hp;
-		if (sd && tsd) {
-			hp = 8*hp/100;
-			if (100*sstatus->hp <= 20*sstatus->max_hp)
+		int hp = sstatus->max_hp;
+		if( sd && tsd )
+		{
+			hp = 8 * hp / 100;
+			if( 100 * sstatus->hp <= 20 * sstatus->max_hp )
 				hp = sstatus->hp;
-		} else
-			hp = 2*hp/100; //2% hp loss per hit
+		}
+		else
+			hp = 2 * hp / 100; //2% hp loss per hit
 		status_zap(src, hp, 0);
 	}
 
@@ -3047,15 +3055,16 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 	struct status_data *tstatus = status_get_status_data(target);
 	struct status_change *sc = status_get_sc(src);
 
-	struct {
+	struct
+	{
 		unsigned imdef : 1;
 		unsigned infdef : 1;
-	}	flag;
+	}flag;
 
 	memset(&ad,0,sizeof(ad));
 	memset(&flag,0,sizeof(flag));
 
-	if(src==NULL || target==NULL)
+	if( src == NULL || target == NULL )
 	{
 		nullpo_info(NLP_MARK);
 		return ad;
@@ -3684,13 +3693,13 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 	{
 	case HT_LANDMINE:
 	case MA_LANDMINE:
-		md.damage=skill_lv*(sstatus->dex+75)*(100+sstatus->int_)/100;
+		md.damage = skill_lv * (sstatus->dex + 75) * (100 + sstatus->int_) / 100;
 		break;
 	case HT_BLASTMINE:
-		md.damage=skill_lv*(sstatus->dex/2+50)*(100+sstatus->int_)/100;
+		md.damage = skill_lv * (sstatus->dex / 2 + 50)*(100 + sstatus->int_) / 100;
 		break;
 	case HT_CLAYMORETRAP:
-		md.damage=skill_lv*(sstatus->dex/2+75)*(100+sstatus->int_)/100;
+		md.damage = skill_lv * (sstatus->dex / 2 + 75)*(100 + sstatus->int_) / 100;
 		break;
 	case HT_BLITZBEAT:
 	case SN_FALCONASSAULT:
@@ -3756,17 +3765,17 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 			md.damage=md.damage/2;
 		break;
 	case GS_FLING:
-		md.damage = sd?sd->status.job_level:status_get_lv(src);
+		md.damage = sd ? sd->status.job_level : status_get_lv(src);
 		break;
 	case HVAN_EXPLOSION:	//[orn]
 		md.damage = sstatus->max_hp * (50 + 50 * skill_lv) / 100 ;
 		break ;
 	case ASC_BREAKER:
-		md.damage = 500+rand()%500 + 5*skill_lv * sstatus->int_;
+		md.damage = 500 + rand()%500 + 5 * skill_lv * sstatus->int_;
 		nk|=NK_IGNORE_FLEE|NK_NO_ELEFIX; //These two are not properties of the weapon based part.
 		break;
 	case HW_GRAVITATION:
-		md.damage = 200+200*skill_lv;
+		md.damage = 200 + 200 * skill_lv;
 		md.dmotion = 0; //No flinch animation.
 		break;
 	case NPC_EVILLAND:
@@ -3981,11 +3990,13 @@ int battle_calc_return_damage(struct block_list *src, struct block_list *bl, int
 			rdamage += (int)((*damage) + (*damage) * status_get_hp(src) * 2.15 / 100000);	// 
 			if( rdamage < 1 ) rdamage = 1;
 		}
-	} else {
-		if (sd && sd->long_weapon_damage_return)
+	}
+	else
+	{
+		if( sd && sd->long_weapon_damage_return )
 		{
 			rdamage += (*damage) * sd->long_weapon_damage_return / 100;
-			if (rdamage < 1) rdamage = 1;
+			if( rdamage < 1 ) rdamage = 1;
 		}
 	}
 	return rdamage;
