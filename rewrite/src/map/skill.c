@@ -1036,7 +1036,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl,SC_FEAR,3+2*skilllv,skilllv,skill_get_time(skillid,skilllv));
 		break;
 	case RK_HUNDREDSPEAR:
-		if( !sd || pc_checkskill(sd,skillid) == 0 )
+		if( !sd || pc_checkskill(sd,KN_SPEARBOOMERANG) == 0 )
 			break; // Spear Boomerang auto cast chance only works if you have mastered Spear Boomerang.
 		rate = 10 + 3 * skilllv;
 		if( rand()%100 < rate )
@@ -3615,7 +3615,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		{
 			if( skillid == NJ_BAKUENRYU || skillid == LG_EARTHDRIVE )
 				clif_skill_nodamage(src,bl,skillid,skilllv,1);
-			if( skillid ==  LG_MOONSLASHER );
+			if( skillid ==  LG_MOONSLASHER )
 				clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
 
 			skill_area_temp[0] = 0;
@@ -12823,6 +12823,8 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 			req.sp += req.sp + sc->data[SC__LAZINESS]->val1 * 10;
 		if( sc->data[SC_UNLIMITEDHUMMINGVOICE] )
 			req.sp += req.sp * sc->data[SC_UNLIMITEDHUMMINGVOICE]->val3 / 100;
+		if( sc->data[SC_RECOGNIZEDSPELL] )
+			req.sp += req.sp / 4;
 	}
 
 	req.zeny = skill_db[j].zeny[lv-1];

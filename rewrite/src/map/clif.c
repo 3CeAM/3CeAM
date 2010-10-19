@@ -4452,7 +4452,7 @@ int clif_outsight(struct block_list *bl,va_list ap)
 	{	//tsd has lost sight of the bl object.
 		switch(bl->type){
 		case BL_PC:
-			if (((TBL_PC*)bl)->vd.class_ != INVISIBLE_CLASS)
+			if (sd->vd.class_ != INVISIBLE_CLASS)
 				clif_clearunit_single(bl->id,0,tsd->fd);
 			if(sd->chatID){
 				struct chat_data *cd;
