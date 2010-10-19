@@ -8547,10 +8547,15 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			sd->itemid = ammo_id;
 			if( itemdb_is_GNbomb(ammo_id) )
 			{
-				if( ammo_id == 13263 )
-					map_foreachincell(skill_area_sub,bl->m,bl->x,bl->y,BL_CHAR,src,GN_SLINGITEM_RANGEMELEEATK,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
-				else
-					skill_attack(BF_WEAPON,src,src,bl,GN_SLINGITEM_RANGEMELEEATK,skilllv,tick,flag);
+				if( battle_check_target(src,bl,BCT_ENEMY) >= 0 )
+				{	// Only attack if the target is an enemy.
+					if( ammo_id == 13263 )
+						map_foreachincell(skill_area_sub,bl->m,bl->x,bl->y,BL_CHAR,src,GN_SLINGITEM_RANGEMELEEATK,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
+					else
+						skill_attack(BF_WEAPON,src,src,bl,GN_SLINGITEM_RANGEMELEEATK,skilllv,tick,flag);
+				}
+				else //Otherwise, it fails, shows animation and removes items.
+					clif_skill_fail(sd,GN_SLINGITEM_RANGEMELEEATK,0xa,0,0);
 			}
 			else
 			{
