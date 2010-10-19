@@ -814,7 +814,7 @@ int memitemdata_to_sql(const struct item items[], int max, int id, int tableswit
 	return 0;
 }
 
-#define MAX_CHAR_BUF 110 //Max size (for WFIFOHEAD calls)
+#define MAX_CHAR_BUF 112 //Max size (for WFIFOHEAD calls)
 int mmo_char_tobuf(uint8* buf, struct mmo_charstatus* p);
 
 #ifndef TXT_SQL_CONVERT
@@ -1599,7 +1599,7 @@ int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p)
 	WBUFW(buf,106) = ( p->rename > 0 ) ? 0 : 1;
 	offset+=2;
 #endif
-#if PACKETVER >= 20100721
+#if PACKETVER >= 20100720 && PACKETVER <= 20100727
 	mapindex_getmapname_ext(mapindex_id2name(p->last_point.map), (char*)WBUFP(buf,108));
 	offset += 16;
 #endif
