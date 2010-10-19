@@ -584,7 +584,7 @@ int unit_movepos(struct block_list *bl, short dst_x, short dst_y, int easy, bool
 	ud->walktimer = -2; // arbitrary non-INVALID_TIMER value to make the clif code send walking packets
 	map_foreachinmovearea(clif_insight, bl, AREA_SIZE, -dx, -dy, sd?BL_ALL:BL_PC, bl);
 	ud->walktimer = INVALID_TIMER;
-		
+	
 	if(sd) {
 		if( sd->touching_id )
 			npc_touchnext_areanpc(sd,false);
@@ -1000,7 +1000,7 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 			}
 			break;
 		}
-		if (target)
+		if( target )
 			target_id = target->id;
 	}
 	if (src->type==BL_HOM)

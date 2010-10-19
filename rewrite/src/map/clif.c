@@ -5324,7 +5324,7 @@ int clif_status_change(struct block_list *bl, int type, int flag, unsigned int t
 		type == SI_OVERHEAT || type == SI_BANDING)
 		tick=0;
 
-	if( battle_config.display_status_timers && tick>0 )
+	if( battle_config.display_status_timers && tick > 0 )
 		WBUFW(buf,0)=0x043f;
 	else
 		WBUFW(buf,0)=0x0196;

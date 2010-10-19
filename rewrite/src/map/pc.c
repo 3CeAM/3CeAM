@@ -4621,15 +4621,17 @@ int pc_memo(struct map_session_data* sd, int pos)
  *------------------------------------------*/
 int pc_checkskill(struct map_session_data *sd,int skill_id)
 {
-	if(sd == NULL) return 0;
-	if( skill_id>=GD_SKILLBASE){
+	nullpo_ret(sd);
+
+	if( skill_id >= GD_SKILLBASE )
+	{
 		struct guild *g;
-		if( sd->status.guild_id>0 && (g=guild_search(sd->status.guild_id))!=NULL)
+		if( sd->status.guild_id > 0 && (g = guild_search(sd->status.guild_id)) != NULL )
 			return guild_checkskill(g,skill_id);
 		return 0;
 	}
 
-	if(sd->status.skill[skill_id].id == skill_id)
+	if( sd->status.skill[skill_id].id == skill_id )
 		return (sd->status.skill[skill_id].lv);
 
 	return 0;

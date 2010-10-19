@@ -4396,20 +4396,22 @@ BUILDIN_FUNC(itemheal)
 	TBL_PC *sd;
 	int hp,sp;
 
-	hp=script_getnum(st,2);
-	sp=script_getnum(st,3);
+	hp = script_getnum(st,2);
+	sp = script_getnum(st,3);
 
-	if(potion_flag==1) {
+	if( potion_flag == 1 )
+	{
 		potion_hp = hp;
 		potion_sp = sp;
 		return 0;
 	}
 	
 	sd = script_rid2sd(st);
-	if (!sd) return 0;
+	if( !sd ) return 0;
 	pc_itemheal(sd,sd->itemid,hp,sp);
 	return 0;
 }
+
 /*==========================================
  *
  *------------------------------------------*/
