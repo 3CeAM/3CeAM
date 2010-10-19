@@ -441,7 +441,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			return 0;
 		}
 
-		if( sc->data[SC_WEAPONBLOCKING] && (flag&(BF_WEAPON|BF_SHORT)) && rand()%100 < sc->data[SC_WEAPONBLOCKING]->val2 )
+		if( sc->data[SC_WEAPONBLOCKING] && flag&BF_SHORT && rand()%100 < sc->data[SC_WEAPONBLOCKING]->val2 )
 		{
 			clif_skill_nodamage(bl,src,GC_WEAPONBLOCKING,1,1);
 			d->dmg_lv = ATK_NONE;
@@ -646,7 +646,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 		}
 
 		//Finally added to remove the status of immobile when aimedbolt is used. [Jobbie]
-		if( skill_num == RA_AIMEDBOLT && tsc && (tsc->data[SC_BITE] || tsc->data[SC_ANKLE] || tsc->data[SC_ELECTRICSHOCKER]) )
+		if( skill_num == RA_AIMEDBOLT && sc && (sc->data[SC_BITE] || sc->data[SC_ANKLE] || sc->data[SC_ELECTRICSHOCKER]) )
 		{
 			status_change_end(bl, SC_BITE, -1);
 			status_change_end(bl, SC_ANKLE, -1);
@@ -1559,7 +1559,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 
 			if( sd && (sd->status.weapon == W_1HSWORD || sd->status.weapon == W_DAGGER) && 
 				(skill = pc_checkskill(sd, GN_TRAINING_SWORD))>0 )
-				hitrate += hitrate * 3 * skill;
+				hitrate += 3 * skill;
 		}
 
 		hitrate = cap_value(hitrate, battle_config.min_hitrate, battle_config.max_hitrate); 
@@ -1633,7 +1633,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					short index = sd->equip_index[EQI_HAND_L];
 					if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_ARMOR )
 						ATK_ADD(sd->inventory_data[index]->weight/10);
-					break;
 				}
 				else
 					ATK_ADD(sstatus->rhw.atk2); //Else use Atk2
@@ -2051,7 +2050,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case RK_WINDCUTTER: // Sugested formula from irowiki.
 					skillratio += 50 * skill_lv; // Base skillratio
-					if( s_level > 50 ) skillratio += skillratio * (1 + (s_level-50) / 20); // Bonus by base level.
+					if( s_level > 50 ) skillratio += skillratio * (1 + (s_level-50) / 200.); // Bonus by base level.
 					break;
 				case RK_IGNITIONBREAK: // Sugested formula from irowiki.
 					i = distance_bl(src,target) / 2;
@@ -2164,7 +2163,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio += 100 * skill_lv;
 					break;
 				case SC_TRIANGLESHOT:
-					skillratio += 270 + 30 * skill_lv;
+					skillratio += 270 + 30 * skill_lv;		// Note: Isn't the formula outdated? [Xazax]
 					break;
 				case SC_FEINTBOMB:
 					skillratio += 100 + 100 * skill_lv;
@@ -2478,17 +2477,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					sc->data[SC_SPIRIT]->val2 == SL_CRUSADER)
 					ATK_ADDRATE(100);
 				break;
-			case NC_BOOSTKNUCKLE:
-			case NC_PILEBUNKER:
-			case NC_VULCANARM:
-			case NC_FLAMELAUNCHER:
-			case NC_COLDSLOWER:
-			case NC_ARMSCANNON:
-			case NC_AXEBOOMERANG:
-			case NC_POWERSWING:
 			case NC_AXETORNADO:
-				ATK_ADDRATE(status_get_lv(src)/6);//Should led up to 1.25 times the normal damage if Blevel is 150. [Jobbie]
-				if( skill_num == NC_AXETORNADO && ((sstatus->rhw.ele) == ELE_WIND || (sstatus->lhw.ele) == ELE_WIND) )
+				if( (sstatus->rhw.ele) == ELE_WIND || (sstatus->lhw.ele) == ELE_WIND )
 					ATK_ADDRATE(50);
 				break;
 			case RK_DRAGONBREATH:
@@ -3340,9 +3330,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						{
 							struct status_change *tsc = status_get_sc(target);
 							if( tsc && tsc->data[SC_FREEZING] )
-							{
 								skillratio = (skillratio + 900 + 300 * skill_lv) * s_level / 100;
-							}
 							else
 								skillratio = (skillratio + 100 * skill_lv) * (1 + ((sd) ? sd->status.job_level : 0) / 100);
 						}
@@ -3407,7 +3395,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							skillratio += skillratio * sc->data[SC_HEATER_OPTION]->val3 / 100;
 						break;
 					case SO_ELECTRICWALK:
-						skillratio += -100 + 300 * ( s_level * 3 / 100 );
+						skillratio += -100 + 300 * ( s_level * 3 / 100 );		// Note: Isn't this damage to high? The formula should be checked [Xazax]
 						if( sc && sc->data[SC_BLAST_OPTION] )
 							skillratio += skillratio * sc->data[SC_BLAST_OPTION]->val2 / 100;
 						break;
@@ -4359,7 +4347,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			}
 		}
 
-		if( tsc && tsc->data[SC_WATER_SCREEN_OPTION] && tsc->data[SC_WATER_SCREEN_OPTION]->val1 )
+		if( tsc->data[SC_WATER_SCREEN_OPTION] && tsc->data[SC_WATER_SCREEN_OPTION]->val1 )
 		{
 			struct block_list *e_bl = map_id2bl(tsc->data[SC_WATER_SCREEN_OPTION]->val1);
 			if( e_bl && !status_isdead(e_bl) )

@@ -1626,7 +1626,7 @@ int status_base_amotion_pc(struct map_session_data* sd, struct status_data* stat
 	// raw delay adjustment from bAspd bonus
 	amotion+= sd->aspd_add;
 
-	amotion += amotion * pc_checkskill(sd, GN_TRAINING_SWORD) / 100;
+	amotion += amotion * pc_checkskill(sd, GN_TRAINING_SWORD) / 100;		// Note: Does GN_TRAINING_SWORD affect aspd? [Xazax]
 	
  	return amotion;
 }
@@ -2747,9 +2747,6 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 
 	if( sc->data[SC_SPCOST_RATE] )
 		sd->dsprate -= sc->data[SC_SPCOST_RATE]->val1;
-
-	if( sc->data[SC_RECOGNIZEDSPELL] )
-		sd->dsprate = sd->dsprate + ((sd->dsprate / 100) * 25);
 
 	//Underflow protections.
 	if( sd->dsprate < 0 )
@@ -6320,6 +6317,8 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC_LERADSDEW:
 				if( sc && sc->data[SC_BERSERK] )
 					return 0;
+			case SC_SHAPESHIFT:
+			case SC_PROPERTYWALK:
 				break;
 			default:
 				if(sce->val1 > val1)
@@ -9075,7 +9074,9 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 				damage += 3 * status->vit;
 			else
 				damage += 7 * status->vit;
-
+			
+			unit_skillcastcancel(bl,0);
+			
 			map_freeblock_lock();
 			status_zap(bl,damage,0);
 			flag = !sc->data[type];
@@ -9680,7 +9681,6 @@ int status_change_spread( struct block_list *src, struct block_list *bl )
 {
 	int i, flag = 0;
 	struct status_change *sc = status_get_sc(src);
-	struct status_change *tsc = status_get_sc(bl);
 	const struct TimerData *timer;
 	unsigned int tick;
 	struct status_change_data data;
@@ -9744,7 +9744,7 @@ int status_change_spread( struct block_list *src, struct block_list *bl )
 				data.val2 = sc->data[i]->val2;
 				data.val3 = sc->data[i]->val3;
 				data.val4 = sc->data[i]->val4;
-				sc_start4(bl,i,100,data.val1,data.val2,data.val3,data.val4,data.tick);
+				status_change_start(bl,i,10000,data.val1,data.val2,data.val3,data.val4,data.tick,1|2|8); // SpeedRO Patch
 				flag = 1;
 				break;
 			default:
