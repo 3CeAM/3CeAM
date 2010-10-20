@@ -2050,7 +2050,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case RK_WINDCUTTER: // Sugested formula from irowiki.
 					skillratio += 50 * skill_lv; // Base skillratio
-					if( s_level > 50 ) skillratio += skillratio * (1 + (s_level-50) / 200.); // Bonus by base level.
+					if( s_level > 50 ) skillratio += skillratio * (s_level-50) / 200; 		// x1.5 at base level 150
 					break;
 				case RK_IGNITIONBREAK: // Sugested formula from irowiki.
 					i = distance_bl(src,target) / 2;
@@ -2115,7 +2115,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio += 500;//Damage based from iROwiki info. [Jobbie]
 					break;
 				case RA_WUGSTRIKE:
-					skillratio = 120 * skill_lv - 100;
+					skillratio = 120 * skill_lv;
 					break;
 				case RA_WUGBITE:
 				case RA_SENSITIVEKEEN:
@@ -3212,8 +3212,19 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							skillratio += 5*skill_lv;
 						break;
 					case MG_COLDBOLT:
-						if( sc && sc->data[SC_AQUAPLAY_OPTION] )
-							skillratio += skillratio * sc->data[SC_AQUAPLAY_OPTION]->val3 / 100;
+						if ( sc ) 
+						{
+							if ( sc->data[SC_SPELLFIST] ) 
+							{
+								skillratio *= ad.blewcount;
+								skillratio += skillratio / sc->data[SC_SPELLFIST]->val4 * sc->data[SC_SPELLFIST]->val2;
+								ad.blewcount = 1;				// ad mods, to make it work similar to regular hits [Xazax]
+								ad.flag = BF_WEAPON|BF_SHORT;
+								ad.type = 0;
+							}
+							if( sc->data[SC_AQUAPLAY_OPTION] )
+								skillratio += skillratio * sc->data[SC_AQUAPLAY_OPTION]->val3 / 100;
+						}
 						break;
 					case MG_FIREWALL:
 						skillratio -= 50;						
@@ -3221,12 +3232,34 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							skillratio += skillratio * sc->data[SC_PYROTECHNIC_OPTION]->val3 / 100;
 						break;
 					case MG_FIREBOLT:
-						if( sc && sc->data[SC_PYROTECHNIC_OPTION] )
-							skillratio += skillratio * sc->data[SC_PYROTECHNIC_OPTION]->val3 / 100;
+						if ( sc )
+						{
+							if ( sc->data[SC_SPELLFIST] )
+							{
+								skillratio *= ad.blewcount;
+								skillratio += skillratio / sc->data[SC_SPELLFIST]->val4 * sc->data[SC_SPELLFIST]->val2;
+								ad.blewcount = 1;
+								ad.flag = BF_WEAPON|BF_SHORT;
+								ad.type = 0;
+							}
+							if( sc->data[SC_PYROTECHNIC_OPTION] )
+								skillratio += skillratio * sc->data[SC_PYROTECHNIC_OPTION]->val3 / 100;
+						}
 						break;
 					case MG_LIGHTNINGBOLT:
-						if( sc && sc->data[SC_GUST_OPTION] )
-							skillratio += skillratio * sc->data[SC_GUST_OPTION]->val2 / 100;
+						if ( sc )
+						{
+							if ( sc->data[SC_SPELLFIST] )
+							{
+								skillratio *= ad.blewcount;
+								skillratio += skillratio / sc->data[SC_SPELLFIST]->val4 * sc->data[SC_SPELLFIST]->val2;
+								ad.blewcount = 1;
+								ad.flag = BF_WEAPON|BF_SHORT;
+								ad.type = 0;
+							}
+							if( sc->data[SC_GUST_OPTION] )
+								skillratio += skillratio * sc->data[SC_GUST_OPTION]->val2 / 100;
+						}
 						break;
 					case MG_THUNDERSTORM:
 						skillratio -= 20;
@@ -3339,7 +3372,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						skillratio = (skillratio + 400 + 100 * skill_lv * (1 + sstatus->int_/1000)) * s_level / 100;
 						break;
 					case WL_CRIMSONROCK:
-						skillratio = skillratio + 1200 + 300 * skill_lv + 15 * (s_level - 100);
+						skillratio += 1200 + 300 * skill_lv + 15 * (s_level - 100);
 						break;
 					case WL_HELLINFERNO:
 						if( s_ele == ELE_FIRE )
@@ -3381,7 +3414,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					case WL_SUMMON_ATK_WIND:
 					case WL_SUMMON_ATK_GROUND:
 						skillratio += 50 * skill_lv - 50;
-						skillratio = skillratio * (s_level + 2 * (sd ? sd->status.job_level : 0)) / 100;
+						skillratio *= (s_level + 2 * (sd ? sd->status.job_level : 0)) / 100;
 						break;
 					case WM_SEVERE_RAINSTORM:
 						skillratio += 50 * skill_lv;
@@ -4228,10 +4261,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		if( sc->data[SC_SPELLFIST] )
 		{
 			if( --(sc->data[SC_SPELLFIST]->val1) >= 0 )
-			{
 				wd = battle_calc_attack(BF_MAGIC,src,target,sc->data[SC_SPELLFIST]->val3,sc->data[SC_SPELLFIST]->val4,flag);
-				wd.damage += (wd.damage / sc->data[SC_SPELLFIST]->val4) * sc->data[SC_SPELLFIST]->val2;
-			}
 			else
 				status_change_end(src,SC_SPELLFIST,-1);
 		}
@@ -4401,17 +4431,28 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		int r_skill = sd->status.skill[sc->data[SC__AUTOSHADOWSPELL]->val1].id,
 			r_lv = sc->data[SC__AUTOSHADOWSPELL]->val2;
 
-		switch( skill_get_casttype(r_skill) )
+		if (r_skill != AL_HOLYLIGHT && r_skill != PR_MAGNUS)
 		{
-		case CAST_GROUND:
-			skill_castend_pos2(src, target->x, target->y, r_skill, r_lv, tick, flag);
-			break;
-		case CAST_NODAMAGE:
-			skill_castend_nodamage_id(src, target, r_skill, r_lv, tick, flag);
-			break;
-		case CAST_DAMAGE:
-			skill_castend_damage_id(src, target, r_skill, r_lv, tick, flag);
-			break;
+			struct unit_data *ud;
+
+			switch( skill_get_casttype(r_skill) )
+			{
+			case CAST_GROUND:
+				skill_castend_pos2(src, target->x, target->y, r_skill, r_lv, tick, flag);
+				break;
+			case CAST_NODAMAGE:
+				skill_castend_nodamage_id(src, target, r_skill, r_lv, tick, flag);
+				break;
+			case CAST_DAMAGE:
+				skill_castend_damage_id(src, target, r_skill, r_lv, tick, flag);
+				break;
+			}
+
+			if ( (ud = unit_bl2ud(src)) != NULL )
+			{
+				ud->canact_tick = tick + skill_delayfix(src, r_skill, r_lv);
+				clif_status_change(src, SI_ACTIONDELAY, 1, skill_delayfix(src, r_skill, r_lv), 0, 0, 1);
+			}
 		}
 	}
 	if( sd && sc && (sc->data[SC_TROPIC_OPTION] || sc->data[SC_CHILLY_AIR_OPTION] || sc->data[SC_WILD_STORM_OPTION] || sc->data[SC_UPHEAVAL_OPTION]) )

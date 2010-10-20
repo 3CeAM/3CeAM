@@ -3615,7 +3615,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		{
 			if( skillid == NJ_BAKUENRYU || skillid == LG_EARTHDRIVE )
 				clif_skill_nodamage(src,bl,skillid,skilllv,1);
-			if( skillid ==  LG_MOONSLASHER )
+			if( skillid == LG_MOONSLASHER )
 				clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
 
 			skill_area_temp[0] = 0;
@@ -5100,10 +5100,17 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SR_GENTLETOUCH_ENERGYGAIN:
 	case SR_GENTLETOUCH_CHANGE:
 	case SR_GENTLETOUCH_REVITALIZE:
-	case SO_STRIKING:
 	case GN_CARTBOOST:
 		clif_skill_nodamage(src,bl,skillid,skilllv,
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
+		break;
+	case SO_STRIKING:
+		{
+			int bonus;
+			bonus = 25 + 10 * skilllv;
+			bonus += (pc_checkskill(sd, SA_FLAMELAUNCHER)+pc_checkskill(sd, SA_FROSTWEAPON)+pc_checkskill(sd, SA_LIGHTNINGLOADER)+pc_checkskill(sd, SA_SEISMICWEAPON))*5;
+			clif_skill_nodamage( src, bl, skillid, skilllv, sc_start2(bl, type, 100, skilllv, bonus, skill_get_time(skillid,skilllv)) );
+		}
 		break;
 	case NPC_STOP:
 		if( clif_skill_nodamage(src,bl,skillid,skilllv,
@@ -6224,7 +6231,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_NEUTRALBARRIER_MASTER:	case SC_NEUTRALBARRIER:			case SC_STEALTHFIELD_MASTER:
 				case SC_STEALTHFIELD:			case SC_THURISAZ:				case SC_BERKANA:
 				case SC_NAUTHIZ:				case SC_HAGALAZ:				case SC_ISA:
-				case SC_OTHILA:					case SC_URUZ:
+				case SC_OTHILA:					case SC_URUZ:					case SC__SHADOWFORM:
 					continue;
 				case SC_ASSUMPTIO:
 					if( bl->type == BL_MOB )
@@ -7214,7 +7221,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 	case RK_ENCHANTBLADE:
 		clif_skill_nodamage(src,bl,skillid,skilllv,
-			sc_start2(bl,type,100,skilllv,(100+20*skilllv)+status_get_status_data(src)->matk_min/2,skill_get_time(skillid,skilllv)));
+			sc_start2(bl,type,100,skilllv,100+20*skilllv+status_get_status_data(src)->matk_min/2,skill_get_time(skillid,skilllv)));
 		break;
 	case RK_DRAGONHOWLING:
 		if( flag&1)
@@ -7883,7 +7890,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SC_WEAKNESS:
 		if( !(tsc && tsc->data[type]) )
 		{ // p = 0.1 + (1 - Ta/Cd)^2 + (1.5 * (floor(Cd/60) - floor(Ta/60)) * (Ta * (Cd - Ta)/(Cd^2)) iROwiki information
-			int rate = (int)(10000 * (0.1 + pow(1 - tstatus->agi/sstatus->dex,2) + (1.5 * floor(sstatus->dex/60.) + floor(tstatus->agi/60.)) * (tstatus->agi * (sstatus->dex - tstatus->agi)/(pow(sstatus->dex,2)))));
+			int rate = (int)(10000 * (0.1 + pow(1 - tstatus->agi/(float)sstatus->dex,2) + (1.5 * floor(sstatus->dex/60.) + floor(tstatus->agi/60.)) * (tstatus->agi * (sstatus->dex - tstatus->agi)/(float)(pow(sstatus->dex,2)))));
 			rate = cap_value(rate,0,10000);
 			clif_skill_nodamage(src,bl,skillid,0,
 				status_change_start(bl,type,rate,skilllv,0,0,0,skill_get_time(skillid,skilllv),0));
@@ -8525,9 +8532,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case GN_MANDRAGORA:
 		if( flag&1 )
 		{
-			status_zap(bl, 0, status_get_max_sp(bl) / 100 * 25 + 5 * skilllv);
-			clif_skill_nodamage(bl, src, skillid, skilllv, 
-				sc_start(bl, type, 35 + 10 * skilllv, skilllv, skill_get_time(skillid, skilllv)));
+			if ( clif_skill_nodamage(bl, src, skillid, skilllv,
+				sc_start(bl, type, 35 + 10 * skilllv, skilllv, skill_get_time(skillid, skilllv))) )
+				status_zap(bl, 0, status_get_max_sp(bl) / 100 * 25 + 5 * skilllv);
 		}
 		else
 			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), BL_CHAR,
@@ -8591,14 +8598,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case GN_S_PHARMACY:
 		if( sd )
 		{
-			switch( skilllv )
-			{
-				case 6: case 7: case 8: i = 3; break; //3 items to make at once.
-				case 9: i = 3 + rand()%3; break; //3~5 items to make at once.
-				case 10: i = 4 + rand()%3; break; //4~6 items to make at once.
-				default: i = 2; //2 item to make at once.
-			}
-			clif_cooking_list(sd,29,skillid,i,6);
+			clif_cooking_list(sd,29,skillid,1,6);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
 		break;
@@ -11237,7 +11237,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			break;
 
 		case UNT_THORNS_TRAP:
-			if( (tsc = status_get_sc(bl)) )
+			if( tsc )
 			{
 				if( !sg->val2 )
 				{
@@ -11309,7 +11309,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 				status_heal(bl, hp, 0, 0);
 				if( tstatus->hp != tstatus->max_hp )
 					clif_skill_nodamage(&src->bl, bl, AL_HEAL, hp, 0);
-				if( (tsc = status_get_sc(bl)) && (tsc->data[SC_FREEZE] || tsc->data[SC_FREEZING]) ) // It only affects if the target is under Freeze or Freezing status.
+				if( tsc && (tsc->data[SC_FREEZE] || tsc->data[SC_FREEZING]) ) // It only affects if the target is under Freeze or Freezing status.
 					sc_start(bl, type, 100, sg->skill_lv, sg->interval + 100);
 			}
 			break;
@@ -11874,8 +11874,13 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		return 0;
 	}
 
-	if( sc && (sc->data[SC__SHADOWFORM] || sc->data[SC__IGNORANCE]) )
-		return 0;
+	if( sc )
+	{ 
+		if( sc->data[SC__SHADOWFORM] || sc->data[SC__IGNORANCE] )
+			return 0;
+		if( sc->data[SC_SPELLFIST] )
+			status_change_end(&sd->bl,SC_SPELLFIST,-1);
+	}
 
 	switch( skill )
 	{ // Turn off check.
@@ -15290,6 +15295,13 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 						break;
 				}
 			case GN_S_PHARMACY:
+				switch( pc_checkskill(sd,GN_S_PHARMACY) )
+				{
+					case 6: case 7: case 8: qty = 3; break; //3 items to make at once.
+					case 9: qty = 3 + rand()%3; break; //3~5 items to make at once.
+					case 10: qty = 4 + rand()%3; break; //4~6 items to make at once.
+					default: qty = 2; //2 item to make at once.
+				}
 				make_per = 100000; //100% success rate.
 				break;
 			default:
