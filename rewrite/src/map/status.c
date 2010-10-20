@@ -2702,10 +2702,10 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		status->aspd_rate -= 30 * skill;
 	if( (skill=pc_checkskill(sd,GS_SINGLEACTION)) > 0 && (sd->status.weapon >= W_REVOLVER && sd->status.weapon <= W_GRENADE) )
 		status->aspd_rate -= ((skill + 1) / 2) * 10;
-	if( pc_isriding(sd,OPTION_RIDING) && !(sd->class_&JOBL_THIRD) )
+	if( pc_isriding(sd,OPTION_RIDING) )			// If there is the !(sd->class_&JOBL_THIRD), than aspd reduction isn't applied to griff users. FIXME: pc_isriding(sd,OPTION_RIDING) is only true for griffs and pecos? [Xazax]
 		status->aspd_rate += 500 - 100 * pc_checkskill(sd,KN_CAVALIERMASTERY);
 	if( pc_isriding(sd,OPTION_RIDING_DRAGON) && (sd->class_&JOBL_THIRD) && (skill = pc_checkskill(sd,RK_DRAGONTRAINING)) > 0 )
-		status->aspd_rate += 500 - 100 * pc_checkskill(sd,RK_DRAGONTRAINING);
+		status->aspd_rate += 500 - 100 * skill;
 
 	status->adelay = 2 * status->amotion;
 
@@ -7391,14 +7391,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			status_change_end(bl, SC_CRYSTALIZE, -1);
 			break;
 		case SC_STRIKING:
-			val2 = 25 + 10 * val1;
-			if( sd )
-			{
-				val2 += pc_checkskill(sd, SA_FLAMELAUNCHER) * 5;
-				val2 += pc_checkskill(sd, SA_FROSTWEAPON) * 5;
-				val2 += pc_checkskill(sd, SA_LIGHTNINGLOADER) * 5;
-				val2 += pc_checkskill(sd, SA_SEISMICWEAPON) * 5;
-			}
 			val4 = tick / 1000;
 			tick = 1000;
 			break;
@@ -9281,7 +9273,7 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 	case SC_STRIKING:
 		if( --(sce->val4) >= 0 )
 		{
-			if( !status_charge(bl,0,20*sce->val1/100) )
+			if( !status_charge(bl,0, sce->val1 ) )
 				break;
 			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
 			return 0;
@@ -9744,7 +9736,7 @@ int status_change_spread( struct block_list *src, struct block_list *bl )
 				data.val2 = sc->data[i]->val2;
 				data.val3 = sc->data[i]->val3;
 				data.val4 = sc->data[i]->val4;
-				status_change_start(bl,i,10000,data.val1,data.val2,data.val3,data.val4,data.tick,1|2|8); // SpeedRO Patch
+				status_change_start(bl,i,10000,data.val1,data.val2,data.val3,data.val4,data.tick,1|2|8);
 				flag = 1;
 				break;
 			default:
