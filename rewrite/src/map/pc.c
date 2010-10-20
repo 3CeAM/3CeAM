@@ -4627,7 +4627,8 @@ int pc_memo(struct map_session_data* sd, int pos)
  *------------------------------------------*/
 int pc_checkskill(struct map_session_data *sd,int skill_id)
 {
-	nullpo_ret(sd);
+	if( sd == NULL )
+		return 0;
 
 	if( skill_id >= GD_SKILLBASE )
 	{
