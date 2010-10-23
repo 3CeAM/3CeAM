@@ -1596,8 +1596,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				wd.damage2 = 0;
 				break;
 			case LK_SPIRALPIERCE:
-				if( sc && sc->data[SC_GLOOMYDAY_SK] )
-					ATK_ADD(50 + 5 * sc->data[SC_GLOOMYDAY_SK]->val1);
 			case ML_SPIRALPIERCE:
 				if (sd) {
 					short index = sd->equip_index[EQI_HAND_R];
@@ -1613,6 +1611,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				i = sstatus->str/10;
 				i*=i;
 				ATK_ADD(i); //Add str bonus.
+				if( sc && sc->data[SC_GLOOMYDAY_SK] && skill_num == LK_SPIRALPIERCE )
+					ATK_ADD(50 + 5 * sc->data[SC_GLOOMYDAY_SK]->val1);
 				switch (tstatus->size) { //Size-fix. Is this modified by weapon perfection?
 					case 0: //Small: 125%
 						ATK_RATE(125);
@@ -3216,9 +3216,9 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						{
 							if ( sc->data[SC_SPELLFIST] ) 
 							{
-								skillratio *= ad.blewcount;
+								skillratio *= ad.div_;
 								skillratio += skillratio / sc->data[SC_SPELLFIST]->val4 * sc->data[SC_SPELLFIST]->val2;
-								ad.blewcount = 1;				// ad mods, to make it work similar to regular hits [Xazax]
+								ad.div_ = 1;				// ad mods, to make it work similar to regular hits [Xazax]
 								ad.flag = BF_WEAPON|BF_SHORT;
 								ad.type = 0;
 							}
@@ -3236,9 +3236,9 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						{
 							if ( sc->data[SC_SPELLFIST] )
 							{
-								skillratio *= ad.blewcount;
+								skillratio *= ad.div_;
 								skillratio += skillratio / sc->data[SC_SPELLFIST]->val4 * sc->data[SC_SPELLFIST]->val2;
-								ad.blewcount = 1;
+								ad.div_ = 1;
 								ad.flag = BF_WEAPON|BF_SHORT;
 								ad.type = 0;
 							}
@@ -3251,9 +3251,9 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						{
 							if ( sc->data[SC_SPELLFIST] )
 							{
-								skillratio *= ad.blewcount;
+								skillratio *= ad.div_;
 								skillratio += skillratio / sc->data[SC_SPELLFIST]->val4 * sc->data[SC_SPELLFIST]->val2;
-								ad.blewcount = 1;
+								ad.div_ = 1;
 								ad.flag = BF_WEAPON|BF_SHORT;
 								ad.type = 0;
 							}

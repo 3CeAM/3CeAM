@@ -1090,7 +1090,7 @@
 //2331,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		SR_HELLGATE,Hell Gate
 2332,5,6,4,-1,0x2,3,5,1,no,0,0,0,weapon,0,		SR_RAMPAGEBLASTER,Rampage Blaster
 2333,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,			SR_CRESCENTELBOW,Crescent Elbow
-2334,0,6,4,0,0x2,3,5,1,no,0,0,0,none,0,	SR_CURSEDCIRCLE,Cursed Circle
+2334,0,6,4,0,0x2,1:1:2:2:3,5,1,no,0,0,0,none,0,	SR_CURSEDCIRCLE,Cursed Circle
 2335,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,			SR_LIGHTNINGWALK,Lightning Walk
 2336,9,6,1,-1,0,0,5,1,no,0,0,0,weapon,2,		SR_KNUCKLEARROW,Knuckle Arrow
 2337,0,6,4,-1,0x2,2,1,1,no,0,0,0,weapon,0,		SR_WINDMILL,Windmill
@@ -1177,7 +1177,7 @@
 2478,0,6,4,0,0x1,0,5,1,no,0,0,0,weapon,0,	GN_CARTBOOST,Cart Boost
 2479,6,6,2,0,0x1,0,5,1,yes,0,0x80,0,magic,0,	GN_THORNS_TRAP,Thorn Trap
 2480,9,6,1,0,0x1,0,5,0,no,0,0,3,weapon,0,	GN_BLOOD_SUCKER,Blood Sucker
-2481,9,6,1,0,0,3:5:7:9:11,5,1,yes,0,0,0,magic,0,	GN_SPORE_EXPLOSION,Spore Explosion
+2481,9,6,1,0,0,1:2:3:4:5,5,1,yes,0,0,0,magic,0,	GN_SPORE_EXPLOSION,Spore Explosion
 2482,6,6,16,0,0x1,0,5,-1,yes,0,0,1,weapon,2,	GN_WALLOFTHORN,Wall of Thorns
 2483,9,6,2,0,0x2,3,10,1,yes,0,0,0,weapon,0,	GN_CRAZYWEED,Crazy Weed
 2484,0,6,1,2,0,0,10,0,no,0,0,0,weapon,0,	GN_CRAZYWEED_ATK,Crazy Weed Attack
@@ -1200,7 +1200,7 @@
 2515,9,6,16,0,0x1,0,5,1,yes,0,0,0,magic,0,	AB_SECRAMENT,Sacrament
 2516,0,0,1,-1,0x2,5,5,0,no,0,0,0,weapon,0,		WM_SEVERE_RAINSTORM_MELEE,Severe Rainstorm Melee
 2517,0,6,4,-1,0x2,3:4:5:6:7,5,0,no,0,0,0,weapon,0,	SR_HOWLINGOFLION,Howling of Lion
-2518,3,6,2,-1,0x2,2:2:3:4:4,5,1,no,0,0,0,weapon,0,	SR_RIDEINLIGHTNING,Ride In Lightening
+2518,3,6,2,-1,0x2,2:2:3:3:4,5,1,no,0,0,0,weapon,0,	SR_RIDEINLIGHTNING,Ride In Lightening
 2519,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_OVERBRAND_BRANDISH,Overbrand Brandish
 2520,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_OVERBRAND_PLUSATK,Overbrand Plus Attack
 
