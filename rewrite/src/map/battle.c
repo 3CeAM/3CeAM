@@ -380,7 +380,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 
 		if(!damage) return 0;
 	}
-	// FIXMI: Double definition of "sc".
+
 	sc = status_get_sc(bl);
 	tsc = status_get_sc(src);
 
@@ -702,28 +702,25 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 	if( sc && sc->data[SC__DEADLYINFECT] && damage > 0 && rand()%100 < 20 )
 		status_change_spread(bl, src); // Deadly infect attacked side
 
-	//SC effects from caster side.
-	sc = status_get_sc(src);
-
-	if( sc && sc->count )
+	if( tsc && tsc->count )
 	{
-		if( sc->data[SC_INVINCIBLE] && !sc->data[SC_INVINCIBLEOFF] )
+		if( tsc->data[SC_INVINCIBLE] && !tsc->data[SC_INVINCIBLEOFF] )
 			damage += damage * 75 / 100;
 		// [Epoque]
 		if (bl->type == BL_MOB)
 		{
 			int i;
 
-			if ( ((sce=sc->data[SC_MANU_ATK]) && (flag&BF_WEAPON)) ||
-				 ((sce=sc->data[SC_MANU_MATK]) && (flag&BF_MAGIC))
+			if ( ((sce=tsc->data[SC_MANU_ATK]) && (flag&BF_WEAPON)) ||
+				 ((sce=tsc->data[SC_MANU_MATK]) && (flag&BF_MAGIC))
 				)
 				for (i=0;ARRAYLENGTH(mob_manuk)>i;i++)
 					if (((TBL_MOB*)bl)->class_==mob_manuk[i]) {
 						damage += damage*sce->val1/100;
 						break;
 					}
-			if ( ((sce=sc->data[SC_SPL_ATK]) && (flag&BF_WEAPON)) ||
-				 ((sce=sc->data[SC_SPL_MATK]) && (flag&BF_MAGIC))
+			if ( ((sce=tsc->data[SC_SPL_ATK]) && (flag&BF_WEAPON)) ||
+				 ((sce=tsc->data[SC_SPL_MATK]) && (flag&BF_MAGIC))
 				)
 				for (i=0;ARRAYLENGTH(mob_splendide)>i;i++)
 					if (((TBL_MOB*)bl)->class_==mob_splendide[i]) {
@@ -731,9 +728,9 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 						break;
 					}
 		}
-		if( sc->data[SC_POISONINGWEAPON] && skill_num != GC_VENOMPRESSURE && (flag&BF_WEAPON) && damage > 0 && rand()%100 < sc->data[SC_POISONINGWEAPON]->val3 )
-			sc_start(bl,sc->data[SC_POISONINGWEAPON]->val2,100,sc->data[SC_POISONINGWEAPON]->val1,skill_get_time2(GC_POISONINGWEAPON,sc->data[SC_POISONINGWEAPON]->val1));
-		if( sc->data[SC__DEADLYINFECT] && damage > 0 && rand()%100 < 20 )
+		if( tsc->data[SC_POISONINGWEAPON] && skill_num != GC_VENOMPRESSURE && (flag&BF_WEAPON) && damage > 0 && rand()%100 < tsc->data[SC_POISONINGWEAPON]->val3 )
+			sc_start(bl,tsc->data[SC_POISONINGWEAPON]->val2,100,tsc->data[SC_POISONINGWEAPON]->val1,skill_get_time2(GC_POISONINGWEAPON,tsc->data[SC_POISONINGWEAPON]->val1));
+		if( tsc->data[SC__DEADLYINFECT] && damage > 0 && rand()%100 < 20 )
 			status_change_spread(src, bl);
 	}
 
@@ -3101,7 +3098,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 		if( s_ele == -1 )
 			s_ele = sstatus->rhw.ele;
 		else if( s_ele == -2 )
-			s_ele = status_get_attack_sc_element(src,status_get_sc(src));
+			s_ele = status_get_attack_sc_element(src,sc);
 		else if( s_ele == -3 ) //Use random element
 			s_ele = rand()%ELE_MAX;
 	}

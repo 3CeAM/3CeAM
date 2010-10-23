@@ -2009,9 +2009,6 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 			src = tbl;
 			sd = BL_CAST(BL_PC, src);
 			tsd = BL_CAST(BL_PC, bl);
-			sc = status_get_sc(bl);
-			if (sc && !sc->count)
-				sc = NULL; //Don't need it.
 
 			//Spirit of Wizard blocks Kaite's reflection
 			if( type == 2 && sc && sc->data[SC_SPIRIT] && sc->data[SC_SPIRIT]->val2 == SL_WIZARD )
@@ -3376,9 +3373,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		case 4: flag |= BREAK_WAIST; break;
 		case 5: flag |= BREAK_NECK; break;
 		}
-		//TODO: is there really no cleaner way to do this?
-		sc = status_get_sc(bl);
-		if (sc) sc->jb_flag = flag;
+		if (tsc) tsc->jb_flag = flag;
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
@@ -3968,8 +3963,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case GC_PHANTOMMENACE:
 		if( flag&1 )
 		{ // Only Hits Invisible Targets
-			sc = status_get_sc(bl);
-			if(sc && (sc->option&(OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK) || sc->data[SC__INVISIBILITY]) )
+			if(tsc && (tsc->option&(OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK) || tsc->data[SC__INVISIBILITY]) )
 				skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		}
 		break;
@@ -4148,8 +4142,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case RA_SENSITIVEKEEN:
 		if( bl->type != BL_SKILL )
 		{ // Only Hits Invisible Targets
-			sc = status_get_sc(bl);
-			if(sc && (sc->option&(OPTION_HIDE|OPTION_CLOAK) || sc->data[SC__INVISIBILITY]) )
+			if(tsc && (tsc->option&(OPTION_HIDE|OPTION_CLOAK) || tsc->data[SC__INVISIBILITY]) )
 				skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		}
 		else
@@ -4180,16 +4173,13 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		break;
 
 	case WL_JACKFROST:
-		{
-			struct status_change *tsc = status_get_sc(bl);
-			if( bl->id == skill_area_temp[1] )
-				break;
-			if( tsc && (tsc->option&(OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK) || tsc->data[SC__INVISIBILITY]) )
-				break; // Do not hit invisible enemy
-			if( !path_search(NULL,src->m,src->x,src->y,bl->x,bl->y,1,CELL_CHKNOREACH) )
-				break; // Do not pass snipeable walls - skill have floor effect
-			skill_attack(skill_get_type(skillid), src, src, bl, skillid, skilllv, tick, flag);
-		}
+		if( bl->id == skill_area_temp[1] )
+			break;
+		if( tsc && (tsc->option&(OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK) || tsc->data[SC__INVISIBILITY]) )
+			break; // Do not hit invisible enemy
+		if( !path_search(NULL,src->m,src->x,src->y,bl->x,bl->y,1,CELL_CHKNOREACH) )
+			break; // Do not pass snipeable walls - skill have floor effect
+		skill_attack(skill_get_type(skillid), src, src, bl, skillid, skilllv, tick, flag);
 		break;
 
 	case NC_INFRAREDSCAN:
@@ -4687,7 +4677,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			break;
 		{
 			int per = 0, sper = 0;
-			if (status_get_sc(bl)->data[SC_HELLPOWER])
+			if (tsc->data[SC_HELLPOWER])
 				break;
 
 			if (map[bl->m].flag.pvp && dstsd && dstsd->pvp_point < 0)
@@ -6824,13 +6814,11 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case CG_LONGINGFREEDOM:
+		if (tsc && !tsce && (tsce=tsc->data[SC_DANCING]) && tsce->val4
+			&& (tsce->val1&0xFFFF) != CG_MOONLIT) //Can't use Longing for Freedom while under Moonlight Petals. [Skotlex]
 		{
-			if (tsc && !tsce && (tsce=tsc->data[SC_DANCING]) && tsce->val4
-				&& (tsce->val1&0xFFFF) != CG_MOONLIT) //Can't use Longing for Freedom while under Moonlight Petals. [Skotlex]
-			{
-				clif_skill_nodamage(src,bl,skillid,skilllv,
-					sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
-			}
+			clif_skill_nodamage(src,bl,skillid,skilllv,
+				sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
 		}
 		break;
 
@@ -8643,8 +8631,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			{
 				sc_type type2 = type-1;
 				struct status_change *sc = status_get_sc(&ele->bl);
-
-				tsc = status_get_sc(bl);
 
 				if( (sc && sc->data[type2]) || (tsc && tsc->data[type]) )
 				{
@@ -13100,7 +13086,7 @@ int skill_castfix(struct block_list *bl, int skill_id, int skill_lv)
 			max_fixedReduction = sc->data[SC_SECRAMENT]->val2;
 	}
 
-	if( sd && pc_checkskill(sd, WL_RADIUS) && skill_id >= WL_WHITEIMPRISON && skill_id <= WL_FREEZE_SP )
+	if( sd && pc_checkskill(sd, WL_RADIUS) && skill_id >= WL_WHITEIMPRISON && skill_id <= WL_FREEZE_SP ) // Note: There is no check whether this reduction should be applied ( bigger than max reduction )
 		max_fixedReduction = 5 + 5 * pc_checkskill(sd, WL_RADIUS); // 10 15 20% of Fixed Cast Time reduced.
 
 	// fixed cast time mod by equip/card bonuses/penalties
@@ -14385,7 +14371,6 @@ int skill_delunitgroup (struct skill_unit_group *group)
 	sc = status_get_sc(src);
 	if (skill_get_unit_flag(group->skill_id)&(UF_DANCE|UF_SONG|UF_ENSEMBLE))
 	{
-		struct status_change* sc = status_get_sc(src);
 		if (sc && sc->data[SC_DANCING])
 		{
 			sc->data[SC_DANCING]->val2 = 0 ; //This prevents status_change_end attempting to redelete the group. [Skotlex]
