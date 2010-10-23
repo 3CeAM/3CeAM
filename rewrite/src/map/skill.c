@@ -8025,7 +8025,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 					switch( opt )
 					{
 						case 1:
-							val = (105 / 10) * it->refine;
+							val = 105 * it->refine / 10;
 							sc_start2(bl,SC_SHIELDSPELL_REF,brate,opt,val,skill_get_time(skillid,skilllv));
 							break;
 						case 2: case 3:
