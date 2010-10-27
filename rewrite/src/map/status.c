@@ -3230,11 +3230,6 @@ void status_calc_regen_rate(struct block_list *bl, struct regen_data *regen, str
 	}
 	if( sc->data[SC_ISA] )
 		regen->flag &=~RGN_SP;
-	if( sc->data[SC_GT_REVITALIZE] )
-	{
-		const struct status_change_entry *sce = sc->data[SC_GT_REVITALIZE];
-		regen->rate.hp += sce->val3;
-	}
 }
 
 /// Recalculates parts of an object's battle status according to the specified flags.
@@ -9851,7 +9846,7 @@ static int status_natural_heal(struct block_list* bl, va_list args)
 	}
 
 	//Natural Hp regen
-	if (flag&RGN_HP)
+	if( flag&RGN_HP )
 	{
 		rate = natural_heal_diff_tick*(regen->rate.hp+bonus);
 		if (ud && ud->walktimer != -1)
@@ -9864,12 +9859,16 @@ static int status_natural_heal(struct block_list* bl, va_list args)
 		if(regen->tick.hp >= (unsigned int)battle_config.natural_healhp_interval)
 		{
 			val = 0;
-			do {
+			do
+			{
 				val += regen->hp;
+				// Placed here waiting for renewal. [pakpil]
+				if( sc && sc->data[SC_GT_REVITALIZE] )
+					val = val * sc->data[SC_GT_REVITALIZE]->val3 / 100;
 				regen->tick.hp -= battle_config.natural_healhp_interval;
 			} while(regen->tick.hp >= (unsigned int)battle_config.natural_healhp_interval);
-			if (status_heal(bl, val, 0, 1) < val)
-				flag&=~RGN_SHP; //full.
+			if( status_heal(bl, val, 0, 1) < val )
+				flag &= ~RGN_SHP; //full.
 		}
 	}
 
