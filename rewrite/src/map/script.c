@@ -11420,11 +11420,8 @@ BUILDIN_FUNC(movenpc)
  *------------------------------------------*/
 BUILDIN_FUNC(message)
 {
-	TBL_PC *sd;
 	const char *msg,*player;
 	TBL_PC *pl_sd = NULL;
-
-	sd = script_rid2sd(st);
 
 	player = script_getstr(st,2);
 	msg = script_getstr(st,3);

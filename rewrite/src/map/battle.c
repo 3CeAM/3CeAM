@@ -354,7 +354,6 @@ int battle_attr_fix(struct block_list *src, struct block_list *target, int damag
 int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damage *d,int damage,int skill_num,int skill_lv,int element)
 {
 	struct map_session_data *sd = NULL;
-	struct map_session_data *tsd = NULL;
 	struct status_change *sc, *tsc;
 	struct status_change_entry *sce;
 	int div_ = d->div_, flag = d->flag;
@@ -1304,11 +1303,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				if (!sd) wd.flag=(wd.flag&~(BF_RANGEMASK|BF_WEAPONMASK))|BF_LONG|BF_MISC;
 				break;
 
-			case RA_AIMEDBOLT: //Ankle Snare, Electric Shocker, Warg Bite effect count as snared.
-				if( tsc && (tsc->data[SC_BITE] || tsc->data[SC_ANKLE] || tsc->data[SC_ELECTRICSHOCKER]) )
-					wd.div_ = tstatus->size + 2;
- 				break;
-
 			case SR_GATEOFHELL:
 				if( sd )
 					wd.div_ = sd->spiritball_old + 2; // 7 Consecutive hits.
@@ -1921,7 +1915,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case SN_SHARPSHOOTING:
 				case MA_SHARPSHOOTING:
-				case RA_ARROWSTORM:
 					skillratio += 100 + 50 * skill_lv;
 					break;
 				case CG_ARROWVULCAN:
@@ -2100,10 +2093,15 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case AB_DUPLELIGHT_MELEE:
 					skillratio += 10 * skill_lv;
 					break;
+				case RA_ARROWSTORM:
+					skillratio += 100 + 50 * skill_lv;
+					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Need official value.
+					break;
 				case RA_AIMEDBOLT:
-					skillratio += 100 + 20 * skill_lv;
+					skillratio += 400 + 50 * skill_lv;
+					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Need official value.
 					if( tsc && (tsc->data[SC_BITE] || tsc->data[SC_ANKLE] || tsc->data[SC_ELECTRICSHOCKER]) )
-						skillratio = skillratio * (tstatus->size + 2);
+						wd.div_ = tstatus->size + 2 + rand()%2;
 					break;
 				case RA_CLUSTERBOMB:
 					skillratio += 100 + 100 * skill_lv;
@@ -2112,9 +2110,12 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio += 500;//Damage based from iROwiki info. [Jobbie]
 					break;
 				case RA_WUGSTRIKE:
-					skillratio = 120 * skill_lv;
+					skillratio = 200 * skill_lv;
 					break;
 				case RA_WUGBITE:
+					skillratio += 300 + 200 * skill_lv;
+					if ( skill_lv == 5 ) skillratio += 100;
+					break;
 				case RA_SENSITIVEKEEN:
 					skillratio += 50 * skill_lv;
 					break;
@@ -2420,7 +2421,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case RA_WUGSTRIKE:
 				case RA_WUGBITE:
 					if(sd)
-						ATK_ADD(6*pc_checkskill(sd, RA_TOOTHOFWUG));
+						ATK_ADD(30*pc_checkskill(sd, RA_TOOTHOFWUG));
 					break;
 			}
 		}

@@ -3,18 +3,19 @@
 // layout = -1:special, 0:1*1, 1:3*3, 2:5*5, up to 5:11*11
 // target = friend (party +guildmates +neutral players) / party /
 //          ally (party +guildmates) / all / enemy
-// flag 0x001(UF_DEFNOTENEMY)		If 'defunit_not_enemy' is set, the target is changed to 'friend'
-//      0x002(UF_NOREITERRATION)	Spell cannot be stacked
-//      0x004(UF_NOFOOTSET)		Spell cannot be cast near/on targets
-//      0x008(UF_NOOVERLAP)		Spell effects do not overlap
-//      0x010(UF_PATHCHECK)	Only cells with a shootable path will be placed
-//      0x020(UF_NOPC)		Spell cannot affect players.
-//      0x040(UF_NOMOB)		Spell cannot affect mobs.
-//      0x080(UF_SKILL)		Spell CAN affect skills.
-//      0x100(UF_DANCE)		Dance skill
-//      0x200(UF_ENSEMBLE)	Ensemble skill
-//      0x400(UF_SONG)		Song skill
-//      0x800(UF_DUALMODE)	Spell has effects both at an interval and when you step in/out
+// flag 0x0001(UF_DEFNOTENEMY)		If 'defunit_not_enemy' is set, the target is changed to 'friend'
+//      0x0002(UF_NOREITERRATION)	Spell cannot be stacked
+//      0x0004(UF_NOFOOTSET)		Spell cannot be cast near/on targets
+//      0x0008(UF_NOOVERLAP)		Spell effects do not overlap
+//      0x0010(UF_PATHCHECK)	Only cells with a shootable path will be placed
+//      0x0020(UF_NOPC)		Spell cannot affect players.
+//      0x0040(UF_NOMOB)		Spell cannot affect mobs.
+//      0x0080(UF_SKILL)		Spell CAN affect skills.
+//      0x0100(UF_DANCE)		Dance skill
+//      0x0200(UF_ENSEMBLE)	Ensemble skill
+//      0x0400(UF_SONG)		Song skill
+//      0x0800(UF_DUALMODE)	Spell has effects both at an interval and when you step in/out
+//      0x1000(UF_RANGEDUNIT)	Only send the middle unit to the client
 // 	Example: 0x006 = 0x002+0x004 -> Cannot be stacked nor cast near targets
 //
 // Notes:
@@ -100,7 +101,7 @@
 2214,0x86,    ,  0, 5, 100,enemy, 0x080	//WL_CHAINLIGHTNING
 2216,0xcb,    , -1, 2,1000,enemy, 0x018	//WL_EARTHSTRAIN
 2238,0xd8,    ,  0, 1,1000,enemy, 0x002	//RA_ELECTRICSHOCKER
-2239,0xd9,    ,  0, 0,1000,enemy, 0x004	//RA_CLUSTERBOMB
+2239,0xd9,    ,  0, 0,1000,enemy, 0x000	//RA_CLUSTERBOMB
 2249,0xd2,    ,  0, 1,1000,enemy, 0x022	//RA_MAGENTATRAP
 2250,0xd3,    ,  0, 1,1000,enemy, 0x022	//RA_COBALTTRAP
 2251,0xd4,    ,  0, 1,1000,enemy, 0x022	//RA_MAIZETRAP
@@ -117,7 +118,7 @@
 2304,0xd1,    ,  0, 2,  -1,enemy, 0x000	//SC_FEINTBOMB
 2319,0xec,    ,  0, 3,5000,all,   0x000	//LG_BANDING
 2414,0xda,    ,  0, 2,1000,enemy, 0x018	//WM_REVERBERATION
-2418,0xdb,    ,  0,11, 300,enemy, 0x800	//WM_SEVERE_RAINSTORM
+2418,0xdb,    ,  0, 5, 300,enemy, 0x800	//WM_SEVERE_RAINSTORM
 2419,0xde,    ,  0, 3,1000,enemy, 0x010  //WM_POEMOFNETHERWORLD
 2443,0xdc,    ,  0, 1,1000,enemy, 0x00A	//SO_FIREWALK
 2444,0xdd,    ,  0, 1,1000,enemy, 0x00A	//SO_ELECTRICWALK

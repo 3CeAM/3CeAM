@@ -10731,7 +10731,6 @@ void clif_parse_Cooking(int fd,struct map_session_data *sd)
 {
 	int type = RFIFOW(fd,2);
 	int nameid = RFIFOW(fd,4);
-	int amount = 1;
 
 	if( type == 6 && sd->menuskill_id != GN_MIX_COOKING && sd->menuskill_id != GN_S_PHARMACY )
 		return;
@@ -13634,10 +13633,8 @@ void clif_parse_cashshop_buy(int fd, struct map_session_data *sd)
 {
 	int fail = 0, amount, points;
 	short nameid;
-	struct npc_data *nd;
 	nullpo_retv(sd);
 
-	nd = (struct npc_data *)map_id2bl(sd->npc_shopid);
 	nameid = RFIFOW(fd,2);
 	amount = RFIFOW(fd,4);
 	points = RFIFOL(fd,6); // Not Implemented. Should be 0

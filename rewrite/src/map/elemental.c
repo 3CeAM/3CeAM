@@ -582,8 +582,7 @@ static int elemental_ai_sub_timer_activesearch(struct block_list *bl, va_list ap
 
 static int elemental_ai_sub_timer(struct elemental_data *ed, struct map_session_data *sd, unsigned int tick)
 {
-	struct block_list *target = NULL, *abl = NULL;
-	struct block_list *mtbl = NULL;
+	struct block_list *target = NULL;
 	int master_dist, view_range, mode;
 
 	nullpo_ret(ed);

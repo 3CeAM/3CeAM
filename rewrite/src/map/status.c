@@ -452,7 +452,7 @@ void initChangeTables(void)
 	set_sc( RA_FEARBREEZE        , SC_FEARBREEZE      , SI_FEARBREEZE      , SCB_NONE );
 	set_sc( RA_ELECTRICSHOCKER   , SC_ELECTRICSHOCKER , SI_ELECTRICSHOCKER , SCB_NONE );
 	set_sc( RA_WUGDASH           , SC_WUGDASH         , SI_WUGDASH		   , SCB_SPEED );
-	set_sc( RA_CAMOUFLAGE        , SC_CAMOUFLAGE      , SI_CAMOUFLAGE      , SCB_SPEED );
+	set_sc( RA_CAMOUFLAGE        , SC_CAMOUFLAGE      , SI_CAMOUFLAGE      , SCB_CRI|SCB_SPEED );
 	add_sc( RA_MAGENTATRAP       , SC_ELEMENTALCHANGE );
 	add_sc( RA_COBALTTRAP        , SC_ELEMENTALCHANGE );
 	add_sc( RA_MAIZETRAP         , SC_ELEMENTALCHANGE );
@@ -2979,7 +2979,6 @@ int status_calc_elemental_(struct elemental_data *ed, bool first)
 	struct status_data *status = &ed->base_status;
 	struct s_elemental *ele = &ed->elemental;
 	struct map_session_data *sd = ed->master;
-	struct status_change *sc = status_get_sc(&ed->bl);
 	
 	if( !sd )
 		return 0;
@@ -4193,6 +4192,8 @@ static signed short status_calc_critical(struct block_list *bl, struct status_ch
 		critical += critical * sc->data[SC_STRIKING]->val1 / 100;
 	if(sc->data[SC__INVISIBILITY])
 		critical += critical * sc->data[SC__INVISIBILITY]->val3 / 100;
+	if(sc->data[SC_CAMOUFLAGE])
+		critical += 100;
 	if(sc->data[SC__UNLUCKY])
 		critical -= critical * sc->data[SC__UNLUCKY]->val2 / 100;
 
@@ -5566,7 +5567,7 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 			if( bl->type == BL_MOB )
 				tick -= 1000 * (status->agi/10);
 			if( sd && type != SC_ELECTRICSHOCKER )
-				tick >>= 1; //Only 10 seconds should be on players.
+				tick >>= 1;
 		}
 		break;
 	case SC_CRYSTALIZE:
@@ -9478,7 +9479,6 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
  *------------------------------------------*/
 int status_change_timer_sub(struct block_list* bl, va_list ap)
 {
-	struct map_session_data *sd, *tsd;
 	struct status_change* tsc;
 
 	struct block_list* src = va_arg(ap,struct block_list*);
@@ -9490,9 +9490,6 @@ int status_change_timer_sub(struct block_list* bl, va_list ap)
 		return 0;
 
 	tsc = status_get_sc(bl);
-
-	sd = BL_CAST(BL_PC, src);
-	tsd = BL_CAST(BL_PC, bl);
 
 	switch( type )
 	{
@@ -9521,7 +9518,7 @@ int status_change_timer_sub(struct block_list* bl, va_list ap)
 			status_check_skilluse(src, bl, WZ_SIGHTBLASTER, sce->val1, 2) )
 		{
 			skill_attack(BF_MAGIC,src,src,bl,WZ_SIGHTBLASTER,1,tick,0);
-			if (sce) sce->val2 = 0; //This signals it to end.
+			sce->val2 = 0; //This signals it to end.
 		}
 		break;
 	case SC_CLOSECONFINE:
