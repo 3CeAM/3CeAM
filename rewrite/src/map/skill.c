@@ -373,8 +373,6 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, int skill
 int can_copy(struct map_session_data *sd, int skillid, struct block_list* bl)
 {
 	int id;
-	struct status_change* sc;
-	sc = status_get_sc(bl);
 
 	id = skill_reproduce_db[skillid].reproduce;
 
@@ -1076,7 +1074,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 			sc_start(bl,SC_FREEZE,100,skilllv,skill_get_time(skillid,skilllv));
 		break;
 	case RA_WUGBITE:
-		sc_start(bl, SC_BITE, 100, skilllv, skill_get_time(skillid, skilllv) + (sd ? pc_checkskill(sd,RA_TOOTHOFWUG) * 1000 : 0));
+		sc_start(bl, SC_BITE, 70, skilllv, skill_get_time(skillid, skilllv) + (sd ? pc_checkskill(sd,RA_TOOTHOFWUG) * 1000 : 0)); // Need official chance.
 		break;
 	case RA_SENSITIVEKEEN:
 		if( rand()%100 < 8*skilllv )
@@ -8711,7 +8709,6 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 	struct block_list *target, *src;
 	struct map_session_data *sd;
 	struct mob_data *md;
-	struct elemental_data *ed;
 	struct unit_data *ud;
 	struct status_change *sc = NULL;
 	int inf,inf2,flag = 0;
@@ -8732,7 +8729,6 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 
 	sd = BL_CAST(BL_PC,  src);
 	md = BL_CAST(BL_MOB, src);
-	ed = BL_CAST(BL_ELEM, src);
 
 	if( src->prev == NULL )
 	{

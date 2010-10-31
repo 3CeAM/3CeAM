@@ -7103,10 +7103,8 @@ int pc_changelook(struct map_session_data *sd,int type,int val)
 int pc_setoption(struct map_session_data *sd,int type)
 {
 	int p_type, new_look = 0;
-	struct status_data *status;
 	nullpo_ret(sd);
 	p_type = sd->sc.option;
-	status = status_get_status_data(&sd->bl);
 
 	if( p_type&OPTION_MADO && p_type&OPTION_CART) // Don't remove cart when you're removing your mado.
 		type |= (p_type&OPTION_CART);
