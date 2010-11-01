@@ -3363,7 +3363,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							if( tsc && tsc->data[SC_FREEZING] )
 								skillratio = (skillratio + 900 + 300 * skill_lv) * s_level / 100;
 							else
-								skillratio = (skillratio + 100 * skill_lv) * (1 + ((sd) ? sd->status.job_level : 0) / 100);
+								skillratio = (int)( (skillratio + 100 * skill_lv) * (1 + ((sd) ? sd->status.job_level : 0) / 100. ) );
 						}
 						break;
 					case WL_DRAINLIFE:
@@ -4295,7 +4295,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			if( tsc && tsc->data[SC_REFLECTDAMAGE] )
 			{
 				if( src != target )// Don't reflect your own damage (Grand Cross)
-					map_foreachinrange(battle_damage_area,target,skill_get_splash(LG_REFLECTDAMAGE,1),BL_CHAR,tick,target,wd.amotion,wd.dmotion,rdamage,tstatus->race,0);
+					map_foreachinshootrange(battle_damage_area,target,skill_get_splash(LG_REFLECTDAMAGE,1),BL_CHAR,tick,target,wd.amotion,wd.dmotion,rdamage,tstatus->race,0);
 			}
 			else
 			{

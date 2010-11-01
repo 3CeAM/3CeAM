@@ -1052,7 +1052,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		break;
 	case WL_FROSTMISTY:
 		rate = 20 + 12 * skilllv;
-		if( sd ) rate *= 1 + sd->status.job_level / 200;
+		if( sd ) rate = (int)( rate * (1 + sd->status.job_level / 200. ) );
 		sc_start(bl,SC_FREEZING,rate,skilllv,skill_get_time(skillid,skilllv));
 		break;
 	case WL_COMET:
@@ -3970,8 +3970,8 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		{
 			int heal = skill_attack(skill_get_type(skillid), src, src, bl, skillid, skilllv, tick, flag);
 			int rate = 25 + 5 * skilllv;
-			if( sd && sd->status.base_level >= 99 )
-				rate += rate * (1 + sd->status.job_level) / 50 ;
+			if( sd )
+				rate = (int)( rate * (1 + sd->status.job_level / 50. ) );
 
 			heal = heal * 8 * skilllv * status_get_lv(src) / 10000;
 
@@ -7543,7 +7543,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		if( !(tsc && tsc->data[type]) && (src == bl || battle_check_target(src, bl, BCT_ENEMY)) )
 		{
 			int rate = 50 + 3 * skilllv;
-			if( sd ) rate += rate * (1 + sd->status.job_level) / 100;
+			if( sd ) rate = (int)( rate * (1 + sd->status.job_level / 100. ) );
 			i = sc_start2(bl,type,rate,skilllv,src->id,(src == bl)?skill_get_time2(skillid,skilllv):skill_get_time(skillid, skilllv));
 			clif_skill_nodamage(src,bl,skillid,skilllv,i);
 			if( sd && i )
@@ -7584,7 +7584,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		else
 		{
 			int rate = 40 + 8 * skilllv;
-			if( sd ) rate *= 1 + sd->status.job_level / 200;
+			if( sd ) rate = (int)( rate * (1 + sd->status.job_level / 200.) );
 			// IroWiki says Rate should be reduced by target stats, but currently unknown
 			if( rand()%100 < rate )
 			{ // Success on First Target
