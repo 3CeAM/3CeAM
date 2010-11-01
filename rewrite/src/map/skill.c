@@ -10328,6 +10328,10 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 
 	case WM_REVERBERATION:
 		interval = limit;
+		val2 = 1;
+	case WM_POEMOFNETHERWORLD:	// Can't be placed on top of Land Protector.
+		if( map_getcell(sd->bl.m, x, y, CELL_CHKLANDPROTECTOR) )
+			return 0;
 		break;
 
 	case SO_CLOUD_KILL:
@@ -11203,7 +11207,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			sg->limit = DIFF_TICK(gettick(),sg->tick) + 1500;
 			sg->val1 = 0;
 			clif_changetraplook(&src->bl,UNT_USED_TRAPS);
-			skill_castend_damage_id(ss, bl, sg->skill_id, sg->skill_lv, tick, SD_LEVEL|BCT_ENEMY);
+			skill_castend_damage_id(ss, bl, sg->skill_id, sg->skill_lv, tick, SD_LEVEL|BCT_ENEMY|1);
 			sg->unit_id = UNT_USED_TRAPS;
 			break;
 
@@ -14645,7 +14649,7 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 					break;
 				}
 				clif_changetraplook(bl,UNT_USED_TRAPS);
-				skill_castend_damage_id(ss, &group->unit->bl, group->skill_id, group->skill_lv, tick, 0);
+				skill_castend_damage_id(ss, &group->unit->bl, group->skill_id, group->skill_lv, tick, SD_LEVEL|BCT_ENEMY|1);
 				group->limit=DIFF_TICK(tick,group->tick)+1500;
 				unit->limit=DIFF_TICK(tick,group->tick)+1500;
 				group->unit_id = UNT_USED_TRAPS;
@@ -15399,6 +15403,12 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 		{
 			int fame = 0;
 			tmp_item.amount = 0;
+			if( skill_id == GN_MIX_COOKING && temp_qty > 1 )// Mix Cooking level 2.
+			{	// Success. As I see the chance as level 2 is global, not indiviual.
+				if( rand()%10000 < make_per )
+					tmp_item.amount = 5 + rand()%5;
+			}
+			else
 			for( i = 0; i < qty; i++ )
 			{	//Apply quantity modifiers.
 				if( rand()%10000 < make_per || qty == 1 )
@@ -15460,9 +15470,9 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 					clif_misceffect(&sd->bl,5);
 					break;
 				case GN_MAKEBOMB:
+				case GN_MIX_COOKING:
 					clif_skill_msg(sd,skill_id,SKMSG_SUCCESS);
 					break;
-				case GN_MIX_COOKING:
 				case GN_S_PHARMACY:
 					break;	// No effects here.
 				default: //Those that don't require a skill?
@@ -15532,13 +15542,14 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 						tmp_item.nameid = products[i][0];
 					}
 					while( rand()%10000 >= products[i][1] );
-					tmp_item.amount = (skill_lv == 2)?10:1; // TODO: Find the proper value to it.
+					tmp_item.amount = (temp_qty > 1 )? 5 + rand()%5 : 1; // When it fails it gives a random amount of items.
 					tmp_item.identify = 1;
 					if( pc_additem(sd,&tmp_item,tmp_item.amount) )
 					{
 						clif_additem(sd,0,0,flag);
 						map_addflooritem(&tmp_item,tmp_item.amount,sd->bl.m,sd->bl.x,sd->bl.y,0,0,0,0);
 					}
+					clif_skill_msg(sd,skill_id,SKMSG_FAIL_MATERIAL_DESTROY);
 				}
 				break;
 			case GN_S_PHARMACY:
