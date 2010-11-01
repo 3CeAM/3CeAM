@@ -3115,7 +3115,10 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 
 	//Skill Range Criteria
 	ad.flag |= battle_range_type(src, target, skill_num, skill_lv);
-	flag.infdef=(tstatus->mode&MD_PLANT?1:0);
+	flag.infdef = (tstatus->mode&MD_PLANT?1:0);	
+	if( !flag.infdef && (target->type == BL_SKILL && ((TBL_SKILL*)target)->group->unit_id == UNT_REVERBERATION) )
+		flag.infdef = 1; // Reberberation takes 1 damage
+	
 		
 	switch(skill_num)
 	{
@@ -3636,7 +3639,14 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 	damage_div_fix(ad.damage, ad.div_);
 	
 	if (flag.infdef && ad.damage)
+	{
 		ad.damage = ad.damage>0?1:-1;
+		if( skill_num == WL_JACKFROST || skill_num == WL_FROSTMISTY )
+		{
+			ad.damage = 0;
+			ad.dmg_lv = ATK_MISS;
+		}
+	}
 
 	ad.damage = battle_calc_damage(src,target,&ad,ad.damage,skill_num,skill_lv,s_ele);
 	if( map_flag_gvg2(target->m) )

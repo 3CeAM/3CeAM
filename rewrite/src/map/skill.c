@@ -410,14 +410,14 @@ int can_copy(struct map_session_data *sd, int skillid, struct block_list* bl)
 int skillnotok(int skillid, struct map_session_data *sd)
 {
 	int i,m;
-	nullpo_retr (1, sd);
+	nullpo_retr(1, sd);
 	m = sd->bl.m;
 	i = skill_get_index(skillid);
 
 	if (i == 0)
 		return 1; // invalid skill id
 
-	if (battle_config.gm_skilluncond && pc_isGM(sd) >= battle_config.gm_skilluncond)
+	if( battle_config.gm_skilluncond && pc_isGM(sd) >= battle_config.gm_skilluncond )
 		return 0; // GMs can do any damn thing they want
 
 	if( skillid == AL_TELEPORT && sd->skillitem == skillid && sd->skillitemlv > 2 )
@@ -427,21 +427,23 @@ int skillnotok(int skillid, struct map_session_data *sd)
 		return 1;
 
 	// Check skill restrictions [Celest]
-	if(!map_flag_vs(m) && skill_get_nocast (skillid) & 1)
+	if( !map_flag_vs(m) && skill_get_nocast (skillid) & 1 )
 		return 1;
-	if(map[m].flag.pvp && skill_get_nocast (skillid) & 2)
+	if( map[m].flag.pvp && skill_get_nocast (skillid) & 2 )
 		return 1;
-	if(map_flag_gvg(m) && skill_get_nocast (skillid) & 4)
+	if( map_flag_gvg(m) && skill_get_nocast (skillid) & 4 )
 		return 1;
-	if(map[m].flag.battleground && skill_get_nocast (skillid) & 8)
+	if( map[m].flag.battleground && skill_get_nocast (skillid) & 8 )
 		return 1;
-	if(map[m].flag.restricted && map[m].zone && skill_get_nocast (skillid) & (8*map[m].zone))
+	if( map[m].flag.restricted && map[m].zone && skill_get_nocast (skillid) & (8*map[m].zone) )
 		return 1;
 
-	switch (skillid) {
+	switch( skillid )
+	{
 		case AL_WARP:
 		case RETURN_TO_ELDICASTES:
-			if(map[m].flag.nowarp) {
+			if( map[m].flag.nowarp )
+			{
 				clif_skill_teleportmessage(sd,0);
 				return 1;
 			}
@@ -449,7 +451,8 @@ int skillnotok(int skillid, struct map_session_data *sd)
 		case AL_TELEPORT:
 		case SC_FATALMENACE:
 		case SC_DIMENSIONDOOR:
-			if(map[m].flag.noteleport) {
+			if( map[m].flag.noteleport )
+			{
 				clif_skill_teleportmessage(sd,0);
 				return 1;
 			}
@@ -457,7 +460,8 @@ int skillnotok(int skillid, struct map_session_data *sd)
 		case WE_CALLPARTNER:
 		case WE_CALLPARENT:
 		case WE_CALLBABY:
-			if (map[m].flag.nomemo) {
+			if( map[m].flag.nomemo )
+			{
 				clif_skill_teleportmessage(sd,1);
 				return 1;
 			}
@@ -1050,11 +1054,6 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		if( tsc && !tsc->data[SC_DECREASEAGI] ) //Prevent duplicate agi-down effect.
 			sc_start(bl, SC_ADORAMUS, 100, skilllv, skill_get_time(skillid, skilllv));
 		break;
-	case WL_FROSTMISTY:
-		rate = 20 + 12 * skilllv;
-		if( sd ) rate = (int)( rate * (1 + sd->status.job_level / 200. ) );
-		sc_start(bl,SC_FREEZING,rate,skilllv,skill_get_time(skillid,skilllv));
-		break;
 	case WL_COMET:
 		sc_start4(bl,SC_BURNING,100,skilllv,1000,src->id,0,skill_get_time(skillid,skilllv));
 		break;
@@ -1070,8 +1069,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		}
 		break;
 	case WL_JACKFROST:
-		if( tsc && tsc->data[SC_FREEZING] )
-			sc_start(bl,SC_FREEZE,100,skilllv,skill_get_time(skillid,skilllv));
+		sc_start(bl,SC_FREEZE,100,skilllv,skill_get_time(skillid,skilllv));
 		break;
 	case RA_WUGBITE:
 		sc_start(bl, SC_BITE, 70, skilllv, skill_get_time(skillid, skilllv) + (sd ? pc_checkskill(sd,RA_TOOTHOFWUG) * 1000 : 0)); // Need official chance.
@@ -4166,17 +4164,18 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		break;
 
 	case WL_FROSTMISTY:
+		if( tsc && (tsc->option&(OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK) || tsc->data[SC__INVISIBILITY]) )
+			break; // Doesn't hit/cause Freezing to invisible enemy
+		// Causes Freezing status through walls.
+		sc_start(bl,status_skill2sc(skillid),(int)((20+12*skilllv)*(1+(sd)?sd->status.job_level/200.:0)),skilllv,skill_get_time(skillid,skilllv));
+		// Doesn't deal damage through non-shootable walls.
 		if( path_search(NULL,src->m,src->x,src->y,bl->x,bl->y,1,CELL_CHKWALL) )
 			skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
 	case WL_JACKFROST:
-		if( bl->id == skill_area_temp[1] )
-			break;
 		if( tsc && (tsc->option&(OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK) || tsc->data[SC__INVISIBILITY]) )
 			break; // Do not hit invisible enemy
-		if( !path_search(NULL,src->m,src->x,src->y,bl->x,bl->y,1,CELL_CHKNOREACH) )
-			break; // Do not pass snipeable walls - skill have floor effect
 		skill_attack(skill_get_type(skillid), src, src, bl, skillid, skilllv, tick, flag);
 		break;
 
@@ -7554,11 +7553,14 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case WL_FROSTMISTY:
+		clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		map_foreachinrange(skill_area_sub,bl,skill_get_splash(skillid,skilllv),BL_CHAR|BL_SKILL,src,skillid,skilllv,tick,flag|BCT_ENEMY,skill_castend_damage_id);
+		break;
+		
 	case WL_JACKFROST:
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
-		skill_area_temp[1] = bl->id;
-		map_foreachinrange(skill_area_sub,bl,skill_get_splash(skillid,skilllv),splash_target(src),src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
-		break;
+		map_foreachinshootrange(skill_area_sub,bl,skill_get_splash(skillid,skilllv),BL_CHAR|BL_SKILL,src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
+		break;		
 
 	case WL_MARSHOFABYSS:
 		// Should marsh of abyss still apply half reduction to players after the 28/10 patch? [LimitLine]
