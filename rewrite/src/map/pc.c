@@ -378,8 +378,8 @@ static int pc_check_banding( struct block_list *bl, va_list ap )
 int pc_banding(struct map_session_data *sd, short skill_lv)
 {
 	static int c;
-	static int b_sd[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // In case of a full Royal Guard party.
-	int i, j, per, tmp_per;
+	static int b_sd[MAX_PARTY]; // In case of a full Royal Guard party.
+	int i, j, hp, extra_hp = 0, tmp_qty = 0, tmp_hp;
 	struct map_session_data *bsd;
 	struct status_change *sc;
 	int range = skill_get_splash(LG_BANDING,skill_lv);
@@ -387,42 +387,58 @@ int pc_banding(struct map_session_data *sd, short skill_lv)
 	nullpo_ret(sd);
 
 	c = 0;
-	tmp_per = per = 0;
 	memset(b_sd, 0, sizeof(b_sd));
 	i = party_foreachsamemap(pc_check_banding,sd,range,&sd->bl,&c,&b_sd);
-	if( c < 2 )
+
+	if( c < 1 )
 	{	// No more Royal Guards in Banding found.
 		if( (sc = status_get_sc(&sd->bl)) != NULL  && sc->data[SC_BANDING] )
 		{
 			sc->data[SC_BANDING]->val2 = 0; // Reset the counter
 			status_calc_bl(&sd->bl,StatusChangeFlagTable[SC_BANDING]);
-	}
+		}
 		return 0;
 	}
-	// Get hp average.
-	for( j = 0; j < c; j++ )
+
+	//Add yourself
+	hp = status_get_hp(&sd->bl);
+	i++;
+
+	// Get total HP of all Royal Guards in party.
+	for( j = 0; j < i; j++ )
 	{
 		bsd = map_id2sd(b_sd[j]);
-		if( bsd != NULL && bsd != sd )
-			tmp_per += status_get_hp(&bsd->bl) * 100 / status_get_max_hp(&bsd->bl);
+		if( bsd != NULL )
+			hp += status_get_hp(&bsd->bl);
 	}
-	if( tmp_per > 0 && (per = tmp_per / ( c + 1)) > 0)
+
+	// Set average HP.
+	hp = hp / i;
+	
+	// If a Royal Guard have full HP, give more HP to others that haven't full HP.
+	for( j = 0; j < i; j++ )
 	{
-		// Set hp
-		if( per > 0 )
+		bsd = map_id2sd(b_sd[j]);
+		if( bsd != NULL && (tmp_hp = hp - status_get_max_hp(&bsd->bl)) > 0 )
 		{
-			for( j = 0; j < c; j++ )
+			extra_hp += tmp_hp;
+			tmp_qty++;
+		}
+	}
+
+	if( extra_hp > 0 && tmp_qty > 0 )
+		hp += extra_hp / tmp_qty;
+
+	for( j = 0; j < i; j++ )
+	{
+		bsd = map_id2sd(b_sd[j]);
+		if( bsd != NULL )
+		{
+			status_set_hp(&bsd->bl,hp,0);	// Set hp
+			if( (sc = status_get_sc(&bsd->bl)) != NULL  && sc->data[SC_BANDING] )
 			{
-				bsd = map_id2sd(b_sd[j]);
-				if( bsd != NULL )
-				{
-					status_set_hp(&bsd->bl,status_get_max_hp(&bsd->bl)*per/100,0);
-					if( (sc = status_get_sc(&bsd->bl)) != NULL  && sc->data[SC_BANDING] )
-					{
-						sc->data[SC_BANDING]->val2 = c-1; // Set the counter. Don't count your self.
-						status_calc_bl(&bsd->bl,StatusChangeFlagTable[SC_BANDING]);
-					}
-				}
+				sc->data[SC_BANDING]->val2 = c; // Set the counter. It doesn't count your self.
+				status_calc_bl(&bsd->bl,StatusChangeFlagTable[SC_BANDING]);	// Set atk and def.
 			}
 		}
 	}

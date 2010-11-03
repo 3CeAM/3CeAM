@@ -491,7 +491,7 @@ void initChangeTables(void)
 	set_sc( LG_PRESTIGE          , SC_PRESTIGE           , SI_PRESTIGE          , SCB_DEF2 );
 	set_sc( LG_PIETY             , SC_BENEDICTIO         , SI_BENEDICTIO        , SCB_DEF_ELE );
 	set_sc( LG_EXEEDBREAK        , SC_EXEEDBREAK         , SI_EXEEDBREAK        , SCB_NONE );
-	set_sc( LG_BANDING           , SC_BANDING            , SI_BANDING           , SCB_DEF2|SCB_WATK );
+	set_sc( LG_BANDING           , SC_BANDING            , SI_BANDING           , SCB_DEF2|SCB_WATK );// Renewal: atk2 & def2
 	set_sc( LG_INSPIRATION       , SC_INSPIRATION		 , SI_INSPIRATION       , SCB_MAXHP|SCB_WATK|SCB_HIT|SCB_VIT|SCB_AGI|SCB_STR|SCB_DEX|SCB_INT|SCB_LUK);
 	set_sc( LG_EARTHDRIVE        , SC_EARTHDRIVE         , SI_EARTHDRIVE        , SCB_DEF|SCB_ASPD );
 

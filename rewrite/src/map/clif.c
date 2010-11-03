@@ -6315,26 +6315,38 @@ void clif_partyinvitationstate(struct map_session_data* sd)
 }
 
 /*==========================================
- * パーティ勧誘
+ * Party invitation request.
+ * R 00fe <account_id>.L <party_name>.24S
+ * R 02c6 <guild_id>.L <party_name>.24S
  *------------------------------------------*/
 int clif_party_invite(struct map_session_data *sd,struct map_session_data *tsd)
 {
 	int fd;
 	struct party_data *p;
 
+#if PACKETVER < 20070821
+	const int cmd = 0xfe;
+#else
+	const int cmd = 0x2c6;
+#endif
+
 	nullpo_ret(sd);
 	nullpo_ret(tsd);
 
 	fd=tsd->fd;
 
-	if( (p=party_search(sd->status.party_id))==NULL )
+	if( (p = party_search(sd->status.party_id)) == NULL )
 		return 0;
 
-	WFIFOHEAD(fd,packet_len(0xfe));
-	WFIFOW(fd,0)=0xfe;
-	WFIFOL(fd,2)=sd->status.account_id;
+	WFIFOHEAD(fd,cmd);
+	WFIFOW(fd,0) = cmd;
+#if PACKETVER < 20071002
+	WFIFOL(fd,2) = sd->status.account_id;
+#else
+	WFIFOL(fd,2) = p->party.party_id;
+#endif
 	memcpy(WFIFOP(fd,6),p->party.name,NAME_LENGTH);
-	WFIFOSET(fd,packet_len(0xfe));
+	WFIFOSET(fd,cmd);
 	return 0;
 }
 
