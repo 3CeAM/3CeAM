@@ -6338,7 +6338,7 @@ int clif_party_invite(struct map_session_data *sd,struct map_session_data *tsd)
 	if( (p = party_search(sd->status.party_id)) == NULL )
 		return 0;
 
-	WFIFOHEAD(fd,cmd);
+	WFIFOHEAD(fd,packet_len(cmd));
 	WFIFOW(fd,0) = cmd;
 #if PACKETVER < 20071002
 	WFIFOL(fd,2) = sd->status.account_id;
@@ -6346,7 +6346,7 @@ int clif_party_invite(struct map_session_data *sd,struct map_session_data *tsd)
 	WFIFOL(fd,2) = p->party.party_id;
 #endif
 	memcpy(WFIFOP(fd,6),p->party.name,NAME_LENGTH);
-	WFIFOSET(fd,cmd);
+	WFIFOSET(fd,packet_len(cmd));
 	return 0;
 }
 
