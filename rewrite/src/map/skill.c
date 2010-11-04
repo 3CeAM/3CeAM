@@ -4040,6 +4040,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 			if( i < MAX_SPELLBOOK )
 			{ // SpellBook
 				int rsb_skillid, rsb_skilllv;
+
 				if( skilllv > 1 )
 				{
 					ARR_FIND(0,MAX_SPELLBOOK,i,sd->rsb[i].skillid == 0);
@@ -4048,7 +4049,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 
 				rsb_skillid = sd->rsb[i].skillid;
 				rsb_skilllv = sd->rsb[i].level;
-				
+
 				if( skilllv > 1 )
 					sd->rsb[i].skillid = 0; // Last position - only remove it from list
 				else
@@ -4075,6 +4076,9 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 						skill_castend_damage_id(src,bl,rsb_skillid,rsb_skilllv,tick,0);
 						break;
 				}
+
+				sd->ud.canact_tick = tick + skill_delayfix(src, rsb_skillid, rsb_skilllv);
+				clif_status_change(src, SI_ACTIONDELAY, 1, skill_delayfix(src, rsb_skillid, rsb_skilllv), 0, 0, 1);
 			}
 			else
 			{ // Summon Balls
@@ -8084,6 +8088,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			if( is_boss(bl) ) break;
 			if( sc_start2(bl, type, 100, skilllv, src->id, skill_get_time(skillid, skilllv)))
 			{
+				unit_stop_attack(bl);
 				clif_bladestop(src, bl->id, 1);
 				map_freeblock_unlock();
 				return 1;

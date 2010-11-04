@@ -4441,8 +4441,6 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 
 		if (r_skill != AL_HOLYLIGHT && r_skill != PR_MAGNUS)
 		{
-			struct unit_data *ud;
-
 			switch( skill_get_casttype(r_skill) )
 			{
 			case CAST_GROUND:
@@ -4456,11 +4454,8 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 				break;
 			}
 
-			if ( (ud = unit_bl2ud(src)) != NULL )
-			{
-				ud->canact_tick = tick + skill_delayfix(src, r_skill, r_lv);
-				clif_status_change(src, SI_ACTIONDELAY, 1, skill_delayfix(src, r_skill, r_lv), 0, 0, 1);
-			}
+			sd->ud.canact_tick = tick + skill_delayfix(src, r_skill, r_lv);
+			clif_status_change(src, SI_ACTIONDELAY, 1, skill_delayfix(src, r_skill, r_lv), 0, 0, 1);
 		}
 	}
 	if( sd && sc && (sc->data[SC_TROPIC_OPTION] || sc->data[SC_CHILLY_AIR_OPTION] || sc->data[SC_WILD_STORM_OPTION] || sc->data[SC_UPHEAVAL_OPTION]) )
