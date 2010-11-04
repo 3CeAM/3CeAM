@@ -3464,8 +3464,8 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						break;
 					case SO_VARETYR_SPEAR: //Assumed Formula.
 						skillratio += -100 + (sstatus->int_ * skill_lv * s_level / 100);
-					if( sc && sc->data[SC_BLAST_OPTION] )
-						skillratio += skillratio * sc->data[SC_BLAST_OPTION]->val2 / 100;
+						if( sc && sc->data[SC_BLAST_OPTION] )
+							skillratio += skillratio * sc->data[SC_BLAST_OPTION]->val2 / 100;
 						break;
 					case SO_CLOUD_KILL:
 						skillratio += -100 + skill_lv * 40 * s_level / 100;
