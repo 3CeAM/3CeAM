@@ -5304,11 +5304,18 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case MO_CALLSPIRITS:
-		if(sd) {
-			clif_skill_nodamage(src,bl,skillid,skilllv,1);
-			pc_addspiritball(sd,skill_get_time(skillid,skilllv),skilllv);
-		}
-		break;
+		if( sd )
+		{
+			if( !sd->sc.data[SC_RAISINGDRAGON] )
+				pc_addspiritball(sd, skill_get_time(skillid, skilllv), skilllv);
+			else
+			{ // Call Spirit can summon more than its max level if under raising dragon status. [Jobbie]
+				short rd_lvl = sd->sc.data[SC_RAISINGDRAGON]->val1;
+				pc_addspiritball(sd, skill_get_time(skillid, skilllv), skilllv + rd_lvl);
+			}
+ 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+ 		}
+ 		break;
 
 	case CH_SOULCOLLECT:
 		if( sd )
@@ -5319,11 +5326,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 					pc_addspiritball(sd, skill_get_time(skillid, skilllv), 5);
 			}
 			else
-			{ //Soul Collect will directly summon 15 spiritballs if RD status is Level 10. [Jobbie]
+			{ //As Tested in kRO Soul Collect will summon 5 + raising dragon level spirit balls directly. [Jobbie]
 				short rd_lvl = sd->sc.data[SC_RAISINGDRAGON]->val1;
-				short max = ( rd_lvl == 10 ) ? 15 : 5;
-				for( i = 0; i < max; i++ )
-					pc_addspiritball(sd, skill_get_time(skillid, skilllv), (rd_lvl == 10) ? 15 : 5 + rd_lvl );
+				for( i = 0; i < 15; i++ )
+					pc_addspiritball(sd, skill_get_time(skillid, skilllv), 5 + rd_lvl);
 			}
 			clif_skill_nodamage(src, bl, skillid, skilllv, 1);
  		}
@@ -8097,10 +8103,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		if( sd )
 		{
 			short max = 5 + skilllv;
-			clif_skill_nodamage(src, bl, skillid, skilllv, sc_start(bl, type, 100, skilllv,skill_get_time(skillid, skilllv)));
 			sc_start(bl, SC_EXPLOSIONSPIRITS, 100, skilllv, skill_get_time(skillid, skilllv));				
 			for( i = 0; i < max; i++ ) // Don't call more than max available spheres.
 				pc_addspiritball(sd, skill_get_time(skillid, skilllv), max);
+			clif_skill_nodamage(src, bl, skillid, skilllv, sc_start(bl, type, 100, skilllv,skill_get_time(skillid, skilllv)));
 		}
 		break;
 
@@ -11908,11 +11914,16 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		}
 		break;
 	case MO_CALLSPIRITS:
-		if(sd->spiritball >= lv) {
-			clif_skill_fail(sd,skill,0,0,0);
-			return 0;
+		{
+			if( sc && sc->data[SC_RAISINGDRAGON] )
+				lv = sc->data[SC_RAISINGDRAGON]->val1 + lv;
+			if( sd->spiritball >= lv )
+			{
+				clif_skill_fail(sd,skill,0,0,0);
+				return 0;
+			}
 		}
-		break;
+ 		break;
 	case MO_FINGEROFFENSIVE:
 	case GS_FLING:
 	case SR_RAMPAGEBLASTER:
@@ -12966,7 +12977,7 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 					}
 				}
 				else if( sc->data[SC_RAISINGDRAGON] ) //Only Asura will consume all remaining balls under RD status. [Jobbie]
-					req.spiritball = sd->spiritball?sd->spiritball:15;
+					req.spiritball = sd->spiritball ? sd->spiritball : 15;
 			}
 			break;
 		case LG_RAGEBURST:
