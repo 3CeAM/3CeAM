@@ -10333,8 +10333,8 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 		interval = limit;
 		val2 = 1;
 	case WM_POEMOFNETHERWORLD:	// Can't be placed on top of Land Protector.
-		if( map_getcell(sd->bl.m, x, y, CELL_CHKLANDPROTECTOR) )
-			return 0;
+		if( map_getcell(src->m, x, y, CELL_CHKLANDPROTECTOR) )
+			return NULL;
 		break;
 
 	case SO_CLOUD_KILL:

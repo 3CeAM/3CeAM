@@ -1803,7 +1803,7 @@ int map_quit(struct map_session_data *sd)
 		status_change_end(&sd->bl,SC_RAISINGDRAGON,-1);
 		status_change_end(&sd->bl,SC_OVERHEAT,-1);
 
-		if (battle_config.debuff_on_logout&1)
+		if( battle_config.debuff_on_logout&1 )
 		{
 			status_change_end(&sd->bl,SC_ORCISH,-1);
 			status_change_end(&sd->bl,SC_STRIPWEAPON,-1);
