@@ -498,7 +498,7 @@ void initChangeTables(void)
 	set_sc( SR_CRESCENTELBOW            , SC_CRESCENTELBOW        , SI_CRESCENTELBOW            , SCB_NONE );
 	set_sc( SR_CURSEDCIRCLE             , SC_CURSEDCIRCLE_TARGET  , SI_CURSEDCIRCLE_TARGET      , SCB_NONE );
 	set_sc( SR_LIGHTNINGWALK            , SC_LIGHTNINGWALK        , SI_LIGHTNINGWALK            , SCB_NONE );
-	set_sc( SR_RAISINGDRAGON            , SC_RAISINGDRAGON        , SI_RAISINGDRAGON            , SCB_REGEN|SCB_MAXHP|SCB_MAXSP|SCB_ASPD );
+	set_sc( SR_RAISINGDRAGON            , SC_RAISINGDRAGON        , SI_RAISINGDRAGON            , SCB_REGEN|SCB_MAXHP|SCB_MAXSP/*|SCB_ASPD*/ );
 	set_sc( SR_GENTLETOUCH_ENERGYGAIN   , SC_GT_ENERGYGAIN        , SI_GENTLETOUCH_ENERGYGAIN   , SCB_NONE );
 	set_sc( SR_GENTLETOUCH_CHANGE       , SC_GT_CHANGE            , SI_GENTLETOUCH_CHANGE       , SCB_BATK|SCB_ASPD|SCB_DEF|SCB_MDEF );
 	set_sc( SR_GENTLETOUCH_REVITALIZE   , SC_GT_REVITALIZE        , SI_GENTLETOUCH_REVITALIZE   , SCB_VIT|SCB_MAXHP|SCB_DEF2|SCB_REGEN|SCB_ASPD|SCB_SPEED );
@@ -4779,8 +4779,9 @@ static short status_calc_aspd_rate(struct block_list *bl, struct status_change *
 		aspd_rate += aspd_rate * sc->data[SC_GLOOMYDAY]->val3 / 100;
 	if( sc->data[SC_EARTHDRIVE] )
 		aspd_rate += aspd_rate * 25 / 100;
-	if( sc->data[SC_RAISINGDRAGON] )
-		aspd_rate -= 100; //FIXME: Need official ASPD bonus of this status. [Jobbie]
+	/*As far I tested the skill there is no ASPD addition is applied. [Jobbie] */
+	//if( sc->data[SC_RAISINGDRAGON] )
+	//	aspd_rate -= 100; //FIXME: Need official ASPD bonus of this status. [Jobbie]
 	if( sc->data[SC_GT_CHANGE] )
 		aspd_rate -= aspd_rate * (sc->data[SC_GT_CHANGE]->val2/200) / 100;
 	if( sc->data[SC_GT_REVITALIZE] )
@@ -8450,10 +8451,14 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 			if( sd && sce->val2 && !pc_isdead(sd) )
 			{
 				int i;
+				i = min(sd->spiritball,5);
 				pc_delspiritball(sd, sd->spiritball, 0);
 				status_change_end(bl, SC_EXPLOSIONSPIRITS, -1);
-				for( i = 0; i < 5; i++ )
-					pc_addspiritball(sd, skill_get_time(MO_CALLSPIRITS, sce->val1), 5);
+				while( i > 0 )
+				{
+					pc_addspiritball(sd, skill_get_time(MO_CALLSPIRITS, pc_checkskill(sd,MO_CALLSPIRITS)), 5);
+					--i;
+				}
 			}
 			break;
 		}
