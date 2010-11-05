@@ -2214,6 +2214,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case LG_OVERBRAND_PLUSATK:
 					skillratio = 160 * skill_lv * s_level / 100;
 					break;
+				case LG_RAYOFGENESIS:
+					skillratio = (skillratio + 200 + 300 * skill_lv) * s_level / 100;
+					break;
 				case LG_EARTHDRIVE:
 					skillratio = (skillratio + 100) * skill_lv * s_level / 100;
 					break;
@@ -2422,6 +2425,12 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case RA_WUGBITE:
 					if(sd)
 						ATK_ADD(30*pc_checkskill(sd, RA_TOOTHOFWUG));
+					break;
+				case LG_RAYOFGENESIS:
+					{
+						short *lv = (short*)&skill_lv;
+						ATK_ADDRATE( 190 * skill_check_pc_partner(sd,(short)skill_num,lv,skill_get_splash(skill_num,skill_lv),0));
+					}
 					break;
 			}
 		}
@@ -3018,11 +3027,16 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 		status_zap(src, hp, 0);
 	}
 
-	if(sc && sc->data[SC_ENCHANTBLADE] && !skill_num && (sd && (flag.rh && sd->weapontype1) || (flag.lh && sd->weapontype2))) // Only regular melee attacks are increased. A weapon must be equiped. [pakpil]
+	if( sc && sc->data[SC_ENCHANTBLADE] && !skill_num && (sd && (flag.rh && sd->weapontype1) || (flag.lh && sd->weapontype2)) ) // Only regular melee attacks are increased. A weapon must be equiped. [pakpil]
 	{	// Magic damage from Enchant Blade
 		struct Damage md = battle_calc_magic_attack(src, target, RK_ENCHANTBLADE, ((TBL_PC*)src)->status.skill[RK_ENCHANTBLADE].lv, wflag);
 		wd.damage += md.damage;
 		wd.flag += md.flag;
+	}
+	if( skill_num == LG_RAYOFGENESIS )
+	{
+		struct Damage md = battle_calc_magic_attack(src, target, skill_num, skill_lv, wflag);
+		wd.damage += md.damage;
 	}
 
 	return wd;
@@ -3416,6 +3430,9 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					case WL_SUMMON_ATK_GROUND:
 						skillratio += 50 * skill_lv - 50;
 						skillratio *= (s_level + 2 * (sd ? sd->status.job_level : 0)) / 100;
+						break;
+					case LG_RAYOFGENESIS:
+						skillratio = (skillratio + 200) * skill_lv * s_level / 100;
 						break;
 					case WM_SEVERE_RAINSTORM:
 						skillratio += 50 * skill_lv;

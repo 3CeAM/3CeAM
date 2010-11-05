@@ -377,8 +377,8 @@ static int pc_check_banding( struct block_list *bl, va_list ap )
 
 int pc_banding(struct map_session_data *sd, short skill_lv)
 {
-	static int c;
-	static int b_sd[MAX_PARTY]; // In case of a full Royal Guard party.
+	int c;
+	int b_sd[MAX_PARTY]; // In case of a full Royal Guard party.
 	int i, j, hp, extra_hp = 0, tmp_qty = 0, tmp_hp;
 	struct map_session_data *bsd;
 	struct status_change *sc;

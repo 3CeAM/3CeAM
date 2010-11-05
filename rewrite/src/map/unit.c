@@ -93,6 +93,8 @@ int unit_walktoxy_sub(struct block_list *bl)
 	if (bl->type == BL_PC) {
 		((TBL_PC *)bl)->head_dir = 0;
 		clif_walkok((TBL_PC*)bl);
+		if( ud->walktimer == INVALID_TIMER && ((TBL_PC *)bl)->sc.data[SC_BANDING] )
+			clif_status_change(bl,SI_BANDING,1,9999,((TBL_PC *)bl)->sc.data[SC_BANDING]->val1,0,0);
 	}
 	clif_move(ud);
 
@@ -931,15 +933,15 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 	int temp;
 
 	nullpo_ret(src);
-	if(status_isdead(src))
+	if( status_isdead(src) )
 		return 0; // Ž€‚ñ‚Å‚¢‚È‚¢‚©
 
 	sd = BL_CAST(BL_PC, src);
 	ud = unit_bl2ud(src);
 
-	if(ud == NULL) return 0;
+	if( ud == NULL ) return 0;
 	sc = status_get_sc(src);
-	if (sc && !sc->count)
+	if( sc && !sc->count )
 		sc = NULL; //Unneeded
 
 	//temp: used to signal combo-skills right now.
@@ -950,10 +952,11 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 					skill_num == SR_DRAGONCOMBO 
 				) 
 			);
-	if (temp)
+	if( temp )
 		target_id = ud->target; //Auto-select skills. [Skotlex]
 
-	if (sd) {
+	if( sd )
+	{
 		//Target_id checking.
 		if(skillnotok(skill_num, sd)) // [MouseJstr]
 			return 0;
@@ -1119,9 +1122,9 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 			return 0; // Arrow-path check failed.
 	}
 
-	if (!temp) //Stop attack on non-combo skills [Skotlex]
+	if( !temp ) //Stop attack on non-combo skills [Skotlex]
 		unit_stop_attack(src);
-	else if(ud->attacktimer != -1) //Elsewise, delay current attack sequence
+	else if( ud->attacktimer != -1 ) //Elsewise, delay current attack sequence
 		ud->attackabletime = tick + status_get_adelay(src);
 	
 	ud->state.skillcastcancel = castcancel;
