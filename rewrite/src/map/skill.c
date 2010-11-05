@@ -1130,6 +1130,10 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		else if( dstmd && !is_boss(bl) )
 			sc_start(bl,SC_STOP,100,skilllv,skill_get_time(skillid,skilllv));
 		break;
+	case LG_RAYOFGENESIS:	// 50% chance to cause Blind on Undead and Demon monsters.
+		if ( battle_check_undead(tstatus->race, tstatus->def_ele) || tstatus->race == RC_DEMON )
+			sc_start(bl, SC_BLIND,50, skilllv, skill_get_time(skillid,skilllv));
+		break;
 	case LG_EARTHDRIVE:
 		skill_break_equip(src, EQP_SHIELD, 500, BCT_SELF);
 		sc_start(bl, SC_EARTHDRIVE, 100, skilllv, skill_get_time(skillid, skilllv));
@@ -3347,6 +3351,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case LG_BANISHINGPOINT:
 	case LG_SHIELDPRESS:
 	case LG_RAGEBURST:
+	case LG_RAYOFGENESIS:
 	case SR_SKYNETBLOW:
 	case SR_FALLENEMPIRE:
 	case SR_RAMPAGEBLASTER:
@@ -8307,8 +8312,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		else
 		{	// These affect to all targets arround the caster.
-			short lv = (short)skilllv;
-			skill_area_temp[0] = (sd) ? skill_check_pc_partner(sd,skillid,&lv,skill_get_splash(skillid,skilllv),1) : 50; // 50% chance in non BL_PC (clones).
+			short *lv = (short*)&skilllv;
+			skill_area_temp[0] = (sd) ? skill_check_pc_partner(sd,skillid,lv,skill_get_splash(skillid,skilllv),1) : 50; // 50% chance in non BL_PC (clones).
 			map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid,skilllv),BL_PC, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
@@ -8351,8 +8356,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		else
 		{
-			short lv = (short)skilllv;
-			skill_area_temp[0] = (sd) ? skill_check_pc_partner(sd,skillid,&lv,skill_get_splash(skillid,skilllv),1) : 50; // 50% chance in non BL_PC (clones).
+			short *lv = (short*)&skilllv;
+			skill_area_temp[0] = (sd) ? skill_check_pc_partner(sd,skillid,lv,skill_get_splash(skillid,skilllv),1) : 50; // 50% chance in non BL_PC (clones).
 			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid,skilllv),BL_PC, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
@@ -9769,6 +9774,16 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		}
 		clif_skill_nodamage(src,src,skillid,skilllv,1);
 		break;
+
+	case LG_RAYOFGENESIS:
+		if( status_charge(src,status_get_max_hp(src)*3*skilllv / 100,0) )
+		{
+			i = skill_get_splash(skillid,skilllv);
+			map_foreachinarea(skill_area_sub,src->m,x-i,y-i,x+i,y+i,BL_CHAR,
+				src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
+		}
+		else if( sd ) clif_skill_fail(sd,skillid,0xa,0,0);
+		break;		
 
 	case WM_DOMINION_IMPULSE:
 		i = skill_get_splash(skillid, skilllv);
@@ -11650,6 +11665,13 @@ static int skill_check_condition_char_sub (struct block_list *bl, va_list ap)
 				p_sd[(*c)++] = tsd->bl.id;
 			return 1;
 		}
+		case LG_RAYOFGENESIS:
+		{
+			if( tsd->status.party_id == sd->status.party_id && (tsd->class_&MAPID_UPPERMASK_THIRD) == MAPID_ROYAL_GUARD &&
+				tsd->sc.data[SC_BANDING] )
+				p_sd[(*c)++] = tsd->bl.id;
+			return 1;
+		}
 		default: //Warning: Assuming Ensemble Dance/Songs for code speed. [Skotlex]
 			{
 				int skilllv;
@@ -12303,6 +12325,13 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			return 0;
 		}
 		break;
+	case LG_BANDING:
+		if( sc && sc->data[SC_INSPIRATION] )
+		{
+			clif_skill_fail(sd,skill,0,0,0);
+			return 0;
+		}
+		break;
 	case LG_PRESTIGE:
 		if( sc && (sc->data[SC_BANDING] || sc->data[SC_INSPIRATION]) )
 		{
@@ -12317,6 +12346,17 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			return 0;
 		}
 		sd->rageball_old = require.spiritball = sd->rageball;
+		break;
+	case LG_RAYOFGENESIS:
+		if( sc && sc->data[SC_INSPIRATION]  )
+			return 1;	// Don't check for partner.
+		if( !(sc && sc->data[SC_BANDING]) )
+		{
+			clif_skill_fail(sd,skill,0xa,0,0);
+			return 0;
+		}
+		else if( skill_check_pc_partner(sd,skill,&lv,skill_get_range(skill,lv),0) < 1 )
+			return 0; // Just fails, no msg here.
 		break;
 	case SR_FALLENEMPIRE:
 		if( !(sc && sc->data[SC_COMBO] && sc->data[SC_COMBO]->val1 == SR_DRAGONCOMBO) )
