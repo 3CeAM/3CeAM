@@ -135,12 +135,11 @@ int npc_ontouch2_event(struct map_session_data *sd, struct npc_data *nd)
  *------------------------------------------*/
 int npc_enable_sub(struct block_list *bl, va_list ap)
 {
-	struct map_session_data *sd;
 	struct npc_data *nd;
 
 	nullpo_ret(bl);
 	nullpo_ret(nd=va_arg(ap,struct npc_data *));
-	if(bl->type == BL_PC && (sd=(struct map_session_data *)bl))
+	if(bl->type == BL_PC)
 	{
 		TBL_PC *sd = (TBL_PC*)bl;
 
@@ -2977,8 +2976,6 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 		map[m].flag.leaves=state;
 	else if (!strcmpi(w3,"rain"))
 		map[m].flag.rain=state;
-	else if (!strcmpi(w3,"indoors"))
-		map[m].flag.indoors=state;
 	else if (!strcmpi(w3,"nightenabled"))
 		map[m].flag.nightenabled=state;
 	else if (!strcmpi(w3,"nogo"))
