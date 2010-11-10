@@ -9464,9 +9464,9 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		return 0;
 
 	case SC_BANDING:
-		if(status_charge(bl, 0, 7 - sce->val1))
+		if( status_charge(bl, 0, 7 - sce->val1) )
 		{
-			pc_banding(sd, sce->val1);
+			if( sd ) pc_banding(sd, sce->val1);
 			sc_timer_next(5000 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}
