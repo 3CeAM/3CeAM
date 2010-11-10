@@ -2427,9 +2427,10 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						ATK_ADD(30*pc_checkskill(sd, RA_TOOTHOFWUG));
 					break;
 				case LG_RAYOFGENESIS:
-					{
-						short *lv = (short*)&skill_lv;
-						ATK_ADDRATE( 190 * skill_check_pc_partner(sd,(short)skill_num,lv,skill_get_splash(skill_num,skill_lv),0));
+					if( sc && sc->data[SC_BANDING] )
+					{// Increase only if the RG is under Banding.
+						short lv = (short)skill_lv;
+						ATK_ADDRATE( 190 * skill_check_pc_partner(sd,(short)skill_num,&lv,skill_get_splash(skill_num,skill_lv),0));
 					}
 					break;
 			}

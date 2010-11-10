@@ -8312,8 +8312,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		else
 		{	// These affect to all targets arround the caster.
-			short *lv = (short*)&skilllv;
-			skill_area_temp[0] = (sd) ? skill_check_pc_partner(sd,skillid,lv,skill_get_splash(skillid,skilllv),1) : 50; // 50% chance in non BL_PC (clones).
+			short lv = (short)skilllv;
+			skill_area_temp[0] = (sd) ? skill_check_pc_partner(sd,skillid,&lv,skill_get_splash(skillid,skilllv),1) : 50; // 50% chance in non BL_PC (clones).
 			map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid,skilllv),BL_PC, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
