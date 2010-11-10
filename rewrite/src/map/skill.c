@@ -7945,8 +7945,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 						struct item_data *shield_data = sd->inventory_data[sd->equip_index[EQI_HAND_L]];
 						if( !shield_data || shield_data->type != IT_ARMOR )
 						{	// No shield?
-							if( sd )
-								clif_skill_fail(sd, skillid, 0, 0, 0);
+							clif_skill_fail(sd, skillid, 0, 0, 0);
 							break;
 						}
 						brate = shield_data->def * 10;
@@ -8014,8 +8013,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 					struct item *it = &sd->status.inventory[sd->equip_index[EQI_HAND_L]];
 					if( !it )
 					{	// No shield?
-						if( sd )
-							clif_skill_fail(sd,skillid,0,0,0);
+						clif_skill_fail(sd,skillid,0,0,0);
 						break;
 					}
 					brate = it->refine * 5;
