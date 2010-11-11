@@ -2060,8 +2060,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						short index = sd->equip_index[EQI_HAND_R];
 						if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_WEAPON )
 						{
-							skillratio += 100 * sd->inventory_data[index]->wlv; // Increased by weapon level.
-							skillratio *= sd->status.inventory[index].refine;	// Increased by weapon refine.
+							skillratio += 100 * sd->status.inventory[index].refine;	// Increased by weapon refine.
+							skillratio *= sd->inventory_data[index]->wlv; // Increased by weapon level.
 						}
 					}
 					break;
