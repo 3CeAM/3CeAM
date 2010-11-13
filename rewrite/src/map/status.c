@@ -7407,7 +7407,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			tick = 1000;
 			break;
 		case SC_CAMOUFLAGE:
-			val2 = tick/1000;
 			val3 |= battle_config.pc_camouflage_check_type&7;
 			tick = 1000;
 			break;
@@ -9335,13 +9334,10 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		break;
 
 	case SC_CAMOUFLAGE:
-		if( --(sce->val2) > 0 )
-		{
-			status_charge(bl,0,7 - sce->val1);
-			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
-			return 0;
-		}
-		break;
+		if( !status_charge(bl,0,7 - sce->val1) )
+			break;
+		sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
+		return 0;
 
 	case SC__REPRODUCE:
 		if(!status_charge(bl, 0, 1))

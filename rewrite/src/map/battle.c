@@ -495,7 +495,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 		if(sc->data[SC_DODGE] && !sc->opt1 &&
 			(flag&BF_LONG || sc->data[SC_SPURT])
 			&& rand()%100 < 20) {
-				if (sd && pc_issit(sd) && !sc->data[SC_SITDOWN_FORCE]) pc_setstand(sd); //Stand it to dodge.
+			if (sd && pc_issit(sd) && !sc->data[SC_SITDOWN_FORCE]) pc_setstand(sd); //Stand it to dodge.
 			clif_skill_nodamage(bl,bl,TK_DODGE,1,1);
 			if (!sc->data[SC_COMBO])
 				sc_start4(bl, SC_COMBO, 100, TK_JUMPKICK, src->id, 1, 0, 2000);
@@ -556,7 +556,6 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 		}
 		if( sc->data[SC_VOICEOFSIREN] && damage > 0)
 			status_change_end(bl,SC_VOICEOFSIREN,-1);
-
 
 		//Finally damage reductions....
 		if( sc->data[SC_ASSUMPTIO] )
@@ -627,7 +626,6 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 
 		// FIXME:
 		// So Reject Sword calculates the redirected damage before calculating WoE/BG reduction? This is weird. [Inkfish]
-		
 		if((sce=sc->data[SC_REJECTSWORD]) && flag&BF_WEAPON &&
 			// Fixed the condition check [Aalye]
 			(src->type!=BL_PC || (
@@ -645,7 +643,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 		}
 
 		//Finally added to remove the status of immobile when aimedbolt is used. [Jobbie]
-		if( skill_num == RA_AIMEDBOLT && sc && (sc->data[SC_BITE] || sc->data[SC_ANKLE] || sc->data[SC_ELECTRICSHOCKER]) )
+		if( skill_num == RA_AIMEDBOLT && (sc->data[SC_BITE] || sc->data[SC_ANKLE] || sc->data[SC_ELECTRICSHOCKER]) )
 		{
 			status_change_end(bl, SC_BITE, -1);
 			status_change_end(bl, SC_ANKLE, -1);
@@ -696,10 +694,10 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			int duration = skill_get_time2(MO_CALLSPIRITS, sce->val1);
 			if( sd ) pc_addspiritball(sd, duration, sce->val1);
 		}
+		
+		if( sc->data[SC__DEADLYINFECT] && damage > 0 && rand()%100 < 20 )
+			status_change_spread(bl, src); // Deadly infect attacked side
 	}
-
-	if( sc && sc->data[SC__DEADLYINFECT] && damage > 0 && rand()%100 < 20 )
-		status_change_spread(bl, src); // Deadly infect attacked side
 
 	if( tsc && tsc->count )
 	{
@@ -1181,7 +1179,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 		unsigned idef2 : 1;	//Ignore defense (left weapon)
 		unsigned pdef : 2;	//Pierces defense (Investigate/Ice Pick)
 		unsigned pdef2 : 2;	//1: Use def+def2/100, 2: Use def+def2/50	
-//		unsigned pdef3 : 100;	// Defense piercing rate for Expiatio [LimitLine]
 		unsigned infdef : 1;	//Infinite defense (plants)
 		unsigned arrow : 1;	//Attack is arrow-based
 		unsigned rh : 1;		//Attack considers right hand (wd.damage)
@@ -1456,9 +1453,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case CR_SHIELDBOOMERANG:
 					if( sc && sc->data[SC_SPIRIT] && sc->data[SC_SPIRIT]->val2 == SL_CRUSADER )
 						flag.hit = 1;
-					break;
-				case LG_PINPOINTATTACK:
-					flag.hit = 1; // Always hits.
 					break;
 			}
 		if (tsc && !flag.hit && tsc->opt1 && tsc->opt1 != OPT1_STONEWAIT)
@@ -2733,7 +2727,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 		if( (wd.damage || wd.damage2) && !(nk&NK_NO_CARDFIX_ATK) )
 		{
 			int cardfix = 1000, cardfix_ = 1000;
-			int t_race2 = status_get_race2(target);	
+			int t_race2 = status_get_race2(target);
 			if(sd->state.arrow_atk)
 			{
 				cardfix=cardfix*(100+sd->right_weapon.addrace[tstatus->race]+sd->arrow_addrace[tstatus->race])/100;
