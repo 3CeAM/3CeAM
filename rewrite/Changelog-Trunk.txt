@@ -1,5 +1,24 @@
 Date	Added
 
+2010/11/07
+	* 'Exp gained' packets are now sent regardless of @showexp. @showexp can be enabled regardless of PACKETVER. [Gepard]
+	* Applied clif_equiplist fix by Ai4rei to prevent client crash when equipment is broken/repaired and PACKETVER >= 20100629. Follow-up to r14368. (bugreport:4459) [Gepard]
+2010/11/02
+	* Fixed an issue where two ushorts were being strcmp'd. Follow-up to r14442. (bugreport:4523) [Paradox924X]
+	* Ensured character data is saved even when last map is the only value that has changed during save time. (bugreport:2218) [Paradox924X]
+	* Applied fix by Ai4rei to reintroduce mapName within charinfo packet when PACKETVER >= 20100803. Follow-up to r14432. (bugreport:4413) [Paradox924X]
+	* Updated script doc to appropriately describe the effects of close/close2 when used without a window on screen. (bugreport:898) [Paradox924X]
+	* Applied patch by xazax to clean up various bits of code across mapserver code. (bugreport:4512) [Paradox924X]
+2010/11/01
+	* Changed Normal and Cash Food statuses so they do not stack and overwrite the other if the level (val1) is the same or higher. (bugreport:4519) [Paradox924X]
+	* Modified certain atcommands to use 64 bit arithmetic before capping a value to correct boundary logic for overflowing values. [Paradox924X]
+2010/10/21
+	* Removed unused 'indoors' mapflag. [Gepard]
+2010/10/17
+	* Fixed wrong char info packet size for clients after 2010-07-27. (bugreport:4413) [Gepard]
+2010/10/13
+	* Prevented direct transformation into dummy jobs via @jobchange command. (bugreport:4227) [Paradox924X]
+	* Prevented @stpoint and @skpoint from causing overflows. [Paradox924X]
 2010/10/11
 	* Implemented official cash food behavior, including use delay, not being dispelled (including on death),
 	  distinct status effects and icons from the ordinary food types. (bugreport:2560) [Paradox924X]
