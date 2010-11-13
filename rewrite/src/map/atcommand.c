@@ -4963,7 +4963,7 @@ char* txt_time(unsigned int duration)
 {
 	int days, hours, minutes, seconds;
 	char temp[CHAT_SIZE_MAX];
-	static char temp1[256];
+	static char temp1[CHAT_SIZE_MAX];
 
 	memset(temp, '\0', sizeof(temp));
 	memset(temp1, '\0', sizeof(temp1));
