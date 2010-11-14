@@ -4151,17 +4151,18 @@ int clif_damage(struct block_list* src, struct block_list* dst, unsigned int tic
 
 	type = clif_calc_delay(type,div,damage+damage2,ddelay);
 	sc = status_get_sc(dst);
-	if(sc && sc->count) {
-		if(sc->data[SC_HALLUCINATION]) {
-			if(damage) damage = damage*(sc->data[SC_HALLUCINATION]->val2) + rand()%100;
-			if(damage2) damage2 = damage2*(sc->data[SC_HALLUCINATION]->val2) + rand()%100;
+	if( sc && sc->count )
+	{
+		if(sc->data[SC_HALLUCINATION])
+		{
+			if( damage ) damage = damage * ( sc->data[SC_HALLUCINATION]->val2) + rand()%100;
+			if( damage2 ) damage2 = damage2 * (sc->data[SC_HALLUCINATION]->val2) + rand()%100;
 		}
 	}
 
-	WBUFW(buf,0) = cmd;
-
-	WBUFL(buf,2) = src->id;
-	WBUFL(buf,6) = dst->id;
+	WBUFW(buf, 0) = cmd;
+	WBUFL(buf, 2) = src->id;
+	WBUFL(buf, 6) = dst->id;
 	WBUFL(buf,10) = tick;
 	WBUFL(buf,14) = sdelay;
 	WBUFL(buf,18) = ddelay;
@@ -4169,11 +4170,11 @@ int clif_damage(struct block_list* src, struct block_list* dst, unsigned int tic
 	if( battle_config.hide_woe_damage && map_flag_gvg(src->m) )
 	{
 #if PACKETVER < 20071113
-		WBUFW(buf,22) = damage?div:0;
-		WBUFW(buf,i + 27) = damage2?div:0;
+		WBUFW(buf,22) = damage ? div : 0;
+		WBUFW(buf,i + 27) = damage2 ? div : 0;
 #else
-		WBUFL(buf,22) = damage?div:0;
-		WBUFL(buf,i + 27) = damage2?div:0;
+		WBUFL(buf,22) = damage ? div : 0;
+		WBUFL(buf,i + 27) = damage2 ? div : 0;
 #endif
 	}
 	else
@@ -4183,7 +4184,7 @@ int clif_damage(struct block_list* src, struct block_list* dst, unsigned int tic
 		WBUFW(buf,i + 27) = damage2;
 #else
 		WBUFL(buf,22) = min(damage, INT_MAX);
-		WBUFL(buf,i+ 27) = damage2;
+		WBUFL(buf,i + 27) = damage2;
 #endif
 	}
 	WBUFW(buf,i + 24) = div;

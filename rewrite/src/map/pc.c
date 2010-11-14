@@ -256,12 +256,12 @@ static int pc_rageball_timer(int tid, unsigned int tick, int id, intptr data)
 	struct map_session_data *sd;
 	int i;
 
-	if( (sd=(struct map_session_data *)map_id2sd(id)) == NULL || sd->bl.type!=BL_PC )
+	if( (sd = (struct map_session_data *)map_id2sd(id)) == NULL || sd->bl.type != BL_PC )
 		return 1;
 
 	if( sd->rageball <= 0 )
 	{
-		ShowError("pc_spiritball_timer: %d spiritball's available. (aid=%d cid=%d tid=%d)\n", sd->spiritball, sd->status.account_id, sd->status.char_id, tid);
+		ShowError("pc_rageball_timer: %d rageball's available. (aid=%d cid=%d tid=%d)\n", sd->rageball, sd->status.account_id, sd->status.char_id, tid);
 		sd->rageball = 0;
 		return 0;
 	}
@@ -4041,16 +4041,6 @@ int pc_useitem(struct map_session_data *sd,int n)
 	amount = sd->status.inventory[n].amount;
 	script = sd->inventory_data[n]->script;
 	
-	// If any other class that isn't Rune Knight class, uses one rune, this is consumed without nothing happends.
-	if( itemdb_is_rune(sd->status.inventory[n].nameid) && !((sd->class_&MAPID_UPPERMASK_THIRD) == MAPID_RUNE_KNIGHT) )
-	{
-		clif_useitemack(sd,n,amount-1,1);
-		if( log_config.enable_logs&0x100 )
-			log_pick_pc(sd, "C", sd->status.inventory[n].nameid, -1, &sd->status.inventory[n]);
-		pc_delitem(sd,n,1,1,0);
-		return 1;
-	}
-
 	//Check if the item is to be consumed immediately [Skotlex]
 	if( sd->inventory_data[n]->flag.delay_consume )
 		clif_useitemack(sd,n,amount,1);

@@ -494,7 +494,8 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 		
 		if(sc->data[SC_DODGE] && !sc->opt1 &&
 			(flag&BF_LONG || sc->data[SC_SPURT])
-			&& rand()%100 < 20) {
+			&& rand()%100 < 20)
+		{
 			if (sd && pc_issit(sd) && !sc->data[SC_SITDOWN_FORCE]) pc_setstand(sd); //Stand it to dodge.
 			clif_skill_nodamage(bl,bl,TK_DODGE,1,1);
 			if (!sc->data[SC_COMBO])
