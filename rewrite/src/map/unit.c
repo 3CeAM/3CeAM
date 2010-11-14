@@ -618,7 +618,7 @@ int unit_movepos(struct block_list *bl, short dst_x, short dst_y, int easy, bool
 int unit_setdir(struct block_list *bl,unsigned char dir)
 {
 	struct unit_data *ud;
-	nullpo_ret(bl );
+	nullpo_ret(bl);
 	ud = unit_bl2ud(bl);
 	if (!ud) return 0;
 	ud->dir = dir;
@@ -631,7 +631,7 @@ int unit_setdir(struct block_list *bl,unsigned char dir)
 uint8 unit_getdir(struct block_list *bl)
 {
 	struct unit_data *ud;
-	nullpo_ret(bl );
+	nullpo_ret(bl);
 	ud = unit_bl2ud(bl);
 	if (!ud) return 0;
 	return ud->dir;

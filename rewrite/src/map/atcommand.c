@@ -3123,10 +3123,13 @@ int atcommand_stat_all(const int fd, struct map_session_data* sd, const char* co
 	status[4] = &sd->status.dex;
 	status[5] = &sd->status.luk;
 
-	if (!message || !*message || sscanf(message, "%d", &value) < 1 || value == 0) {
+	if( !message || !*message || sscanf(message, "%d", &value) < 1 || value == 0 )
+	{
 		value = pc_maxparameter(sd);
 		max = pc_maxparameter(sd);
-	} else {
+	}
+	else
+	{
 		max = SHRT_MAX;
 	}
 

@@ -1732,58 +1732,59 @@ int status_calc_mob_(struct mob_data* md, bool first)
 {
 	struct status_data *status;
 	struct block_list *mbl = NULL;
-	int flag=0;
+	int flag = 0;
 
-	if(first)
+	if( first )
 	{	//Set basic level on respawn.
 		md->level = md->db->lv;
 	}
 
 	//Check if we need custom base-status
-	if (battle_config.mobs_level_up && md->level > md->db->lv)
-		flag|=1;
+	if( battle_config.mobs_level_up && md->level > md->db->lv )
+		flag |= 1;
 	
-	if (md->special_state.size)
-		flag|=2;
+	if( md->special_state.size )
+		flag |= 2;
 
-	if (md->guardian_data && md->guardian_data->guardup_lv)
-		flag|=4;
-	if (md->class_ == MOBID_EMPERIUM)
-		flag|=4;
+	if( md->guardian_data && md->guardian_data->guardup_lv )
+		flag |= 4;
+	if( md->class_ == MOBID_EMPERIUM )
+		flag |= 4;
 
-	if (battle_config.slaves_inherit_speed && md->master_id)
-		flag|=8;
+	if( battle_config.slaves_inherit_speed && md->master_id )
+		flag |= 8;
 
-	if (md->master_id && md->special_state.ai>1)
-		flag|=16;
+	if( md->master_id && md->special_state.ai > 1 )
+		flag |= 16;
 
-	if (!flag)
+	if( !flag )
 	{ //No special status required.
-		if (md->base_status) {
+		if( md->base_status )
+		{
 			aFree(md->base_status);
 			md->base_status = NULL;
 		}
-		if(first)
+		if( first )
 			memcpy(&md->status, &md->db->status, sizeof(struct status_data));
 		return 0;
 	}
-	if (!md->base_status)
+	if( !md->base_status )
 		md->base_status = (struct status_data*)aCalloc(1, sizeof(struct status_data));
 
 	status = md->base_status;
 	memcpy(status, &md->db->status, sizeof(struct status_data));
 
-	if (flag&(8|16))
+	if( flag&(8|16) )
 		mbl = map_id2bl(md->master_id);
 
-	if (flag&8 && mbl) {
+	if( flag&8 && mbl )
+	{
 		struct status_data *mstatus = status_get_base_status(mbl);
-		if (mstatus &&
-			battle_config.slaves_inherit_speed&(mstatus->mode&MD_CANMOVE?1:2))
+		if( mstatus && battle_config.slaves_inherit_speed&(mstatus->mode&MD_CANMOVE?1:2) )
 			status->speed = mstatus->speed;
 	}
 
-	if (flag&16 && mbl)
+	if( flag&16 && mbl )
 	{	//Max HP setting from Summon Flora/marine Sphere
 		struct unit_data *ud = unit_bl2ud(mbl);
 		//Remove special AI when this is used by regular mobs.
@@ -1805,90 +1806,99 @@ int status_calc_mob_(struct mob_data* md, bool first)
 		}
 	}
 
-	if (flag&1)
+	if( flag&1 )
 	{	// increase from mobs leveling up [Valaris]
 		int diff = md->level - md->db->lv;
-		status->str+= diff;
-		status->agi+= diff;
-		status->vit+= diff;
+		status->str += diff;
+		status->agi += diff;
+		status->vit += diff;
 		status->int_+= diff;
-		status->dex+= diff;
-		status->luk+= diff;
-		status->max_hp += diff*status->vit;
-		status->max_sp += diff*status->int_;
+		status->dex += diff;
+		status->luk += diff;
+		status->max_hp += diff * status->vit;
+		status->max_sp += diff * status->int_;
 		status->hp = status->max_hp;
 		status->sp = status->max_sp;
 		status->speed -= diff;
 	}
 
 
-	if (flag&2)
+	if( flag&2 )
 	{	// change for sized monsters [Valaris]
-		if (md->special_state.size==1) {
+		if( md->special_state.size == 1 )
+		{
 			status->max_hp>>=1;
 			status->max_sp>>=1;
-			if (!status->max_hp) status->max_hp = 1;
-			if (!status->max_sp) status->max_sp = 1;
-			status->hp=status->max_hp;
-			status->sp=status->max_sp;
-			status->str>>=1;
-			status->agi>>=1;
-			status->vit>>=1;
-			status->int_>>=1;
-			status->dex>>=1;
-			status->luk>>=1;
-			if (!status->str) status->str = 1;
-			if (!status->agi) status->agi = 1;
-			if (!status->vit) status->vit = 1;
-			if (!status->int_) status->int_ = 1;
-			if (!status->dex) status->dex = 1;
-			if (!status->luk) status->luk = 1;
-		} else if (md->special_state.size==2) {
-			status->max_hp<<=1;
-			status->max_sp<<=1;
-			status->hp=status->max_hp;
-			status->sp=status->max_sp;
-			status->str<<=1;
-			status->agi<<=1;
-			status->vit<<=1;
-			status->int_<<=1;
-			status->dex<<=1;
-			status->luk<<=1;
+			if( !status->max_hp ) status->max_hp = 1;
+			if( !status->max_sp ) status->max_sp = 1;
+			status->hp = status->max_hp;
+			status->sp = status->max_sp;
+			status->str >>= 1;
+			status->agi >>= 1;
+			status->vit >>= 1;
+			status->int_ >>= 1;
+			status->dex >>= 1;
+			status->luk >>= 1;
+			if( !status->str ) status->str = 1;
+			if( !status->agi ) status->agi = 1;
+			if( !status->vit ) status->vit = 1;
+			if( !status->int_ ) status->int_ = 1;
+			if( !status->dex ) status->dex = 1;
+			if( !status->luk ) status->luk = 1;
+		}
+		else if( md->special_state.size == 2 )
+		{
+			status->max_hp <<= 1;
+			status->max_sp <<= 1;
+			status->hp = status->max_hp;
+			status->sp = status->max_sp;
+			status->str <<= 1;
+			status->agi <<= 1;
+			status->vit <<= 1;
+			status->int_ <<= 1;
+			status->dex <<= 1;
+			status->luk <<= 1;
 		}
 	}
 
 	status_calc_misc(&md->bl, status, md->level);
 
-	if(flag&4)
+	if( flag&4 )
 	{	// Strengthen Guardians - custom value +10% / lv
 		struct guild_castle *gc;
-		gc=guild_mapname2gc(map[md->bl.m].name);
-		if (!gc)
+		gc = guild_mapname2gc(map[md->bl.m].name);
+		if( !gc )
 			ShowError("status_calc_mob: No castle set at map %s\n", map[md->bl.m].name);
-		else {
-			if(gc->castle_id > 23) {
-				if(md->class_ == MOBID_EMPERIUM) {
+		else
+		{
+			if( gc->castle_id > 23 )
+			{
+				if( md->class_ == MOBID_EMPERIUM )
+				{
 					status->max_hp += 1000 * gc->defense;
 					status->max_sp += 200 * gc->defense;
 					status->hp = status->max_hp;
 					status->sp = status->max_sp;
-					status->def += (gc->defense+2)/3;
-					status->mdef += (gc->defense+2)/3;
+					status->def += (gc->defense+2) / 3;
+					status->mdef += (gc->defense+2) / 3;
 				}
-			}else{
+			}
+			else
+			{
 				status->max_hp += 1000 * gc->defense;
 				status->max_sp += 200 * gc->defense;
 				status->hp = status->max_hp;
 				status->sp = status->max_sp;
-				status->def += (gc->defense+2)/3;
-				status->mdef += (gc->defense+2)/3;
+				status->def += (gc->defense + 2) / 3;
+				status->mdef += (gc->defense + 2) / 3;
 			}
 		}
-		if(md->class_ != MOBID_EMPERIUM) {
-			status->batk += status->batk * 10*md->guardian_data->guardup_lv/100;
-			status->rhw.atk += status->rhw.atk * 10*md->guardian_data->guardup_lv/100;
-			status->rhw.atk2 += status->rhw.atk2 * 10*md->guardian_data->guardup_lv/100;
-			status->aspd_rate -= 100*md->guardian_data->guardup_lv;
+		if( md->class_ != MOBID_EMPERIUM )
+		{
+			status->batk += status->batk * 10 * md->guardian_data->guardup_lv / 100;
+			status->rhw.atk += status->rhw.atk * 10*md->guardian_data->guardup_lv / 100;
+			status->rhw.atk2 += status->rhw.atk2 * 10 * md->guardian_data->guardup_lv / 100;
+			status->aspd_rate -= 100 * md->guardian_data->guardup_lv;
 		}
 	}
 
