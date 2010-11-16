@@ -98,7 +98,7 @@
 2032,0xe1,    ,  2, 0,1000,enemy, 0x000	//GC_POISONSMOKE
 2044,0xca,    ,  0, 3,1000,all,   0x000	//AB_EPICLESIS
 2214,0x86,    ,  0, 5, 100,enemy, 0x080	//WL_CHAINLIGHTNING
-2216,0xcb,    , -1, 2,1000,enemy, 0x018	//WL_EARTHSTRAIN
+2216,0xcb,    , -1, 2,2000,enemy, 0x018	//WL_EARTHSTRAIN
 2238,0xd8,    ,  0, 1,1000,enemy, 0x002	//RA_ELECTRICSHOCKER
 2239,0xd9,    ,  0, 0,1000,enemy, 0x000	//RA_CLUSTERBOMB
 2249,0xd2,    ,  0, 1,1000,enemy, 0x022	//RA_MAGENTATRAP
@@ -107,8 +107,8 @@
 2252,0xd5,    ,  0, 1,1000,enemy, 0x022	//RA_VERDURETRAP
 2253,0xd6,    ,  0, 1,1000,enemy, 0x002	//RA_FIRINGTRAP
 2254,0xd7,    ,  0, 1,1000,enemy, 0x002	//RA_ICEBOUNDTRAP
-2273,0xe2,    ,  1, 0, 300,friend,0x000	//NC_NEUTRALBARRIER
-2274,0xe3,    ,  1, 0, 300,all,   0x000	//NC_STEALTHFIELD
+2273,0xe2,    ,  1, 0, 500,friend,0x000	//NC_NEUTRALBARRIER
+2274,0xe3,    ,  1, 0, 500,all,   0x000	//NC_STEALTHFIELD
 2299,0xcc,    ,  0, 1,1000,all,   0x006	//SC_MANHOLE
 2300,0xcd,    ,  0, 1,1000,all,   0x006	//SC_DIMENSIONDOOR
 2301,0xce,    ,  0, 2,  -1,all,   0x00E	//SC_CHAOSPANIC
@@ -121,8 +121,8 @@
 2419,0xde,    ,  0, 3,1000,enemy, 0x010  //WM_POEMOFNETHERWORLD
 2443,0xdc,    ,  0, 1,1000,enemy, 0x00A	//SO_FIREWALK
 2444,0xdd,    ,  0, 1,1000,enemy, 0x00A	//SO_ELECTRICWALK
-2449,0xdf,    ,  0, 3:3:4:4:5, 500,enemy,0x000	//SO_PSYCHIC_WAVE
-2450,0xe0,    ,  0, 3, 500,enemy, 0x010	//SO_CLOUD_KILL
+2449,0xdf,    ,  0, 3:3:4:4:5,500,enemy,0x000	//SO_PSYCHIC_WAVE
+2450,0xe0,    ,  3, 0, 500,enemy, 0x010	//SO_CLOUD_KILL
 2452,0xe4,    ,  0, 3,3000,all, 0x010	//SO_WARMER
 2453,0xeb,    ,  0, 1:1:2:2:3,1000,enemy,0x010	//SO_VACUUM_EXTREME
 2479,0xe5,    ,  0, 1,1000,enemy, 0x000	//GN_THORNS_TRAP
