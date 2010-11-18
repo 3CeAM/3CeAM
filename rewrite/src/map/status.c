@@ -696,6 +696,7 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_PYREXIA] = SI_PYREXIA;
 	StatusIconChangeTable[SC_OBLIVIONCURSE] = SI_OBLIVIONCURSE;
 	StatusIconChangeTable[SC_LEECHESEND] = SI_LEECHESEND;
+	StatusIconChangeTable[SC_CURSEDCIRCLE_ATKER] = SI_CURSEDCIRCLE_ATKER;
 	//Genetics New Food Items Status Icons
 	StatusIconChangeTable[SC_SAVAGE_STEAK] = SI_SAVAGE_STEAK;
 	StatusIconChangeTable[SC_COCKTAIL_WARG_BLOOD] = SI_COCKTAIL_WARG_BLOOD;
@@ -7632,7 +7633,12 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			status_change_clear_buffs(bl,3); //Remove buffs/debuffs
 			break;
 		case SC_SPELLFIST:
+		case SC_CURSEDCIRCLE_ATKER:
 			val_flag |= 1|2|4;
+			break;
+		case SC_CRESCENTELBOW:
+			val2 = 94 + val1;
+			val_flag |= 1|2;
 			break;
 		case SC_RAISINGDRAGON:
 			val3 = tick / 5000;
@@ -7891,8 +7897,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			opt_flag = 0;
 			break;
 		case SC_BLADESTOP:
-		case SC_CURSEDCIRCLE_ATKER:
-		case SC_CURSEDCIRCLE_TARGET:
 			sc->opt3 |= OPT3_BLADESTOP;
 			opt_flag = 0;
 			break;
@@ -8548,6 +8552,7 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 			}
 			break;
 		case SC_CURSEDCIRCLE_ATKER:
+			if( sce->val3 )
 			{
 				int range = skill_get_splash(SR_CURSEDCIRCLE, sce->val1);
 				map_foreachinarea(status_change_timer_sub, 
@@ -8666,8 +8671,6 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 		opt_flag = 0;
 		break;
 	case SC_BLADESTOP:
-	case SC_CURSEDCIRCLE_ATKER:
-	case SC_CURSEDCIRCLE_TARGET:
 		sc->opt3 &= ~OPT3_BLADESTOP;
 		opt_flag = 0;
 		break;
