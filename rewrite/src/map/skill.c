@@ -2197,6 +2197,7 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 			dmg.dmotion = clif_skill_damage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, 5); // needs -2(!) as skill level
 		break;
 	case WL_HELLINFERNO:
+	case SR_EARTHSHAKER:
 		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,1,skillid,-2,6);
 		break;
 	case WL_SOULEXPANSION:
@@ -8116,10 +8117,12 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		else
 		{
 			int count = 0;
-			clif_skill_nodamage(src, src, skillid, skilllv,	sc_start(src, SC_CURSEDCIRCLE_ATKER, 100, skilllv, skill_get_time(skillid,skilllv)));
+			clif_skill_damage(src, bl, tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
 			count = map_forcountinrange(skill_area_sub, src, skill_get_splash(skillid,skilllv), (sd)?sd->spiritball_old:15, // Assume 15 spiritballs in non-charactors
 				BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
 			if( sd ) pc_delspiritball(sd, count, 0);
+			clif_skill_nodamage(src, src, skillid, skilllv,
+				sc_start2(src, SC_CURSEDCIRCLE_ATKER, 100, skilllv, count, skill_get_time(skillid,skilllv)));
 		}
 		break;
 
@@ -8147,7 +8150,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			clif_skill_nodamage(src, bl, skillid, skilllv, i ? 1:0);
 		}
 		else
+		{
+			clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
 			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), splash_target(src), src, skillid, skilllv, tick, flag|BCT_ENEMY|SD_SPLASH|1, skill_castend_nodamage_id);
+		}
 		break;
 
 	case SR_POWERVELOCITY:
@@ -9232,7 +9238,10 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		if( sc->data[SC_CAMOUFLAGE] )
 			status_change_end(src,SC_CAMOUFLAGE,-1);
 		if( sc->data[SC_CURSEDCIRCLE_ATKER] )
+		{
+			sc->data[SC_CURSEDCIRCLE_ATKER]->val3 = 1;
 			status_change_end(src,SC_CURSEDCIRCLE_ATKER,-1);
+		}
 	}
 
 	switch (skillid) { //Skill effect.
@@ -13039,6 +13048,10 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 			break;
 		case LG_RAGEBURST:
 			req.spiritball = sd->rageball?sd->rageball:1;
+			break;
+		case SR_CRESCENTELBOW:
+			if( sd->spiritball <= 0 )
+				req.spiritball = 0;	// Only consumes spirit spheres if these are pressent. Is a bug?
 			break;
 		case SR_RAMPAGEBLASTER:
 			req.spiritball = sd->spiritball?sd->spiritball:15;
