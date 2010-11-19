@@ -664,19 +664,12 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 				status_change_end(bl, SC_KYRIE, -1);
 		}
 
-		if( (sce = sc->data[SC_LIGHTNINGWALK]) && flag&BF_LONG && damage > 0 )
+		if( (sce = sc->data[SC_LIGHTNINGWALK]) && flag&BF_LONG && damage > 0 && rand()%100 < sce->val1 )
 		{
-			if( rand()%100 < 88 + 2 * sce->val1 )
-			{
-				short x, y;
-				damage = 0;
-				map_search_freecell(src, 0, &x, &y, 1, 1, 0);
-				unit_movepos(bl, x, y, 1, 1);
-				clif_slide(bl, x, y);
-				clif_fixpos(bl);
-				map_moveblock(bl, x, y, gettick());
-				status_change_end(bl, SC_LIGHTNINGWALK, -1);
-			}
+			skill_blown(src,bl,1,-2,0);
+			d->div_ = ATK_DEF;
+			status_change_end(bl, SC_LIGHTNINGWALK, -1);
+			return 0;
 		}
 
 		if (!damage) return 0;

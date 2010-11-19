@@ -5330,20 +5330,21 @@ int clif_status_change(struct block_list *bl, int type, int flag, unsigned int t
 		type == SI_BLOODYLUST || type == SI_FORCEOFVANGUARD || type == SI_NEUTRALBARRIER ||
 		type == SI_OVERHEAT || type == SI_BANDING)
 		tick=0;
-
-	if( battle_config.display_status_timers && tick > 0 )
-		WBUFW(buf,0)=0x043f;
+	
+	// if flag = 0 this should send 0x196.
+	if( flag && battle_config.display_status_timers && tick > 0 )
+		WBUFW(buf,0) = 0x043f;
 	else
-		WBUFW(buf,0)=0x0196;
-	WBUFW(buf,2)=type;
-	WBUFL(buf,4)=bl->id;
-	WBUFB(buf,8)=flag;
-	if( battle_config.display_status_timers && tick>0 )
+		WBUFW(buf,0) = 0x0196;
+	WBUFW(buf,2) = type;
+	WBUFL(buf,4) = bl->id;
+	WBUFB(buf,8) = flag;
+	if( flag && battle_config.display_status_timers && tick > 0 )
 	{
-		WBUFL(buf,9)=tick;
-		WBUFL(buf,13)=val1;
-		WBUFL(buf,17)=val2;
-		WBUFL(buf,21)=val3;
+		WBUFL(buf, 9) = tick;
+		WBUFL(buf,13) = val1;
+		WBUFL(buf,17) = val2;
+		WBUFL(buf,21) = val3;
 	}
 	clif_send(buf,packet_len(WBUFW(buf,0)),bl,AREA);
 	return 0;
@@ -9589,7 +9590,7 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 			clif_skill_fail(sd, 1, 0, 2, 0);
 			break;
 		}
-		if( sd->sc.data[SC_SITDOWN_FORCE] || sd->sc.data[SC_BANANA_BOMB_SITDOWN] )
+		if( sd->sc.data[SC_SITDOWN_FORCE] )
 			return;
 
 		if(pc_issit(sd)) {
