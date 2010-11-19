@@ -7640,6 +7640,10 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val2 = 94 + val1;
 			val_flag |= 1|2;
 			break;
+		case SC_LIGHTNINGWALK:
+			val1 = 88 + 2 * val1;
+			val_flag |= 1;
+			break;
 		case SC_RAISINGDRAGON:
 			val3 = tick / 5000;
 			tick = 5000;
