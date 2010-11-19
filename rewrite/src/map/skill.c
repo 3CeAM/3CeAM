@@ -1151,7 +1151,8 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		if( dstsd && !pc_issit(dstsd) )
 		{
 			pc_setsit(dstsd);
-			clif_sitting(&dstsd->bl);
+			skill_sit(dstsd,1);
+			clif_sitting(&dstsd->bl,true);
 		}
 		if( dstmd && !is_boss(bl) )
 			sc_start(bl, SC_STUN, 100, skilllv, 1000 + 1000 * (rand()%3));
@@ -3026,7 +3027,8 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 						if( tsd && !pc_issit(tsd) )
 						{
 							pc_setsit(tsd);
-							clif_sitting(&tsd->bl);
+							skill_sit(tsd,1);
+							clif_sitting(&tsd->bl,true);
 						}
 					}
 					break;
