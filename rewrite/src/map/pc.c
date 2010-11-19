@@ -6238,6 +6238,7 @@ void pc_damage(struct map_session_data *sd,struct block_list *src,unsigned int h
 	{
 		pc_setstand(sd);
 		skill_sit(sd,0);
+		clif_standing(&sd->bl,true);	// To sincronize client and server.
 	}
 
 	if( sd->progressbar.npc_id )

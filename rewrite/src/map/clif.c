@@ -4235,7 +4235,7 @@ void clif_takeitem(struct block_list* src, struct block_list* dst)
 /*==========================================
  * inform clients in area that `bl` is sitting
  *------------------------------------------*/
-void clif_sitting(struct block_list* bl)
+void clif_sitting(struct block_list* bl, bool area)
 {
 	unsigned char buf[32];
 	nullpo_retv(bl);
@@ -4243,7 +4243,10 @@ void clif_sitting(struct block_list* bl)
 	WBUFW(buf, 0) = 0x8a;
 	WBUFL(buf, 2) = bl->id;
 	WBUFB(buf,26) = 2;
-	clif_send(buf, packet_len(0x8a), bl, AREA);
+	if( area )
+		clif_send(buf, packet_len(0x8a), bl, AREA);
+	else
+		clif_send(buf, packet_len(0x8a), bl, SELF);
 
 	if(disguised(bl)) {
 		WBUFL(buf, 2) = - bl->id;
@@ -4254,7 +4257,7 @@ void clif_sitting(struct block_list* bl)
 /*==========================================
  * inform clients in area that `bl` is standing
  *------------------------------------------*/
-void clif_standing(struct block_list* bl)
+void clif_standing(struct block_list* bl, bool area)
 {
 	unsigned char buf[32];
 	nullpo_retv(bl);
@@ -4262,7 +4265,10 @@ void clif_standing(struct block_list* bl)
 	WBUFW(buf, 0) = 0x8a;
 	WBUFL(buf, 2) = bl->id;
 	WBUFB(buf,26) = 3;
-	clif_send(buf, packet_len(0x8a), bl, AREA);
+	if( area )
+		clif_send(buf, packet_len(0x8a), bl, AREA);
+	else
+		clif_send(buf, packet_len(0x8a), bl, SELF);
 
 	if(disguised(bl)) {
 		WBUFL(buf, 2) = - bl->id;
@@ -8127,7 +8133,7 @@ int clif_refresh(struct map_session_data *sd)
 	if( sd->chatID )
 		chat_leavechat(sd,0);
 	if( pc_issit(sd) )
-		clif_sitting(&sd->bl); // FIXME: just send to self, not area
+		clif_sitting(&sd->bl,false); // just send to self, not area
 	if( pc_isdead(sd) ) //When you refresh, resend the death packet.
 		clif_clearunit_single(sd->bl.id,1,sd->fd);
 	else
@@ -9595,7 +9601,7 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 
 		if(pc_issit(sd)) {
 			//Bugged client? Just refresh them.
-			clif_sitting(&sd->bl);
+			clif_sitting(&sd->bl,false);
 			return;
 		}
 
@@ -9610,7 +9616,7 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 
 		pc_setsit(sd);
 		skill_sit(sd,1);
-		clif_sitting(&sd->bl);
+		clif_sitting(&sd->bl,true);
 	break;
 	case 0x03: // standup
 		if( sd->sc.data[SC_SITDOWN_FORCE] )
@@ -9618,12 +9624,12 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 
 		if (!pc_issit(sd)) {
 			//Bugged client? Just refresh them.
-			clif_standing(&sd->bl);
+			clif_standing(&sd->bl,false);
 			return;
 		}
 		pc_setstand(sd);
 		skill_sit(sd,0); 
-		clif_standing(&sd->bl);
+		clif_standing(&sd->bl,true);
 	break;
 	}
 }
