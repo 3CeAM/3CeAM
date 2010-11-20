@@ -1859,8 +1859,13 @@ int atcommand_baselevelup(const int fd, struct map_session_data* sd, const char*
 		} // End Addition
 		if ((unsigned int)level > pc_maxbaselv(sd) || (unsigned int)level > pc_maxbaselv(sd) - sd->status.base_level) // fix positiv overflow
 			level = pc_maxbaselv(sd) - sd->status.base_level;
-		for (i = 1; i <= level; i++)
-			status_point += (sd->status.base_level + i + 14) / 5;
+		if (battle_config.use_statpoint_table)
+			status_point += statp[sd->status.base_level+level] - statp[sd->status.base_level];
+		else
+		{
+			for (i = 1; i <= level; i++)
+				status_point += (sd->status.base_level + i + 14) / 5;
+		}
 
 		sd->status.status_point += status_point;
 		sd->status.base_level += (unsigned int)level;
@@ -1875,8 +1880,13 @@ int atcommand_baselevelup(const int fd, struct map_session_data* sd, const char*
 		level*=-1;
 		if ((unsigned int)level >= sd->status.base_level)
 			level = sd->status.base_level-1;
-		for (i = 0; i > -level; i--)
-			status_point += (sd->status.base_level + i + 14) / 5;
+		if (battle_config.use_statpoint_table)
+			status_point += statp[sd->status.base_level] - statp[sd->status.base_level-level];
+		else
+		{
+			for (i = 0; i > -level; i--)
+				status_point += (sd->status.base_level + i + 14) / 5;
+		}
 		if (sd->status.status_point < status_point)
 			pc_resetstate(sd);
 		if (sd->status.status_point < status_point)
