@@ -8999,7 +8999,10 @@ int pc_readdb(void)
 			i++;
 		}
 		fclose(fp);
-		ShowStatus("Done reading '"CL_WHITE"%s"CL_RESET"'.\n","statpoint.txt");
+		if( battle_config.use_renewal_statpoints )
+			ShowStatus("Done reading '"CL_WHITE"%s"CL_RESET"'.\n","statpoint_renewal.txt");
+		else
+			ShowStatus("Done reading '"CL_WHITE"%s"CL_RESET"'.\n","statpoint.txt");
 	}
 	// generate the remaining parts of the db if necessary
 	for (; i <= MAX_LEVEL; i++) {

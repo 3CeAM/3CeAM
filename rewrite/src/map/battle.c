@@ -3612,7 +3612,19 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 			int cardfix=1000;
 
 			if (!(nk&NK_NO_ELEFIX))
-				cardfix=cardfix*(100-tsd->subele[s_ele])/100;
+			{
+				int ele_fix = tsd->subele[s_ele];
+				for (i = 0; ARRAYLENGTH(tsd->subele2) > i && tsd->subele2[i].rate != 0; i++)
+				{
+					if(tsd->subele2[i].ele != s_ele) continue;
+					if(!(tsd->subele2[i].flag&ad.flag&BF_WEAPONMASK &&
+						 tsd->subele2[i].flag&ad.flag&BF_RANGEMASK &&
+						 tsd->subele2[i].flag&ad.flag&BF_SKILLMASK))
+						continue;
+					ele_fix += tsd->subele2[i].rate;
+				}
+				cardfix=cardfix*(100-ele_fix)/100;
+			}
 			cardfix=cardfix*(100-tsd->subsize[sstatus->size])/100;
 			cardfix=cardfix*(100-tsd->subrace2[s_race2])/100;
 			cardfix=cardfix*(100-tsd->subrace[sstatus->race])/100;
@@ -3878,7 +3890,19 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		int cardfix = 10000;
 		int race2 = status_get_race2(src);
 		if (!(nk&NK_NO_ELEFIX))
-			cardfix=cardfix*(100-tsd->subele[s_ele])/100;
+		{
+			int ele_fix = tsd->subele[s_ele];
+			for (i = 0; ARRAYLENGTH(tsd->subele2) > i && tsd->subele2[i].rate != 0; i++)
+			{
+				if(tsd->subele2[i].ele != s_ele) continue;
+				if(!(tsd->subele2[i].flag&md.flag&BF_WEAPONMASK &&
+					 tsd->subele2[i].flag&md.flag&BF_RANGEMASK &&
+					 tsd->subele2[i].flag&md.flag&BF_SKILLMASK))
+					continue;
+				ele_fix += tsd->subele2[i].rate;
+			}
+			cardfix=cardfix*(100-ele_fix)/100;
+		}
 		cardfix=cardfix*(100-tsd->subsize[sstatus->size])/100;
 		cardfix=cardfix*(100-tsd->subrace2[race2])/100;
 		cardfix=cardfix*(100-tsd->subrace[sstatus->race])/100;
@@ -5021,8 +5045,8 @@ static const struct _battle_data {
 	{ "arrow_decrement",                    &battle_config.arrow_decrement,                 1,      0,      2,              },
 	{ "max_aspd",                           &battle_config.max_aspd,                        199,    100,    199,            },
 	{ "max_walk_speed",                     &battle_config.max_walk_speed,                  300,    100,    100*DEFAULT_WALK_SPEED, },
-	{ "max_lv",                             &battle_config.max_lv,                          150,     0,      150,            },
-	{ "aura_lv",                            &battle_config.aura_lv,                         150,     0,      INT_MAX,        },
+	{ "max_lv",                             &battle_config.max_lv,                          99,     0,      150,            },
+	{ "aura_lv",                            &battle_config.aura_lv,                         99,     0,      INT_MAX,        },
 	{ "max_hp",                             &battle_config.max_hp,                          32500,  100,    1000000000,     },
 	{ "max_sp",                             &battle_config.max_sp,                          32500,  100,    1000000000,     },
 	{ "max_cart_weight",                    &battle_config.max_cart_weight,                 8000,   100,    1000000,        },
