@@ -48,7 +48,7 @@
 #define PVP_CALCRANK_INTERVAL 1000	// PVPèáà åvéZÇÃä‘äu
 static unsigned int exp_table[CLASS_COUNT][2][MAX_LEVEL];
 static unsigned int max_level[CLASS_COUNT][2];
-static unsigned int statp[MAX_LEVEL+1];
+unsigned int statp[MAX_LEVEL+1];
 
 // h-files are for declarations, not for implementations... [Shinomori]
 struct skill_tree_entry skill_tree[CLASS_COUNT][MAX_SKILL_TREE];
