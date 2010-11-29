@@ -1107,16 +1107,16 @@ int status_damage(struct block_list *src,struct block_list *target,int hp, int s
 	status_change_clear(target,0);
 
 	if(flag&4) //Delete from memory. (also invokes map removal code)
-		unit_free(target,1);
+		unit_free(target,CLR_DEAD);
 	else
 	if(flag&2) //remove from map
-		unit_remove_map(target,1);
+		unit_remove_map(target,CLR_DEAD);
 	else
 	{ //Some death states that would normally be handled by unit_remove_map
 		unit_stop_attack(target);
 		unit_stop_walking(target,1);
 		unit_skillcastcancel(target,0);
-		clif_clearunit_area(target,1);
+		clif_clearunit_area(target,CLR_DEAD);
 		skill_unit_move(target,gettick(),4);
 		skill_cleartimerskill(target);
 	}
@@ -1364,7 +1364,7 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 
 		if (sc->data[SC_WINKCHARM] && target && !flag)
 		{	//Prevents skill usage
-			clif_emotion(src, 3);
+			clif_emotion(src, E_LV);
 			return 0;
 		}
 
@@ -1916,8 +1916,13 @@ int status_calc_pet_(struct pet_data *pd, bool first)
 
 	if (first) {
 		memcpy(&pd->status, &pd->db->status, sizeof(struct status_data));
-		pd->status.mode|= MD_CANMOVE; //so they can chase their master!
+		pd->status.mode = MD_CANMOVE; // pets discard all modes, except walking
 		pd->status.speed = pd->petDB->speed;
+
+		if(battle_config.pet_attack_support || battle_config.pet_damage_support)
+		{// attack support requires the pet to be able to attack
+			pd->status.mode|= MD_CANATTACK;
+		}
 	}
 
 	if (battle_config.pet_lv_rate && pd->msd)
@@ -2236,8 +2241,8 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 
 	// Autobonus
 	pc_delautobonus(sd,sd->autobonus,ARRAYLENGTH(sd->autobonus),true);
-	pc_delautobonus(sd,sd->autobonus2,ARRAYLENGTH(sd->autobonus),true);
-	pc_delautobonus(sd,sd->autobonus3,ARRAYLENGTH(sd->autobonus),true);
+	pc_delautobonus(sd,sd->autobonus2,ARRAYLENGTH(sd->autobonus2),true);
+	pc_delautobonus(sd,sd->autobonus3,ARRAYLENGTH(sd->autobonus3),true);
 
 	// Parse equipment.
 	for( i = 0; i < EQI_MAX - 1; i++ )
@@ -3631,6 +3636,9 @@ void status_calc_bl_(struct block_list* bl, enum scb_flag flag, bool first)
 		case BL_ELEM: status_calc_elemental_(BL_CAST(BL_ELEM,bl), first);  break;
 		}
 	}
+
+	if( bl->type == BL_PET )
+		return; // pets are not affected by statuses
 
 	if( first && bl->type == BL_MOB )
 		return; // assume there will be no statuses active
@@ -5980,51 +5988,51 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			return 0; // Stats only for Mercenaries
 	break;
 	case SC_STRFOOD:
-		if (sc->data[SC_FOOD_STR_CASH] && sc->data[SC_FOOD_STR_CASH]->val1 > sc->data[type]->val1)
+		if (sc->data[SC_FOOD_STR_CASH] && sc->data[SC_FOOD_STR_CASH]->val1 > val1)
 			return 0;
 	break;
 	case SC_AGIFOOD:
-		if (sc->data[SC_FOOD_AGI_CASH] && sc->data[SC_FOOD_AGI_CASH]->val1 > sc->data[type]->val1)
+		if (sc->data[SC_FOOD_AGI_CASH] && sc->data[SC_FOOD_AGI_CASH]->val1 > val1)
 			return 0;
 	break;
 	case SC_VITFOOD:
-		if (sc->data[SC_FOOD_VIT_CASH] && sc->data[SC_FOOD_VIT_CASH]->val1 > sc->data[type]->val1)
+		if (sc->data[SC_FOOD_VIT_CASH] && sc->data[SC_FOOD_VIT_CASH]->val1 > val1)
 			return 0;
 	break;
 	case SC_INTFOOD:
-		if (sc->data[SC_FOOD_INT_CASH] && sc->data[SC_FOOD_INT_CASH]->val1 > sc->data[type]->val1)
+		if (sc->data[SC_FOOD_INT_CASH] && sc->data[SC_FOOD_INT_CASH]->val1 > val1)
 			return 0;
 	break;
 	case SC_DEXFOOD:
-		if (sc->data[SC_FOOD_DEX_CASH] && sc->data[SC_FOOD_DEX_CASH]->val1 > sc->data[type]->val1)
+		if (sc->data[SC_FOOD_DEX_CASH] && sc->data[SC_FOOD_DEX_CASH]->val1 > val1)
 			return 0;
 	break;
 	case SC_LUKFOOD:
-		if (sc->data[SC_FOOD_LUK_CASH] && sc->data[SC_FOOD_LUK_CASH]->val1 > sc->data[type]->val1)
+		if (sc->data[SC_FOOD_LUK_CASH] && sc->data[SC_FOOD_LUK_CASH]->val1 > val1)
 			return 0;
 	break;
 	case SC_FOOD_STR_CASH:
-		if (sc->data[SC_STRFOOD] && sc->data[SC_STRFOOD]->val1 > sc->data[type]->val1)
+		if (sc->data[SC_STRFOOD] && sc->data[SC_STRFOOD]->val1 > val1)
 			return 0;
 	break;
 	case SC_FOOD_AGI_CASH:
-		if (sc->data[SC_AGIFOOD] && sc->data[SC_AGIFOOD]->val1 > sc->data[type]->val1)
+		if (sc->data[SC_AGIFOOD] && sc->data[SC_AGIFOOD]->val1 > val1)
 			return 0;
 	break;
 	case SC_FOOD_VIT_CASH:
-		if (sc->data[SC_VITFOOD] && sc->data[SC_VITFOOD]->val1 > sc->data[type]->val1)
+		if (sc->data[SC_VITFOOD] && sc->data[SC_VITFOOD]->val1 > val1)
 			return 0;
 	break;
 	case SC_FOOD_INT_CASH:
-		if (sc->data[SC_INTFOOD] && sc->data[SC_INTFOOD]->val1 > sc->data[type]->val1)
+		if (sc->data[SC_INTFOOD] && sc->data[SC_INTFOOD]->val1 > val1)
 			return 0;
 	break;
 	case SC_FOOD_DEX_CASH:
-		if (sc->data[SC_DEXFOOD] && sc->data[SC_DEXFOOD]->val1 > sc->data[type]->val1)
+		if (sc->data[SC_DEXFOOD] && sc->data[SC_DEXFOOD]->val1 > val1)
 			return 0;
 	break;
 	case SC_FOOD_LUK_CASH:
-		if (sc->data[SC_LUKFOOD] && sc->data[SC_LUKFOOD]->val1 > sc->data[type]->val1)
+		if (sc->data[SC_LUKFOOD] && sc->data[SC_LUKFOOD]->val1 > val1)
 			return 0;
 	break;
 	case SC_CAMOUFLAGE:
@@ -6211,51 +6219,51 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		status_change_end(bl,SC_INCREASEAGI,-1);
 		break;
 	case SC_STRFOOD:
-		if (sc->data[SC_FOOD_STR_CASH] && sc->data[SC_FOOD_STR_CASH]->val1 <= sc->data[type]->val1)
+		if (sc->data[SC_FOOD_STR_CASH] && sc->data[SC_FOOD_STR_CASH]->val1 <= val1)
 			status_change_end(bl,SC_FOOD_STR_CASH,-1);
 		break;
 	case SC_AGIFOOD:
-		if (sc->data[SC_FOOD_AGI_CASH] && sc->data[SC_FOOD_AGI_CASH]->val1 <= sc->data[type]->val1)
+		if (sc->data[SC_FOOD_AGI_CASH] && sc->data[SC_FOOD_AGI_CASH]->val1 <= val1)
 			status_change_end(bl,SC_FOOD_AGI_CASH,-1);
 		break;
 	case SC_VITFOOD:
-		if (sc->data[SC_FOOD_VIT_CASH] && sc->data[SC_FOOD_VIT_CASH]->val1 <= sc->data[type]->val1)
+		if (sc->data[SC_FOOD_VIT_CASH] && sc->data[SC_FOOD_VIT_CASH]->val1 <= val1)
 			status_change_end(bl,SC_FOOD_VIT_CASH,-1);
 		break;
 	case SC_INTFOOD:
-		if (sc->data[SC_FOOD_INT_CASH] && sc->data[SC_FOOD_INT_CASH]->val1 <= sc->data[type]->val1)
+		if (sc->data[SC_FOOD_INT_CASH] && sc->data[SC_FOOD_INT_CASH]->val1 <= val1)
 			status_change_end(bl,SC_FOOD_INT_CASH,-1);
 		break;
 	case SC_DEXFOOD:
-		if (sc->data[SC_FOOD_DEX_CASH] && sc->data[SC_FOOD_DEX_CASH]->val1 <= sc->data[type]->val1)
+		if (sc->data[SC_FOOD_DEX_CASH] && sc->data[SC_FOOD_DEX_CASH]->val1 <= val1)
 			status_change_end(bl,SC_FOOD_DEX_CASH,-1);
 		break;
 	case SC_LUKFOOD:
-		if (sc->data[SC_FOOD_LUK_CASH] && sc->data[SC_FOOD_LUK_CASH]->val1 <= sc->data[type]->val1)
+		if (sc->data[SC_FOOD_LUK_CASH] && sc->data[SC_FOOD_LUK_CASH]->val1 <= val1)
 			status_change_end(bl,SC_FOOD_LUK_CASH,-1);
 		break;
 	case SC_FOOD_STR_CASH:
-		if (sc->data[SC_STRFOOD] && sc->data[SC_STRFOOD]->val1 <= sc->data[type]->val1)
+		if (sc->data[SC_STRFOOD] && sc->data[SC_STRFOOD]->val1 <= val1)
 			status_change_end(bl,SC_STRFOOD,-1);
 		break;
 	case SC_FOOD_AGI_CASH:
-		if (sc->data[SC_AGIFOOD] && sc->data[SC_AGIFOOD]->val1 <= sc->data[type]->val1)
+		if (sc->data[SC_AGIFOOD] && sc->data[SC_AGIFOOD]->val1 <= val1)
 			status_change_end(bl,SC_AGIFOOD,-1);
 		break;
 	case SC_FOOD_VIT_CASH:
-		if (sc->data[SC_VITFOOD] && sc->data[SC_VITFOOD]->val1 <= sc->data[type]->val1)
+		if (sc->data[SC_VITFOOD] && sc->data[SC_VITFOOD]->val1 <= val1)
 			status_change_end(bl,SC_VITFOOD,-1);
 		break;
 	case SC_FOOD_INT_CASH:
-		if (sc->data[SC_INTFOOD] && sc->data[SC_INTFOOD]->val1 <= sc->data[type]->val1)
+		if (sc->data[SC_INTFOOD] && sc->data[SC_INTFOOD]->val1 <= val1)
 			status_change_end(bl,SC_INTFOOD,-1);
 		break;
 	case SC_FOOD_DEX_CASH:
-		if (sc->data[SC_DEXFOOD] && sc->data[SC_DEXFOOD]->val1 <= sc->data[type]->val1)
+		if (sc->data[SC_DEXFOOD] && sc->data[SC_DEXFOOD]->val1 <= val1)
 			status_change_end(bl,SC_DEXFOOD,-1);
 		break;
 	case SC_FOOD_LUK_CASH:
-		if (sc->data[SC_LUKFOOD] && sc->data[SC_LUKFOOD]->val1 <= sc->data[type]->val1)
+		if (sc->data[SC_LUKFOOD] && sc->data[SC_LUKFOOD]->val1 <= val1)
 			status_change_end(bl,SC_LUKFOOD,-1);
 		break;
 	case SC_OTHILA:
@@ -6475,7 +6483,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_SIGNUMCRUCIS:
 			val2 = 10 + 4*val1; //Def reduction
 			tick = -1;
-			clif_emotion(bl,4);
+			clif_emotion(bl,E_SWT);
 			break;
 		case SC_MAXIMIZEPOWER:
 			val2 = tick>0?tick:60000;
@@ -6698,7 +6706,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		
 		break;
 		case SC_CONFUSION:
-			clif_emotion(bl,1);
+			clif_emotion(bl,E_WHAT);
 			break;
 		case SC_BLEEDING:
 			val4 = tick/10000;
@@ -7170,7 +7178,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 					int pos =  (bl->x&0xFFFF)|(bl->y<<16), //Current Coordinates
 					map =  sd->mapindex; //Current Map
 					//1. Place in Jail (val2 -> Jail Map, val3 -> x, val4 -> y
-					pc_setpos(sd,(unsigned short)val2,val3,val4, 3);
+					pc_setpos(sd,(unsigned short)val2,val3,val4, CLR_TELEPORT);
 					//2. Set restore point (val3 -> return map, val4 return coords
 					val3 = map;
 					val4 = pos;
@@ -8467,7 +8475,7 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 				break;
 		  	//natural expiration.
 			if(sd && sd->mapindex == sce->val2)
-				pc_setpos(sd,(unsigned short)sce->val3,sce->val4&0xFFFF, sce->val4>>16, 3);
+				pc_setpos(sd,(unsigned short)sce->val3,sce->val4&0xFFFF, sce->val4>>16, CLR_TELEPORT);
 			break; //guess hes not in jail :P
 		case SC_CHANGE:
 			if (tid == -1)

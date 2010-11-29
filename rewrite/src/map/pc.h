@@ -35,7 +35,7 @@ struct weapon_data {
 	int def_ratio_atk_race;
 	int addele[ELE_MAX];
 	int addrace[RC_MAX];
-	int addrace2[RC_MAX];
+	int addrace2[RC2_MAX];
 	int addsize[3];
 
 	struct drain_data {
@@ -233,7 +233,7 @@ struct map_session_data {
 	int param_bonus[6],param_equip[6]; //Stores card/equipment bonuses.
 	int subele[ELE_MAX];
 	int subrace[RC_MAX];
-	int subrace2[RC_MAX];
+	int subrace2[RC2_MAX];
 	int subsize[3];
 	int reseff[SC_COMMON_MAX-SC_COMMON_MIN+1];
 	int weapon_coma_ele[ELE_MAX];
@@ -396,6 +396,8 @@ struct map_session_data {
 
 	int duel_group; // duel vars [LuzZza]
 	int duel_invite;
+
+	int killerrid, killedrid;
 
 	char away_message[128]; // [LuzZza]
 
@@ -573,7 +575,7 @@ bool pc_can_give_items(int level);
 
 int pc_setrestartvalue(struct map_session_data *sd,int type);
 int pc_makesavestatus(struct map_session_data *);
-void pc_respawn(struct map_session_data* sd, uint8 clrtype);
+void pc_respawn(struct map_session_data* sd, clr_type clrtype);
 int pc_setnewpc(struct map_session_data*,int,int,int,unsigned int,int,int);
 bool pc_authok(struct map_session_data* sd, int, time_t, int gmlevel, struct mmo_charstatus* status);
 void pc_authfail(struct map_session_data *);
@@ -594,11 +596,10 @@ int pc_clean_skilltree(struct map_session_data *sd);
 #define pc_checkoverhp(sd) (sd->battle_status.hp == sd->battle_status.max_hp)
 #define pc_checkoversp(sd) (sd->battle_status.sp == sd->battle_status.max_sp)
 
-int pc_setpos(struct map_session_data* sd, unsigned short mapindex, int x, int y, uint8 clrtype);
+int pc_setpos(struct map_session_data* sd, unsigned short mapindex, int x, int y, clr_type clrtype);
 int pc_setsavepoint(struct map_session_data*,short,int,int);
-int pc_randomwarp(struct map_session_data *sd,int type);
+int pc_randomwarp(struct map_session_data *sd,clr_type type);
 int pc_memo(struct map_session_data* sd, int pos);
-int pc_remove_map(struct map_session_data *sd,int clrtype);
 
 int pc_checkadditem(struct map_session_data*,int,int);
 int pc_inventoryblank(struct map_session_data*);

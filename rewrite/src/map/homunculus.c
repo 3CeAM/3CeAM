@@ -68,7 +68,7 @@ int merc_hom_dead(struct homun_data *hd, struct block_list *src)
 	//There's no intimacy penalties on death (from Tharis)
 	struct map_session_data *sd = hd->master;
 
-	clif_emotion(&hd->bl, 16) ;	//wah
+	clif_emotion(&hd->bl, E_WAH);
 
 	//Delete timers when dead.
 	merc_hom_hungry_timer_delete(hd);
@@ -77,7 +77,7 @@ int merc_hom_dead(struct homun_data *hd, struct block_list *src)
 	if (!sd) //unit remove map will invoke unit free
 		return 3;
 
-	clif_emotion(&sd->bl, 28) ; //sob
+	clif_emotion(&sd->bl, E_SOB);
 	//Remove from map (if it has no intimacy, it is auto-removed from memory)
 	return 3;
 }
@@ -107,7 +107,7 @@ int merc_hom_vaporize(struct map_session_data *sd, int flag)
 		memset(hd->blockskill, 0, sizeof(hd->blockskill));
 	clif_hominfo(sd, sd->hd, 0);
 	merc_save(hd);
-	return unit_remove_map(&hd->bl, 0);
+	return unit_remove_map(&hd->bl, CLR_OUTSIGHT);
 }
 
 //delete a homunculus, completely "killing it". 
@@ -119,7 +119,7 @@ int merc_hom_delete(struct homun_data *hd, int emote)
 	sd = hd->master;
 
 	if (!sd)
-		return unit_free(&hd->bl,1);
+		return unit_free(&hd->bl,CLR_DEAD);
 
 	if (emote >= 0)
 		clif_emotion(&sd->bl, emote);
@@ -129,7 +129,7 @@ int merc_hom_delete(struct homun_data *hd, int emote)
 	// Send homunculus_dead to client
 	hd->homunculus.hp = 0;
 	clif_hominfo(sd, hd, 0);
-	return unit_remove_map(&hd->bl,0);
+	return unit_remove_map(&hd->bl,CLR_OUTSIGHT);
 }
 
 int merc_hom_calc_skilltree(struct homun_data *hd)
@@ -291,7 +291,7 @@ int merc_hom_evolution(struct homun_data *hd)
 
 	if(!hd->homunculusDB->evo_class || hd->homunculus.class_ == hd->homunculusDB->evo_class)
 	{
-		clif_emotion(&hd->bl, 4) ;	//swt
+		clif_emotion(&hd->bl, E_SWT);
 		return 0 ;
 	}
 	sd = hd->master;
@@ -317,11 +317,11 @@ int merc_hom_evolution(struct homun_data *hd)
 	hom->luk += 10*rand(min->luk, max->luk);
 	hom->intimacy = 500;
 
-	unit_remove_map(&hd->bl, 0);
+	unit_remove_map(&hd->bl, CLR_OUTSIGHT);
 	map_addblock(&hd->bl);
 
 	clif_spawn(&hd->bl);
-	clif_emotion(&sd->bl, 21);	//no1
+	clif_emotion(&sd->bl, E_NO1);
 	clif_misceffect2(&hd->bl,568);
 
 	//status_Calc flag&1 will make current HP/SP be reloaded from hom structure
@@ -448,33 +448,33 @@ int merc_hom_food(struct map_session_data *sd, struct homun_data *hd)
 
 	if ( hd->homunculus.hunger >= 91 ) {
 		merc_hom_decrease_intimacy(hd, 50);
-		emotion = 16;
+		emotion = E_WAH;
 	} else if ( hd->homunculus.hunger >= 76 ) {
 		merc_hom_decrease_intimacy(hd, 5);
-		emotion = 19;
+		emotion = E_SWT2;
 	} else if ( hd->homunculus.hunger >= 26 ) {
 		merc_hom_increase_intimacy(hd, 75);
-		emotion = 2;
+		emotion = E_HO;
 	} else if ( hd->homunculus.hunger >= 11 ) {
 		merc_hom_increase_intimacy(hd, 100);
-		emotion = 2;
+		emotion = E_HO;
 	} else {
 		merc_hom_increase_intimacy(hd, 50);
-		emotion = 2;
+		emotion = E_HO;
 	}
 
 	hd->homunculus.hunger += 10;	//dunno increase value for each food
 	if(hd->homunculus.hunger > 100)
 		hd->homunculus.hunger = 100;
 
-	clif_emotion(&hd->bl,emotion) ;
+	clif_emotion(&hd->bl,emotion);
 	clif_send_homdata(sd,SP_HUNGRY,hd->homunculus.hunger);
 	clif_send_homdata(sd,SP_INTIMATE,hd->homunculus.intimacy / 100);
 	clif_hom_food(sd,foodID,1);
        	
 	// Too much food :/
 	if(hd->homunculus.intimacy == 0)
-		return merc_hom_delete(sd->hd, 23); //omg  
+		return merc_hom_delete(sd->hd, E_OMG);
 
 	return 0;
 }
@@ -500,18 +500,18 @@ static int merc_hom_hungry(int tid, unsigned int tick, int id, intptr data)
 	
 	hd->homunculus.hunger-- ;
 	if(hd->homunculus.hunger <= 10) {
-		clif_emotion(&hd->bl, 6) ;	//an
+		clif_emotion(&hd->bl, E_AN);
 	} else if(hd->homunculus.hunger == 25) {
-		clif_emotion(&hd->bl, 20) ;	//hmm
+		clif_emotion(&hd->bl, E_HMM);
 	} else if(hd->homunculus.hunger == 75) {
-		clif_emotion(&hd->bl, 33) ;	//ok
+		clif_emotion(&hd->bl, E_OK);
 	}  
 	
 	if(hd->homunculus.hunger < 0) {
 		hd->homunculus.hunger = 0;
 		// Delete the homunculus if intimacy <= 100
 		if ( !merc_hom_decrease_intimacy(hd, 100) )
-			return merc_hom_delete(hd, 23); //omg  
+			return merc_hom_delete(hd, E_OMG);
 		clif_send_homdata(sd,SP_INTIMATE,hd->homunculus.intimacy / 100);
 	}
 
@@ -679,7 +679,7 @@ int merc_call_homunculus(struct map_session_data *sd)
 		merc_save(hd); 
 	} else
 		//Warp him to master.
-		unit_warp(&hd->bl,sd->bl.m, sd->bl.x, sd->bl.y,0);
+		unit_warp(&hd->bl,sd->bl.m, sd->bl.x, sd->bl.y,CLR_OUTSIGHT);
 	return 1;
 }
 

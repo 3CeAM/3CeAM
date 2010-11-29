@@ -1,5 +1,86 @@
 Date	Added
 
+2010/11/28
+	* Added an option to re-roll the /dice emotion server-side, to prevent cheats during events (bugreport:4194). [Ai4rei]
+	* Added emotion_type enumeration for clif_emotion constants. [Ai4rei]
+	- Made clif_parse_Emotion use clif_emotion, rather than having it's code inlined.
+	* Added clr_type enumeration for vanish effect constants. [Ai4rei]
+	* Resolved multiple issues with the party booking system (bugreport:4573, since r14412). [Ai4rei]
+	- Fixed recruitments were limited to party leaders.
+	- Fixed recruitment index was party id instead of an auto-increment value, causing sorting by age not working.
+	- Fixed search result packet being sent on recruitment creation (probably to work-around next problem).
+	- Fixed packet 0x0805 not getting sent, because of commented entries in packet_db.txt (packet ver. restriction of clif_send).
+	- Fixed recruitment creation notice being sent to the recruiter only.
+	* Removed 'negative clrtype is used for skipping unauthed objects from saving' introduced in r9975, as it is no longer required/used (follow up to r12223). [Ai4rei]
+	* Made the party booking search pass results as array of pointers, rather than array of indexes, which require further lookup. [Ai4rei]
+	* Replaced literal constants related to the party booking system with defines. [Ai4rei]
+	* Fixed pets derived from immobile monsters not being able to walk (bugreport:3377, since r13789). [Ai4rei]
+	- This also fixes pets using original monster walk speed, instead of the one defined in pet db.
+	- Fixed pets not being able to attack (pet_attack_support and pet_damage_support) when derived from a monster, which is not able to attack.
+2010/11/27
+	* Fixed a crash uncovered with r14501, caused by outdated local variables when a script is about to suspend or terminate (bugreport:4577). [Ai4rei]
+	* Fixed a crash when using food status bonuses with cash food status bonuses (bugreport:4582, since r14437). [Ai4rei]
+2010/11/26
+	* Fixed description of bCriticalAddRace having 'race' and 'crit' parameters interchanged (bugreport:4383, since r1116 and r1382, related r12804). [Ai4rei]
+	* Changed 'killerrid' and 'killedrid' from player vars to player params (bugreport:3249) [ultramage]
+	- Now stored in player session data, so they don't get saved on logout anymore.
+	- Added sql upgrade script 'upgrade_svn14507.sql' to remove the now unused player variables.
+	* Some updates and fixes to script command documentation. [Ai4rei]
+	- Fixed small inaccuracy in description for homevolution (bugreport:125).
+	- Added ~AnnieRuru~'s fixes to item scripts, variables, and commands addtimer and addnpctimer (bugreport:373).
+	- Fixed documentation for function command in regard of passed arguments and return value. (bugreport:373).
+	- Simplified description for getusers, by hiding internal mechanics of the command, which are irrelevant to a scripter (bugreport:2545).
+	- Added description for setfont and mercenary-related commands (bugreport:3034).
+	- Added documentation for ?: operator and "global" labels provided by Gepard (bugreport:3650).
+	- Added documentation for operators -, ~ and ! (bugreport:3650).
+	* Fixed base and job exp not getting reset on (de)leveling through commands (bugreport:85). [Ai4rei]
+	- Fixed level up related functions not updating client-side exp information, causing the exp percent value display random values.
+	- Fixed party system not getting notified of level-ups through parameter changes.
+	* Fixed auto-generated statpoint table missing 3 status points (since r1107). [Ai4rei]
+2010/11/25
+	* Too large client packets, which would otherwise cause the client to crash, are now dropped and reported (bugreport:4391). [Ai4rei]
+	* Fixed a crash when an unknown map is encountered during parsing a 'script' npc and the script has mismatched curly braces (bugreport:4423, since r11502). [Ai4rei]
+	* Fixed script commands attachrid and detachrid not updating the attached character's information about currently running script, causing errors with dialog-based scripts or preventing characters from walking (bugreport:4571). [Ai4rei]
+2010/11/24
+	* Fixed party booking search not interpreting level 0 as 'all levels' and using level as upper rather than lower bound (bugreport:4537, since r14412). [Ai4rei]
+	* Display a message showing the user where to change MAX_ITEMDELAYS when they have too many entries in the item_delays db. Follow-up to r14455. [Paradox924X]
+	* Fixed pets with player sprites causing the client to crash while looking for non-existing resources (topic:260895, follow up to r14488). [Ai4rei]
+	* Fixed calls to pc_delautobonus assuming map_session_data::autobonus2 and map_session_data::autobonus3 arrays having the same size as map_session_data::autobonus (since r13915). [Ai4rei]
+2010/11/23
+	* Added script command pushpc, which is required by newer scripts. [Ai4rei]
+	- Moved knockback-part of skill_blown into unit_blown, to allow unconditional knockback required by pushpc without copy-pasting code.
+	* Various small cleanups. [Ai4rei]
+	- Fixed truncation warnings in @statuspoint, @skillpoint and @str/@agi/@vit/@int/@dex/@luk (since r14436).
+	- Fixed data type inconsistency in @statuspoint and @skillpoint (since r5762, related r13541).
+	- Silenced truncation warnings in CR_ACIDDEMONSTRATION damage calculation and cardfix application (since r13700).
+	- Reformatted unit_blown to make it look cleaner (follow up to r14492).
+	* Labels longer than 23 characters will no longer cause the server to exit immediately (bugreport:4563, since r1213). [Ai4rei]
+	* Fixed script command getusers causing map server to crash when called with type 0 without attached character (bugreport:4565). [Ai4rei]
+	- Lack of character is now reported like other script commands do. Additionally invalid types are reported as well.
+2010/11/22
+	* mail_deliveryfail no longer attempts to log (since r12910) and give items (since r11855), when there is no item attached to the mail (bugreport:3239). [Ai4rei]
+	* Fixed a crash when shutting down char-server (TXT only), after it failed to load storage save data (since r1275). [Ai4rei]
+	* Batch files (Windows) now detect whether the server crashed, aborted or shutdown cleanly (Ctrl+C or @mapexit) and print appropriate message, instead of always assuming, that the server crashed (bugreport:3476, since r1818). [Ai4rei]
+	* Fixed map server getting notified of hair, hair color, gender, class and level changes from a char server (TXT only) twice (since r2986). [Ai4rei]
+	* Fixed saving/loading errors with compilers (such as VC6, MinGW), which do not recognize %ll format (since r14242). [Ai4rei]
+	- This also fixes guild leader name being displayed and saved as "(null)" in the guild member list.
+	* Fixed guild and guild member exp truncation issue (bugreport:4130, since r14242). [Ai4rei]
+	- Fixed guild member position, hair, hair color, gender, class and level could potentially become corrupted due to shorts being read as ints (partially since r2986).
+	* Fixed disguising as player clone causing the client to crash while looking for non-existing NPC sprites (bugreport:4428, since r14387, related r14383). [Ai4rei]
+	* Fixed Rogue skill Steal Coin working on boss monsters (bugreport:2442). [Ai4rei]
+	* Fixed map-server displaying 'PK Mode' notice only for pk_mode 1 (since r8402). [Ai4rei]
+2010/11/21
+	* Added msinttypes (rev. 26, http://msinttypes.googlecode.com/svn/trunk/) portability framework for Visual C++ compilers (related bugreport:4059). [Ai4rei]
+	* Added 64-bit variants of the socket and buffer I/O macros. [Ai4rei]
+	* Added enumeration RC2_* for mob data 'race2' (bugreport:4561). [Ai4rei]
+	- Fixed race2-related bonus arrays using RC_MAX, rather than race2 maximum (since r6221, related r1277).
+	- Fixed bSubRace2 lacking bounds check (since r1257).
+2010/11/20
+	* Fixed @doom and @doommap spamming packets for the visual effect on invoker unnecessarily over whole map and server respectively. The effect is now displayed on each killed character (bugreport:871, since r311). [Ai4rei]
+	* Fixed login-server account engine initialization not getting checked, whether it succeeds or not (bugreport:4361, since r12700, related r13000). [Ai4rei]
+	- Failure to retrieve account engine and initializing it is now considered fatal and causes the server to exit immediately.
+	- Fixed two data type inconsistencies, while being at it.
+	* Made atcommand declarations use ACMD_FUNC macro (bugreport:4252, related r11607). [Ai4rei]
 2010/11/19
 	* Various VC6-related fixes and tweaks. [Ai4rei]
 	- Fixed a typo in VC6 project files, that prevented login-server from compiling (bugreport:4061, since r12727).

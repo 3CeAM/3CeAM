@@ -169,9 +169,9 @@ static inline unsigned char clif_bl_type(struct block_list *bl) {
 	case BL_ITEM:  return 0x2; //ITEM_TYPE
 	case BL_SKILL: return 0x3; //SKILL_TYPE
 	case BL_CHAT:  return 0x4; //UNKNOWN_TYPE
-	case BL_MOB:   return pcdb_checkid(((TBL_MOB*)bl)->vd->class_)?0x0:0x5; //NPC_MOB_TYPE
+	case BL_MOB:   return pcdb_checkid(status_get_viewdata(bl)->class_)?0x0:0x5; //NPC_MOB_TYPE
 	case BL_NPC:   return 0x6; //NPC_EVT_TYPE
-	case BL_PET:   return 0x7; //NPC_PET_TYPE
+	case BL_PET:   return pcdb_checkid(status_get_viewdata(bl)->class_)?0x0:0x7; //NPC_PET_TYPE
 	case BL_HOM:   return 0x8; //NPC_HOM_TYPE
 	case BL_MER:   return 0x9; //NPC_MERSOL_TYPE
 	case BL_ELEM:  return 0xa; //NPC_ELEMENTAL_TYPE
@@ -682,7 +682,7 @@ int clif_clearflooritem(struct flooritem_data *fitem, int fd)
  *       3 - teleported / logged out
  * fd  : the target client
  *------------------------------------------*/
-int clif_clearunit_single(int id, uint8 type, int fd)
+int clif_clearunit_single(int id, clr_type type, int fd)
 {
 	WFIFOHEAD(fd, packet_len(0x80));
 	WFIFOW(fd,0) = 0x80;
@@ -700,7 +700,7 @@ int clif_clearunit_single(int id, uint8 type, int fd)
  *       2 - respawned
  *       3 - teleported / logged out
  *------------------------------------------*/
-int clif_clearunit_area(struct block_list* bl, uint8 type)
+int clif_clearunit_area(struct block_list* bl, clr_type type)
 {
 	unsigned char buf[16];
 
@@ -710,7 +710,7 @@ int clif_clearunit_area(struct block_list* bl, uint8 type)
 	WBUFL(buf,2) = bl->id;
 	WBUFB(buf,6) = type;
 
-	clif_send(buf, packet_len(0x80), bl, type == 1 ? AREA : AREA_WOS);
+	clif_send(buf, packet_len(0x80), bl, type == CLR_DEAD ? AREA : AREA_WOS);
 
 	if(disguised(bl)) {
 		WBUFL(buf,2) = -bl->id;
@@ -723,7 +723,7 @@ int clif_clearunit_area(struct block_list* bl, uint8 type)
 static int clif_clearunit_delayed_sub(int tid, unsigned int tick, int id, intptr data)
 {
 	struct block_list *bl = (struct block_list *)data;
-	clif_clearunit_area(bl, 0);
+	clif_clearunit_area(bl, CLR_OUTSIGHT);
 	aFree(bl);
 	return 0;
 }
@@ -1041,10 +1041,10 @@ static int clif_set_unit_walking(struct block_list* bl, struct unit_data* ud, un
 static void clif_setdisguise(struct block_list *bl, unsigned char *buf,int len)
 {
 #if PACKETVER >= 20091103
-	WBUFB(buf,4)= 0x5; //NPC_MOB_TYPE
+	WBUFB(buf,4)= pcdb_checkid(status_get_viewdata(bl)->class_) ? 0x0 : 0x5; //PC_TYPE : NPC_MOB_TYPE
 	WBUFL(buf,5)=-bl->id;
 #elif PACKETVER >= 20071106
-	WBUFB(buf,2)= 0x5; //NPC_MOB_TYPE
+	WBUFB(buf,2)= pcdb_checkid(status_get_viewdata(bl)->class_) ? 0x0 : 0x5; //PC_TYPE : NPC_MOB_TYPE
 	WBUFL(buf,3)=-bl->id;
 #else
 	WBUFL(buf,2)=-bl->id;
@@ -4463,7 +4463,7 @@ int clif_outsight(struct block_list *bl,va_list ap)
 		switch(bl->type){
 		case BL_PC:
 			if (sd->vd.class_ != INVISIBLE_CLASS)
-				clif_clearunit_single(bl->id,0,tsd->fd);
+				clif_clearunit_single(bl->id,CLR_OUTSIGHT,tsd->fd);
 			if(sd->chatID){
 				struct chat_data *cd;
 				cd=(struct chat_data*)map_id2bl(sd->chatID);
@@ -4481,14 +4481,14 @@ int clif_outsight(struct block_list *bl,va_list ap)
 			break;
 		default:
 			if ((vd=status_get_viewdata(bl)) && vd->class_ != INVISIBLE_CLASS)
-				clif_clearunit_single(bl->id,0,tsd->fd);
+				clif_clearunit_single(bl->id,CLR_OUTSIGHT,tsd->fd);
 			break;
 		}
 	}
 	if (sd && sd->fd)
 	{	//sd is watching tbl go out of view.
 		if ((vd=status_get_viewdata(tbl)) && vd->class_ != INVISIBLE_CLASS)
-			clif_clearunit_single(tbl->id,0,sd->fd);
+			clif_clearunit_single(tbl->id,CLR_OUTSIGHT,sd->fd);
 	}
 	return 0;
 }
@@ -7192,7 +7192,7 @@ int clif_guild_basicinfo(struct map_session_data *sd)
 	WFIFOL(fd,10)=g->connect_member;
 	WFIFOL(fd,14)=g->max_member;
 	WFIFOL(fd,18)=g->average_lv;
-	WFIFOL(fd,22)=g->exp;
+	WFIFOL(fd,22)=(uint32)cap_value(g->exp,0,INT_MAX);
 	WFIFOL(fd,26)=g->next_exp;
 	WFIFOL(fd,30)=0;	// Tax Points
 	WFIFOL(fd,34)=0;	// Tendency: (left) Vulgar [-100,100] Famed (right)
@@ -8132,7 +8132,7 @@ int clif_refresh(struct map_session_data *sd)
 	if( pc_issit(sd) )
 		clif_sitting(&sd->bl,false); // just send to self, not area
 	if( pc_isdead(sd) ) //When you refresh, resend the death packet.
-		clif_clearunit_single(sd->bl.id,1,sd->fd);
+		clif_clearunit_single(sd->bl.id,CLR_DEAD,sd->fd);
 	else
 		clif_changed_dir(&sd->bl, SELF);
 
@@ -9148,7 +9148,7 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 
   	// If player is dead, and is spawned (such as @refresh) send death packet. [Valaris]
 	if( pc_isdead(sd) )
-		clif_clearunit_area(&sd->bl, 1);
+		clif_clearunit_area(&sd->bl, CLR_DEAD);
 // Uncomment if you want to make player face in the same direction he was facing right before warping. [Skotlex]
 //	else
 //		clif_changed_dir(&sd->bl, SELF);
@@ -9249,7 +9249,7 @@ void clif_parse_WalkToXY(int fd, struct map_session_data *sd)
 	int cmd;
 
 	if (pc_isdead(sd)) {
-		clif_clearunit_area(&sd->bl, 1);
+		clif_clearunit_area(&sd->bl, CLR_DEAD);
 		return;
 	}
 
@@ -9493,10 +9493,10 @@ void clif_parse_ChangeDir(int fd, struct map_session_data *sd)
  *------------------------------------------*/
 void clif_parse_Emotion(int fd, struct map_session_data *sd)
 {
-	unsigned char buf[64];
+	int emoticon = RFIFOB(fd,packet_db[sd->packet_ver][RFIFOW(fd,0)].pos[0]);
 
 	if (battle_config.basic_skill_check == 0 || pc_checkskill(sd, NV_BASIC) >= 2) {
-		if (RFIFOB(fd,2) == 34) {// prevent use of the mute emote [Valaris]
+		if (emoticon == E_MUTE) {// prevent use of the mute emote [Valaris]
 			clif_skill_fail(sd, 1, 0, 1, 0);
 			return;
 		}
@@ -9507,11 +9507,13 @@ void clif_parse_Emotion(int fd, struct map_session_data *sd)
 			return;
 		}
 		sd->emotionlasttime = time(NULL) + 1; // not more than 1 per second (using /commands the client can spam it)
-		
-		WBUFW(buf,0) = 0xc0;
-		WBUFL(buf,2) = sd->bl.id;
-		WBUFB(buf,6) = RFIFOB(fd,2);
-		clif_send(buf, packet_len(0xc0), &sd->bl, AREA);
+
+		if(battle_config.client_reshuffle_dice && emoticon>=E_DICE1 && emoticon<=E_DICE6)
+		{// re-roll dice
+			emoticon = rand()%6+E_DICE1;
+		}
+
+		clif_emotion(&sd->bl, emoticon);
 	} else
 		clif_skill_fail(sd, 1, 0, 1, 0);
 }
@@ -9532,7 +9534,7 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 	struct status_change *tsc = status_get_sc(map_id2bl(target_id));
 
 	if (pc_isdead(sd)) {
-		clif_clearunit_area(&sd->bl, 1);
+		clif_clearunit_area(&sd->bl, CLR_DEAD);
 		return;
 	}
 
@@ -9650,7 +9652,7 @@ void clif_parse_Restart(int fd, struct map_session_data *sd)
 {
 	switch(RFIFOB(fd,2)) {
 	case 0x00:
-		pc_respawn(sd,2);
+		pc_respawn(sd,CLR_RESPAWN);
 		break;
 	case 0x01:
 		/*	Rovert's Prevent logout option - Fixed [Valaris]	*/
@@ -9870,7 +9872,7 @@ void clif_parse_TakeItem(int fd, struct map_session_data *sd)
 
 	do {
 		if (pc_isdead(sd)) {
-			clif_clearunit_area(&sd->bl, 1);
+			clif_clearunit_area(&sd->bl, CLR_DEAD);
 			break;
 		}
 
@@ -9941,7 +9943,7 @@ void clif_parse_UseItem(int fd, struct map_session_data *sd)
 	int n;
 
 	if (pc_isdead(sd)) {
-		clif_clearunit_area(&sd->bl, 1);
+		clif_clearunit_area(&sd->bl, CLR_DEAD);
 		return;
 	}
 
@@ -9974,7 +9976,7 @@ void clif_parse_EquipItem(int fd,struct map_session_data *sd)
 	int index;
 
 	if(pc_isdead(sd)) {
-		clif_clearunit_area(&sd->bl,1);
+		clif_clearunit_area(&sd->bl,CLR_DEAD);
 		return;
 	}
 	index = RFIFOW(fd,2)-2; 
@@ -10020,7 +10022,7 @@ void clif_parse_UnequipItem(int fd,struct map_session_data *sd)
 	int index;
 
 	if(pc_isdead(sd)) {
-		clif_clearunit_area(&sd->bl,1);
+		clif_clearunit_area(&sd->bl,CLR_DEAD);
 		return;
 	}
 
@@ -10042,7 +10044,7 @@ void clif_parse_NpcClicked(int fd,struct map_session_data *sd)
 	struct block_list *bl;
 
 	if(pc_isdead(sd)) {
-		clif_clearunit_area(&sd->bl,1);
+		clif_clearunit_area(&sd->bl,CLR_DEAD);
 		return;
 	}
 
@@ -11320,10 +11322,10 @@ void clif_parse_PartyBookingRegisterReq(int fd, struct map_session_data* sd)
 {
 	short level = RFIFOW(fd,2);
 	short mapid = RFIFOW(fd,4);
-	short job[6];
+	short job[PARTY_BOOKING_JOBS];
 	int i;
 	
-	for(i=0; i<6; i++)
+	for(i=0; i<PARTY_BOOKING_JOBS; i++)
 		job[i] = RFIFOB(fd,6+i*2);
 
 	party_booking_register(sd, level, mapid, job);
@@ -11356,7 +11358,7 @@ void clif_parse_PartyBookingSearchReq(int fd, struct map_session_data* sd)
 /*==========================================
  * more_result: 0 - no more, 1 - more
  *------------------------------------------*/
-void clif_PartyBookingSearchAck(int fd, unsigned long *index, int count, bool more_result)
+void clif_PartyBookingSearchAck(int fd, struct party_booking_ad_info** results, int count, bool more_result)
 {
 	int i, j;
 	int size = sizeof(struct party_booking_ad_info); // structure size (48)
@@ -11364,17 +11366,16 @@ void clif_PartyBookingSearchAck(int fd, unsigned long *index, int count, bool mo
 	WFIFOHEAD(fd,size*count + 5);
 	WFIFOW(fd,0) = 0x805;
 	WFIFOW(fd,2) = size*count + 5;
-	WFIFOB(fd,4) = (bool)more_result;
+	WFIFOB(fd,4) = more_result;
 	for(i=0; i<count; i++)
 	{
-		pb_ad = party_booking_getdata(index[i]);
-		if(pb_ad == NULL) return;
+		pb_ad = results[i];
 		WFIFOL(fd,i*size+5) = pb_ad->index;
 		memcpy(WFIFOP(fd,i*size+9),pb_ad->charname,NAME_LENGTH);
 		WFIFOL(fd,i*size+33) = pb_ad->starttime;
 		WFIFOW(fd,i*size+37) = pb_ad->p_detail.level;
 		WFIFOW(fd,i*size+39) = pb_ad->p_detail.mapid;
-		for(j=0; j<6; j++)
+		for(j=0; j<PARTY_BOOKING_JOBS; j++)
 			WFIFOW(fd,i*size+41+j*2) = pb_ad->p_detail.job[j];
 	}
 	WFIFOSET(fd,WFIFOW(fd,2));
@@ -11382,7 +11383,7 @@ void clif_PartyBookingSearchAck(int fd, unsigned long *index, int count, bool mo
 
 void clif_parse_PartyBookingDeleteReq(int fd, struct map_session_data* sd)
 {
-	if(party_booking_delete(sd, false))
+	if(party_booking_delete(sd))
 		clif_PartyBookingDeleteAck(sd, 0);
 }
 
@@ -11401,10 +11402,10 @@ void clif_PartyBookingDeleteAck(struct map_session_data* sd, int flag)
 
 void clif_parse_PartyBookingUpdateReq(int fd, struct map_session_data* sd)
 {
-	short job[6];
+	short job[PARTY_BOOKING_JOBS];
 	int i;
 	
-	for(i=0; i<6; i++)
+	for(i=0; i<PARTY_BOOKING_JOBS; i++)
 		job[i] = RFIFOW(fd,2+i*2);
 
 	party_booking_update(sd, job);
@@ -11413,32 +11414,32 @@ void clif_parse_PartyBookingUpdateReq(int fd, struct map_session_data* sd)
 void clif_PartyBookingInsertNotify(struct map_session_data* sd, struct party_booking_ad_info* pb_ad)
 {
 	int i;
+	uint8 buf[38+PARTY_BOOKING_JOBS*2];
 
 	if(pb_ad == NULL) return;
 
-	WFIFOHEAD(sd->fd,packet_len(0x809));
-	WFIFOW(sd->fd,0) = 0x809;
-	WFIFOL(sd->fd,2) = pb_ad->index;
-	memcpy(WFIFOP(sd->fd,6),pb_ad->charname,NAME_LENGTH);
-	WFIFOL(sd->fd,30) = pb_ad->starttime;
-	WFIFOW(sd->fd,34) = pb_ad->p_detail.level;
-	WFIFOW(sd->fd,36) = pb_ad->p_detail.mapid;
-	for(i=0; i<6; i++)
-		WFIFOW(sd->fd,38+i*2) = pb_ad->p_detail.job[i];
+	WBUFW(buf,0) = 0x809;
+	WBUFL(buf,2) = pb_ad->index;
+	memcpy(WBUFP(buf,6),pb_ad->charname,NAME_LENGTH);
+	WBUFL(buf,30) = pb_ad->starttime;
+	WBUFW(buf,34) = pb_ad->p_detail.level;
+	WBUFW(buf,36) = pb_ad->p_detail.mapid;
+	for(i=0; i<PARTY_BOOKING_JOBS; i++)
+		WBUFW(buf,38+i*2) = pb_ad->p_detail.job[i];
 	
-	WFIFOSET(sd->fd,packet_len(0x809));
+	clif_send(buf, packet_len(0x809), &sd->bl, ALL_CLIENT);
 }
 
 void clif_PartyBookingUpdateNotify(struct map_session_data* sd, struct party_booking_ad_info* pb_ad)
 {
 	int i;
-	uint8 buf[18];
+	uint8 buf[6+PARTY_BOOKING_JOBS*2];
 
 	if(pb_ad == NULL) return;
 
 	WBUFW(buf,0) = 0x80a;
 	WBUFL(buf,2) = pb_ad->index;
-	for(i=0; i<6; i++)
+	for(i=0; i<PARTY_BOOKING_JOBS; i++)
 		WBUFW(buf,6+i*2) = pb_ad->p_detail.job[i];
 	clif_send(buf,packet_len(0x80a),&sd->bl,ALL_CLIENT); // Now UPDATE all client.
 }

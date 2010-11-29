@@ -247,7 +247,7 @@ int merc_delete(struct mercenary_data *md, int reply)
 	merc_contract_stop(md);
 
 	if( !sd )
-		return unit_free(&md->bl, 0);
+		return unit_free(&md->bl, CLR_OUTSIGHT);
 
 	if( md->devotion_flag )
 	{
@@ -262,7 +262,7 @@ int merc_delete(struct mercenary_data *md, int reply)
 	}
 
 	clif_mercenary_message(sd->fd, reply);
-	return unit_remove_map(&md->bl, 0);
+	return unit_remove_map(&md->bl, CLR_OUTSIGHT);
 }
 
 void merc_contract_stop(struct mercenary_data *md)

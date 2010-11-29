@@ -1840,7 +1840,7 @@ int map_quit(struct map_session_data *sd)
 	
 	if( sd->ed ) elemental_clean_effect(sd->ed);
 
-	unit_remove_map_pc(sd,3);
+	unit_remove_map_pc(sd,CLR_TELEPORT);
 	
 	if( map[sd->bl.m].instance_id )
 	{ // Avoid map conflicts and warnings on next login
@@ -1860,7 +1860,7 @@ int map_quit(struct map_session_data *sd)
 		}
 	}	
 
-	party_booking_delete(sd, true); // Party Booking [Spiria]
+	party_booking_delete(sd); // Party Booking [Spiria]
 	pc_makesavestatus(sd);
 	pc_clean_skilltree(sd);
 	chrif_save(sd,1);
@@ -2345,7 +2345,7 @@ int map_removemobs_sub(struct block_list *bl, va_list ap)
 	if( md->db->mexp > 0 )
 		return 0;
 	
-	unit_free(&md->bl,0);
+	unit_free(&md->bl,CLR_OUTSIGHT);
 
 	return 1;
 }
@@ -3563,7 +3563,7 @@ int cleanup_sub(struct block_list *bl, va_list ap)
 			npc_unload((struct npc_data *)bl);
 			break;
 		case BL_MOB:
-			unit_free(bl,0);
+			unit_free(bl,CLR_OUTSIGHT);
 			break;
 		case BL_PET:
 		//There is no need for this, the pet is removed together with the player. [Skotlex]
@@ -3876,7 +3876,7 @@ int do_init(int argc, char *argv[])
 		//##TODO invoke a CONSOLE_START plugin event
 	}
 
-	if (battle_config.pk_mode == 1)
+	if (battle_config.pk_mode)
 		ShowNotice("Server is running on '"CL_WHITE"PK Mode"CL_RESET"'.\n");
 
 	ShowStatus("Server is '"CL_GREEN"ready"CL_RESET"' and listening on port '"CL_WHITE"%d"CL_RESET"'.\n\n", map_port);
