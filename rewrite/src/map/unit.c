@@ -637,10 +637,82 @@ uint8 unit_getdir(struct block_list *bl)
 	return ud->dir;
 }
 
+// Pushes a unit by given amount of cells into given direction. Only
+// map cell restrictions are respected.
+// flag:
+//  &1  Do not send position update packets.
+int unit_blown(struct block_list* bl, int dx, int dy, int count, int flag)
+{
+	int nx, ny, result;
+	struct map_session_data* sd;
+	struct skill_unit* su = NULL;
+
+	if(count)
+	{
+		sd = BL_CAST(BL_PC, bl);
+		su = BL_CAST(BL_SKILL, bl);
+
+		result = path_blownpos(bl->m, bl->x, bl->y, dx, dy, count);
+
+		nx = result>>16;
+		ny = result&0xffff;
+
+		if(!su)
+		{
+			unit_stop_walking(bl, 0);
+		}
+
+		dx = nx-bl->x;
+		dy = ny-bl->y;
+
+		if(dx || dy)
+		{
+			map_foreachinmovearea(clif_outsight, bl, AREA_SIZE, dx, dy, bl->type == BL_PC ? BL_ALL : BL_PC, bl);
+
+			if(su)
+			{
+				skill_unit_move_unit_group(su->group, bl->m, dx, dy);
+			}
+			else
+			{
+				map_moveblock(bl, nx, ny, gettick());
+			}
+
+			map_foreachinmovearea(clif_insight, bl, AREA_SIZE, -dx, -dy, bl->type == BL_PC ? BL_ALL : BL_PC, bl);
+
+			if(!(flag&1))
+			{
+				clif_blown(bl);
+			}
+
+			if(sd)
+			{
+				if(sd->touching_id)
+				{
+					npc_touchnext_areanpc(sd, false);
+				}
+				if(map_getcell(bl->m, bl->x, bl->y, CELL_CHKNPC))
+				{
+					npc_touch_areanpc(sd, bl->m, bl->x, bl->y);
+				}
+				else
+				{
+					sd->areanpc_id = 0;
+				}
+			}
+		}
+		else
+		{// could not knockback
+			count = 0;
+		}
+	}
+	return count;  // return amount of knocked back cells
+}
+
 //Warps a unit/ud to a given map/position. 
 //In the case of players, pc_setpos is used.
 //it respects the no warp flags, so it is safe to call this without doing nowarpto/nowarp checks.
-int unit_warp(struct block_list *bl,short m,short x,short y,int type)
+int unit_warp(struct block_list *bl,short m,short x,short y,clr_type type)
 {
 	struct unit_data *ud;
 	nullpo_ret(bl);
@@ -649,7 +721,7 @@ int unit_warp(struct block_list *bl,short m,short x,short y,int type)
 	if(bl->prev==NULL || !ud)
 		return 1;
 
-	if (type < 0 || type == 1)
+	if (type == CLR_DEAD)
 		//Type 1 is invalid, since you shouldn't warp a bl with the "death" 
 		//animation, it messes up with unit_remove_map! [Skotlex]
 		return 1;
@@ -1417,8 +1489,6 @@ int unit_skilluse_pos2( struct block_list *src, short skill_x, short skill_y, sh
 	return 1;
 }
 
-static int unit_attack_timer(int tid, unsigned int tick, int id, intptr data);
-
 int unit_stop_attack(struct block_list *bl)
 {
 	struct unit_data *ud = unit_bl2ud(bl);
@@ -1925,7 +1995,7 @@ int unit_changeviewsize(struct block_list *bl,short size)
  * Otherwise it is assumed bl is being warped.
  * On-Kill specific stuff is not performed here, look at status_damage for that.
  *------------------------------------------*/
-int unit_remove_map_(struct block_list *bl, int clrtype, const char* file, int line, const char* func)
+int unit_remove_map_(struct block_list *bl, clr_type clrtype, const char* file, int line, const char* func)
 {
 	struct unit_data *ud = unit_bl2ud(bl);
 	struct status_change *sc = status_get_sc(bl);
@@ -2089,7 +2159,7 @@ int unit_remove_map_(struct block_list *bl, int clrtype, const char* file, int l
 		{	//If logging out, this is deleted on unit_free
 			clif_clearunit_area(bl,clrtype);
 			map_delblock(bl);
-			unit_free(bl,0);
+			unit_free(bl,CLR_OUTSIGHT);
 			map_freeblock_unlock();
 			return 0;
 		}
@@ -2102,10 +2172,10 @@ int unit_remove_map_(struct block_list *bl, int clrtype, const char* file, int l
 		ud->canact_tick = ud->canmove_tick; //It appears HOM do reset the can-act tick.
 		if( !hd->homunculus.intimacy && !(hd->master && !hd->master->state.active) )
 		{	//If logging out, this is deleted on unit_free
-			clif_emotion(bl, 28) ;	//sob
+			clif_emotion(bl, E_SOB);
 			clif_clearunit_area(bl,clrtype);
 			map_delblock(bl);
-			unit_free(bl,0);
+			unit_free(bl,CLR_OUTSIGHT);
 			map_freeblock_unlock();
 			return 0;
 		}
@@ -2119,7 +2189,7 @@ int unit_remove_map_(struct block_list *bl, int clrtype, const char* file, int l
 		{
 			clif_clearunit_area(bl,clrtype);
 			map_delblock(bl);
-			unit_free(bl,0);
+			unit_free(bl,CLR_OUTSIGHT);
 			map_freeblock_unlock();
 			return 0;
 		}
@@ -2148,11 +2218,11 @@ int unit_remove_map_(struct block_list *bl, int clrtype, const char* file, int l
 	return 1;
 }
 
-void unit_remove_map_pc(struct map_session_data *sd, int clrtype)
+void unit_remove_map_pc(struct map_session_data *sd, clr_type clrtype)
 {
 	unit_remove_map(&sd->bl,clrtype);
 
-	if (clrtype == 3) clrtype = 0; //3 is the warp from logging out, but pets/homunc need to just 'vanish' instead of showing the warping out animation.
+	if (clrtype == CLR_TELEPORT) clrtype = CLR_OUTSIGHT; //CLR_TELEPORT is the warp from logging out, but pets/homunc need to just 'vanish' instead of showing the warping out animation.
 
 	if(sd->pd)
 		unit_remove_map(&sd->pd->bl, clrtype);
@@ -2166,20 +2236,18 @@ void unit_remove_map_pc(struct map_session_data *sd, int clrtype)
 
 void unit_free_pc(struct map_session_data *sd)
 {
-	if (sd->pd) unit_free(&sd->pd->bl,0);
-	if (sd->hd) unit_free(&sd->hd->bl,0);
-	if (sd->md) unit_free(&sd->md->bl,0);
-	if (sd->ed) unit_free(&sd->ed->bl,0);
-	unit_free(&sd->bl,3);
+	if (sd->pd) unit_free(&sd->pd->bl,CLR_OUTSIGHT);
+	if (sd->hd) unit_free(&sd->hd->bl,CLR_OUTSIGHT);
+	if (sd->md) unit_free(&sd->md->bl,CLR_OUTSIGHT);
+	if (sd->ed) unit_free(&sd->ed->bl,CLR_OUTSIGHT);
+	unit_free(&sd->bl,CLR_TELEPORT);
 }
 
 /*==========================================
  * Function to free all related resources to the bl
  * if unit is on map, it is removed using the clrtype specified
- * If clrtype is <0, no saving is performed. This is only for non-authed
- * objects that shouldn't be on a map yet.
  *------------------------------------------*/
-int unit_free(struct block_list *bl, int clrtype)
+int unit_free(struct block_list *bl, clr_type clrtype)
 {
 	struct unit_data *ud = unit_bl2ud( bl );
 	nullpo_ret(ud);
@@ -2199,8 +2267,8 @@ int unit_free(struct block_list *bl, int clrtype)
 
 			pc_delinvincibletimer(sd);
 			pc_delautobonus(sd,sd->autobonus,ARRAYLENGTH(sd->autobonus),false);
-			pc_delautobonus(sd,sd->autobonus2,ARRAYLENGTH(sd->autobonus),false);
-			pc_delautobonus(sd,sd->autobonus3,ARRAYLENGTH(sd->autobonus),false);
+			pc_delautobonus(sd,sd->autobonus2,ARRAYLENGTH(sd->autobonus2),false);
+			pc_delautobonus(sd,sd->autobonus3,ARRAYLENGTH(sd->autobonus3),false);
 			
 			if( sd->followtimer != -1 )
 				pc_stop_following(sd);
@@ -2285,15 +2353,12 @@ int unit_free(struct block_list *bl, int clrtype)
 				aFree (pd->loot);
 				pd->loot = NULL;
 			}
-			if( clrtype >= 0 )
-			{
-				if( pd->pet.intimate > 0 )
-					intif_save_petdata(pd->pet.account_id,&pd->pet);
-				else
-				{	//Remove pet.
-					intif_delete_petdata(pd->pet.pet_id);
-					if (sd) sd->status.pet_id = 0;
-				}
+			if( pd->pet.intimate > 0 )
+				intif_save_petdata(pd->pet.account_id,&pd->pet);
+			else
+			{	//Remove pet.
+				intif_delete_petdata(pd->pet.pet_id);
+				if (sd) sd->status.pet_id = 0;
 			}
 			if( sd )
 				sd->pd = NULL;
@@ -2360,16 +2425,13 @@ int unit_free(struct block_list *bl, int clrtype)
 			struct homun_data *hd = (TBL_HOM*)bl;
 			struct map_session_data *sd = hd->master;
 			merc_hom_hungry_timer_delete(hd);
-			if( clrtype >= 0 )
+			if( hd->homunculus.intimacy > 0 )
+				merc_save(hd);
+			else
 			{
-				if( hd->homunculus.intimacy > 0 )
-					merc_save(hd);
-				else
-				{
-					intif_homunculus_requestdelete(hd->homunculus.hom_id);
-					if( sd )
-						sd->status.hom_id = 0;
-				}
+				intif_homunculus_requestdelete(hd->homunculus.hom_id);
+				if( sd )
+					sd->status.hom_id = 0;
 			}
 			if( sd )
 				sd->hd = NULL;
@@ -2379,16 +2441,13 @@ int unit_free(struct block_list *bl, int clrtype)
 		{
 			struct mercenary_data *md = (TBL_MER*)bl;
 			struct map_session_data *sd = md->master;
-			if( clrtype >= 0 )
+			if( mercenary_get_lifetime(md) > 0 )
+				mercenary_save(md);
+			else
 			{
-				if( mercenary_get_lifetime(md) > 0 )
-					mercenary_save(md);
-				else
-				{
-					intif_mercenary_delete(md->mercenary.mercenary_id);
-					if( sd )
-						sd->status.mer_id = 0;
-				}
+				intif_mercenary_delete(md->mercenary.mercenary_id);
+				if( sd )
+					sd->status.mer_id = 0;
 			}
 			if( sd )
 				sd->md = NULL;

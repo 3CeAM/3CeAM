@@ -3,7 +3,7 @@
 //===== By ================================================
 //= Developers
 //===== Version ===========================================
-//= 1.1.20100307
+//= 1.1.20090524
 //=========================================================
 //= 1.0 - Standardized doc file
 //= 1.1.20080612 - skill command and bonuses (bAutoSpell, bSkillAtk, 
@@ -13,7 +13,6 @@
 //= 1.1.20090421 - added the correct bonus documentation for bSPDrainValue [Playtester]
 //= 1.1.20090524 - removed outdated bMatk/bMatk1/bMatk2 doc [ultramage]
 //= 1.1.20090529 - added documentation for bHealPower, bHealPower2 [Inkfish]
-//= 1.1.20100307 - added fixed casting reduce bonus bFixCastRate [Jobbie]
 //===== Description =======================================
 //= List of script instructions used in item bonuses,
 //= mainly bonus/bonus2/bonus3/bonus4/bonus5 arguments
@@ -195,7 +194,7 @@ bonus bSPGainValue,n;			When killing a monster by physical attack, you gain n SP
 bonus bHPGainValue,n;			When killing a monster by physical attack, you gain n HP
 bonus bIgnoreDefMob,n;			Ignore monster's DEF when attacking.
 							n: 0=All normal monster except Bosses, 1=All monsters
-bonus2 bCriticalAddRace,n,r;		Critical + n vs. enemies of race r
+bonus2 bCriticalAddRace,r,n;		Critical + n vs. enemies of race r
 								r:
 									0=Formless, 1=Undead, 2=Brute, 3=Plant, 4=Insect,
 									5=Fish, 6=Demon, 7=Demi-Human, 8=Angel, 9=Dragon, 
@@ -286,7 +285,7 @@ bonus2 bSPRegenRate,n,x;		Gain n SP every x milliseconds
 bonus2 bSPLossRate,n,x;			Lose n SP every x milliseconds
 bonus2 bExpAddRace,n,x;			Increase exp gained by x% vs. enemies of race n
 bonus2 bSPGainRace,n,x;			When killing a monster of race n by physical attack gain x amount of sp
-bonus2 bSPSubRace2,n,x;			Damage x% reduction from enemies of race n
+bonus2 bSubRace2,n,x;			Damage x% reduction from enemies of race n
 							(Check db/mob_race2_db.txt)
 
 bonus2 bAddMonsterDropItemGroup,n,x;	x% chance to get an item of group type n when you kill a monster 
@@ -377,6 +376,3 @@ bonus3 bSubEle,n,x,t;			x% Damage reduction against element n.
 					   i: 1=cast on enemy, not on self
 					   2=use random skill lv in [1..y]
 					   3=1+2 (random lv on enemy)
-
-//---- new item bonus effect ----
-bonus bFixCastRate,n;		Skill fixed casting time rate +/- n%

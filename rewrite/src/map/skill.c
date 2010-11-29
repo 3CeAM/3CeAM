@@ -203,9 +203,7 @@ int skill_tree_get_max(int id, int b_class)
 		return skill_get_max(id);
 }
 
-int skill_castend_damage_id( struct block_list* src, struct block_list *bl,int skillid,int skilllv,unsigned int tick,int flag );
 int skill_frostjoke_scream(struct block_list *bl,va_list ap);
-int status_change_timer_sub(struct block_list *bl, va_list ap);
 int skill_attack_area(struct block_list *bl,va_list ap);
 struct skill_unit_group *skill_locate_element_field(struct block_list *bl); // [Skotlex]
 int skill_graffitiremover(struct block_list *bl, va_list ap); // [Valaris]
@@ -841,7 +839,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 	case AM_ACIDTERROR:
 		sc_start(bl,SC_BLEEDING,(skilllv*3),skilllv,skill_get_time2(skillid,skilllv));
 		if (skill_break_equip(bl, EQP_ARMOR, 100*skill_get_time(skillid,skilllv), BCT_ENEMY))
-			clif_emotion(bl,23);
+			clif_emotion(bl,E_OMG);
 		break;
 
 	case AM_DEMONSTRATION:
@@ -1786,18 +1784,17 @@ int skill_strip_equip(struct block_list *bl, unsigned short where, int rate, int
  -------------------------------------------------------------------------*/
 int skill_blown(struct block_list* src, struct block_list* target, int count, int direction, int flag)
 {
-	int dx = 0, dy = 0, nx, ny;
-	int ret;
+	int dx = 0, dy = 0;
 	struct skill_unit* su = NULL;
 
 	nullpo_ret(src);
 
-	if( src != target && (map_flag_gvg(target->m) || map[target->m].flag.battleground) )
+	if (src != target && (map_flag_gvg(target->m) || map[target->m].flag.battleground))
 		return 0; //No knocking back in WoE
-	if( count == 0 )
+	if (count == 0)
 		return 0; //Actual knockback distance is 0.
 
-	switch( target->type )
+	switch (target->type)
 	{
 		case BL_MOB:
 		{
@@ -1825,61 +1822,16 @@ int skill_blown(struct block_list* src, struct block_list* target, int count, in
 			break;
 	}
 
-	if( direction != -2 )
-	{ // pulling the target away from the src
-		if( direction == -1 ) // <optimized>: do the computation here instead of outside
-			direction = map_calc_dir(target, src->x, src->y); // direction from src to target, reversed
-		if( direction >= 0 && direction < 8 )
-		{	// take the reversed 'direction' and reverse it
-			dx = -dirx[direction];
-			dy = -diry[direction];
-		}
-		ret=path_blownpos(target->m,target->x,target->y,dx,dy,count);
-		nx = ret>>16;
-		ny = ret&0xffff;
-		dx = nx - target->x;
-		dy = ny - target->y;
-	}
-	else
-	{ // Pulling the target towards the src
-		direction = unit_getdir(src);
-		dx = dirx[direction];
-		dy = diry[direction];
-		ret = path_blownpos(src->m,src->x,src->y,dx,dy,count);
-		nx = ret>>16;
-		ny = ret&0xffff;
-		dx = nx - src->x;
-		dy = ny - src->y;
+	if (direction == -1) // <optimized>: do the computation here instead of outside
+		direction = map_calc_dir(target, src->x, src->y); // direction from src to target, reversed
+
+	if (direction >= 0 && direction < 8)
+	{	// take the reversed 'direction' and reverse it
+		dx = -dirx[direction];
+		dy = -diry[direction];
 	}
 
-	if( !su ) unit_stop_walking(target,0);
-	if( !dx && !dy ) //Could not knockback.
-		return 0;
-
-	map_foreachinmovearea(clif_outsight, target, AREA_SIZE, dx, dy, target->type == BL_PC ? BL_ALL : BL_PC, target);
-
-	if(su)
-		skill_unit_move_unit_group(su->group,target->m,dx,dy);
-	else
-		map_moveblock(target, nx, ny, gettick());
-
-	map_foreachinmovearea(clif_insight, target, AREA_SIZE, -dx, -dy, target->type == BL_PC ? BL_ALL : BL_PC, target);
-
-	if(!(flag&0x1))
-		clif_blown(target);
-
-	if( target->type == BL_PC )
-	{
-		TBL_PC *sd = (TBL_PC*)target;
-		if( sd->touching_id )
-			npc_touchnext_areanpc(sd,false);
-		if( map_getcell(target->m,target->x,target->y,CELL_CHKNPC) )
-			npc_touch_areanpc(sd,target->m,target->x,target->y);
-		else
-			sd->areanpc_id=0;
-	}
-
-	return count; //Return amount of knocked back cells.
+	return unit_blown(target, dx, dy, count, flag&0x1);
 }
 
 
@@ -2922,12 +2874,11 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 			switch( skl->skill_id )
 			{
 				case RG_INTIMIDATE:
-					if( unit_warp(src,-1,-1,-1,3) == 0 )
-					{
+					if (unit_warp(src,-1,-1,-1,CLR_TELEPORT) == 0) {
 						short x,y;
 						map_search_freecell(src, 0, &x, &y, 1, 1, 0);
 						if( target != src && !status_isdead(target) )
-							unit_warp(target, -1, x, y, 3);
+							unit_warp(target, -1, x, y, CLR_TELEPORT);
 					}
 					break;
 				case BA_FROSTJOKER:
@@ -3836,7 +3787,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		break;
 
 	case NPC_DARKBREATH:
-		clif_emotion(src,7);
+		clif_emotion(src,E_AG);
 	case SN_FALCONASSAULT:
 	case PA_PRESSURE:
 	case CR_ACIDDEMONSTRATION:
@@ -5911,9 +5862,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			if( sd->state.autocast || ( (sd->skillitem == AL_TELEPORT || battle_config.skip_teleport_lv1_menu) && skilllv == 1 ) || skilllv == 3 )
 			{
 				if( skilllv == 1 )
-					pc_randomwarp(sd,3);
+					pc_randomwarp(sd,CLR_TELEPORT);
 				else
-					pc_setpos(sd,sd->status.save_point.map,sd->status.save_point.x,sd->status.save_point.y,3);
+					pc_setpos(sd,sd->status.save_point.map,sd->status.save_point.x,sd->status.save_point.y,CLR_TELEPORT);
 				break;
 			}
 
@@ -5923,12 +5874,12 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			else
 				clif_skill_warppoint(sd,skillid,skilllv, (unsigned short)-1,sd->status.save_point.map,0,0);
 		} else
-			unit_warp(bl,-1,-1,-1,3);
+			unit_warp(bl,-1,-1,-1,CLR_TELEPORT);
 		break;
 
 	case NPC_EXPULSION:
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
-		unit_warp(bl,-1,-1,-1,3);
+		unit_warp(bl,-1,-1,-1,CLR_TELEPORT);
 		break;
 
 	case AL_HOLYWATER:
@@ -6876,7 +6827,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case 5:	// 2000HP heal, random teleported
 					status_heal(src, 2000, 0, 0);
 					if( !map_flag_vs(bl->m) )
-						unit_warp(bl, -1,-1,-1, 3);
+						unit_warp(bl, -1,-1,-1, CLR_TELEPORT);
 					break;
 				case 6:	// random 2 other effects
 					if (count == -1)
@@ -7046,7 +6997,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 						continue;
 					if(map_getcell(src->m,src->x+dx[j],src->y+dy[j],CELL_CHKNOREACH))
 						dx[j] = dy[j] = 0;
-					pc_setpos(dstsd, map_id2index(src->m), src->x+dx[j], src->y+dy[j], 2);
+					pc_setpos(dstsd, map_id2index(src->m), src->x+dx[j], src->y+dy[j], CLR_RESPAWN);
 				}
 			}
 			if (sd)
@@ -9951,9 +9902,9 @@ int skill_castend_map (struct map_session_data *sd, short skill_num, const char 
 	{
 	case AL_TELEPORT:
 		if(strcmp(map,"Random")==0)
-			pc_randomwarp(sd,3);
+			pc_randomwarp(sd,CLR_TELEPORT);
 		else if (sd->menuskill_val > 1) //Need lv2 to be able to warp here.
-			pc_setpos(sd,sd->status.save_point.map,sd->status.save_point.x,sd->status.save_point.y,3);
+			pc_setpos(sd,sd->status.save_point.map,sd->status.save_point.x,sd->status.save_point.y,CLR_TELEPORT);
 		break;
 
 	case AL_WARP:
@@ -10623,7 +10574,7 @@ static int skill_unit_onplace (struct skill_unit *src, struct block_list *bl, un
 				if( --sg->val1 <= 0 )
 					skill_delunitgroup(sg);
 
-				pc_setpos(sd,m,x,y,3);
+				pc_setpos(sd,m,x,y,CLR_TELEPORT);
 				sg = src->group; // avoid dangling pointer (pc_setpos can cause deletion of 'sg')
 			}
 		} else
@@ -10631,7 +10582,7 @@ static int skill_unit_onplace (struct skill_unit *src, struct block_list *bl, un
 		{
 			int m = map_mapindex2mapid(sg->val3);
 			if (m < 0) break; //Map not available on this map-server.
-			unit_warp(bl,m,sg->val2>>16,sg->val2&0xffff,3);
+			unit_warp(bl,m,sg->val2>>16,sg->val2&0xffff,CLR_TELEPORT);
 		}
 		break;
 
@@ -13563,7 +13514,7 @@ void skill_weaponrefine (struct map_session_data *sd, int idx)
 				clif_refine(sd->fd,1,idx,item->refine);
 				pc_delitem(sd,idx,1,0,2);
 				clif_misceffect(&sd->bl,2);
-				clif_emotion(&sd->bl, 23);
+				clif_emotion(&sd->bl, E_OMG);
 			}
 		}
 	}
@@ -14718,13 +14669,13 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 		  			sd = map_charid2sd(group->val1);
 					group->val1 = 0;
 					if (sd && !map[sd->bl.m].flag.nowarp)
-						pc_setpos(sd,map_id2index(unit->bl.m),unit->bl.x,unit->bl.y,3);
+						pc_setpos(sd,map_id2index(unit->bl.m),unit->bl.x,unit->bl.y,CLR_TELEPORT);
 				}
 				if(group->val2) {
 					sd = map_charid2sd(group->val2);
 					group->val2 = 0;
 					if (sd && !map[sd->bl.m].flag.nowarp)
-						pc_setpos(sd,map_id2index(unit->bl.m),unit->bl.x,unit->bl.y,3);
+						pc_setpos(sd,map_id2index(unit->bl.m),unit->bl.x,unit->bl.y,CLR_TELEPORT);
 				}
 				skill_delunit(unit);
 			}

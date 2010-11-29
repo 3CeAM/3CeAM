@@ -2694,6 +2694,10 @@ struct script_state* script_alloc_state(struct script_code* script, int pos, int
 /// @param st Script state
 void script_free_state(struct script_state* st)
 {
+	if(st->bk_st)
+	{// backup was not restored
+		ShowDebug("script_free_state: Previous script state lost (rid=%d, oid=%d, state=%d, bk_npcid=%d).\n", st->bk_st->rid, st->bk_st->oid, st->bk_st->state, st->bk_npcid);
+	}
 	if( st->sleep.timer != INVALID_TIMER )
 		delete_timer(st->sleep.timer, run_script_timer);
 	script_free_vars(st->stack->var_function);
@@ -3062,8 +3066,6 @@ int run_func(struct script_state *st)
 /*==========================================
  * script execution
  *------------------------------------------*/
-void run_script_main(struct script_state *st);
-
 void run_script(struct script_code *rootscript,int pos,int rid,int oid)
 {
 	struct script_state *st;
@@ -3138,6 +3140,63 @@ int run_script_timer(int tid, unsigned int tick, int id, intptr data)
 	return 0;
 }
 
+/// Detaches script state from possibly attached character and restores it's previous script if any.
+///
+/// @param st Script state to detach.
+/// @param dequeue_event Whether to schedule any queued events, when there was no previous script.
+static void script_detach_state(struct script_state* st, bool dequeue_event)
+{
+	struct map_session_data* sd;
+
+	if(st->rid && (sd = map_id2sd(st->rid))!=NULL)
+	{
+		sd->st = st->bk_st;
+		sd->npc_id = st->bk_npcid;
+
+		if(st->bk_st)
+		{
+			//Remove tag for removal.
+			st->bk_st = NULL;
+			st->bk_npcid = 0;
+		}
+		else if(dequeue_event)
+		{
+			npc_event_dequeue(sd);
+		}
+	}
+	else if(st->bk_st)
+	{// rid was set to 0, before detaching the script state
+		ShowError("script_detach_state: Found previous script state without attached player (rid=%d, oid=%d, state=%d, bk_npcid=%d)\n", st->bk_st->rid, st->bk_st->oid, st->bk_st->state, st->bk_npcid);
+		script_reportsrc(st->bk_st);
+
+		script_free_state(st->bk_st);
+		st->bk_st = NULL;
+	}
+}
+
+/// Attaches script state to possibly attached character and backups it's previous script, if any.
+///
+/// @param st Script state to attach.
+static void script_attach_state(struct script_state* st)
+{
+	struct map_session_data* sd;
+
+	if(st->rid && (sd = map_id2sd(st->rid))!=NULL)
+	{
+		if(st!=sd->st)
+		{
+			if(st->bk_st)
+			{// there is already a backup
+				ShowDebug("script_free_state: Previous script state lost (rid=%d, oid=%d, state=%d, bk_npcid=%d).\n", st->bk_st->rid, st->bk_st->oid, st->bk_st->state, st->bk_npcid);
+			}
+			st->bk_st = sd->st;
+			st->bk_npcid = sd->npc_id;
+		}
+		sd->st = st;
+		sd->npc_id = st->oid;
+	}
+}
+
 /*==========================================
  * スクリプトの実行メイン部分
  *------------------------------------------*/
@@ -3146,22 +3205,10 @@ void run_script_main(struct script_state *st)
 	int cmdcount=script_config.check_cmdcount;
 	int gotocount=script_config.check_gotocount;
 	TBL_PC *sd;
-	//For backing up purposes
-	struct script_state *bk_st = NULL;
-	int bk_npcid = 0;
 	struct script_stack *stack=st->stack;
 	struct npc_data *nd;
 
-	sd = map_id2sd(st->rid);
-
-	if(sd){
-		if(sd->st != st){
-			bk_st = sd->st;
-			bk_npcid = sd->npc_id;
-		}
-		sd->st = st;
-		sd->npc_id = st->oid;
-	}
+	script_attach_state(st);
 
 	nd = map_id2nd(st->oid);
 	if( nd && map[nd->bl.m].instance_id > 0 )
@@ -3260,43 +3307,37 @@ void run_script_main(struct script_state *st)
 
 	if(st->sleep.tick > 0) {
 		//Restore previous script
-		if (sd) {
-			sd->st = bk_st;
-			sd->npc_id = bk_npcid;
-			bk_st = NULL; //Remove tag for removal.
-		}
+		script_detach_state(st, false);
 		//Delay execution
-		sd = map_id2sd(st->rid); // Refresh sd since script might have attached someone while running. [Inkfish]
+		sd = map_id2sd(st->rid); // Get sd since script might have attached someone while running. [Inkfish]
 		st->sleep.charid = sd?sd->status.char_id:0;
 		st->sleep.timer  = add_timer(gettick()+st->sleep.tick,
 			run_script_timer, st->sleep.charid, (intptr)st);
 		linkdb_insert(&sleep_db, (void*)st->oid, st);
 	}
-	else if(st->state != END && sd){
+	else if(st->state != END && st->rid){
 		//Resume later (st is already attached to player).
-		if(bk_st) {
+		if(st->bk_st) {
 			ShowWarning("Unable to restore stack! Double continuation!\n");
 			//Report BOTH scripts to see if that can help somehow.
 			ShowDebug("Previous script (lost):\n");
-			script_reportsrc(bk_st);
+			script_reportsrc(st->bk_st);
 			ShowDebug("Current script:\n");
 			script_reportsrc(st);
+
+			script_free_state(st->bk_st);
+			st->bk_st = NULL;
 		}
 	} else {
 		//Dispose of script.
-		if (sd)
+		if ((sd = map_id2sd(st->rid))!=NULL)
 		{	//Restore previous stack and save char.
 			if(sd->state.using_fake_npc){
-				clif_clearunit_single(sd->npc_id, 0, sd->fd);
+				clif_clearunit_single(sd->npc_id, CLR_OUTSIGHT, sd->fd);
 				sd->state.using_fake_npc = 0;
 			}
 			//Restore previous script if any.
-			sd->st = bk_st;
-			sd->npc_id = bk_npcid;
-			if (!bk_st)
-				npc_event_dequeue(sd);
-			else
-				bk_st = NULL; //Remove tag for removal.
+			script_detach_state(st, true);
 			if (sd->state.reg_dirty&2)
 				intif_saveregistry(sd,2);
 			if (sd->state.reg_dirty&1)
@@ -3305,13 +3346,6 @@ void run_script_main(struct script_state *st)
 		script_free_state(st);
 		st = NULL;
 	}
-
-	if (bk_st)
-	{	//Remove previous script
-		script_free_state(bk_st);
-		bk_st = NULL;
-	}
-
 }
 
 int script_config_read(char *cfgName)
@@ -4100,11 +4134,11 @@ BUILDIN_FUNC(warp)
 	y = script_getnum(st,4);
 
 	if(strcmp(str,"Random")==0)
-		ret = pc_randomwarp(sd,3);
+		ret = pc_randomwarp(sd,CLR_TELEPORT);
 	else if(strcmp(str,"SavePoint")==0 || strcmp(str,"Save")==0)
-		ret = pc_setpos(sd,sd->status.save_point.map,sd->status.save_point.x,sd->status.save_point.y,3);
+		ret = pc_setpos(sd,sd->status.save_point.map,sd->status.save_point.x,sd->status.save_point.y,CLR_TELEPORT);
 	else
-		ret = pc_setpos(sd,mapindex_name2id(str),x,y,0);
+		ret = pc_setpos(sd,mapindex_name2id(str),x,y,CLR_OUTSIGHT);
 
 	if( ret ) {
 		ShowError("buildin_warp: moving player '%s' to \"%s\",%d,%d failed.\n", sd->status.name, str, x, y);
@@ -4124,9 +4158,9 @@ static int buildin_areawarp_sub(struct block_list *bl,va_list ap)
 	x=va_arg(ap,int);
 	y=va_arg(ap,int);
 	if(map == 0)
-		pc_randomwarp((TBL_PC *)bl,3);
+		pc_randomwarp((TBL_PC *)bl,CLR_TELEPORT);
 	else
-		pc_setpos((TBL_PC *)bl,map,x,y,0);
+		pc_setpos((TBL_PC *)bl,map,x,y,CLR_OUTSIGHT);
 	return 0;
 }
 BUILDIN_FUNC(areawarp)
@@ -4212,12 +4246,12 @@ BUILDIN_FUNC(warpchar)
 		return 0;
 
 	if(strcmp(str, "Random") == 0)
-		pc_randomwarp(sd, 3);
+		pc_randomwarp(sd, CLR_TELEPORT);
 	else
 	if(strcmp(str, "SavePoint") == 0)
-		pc_setpos(sd, sd->status.save_point.map,sd->status.save_point.x, sd->status.save_point.y, 3);
+		pc_setpos(sd, sd->status.save_point.map,sd->status.save_point.x, sd->status.save_point.y, CLR_TELEPORT);
 	else	
-		pc_setpos(sd, mapindex_name2id(str), x, y, 3);
+		pc_setpos(sd, mapindex_name2id(str), x, y, CLR_TELEPORT);
 	
 	return 0;
 } 
@@ -4274,15 +4308,15 @@ BUILDIN_FUNC(warpparty)
 		{
 		case 0: // Random
 			if(!map[pl_sd->bl.m].flag.nowarp)
-				pc_randomwarp(pl_sd,3);
+				pc_randomwarp(pl_sd,CLR_TELEPORT);
 		break;
 		case 1: // SavePointAll
 			if(!map[pl_sd->bl.m].flag.noreturn)
-				pc_setpos(pl_sd,pl_sd->status.save_point.map,pl_sd->status.save_point.x,pl_sd->status.save_point.y,3);
+				pc_setpos(pl_sd,pl_sd->status.save_point.map,pl_sd->status.save_point.x,pl_sd->status.save_point.y,CLR_TELEPORT);
 		break;
 		case 2: // SavePoint
 			if(!map[pl_sd->bl.m].flag.noreturn)
-				pc_setpos(pl_sd,sd->status.save_point.map,sd->status.save_point.x,sd->status.save_point.y,3);
+				pc_setpos(pl_sd,sd->status.save_point.map,sd->status.save_point.x,sd->status.save_point.y,CLR_TELEPORT);
 		break;
 		case 3: // Leader
 			for(j = 0; j < MAX_PARTY && !p->party.member[j].leader; j++);
@@ -4298,12 +4332,12 @@ BUILDIN_FUNC(warpparty)
 					continue;
 				if(map[pl_sd->bl.m].flag.noreturn || map[pl_sd->bl.m].flag.nowarp)
 					continue;
-				pc_setpos(pl_sd,mapindex,x,y,3);
+				pc_setpos(pl_sd,mapindex,x,y,CLR_TELEPORT);
 			}
 		break;
 		case 4: // m,x,y
 			if(!map[pl_sd->bl.m].flag.noreturn && !map[pl_sd->bl.m].flag.nowarp) 
-				pc_setpos(pl_sd,mapindex_name2id(str),x,y,3);
+				pc_setpos(pl_sd,mapindex_name2id(str),x,y,CLR_TELEPORT);
 		break;
 		}
 	}
@@ -4352,19 +4386,19 @@ BUILDIN_FUNC(warpguild)
 		{
 		case 0: // Random
 			if(!map[pl_sd->bl.m].flag.nowarp)
-				pc_randomwarp(pl_sd,3);
+				pc_randomwarp(pl_sd,CLR_TELEPORT);
 		break;
 		case 1: // SavePointAll
 			if(!map[pl_sd->bl.m].flag.noreturn)
-				pc_setpos(pl_sd,pl_sd->status.save_point.map,pl_sd->status.save_point.x,pl_sd->status.save_point.y,3);
+				pc_setpos(pl_sd,pl_sd->status.save_point.map,pl_sd->status.save_point.x,pl_sd->status.save_point.y,CLR_TELEPORT);
 		break;
 		case 2: // SavePoint
 			if(!map[pl_sd->bl.m].flag.noreturn)
-				pc_setpos(pl_sd,sd->status.save_point.map,sd->status.save_point.x,sd->status.save_point.y,3);
+				pc_setpos(pl_sd,sd->status.save_point.map,sd->status.save_point.x,sd->status.save_point.y,CLR_TELEPORT);
 		break;
 		case 3: // m,x,y
 			if(!map[pl_sd->bl.m].flag.noreturn && !map[pl_sd->bl.m].flag.nowarp)
-				pc_setpos(pl_sd,mapindex_name2id(str),x,y,3);
+				pc_setpos(pl_sd,mapindex_name2id(str),x,y,CLR_TELEPORT);
 		break;
 		}
 	}
@@ -8285,13 +8319,38 @@ BUILDIN_FUNC(areaannounce)
  *------------------------------------------*/
 BUILDIN_FUNC(getusers)
 {
-	int flag=script_getnum(st,2);
-	struct block_list *bl=map_id2bl((flag&0x08)?st->oid:st->rid);
-	int val=0;
-	switch(flag&0x07){
-	case 0: val=map[bl->m].users; break;
-	case 1: val=map_getusers(); break;
+	int flag, val = 0;
+	struct map_session_data* sd;
+	struct block_list* bl = NULL;
+
+	flag = script_getnum(st,2);
+
+	if(flag&0x8)
+	{// npc
+		bl = map_id2bl(st->oid);
 	}
+	else if((sd = script_rid2sd(st))!=NULL)
+	{// pc
+		bl = &sd->bl;
+	}
+
+	switch(flag&0x07)
+	{
+		case 0:
+			if(bl)
+			{
+				val = map[bl->m].users;
+			}
+			break;
+		case 1:
+			val = map_getusers();
+			break;
+		default:
+			ShowWarning("buildin_getusers: Unknown type %d.\n", flag);
+			script_pushint(st,0);
+			return 1;
+	}
+
 	script_pushint(st,val);
 	return 0;
 }
@@ -8697,7 +8756,7 @@ BUILDIN_FUNC(homunculus_evolution)
 		if (sd->hd->homunculus.intimacy > 91000)
 			merc_hom_evolution(sd->hd);
 		else
-			clif_emotion(&sd->hd->bl, 4) ;	//swt
+			clif_emotion(&sd->hd->bl, E_SWT);
 	}
 	return 0;
 }
@@ -9108,16 +9167,16 @@ BUILDIN_FUNC(warpwaitingpc)
 		mapreg_setreg(add_str("$@warpwaitingpc")+(i<<24), sd->bl.id);
 
 		if( strcmp(map_name,"Random") == 0 )
-			pc_randomwarp(sd,3);
+			pc_randomwarp(sd,CLR_TELEPORT);
 		else if( strcmp(map_name,"SavePoint") == 0 )
 		{
 			if( map[sd->bl.m].flag.noteleport )
 				return 0;// can't teleport on this map
 
-			pc_setpos(sd, sd->status.save_point.map, sd->status.save_point.x, sd->status.save_point.y, 3);
+			pc_setpos(sd, sd->status.save_point.map, sd->status.save_point.x, sd->status.save_point.y, CLR_TELEPORT);
 		}
 		else
-			pc_setpos(sd, mapindex_name2id(map_name), x, y, 0);
+			pc_setpos(sd, mapindex_name2id(map_name), x, y, CLR_OUTSIGHT);
 	}
 	mapreg_setreg(add_str("$@warpwaitingpcnum"), i);
 	return 0;
@@ -9127,15 +9186,31 @@ BUILDIN_FUNC(warpwaitingpc)
 // ...
 //
 
+/// Detaches a character from a script.
+///
+/// @param st Script state to detach the character from.
+static void script_detach_rid(struct script_state* st)
+{
+	if(st->rid)
+	{
+		script_detach_state(st, false);
+		st->rid = 0;
+	}
+}
+
 /*==========================================
  * RIDのアタッチ
  *------------------------------------------*/
 BUILDIN_FUNC(attachrid)
 {
 	int rid = script_getnum(st,2);
-	
-	if (map_id2sd(rid)) {
+	struct map_session_data* sd;
+
+	if ((sd = map_id2sd(rid))!=NULL) {
+		script_detach_rid(st);
+
 		st->rid = rid;
+		script_attach_state(st);
 		script_pushint(st,1);
 	} else
 		script_pushint(st,0);
@@ -9146,7 +9221,7 @@ BUILDIN_FUNC(attachrid)
  *------------------------------------------*/
 BUILDIN_FUNC(detachrid)
 {
-	st->rid=0;
+	script_detach_rid(st);
 	return 0;
 }
 /*==========================================
@@ -9535,7 +9610,7 @@ static int buildin_maprespawnguildid_sub_pc(struct map_session_data* sd, va_list
 		(sd->status.guild_id != g_id && flag&2) || //Warp out outsiders
 		(sd->status.guild_id == 0)	// Warp out players not in guild [Valaris]
 	)
-		pc_setpos(sd,sd->status.save_point.map,sd->status.save_point.x,sd->status.save_point.y,3);
+		pc_setpos(sd,sd->status.save_point.map,sd->status.save_point.x,sd->status.save_point.y,CLR_TELEPORT);
 	return 1;
 }
 
@@ -10009,7 +10084,7 @@ BUILDIN_FUNC(mapwarp)	// Added by RoVeRT
 				for( i=0; i < g->max_member; i++)
 				{
 					if(g->member[i].sd && g->member[i].sd->bl.m==m){
-						pc_setpos(g->member[i].sd,index,x,y,3);
+						pc_setpos(g->member[i].sd,index,x,y,CLR_TELEPORT);
 					}
 				}
 			}
@@ -10019,7 +10094,7 @@ BUILDIN_FUNC(mapwarp)	// Added by RoVeRT
 			if(p){
 				for(i=0;i<MAX_PARTY; i++){
 					if(p->data[i].sd && p->data[i].sd->bl.m == m){
-						pc_setpos(p->data[i].sd,index,x,y,3);
+						pc_setpos(p->data[i].sd,index,x,y,CLR_TELEPORT);
 					}
 				}
 			}
@@ -10182,7 +10257,7 @@ BUILDIN_FUNC(warppartner)
 
 	mapindex = mapindex_name2id(str);
 	if (mapindex) {
-		pc_setpos(p_sd,mapindex,x,y,0);
+		pc_setpos(p_sd,mapindex,x,y,CLR_OUTSIGHT);
 		script_pushint(st,1);
 	} else
 		script_pushint(st,0);
@@ -12191,7 +12266,7 @@ BUILDIN_FUNC(setnpcdisplay)
 		npc_setclass(nd, class_);
 	else if( size != -1 )
 	{ // Required to update the visual size
-		clif_clearunit_area(&nd->bl, 0);
+		clif_clearunit_area(&nd->bl, CLR_OUTSIGHT);
 		clif_spawn(&nd->bl);
 	}
 
@@ -13056,7 +13131,7 @@ BUILDIN_FUNC(unitwarp)
 
 	bl = map_id2bl(unit_id);
 	if( map >= 0 && bl != NULL )
-		script_pushint(st, unit_warp(bl,map,x,y,0));
+		script_pushint(st, unit_warp(bl,map,x,y,CLR_OUTSIGHT));
 	else
 		script_pushint(st, 0);
 
@@ -13252,17 +13327,11 @@ BUILDIN_FUNC(unitskillusepos)
 BUILDIN_FUNC(sleep)
 {
 	int ticks;
-	TBL_PC* sd;
 	
 	ticks = script_getnum(st,2);
-	sd = map_id2sd(st->rid);
 
 	// detach the player
-	if( sd && sd->npc_id == st->oid )
-	{
-		sd->npc_id = 0;
-	}
-	st->rid = 0;
+	script_detach_rid(st);
 
 	if( ticks <= 0 )
 	{// do nothing
@@ -13857,7 +13926,7 @@ BUILDIN_FUNC(waitingroom2bg_single)
 
 	if( bg_team_join(bg_id, sd) )
 	{
-		pc_setpos(sd, mapindex, x, y, 3);
+		pc_setpos(sd, mapindex, x, y, CLR_TELEPORT);
 		script_pushint(st,1);
 	}
 	else
@@ -14322,7 +14391,7 @@ BUILDIN_FUNC(instance_warpall)
 
 	mapindex = map_id2index(m);
 	for( i = 0; i < MAX_PARTY; i++ )
-		if( (pl_sd = p->data[i].sd) && map[pl_sd->bl.m].instance_id == st->instance_id ) pc_setpos(pl_sd,mapindex,x,y,3);
+		if( (pl_sd = p->data[i].sd) && map[pl_sd->bl.m].instance_id == st->instance_id ) pc_setpos(pl_sd,mapindex,x,y,CLR_TELEPORT);
 
 	return 0;
 }
@@ -14442,6 +14511,44 @@ BUILDIN_FUNC(progressbar)
 	clif_progressbar(sd, strtol(color, (char **)NULL, 0), second);
 #endif
     return 0;
+}
+
+BUILDIN_FUNC(pushpc)
+{
+	int direction, cells, dx, dy;
+	struct map_session_data* sd;
+
+	if((sd = script_rid2sd(st))==NULL)
+	{
+		return 0;
+	}
+
+	direction = script_getnum(st,2);
+	cells     = script_getnum(st,3);
+
+	if(direction<0 || direction>7)
+	{
+		ShowWarning("buildin_pushpc: Invalid direction %d specified.\n", direction);
+		script_reportsrc(st);
+
+		direction%= 8;  // trim spin-over
+	}
+
+	if(!cells)
+	{// zero distance
+		return 0;
+	}
+	else if(cells<0)
+	{// pushing backwards
+		direction = (direction+4)%8;  // turn around
+		cells     = -cells;
+	}
+
+	dx = dirx[direction];
+	dy = diry[direction];
+
+	unit_blown(&sd->bl, dx, dy, cells, 0);
+	return 0;
 }
 
 // declarations that were supposed to be exported from npc_chat.c
@@ -14806,6 +14913,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(setfont,"i"),
 	BUILDIN_DEF(areamobuseskill,"siiiiviiiii"),
 	BUILDIN_DEF(progressbar, "si"),
+	BUILDIN_DEF(pushpc,"ii"),
 	// WoE SE
 	BUILDIN_DEF(agitstart2,""),
 	BUILDIN_DEF(agitend2,""),

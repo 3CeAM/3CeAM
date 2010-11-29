@@ -261,6 +261,17 @@ enum {
 };
 
 enum {
+	RC2_NONE = 0,
+	RC2_GOBLIN,
+	RC2_KOBOLD,
+	RC2_ORC,
+	RC2_GOLEM,
+	RC2_GUARDIAN,
+	RC2_NINJA,
+	RC2_MAX
+};
+
+enum {
 	ELE_NEUTRAL=0,
 	ELE_WATER,
 	ELE_EARTH,
@@ -335,6 +346,8 @@ enum _sp {
 
 	SP_BASEJOB=119,	// 100+19 - celest
 	SP_BASECLASS=120,	//Hmm.. why 100+19? I just use the next one... [Skotlex]
+	SP_KILLERRID=121,
+	SP_KILLEDRID=122,
 
 	// Mercenaries
 	SP_MERCFLEE=165, SP_MERCKILLS=189, SP_MERCFAITH=190,

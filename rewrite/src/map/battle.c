@@ -3793,7 +3793,7 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		break;
 	case CR_ACIDDEMONSTRATION: // updated the formula based on a Japanese formula found to be exact [Reddozen]
 		if(tstatus->vit+sstatus->int_) //crash fix
-			md.damage = (int64)7*tstatus->vit*sstatus->int_*sstatus->int_ / (10*(tstatus->vit+sstatus->int_));
+			md.damage = (int)((int64)7*tstatus->vit*sstatus->int_*sstatus->int_ / (10*(tstatus->vit+sstatus->int_)));
 		else
 			md.damage = 0;
 		if (tsd) md.damage>>=1;
@@ -3917,7 +3917,7 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 			cardfix=cardfix*(100-tsd->long_attack_def_rate)/100;
 
 		if (cardfix != 10000)
-			md.damage=(int64)md.damage*cardfix/10000;
+			md.damage=(int)((int64)md.damage*cardfix/10000);
 	}
 
 	if (sd && (i = pc_skillatk_bonus(sd, skill_num)))
@@ -5289,6 +5289,7 @@ static const struct _battle_data {
 	{ "invincible.nodamage",                &battle_config.invincible_nodamage,             0,      0,      1,              },
 	{ "mob_slave_keep_target",              &battle_config.mob_slave_keep_target,           0,      0,      1,              },
 	{ "autospell_check_range",              &battle_config.autospell_check_range,           0,      0,      1,              },
+	{ "client_reshuffle_dice",              &battle_config.client_reshuffle_dice,           0,      0,      1,              },
 // BattleGround Settings
 	{ "bg_update_interval",                 &battle_config.bg_update_interval,              1000,   100,    INT_MAX,        },
 	{ "bg_short_attack_damage_rate",        &battle_config.bg_short_damage_rate,            80,     0,      INT_MAX,        },

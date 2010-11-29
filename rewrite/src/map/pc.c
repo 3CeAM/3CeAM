@@ -28,7 +28,6 @@
 #include "instance.h"
 #include "mercenary.h"
 #include "elemental.h"
-#include "mob.h" // MAX_MOB_RACE_DB
 #include "npc.h" // fake_nd
 #include "pet.h" // pet_unlocktarget()
 #include "party.h" // party_search()
@@ -1147,11 +1146,11 @@ bool pc_authok(struct map_session_data *sd, int login_id2, time_t expiration_tim
 		sd->hate_mob[i] = -1;
 
 	// 位置の設定
-	if ((i=pc_setpos(sd,sd->status.last_point.map, sd->status.last_point.x, sd->status.last_point.y, 0)) != 0) {
+	if ((i=pc_setpos(sd,sd->status.last_point.map, sd->status.last_point.x, sd->status.last_point.y, CLR_OUTSIGHT)) != 0) {
 		ShowError ("Last_point_map %s - id %d not found (error code %d)\n", mapindex_id2name(sd->status.last_point.map), sd->status.last_point.map, i);
 
 		// try warping to a default map instead (church graveyard)
-		if (pc_setpos(sd, mapindex_name2id(MAP_PRONTERA), 273, 354, 0) != 0) {
+		if (pc_setpos(sd, mapindex_name2id(MAP_PRONTERA), 273, 354, CLR_OUTSIGHT) != 0) {
 			// if we fail again
 			clif_authfail_fd(sd->fd, 0);
 			return false;
@@ -1710,7 +1709,7 @@ int pc_disguise(struct map_session_data *sd, int class_)
 
 	if (sd->bl.prev != NULL) {
 		pc_stop_walking(sd, 0);
-		clif_clearunit_area(&sd->bl, 0);
+		clif_clearunit_area(&sd->bl, CLR_OUTSIGHT);
 	}
 
 	if (!class_) {
@@ -3041,7 +3040,7 @@ int pc_bonus2(struct map_session_data *sd,int type,int type2,int val)
 		}
 		break;
 	case SP_ADDRACE2:
-		if (!(type2 > 0 && type2 < MAX_MOB_RACE_DB))
+		if (!(type2 > RC2_NONE && type2 < RC2_MAX))
 			break;
 		if(sd->state.lr_flag != 2)
 			sd->right_weapon.addrace2[type2] += val;
@@ -3053,6 +3052,8 @@ int pc_bonus2(struct map_session_data *sd,int type,int type2,int val)
 			sd->subsize[type2]+=val;
 		break;
 	case SP_SUBRACE2:
+		if (!(type2 > RC2_NONE && type2 < RC2_MAX))
+			break;
 		if(sd->state.lr_flag != 2)
 			sd->subrace2[type2]+=val;
 		break;
@@ -4360,7 +4361,7 @@ int pc_steal_coin(struct map_session_data *sd,struct block_list *target)
 		return 0;
 
 	md = (TBL_MOB*)target;
-	if( md->state.steal_coin_flag || md->sc.data[SC_STONE] || md->sc.data[SC_FREEZE] )
+	if( md->state.steal_coin_flag || md->sc.data[SC_STONE] || md->sc.data[SC_FREEZE] || md->status.mode&MD_BOSS )
 		return 0;
 
 	if( (md->class_ >= 1324 && md->class_ < 1364) || (md->class_ >= 1938 && md->class_ < 1946) )
@@ -4383,7 +4384,7 @@ int pc_steal_coin(struct map_session_data *sd,struct block_list *target)
  * 1 - Invalid map index.
  * 2 - Map not in this map-server, and failed to locate alternate map-server.
  *------------------------------------------*/
-int pc_setpos(struct map_session_data* sd, unsigned short mapindex, int x, int y, uint8 clrtype)
+int pc_setpos(struct map_session_data* sd, unsigned short mapindex, int x, int y, clr_type clrtype)
 {
 	struct party_data *p;
 	int m;
@@ -4572,7 +4573,7 @@ int pc_setpos(struct map_session_data* sd, unsigned short mapindex, int x, int y
 /*==========================================
  * PCのランダムワ?プ
  *------------------------------------------*/
-int pc_randomwarp(struct map_session_data *sd, int type)
+int pc_randomwarp(struct map_session_data *sd, clr_type type)
 {
 	int x,y,i=0;
 	int m;
@@ -5298,7 +5299,7 @@ int pc_follow_timer(int tid, unsigned int tick, int id, intptr data)
 			if (!check_distance_bl(&sd->bl, tbl, 5))
 				unit_walktobl(&sd->bl, tbl, 5, 0);
 		} else
-			pc_setpos(sd, map_id2index(tbl->m), tbl->x, tbl->y, 3);
+			pc_setpos(sd, map_id2index(tbl->m), tbl->x, tbl->y, CLR_TELEPORT);
 	}
 	sd->followtimer = add_timer(
 		tick + 1000,	// increase time a bit to loosen up map's load
@@ -5361,6 +5362,7 @@ int pc_checkbaselevelup(struct map_session_data *sd)
 	
 	clif_updatestatus(sd,SP_STATUSPOINT);
 	clif_updatestatus(sd,SP_BASELEVEL);
+	clif_updatestatus(sd,SP_BASEEXP);
 	clif_updatestatus(sd,SP_NEXTBASEEXP);
 	status_calc_pc(sd,0);
 	status_percent_heal(&sd->bl,100,100);
@@ -5408,6 +5410,7 @@ int pc_checkjoblevelup(struct map_session_data *sd)
 	} while ((next=pc_nextjobexp(sd)) > 0 && sd->status.job_exp >= next);
 
 	clif_updatestatus(sd,SP_JOBLEVEL);
+	clif_updatestatus(sd,SP_JOBEXP);
 	clif_updatestatus(sd,SP_NEXTJOBEXP);
 	clif_updatestatus(sd,SP_SKILLPOINT);
 	status_calc_pc(sd,0);
@@ -5916,8 +5919,8 @@ int pc_resetlvl(struct map_session_data* sd,int type)
 		sd->status.skill_point=0;
 		sd->status.base_level=1;
 		sd->status.job_level=1;
-		sd->status.base_exp=sd->status.base_exp=0;
-		sd->status.job_exp=sd->status.job_exp=0;
+		sd->status.base_exp=0;
+		sd->status.job_exp=0;
 		if(sd->sc.option !=0)
 			sd->sc.option = 0;
 
@@ -5961,6 +5964,8 @@ int pc_resetlvl(struct map_session_data* sd,int type)
 	clif_updatestatus(sd,SP_BASELEVEL);
 	clif_updatestatus(sd,SP_JOBLEVEL);
 	clif_updatestatus(sd,SP_STATUSPOINT);
+	clif_updatestatus(sd,SP_BASEEXP);
+	clif_updatestatus(sd,SP_JOBEXP);
 	clif_updatestatus(sd,SP_NEXTBASEEXP);
 	clif_updatestatus(sd,SP_NEXTJOBEXP);
 	clif_updatestatus(sd,SP_SKILLPOINT);
@@ -6216,7 +6221,7 @@ int pc_skillheal2_bonus(struct map_session_data *sd, int skill_num)
 	return bonus;
 }
 
-void pc_respawn(struct map_session_data* sd, uint8 clrtype)
+void pc_respawn(struct map_session_data* sd, clr_type clrtype)
 {
 	if( !pc_isdead(sd) )
 		return; // not applicable
@@ -6235,7 +6240,7 @@ static int pc_respawn_timer(int tid, unsigned int tick, int id, intptr data)
 	if( sd != NULL )
 	{
 		sd->pvp_point=0;
-		pc_respawn(sd,0);
+		pc_respawn(sd,CLR_OUTSIGHT);
 	}
 
 	return 0;
@@ -6333,7 +6338,7 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 	}
 
 	pc_setglobalreg(sd,"PC_DIE_COUNTER",sd->die_counter+1);
-	pc_setglobalreg(sd,"killerrid",src?src->id:0);
+	pc_setparam(sd, SP_KILLERRID, src?src->id:0);
 	if( sd->state.bg_id )
 	{
 		struct battleground_data *bg;
@@ -6387,7 +6392,7 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 	if (src && src->type == BL_PC)
 	{
 		struct map_session_data *ssd = (struct map_session_data *)src;
-		pc_setglobalreg(ssd, "killedrid", sd->bl.id);
+		pc_setparam(ssd, SP_KILLEDRID, sd->bl.id);
 		npc_script_event(ssd, NPCE_KILLPC);
 
 		if (battle_config.pk_mode&2) {
@@ -6645,6 +6650,8 @@ int pc_readparam(struct map_session_data* sd,int type)
 	case SP_KARMA:       val = sd->status.karma; break;
 	case SP_MANNER:      val = sd->status.manner; break;
 	case SP_FAME:        val = sd->status.fame; break;
+	case SP_KILLERRID:   val = sd->killerrid; break;
+	case SP_KILLEDRID:   val = sd->killedrid; break;
 	}
 
 	return val;
@@ -6671,11 +6678,15 @@ int pc_setparam(struct map_session_data *sd,int type,int val)
 		}
 		sd->status.base_level = (unsigned int)val;
 		sd->status.base_exp = 0;
-		clif_updatestatus(sd, SP_BASELEVEL);
+		// clif_updatestatus(sd, SP_BASELEVEL);  // Gets updated at the bottom
 		clif_updatestatus(sd, SP_NEXTBASEEXP);
 		clif_updatestatus(sd, SP_STATUSPOINT);
 		clif_updatestatus(sd, SP_BASEEXP);
 		status_calc_pc(sd, 0);
+		if(sd->status.party_id)
+		{
+			party_send_levelup(sd);
+		}
 		break;
 	case SP_JOBLEVEL:
 		if ((unsigned int)val >= sd->status.job_level) {
@@ -6685,11 +6696,10 @@ int pc_setparam(struct map_session_data *sd,int type,int val)
 		}
 		sd->status.job_level = (unsigned int)val;
 		sd->status.job_exp = 0;
-		clif_updatestatus(sd, SP_JOBLEVEL);
+		// clif_updatestatus(sd, SP_JOBLEVEL);  // Gets updated at the bottom
 		clif_updatestatus(sd, SP_NEXTJOBEXP);
 		clif_updatestatus(sd, SP_JOBEXP);
 		status_calc_pc(sd, 0);
-		clif_updatestatus(sd,type);
 		break;
 	case SP_SKILLPOINT:
 		sd->status.skill_point = val;
@@ -6762,6 +6772,15 @@ int pc_setparam(struct map_session_data *sd,int type,int val)
 	case SP_FAME:
 		sd->status.fame = val;
 		break;
+	case SP_KILLERRID:
+		sd->killerrid = val;
+		return 1;
+	case SP_KILLEDRID:
+		sd->killedrid = val;
+		return 1;
+	default:
+		ShowError("pc_setparam: Attempted to set unknown parameter '%d'.\n", type);
+		return 0;
 	}
 	clif_updatestatus(sd,type);
 
@@ -8805,7 +8824,6 @@ int pc_split_atoui(char* str, unsigned int* val, char sep, int max)
 int pc_readdb(void)
 {
 	int i,j,k;
-	unsigned int stat;
 	FILE *fp;
 	char line[24000],*p;
 
@@ -8996,7 +9014,6 @@ int pc_readdb(void)
 	// スキルツリ?
 	memset(statp,0,sizeof(statp));
 	i=1;
-	stat = 45;	// base points
 	if( battle_config.use_renewal_statpoints )
 		sprintf(line, "%s/statpoint_renewal.txt", db_path); // Renewal mechanic
 	else
@@ -9008,6 +9025,7 @@ int pc_readdb(void)
 	} else {
 		while(fgets(line, sizeof(line), fp))
 		{
+			int stat;
 			if(line[0]=='/' && line[1]=='/')
 				continue;
 			if ((stat=strtoul(line,NULL,10))<0)
@@ -9024,10 +9042,9 @@ int pc_readdb(void)
 			ShowStatus("Done reading '"CL_WHITE"%s"CL_RESET"'.\n","statpoint.txt");
 	}
 	// generate the remaining parts of the db if necessary
-	for (; i <= MAX_LEVEL; i++) {
-		stat += (i+15)/5;
-		statp[i] = stat;		
-	}
+	statp[0] = 45; // seed value
+	for (; i <= MAX_LEVEL; i++)
+		statp[i] = statp[i-1] + (i-1+15)/5;
 
 	return 0;
 }

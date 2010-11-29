@@ -78,6 +78,101 @@ typedef enum send_target {
 	BG_AREA_WOS,
 } send_target;
 
+typedef enum emotion_type
+{
+	E_GASP = 0,     // /!
+	E_WHAT,         // /?
+	E_HO,
+	E_LV,
+	E_SWT,
+	E_IC,
+	E_AN,
+	E_AG,
+	E_CASH,         // /$
+	E_DOTS,         // /...
+	E_SCISSORS,     // /gawi --- 10
+	E_ROCK,         // /bawi
+	E_PAPER,        // /bo
+	E_KOREA,
+	E_LV2,
+	E_THX,
+	E_WAH,
+	E_SRY,
+	E_HEH,
+	E_SWT2,
+	E_HMM,          // --- 20
+	E_NO1,
+	E_NO,           // /??
+	E_OMG,
+	E_OH,
+	E_X,
+	E_HLP,
+	E_GO,
+	E_SOB,
+	E_GG,
+	E_KIS,          // --- 30
+	E_KIS2,
+	E_PIF,
+	E_OK,
+	E_MUTE,         // red /... used for muted characters
+	E_INDONESIA,
+	E_BZZ,          // /bzz, /stare
+	E_RICE,
+	E_AWSM,         // /awsm, /cool
+	E_MEH,
+	E_SHY,          // --- 40
+	E_PAT,          // /pat, /goodboy
+	E_MP,           // /mp, /sptime
+	E_SLUR,
+	E_COM,          // /com, /comeon
+	E_YAWN,         // /yawn, /sleepy
+	E_GRAT,         // /grat, /congrats
+	E_HP,           // /hp, /hptime
+	E_PHILIPPINES,
+	E_MALAYSIA,
+	E_SINGAPORE,    // --- 50
+	E_BRAZIL,
+	E_FLASH,        // /fsh
+	E_SPIN,         // /spin
+	E_SIGH,
+	E_PROUD,        // /dum
+	E_LOUD,         // /crwd
+	E_OHNOES,       // /desp, /otl
+	E_DICE1,
+	E_DICE2,
+	E_DICE3,        // --- 60
+	E_DICE4,
+	E_DICE5,
+	E_DICE6,
+	E_INDIA,
+	E_LOOSER,
+	E_RUSSIA,
+	E_VIRGIN,
+	E_PHONE,
+	E_MAIL,
+	E_CHINESE,      // --- 70
+	E_SIGNAL,
+	E_SIGNAL2,
+	E_SIGNAL3,
+	E_HUM,
+	E_ABS,
+	E_OOPS,
+	E_SPIT,
+	E_ENE,
+	E_PANIC,
+	E_WHISP,        // --- 80
+	//
+	E_MAX
+} emotion_type;
+
+typedef enum clr_type
+{
+	CLR_OUTSIGHT = 0,
+	CLR_DEAD,
+	CLR_RESPAWN,
+	CLR_TELEPORT,
+} clr_type;
+
 int clif_setip(const char* ip);
 void clif_setbindip(const char* ip);
 void clif_setport(uint16 port);
@@ -92,8 +187,8 @@ int clif_charselectok(int);
 int clif_dropflooritem(struct flooritem_data *);
 int clif_clearflooritem(struct flooritem_data *,int);
 
-int clif_clearunit_single(int id, uint8 type, int fd);
-int clif_clearunit_area(struct block_list* bl, uint8 type);
+int clif_clearunit_single(int id, clr_type type, int fd);
+int clif_clearunit_area(struct block_list* bl, clr_type type);
 int clif_clearunit_delayed(struct block_list* bl, unsigned int tick);
 int clif_spawn(struct block_list*);	//area
 int clif_walkok(struct map_session_data*);	// self
@@ -478,7 +573,7 @@ void clif_progressbar_abort(struct map_session_data * sd);
 
 void clif_PartyBookingRegisterAck(struct map_session_data *sd, int flag);
 void clif_PartyBookingDeleteAck(struct map_session_data* sd, int flag);
-void clif_PartyBookingSearchAck(int fd, unsigned long *index, int count, bool more_result);
+void clif_PartyBookingSearchAck(int fd, struct party_booking_ad_info** results, int count, bool more_result);
 void clif_PartyBookingUpdateNotify(struct map_session_data* sd, struct party_booking_ad_info* pb_ad);
 void clif_PartyBookingDeleteNotify(struct map_session_data* sd, int index);
 void clif_PartyBookingInsertNotify(struct map_session_data* sd, struct party_booking_ad_info* pb_ad);
