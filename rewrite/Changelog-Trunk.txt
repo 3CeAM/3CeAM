@@ -1,5 +1,30 @@
 Date	Added
 
+2010/12/01
+	* Monster database reading now utilizes sv_readdb. [Ai4rei]
+2010/11/30
+	* Fixed out-of-bound access to percentrefinery array causing refine bonuses stop working (bugreport:4598, since r14526). [Ai4rei]
+	* Fixed class being used instead of idx in status_readdb_job2 (bugreport:4597, since r14526). [Ai4rei]
+	* Moved function 'exists' (file presense check) to utils.c, so that it is available to code outside of lock.c [Ai4rei]
+	- Fixed associated F_OK and R_OK defines causing 'already defined' warnings on MinGW (since r1361).
+	* Resolved missing script documentation (bugreport:4578). [Ai4rei]
+	- Added documentation for bonus bAutoSpellOnSkill (follow up to r13596).
+	- Added documentation for script command progressbar (follow up to r14024).
+	* Made job_db1.txt, job_db2.txt, size_fix.txt and refine_db.txt reading use sv_readdb. [Ai4rei]
+	- NOTE: Any MAX_LEVEL (map.h) increase requires at least same increase of SV_READDB_MAX_FIELDS (strlib.c) as well.
+	* Added SV_READDB_MAX_FIELDS define for configuration of the sv_readdb limit. [Ai4rei]
+	* Made skill_tree.txt reading use sv_readdb. [Ai4rei]
+	- Added define for skill entry requirements.
+	- Reports duplicate skills within same job class.
+	* Added a define for star gladiator feel/hate info array length (follow up to r8721 and r11840). [Ai4rei]
+	* Fixed script command getusers causing 'player not attached' errors when asking for character count in entire server (bugreport:4591, since r14495). [Ai4rei]
+2010/11/29
+	* Resolved issues with item delay system. [Ai4rei]
+	- Fixed random crashes caused by map_session_data corruption due to out-of-bounds access to item_delay array (bugreport:4568, since r14455).
+	- Fixed item delay database not being compatible with @reloaditemdb. Item delays are now reset upon reloading, much like a restart would do (bugreport:4589).
+	- Fixed trailing commented lines in db/item_delay.txt could cause 'too many entries' error to be displayed.
+	- Fixed last entity of a cash food item not being recognized as cash food, thus not receiving use delay, due to access to deleted inventory slot (since r14426).
+	- These changes also fix a warning regarding variable 'i' in pc_useitem being potentionally uninitialized (bugreport:4559).
 2010/11/28
 	* Added an option to re-roll the /dice emotion server-side, to prevent cheats during events (bugreport:4194). [Ai4rei]
 	* Added emotion_type enumeration for clif_emotion constants. [Ai4rei]

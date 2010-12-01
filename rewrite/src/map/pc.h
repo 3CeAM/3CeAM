@@ -17,6 +17,8 @@
 #include "mob.h"
 
 #define MAX_PC_BONUS 10
+#define MAX_PC_SKILL_REQUIRE 5
+#define MAX_PC_FEELHATE 3
 
 #define MAX_RUNE 20
 #define MAX_RAGE 15
@@ -754,7 +756,7 @@ struct skill_tree_entry {
 	struct {
 		short id;
 		unsigned char lv;
-	} need[5];
+	} need[MAX_PC_SKILL_REQUIRE];
 }; // Celest
 extern struct skill_tree_entry skill_tree[CLASS_COUNT][MAX_SKILL_TREE];
 
@@ -766,7 +768,7 @@ struct sg_data {
 	char hate_var[NAME_LENGTH];
 	int (*day_func)(void);
 };
-extern const struct sg_data sg_info[3];
+extern const struct sg_data sg_info[MAX_PC_FEELHATE];
 
 void pc_setinvincibletimer(struct map_session_data* sd, int val);
 void pc_delinvincibletimer(struct map_session_data* sd);

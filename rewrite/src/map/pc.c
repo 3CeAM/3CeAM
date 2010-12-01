@@ -67,10 +67,8 @@ char motd_text[MOTD_LINE_SIZE][256]; // Message of the day buffer [Valaris]
 struct duel duel_list[MAX_DUEL];
 int duel_count = 0;
 
-extern int item_delays; // [Paradox924X]
-
 //Links related info to the sd->hate_mob[]/sd->feel_map[] entries
-const struct sg_data sg_info[3] = {
+const struct sg_data sg_info[MAX_PC_FEELHATE] = {
 		{ SG_SUN_ANGER, SG_SUN_BLESS, SG_SUN_COMFORT, "PC_FEEL_SUN", "PC_HATE_MOB_SUN", is_day_of_sun },
 		{ SG_MOON_ANGER, SG_MOON_BLESS, SG_MOON_COMFORT, "PC_FEEL_MOON", "PC_HATE_MOB_MOON", is_day_of_moon },
 		{ SG_STAR_ANGER, SG_STAR_BLESS, SG_STAR_COMFORT, "PC_FEEL_STAR", "PC_HATE_MOB_STAR", is_day_of_star }
@@ -753,11 +751,6 @@ int pc_setinventorydata(struct map_session_data *sd)
 	for(i=0;i<MAX_INVENTORY;i++) {
 		id = sd->status.inventory[i].nameid;
 		sd->inventory_data[i] = id?itemdb_search(id):NULL;
-		if(sd->inventory_data[i] && sd->inventory_data[i]->delay > 0) { // Load delays
-			sd->item_delay[item_delays].nameid = sd->inventory_data[i]->nameid;
-			sd->item_delay[item_delays].tick = 0;
-			++item_delays;
-		}
 	}
 	return 0;
 }
@@ -1274,7 +1267,7 @@ int pc_reg_received(struct map_session_data *sd)
 	}
 
 	//SG map and mob read [Komurka]
-	for(i=0;i<3;i++) //for now - someone need to make reading from txt/sql
+	for(i=0;i<MAX_PC_FEELHATE;i++) //for now - someone need to make reading from txt/sql
 	{
 		if ((j = pc_readglobalreg(sd,sg_info[i].feel_var))!=0) {
 			sd->feel_map[i].index = j;
@@ -1459,7 +1452,7 @@ int pc_calc_skilltree(struct map_session_data *sd)
 
 			f = 1;
 			if(!battle_config.skillfree) {
-				for(j = 0; j < 5; j++) {
+				for(j = 0; j < MAX_PC_SKILL_REQUIRE; j++) {
 					if((k=skill_tree[c][i].need[j].id))
 					{
 						if (!sd->status.skill[k].id || sd->status.skill[k].flag == 13)
@@ -1556,7 +1549,7 @@ static void pc_check_skilltree(struct map_session_data *sd, int skill)
 			if( sd->status.skill[id].id ) //Already learned
 				continue;
 			
-			for( j = 0; j < 5; j++ )
+			for( j = 0; j < MAX_PC_SKILL_REQUIRE; j++ )
 			{
 				if( (k = skill_tree[c][i].need[j].id) )
 				{
@@ -3981,7 +3974,7 @@ int pc_isUseitem(struct map_session_data *sd,int n)
  *------------------------------------------*/
 int pc_useitem(struct map_session_data *sd,int n)
 {
-	unsigned int delay, tick = gettick();
+	unsigned int tick = gettick();
 	int amount, i, nameid;
 	struct script_code *script;
 
@@ -4036,13 +4029,6 @@ int pc_useitem(struct map_session_data *sd,int n)
 
 	// Store information for later use before it is lost (via pc_delitem) [Paradox924X]
 	nameid = sd->inventory_data[n]->nameid;
-	delay = sd->inventory_data[n]->delay;
-
-	if( sd->inventory_data[n]->delay > 0 ) { // Check if there is a delay on this item [Paradox924X]
-		ARR_FIND(0, item_delays, i, sd->item_delay[i].nameid == nameid);
-		if( i < item_delays && DIFF_TICK(sd->item_delay[i].tick, tick) > 0 )
-			return 0; // Delay has not expired yet
-	}
 
 	//Since most delay-consume items involve using a "skill-type" target cursor,
 	//perform a skill-use check before going through. [Skotlex]
@@ -4050,6 +4036,27 @@ int pc_useitem(struct map_session_data *sd,int n)
 	//FIXME: Is this really needed here? It'll be checked in unit.c after all and this prevents skill items using when silenced [Inkfish]
 	if( sd->inventory_data[n]->flag.delay_consume && ( sd->ud.skilltimer != -1 /*|| !status_check_skilluse(&sd->bl, &sd->bl, ALL_RESURRECTION, 0)*/ ) )
 		return 0;
+
+	if( sd->inventory_data[n]->delay > 0 ) { // Check if there is a delay on this item [Paradox924X]
+		ARR_FIND(0, MAX_ITEMDELAYS, i, sd->item_delay[i].nameid == nameid || !sd->item_delay[i].nameid);
+		if( i < MAX_ITEMDELAYS )
+		{
+			if( sd->item_delay[i].nameid )
+			{// found
+				if( DIFF_TICK(sd->item_delay[i].tick, tick) > 0 )
+					return 0; // Delay has not expired yet
+			}
+			else
+			{// not yet used item (all slots are initially empty)
+				sd->item_delay[i].nameid = nameid;
+			}
+			sd->item_delay[i].tick = tick + sd->inventory_data[n]->delay;
+		}
+		else
+		{// should not happen
+			ShowError("pc_useitem: Exceeded item delay array capacity! (nameid=%d, char_id=%d)\n", nameid, sd->status.char_id);
+		}
+	}
 
 	sd->itemid = sd->status.inventory[n].nameid;
 	sd->itemindex = n;
@@ -4087,10 +4094,8 @@ int pc_useitem(struct map_session_data *sd,int n)
 
 	//Update item use time.
 	sd->canuseitem_tick = tick + battle_config.item_use_interval;
-	if( itemdb_iscashfood(sd->status.inventory[n].nameid) )
+	if( itemdb_iscashfood(nameid) )
 		sd->canusecashfood_tick = tick + battle_config.cashfood_use_interval;
-	if( delay > 0 && i < item_delays )
-		sd->item_delay[i].tick = tick + delay;
 
 	run_script(script,0,sd->bl.id,fake_nd->bl.id);
 	potion_flag = 0;
@@ -6155,7 +6160,7 @@ int pc_resetfeel(struct map_session_data* sd)
 	int i;
 	nullpo_ret(sd);
 
-	for (i=0; i<3; i++)
+	for (i=0; i<MAX_PC_FEELHATE; i++)
 	{
 		sd->feel_map[i].m = -1;
 		sd->feel_map[i].index = 0;
@@ -8814,13 +8819,58 @@ int pc_split_atoui(char* str, unsigned int* val, char sep, int max)
 /*==========================================
  * DB reading.
  * exp.txt        - required experience values
- * job_db1.txt    - weight, hp, sp, aspd
- * job_db2.txt    - job level stat bonuses
  * skill_tree.txt - skill tree for every class
  * attr_fix.txt   - elemental adjustment table
- * size_fix.txt   - size adjustment table for weapons
- * refine_db.txt  - refining data table
+ * statpoint.txt  - status points per base level
  *------------------------------------------*/
+static bool pc_readdb_skilltree(char* fields[], int columns, int current)
+{
+	unsigned char joblv = 0, skilllv;
+	unsigned short skillid;
+	int idx, class_;
+	unsigned int i, offset = 3, skillidx;
+
+	class_  = atoi(fields[0]);
+	skillid = (unsigned short)atoi(fields[1]);
+	skilllv = (unsigned char)atoi(fields[2]);
+
+	if(columns==4+MAX_PC_SKILL_REQUIRE*2)
+	{// job level requirement extra column
+		joblv = (unsigned char)atoi(fields[3]);
+		offset++;
+	}
+
+	if(!pcdb_checkid(class_))
+	{
+		ShowWarning("pc_readdb_skilltree: Invalid job class %d specified.\n", class_);
+		return false;
+	}
+	idx = pc_class2idx(class_);
+
+	//This is to avoid adding two lines for the same skill. [Skotlex]
+	ARR_FIND( 0, MAX_SKILL_TREE, skillidx, skill_tree[idx][skillidx].id == 0 || skill_tree[idx][skillidx].id == skillid );
+	if( skillidx == MAX_SKILL_TREE )
+	{
+		ShowWarning("pc_readdb_skilltree: Unable to load skill %hu into job %d's tree. Maximum number of skills per class has been reached.\n", skillid, class_);
+		return false;
+	}
+	else if(skill_tree[idx][skillidx].id)
+	{
+		ShowNotice("pc_readdb_skilltree: Overwriting skill %hu for job class %d.\n", skillid, class_);
+	}
+
+	skill_tree[idx][skillidx].id    = skillid;
+	skill_tree[idx][skillidx].max   = skilllv;
+	skill_tree[idx][skillidx].joblv = joblv;
+
+	for(i = 0; i < MAX_PC_SKILL_REQUIRE; i++)
+	{
+		skill_tree[idx][skillidx].need[i].id = atoi(fields[i*2+offset]);
+		skill_tree[idx][skillidx].need[i].lv = atoi(fields[i*2+offset+1]);
+	}
+	return true;
+}
+
 int pc_readdb(void)
 {
 	int i,j,k;
@@ -8912,53 +8962,7 @@ int pc_readdb(void)
 
 	// スキルツリ?
 	memset(skill_tree,0,sizeof(skill_tree));
-	sprintf(line, "%s/skill_tree.txt", db_path);
-	fp=fopen(line,"r");
-	if(fp==NULL){
-		ShowError("can't read %s\n", line);
-		return 1;
-	}
-
-	while(fgets(line, sizeof(line), fp))
-	{
-		char *split[50];
-		int f=0, m=3, idx;
-		if(line[0]=='/' && line[1]=='/')
-			continue;
-		for(j=0,p=line;j<14 && p;j++){
-			split[j]=p;
-			p=strchr(p,',');
-			if(p) *p++=0;
-		}
-		if(j<13)
-			continue;
-		if (j == 14) {
-			f=1;	// MinJobLvl has been added
-			m++;
-		}
-		// check for bounds [celest]
-		idx = atoi(split[0]);
-		if(!pcdb_checkid(idx))
-			continue;
-		idx = pc_class2idx(idx);
-		k = atoi(split[1]); //This is to avoid adding two lines for the same skill. [Skotlex]
-		ARR_FIND( 0, MAX_SKILL_TREE, j, skill_tree[idx][j].id == 0 || skill_tree[idx][j].id == k );
-		if( j == MAX_SKILL_TREE )
-		{
-			ShowWarning("Unable to load skill %d into job %d's tree. Maximum number of skills per class has been reached.\n", k, atoi(split[0]));
-			continue;
-		}
-		skill_tree[idx][j].id=k;
-		skill_tree[idx][j].max=atoi(split[2]);
-		if (f) skill_tree[idx][j].joblv=atoi(split[3]);
-
-		for(k=0;k<5;k++){
-			skill_tree[idx][j].need[k].id=atoi(split[k*2+m]);
-			skill_tree[idx][j].need[k].lv=atoi(split[k*2+m+1]);
-		}
-	}
-	fclose(fp);
-	ShowStatus("Done reading '"CL_WHITE"%s"CL_RESET"'.\n","skill_tree.txt");
+	sv_readdb(db_path, "skill_tree.txt", ',', 3+MAX_PC_SKILL_REQUIRE*2, 4+MAX_PC_SKILL_REQUIRE*2, -1, &pc_readdb_skilltree);
 
 	// ?性修正テ?ブル
 	for(i=0;i<4;i++)
