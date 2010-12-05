@@ -1,6 +1,41 @@
 Date	Added
 
+2010/12/04
+	* Fixed party booking search increasing result counter, even when no results were found, causing crashes from r14516 onwards (bugreport:4615, since r14412). [Ai4rei]
+2010/12/03
+	* Fixed soul linkers not receiving taekwon angel buffs upon level up (bugreport:3585, since r3657 and r3660, related r6294). [Ai4rei]
+	* Corrected 'chance' in description for bonuses bAddMonsterDropItem and bAddMonsterDropItemGroup (bugreport:4063, partially since r1572). [Ai4rei]
+	* Removed leftovers of the item_value_db.txt feature (bugreport:2031, since athena-dev-2.1.1-mod377, followup to pre-svn 2004/05/29). [Ai4rei]
+2010/12/02
+	* Various code tweaks and updates related to item types. [Ai4rei]
+	- Replaced item type literals with their appropriate constants.
+	- Added itemdb_typename to replace the ugly "BUG!" filled array in @iteminfo (since r1741, follow up to r14550).
+	- Made the item database parser verify item type for validity.
+	- Added item type constants to const.txt for use in scripts (getiteminfo).
+	* Added support for IT_CASH to @iteminfo, logging filters and item drop rate adjustment. Added 'show_picker.item_type'-specific IT_CASH value to it's description (follow up to r14549). [Ai4rei]
+	* Rev. 14549 Added item type IT_CASH (item type 18) Requires user confirmation before using/generating item(s). [L0ne_W0lf]
+	* Fixed mapflags not getting initialized upon @reloadscript (bugreport:2247, since r1275). [Ai4rei]
+	* Removed redundant check in food vs. cash food status change overriding code, partially suggested by xazax (related r14437 and r14510). [Ai4rei]
+	* Added an error message when a client connection exceeds the socket write buffer, so that it does not appear to be closed for no apparent reason (follow up to r13469). [Ai4rei]
+	* Random clif.c fixes and cleanups. [Ai4rei]
+	- Fixed clif_homskillup using sd before nullpo check (since r9297 and r9307).
+	- Merged code responsible for disabling pets in GvG and spawning them as per TODO (related r12002).
+	- Fixed base and job exp not being sent to the client for new connections (follow to r14505).
+	- Fixed Magnifier (item) and Identify (skill) attempting to identify an item, even when cancel is pressed, causing skill failed message.
+	* Added defines for guild notice sizes (MAX_GUILDMES1 and MAX_GUILDMES2). [Ai4rei]
+	* Added clif_starskill (packet 0x20e, ZC_STARSKILL) to host the packet previously implemented by clif_feel_info, clif_hate_info, clif_mission_info and clif_feel_hate_reset (related r4352, r4375 and r9162). [Ai4rei]
+	- This also fixes sd->bl.id being sometimes supplied for monster_id in this packet.
+	* Various additions and updates to the comments and documentation of packets in clif. [Ai4rei]
+	- Renamed clif_01ac to clif_skillunit_update to make it look less 'mysterious'.
+	* Removed clif_weather_sub and clif_misceffect2 in favor of clif_specialeffect_single and clif_specialeffect (all of them are ZC_NOTIFY_EFFECT2). [Ai4rei]
+	* Rev. 14540 Monsters spawned with mob-generating items now have MD_ANGRY applied to them. [L0ne_W0lf]
 2010/12/01
+	* Added packet 0x1b1 (ZC_SHOWDIGIT). [Ai4rei]
+	* Confirmed packet 0x291 (ZC_MSG) to be general-purpose msgstringtable.txt packet and updated all functions using it (related r12245 and r13126). [Ai4rei]
+	* Fixed using main chat nick longer than 15 characters would cause a buffer overflow (bugreport:2671, since r5013). [Ai4rei]
+	* Fixed bAutoSpellOnSkill bonuses could not be chained (bugreport:4421, since r13596). [Ai4rei]
+	* Fixed NPC_TALK message being displayed with EOL character attached (bugreport:4596, since r14270). [Ai4rei]
+	* Reverted change from r14533 and restored the 3rd field of mob_avail.txt being optional (bugreport:4599, since r14532). [Ai4rei]
 	* Monster database reading now utilizes sv_readdb. [Ai4rei]
 2010/11/30
 	* Fixed out-of-bound access to percentrefinery array causing refine bonuses stop working (bugreport:4598, since r14526). [Ai4rei]

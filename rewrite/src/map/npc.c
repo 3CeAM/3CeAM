@@ -1300,8 +1300,7 @@ int npc_buylist(struct map_session_data* sd, int n, unsigned short* item_list)
 				return 2;
 		}
 
-		if( !itemdb_value_notdc(nameid) )
-			value = pc_modifybuyvalue(sd,value);
+		value = pc_modifybuyvalue(sd,value);
 
 		z += (double)value * amount;
 		w += itemdb_weight(nameid) * amount;
@@ -1386,10 +1385,7 @@ int npc_selllist(struct map_session_data* sd, int n, unsigned short* item_list)
 		   sd->status.inventory[idx].amount < qty)
 			break;
 		
-		if (sd->inventory_data[idx]->flag.value_notoc)
-			z+=(double)qty*sd->inventory_data[idx]->value_sell;
-		else
-			z+=(double)qty*pc_modifysellvalue(sd,sd->inventory_data[idx]->value_sell);
+		z+=(double)qty*pc_modifysellvalue(sd,sd->inventory_data[idx]->value_sell);
 
 		if(sd->inventory_data[idx]->type == IT_PETEGG &&
 			sd->status.inventory[idx].card[0] == CARD0_PET)
@@ -3313,6 +3309,9 @@ int npc_reload(void)
 	npcname_db->clear(npcname_db,NULL);
 	npc_warp = npc_shop = npc_script = 0;
 	npc_mob = npc_cache_mob = npc_delay_mob = 0;
+
+	// reset mapflags
+	map_flags_init();
 
 	//TODO: the following code is copy-pasted from do_init_npc(); clean it up
 	// Reloading npcs now

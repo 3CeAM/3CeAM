@@ -168,6 +168,10 @@
 #define END_ACCOUNT_NUM 100000000
 #define START_CHAR_NUM 150000
 
+//Guilds
+#define MAX_GUILDMES1 60
+#define MAX_GUILDMES2 120
+
 //Base Homun skill.
 #define HM_SKILLBASE 8001
 #define MAX_HOMUNSKILL 43	// Increased from 16 to 43 to add in mutated homunculus skills. [Rytech]
@@ -212,7 +216,7 @@ enum item_types {
 								//IT_GUN				= 0x0f
 								//IT_AMMO				= 0x10
 	IT_THROWWEAPON = 17,		//IT_THROWWEAPON		= 0x11
-								//IT_CASH_POINT_ITEM	= 0x12
+	IT_CASH = 18,				//IT_CASH_POINT_ITEM	= 0x12
 	IT_CANNONBALL = 19,			//IT_CANNONBALL			= 0x13
 	IT_MAX 
 };
@@ -525,7 +529,7 @@ struct guild {
 	char name[NAME_LENGTH],master[NAME_LENGTH];
 	struct guild_member member[MAX_GUILD];
 	struct guild_position position[MAX_GUILDPOSITION];
-	char mes1[60],mes2[120];
+	char mes1[MAX_GUILDMES1],mes2[MAX_GUILDMES2];
 	int emblem_len,emblem_id;
 	char emblem_data[2048];
 	struct guild_alliance alliance[MAX_GUILDALLIANCE];

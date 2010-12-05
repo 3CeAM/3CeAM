@@ -78,8 +78,6 @@ struct item_data {
 	struct script_code *unequip_script;//Script executed once when unequipping.
 	struct {
 		unsigned available : 1;
-		unsigned value_notdc : 1;
-		unsigned value_notoc : 1;
 		short no_equip;
 		unsigned no_refine : 1;	// [celest]
 		unsigned delay_consume : 1;	// Signifies items that are not consumed immediately upon double-click [Skotlex]
@@ -127,6 +125,7 @@ struct item_data* itemdb_exists(int nameid);
 #define itemdb_available(n) (itemdb_exists(n) && itemdb_search(n)->flag.available)
 #define itemdb_viewid(n) (itemdb_search(n)->view_id)
 #define itemdb_autoequip(n) (itemdb_search(n)->flag.autoequip)
+const char* itemdb_typename(int type);
 #define itemdb_is_rune(n) (n >= ITEMID_NAUTHIZ && n <= ITEMID_HAGALAZ)
 #define itemdb_is_poison(n) (n >= 12717 && n <= 12724)
 #define itemdb_is_spellbook(n) (n >= 6188 && n <= 6205)
@@ -138,8 +137,6 @@ int itemdb_searchrandomid(int flags);
 
 #define itemdb_value_buy(n) itemdb_search(n)->value_buy
 #define itemdb_value_sell(n) itemdb_search(n)->value_sell
-#define itemdb_value_notdc(n) itemdb_search(n)->flag.value_notdc
-#define itemdb_value_notoc(n) itemdb_search(n)->flag.value_notoc
 #define itemdb_canrefine(n) itemdb_search(n)->flag.no_refine
 //Item trade restrictions [Skotlex]
 int itemdb_isdropable_sub(struct item_data *, int, int);

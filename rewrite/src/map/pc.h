@@ -59,6 +59,7 @@ struct weapon_data {
 
 struct s_autospell {
 	short id, lv, rate, card_id, flag;
+	bool lock;  // bAutoSpellOnSkill: blocks autospell from triggering again, while being executed
 };
 
 struct s_addeffect {
@@ -143,7 +144,6 @@ struct map_session_data {
 		short pmap; // Previous map on Map Change
 		struct guild *gmaster_flag;
 		unsigned int bg_id;
-		unsigned skillonskill : 1;
 		unsigned short user_font;
 		unsigned short autobonus; //flag to indicate if an autobonus is activated. [Inkfish]
 		unsigned improv_flag : 1;
