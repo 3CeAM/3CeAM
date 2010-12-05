@@ -180,6 +180,29 @@ struct item_data* itemdb_exists(int nameid)
 	return item;
 }
 
+/// Returns human readable name for given item type.
+/// @param type Type id to retrieve name for ( IT_* ).
+const char* itemdb_typename(int type)
+{
+	switch(type)
+	{
+		case IT_HEALING:        return "Potion/Food";
+		case IT_USABLE:         return "Usable";
+		case IT_ETC:            return "Etc.";
+		case IT_WEAPON:         return "Weapon";
+		case IT_ARMOR:          return "Armor";
+		case IT_CARD:           return "Card";
+		case IT_PETEGG:         return "Pet Egg";
+		case IT_PETARMOR:       return "Pet Accessory";
+		case IT_AMMO:           return "Arrow/Ammunition";
+		case IT_DELAYCONSUME:   return "Delay-Consume Usable";
+		case IT_THROWWEAPON:  		return "Throwing Item";
+		case IT_CASH:           return "Cash Usable";
+		case IT_CANNONBALL:  		return "Cannon Ball";
+	}
+	return "Unknown Type";
+}
+
 /*==========================================
  * Converts the jobid from the format in itemdb 
  * to the format used by the map server. [Skotlex]
@@ -758,6 +781,13 @@ static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scr
 	safestrncpy(id->jname, str[2], sizeof(id->jname));
 
 	id->type = atoi(str[3]);
+
+	if( id->type < 0 || id->type == IT_UNKNOWN || id->type == IT_UNKNOWN2 || ( id->type > IT_DELAYCONSUME && id->type < IT_THROWWEAPON ) || id->type >= IT_MAX )
+	{// catch invalid item types
+		ShowWarning("itemdb_parse_dbrow: Invalid item type %d for item %d. IT_ETC will be used.\n", id->type, nameid);
+		id->type = IT_ETC;
+	}
+
 	if (id->type == IT_DELAYCONSUME)
 	{	//Items that are consumed only after target confirmation
 		id->type = IT_USABLE;
@@ -817,8 +847,6 @@ static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scr
 	id->look = atoi(str[18]);
 
 	id->flag.available = 1;
-	id->flag.value_notdc = 0;
-	id->flag.value_notoc = 0;
 	id->view_id = 0;
 	id->sex = itemdb_gendercheck(id); //Apply gender filtering.
 

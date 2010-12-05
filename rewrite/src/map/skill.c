@@ -1400,11 +1400,14 @@ int skill_onskillusage(struct map_session_data *sd, struct block_list *bl, int s
 	if( sd == NULL || skillid <= 0 )
 		return 0;
 
-	sd->state.skillonskill = 1;
 	for( i = 0; i < ARRAYLENGTH(sd->autospell3) && sd->autospell3[i].flag; i++ )
 	{
 		if( sd->autospell3[i].flag != skillid )
 			continue;
+
+		if( sd->autospell3[i].lock )
+			continue;  // autospell already being executed
+
 		skill = (sd->autospell3[i].id > 0) ? sd->autospell3[i].id : -sd->autospell3[i].id;
 		if( skillnotok(skill, sd) )
 			continue;
@@ -1422,6 +1425,7 @@ int skill_onskillusage(struct map_session_data *sd, struct block_list *bl, int s
 			continue;
 
 		sd->state.autocast = 1;
+		sd->autospell3[i].lock = true;
 		skill_consume_requirement(sd,skill,skilllv,1);
 		switch( skill_get_casttype(skill) )
 		{
@@ -1429,6 +1433,7 @@ int skill_onskillusage(struct map_session_data *sd, struct block_list *bl, int s
 			case CAST_NODAMAGE: skill_castend_nodamage_id(&sd->bl, tbl, skill, skilllv, tick, 0); break;
 			case CAST_DAMAGE:   skill_castend_damage_id(&sd->bl, tbl, skill, skilllv, tick, 0); break;
 		}
+		sd->autospell3[i].lock = false;
 		sd->state.autocast = 0;
 	}
 
@@ -1446,7 +1451,6 @@ int skill_onskillusage(struct map_session_data *sd, struct block_list *bl, int s
 		}
 	}
 
-	sd->state.skillonskill = 0;
 	return 1;
 }
 
@@ -4457,8 +4461,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	{
 		if( sd->state.arrow_atk ) //Consume arrow on last invocation to this skill.
 			battle_consume_ammo(sd, skillid, skilllv);
-		if( !sd->state.skillonskill )
-			skill_onskillusage(sd, bl, skillid, tick);
+		skill_onskillusage(sd, bl, skillid, tick);
 		skill_consume_requirement(sd,skillid,skilllv,2);
 	}
 
@@ -6902,7 +6905,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		{	//Erase death count 1% of the casts
 			dstsd->die_counter = 0;
 			pc_setglobalreg(dstsd,"PC_DIE_COUNTER", 0);
-			clif_misceffect2(bl, 0x152);
+			clif_specialeffect(bl, 0x152, AREA);
 			//SC_SPIRIT invokes status_calc_pc for us.
 		}
 		clif_skill_nodamage(src,bl,skillid,skilllv,
@@ -8683,8 +8686,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	{
 		if( sd->state.arrow_atk ) //Consume arrow on last invocation to this skill.
 			battle_consume_ammo(sd, skillid, skilllv);
-		if( !sd->state.skillonskill )
-			skill_onskillusage(sd, bl, skillid, tick);
+		skill_onskillusage(sd, bl, skillid, tick);
 		skill_consume_requirement(sd,skillid,skilllv,2);
 	}
 
@@ -9838,8 +9840,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	{
 		if( sd->state.arrow_atk && !(flag&1) ) //Consume arrow if a ground skill was not invoked. [Skotlex]
 			battle_consume_ammo(sd, skillid, skilllv);
-		if( !sd->state.skillonskill )
-			skill_onskillusage(sd, NULL, skillid, tick);
+		skill_onskillusage(sd, NULL, skillid, tick);
 		skill_consume_requirement(sd,skillid,skilllv,2);
 	}
 
@@ -10913,7 +10914,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 				else
 					sec = 3000; //Couldn't trap it?
 				if( sg->unit_id == UNT_ANKLESNARE )
-					clif_01ac(&src->bl); // mysterious packet
+					clif_skillunit_update(&src->bl);
 				sg->limit = DIFF_TICK(tick,sg->tick)+sec;
 				sg->interval = -1;
 				src->range = 0;
@@ -13413,7 +13414,7 @@ void skill_repairweapon (struct map_session_data *sd, int idx)
 		return;
 	}
 
-	if (itemdb_type(item->nameid)==4)
+	if (itemdb_type(item->nameid)==IT_WEAPON)
 		material = materials [itemdb_wlv(item->nameid)-1]; // Lv1/2/3/4 weapons consume 1 Iron Ore/Iron/Steel/Rough Oridecon
 	else
 		material = materials [2]; // Armors consume 1 Steel
@@ -13464,7 +13465,7 @@ void skill_weaponrefine (struct map_session_data *sd, int idx)
 		struct item_data *ditem = sd->inventory_data[idx];
 		item = &sd->status.inventory[idx];
 
-		if(item->nameid > 0 && ditem->type == 4)
+		if(item->nameid > 0 && ditem->type == IT_WEAPON)
 		{
 			if( item->refine >= sd->menuskill_val
 			||  item->refine >= MAX_REFINE		// if it's no longer refineable

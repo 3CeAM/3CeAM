@@ -1772,15 +1772,15 @@ ACMD_FUNC(item2)
 	if (item_id > 500) {
 		loop = 1;
 		get_count = number;
-		if (item_data->type == 4 || item_data->type == 5 ||
-			item_data->type == 7 || item_data->type == 8) {
+		if (item_data->type == IT_WEAPON || item_data->type == IT_ARMOR ||
+			item_data->type == IT_PETEGG || item_data->type == IT_PETARMOR) {
 			loop = number;
 			get_count = 1;
-			if (item_data->type == 7) {
+			if (item_data->type == IT_PETEGG) {
 				identify = 1;
 				refine = 0;
 			}
-			if (item_data->type == 8)
+			if (item_data->type == IT_PETARMOR)
 				refine = 0;
 			if (refine > 10)
 				refine = 10;
@@ -6782,7 +6782,7 @@ ACMD_FUNC(summon)
 	md->master_id=sd->bl.id;
 	md->special_state.ai=1;
 	md->deletetimer=add_timer(tick+(duration*60000),mob_timer_delete,md->bl.id,0);
-	clif_misceffect2(&md->bl,344);
+	clif_specialeffect(&md->bl,344,AREA);
 	mob_spawn(md);
 	sc_start4(&md->bl, SC_MODECHANGE, 100, 1, 0, MD_AGGRESSIVE, 0, 60000);
 	clif_skill_poseffect(&sd->bl,AM_CALLHOMUN,1,md->bl.x,md->bl.y,tick);
@@ -7321,7 +7321,7 @@ ACMD_FUNC(homlevel)
 	}
 	status_calc_homunculus(hd,0);
 	status_percent_heal(&hd->bl, 100, 100);
-	clif_misceffect2(&hd->bl,568);
+	clif_specialeffect(&hd->bl,568,AREA);
 	return 0;
 }
 
@@ -7589,9 +7589,6 @@ ACMD_FUNC(homshuffle)
  *------------------------------------------*/
 ACMD_FUNC(iteminfo)
 {
-	char *itype[12] = {"Potion/Food", "BUG!", "Usable", "Etc", "Weapon", "Protection", "Card", "Egg", "Pet Acessory", "BUG!", "Arrow"};
-	//, "Lure/Scroll"}; No need, type 11 items are converted to type 2 upon loading [Skotlex]
-
 	struct item_data *item_data, *item_array[MAX_SEARCH];
 	int i, count = 1;
 
@@ -7616,12 +7613,12 @@ ACMD_FUNC(iteminfo)
 		item_data = item_array[i];
 		sprintf(atcmd_output, "Item: '%s'/'%s'[%d] (%d) Type: %s | Extra Effect: %s",
 			item_data->name,item_data->jname,item_data->slot,item_data->nameid,
-			item_data->type < 12 ? itype[item_data->type] : "BUG!", 
+			itemdb_typename(item_data->type), 
 			(item_data->script==NULL)? "None" : "With script"
 		);
 		clif_displaymessage(fd, atcmd_output);
 
-		sprintf(atcmd_output, "NPC Buy:%dz%s, Sell:%dz%s | Weight: %.1f ", item_data->value_buy, item_data->flag.value_notdc ? "(No Discount!)":"", item_data->value_sell, item_data->flag.value_notoc ? "(No Overcharge!)":"", item_data->weight/10. );
+		sprintf(atcmd_output, "NPC Buy:%dz, Sell:%dz | Weight: %.1f ", item_data->value_buy, item_data->value_sell, item_data->weight/10. );
 		clif_displaymessage(fd, atcmd_output);
 
 		if (item_data->maxchance == 10000)

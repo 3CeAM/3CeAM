@@ -826,7 +826,7 @@ int pc_setequipindex(struct map_session_data *sd)
 
 			if( sd->status.inventory[i].equip & EQP_HAND_L )
 			{
-				if( sd->inventory_data[i] && sd->inventory_data[i]->type == 4 )
+				if( sd->inventory_data[i] && sd->inventory_data[i]->type == IT_WEAPON )
 					sd->weapontype2 = sd->inventory_data[i]->look;
 				else
 					sd->weapontype2 = 0;
@@ -3840,7 +3840,7 @@ int pc_isUseitem(struct map_session_data *sd,int n)
 	if( item == NULL )
 		return 0;
 	//Not consumable item
-	if( item->type != IT_HEALING && item->type != IT_USABLE )
+	if( item->type != IT_HEALING && item->type != IT_USABLE && item->type != IT_CASH )
 		return 0;
 	if( !item->script ) //if it has no script, you can't really consume it!
 		return 0;
@@ -5382,7 +5382,7 @@ int pc_checkbaselevelup(struct map_session_data *sd)
 		if (sd->state.snovice_dead_flag)
 			sd->state.snovice_dead_flag = 0; //Reenable steelbody resurrection on dead.
 	} else
-	if((sd->class_&MAPID_UPPERMASK) == MAPID_TAEKWON || (sd->class_&MAPID_UPPERMASK) == MAPID_STAR_GLADIATOR)
+	if( (sd->class_&MAPID_BASEMASK) == MAPID_TAEKWON )
 	{
 		sc_start(&sd->bl,status_skill2sc(AL_INCAGI),100,10,600000);
 		sc_start(&sd->bl,status_skill2sc(AL_BLESSING),100,10,600000);

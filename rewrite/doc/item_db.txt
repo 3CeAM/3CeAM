@@ -21,6 +21,8 @@ Type:
 	10	Ammo (Arrows/Bullets/etc)
 	11	Usable with delayed consumption (item is lost from inventory
 		after selecting a target, for use with skills and pet lures)
+	18	Another delayed consume that requires user confirmation before
+		using item.
 
 Buy: Default buying price. When not specified, becomes double the sell price.
 
@@ -66,12 +68,9 @@ Job: Equippable jobs. Uses the following bitmask table:
 	Ninja       (2^25): 0x02000000
 
 Upper: Equippable upper-types. Uses the following bitmasks:
-	 1: Normal jobs
-	 2: Upper jobs or Third jobs
-	 4: Baby jobs
-	 8: Third jobs
-	16: Trans-3rd jobs
-	24: Baby 3rd jobs
+	1: Normal jobs
+	2: Upper jobs
+	4: Baby jobs
 
 Gender: Gender restriction. 0 is female, 1 is male, 2 for both.
 
@@ -131,8 +130,6 @@ View: For normal items, defines a replacement view-sprite for the item (eg:
 		5: Grenades
 		6: Shuriken
 		7: Kunai
-		8: Cannonball
-		9: Throwweapon
 
 Script: Script to execute when the item is used/equipped.
 
