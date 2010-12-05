@@ -3020,7 +3020,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 	{	// Magic damage from Enchant Blade
 		struct Damage md = battle_calc_magic_attack(src, target, RK_ENCHANTBLADE, ((TBL_PC*)src)->status.skill[RK_ENCHANTBLADE].lv, wflag);
 		wd.damage += md.damage;
-		wd.flag += md.flag;
+		wd.flag |= md.flag;
 	}
 	if( skill_num == LG_RAYOFGENESIS )
 	{
