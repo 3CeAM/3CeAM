@@ -236,6 +236,9 @@
 11023,Vitality_Boost_Research_Book,Vitality Boost Research Book,3,10,,10,,,,,,,,,,,,,{},{},{}
 11024,Energy_Drink_Formula,Energy Drink Formula,3,10,,10,,,,,,,,,,,,,{},{},{}
 
+// Sorcerer Elemental Spirit Guide
+11056,Elemental_Spirit_Guide,Elemental Spirit Guide,3,1000,,10,,,,,,,,,,,,,{},{},{}
+
 // Minstrel And Wanderer Cough Drop
 11513,Cough_Drop,Cough Drop,3,200,,10,,,,,,,,,,,,,{},{},{}
 
