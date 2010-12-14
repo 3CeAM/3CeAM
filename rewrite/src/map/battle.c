@@ -849,6 +849,7 @@ int battle_calc_gvg_damage(struct block_list *src,struct block_list *bl,int dama
 	case PA_PRESSURE:
 	case HW_GRAVITATION:
 	case NJ_ZENYNAGE:
+	case GN_HELLS_PLANT_ATK:
 		break;
 	default:
 		/* Uncomment if you want god-mode Emperiums at 100 defense. [Kisuka]
@@ -2307,9 +2308,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					if( sc && sc->data[SC_GN_CARTBOOST] )
 						skillratio += 10 * sc->data[SC_GN_CARTBOOST]->val1;
 					break;
-				case GN_THORNS_TRAP:
-					skillratio += 10 * skill_lv;
-					break;
+				case GN_SPORE_EXPLOSION:
+						skillratio += 200 + 100 * skill_lv;
+						break;
 				case GN_CRAZYWEED_ATK:
 					skillratio += 400 + 100 * skill_lv;
 					break;
@@ -3478,9 +3479,6 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						if( sc && sc->data[SC_CURSED_SOIL_OPTION] )
 							skillratio += skillratio * sc->data[SC_CURSED_SOIL_OPTION]->val2 / 100;
 						break;
-					case GN_SPORE_EXPLOSION: // Need official value. [LimitLine]
-						skillratio += 400 + 100 * skill_lv;
-						break;
 					case GN_DEMONIC_FIRE:
 						if( skill_lv > 20)
 						{	// Fire expansion Lv.2
@@ -3835,6 +3833,15 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		break;
 	case NC_SELFDESTRUCTION:
 		md.damage = (sstatus->hp + sstatus->sp) * 50 * skill_lv / 100;
+		break;
+	case GN_THORNS_TRAP:
+		md.damage = 100 + 200 * skill_lv + sstatus->int_;
+		break;
+	case GN_BLOOD_SUCKER:
+		md.damage = 200 + 100 * skill_lv + sstatus->int_;
+		break;
+	case GN_HELLS_PLANT_ATK:
+		md.damage = ((sstatus->int_ * 25) + (status_get_lv(target) * 15) * skill_lv) + (10 / (10 - pc_checkskill(sd,BA_MUSICALLESSON)));
 		break;
 	}
 

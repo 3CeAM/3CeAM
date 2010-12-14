@@ -1175,9 +1175,9 @@
 2476,0,6,4,-1,0x02,2,5,1,no,0,0,0,weapon,2,	GN_CART_TORNADO,Cart Tornado
 2477,7,6,1,0,0,2,5,0,yes,0,0,0,weapon,0,	GN_CARTCANNON,Cart Cannon
 2478,0,6,4,0,0x1,0,5,1,no,0,0,0,weapon,0,	GN_CARTBOOST,Cart Boost
-2479,6,6,2,0,0x1,0,5,1,yes,0,0x80,0,magic,0,	GN_THORNS_TRAP,Thorn Trap
-2480,9,6,1,0,0x1,0,5,0,no,0,0,3,weapon,0,	GN_BLOOD_SUCKER,Blood Sucker
-2481,9,6,1,0,0,1:2:3:4:5,5,1,yes,0,0,0,magic,0,	GN_SPORE_EXPLOSION,Spore Explosion
+2479,6,6,2,0,0x1,0,5,1,yes,0,0x80,0,misc,0,	GN_THORNS_TRAP,Thorn Trap
+2480,9,6,1,0,0x1,0,5,0,no,0,0,3,misc,0,		GN_BLOOD_SUCKER,Blood Sucker
+2481,9,6,1,0,0,1:2:3:4:5,5,1,yes,0,0,0,weapon,0,	GN_SPORE_EXPLOSION,Spore Explosion
 2482,6,6,16,0,0x1,0,5,-1,yes,0,0,1,weapon,2,	GN_WALLOFTHORN,Wall of Thorns
 2483,9,6,2,0,0x2,3,10,1,yes,0,0,0,weapon,0,	GN_CRAZYWEED,Crazy Weed
 2484,0,6,1,2,0,0,10,0,no,0,0,0,weapon,0,	GN_CRAZYWEED_ATK,Crazy Weed Attack
@@ -1187,7 +1187,7 @@
 2488,9,6,2,0,0,0,1,1,yes,0,0,0,weapon,0,	GN_FIRE_EXPANSION_TEAR_GAS,Fire Expansion Tear Gas
 2489,9,6,2,0,0,0,1,1,yes,0,0,0,weapon,0,	GN_FIRE_EXPANSION_ACID,Fire Expansion Acid
 2490,9,6,2,0,0,0,5,1,yes,0,0,2:3:4:5:6,none,0,	GN_HELLS_PLANT,Hell's Plant
-2491,0,6,1,0,0,0,5,1,no,0,0,0,weapon,0,		GN_HELLS_PLANT_ATK,Hell's Plant Attack
+2491,0,6,1,0,0x90,0,5,1,no,0,0,0,misc,0,		GN_HELLS_PLANT_ATK,Hell's Plant Attack
 2492,0,6,4,0,0x3,9,5,0,yes,0,0,0,none,0,		GN_MANDRAGORA,Howling of Mandragora
 2493,11,6,16,0,0x1,0,1,0,yes,0,0,0,none,0,		GN_SLINGITEM,Sling Item
 2494,0,6,4,0,0x1,0,1,0,no,0,0,0,none,0,		GN_CHANGEMATERIAL,Change Material
