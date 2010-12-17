@@ -555,7 +555,7 @@ CREATE TABLE IF NOT EXISTS `pet` (
 -- Table structure for table `elemental`
 --
 
-CREATE TABLE `elemental` (
+CREATE TABLE IF NOT EXISTS `elemental` (
   `ele_id` int(11) unsigned NOT NULL auto_increment,
   `char_id` int(11) NOT NULL,
   `class` mediumint(9) unsigned NOT NULL default '0',

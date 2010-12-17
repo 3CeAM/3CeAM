@@ -3860,7 +3860,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		unit_setdir(src,map_calc_dir(src, bl->x, bl->y));
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 
-		skill_blown(src,bl,1,-2,0);
+		skill_blown(src,bl,distance_bl(src,bl)-1,unit_getdir(src),0);
 		if( sd && tsd && sd->status.party_id && sd->status.party_id && sd->status.party_id == tsd->status.party_id ) // Don't damage party members.
 			; // No damage to Members
 		else
