@@ -51,7 +51,7 @@
  *   - globals
  * - Portability to MinGW
  *
- * $Id: dbghelpplug.c 13945 2009-07-11 07:05:05Z ultramage $
+ * $Id: dbghelpplug.c 14567 2010-12-07 19:45:24Z ai4rei $
  */
 
 #ifdef _WIN32

@@ -2223,6 +2223,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		+ sizeof(sd->aspd_add)
 		+ sizeof(sd->setitem_hash)
 		+ sizeof(sd->setitem_hash2)
+		+ sizeof(sd->itemhealrate2)
 		// shorts
 		+ sizeof(sd->splash_range)
 		+ sizeof(sd->splash_add_range)
@@ -8338,6 +8339,15 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 				if(sce->val2)
 				{// erase associated land skill
 					group = skill_id2group(sce->val2);
+
+					if( group == NULL )
+					{
+						ShowDebug("status_change_end: SC_DANCING is missing skill unit group (val1=%d, val2=%d, val3=%d, val4=%d, timer=%d, tid=%d, char_id=%d, map=%s, x=%d, y=%d). Please report this! (#3504)\n",
+							sce->val1, sce->val2, sce->val3, sce->val4, sce->timer, tid,
+							sd ? sd->status.char_id : 0,
+							mapindex_id2name(map_id2index(bl->m)), bl->x, bl->y);
+					}
+
 					sce->val2 = 0;
 					skill_delunitgroup(group);
 				}

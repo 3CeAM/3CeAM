@@ -257,7 +257,7 @@ void clif_talkiebox(struct block_list* bl, const char* talkie);
 void clif_wedding_effect(struct block_list *bl);
 void clif_divorced(struct map_session_data* sd, const char* name);
 void clif_callpartner(struct map_session_data *sd);
-void clif_playBGM(struct map_session_data* sd, struct block_list* bl, const char* name);
+void clif_playBGM(struct map_session_data* sd, const char* name);
 void clif_soundeffect(struct map_session_data* sd, struct block_list* bl, const char* name, int type);
 int clif_soundeffectall(struct block_list* bl, const char *name, int type, enum send_target coverage);
 void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, int target_id, unsigned int tick);
@@ -275,14 +275,12 @@ void clif_tradecompleted(struct map_session_data* sd, int fail);
 
 // storage
 #include "storage.h"
-void clif_storagelist(struct map_session_data* sd, struct storage_data* stor);
+void clif_storagelist(struct map_session_data* sd, struct item* items, int items_length);
 void clif_updatestorageamount(struct map_session_data* sd, int amount);
 void clif_storageitemadded(struct map_session_data* sd, struct item* i, int index, int amount);
 void clif_storageitemremoved(struct map_session_data* sd, int index, int amount);
 void clif_storageclose(struct map_session_data* sd);
-void clif_guildstoragelist(struct map_session_data* sd, struct guild_storage* stor);
 void clif_updateguildstorageamount(struct map_session_data* sd, int amount);
-void clif_guildstorageitemadded(struct map_session_data* sd, struct item* i, int index, int amount);
 
 int clif_insight(struct block_list *,va_list);	// map_forallinmovearea callback
 int clif_outsight(struct block_list *,va_list);	// map_forallinmovearea callback

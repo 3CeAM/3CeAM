@@ -62,7 +62,7 @@ struct fame_list taekwon_fame_list[MAX_FAME_LIST];
 static unsigned short equip_pos[EQI_MAX]={EQP_ACC_L,EQP_ACC_R,EQP_SHOES,EQP_GARMENT,EQP_HEAD_LOW,EQP_HEAD_MID,EQP_HEAD_TOP,EQP_ARMOR,EQP_HAND_L,EQP_HAND_R,EQP_AMMO};
 
 #define MOTD_LINE_SIZE 128
-char motd_text[MOTD_LINE_SIZE][256]; // Message of the day buffer [Valaris]
+static char motd_text[MOTD_LINE_SIZE][CHAT_SIZE_MAX]; // Message of the day buffer [Valaris]
 
 struct duel duel_list[MAX_DUEL];
 int duel_count = 0;
@@ -1076,6 +1076,23 @@ bool pc_authok(struct map_session_data *sd, int login_id2, time_t expiration_tim
 		sd->class_ = MAPID_NOVICE;
 	} else
 		sd->class_ = i; 
+
+	// Checks and fixes to character status data, that are required
+	// in case of configuration change or stuff, which cannot be
+	// checked on char-server.
+	if( sd->status.hair < MIN_HAIR_STYLE || sd->status.hair > MAX_HAIR_STYLE )
+	{
+		sd->status.hair = MIN_HAIR_STYLE;
+	}
+	if( sd->status.hair_color < MIN_HAIR_COLOR || sd->status.hair_color > MAX_HAIR_COLOR )
+	{
+		sd->status.hair_color = MIN_HAIR_COLOR;
+	}
+	if( sd->status.clothes_color < MIN_CLOTH_COLOR || sd->status.clothes_color > MAX_CLOTH_COLOR )
+	{
+		sd->status.clothes_color = MIN_CLOTH_COLOR;
+	}
+
 	//Initializations to null/0 unneeded since map_session_data was filled with 0 upon allocation.
 	if(!sd->status.hp) pc_setdead(sd);
 	sd->state.connect_new = 1;
@@ -1770,13 +1787,7 @@ static int pc_bonus_autospell_onskill(struct s_autospell *spell, int max, short 
 
 	for( i = 0; i < max && spell[i].id; i++ )  
 	{  
-		if( spell[i].flag == src_skill && spell[i].id == id && spell[i].lv == lv && (spell[i].card_id == card_id || spell[i].rate <= 0 || rate < 0) )  
-		{  
-			if( !battle_config.autospell_stacking && spell[i].rate > 0 && rate > 0 )
-				return 0;
-			rate += spell[i].rate;
-			break; 
-		}  
+		;  // each autospell works independently
 	}
 
 	if( i == max )
@@ -2634,6 +2645,10 @@ int pc_bonus(struct map_session_data *sd,int type,int val)
 	case SP_ADD_HEAL2_RATE:
 		if(sd->state.lr_flag != 2)
 			sd->add_heal2_rate += val;
+		break;
+	case SP_ADD_ITEM_HEAL_RATE:
+		if(sd->state.lr_flag != 2)
+			sd->itemhealrate2 += val;
 		break;
 	default:
 		ShowWarning("pc_bonus: unknown type %d %d !\n",type,val);
@@ -6825,6 +6840,8 @@ int pc_itemheal(struct map_session_data *sd,int itemid, int hp,int sp)
 		// A potion produced by an Alchemist in the Fame Top 10 gets +50% effect [DracoRPG]
 		if (potion_flag > 1)
 			bonus += bonus*(potion_flag-1)*50/100;
+		//All item bonuses.
+		bonus += sd->itemhealrate2;
 		//Item Group bonuses
 		bonus += bonus*itemdb_group_bonus(sd, itemid)/100;
 		//Individual item bonuses.
@@ -7091,10 +7108,8 @@ int pc_changelook(struct map_session_data *sd,int type,int val)
 
 	switch(type){
 	case LOOK_HAIR:	//Use the battle_config limits! [Skotlex]
-		if (val < battle_config.min_hair_style)
-			val = battle_config.min_hair_style;
-		else if (val > battle_config.max_hair_style)
-			val = battle_config.max_hair_style;
+		val = cap_value(val, MIN_HAIR_STYLE, MAX_HAIR_STYLE);
+
 		if (sd->status.hair != val)
 		{
 			sd->status.hair=val;
@@ -7116,10 +7131,8 @@ int pc_changelook(struct map_session_data *sd,int type,int val)
 		sd->status.head_mid=val;
 		break;
 	case LOOK_HAIR_COLOR:	//Use the battle_config limits! [Skotlex]
-		if (val < battle_config.min_hair_color)
-			val = battle_config.min_hair_color;
-		else if (val > battle_config.max_hair_color)
-			val = battle_config.max_hair_color;
+		val = cap_value(val, MIN_HAIR_COLOR, MAX_HAIR_COLOR);
+
 		if (sd->status.hair_color != val)
 		{
 			sd->status.hair_color=val;
@@ -7129,10 +7142,8 @@ int pc_changelook(struct map_session_data *sd,int type,int val)
 		}
 		break;
 	case LOOK_CLOTHES_COLOR:	//Use the battle_config limits! [Skotlex]
-		if (val < battle_config.min_cloth_color)
-			val = battle_config.min_cloth_color;
-		else if (val > battle_config.max_cloth_color)
-			val = battle_config.max_cloth_color;
+		val = cap_value(val, MIN_CLOTH_COLOR, MAX_CLOTH_COLOR);
+
 		sd->status.clothes_color=val;
 		break;
 	case LOOK_SHIELD:
@@ -9056,30 +9067,60 @@ int pc_readdb(void)
 // Read MOTD on startup. [Valaris]
 int pc_read_motd(void)
 {
-	FILE *fp;
-	int ln=0,i=0;
+	char* buf, * ptr;
+	unsigned int lines = 0, entries = 0;
+	size_t len;
+	FILE* fp;
 
-	memset(motd_text,0,sizeof(motd_text));
-	if ((fp = fopen(motd_txt, "r")) != NULL) {
-		while ((ln < MOTD_LINE_SIZE) && fgets(motd_text[ln], sizeof(motd_text[ln])-1, fp) != NULL) {
-			if(motd_text[ln][0] == '/' && motd_text[ln][1] == '/')
+	// clear old MOTD
+	memset(motd_text, 0, sizeof(motd_text));
+
+	// read current MOTD
+	if( ( fp = fopen(motd_txt, "r") ) != NULL )
+	{
+		while( entries < MOTD_LINE_SIZE && fgets(motd_text[entries], sizeof(motd_text[entries]), fp) )
+		{
+			lines++;
+
+			buf = motd_text[entries];
+
+			if( buf[0] == '/' && buf[1] == '/' )
+			{
 				continue;
-			for(i=0; motd_text[ln][i]; i++) {
-				if (motd_text[ln][i] == '\r' || motd_text[ln][i]== '\n') {
-					if(i)
-						motd_text[ln][i]=0;
-					else
-						motd_text[ln][0]=' ';
-					ln++;
-					break;
+			}
+
+			len = strlen(buf);
+
+			while( len && ( buf[len-1] == '\r' || buf[len-1] == '\n' ) )
+			{// strip trailing EOL characters
+				len--;
+			}
+
+			if( len )
+			{
+				buf[len] = 0;
+
+				if( ( ptr = strstr(buf, " :") ) != NULL && ptr-buf >= NAME_LENGTH )
+				{// crashes newer clients
+					ShowWarning("Found sequence '"CL_WHITE" :"CL_RESET"' on line '"CL_WHITE"%u"CL_RESET"' in '"CL_WHITE"%s"CL_RESET"'. This can cause newer clients to crash.\n", lines, motd_txt);
 				}
 			}
+			else
+			{// empty line
+				buf[0] = ' ';
+				buf[1] = 0;
+			}
+			entries++;
 		}
 		fclose(fp);
+
+		ShowStatus("Done reading '"CL_WHITE"%u"CL_RESET"' entries in '"CL_WHITE"%s"CL_RESET"'.\n", entries, motd_txt);
 	}
 	else
-		ShowWarning("In function pc_read_motd() -> File '"CL_WHITE"%s"CL_RESET"' not found.\n", motd_txt);
-	
+	{
+		ShowWarning("File '"CL_WHITE"%s"CL_RESET"' not found.\n", motd_txt);
+	}
+
 	return 0;
 }
 

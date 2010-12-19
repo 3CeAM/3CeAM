@@ -1297,8 +1297,6 @@ int make_new_char_sql(struct char_session_data* sd, char* name_, int str, int ag
 
 	//check other inputs
 	if((slot >= MAX_CHARS) // slots
-	|| (hair_style >= 24) // hair style
-	|| (hair_color >= 9) // hair color
 	|| (str + agi + vit + int_ + dex + luk != 6*5 ) // stats
 	|| (str < 1 || str > 9 || agi < 1 || agi > 9 || vit < 1 || vit > 9 || int_ < 1 || int_ > 9 || dex < 1 || dex > 9 || luk < 1 || luk > 9) // individual stat values
 	|| (str + int_ != 10 || agi + luk != 10 || vit + dex != 10) ) // pairs
@@ -1605,7 +1603,7 @@ int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p)
 #endif
 #if (PACKETVER >= 20100720 && PACKETVER <= 20100727) || PACKETVER >= 20100803
 	mapindex_getmapname_ext(mapindex_id2name(p->last_point.map), (char*)WBUFP(buf,108));
-	offset += 16;
+	offset += MAP_NAME_LENGTH_EXT;
 #endif
 	return 106+offset;
 }
@@ -2796,22 +2794,17 @@ int parse_frommap(int fd)
 		break;
 
 		case 0x2b16: // Receive rates [Wizputer]
-			if (RFIFOREST(fd) < 6 || RFIFOREST(fd) < RFIFOW(fd,8))
+			if( RFIFOREST(fd) < 14 )
 				return 0;
 		{
-			char motd[256];
-			char esc_motd[sizeof(motd)*2+1];
 			char esc_server_name[sizeof(server_name)*2+1];
 
-			strncpy(motd, (char*)RFIFOP(fd,10), 255); //First copy it to make sure the motd fits.
-			motd[255] = '\0';
-			Sql_EscapeString(sql_handle, esc_motd, motd);
 			Sql_EscapeString(sql_handle, esc_server_name, server_name);
 
-			if( SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `ragsrvinfo` SET `index`='%d',`name`='%s',`exp`='%d',`jexp`='%d',`drop`='%d',`motd`='%s'",
-				fd, esc_server_name, RFIFOW(fd,2), RFIFOW(fd,4), RFIFOW(fd,6), esc_motd) )
+			if( SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `ragsrvinfo` SET `index`='%d',`name`='%s',`exp`='%d',`jexp`='%d',`drop`='%d'",
+				fd, esc_server_name, RFIFOL(fd,2), RFIFOL(fd,6), RFIFOL(fd,10)) )
 				Sql_ShowDebug(sql_handle);
-			RFIFOSKIP(fd,RFIFOW(fd,8));
+			RFIFOSKIP(fd,14);
 		}
 		break;
 

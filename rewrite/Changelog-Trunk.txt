@@ -1,5 +1,96 @@
 Date	Added
 
+2010/12/18
+	* Renamed item array in 'struct guild_storage' from 'storage_' to 'items' to match 'struct storage_data' (related r12933). [Ai4rei]
+	* Bunch of intif_parse_LoadGuildStorage fixes. [Ai4rei]
+	- Fixed guild storage not being sorted, when the storage had to be requested first (follow up to r14605).
+	- Fixed missing check, whether or not the character has already an open storage (follow up to r4562).
+	- Fixed missing GM trust check, whether or not the player is allowed to use guild storage (follow up to r3481).
+	* Fixed character storage no longer being sorted (bugreport:1982, since r12950). [Ai4rei]
+	- Guild storage is now sorted before being displayed rather than after being saved...
+	- Merged storage_gsortitem into storage_sortitem.
+	- Added option 'client_sort_storage' to control storage sorting (disabled by default, like on official servers).
+	* Updates to handling of hair color/style and cloth color of characters. [Ai4rei]
+	- Moved limit shortcut defines from mmo.h to battle.h, as they are only required in files, which include battle.h (since pre-svn 2004/10/15).
+	- Moved hair style/color validation from char-server to map-server. This enables use of non-default limits as specified in battle config, rather than being restricted to hard-coded ones (bugreport:150).
+	- Cleaned up related capping of values in pc_changelook (related r1708).
+	* Fixed usage of literals for map name length in character list packet (since r14368). [Ai4rei]
+2010/12/17
+	* Made the 'player not attached' script error also report the function it occured in, if available. [Ai4rei]
+	* Fixed a crash, when script command 'doevent' is called without an attached player (bugreport:3973). [Ai4rei]
+	* Fixed label definitions silently overwriting built-in script functions (bugreport:2806, follow up to r8027). [Ai4rei]
+	* Added temporary check to skill_delunitgroup to prevent crashes when 'group' is NULL and added some debug messages to track down the source of the crash (bugreport:3504). [Ai4rei]
+	* Spellchecked script_commands.txt. [Ai4rei]
+	* Random script engine clean-ups that have accumulated over time. [Ai4rei]
+	- Resolved unnecessary script_getnum re-evaluation in a loop in script command 'npcshopdelitem' (since r7120).
+	- Script commands 'menu', 'select' and 'prompt' now warn, when there are more menu options, than the client can handle correctly (TODO from r10316).
+2010/12/16
+	* Reverted r14525 (introduction of SV_READDB_MAX_FIELDS) because it causes confusion to certain group of users and depends on MAX_LEVEL since r14526. [Ai4rei]
+	- Made sv_readdb be able to process any amount of columns instead.
+	* Fixed a mistake in sv_split, causing CR being recognized as EOL character, even when only LF was specified (since r12459). [Ai4rei]
+2010/12/15
+	* Corrected type of second argument of script command 'setbattleflag' from string to number (bugreport:4640, topic:261833, since r5407, related r14577). [Ai4rei]
+	* Fixed missing check in cooking, causing cooking kit requirement could be bypassed by sending 0x25b (CZ_REQ_MAKINGITEM) directly (bugreport:4642, since r13628). [Ai4rei]
+2010/12/13
+	* Fixed plugin 'sig' not being compilable on Mac OS X, due to different return value type of 'strsignal' (bugreport:4637). [Ai4rei]
+2010/12/12
+	* Fixed homunculus_autoloot not working with skill/item granted drops and loot (bugreport:4452, since r12203). [Ai4rei]
+	* Fixed killed monsters were assumed to be killed by homunculus only, if no damage log entries were elligible for exp distribution, even when no homunculus took part in damage dealing (bugreport:4452, since r12203). [Ai4rei]
+	* Added enumeration for monster damage log field 'flag'. [Ai4rei]
+	* Removed disabled backup of script command 'isequipped' (since r1605). [Ai4rei]
+	* Made script engine's DEBUG_DISASM block use script_op2name, rather than hardcoding operator names as per TODO from r13083 (related r9569, follow up to r10667). [Ai4rei]
+	* Cleaned up MOTD reading (related r292 and r4552). [Ai4rei]
+	- Added a warning for common client crash caused by the sequence ' :' in MOTD.
+	* Fixed impossible condition in soundeffect script command (since athena-dev-2.1.1-mod1046, related r5841). [Ai4rei]
+	* Updates to the playBGM functionality (since r14335). [Ai4rei]
+	- Removed impossible condition in playBGM script command (from soundeffect).
+	- Removed unused code (retrieving of a bl) in playBGMall (from soundeffectall).
+	- Made playBGMall default to 'entire server' when both map name and coordinates are omitted instead of printing an error.
+	- Updated documentation for playBGM and playBGMall to match actual behavior.
+	- Removed unused parameter 'bl' in clif_playBGM.
+2010/12/11
+	* Fixed script command setd always assuming value parameter to be a string, which causes hexadecimal and octal numbers not being handled properly (topic:261833, followup to r14577 and r14578). [Ai4rei]
+	* Updates to dynamic server information `ragsrvinfo` on SQL. [Ai4rei]
+	- Fixed exp and drop rates (int) getting truncated (short) when sent to char-server.
+	- Removed `motd` from `ragsrvinfo` as it is not dynamically changed by the server and as such can be read by 3rd party applications directly from conf/motd.txt if required.
+	* Added support for checking argument data type of built-in script functions (bugreport:1701, topic:261833, related r14573). [Ai4rei]
+	* Fixed error message in intif_parse_mercenary_received printing wrong struct size (bugreport:4633, since r13116). [Ai4rei]
+2010/12/10
+	* Replaced buildin_getpartyname_sub, buildin_getguildname_sub and buildin_getguildmaster_sub, which create only unnecessary overhead, with equivalent inlined code. [Ai4rei]
+	- Fixed a memory leak in getguildmasterid, when the guild leader was not online (bugreport:2743).
+	- Command getguildmasterid no longer requires the guild leader to be online.
+	* Fixed bAutoSpellOnSkill bonuses not working independently of each other (bugreport:4617, since r13596, related r14536). [Ai4rei]
+	* Revised argument declaration of all script commands according to the actual functions' argument usage. [Ai4rei]
+	- Fixed many script commands with fixed amount of optional parameters to no longer accept any amount of arguments (faulty declaration).
+	- Corrected use of dummy parameter for guildopenstorage in scripts.
+2010/12/09
+	* Removed some of the duplicate, storage-related packet code. [Ai4rei]
+	- Removed clif_guildstoragelist and adjusted clif_storagelist to be able to handle any kind of storage.
+	- Removed clif_guildstorageitemadded in favor of clif_storageitemadded.
+	- This also fixes clif_guildstorageitemadded sending old update packet for clients prior 20090603, although packet 0x1c4 (ZC_ADD_ITEM_TO_STORE2) was added before PACKETVER 5 (before 2003-11-03aSakexe, exact addition date unknown) (since r14286).
+2010/12/08
+	* Applied some script command documentation updates and fixes as already done inside the wiki. [Ai4rei]
+	- Updated description for 'next', 'return', 'attachrid', 'detachrid', 'itemskill', 'openstorage', 'skilleffect', 'donpcevent', 'day', 'night', 'atoi' and 'axtoi' to resolve inaccuracies, missing information or unverified behavior.
+	- Clarified the purpose of the 'jump_zero' and 'getelementofarray' script commands.
+	- Fixed 'changebase' stating, that it only works in item scripts (since r2402).
+	- Fixed 'kickwaitingroomall' stating, that it is not properly linked into the script engine, thus not working (since r13732).
+	- Updated the description for 'cutin' so that it does not give the impression, that the client is able to display multiple illustrations at once, and being less confusing about the maximum size of illustrations.
+2010/12/07
+	* Fixed txt-converter-login was no longer compilable with supplied project/make files, due to missing reference to function exists in utils.c (bugreport:4626, since r14528). [Ai4rei]
+	* Applied svn:eol-style to VS2010 project files (follow up to r14562). [Ai4rei]
+	* Reverted r14563, due to multiple issues which render the source malfunctioning or uncompilable. To be redone later (bugreport:4627). [Ai4rei]
+	* Removed unnecessary reference operator from scanf calls passing character strings as arguments in adduser tool. [Paradox924X]
+	* Revert of r14564. The value wasn't an arbitrary account id but rather the file format version. Added comment specifying this. [Paradox924X]
+	* Removed arbitrary account id from atop account.txt (Since r13000). [Paradox924X]
+	* Changed almost all instances of sprintf() to snprintf(). [Paradox924X]
+	* Further corrections to doc/item_bonus.txt (bugreport:4624). [Ai4rei]
+	- Added documentation for bUnbreakableGarment, bUnbreakableWeapon, bUnbreakableArmor, bUnbreakableHelm, bUnbreakableShield, bUnbreakableShoes, bBreakWeaponRate and bBreakArmorRate (follow up to r485, r915, r1116, r13819).
+	- Fixed bIgnoreDefEle having race constants listed instead of element constants (since r12804).
+	- Fixed bUnstripable* not mentioning, that the bonus parameter is meaningless (follow up to r1382).
+2010/12/06
+	* Corrected description for bonuses bHealPower and bHealPower2 stating skill names being supported, although the bonus does not accept 'skill' as parameter (bugreport:4619, since r13821). [Ai4rei]
+2010/12/05
+	* Rev. 14559 Added support for bonus bAddItemHealRate, which works for all healing items care of Epoque. [L0ne_W0lf]
 2010/12/04
 	* Fixed party booking search increasing result counter, even when no results were found, causing crashes from r14516 onwards (bugreport:4615, since r14412). [Ai4rei]
 2010/12/03
