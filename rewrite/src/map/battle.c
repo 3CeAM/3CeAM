@@ -2195,13 +2195,13 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio += -100 + (120 * skill_lv + ((sd) ? pc_checkskill(sd,LG_OVERBRAND) : 5) * 80) * s_level / 100;
 					break;
 				case LG_OVERBRAND:
-					skillratio += - 100 + 400 * skill_lv + (pc_checkskill(sd,CR_SPEARQUICKEN) * 30) * s_level / 100;
+					skillratio += ((2567 * skill_lv / 10) + ((sd) ? pc_checkskill(sd,CR_SPEARQUICKEN): 1)) * s_level / 100;
 					break;
 				case LG_OVERBRAND_BRANDISH:
-					skillratio += - 100 + 300 * skill_lv + (2 * (sstatus->str + sstatus->dex) / 3 * s_level / 100;
+					skillratio += -100 + ((200 * skill_lv) +  (2 * (status_get_str(src) + status_get_dex(src)) / 3)) * s_level / 100;
 					break;
 				case LG_OVERBRAND_PLUSATK:
-					skillratio += - 100 + 150 * skill_lv * s_level / 100;
+					skillratio = 160 * skill_lv * s_level / 100;
 					break;
 				case LG_RAYOFGENESIS:
 					skillratio = (skillratio + 200 + 300 * skill_lv) * s_level / 100;
@@ -3841,7 +3841,7 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		md.damage = 200 + 100 * skill_lv + sstatus->int_;
 		break;
 	case GN_HELLS_PLANT_ATK:
-		md.damage = ((sstatus->int_ * 25) + (status_get_lv(target) * 15) * skill_lv) + (10 / (10 - pc_checkskill(sd,AM_CANNIBALIZE)));
+		md.damage = ((sstatus->int_ * 25) + (status_get_lv(target) * 15) * skill_lv) + (10 / (10 - pc_checkskill(sd,BA_MUSICALLESSON)));
 		break;
 	}
 
@@ -5297,6 +5297,7 @@ static const struct _battle_data {
 	{ "mob_slave_keep_target",              &battle_config.mob_slave_keep_target,           0,      0,      1,              },
 	{ "autospell_check_range",              &battle_config.autospell_check_range,           0,      0,      1,              },
 	{ "client_reshuffle_dice",              &battle_config.client_reshuffle_dice,           0,      0,      1,              },
+	{ "client_sort_storage",                &battle_config.client_sort_storage,             0,      0,      1,              },
 // BattleGround Settings
 	{ "bg_update_interval",                 &battle_config.bg_update_interval,              1000,   100,    INT_MAX,        },
 	{ "bg_short_attack_damage_rate",        &battle_config.bg_short_damage_rate,            80,     0,      INT_MAX,        },

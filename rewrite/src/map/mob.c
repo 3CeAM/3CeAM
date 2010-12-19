@@ -1824,7 +1824,7 @@ int mob_respawn(int tid, unsigned int tick, int id, intptr data)
 
 void mob_log_damage(struct mob_data *md, struct block_list *src, int damage)
 {
-	int char_id = 0, flag = 0;
+	int char_id = 0, flag = MDLF_NORMAL;
 
 	if( damage < 0 )
 		return; //Do nothing for absorbed damage.
@@ -1846,7 +1846,7 @@ void mob_log_damage(struct mob_data *md, struct block_list *src, int damage)
 		case BL_HOM:
 		{
 			struct homun_data *hd = (TBL_HOM*)src;
-			flag = 1;
+			flag = MDLF_HOMUN;
 			if( hd->master )
 				char_id = hd->master->status.char_id;
 			if( damage )
@@ -1865,7 +1865,7 @@ void mob_log_damage(struct mob_data *md, struct block_list *src, int damage)
 		case BL_PET:
 		{
 			struct pet_data *pd = (TBL_PET*)src;
-			flag = 2;
+			flag = MDLF_PET;
 			if( pd->msd )
 			{
 				char_id = pd->msd->status.char_id;
@@ -1988,9 +1988,9 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 		unsigned int base_exp,job_exp;
 	} pt[DAMAGELOG_SIZE];
 	int i,temp,count,pnum=0,m=md->bl.m;
+	int dmgbltypes = 0;  // bitfield of all bl types, that caused damage to the mob and are elligible for exp distribution
 	unsigned int mvp_damage, tick = gettick();
-	unsigned short flaghom = 1; // [Zephyrus] Does the mob only received damage from homunculus?
-	bool rebirth;
+	bool rebirth, homkillonly;
 
 	status = &md->status;
 
@@ -2050,9 +2050,9 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 		count++; //Only logged into same map chars are counted for the total.
 		if (pc_isdead(tsd))
 			continue; // skip dead players
-		if(md->dmglog[i].flag == 1 && !merc_is_hom_active(tsd->hd))
+		if(md->dmglog[i].flag == MDLF_HOMUN && !merc_is_hom_active(tsd->hd))
 			continue; // skip homunc's share if inactive
-		if( md->dmglog[i].flag == 2 && (!tsd->status.pet_id || !tsd->pd) )
+		if( md->dmglog[i].flag == MDLF_PET && (!tsd->status.pet_id || !tsd->pd) )
 			continue; // skip pet's share if inactive
 
 		if(md->dmglog[i].dmg > mvp_damage)
@@ -2065,9 +2065,16 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 
 		tmpsd[i] = tsd; // record as valid damage-log entry
 
-		if(!md->dmglog[i].flag == 1 && flaghom)
-			flaghom = 0; // Damage received from other Types != Homunculus
+		switch( md->dmglog[i].flag )
+		{
+			case MDLF_NORMAL: dmgbltypes|= BL_PC;  break;
+			case MDLF_HOMUN:  dmgbltypes|= BL_HOM; break;
+			case MDLF_PET:    dmgbltypes|= BL_PET; break;
+		}
 	}
+
+	// determines, if the monster was killed by homunculus' damage only
+	homkillonly = (bool)( ( dmgbltypes&BL_HOM ) && !( dmgbltypes&~BL_HOM ) );
 
 	if(!battle_config.exp_calc_type && count > 1)
 	{	//Apply first-attacker 200% exp share bonus
@@ -2132,7 +2139,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 		else if(md->special_state.size==2)
 			per *=2.;
 
-		if( md->dmglog[i].flag == 2 )
+		if( md->dmglog[i].flag == MDLF_PET )
 			per *= battle_config.pet_attack_exp_rate/100.;
 
 		if(battle_config.zeny_from_mobs && md->level) {
@@ -2147,12 +2154,12 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 		else
 			base_exp = (unsigned int)cap_value(md->db->base_exp * per * bonus/100. * map[m].bexp/100., 1, UINT_MAX);
 		
-		if (map[m].flag.nojobexp || !md->db->job_exp || md->dmglog[i].flag == 1) //Homun earned job-exp is always lost.
+		if (map[m].flag.nojobexp || !md->db->job_exp || md->dmglog[i].flag == MDLF_HOMUN) //Homun earned job-exp is always lost.
 			job_exp = 0; 
 		else
 			job_exp = (unsigned int)cap_value(md->db->job_exp * per * bonus/100. * map[m].jexp/100., 1, UINT_MAX);
  		
-		if((temp = tmpsd[i]->status.party_id )>0 && !md->dmglog[i].flag == 1) //Homun-done damage (flag 1) is not given to party
+		if((temp = tmpsd[i]->status.party_id )>0 && !md->dmglog[i].flag == MDLF_HOMUN) //Homun-done damage (flag 1) is not given to party
 		{
 			int j;
 			for(j=0;j<pnum && pt[j].id!=temp;j++); //Locate party.
@@ -2184,11 +2191,11 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 			}
 		}
 		if(flag) {
-			if(base_exp && md->dmglog[i].flag == 1) //tmpsd[i] is null if it has no homunc.
+			if(base_exp && md->dmglog[i].flag == MDLF_HOMUN) //tmpsd[i] is null if it has no homunc.
 				merc_hom_gainexp(tmpsd[i]->hd, base_exp);
 			if(base_exp || job_exp)
 			{
-				if( md->dmglog[i].flag != 2 || battle_config.pet_attack_exp_to_master )
+				if( md->dmglog[i].flag != MDLF_PET || battle_config.pet_attack_exp_to_master )
 					pc_gainexp(tmpsd[i], &md->bl, base_exp, job_exp,0);
 			}
 			if(zeny) // zeny from mobs [Valaris]
@@ -2270,13 +2277,13 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 			}
 			// Announce first, or else ditem will be freed. [Lance]
 			// By popular demand, use base drop rate for autoloot code. [Skotlex]
-			mob_item_drop(md, dlist, ditem, 0, md->db->dropitem[i].p, flaghom);
+			mob_item_drop(md, dlist, ditem, 0, md->db->dropitem[i].p, homkillonly);
 		}
 
 		// Ore Discovery [Celest]
 		if (sd == mvp_sd && pc_checkskill(sd,BS_FINDINGORE)>0 && battle_config.finding_ore_rate/10 >= rand()%10000) {
 			ditem = mob_setdropitem(itemdb_searchrandomid(IG_FINDINGORE), 1);
-			mob_item_drop(md, dlist, ditem, 0, battle_config.finding_ore_rate/10, 0);
+			mob_item_drop(md, dlist, ditem, 0, battle_config.finding_ore_rate/10, homkillonly);
 		}
 
 		if(sd) {
@@ -2302,7 +2309,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 					if (rand()%10000 >= drop_rate)
 						continue;
 					itemid = (sd->add_drop[i].id > 0) ? sd->add_drop[i].id : itemdb_searchrandomid(sd->add_drop[i].group);
-					mob_item_drop(md, dlist, mob_setdropitem(itemid,1), 0, drop_rate, 0);
+					mob_item_drop(md, dlist, mob_setdropitem(itemid,1), 0, drop_rate, homkillonly);
 				}
 			}
 			
@@ -2318,7 +2325,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 		// process items looted by the mob
 		if(md->lootitem) {
 			for(i = 0; i < md->lootitem_count; i++)
-				mob_item_drop(md, dlist, mob_setlootitem(&md->lootitem[i]), 1, 10000, 0);
+				mob_item_drop(md, dlist, mob_setlootitem(&md->lootitem[i]), 1, 10000, homkillonly);
 		}
 		if (dlist->item) //There are drop items.
 			add_timer(tick + (!battle_config.delay_battle_damage?500:0), mob_delay_item_drop, 0, (intptr)dlist);
@@ -2334,7 +2341,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 		dlist->third_charid = (third_sd ? third_sd->status.char_id : 0);
 		dlist->item = NULL;
 		for(i = 0; i < md->lootitem_count; i++)
-			mob_item_drop(md, dlist, mob_setlootitem(&md->lootitem[i]), 1, 10000, 0);
+			mob_item_drop(md, dlist, mob_setlootitem(&md->lootitem[i]), 1, 10000, homkillonly);
 		add_timer(tick + (!battle_config.delay_battle_damage?500:0), mob_delay_item_drop, 0, (intptr)dlist);
 	}
 
