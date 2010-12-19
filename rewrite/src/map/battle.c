@@ -2198,7 +2198,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio = 400 * skill_lv + (pc_checkskill(sd,CR_SPEARQUICKEN) * 30) * s_level / 100;
 					break;
 				case LG_OVERBRAND_BRANDISH:
-					skillratio = 300 * skill_lv + (2 * (sstatus->str + sstatus->dex) / 3 * s_level / 100);
+					skillratio = 300 * skill_lv + (2 * (sstatus->str + sstatus->dex) / 3) * s_level / 100;
 					break;
 				case LG_OVERBRAND_PLUSATK:
 					skillratio = 150 * skill_lv * s_level / 100;
