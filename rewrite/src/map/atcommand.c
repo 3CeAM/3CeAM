@@ -1372,6 +1372,8 @@ ACMD_FUNC(jobchange)
 			{ "baby sura",		4106 },
 			{ "baby genetic",	4107 },
 			{ "baby chaser",	4108 },
+			//{ "super novice e",	4190 },
+			//{ "super baby e",	4191 },
 		};
 
 		for (i=0; i < ARRAYLENGTH(jobs); i++) {
@@ -1414,7 +1416,7 @@ ACMD_FUNC(jobchange)
 			clif_displaymessage(fd, "----- Expanded Class -----");
 			clif_displaymessage(fd, "  23 Super Novice     24 Gunslinger       25 Ninja          4046 Taekwon");
 			clif_displaymessage(fd, "4047 Star Gladiator 4049 Soul Linker    4050 Gangsi         4051 Death Knight");
-			clif_displaymessage(fd, "4052 Dark Collector");
+			clif_displaymessage(fd, "4052 Dark Collector 4090 Enhanced Super Novice  4191 Enhanced Super Baby");
 			clif_displaymessage(fd, "---- 1st And 2nd Baby Class ----");
 			clif_displaymessage(fd, "4023 Baby Novice    4024 Baby Swordsman 4025 Baby Mage      4026 Baby Archer");
 			clif_displaymessage(fd, "4027 Baby Acolyte   4028 Baby Merchant  4029 Baby Thief     4030 Baby Knight");
@@ -1430,7 +1432,7 @@ ACMD_FUNC(jobchange)
 			clif_displaymessage(fd, "4108 Baby Shadow Chaser");
 			clif_displaymessage(fd, "---- Modes, And Others ----");
 			clif_displaymessage(fd, "  22 Wedding          26 Christmas");
-			clif_displaymessage(fd, "4048 Star Gladiator (Union)   27 Summer");
+			clif_displaymessage(fd, "  27 Summer         4048 Star Gladiator (Union)");
 			clif_displaymessage(fd, "---- Mounts (Not Allowed) ----");
 			clif_displaymessage(fd, "  13 Knight (Peco)          21 Crusader (Peco)");
 			clif_displaymessage(fd, "4014 Lord Knight (Peco)   4022 Paladin (Peco)       4036 Baby Knight (Peco)");
@@ -1446,7 +1448,8 @@ ACMD_FUNC(jobchange)
 	{
  		case   13: case   21: case 4014: case 4022: case 4036:
 		case 4044: case 4080: case 4081: case 4082: case 4083:
-		case 4084: case 4085: case 4086: case 4087:
+		case 4084: case 4085: case 4086: case 4087: case 4109:
+		case 4110: case 4111: case 4112:
 			return 0; // Deny direct transformation into dummy jobs
 	}
 
@@ -1488,7 +1491,7 @@ ACMD_FUNC(jobchange)
 		clif_displaymessage(fd, "----- Expanded Class -----");
 		clif_displaymessage(fd, "  23 Super Novice     24 Gunslinger       25 Ninja          4046 Taekwon");
 		clif_displaymessage(fd, "4047 Star Gladiator 4049 Soul Linker    4050 Gangsi         4051 Death Knight");
-		clif_displaymessage(fd, "4052 Dark Collector");
+		clif_displaymessage(fd, "4052 Dark Collector 4090 Enhanced Super Novice  4191 Enhanced Super Baby");
 		clif_displaymessage(fd, "---- 1st And 2nd Baby Class ----");
 		clif_displaymessage(fd, "4023 Baby Novice    4024 Baby Swordsman 4025 Baby Mage      4026 Baby Archer");
 		clif_displaymessage(fd, "4027 Baby Acolyte   4028 Baby Merchant  4029 Baby Thief     4030 Baby Knight");
@@ -1504,7 +1507,7 @@ ACMD_FUNC(jobchange)
 		clif_displaymessage(fd, "4108 Baby Shadow Chaser");
 		clif_displaymessage(fd, "---- Modes, And Others ----");
 		clif_displaymessage(fd, "  22 Wedding          26 Christmas");
-		clif_displaymessage(fd, "4048 Star Gladiator (Union)   27 Summer");
+		clif_displaymessage(fd, "  27 Summer         4048 Star Gladiator (Union)");
 		clif_displaymessage(fd, "---- Mounts (Not Allowed) ----");
 		clif_displaymessage(fd, "  13 Knight (Peco)          21 Crusader (Peco)");
 		clif_displaymessage(fd, "4014 Lord Knight (Peco)   4022 Paladin (Peco)       4036 Baby Knight (Peco)");

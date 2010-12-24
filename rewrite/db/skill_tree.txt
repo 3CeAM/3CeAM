@@ -5154,6 +5154,173 @@
 4112,2281,5,2277,2,0,0,0,0,0,0,0,0 //NC_SILVERSNIPER#FAW - Silver Sniper#
 4112,2282,5,2277,2,0,0,0,0,0,0,0,0 //NC_MAGICDECOY#FAW - Magic Decoy#
 4112,2283,1,2281,1,0,0,0,0,0,0,0,0 //NC_DISJOINT#FAW Removal#
+// Super Novice (Enhanced)
+//4190,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
+//4190,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
+//4190,2,10,0,0,0,0,0,0,0,0,0,0 //SM_SWORD#Sword Mastery#
+//4190,4,10,0,0,0,0,0,0,0,0,0,0 //SM_RECOVERY#Increase HP Recovery#
+//4190,5,10,0,0,0,0,0,0,0,0,0,0 //SM_BASH#Bash#
+//4190,6,10,0,0,0,0,0,0,0,0,0,0 //SM_PROVOKE#Provoke#
+//4190,7,10,5,5,0,0,0,0,0,0,0,0 //SM_MAGNUM#Magnum Break#
+//4190,8,10,6,5,0,0,0,0,0,0,0,0 //SM_ENDURE#Endure#
+//4190,9,10,0,0,0,0,0,0,0,0,0,0 //MG_SRECOVERY#Increase SP Recovery#
+//4190,10,1,0,0,0,0,0,0,0,0,0,0 //MG_SIGHT#Sight#
+//4190,11,10,0,0,0,0,0,0,0,0,0,0 //MG_NAPALMBEAT#Napalm Beat#
+//4190,12,10,11,7,13,5,0,0,0,0,0,0 //MG_SAFETYWALL#Safety Wall#
+//4190,13,10,11,4,0,0,0,0,0,0,0,0 //MG_SOULSTRIKE#Soul Strike#
+//4190,14,10,0,0,0,0,0,0,0,0,0,0 //MG_COLDBOLT#Cold Bolt#
+//4190,15,10,14,5,0,0,0,0,0,0,0,0 //MG_FROSTDIVER#Frost Diver#
+//4190,16,10,0,0,0,0,0,0,0,0,0,0 //MG_STONECURSE#Stone Curse#
+//4190,17,10,19,4,0,0,0,0,0,0,0,0 //MG_FIREBALL#Fire Ball#
+//4190,18,10,17,5,10,1,0,0,0,0,0,0 //MG_FIREWALL#Fire Wall#
+//4190,19,10,0,0,0,0,0,0,0,0,0,0 //MG_FIREBOLT#Fire Bolt#
+//4190,20,10,0,0,0,0,0,0,0,0,0,0 //MG_LIGHTNINGBOLT#Lightning Bolt#
+//4190,21,10,20,4,0,0,0,0,0,0,0,0 //MG_THUNDERSTORM#Thunderstorm#
+//4190,22,10,0,0,0,0,0,0,0,0,0,0 //AL_DP#Divine Protection#
+//4190,23,10,22,3,0,0,0,0,0,0,0,0 //AL_DEMONBANE#Demon Bane#
+//4190,24,1,0,0,0,0,0,0,0,0,0,0 //AL_RUWACH#Ruwach#
+//4190,25,1,27,4,0,0,0,0,0,0,0,0 //AL_PNEUMA#Pneuma#
+//4190,26,2,24,1,0,0,0,0,0,0,0,0 //AL_TELEPORT#Teleport#
+//4190,27,4,26,2,0,0,0,0,0,0,0,0 //AL_WARP#Warp Portal#
+//4190,28,10,0,0,0,0,0,0,0,0,0,0 //AL_HEAL#Heal#
+//4190,29,10,28,3,0,0,0,0,0,0,0,0 //AL_INCAGI#Increase AGI#
+//4190,30,10,29,1,0,0,0,0,0,0,0,0 //AL_DECAGI#Decrease AGI#
+//4190,31,1,0,0,0,0,0,0,0,0,0,0 //AL_HOLYWATER#Aqua Benedicta#
+//4190,32,10,23,3,0,0,0,0,0,0,0,0 //AL_CRUCIS#Signum Crusis#
+//4190,33,10,22,3,0,0,0,0,0,0,0,0 //AL_ANGELUS#Angelus#
+//4190,34,10,22,5,0,0,0,0,0,0,0,0 //AL_BLESSING#Blessing#
+//4190,35,1,28,2,0,0,0,0,0,0,0,0 //AL_CURE#Cure#
+//4190,36,10,0,0,0,0,0,0,0,0,0,0 //MC_INCCARRY#Enlarge Weight Limit#
+//4190,37,10,36,3,0,0,0,0,0,0,0,0 //MC_DISCOUNT#Discount#
+//4190,38,10,37,3,0,0,0,0,0,0,0,0 //MC_OVERCHARGE#Overcharge#
+//4190,39,10,36,5,0,0,0,0,0,0,0,0 //MC_PUSHCART#Pushcart#
+//4190,40,1,0,0,0,0,0,0,0,0,0,0 //MC_IDENTIFY#Item Appraisal#
+//4190,41,10,39,3,0,0,0,0,0,0,0,0 //MC_VENDING#Vending#
+//4190,42,10,0,0,0,0,0,0,0,0,0,0 //MC_MAMMONITE#Mammonite#
+//4190,43,10,0,0,0,0,0,0,0,0,0,0 //AC_OWL#Owl's Eye#
+//4190,44,10,43,3,0,0,0,0,0,0,0,0 //AC_VULTURE#Vulture's Eye#
+//4190,45,10,44,1,0,0,0,0,0,0,0,0 //AC_CONCENTRATION#Improve Concentration#
+//4190,48,10,0,0,0,0,0,0,0,0,0,0 //TF_DOUBLE#Double Attack#
+//4190,49,10,0,0,0,0,0,0,0,0,0,0 //TF_MISS#Improve Dodge#
+//4190,50,10,0,0,0,0,0,0,0,0,0,0 //TF_STEAL#Steal#
+//4190,51,10,50,5,0,0,0,0,0,0,0,0 //TF_HIDING#Hiding#
+//4190,52,10,0,0,0,0,0,0,0,0,0,0 //TF_POISON#Envenom#
+//4190,53,1,52,3,0,0,0,0,0,0,0,0 //TF_DETOXIFY#Detoxify#
+//4190,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
+//4190,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+//4190,66,5,0,0,0,0,0,0,0,0,0,0 //PR_IMPOSITIO#Impositio Manus#
+//4190,70,10,28,1,0,0,0,0,0,0,0,0 //PR_SANCTUARY#Sanctuary#
+//4190,72,1,0,0,0,0,0,0,0,0,0,0 //PR_STRECOVERY#Status Recovery#
+//4190,75,5,73,4,74,3,0,0,0,0,0,0 //PR_GLORIA#Gloria#
+//4190,80,10,18,1,0,0,0,0,0,0,0,0 //WZ_FIREPILLAR#Fire Pillar#
+//4190,81,10,20,1,10,1,0,0,0,0,0,0 //WZ_SIGHTRASHER#Sightrasher#
+//4190,84,10,11,1,20,1,0,0,0,0,0,0 //WZ_JUPITEL#Jupiter Thunder#
+//4190,86,5,14,1,20,1,0,0,0,0,0,0 //WZ_WATERBALL#Water Ball#
+//4190,87,10,16,1,15,1,0,0,0,0,0,0 //WZ_ICEWALL#Ice Wall#
+//4190,88,10,87,1,0,0,0,0,0,0,0,0 //WZ_FROSTNOVA#Frost Nova#
+//4190,90,5,283,1,0,0,0,0,0,0,0,0 //WZ_EARTHSPIKE#Earth Spike#
+//4190,91,5,90,1,0,0,0,0,0,0,0,0 //WZ_HEAVENDRIVE#Heaven's Drive#
+//4190,92,5,91,1,0,0,0,0,0,0,0,0 //WZ_QUAGMIRE#Quagmire#
+//4190,93,1,0,0,0,0,0,0,0,0,0,0 //WZ_ESTIMATION#Sense#
+//4190,105,1,0,0,0,0,0,0,0,0,0,0 //BS_HILTBINDING#Hilt Binding#
+//4190,107,10,105,1,0,0,0,0,0,0,0,0 //BS_WEAPONRESEARCH#Weaponry Research#
+//4190,115,5,0,0,0,0,0,0,0,0,0,0 //HT_SKIDTRAP#Skid Trap#
+//4190,119,5,120,1,0,0,0,0,0,0,0,0 //HT_SANDMAN#Sandman#
+//4190,120,5,115,1,0,0,0,0,0,0,0,0 //HT_FLASHER#Flasher#
+//4190,121,5,120,1,0,0,0,0,0,0,0,0 //HT_FREEZINGTRAP#Freezing Trap#
+//4190,138,10,52,1,0,0,0,0,0,0,0,0 //AS_ENCHANTPOISON#Enchant Poison#
+//4190,213,5,51,1,0,0,0,0,0,0,0,0 //RG_TUNNELDRIVE#Stalk#
+//4190,226,10,0,0,0,0,0,0,0,0,0,0 //AM_AXEMASTERY#Axe Mastery#
+//4190,248,10,0,0,0,0,0,0,0,0,0,0 //CR_TRUST#Faith#
+//4190,253,10,248,7,0,0,0,0,0,0,0,0 //CR_HOLYCROSS#Holy Cross#
+//4190,259,10,23,10,22,10,0,0,0,0,0,0 //MO_IRONHAND#Iron Fists#
+//4190,261,5,259,2,0,0,0,0,0,0,0,0 //MO_CALLSPIRITS#Summon Spirit Sphere#
+//4190,262,1,261,5,0,0,0,0,0,0,0,0 //MO_ABSORBSPIRITS#Absorb Spirit Sphere#
+//4190,365,1,9,1,0,0,0,0,0,0,0,0 //HW_MAGICCRASHER#Stave Crasher#
+// Super Novice Baby (Enhanced)
+//4191,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
+//4191,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
+//4191,2,10,0,0,0,0,0,0,0,0,0,0 //SM_SWORD#Sword Mastery#
+//4191,4,10,0,0,0,0,0,0,0,0,0,0 //SM_RECOVERY#Increase HP Recovery#
+//4191,5,10,0,0,0,0,0,0,0,0,0,0 //SM_BASH#Bash#
+//4191,6,10,0,0,0,0,0,0,0,0,0,0 //SM_PROVOKE#Provoke#
+//4191,7,10,5,5,0,0,0,0,0,0,0,0 //SM_MAGNUM#Magnum Break#
+//4191,8,10,6,5,0,0,0,0,0,0,0,0 //SM_ENDURE#Endure#
+//4191,9,10,0,0,0,0,0,0,0,0,0,0 //MG_SRECOVERY#Increase SP Recovery#
+//4191,10,1,0,0,0,0,0,0,0,0,0,0 //MG_SIGHT#Sight#
+//4191,11,10,0,0,0,0,0,0,0,0,0,0 //MG_NAPALMBEAT#Napalm Beat#
+//4191,12,10,11,7,13,5,0,0,0,0,0,0 //MG_SAFETYWALL#Safety Wall#
+//4191,13,10,11,4,0,0,0,0,0,0,0,0 //MG_SOULSTRIKE#Soul Strike#
+//4191,14,10,0,0,0,0,0,0,0,0,0,0 //MG_COLDBOLT#Cold Bolt#
+//4191,15,10,14,5,0,0,0,0,0,0,0,0 //MG_FROSTDIVER#Frost Diver#
+//4191,16,10,0,0,0,0,0,0,0,0,0,0 //MG_STONECURSE#Stone Curse#
+//4191,17,10,19,4,0,0,0,0,0,0,0,0 //MG_FIREBALL#Fire Ball#
+//4191,18,10,17,5,10,1,0,0,0,0,0,0 //MG_FIREWALL#Fire Wall#
+//4191,19,10,0,0,0,0,0,0,0,0,0,0 //MG_FIREBOLT#Fire Bolt#
+//4191,20,10,0,0,0,0,0,0,0,0,0,0 //MG_LIGHTNINGBOLT#Lightning Bolt#
+//4191,21,10,20,4,0,0,0,0,0,0,0,0 //MG_THUNDERSTORM#Thunderstorm#
+//4191,22,10,0,0,0,0,0,0,0,0,0,0 //AL_DP#Divine Protection#
+//4191,23,10,22,3,0,0,0,0,0,0,0,0 //AL_DEMONBANE#Demon Bane#
+//4191,24,1,0,0,0,0,0,0,0,0,0,0 //AL_RUWACH#Ruwach#
+//4191,25,1,27,4,0,0,0,0,0,0,0,0 //AL_PNEUMA#Pneuma#
+//4191,26,2,24,1,0,0,0,0,0,0,0,0 //AL_TELEPORT#Teleport#
+//4191,27,4,26,2,0,0,0,0,0,0,0,0 //AL_WARP#Warp Portal#
+//4191,28,10,0,0,0,0,0,0,0,0,0,0 //AL_HEAL#Heal#
+//4191,29,10,28,3,0,0,0,0,0,0,0,0 //AL_INCAGI#Increase AGI#
+//4191,30,10,29,1,0,0,0,0,0,0,0,0 //AL_DECAGI#Decrease AGI#
+//4191,31,1,0,0,0,0,0,0,0,0,0,0 //AL_HOLYWATER#Aqua Benedicta#
+//4191,32,10,23,3,0,0,0,0,0,0,0,0 //AL_CRUCIS#Signum Crusis#
+//4191,33,10,22,3,0,0,0,0,0,0,0,0 //AL_ANGELUS#Angelus#
+//4191,34,10,22,5,0,0,0,0,0,0,0,0 //AL_BLESSING#Blessing#
+//4191,35,1,0,0,0,0,0,0,0,0,0,0 //AL_CURE#Cure#
+//4191,36,10,0,0,0,0,0,0,0,0,0,0 //MC_INCCARRY#Enlarge Weight Limit#
+//4191,37,10,36,3,0,0,0,0,0,0,0,0 //MC_DISCOUNT#Discount#
+//4191,38,10,37,3,0,0,0,0,0,0,0,0 //MC_OVERCHARGE#Overcharge#
+//4191,39,10,36,5,0,0,0,0,0,0,0,0 //MC_PUSHCART#Pushcart#
+//4191,40,1,0,0,0,0,0,0,0,0,0,0 //MC_IDENTIFY#Item Appraisal#
+//4191,41,10,39,3,0,0,0,0,0,0,0,0 //MC_VENDING#Vending#
+//4191,42,10,0,0,0,0,0,0,0,0,0,0 //MC_MAMMONITE#Mammonite#
+//4191,43,10,0,0,0,0,0,0,0,0,0,0 //AC_OWL#Owl's Eye#
+//4191,44,10,43,3,0,0,0,0,0,0,0,0 //AC_VULTURE#Vulture's Eye#
+//4191,45,10,44,1,0,0,0,0,0,0,0,0 //AC_CONCENTRATION#Improve Concentration#
+//4191,48,10,0,0,0,0,0,0,0,0,0,0 //TF_DOUBLE#Double Attack#
+//4191,49,10,0,0,0,0,0,0,0,0,0,0 //TF_MISS#Improve Dodge#
+//4191,50,10,0,0,0,0,0,0,0,0,0,0 //TF_STEAL#Steal#
+//4191,51,10,50,5,0,0,0,0,0,0,0,0 //TF_HIDING#Hiding#
+//4191,52,10,0,0,0,0,0,0,0,0,0,0 //TF_POISON#Envenom#
+//4191,53,1,52,3,0,0,0,0,0,0,0,0 //TF_DETOXIFY#Detoxify#
+//4191,408,1,0,0,0,0,0,0,0,0,0,0 //WE_BABY#Baby#
+//4191,409,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLPARENT#Call Parent#
+//4191,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+//4191,66,5,0,0,0,0,0,0,0,0,0,0 //PR_IMPOSITIO#Impositio Manus#
+//4191,70,10,28,1,0,0,0,0,0,0,0,0 //PR_SANCTUARY#Sanctuary#
+//4191,72,1,0,0,0,0,0,0,0,0,0,0 //PR_STRECOVERY#Status Recovery#
+//4191,75,5,73,4,74,3,0,0,0,0,0,0 //PR_GLORIA#Gloria#
+//4191,80,10,18,1,0,0,0,0,0,0,0,0 //WZ_FIREPILLAR#Fire Pillar#
+//4191,81,10,20,1,10,1,0,0,0,0,0,0 //WZ_SIGHTRASHER#Sightrasher#
+//4191,84,10,11,1,20,1,0,0,0,0,0,0 //WZ_JUPITEL#Jupiter Thunder#
+//4191,86,5,14,1,20,1,0,0,0,0,0,0 //WZ_WATERBALL#Water Ball#
+//4191,87,10,16,1,15,1,0,0,0,0,0,0 //WZ_ICEWALL#Ice Wall#
+//4191,88,10,87,1,0,0,0,0,0,0,0,0 //WZ_FROSTNOVA#Frost Nova#
+//4191,90,5,283,1,0,0,0,0,0,0,0,0 //WZ_EARTHSPIKE#Earth Spike#
+//4191,91,5,90,1,0,0,0,0,0,0,0,0 //WZ_HEAVENDRIVE#Heaven's Drive#
+//4191,92,5,91,1,0,0,0,0,0,0,0,0 //WZ_QUAGMIRE#Quagmire#
+//4191,93,1,0,0,0,0,0,0,0,0,0,0 //WZ_ESTIMATION#Sense#
+//4191,105,1,0,0,0,0,0,0,0,0,0,0 //BS_HILTBINDING#Hilt Binding#
+//4191,107,10,105,1,0,0,0,0,0,0,0,0 //BS_WEAPONRESEARCH#Weaponry Research#
+//4191,115,5,0,0,0,0,0,0,0,0,0,0 //HT_SKIDTRAP#Skid Trap#
+//4191,119,5,120,1,0,0,0,0,0,0,0,0 //HT_SANDMAN#Sandman#
+//4191,120,5,115,1,0,0,0,0,0,0,0,0 //HT_FLASHER#Flasher#
+//4191,121,5,120,1,0,0,0,0,0,0,0,0 //HT_FREEZINGTRAP#Freezing Trap#
+//4191,138,10,52,1,0,0,0,0,0,0,0,0 //AS_ENCHANTPOISON#Enchant Poison#
+//4191,213,5,51,1,0,0,0,0,0,0,0,0 //RG_TUNNELDRIVE#Stalk#
+//4191,226,10,0,0,0,0,0,0,0,0,0,0 //AM_AXEMASTERY#Axe Mastery#
+//4191,248,10,0,0,0,0,0,0,0,0,0,0 //CR_TRUST#Faith#
+//4191,253,10,248,7,0,0,0,0,0,0,0,0 //CR_HOLYCROSS#Holy Cross#
+//4191,259,10,23,10,22,10,0,0,0,0,0,0 //MO_IRONHAND#Iron Fists#
+//4191,261,5,259,2,0,0,0,0,0,0,0,0 //MO_CALLSPIRITS#Summon Spirit Sphere#
+//4191,262,1,261,5,0,0,0,0,0,0,0,0 //MO_ABSORBSPIRITS#Absorb Spirit Sphere#
+//4191,365,1,9,1,0,0,0,0,0,0,0,0 //HW_MAGICCRASHER#Stave Crasher#
 // Temporarly tree entry addin's for the Purchase Shop skill for testing.
 // This is a quest skill and is only learnable by jobs that have Vending
 // level 1 or higher, mainly merchant branch and higher jobs, as well as
@@ -5187,3 +5354,6 @@
 // Baby Mechanic / Baby Genetic
 4100,2535,2,0,0,0,0,0,0,0,0,0,0 //ALL_BUYING_SHOP#Purchase Shop#
 4107,2535,2,0,0,0,0,0,0,0,0,0,0 //ALL_BUYING_SHOP#Purchase Shop#
+// Super Novice 2 / Super Baby 2
+//4190,2535,2,0,0,0,0,0,0,0,0,0,0 //ALL_BUYING_SHOP#Purchase Shop#
+//4191,2535,2,0,0,0,0,0,0,0,0,0,0 //ALL_BUYING_SHOP#Purchase Shop#
