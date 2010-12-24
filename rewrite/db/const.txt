@@ -142,6 +142,9 @@ Job_Baby_Guard2	4110
 Job_Baby_Ranger2	4111
 Job_Baby_Mechanic2	4112
 
+Job_Super_Novice_E	4190
+Job_Super_Baby_E	4191
+
 EAJL_2_1	0x100
 EAJL_2_2	0x200
 EAJL_2	0x300

@@ -196,9 +196,9 @@ const char* itemdb_typename(int type)
 		case IT_PETARMOR:       return "Pet Accessory";
 		case IT_AMMO:           return "Arrow/Ammunition";
 		case IT_DELAYCONSUME:   return "Delay-Consume Usable";
-		case IT_THROWWEAPON:  		return "Throwing Item";
+		case IT_THROWWEAPON:  	return "Throwing Item";
 		case IT_CASH:           return "Cash Usable";
-		case IT_CANNONBALL:  		return "Cannon Ball";
+		case IT_CANNONBALL:  	return "Cannon Ball";
 	}
 	return "Unknown Type";
 }
