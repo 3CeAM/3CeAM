@@ -3049,7 +3049,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
  *------------------------------------------*/
 struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list *target,int skill_num,int skill_lv,int mflag)
 {
-	int i, nk, s_level;
+	int i, nk, s_level, s_job_level;
 	short s_ele = skill_get_ele(skill_num, skill_lv);
 	unsigned int skillratio = 100;	//Skill dmg modifiers.
 
@@ -3080,6 +3080,16 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 	if( skill_num >= RK_ENCHANTBLADE && skill_num <= LG_OVERBRAND_PLUSATK &&
 		battle_config.max_highlvl_nerf && s_level > battle_config.max_highlvl_nerf )
 		s_level = battle_config.max_highlvl_nerf;
+		
+	// Max Job Level bonus that skills should receive. Acording to battle_config.max_joblvl_nerf [Pinky]
+	if( sd && battle_config.max_joblvl_nerf)
+	{
+		s_job_level = sd->status.job_level;
+		if(s_job_level > battle_config.max_joblvl_nerf)
+			s_job_level = battle_config.max_joblvl_nerf;
+	}
+	else if ( sd )
+		s_job_level = sd->status.job_level;
 
 	//Initial Values
 	ad.damage = 1;
@@ -3387,7 +3397,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 								skillratio = (skillratio + 900 + 300 * skill_lv);
 					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 							else
-								skillratio = (int)( (skillratio + 100 * skill_lv) * (1 + ((sd) ? sd->status.job_level : 0) / 100. ) );
+								skillratio = (int)( (skillratio + 100 * skill_lv) * (1 + ((sd) ? s_job_level : 0) / 100. ) );
 						}
 						break;
 					case WL_DRAINLIFE:
@@ -3440,7 +3450,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					case WL_SUMMON_ATK_WIND:
 					case WL_SUMMON_ATK_GROUND:
 						skillratio += 50 * skill_lv - 50;
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 100 + (sd->status.job_level / 50);
+					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 100 + (s_job_level / 50);
 						break;
 					case LG_RAYOFGENESIS:
 						skillratio = (skillratio + 200) * skill_lv;
@@ -5341,6 +5351,8 @@ static const struct _battle_data {
 	{ "renewal_edp",                        &battle_config.renewal_edp,                      0,     0,            3,        },
 	{ "use_renewal_statpoints",             &battle_config.use_renewal_statpoints,           0,     0,            1,        },
 	{ "max_highlvl_nerf",                   &battle_config.max_highlvl_nerf,                 100,   0,      INT_MAX,        },
+	{ "max_joblvl_nerf",                    &battle_config.max_joblvl_nerf,                  100,   0,      INT_MAX,        },
+	{ "max_joblvl_nerf_misc",               &battle_config.max_joblvl_nerf_misc,             100,   0,      INT_MAX,        },
 	{ "skillsbonus_maxhp_RK",               &battle_config.skillsbonus_maxhp_RK,             0,     0,      INT_MAX,        },
 	{ "skillsbonus_maxhp_SR",               &battle_config.skillsbonus_maxhp_SR,             0,     0,      INT_MAX,        },
 };

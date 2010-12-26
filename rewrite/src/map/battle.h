@@ -503,6 +503,8 @@ extern struct Battle_Config
 	// Casting Time Renewal Settings
 	int renewal_cast_enable;
 	int max_highlvl_nerf; // [Pinky]
+	int max_joblvl_nerf; // [Pinky]
+	int max_joblvl_nerf_misc; // [Pinky]
 	int skillsbonus_maxhp_RK; // [Pinky]
 	int skillsbonus_maxhp_SR; // [Pinky]
 } battle_config;
