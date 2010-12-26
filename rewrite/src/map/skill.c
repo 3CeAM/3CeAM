@@ -3161,6 +3161,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	struct map_session_data *sd = NULL, *tsd = NULL;
 	struct status_data *tstatus;
 	struct status_change *sc, *tsc;
+	int s_job_level;
 
 	if( skillid > 0 && skilllv <= 0 ) return 0;	// Wrong skill level.
 
@@ -3178,6 +3179,17 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 
 	if( status_isdead(bl) )
 		return 1;
+
+	// Max Job Level bonus that skills should receive. Acording to battle_config.max_joblvl_nerf [Pinky]
+	if( sd && battle_config.max_joblvl_nerf)
+	{
+		s_job_level = sd->status.job_level;
+		if(s_job_level > battle_config.max_joblvl_nerf)
+			s_job_level = battle_config.max_joblvl_nerf;
+	}
+	else if ( sd )
+		s_job_level = sd->status.job_level;
+
 
 	if( skillid && skill_get_type(skillid) == BF_MAGIC && status_isimmune(bl) == 100 )
 	{	//GTB makes all targetted magic display miss with a single bolt.
@@ -3933,7 +3945,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 			int heal = skill_attack(skill_get_type(skillid), src, src, bl, skillid, skilllv, tick, flag);
 			int rate = 25 + 5 * skilllv;
 			if( sd )
-				rate = (int)( rate * (1 + sd->status.job_level / 50. ) );
+				rate = (int)( rate * (1 + s_job_level / 50. ) );
 
 			heal = heal * 8 * skilllv * status_get_lv(src) / 10000;
 
@@ -4482,7 +4494,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	struct status_change *tsc;
 	struct status_change_entry *tsce;
 
-	int i;
+	int i, s_job_level;
 	enum sc_type type;
 
 	if(skillid > 0 && skilllv <= 0) return 0;	// celest
@@ -4506,6 +4518,16 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		return 1;
 	if(status_isdead(src))
 		return 1;
+
+	// Max Job Level bonus that skills should receive. Acording to battle_config.max_joblvl_nerf [Pinky]
+	if( sd && battle_config.max_joblvl_nerf)
+	{
+		s_job_level = sd->status.job_level;
+		if(s_job_level > battle_config.max_joblvl_nerf)
+			s_job_level = battle_config.max_joblvl_nerf;
+	}
+	else if ( sd )
+		s_job_level = sd->status.job_level;
 
 	if( src != bl && status_isdead(bl) && skillid != ALL_RESURRECTION && skillid != PR_REDEMPTIO && skillid != NPC_WIDESOULDRAIN && skillid != WM_DEADHILLHERE)
 		return 1;
@@ -7530,7 +7552,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		if( !(tsc && tsc->data[type]) && (src == bl || battle_check_target(src, bl, BCT_ENEMY)) )
 		{
 			int rate = 50 + 3 * skilllv;
-			if( sd ) rate = (int)( rate * (1 + sd->status.job_level / 100. ) );
+			if( sd ) rate = (int)( rate * (1 + s_job_level / 100. ) );
 			i = sc_start2(bl,type,rate,skilllv,src->id,(src == bl)?skill_get_time2(skillid,skilllv):skill_get_time(skillid, skilllv));
 			clif_skill_nodamage(src,bl,skillid,skilllv,i);
 			if( sd && i )
@@ -7553,7 +7575,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case WL_MARSHOFABYSS:
 		// Should marsh of abyss still apply half reduction to players after the 28/10 patch? [LimitLine]
 		clif_skill_nodamage(src, bl, skillid, skilllv,
-			sc_start4(bl, type, 100, skilllv, status_get_int(src), sd ? sd->status.job_level : 0, 0,
+			sc_start4(bl, type, 100, skilllv, status_get_int(src), sd ? s_job_level : 0, 0,
 			skill_get_time(skillid, skilllv)));
 		break;
 
@@ -7574,7 +7596,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		else
 		{
 			int rate = 40 + 8 * skilllv;
-			if( sd ) rate = (int)( rate * (1 + sd->status.job_level / 200.) );
+			if( sd ) rate = (int)( rate * (1 + s_job_level / 200.) );
 			// IroWiki says Rate should be reduced by target stats, but currently unknown
 			if( rand()%100 < rate )
 			{ // Success on First Target
@@ -13457,8 +13479,20 @@ void skill_weaponrefine (struct map_session_data *sd, int idx)
 	int i = 0, ep = 0, per;
 	int material[5] = { 0, 1010, 1011, 984, 984 };
 	struct item *item;
+	int s_job_level;
 
 	nullpo_retv(sd);
+
+	// Max Job Level bonus that skills should receive. Acording to battle_config.max_joblvl_nerf_misc [Pinky]
+	if( sd && battle_config.max_joblvl_nerf_misc )
+	{
+		s_job_level = sd->status.job_level;
+		if(s_job_level > battle_config.max_joblvl_nerf_misc)
+			s_job_level = battle_config.max_joblvl_nerf_misc;
+	}
+	else if( sd )
+		s_job_level = sd->status.job_level;
+
 
 	if (idx >= 0 && idx < MAX_INVENTORY)
 	{
@@ -13477,7 +13511,7 @@ void skill_weaponrefine (struct map_session_data *sd, int idx)
 			}
 
 			per = percentrefinery [ditem->wlv][(int)item->refine];
-			per += (((signed int)sd->status.job_level)-50)/2; //Updated per the new kro descriptions. [Skotlex]
+			per += (((signed int)s_job_level)-50)/2; //Updated per the new kro descriptions. [Skotlex]
 
 			pc_delitem(sd, i, 1, 0, 0);
 			if (per > rand() % 100) {
@@ -15125,9 +15159,21 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 	int i,sc,ele,idx,equip,wlv = 0,make_per,flag = 0,skill_lv = 0,temp_qty;
 	int num = -1; // exclude the recipe
 	struct status_data *status;
+	int s_job_level;
 
 	nullpo_ret(sd);
 	status = status_get_status_data(&sd->bl);
+
+	// Max Job Level bonus that skills should receive. Acording to battle_config.max_joblvl_nerf_misc [Pinky]
+	if( sd && battle_config.max_joblvl_nerf_misc )
+	{
+		s_job_level = sd->status.job_level;
+		if(s_job_level > battle_config.max_joblvl_nerf_misc)
+			s_job_level = battle_config.max_joblvl_nerf_misc;
+	}
+	else if( sd )
+		s_job_level = sd->status.job_level;
+
 
 	if( !(idx=skill_can_produce_mix(sd,nameid,-1, qty)) )
 		return 0;
@@ -15225,7 +15271,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 			case BS_ENCHANTEDSTONE:
 				// Ores & Metals Refining - skill bonuses are straight from kRO website [DracoRPG]
 				i = pc_checkskill(sd,skill_id);
-				make_per = sd->status.job_level*20 + status->dex*10 + status->luk*10; //Base chance
+				make_per = s_job_level*20 + status->dex*10 + status->luk*10; //Base chance
 				switch( nameid )
 				{
 					case 998: // Iron
@@ -15254,7 +15300,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 			case AM_TWILIGHT2:
 			case AM_TWILIGHT3:
 				make_per = pc_checkskill(sd,AM_LEARNINGPOTION) * 50
-					+ pc_checkskill(sd,AM_PHARMACY) * 300 + sd->status.job_level * 20
+					+ pc_checkskill(sd,AM_PHARMACY) * 300 + s_job_level * 20
 					+ (status->int_/2) * 10 + status->dex * 10 + status->luk * 10;
 				if( merc_is_hom_active(sd->hd) )
 				{	//Player got a homun
@@ -15360,7 +15406,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 	}
 	else
 	{ // Weapon Forging - skill bonuses are straight from kRO website, other things from a jRO calculator [DracoRPG]
-		make_per = 5000 + sd->status.job_level*20 + status->dex*10 + status->luk*10; // Base
+		make_per = 5000 + s_job_level*20 + status->dex*10 + status->luk*10; // Base
 		make_per += pc_checkskill(sd,skill_id)*500; // Smithing skills bonus: +5/+10/+15
 		make_per += pc_checkskill(sd,BS_WEAPONRESEARCH)*100 +((wlv >= 3)? pc_checkskill(sd,BS_ORIDEOCON)*100:0); // Weaponry Research bonus: +1/+2/+3/+4/+5/+6/+7/+8/+9/+10, Oridecon Research bonus (custom): +1/+2/+3/+4/+5
 		make_per -= (ele?2000:0) + sc*1500 + (wlv>1?wlv*1000:0); // Element Stone: -20%, Star Crumb: -15% each, Weapon level malus: -0/-20/-30
