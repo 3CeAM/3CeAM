@@ -1146,13 +1146,9 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		status_percent_damage(src, bl, 0, 5+1*skilllv, false);
 		break;
 	case SR_WINDMILL:
-		if( dstsd && !pc_issit(dstsd) )
-		{
-			pc_setsit(dstsd);
-			skill_sit(dstsd,1);
-			clif_sitting(&dstsd->bl,true);
-		}
-		if( dstmd && !is_boss(bl) )
+		if( dstsd )
+			skill_addtimerskill(src,tick+status_get_amotion(src),bl->id,0,0,skillid,skilllv,BF_WEAPON,0);
+		else if( dstmd && !is_boss(bl) )
 			sc_start(bl, SC_STUN, 100, skilllv, 1000 + 1000 * (rand()%3));
 		break;
 	case SR_GENTLETOUCH_QUIET:
@@ -2976,6 +2972,7 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 						unit_warp(target, -1, skl->x, skl->y, 3);
 					break;
 				case LG_MOONSLASHER:
+				case SR_WINDMILL:
 					if( target->type == BL_PC )
 					{
 						struct map_session_data *tsd = BL_CAST(BL_PC,target);
@@ -3161,7 +3158,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	struct map_session_data *sd = NULL, *tsd = NULL;
 	struct status_data *tstatus;
 	struct status_change *sc, *tsc;
-	int s_job_level;
+	int s_job_level = 50;
 
 	if( skillid > 0 && skilllv <= 0 ) return 0;	// Wrong skill level.
 
@@ -3182,11 +3179,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 
 	// Max Job Level bonus that skills should receive. Acording to battle_config.max_joblvl_nerf [Pinky]
 	if( sd && battle_config.max_joblvl_nerf)
-	{
-		s_job_level = sd->status.job_level;
-		if(s_job_level > battle_config.max_joblvl_nerf)
-			s_job_level = battle_config.max_joblvl_nerf;
-	}
+		s_job_level = min(sd->status.job_level,battle_config.max_joblvl_nerf);
 	else if ( sd )
 		s_job_level = sd->status.job_level;
 
@@ -4494,7 +4487,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	struct status_change *tsc;
 	struct status_change_entry *tsce;
 
-	int i, s_job_level;
+	int i, s_job_level = 50;
 	enum sc_type type;
 
 	if(skillid > 0 && skilllv <= 0) return 0;	// celest
@@ -4521,11 +4514,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 	// Max Job Level bonus that skills should receive. Acording to battle_config.max_joblvl_nerf [Pinky]
 	if( sd && battle_config.max_joblvl_nerf)
-	{
-		s_job_level = sd->status.job_level;
-		if(s_job_level > battle_config.max_joblvl_nerf)
-			s_job_level = battle_config.max_joblvl_nerf;
-	}
+		s_job_level = min(sd->status.job_level,battle_config.max_joblvl_nerf);
 	else if ( sd )
 		s_job_level = sd->status.job_level;
 
@@ -8954,7 +8943,10 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 			if( sc->data[SC_CAMOUFLAGE] )
 				status_change_end(src,SC_CAMOUFLAGE,-1);
 			if( sc->data[SC_CURSEDCIRCLE_ATKER] )
+			{
+				sc->data[SC_CURSEDCIRCLE_ATKER]->val3 = 1;
 				status_change_end(src,SC_CURSEDCIRCLE_ATKER,-1);
+			}
 		}
 
 		if( skill_get_casttype(ud->skillid) == CAST_NODAMAGE )
@@ -9215,10 +9207,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		if( sc->data[SC_CAMOUFLAGE] )
 			status_change_end(src,SC_CAMOUFLAGE,-1);
 		if( sc->data[SC_CURSEDCIRCLE_ATKER] )
-		{
-			sc->data[SC_CURSEDCIRCLE_ATKER]->val3 = 1;
 			status_change_end(src,SC_CURSEDCIRCLE_ATKER,-1);
-		}
 	}
 
 	switch (skillid) { //Skill effect.
@@ -9643,8 +9632,6 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		}
 		break;
 
-	case SR_WINDMILL:
- 		clif_skill_damage(src,src,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
 	case NC_COLDSLOWER:
 	case NC_ARMSCANNON:
 	case RK_DRAGONBREATH:
@@ -13479,17 +13466,13 @@ void skill_weaponrefine (struct map_session_data *sd, int idx)
 	int i = 0, ep = 0, per;
 	int material[5] = { 0, 1010, 1011, 984, 984 };
 	struct item *item;
-	int s_job_level;
+	int s_job_level = 50;
 
 	nullpo_retv(sd);
 
 	// Max Job Level bonus that skills should receive. Acording to battle_config.max_joblvl_nerf_misc [Pinky]
 	if( sd && battle_config.max_joblvl_nerf_misc )
-	{
-		s_job_level = sd->status.job_level;
-		if(s_job_level > battle_config.max_joblvl_nerf_misc)
-			s_job_level = battle_config.max_joblvl_nerf_misc;
-	}
+		s_job_level = min(sd->status.job_level,battle_config.max_joblvl_nerf_misc);
 	else if( sd )
 		s_job_level = sd->status.job_level;
 
@@ -15159,18 +15142,14 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 	int i,sc,ele,idx,equip,wlv = 0,make_per,flag = 0,skill_lv = 0,temp_qty;
 	int num = -1; // exclude the recipe
 	struct status_data *status;
-	int s_job_level;
+	int s_job_level = 50;
 
 	nullpo_ret(sd);
 	status = status_get_status_data(&sd->bl);
 
 	// Max Job Level bonus that skills should receive. Acording to battle_config.max_joblvl_nerf_misc [Pinky]
 	if( sd && battle_config.max_joblvl_nerf_misc )
-	{
-		s_job_level = sd->status.job_level;
-		if(s_job_level > battle_config.max_joblvl_nerf_misc)
-			s_job_level = battle_config.max_joblvl_nerf_misc;
-	}
+		s_job_level = min(sd->status.job_level,battle_config.max_joblvl_nerf_misc);
 	else if( sd )
 		s_job_level = sd->status.job_level;
 

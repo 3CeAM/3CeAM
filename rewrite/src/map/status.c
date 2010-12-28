@@ -8566,11 +8566,7 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 			break;
 		case SC_CURSEDCIRCLE_ATKER:
 			if( sce->val3 )
-			{
-				int range = skill_get_splash(SR_CURSEDCIRCLE, sce->val1);
-				map_foreachinarea(status_change_timer_sub, 
-					bl->m, bl->x-range, bl->y-range, bl->x+range, bl->y+range, BL_CHAR, bl, sce, SC_CURSEDCIRCLE_TARGET, gettick());
-			}
+				map_foreachinrange(status_change_timer_sub, bl, skill_get_splash(SR_CURSEDCIRCLE, sce->val1),BL_CHAR, bl, sce, SC_CURSEDCIRCLE_TARGET, gettick());
 			break;
 		case SC_RAISINGDRAGON:
 			if( sd && sce->val2 && !pc_isdead(sd) )
