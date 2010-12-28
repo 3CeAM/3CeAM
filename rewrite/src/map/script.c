@@ -159,6 +159,9 @@
 		if( script_hasdata(st,n) ) \
 			(t)=script_getnum(st,n);
 
+/// Maximum amount of elements in script arrays
+#define SCRIPT_MAX_ARRAYSIZE 128
+
 #define SCRIPT_BLOCK_SIZE 512
 enum { LABEL_NEXTLINE=1,LABEL_START };
 
@@ -3544,6 +3547,74 @@ void script_add_autobonus(const char *autobonus)
 	}
 }
 
+
+/// resets a temporary character array variable to given value
+void script_cleararray_pc(struct map_session_data* sd, const char* varname, void* value)
+{
+	int key;
+	uint8 idx;
+
+	if( not_array_variable(varname[0]) || !not_server_variable(varname[0]) )
+	{
+		ShowError("script_cleararray_pc: Variable '%s' has invalid scope (char_id=%d).\n", varname, sd->status.char_id);
+		return;
+	}
+
+	key = add_str(varname);
+
+	if( is_string_variable(varname) )
+	{
+		for( idx = 0; idx < SCRIPT_MAX_ARRAYSIZE; idx++ )
+		{
+			pc_setregstr(sd, reference_uid(key, idx), (const char*)value);
+		}
+	}
+	else
+	{
+		for( idx = 0; idx < SCRIPT_MAX_ARRAYSIZE; idx++ )
+		{
+			pc_setreg(sd, reference_uid(key, idx), (int)value);
+		}
+	}
+}
+
+
+/// sets a temporary character array variable element idx to given value
+/// @param refcache Pointer to an int variable, which keeps a copy of the reference to varname and must be initialized to 0. Can be NULL if only one element is set.
+void script_setarray_pc(struct map_session_data* sd, const char* varname, uint8 idx, void* value, int* refcache)
+{
+	int key;
+
+	if( not_array_variable(varname[0]) || !not_server_variable(varname[0]) )
+	{
+		ShowError("script_setarray_pc: Variable '%s' has invalid scope (char_id=%d).\n", varname, sd->status.char_id);
+		return;
+	}
+
+	if( idx >= SCRIPT_MAX_ARRAYSIZE )
+	{
+		ShowError("script_setarray_pc: Variable '%s' has invalid index '%d' (char_id=%d).\n", varname, (int)idx, sd->status.char_id);
+		return;
+	}
+
+	key = ( refcache && refcache[0] ) ? refcache[0] : add_str(varname);
+
+	if( is_string_variable(varname) )
+	{
+		pc_setregstr(sd, reference_uid(key, idx), (const char*)value);
+	}
+	else
+	{
+		pc_setreg(sd, reference_uid(key, idx), (int)value);
+	}
+
+	if( refcache )
+	{// save to avoid repeated add_str calls
+		refcache[0] = key;
+	}
+}
+
+
 /*==========================================
  * èIóπ
  *------------------------------------------*/
@@ -4750,7 +4821,7 @@ static int32 getarraysize(struct script_state* st, int32 id, int32 idx, int isst
 
 	if( isstring )
 	{
-		for( ; idx < 128; ++idx )
+		for( ; idx < SCRIPT_MAX_ARRAYSIZE; ++idx )
 		{
 			char* str = (char*)get_val2(st, reference_uid(id, idx), ref);
 			if( str && *str )
@@ -4760,7 +4831,7 @@ static int32 getarraysize(struct script_state* st, int32 id, int32 idx, int isst
 	}
 	else
 	{
-		for( ; idx < 128; ++idx )
+		for( ; idx < SCRIPT_MAX_ARRAYSIZE; ++idx )
 		{
 			int32 num = (int32)get_val2(st, reference_uid(id, idx), ref);
 			if( num )
@@ -4813,8 +4884,8 @@ BUILDIN_FUNC(setarray)
 	}
 
 	end = start + script_lastdata(st) - 2;
-	if( end > 127 )
-		end = 127;
+	if( end >= SCRIPT_MAX_ARRAYSIZE )
+		end = SCRIPT_MAX_ARRAYSIZE-1;
 
 	if( is_string_variable(name) )
 	{// string array
@@ -4876,8 +4947,8 @@ BUILDIN_FUNC(cleararray)
 		v = (void*)script_getnum(st, 3);
 
 	end = start + script_getnum(st, 4);
-	if( end > 127 )
-		end = 127;
+	if( end >= SCRIPT_MAX_ARRAYSIZE )
+		end = SCRIPT_MAX_ARRAYSIZE-1;
 
 	for( ; start <= end; ++start )
 		set_reg(st, sd, reference_uid(id, start), name, v, script_getref(st,2));
@@ -4946,8 +5017,8 @@ BUILDIN_FUNC(copyarray)
 	}
 
 	count = script_getnum(st, 4);
-	if( count > 128 - idx1 )
-		count = 128 - idx1;
+	if( count >= SCRIPT_MAX_ARRAYSIZE - idx1 )
+		count = (SCRIPT_MAX_ARRAYSIZE-1) - idx1;
 	if( count <= 0 || (id1 == id2 && idx1 == idx2) )
 		return 0;// nothing to copy
 
@@ -4964,7 +5035,7 @@ BUILDIN_FUNC(copyarray)
 	{// normal copy
 		for( i = 0; i < count; ++i )
 		{
-			if( idx2 + i < 128 )
+			if( idx2 + i < SCRIPT_MAX_ARRAYSIZE )
 			{
 				v = get_val2(st, reference_uid(id2, idx2 + i), reference_getref(data2));
 				set_reg(st, sd, reference_uid(id1, idx1 + i), name1, v, reference_getref(data1));
@@ -5120,7 +5191,7 @@ BUILDIN_FUNC(getelementofarray)
 	}
 
 	i = script_getnum(st, 3);
-	if( i < 0 || i >= 128 )
+	if( i < 0 || i >= SCRIPT_MAX_ARRAYSIZE )
 	{
 		ShowWarning("script:getelementofarray: index out of range (%d)\n", i);
 		script_reportdata(data);
@@ -5316,50 +5387,85 @@ BUILDIN_FUNC(countitem2)
  *------------------------------------------*/
 BUILDIN_FUNC(checkweight)
 {
-	int nameid=0,amount,i;
-	unsigned long weight;
-	TBL_PC *sd;
-	struct script_data *data;
+	int nameid, amount, slots;
+	unsigned int weight;
+	struct item_data* id = NULL;
+	struct map_session_data* sd;
+	struct script_data* data;
 
-	sd = script_rid2sd(st);
-	if( sd == NULL )
+	if( ( sd = script_rid2sd(st) ) == NULL )
+	{
 		return 0;
+	}
 
-	data=script_getdata(st,2);
-	get_val(st,data);
-	if( data_isstring(data) ){
-		const char *name=conv_str(st,data);
-		struct item_data *item_data = itemdb_searchname(name);
-		if( item_data )
-			nameid=item_data->nameid;
-	}else
-		nameid=conv_num(st,data);
+	data = script_getdata(st,2);
+	get_val(st, data);  // convert into value in case of a variable
 
-	amount=script_getnum(st,3);
-	if ( amount<=0 || nameid<500 ) { //if get wrong item ID or amount<=0, don't count weight of non existing items
+	if( data_isstring(data) )
+	{// item name
+		id = itemdb_searchname(conv_str(st, data));
+	}
+	else
+	{// item id
+		id = itemdb_exists(conv_num(st, data));
+	}
+
+	if( id == NULL )
+	{
+		ShowError("buildin_checkweight: Invalid item '%s'.\n", script_getstr(st,2));  // returns string, regardless of what it was
 		script_pushint(st,0);
-		ShowError("buildin_checkweight: Wrong item ID or amount.\n");
+		return 1;
+	}
+
+	nameid = id->nameid;
+	amount = script_getnum(st,3);
+
+	if( amount < 1 )
+	{
+		ShowError("buildin_checkweight: Invalid amount '%d'.\n", amount);
+		script_pushint(st,0);
 		return 1;
 	}
 
 	weight = itemdb_weight(nameid)*amount;
-	if( amount > MAX_AMOUNT || weight + sd->weight > sd->max_weight )
+
+	if( weight + sd->weight > sd->max_weight )
+	{// too heavy
 		script_pushint(st,0);
-	else if( itemdb_isstackable(nameid) )
-	{
-		if( (i = pc_search_inventory(sd,nameid)) >= 0 )
-			script_pushint(st,amount + sd->status.inventory[i].amount > MAX_AMOUNT ? 0 : 1);
-		else
-			script_pushint(st,pc_search_inventory(sd,0) >= 0 ? 1 : 0);
-	}
-	else
-	{
-		for( i = 0; i < MAX_INVENTORY && amount; ++i )
-			if( sd->status.inventory[i].nameid == 0 )
-				amount--;
-		script_pushint(st,amount ? 0 : 1);
+		return 0;
 	}
 
+	switch( pc_checkadditem(sd, nameid, amount) )
+	{
+		case ADDITEM_EXIST:
+			// item is already in inventory, but there is still space for the requested amount
+			break;
+		case ADDITEM_NEW:
+			slots = pc_inventoryblank(sd);
+
+			if( itemdb_isstackable(nameid) )
+			{// stackable
+				if( slots < 1 )
+				{
+					script_pushint(st,0);
+					return 0;
+				}
+			}
+			else
+			{// non-stackable
+				if( slots < amount )
+				{
+					script_pushint(st,0);
+					return 0;
+				}
+			}
+			break;
+		case ADDITEM_OVERAMOUNT:
+			script_pushint(st,0);
+			return 0;
+	}
+
+	script_pushint(st,1);
 	return 0;
 }
 
@@ -5758,6 +5864,156 @@ BUILDIN_FUNC(makeitem)
 	return 0;
 }
 
+
+/// Counts / deletes the current item given by idx.
+/// Used by buildin_delitem_search
+/// Relies on all input data being already fully valid.
+static void buildin_delitem_delete(struct map_session_data* sd, int idx, int* amount, bool delete_items)
+{
+	int delamount;
+	struct item* inv = &sd->status.inventory[idx];
+
+	delamount = ( amount[0] < inv->amount ) ? amount[0] : inv->amount;
+
+	if( delete_items )
+	{
+		if( sd->inventory_data[idx]->type == IT_PETEGG && inv->card[0] == CARD0_PET )
+		{// delete associated pet
+			intif_delete_petdata(MakeDWord(inv->card[1], inv->card[2]));
+		}
+
+		//Logs items, got from (N)PC scripts [Lupus]
+		if( log_config.enable_logs&0x40 )
+		{
+			log_pick_pc(sd, "N", inv->nameid, -delamount, inv);
+		}
+		//Logs
+
+		pc_delitem(sd, idx, delamount, 0, 0);
+	}
+
+	amount[0]-= delamount;
+}
+
+
+/// Searches for item(s) and checks, if there is enough of them.
+/// Used by delitem and delitem2
+/// Relies on all input data being already fully valid.
+/// @param exact_match will also match item attributes and cards, not just name id
+/// @return true when all items could be deleted, false when there were not enough items to delete
+static bool buildin_delitem_search(struct map_session_data* sd, struct item* it, bool exact_match)
+{
+	bool delete_items = false;
+	int i, amount, important;
+	struct item* inv;
+
+	// prefer always non-equipped items
+	it->equip = 0;
+
+	// when searching for nameid only, prefer additionally
+	if( !exact_match )
+	{
+		// non-refined items
+		it->refine = 0;
+		// card-less items
+		memset(it->card, 0, sizeof(it->card));
+	}
+
+	for(;;)
+	{
+		amount = it->amount;
+		important = 0;
+
+		// 1st pass -- less important items / exact match
+		for( i = 0; amount && i < ARRAYLENGTH(sd->status.inventory); i++ )
+		{
+			inv = &sd->status.inventory[i];
+
+			if( !inv->nameid || !sd->inventory_data[i] || inv->nameid != it->nameid )
+			{// wrong/invalid item
+				continue;
+			}
+
+			if( inv->equip != it->equip || inv->refine != it->refine )
+			{// not matching attributes
+				important++;
+				continue;
+			}
+
+			if( exact_match )
+			{
+				if( inv->identify != it->identify || inv->attribute != it->attribute || memcmp(inv->card, it->card, sizeof(inv->card)) )
+				{// not matching exact attributes
+					continue;
+				}
+			}
+			else
+			{
+				if( sd->inventory_data[i]->type == IT_PETEGG )
+				{
+					if( inv->card[0] == CARD0_PET && CheckForCharServer() )
+					{// pet which cannot be deleted
+						continue;
+					}
+				}
+				else if( memcmp(inv->card, it->card, sizeof(inv->card)) )
+				{// named/carded item
+					important++;
+					continue;
+				}
+			}
+
+			// count / delete item
+			buildin_delitem_delete(sd, i, &amount, delete_items);
+		}
+
+		// 2nd pass -- any matching item
+		if( amount == 0 || important == 0 )
+		{// either everything was already consumed or no items were skipped
+			;
+		}
+		else for( i = 0; amount && i < ARRAYLENGTH(sd->status.inventory); i++ )
+		{
+			inv = &sd->status.inventory[i];
+
+			if( !inv->nameid || !sd->inventory_data[i] || inv->nameid != it->nameid )
+			{// wrong/invalid item
+				continue;
+			}
+
+			if( sd->inventory_data[i]->type == IT_PETEGG && inv->card[0] == CARD0_PET && CheckForCharServer() )
+			{// pet which cannot be deleted
+				continue;
+			}
+
+			if( exact_match )
+			{
+				if( inv->refine != it->refine || inv->identify != it->identify || inv->attribute != it->attribute || memcmp(inv->card, it->card, sizeof(inv->card)) )
+				{// not matching attributes
+					continue;
+				}
+			}
+
+			// count / delete item
+			buildin_delitem_delete(sd, i, &amount, delete_items);
+		}
+
+		if( amount )
+		{// not enough items
+			return false;
+		}
+		else if( delete_items )
+		{// we are done with the work
+			return true;
+		}
+		else
+		{// get rid of the items now
+			delete_items = true;
+		}
+	}
+}
+
+
 /// Deletes items from the target/attached player.
 /// Prioritizes ordinary items.
 ///
@@ -5765,8 +6021,8 @@ BUILDIN_FUNC(makeitem)
 /// delitem "<item name>",<amount>{,<account id>}
 BUILDIN_FUNC(delitem)
 {
-	int nameid=0,amount,i,important_item=0;
 	TBL_PC *sd;
+	struct item it;
 	struct script_data *data;
 
 	if( script_hasdata(st,4) )
@@ -5799,89 +6055,30 @@ BUILDIN_FUNC(delitem)
 			st->state = END;
 			return 1;
 		}
-		nameid = id->nameid;// "<item name>"
+		it.nameid = id->nameid;// "<item name>"
 	}
 	else
-		nameid = conv_num(st,data);// <item id>
-
-	amount=script_getnum(st,3);
-
-	if( amount <= 0 )
-		return 0;// nothing to do
-
-	//1st pass
-	//here we won't delete items with CARDS, named items but we count them
-	for(i=0;i<MAX_INVENTORY;i++){
-		//we don't delete wrong item or equipped item
-		if(sd->status.inventory[i].nameid<=0 || sd->inventory_data[i] == NULL ||
-		   sd->status.inventory[i].amount<=0 || sd->status.inventory[i].nameid!=nameid)
-			continue;
-		//1 egg uses 1 cell in the inventory. so it's ok to delete 1 pet / per cycle
-		if(sd->inventory_data[i]->type==IT_PETEGG &&
-			sd->status.inventory[i].card[0] == CARD0_PET)
+	{
+		it.nameid = conv_num(st,data);// <item id>
+		if( !itemdb_exists( it.nameid ) )
 		{
-			if (!intif_delete_petdata(MakeDWord(sd->status.inventory[i].card[1], sd->status.inventory[i].card[2])))
-				continue; //pet couldn't be sent for deletion.
-		} else
-		//is this item important? does it have cards? or Player's name? or Refined/Upgraded
-		if(itemdb_isspecial(sd->status.inventory[i].card[0]) ||
-			sd->status.inventory[i].card[0] ||
-		  	sd->status.inventory[i].refine) {
-			//this is important item, count it (except for pet eggs)
-			if(sd->status.inventory[i].card[0] != CARD0_PET)
-				important_item++;
-			continue;
-		}
-
-		if(sd->status.inventory[i].amount>=amount){
-
-			//Logs items, got from (N)PC scripts [Lupus]
-			if(log_config.enable_logs&0x40)
-				log_pick_pc(sd, "N", sd->status.inventory[i].nameid, -amount, &sd->status.inventory[i]);
-
-			pc_delitem(sd,i,amount,0,0);
-			return 0; //we deleted exact amount of items. now exit
-		} else {
-			amount-=sd->status.inventory[i].amount;
-
-			//Logs items, got from (N)PC scripts [Lupus]
-			if(log_config.enable_logs&0x40) {
-				log_pick_pc(sd, "N", sd->status.inventory[i].nameid, -sd->status.inventory[i].amount, &sd->status.inventory[i]);
-			}
-			//Logs
-
-			pc_delitem(sd,i,sd->status.inventory[i].amount,0,0);
+			ShowError("script:delitem: unknown item \"%d\".\n", it.nameid);
+			st->state = END;
+			return 1;
 		}
 	}
-	//2nd pass
-	//now if there WERE items with CARDs/REFINED/NAMED... and if we still have to delete some items. we'll delete them finally
-	if (important_item>0 && amount>0)
-		for(i=0;i<MAX_INVENTORY;i++){
-			//we don't delete wrong item
-			if(sd->status.inventory[i].nameid<=0 || sd->inventory_data[i] == NULL ||
-				sd->status.inventory[i].amount<=0 || sd->status.inventory[i].nameid!=nameid )
-				continue;
 
-			if(sd->status.inventory[i].amount>=amount){
+	it.amount=script_getnum(st,3);
 
-				//Logs items, got from (N)PC scripts [Lupus]
-				if(log_config.enable_logs&0x40)
-					log_pick_pc(sd, "N", sd->status.inventory[i].nameid, -amount, &sd->status.inventory[i]);
+	if( it.amount <= 0 )
+		return 0;// nothing to do
 
-				pc_delitem(sd,i,amount,0,0);
-				return 0; //we deleted exact amount of items. now exit
-			} else {
-				amount-=sd->status.inventory[i].amount;
+	if( buildin_delitem_search(sd, &it, false) )
+	{// success
+		return 0;
+	}
 
-				//Logs items, got from (N)PC scripts [Lupus]
-				if(log_config.enable_logs&0x40)
-					log_pick_pc(sd, "N", sd->status.inventory[i].nameid, -sd->status.inventory[i].amount, &sd->status.inventory[i]);
-
-				pc_delitem(sd,i,sd->status.inventory[i].amount,0,0);
-			}
-		}
-
-	ShowError("script:delitem: failed to delete %d items (AID=%d item_id=%d).\n", amount, sd->status.account_id, nameid);
+	ShowError("script:delitem: failed to delete %d items (AID=%d item_id=%d).\n", it.amount, sd->status.account_id, it.nameid);
 	st->state = END;
 	clif_scriptclose(sd, st->oid);
 	return 1;
@@ -5893,9 +6090,8 @@ BUILDIN_FUNC(delitem)
 /// delitem2 "<Item name>",<amount>,<identify>,<refine>,<attribute>,<card1>,<card2>,<card3>,<card4>{,<account ID>}
 BUILDIN_FUNC(delitem2)
 {
-	int nameid=0,amount,i=0;
-	int iden,ref,attr,c1,c2,c3,c4;
 	TBL_PC *sd;
+	struct item it;
 	struct script_data *data;
 
 	if( script_hasdata(st,11) )
@@ -5928,59 +6124,37 @@ BUILDIN_FUNC(delitem2)
 			st->state = END;
 			return 1;
 		}
-		nameid = id->nameid;// "<item name>"
+		it.nameid = id->nameid;// "<item name>"
 	}
 	else
-		nameid = conv_num(st,data);// <item id>
-
-	amount=script_getnum(st,3);
-	iden=script_getnum(st,4);
-	ref=script_getnum(st,5);
-	attr=script_getnum(st,6);
-	c1=(short)script_getnum(st,7);
-	c2=(short)script_getnum(st,8);
-	c3=(short)script_getnum(st,9);
-	c4=(short)script_getnum(st,10);
-
-	if( amount <= 0 )
-		return 0;// nothing to do
-
-	for(i=0;i<MAX_INVENTORY;i++){
-	//we don't delete wrong item or equipped item
-		if(sd->status.inventory[i].nameid<=0 || sd->inventory_data[i] == NULL ||
-			sd->status.inventory[i].amount<=0 || sd->status.inventory[i].nameid!=nameid ||
-			sd->status.inventory[i].identify!=iden || sd->status.inventory[i].refine!=ref ||
-			sd->status.inventory[i].attribute!=attr || sd->status.inventory[i].card[0]!=c1 ||
-			sd->status.inventory[i].card[1]!=c2 || sd->status.inventory[i].card[2]!=c3 ||
-			sd->status.inventory[i].card[3]!=c4)
-			continue;
-	//1 egg uses 1 cell in the inventory. so it's ok to delete 1 pet / per cycle
-		if(sd->inventory_data[i]->type==IT_PETEGG && sd->status.inventory[i].card[0] == CARD0_PET)
+	{
+		it.nameid = conv_num(st,data);// <item id>
+		if( !itemdb_exists( it.nameid ) )
 		{
-			if (!intif_delete_petdata( MakeDWord(sd->status.inventory[i].card[1], sd->status.inventory[i].card[2])))
-				continue; //Failed to send delete the pet.
-		}
-
-		if(sd->status.inventory[i].amount>=amount){
-
-			//Logs items, got from (N)PC scripts [Lupus]
-			if(log_config.enable_logs&0x40)
-				log_pick_pc(sd, "N", sd->status.inventory[i].nameid, -amount, &sd->status.inventory[i]);
-
-			pc_delitem(sd,i,amount,0,0);
-			return 0; //we deleted exact amount of items. now exit
-		} else {
-			amount-=sd->status.inventory[i].amount;
-
-			//Logs items, got from (N)PC scripts [Lupus]
-			if(log_config.enable_logs&0x40)
-				log_pick_pc(sd, "N", sd->status.inventory[i].nameid, -sd->status.inventory[i].amount, &sd->status.inventory[i]);
-
-			pc_delitem(sd,i,sd->status.inventory[i].amount,0,0);
+			ShowError("script:delitem: unknown item \"%d\".\n", it.nameid);
+			st->state = END;
+			return 1;
 		}
 	}
 
-	ShowError("script:delitem2: failed to delete %d items (AID=%d item_id=%d).\n", amount, sd->status.account_id, nameid);
+	it.amount=script_getnum(st,3);
+	it.identify=script_getnum(st,4);
+	it.refine=script_getnum(st,5);
+	it.attribute=script_getnum(st,6);
+	it.card[0]=(short)script_getnum(st,7);
+	it.card[1]=(short)script_getnum(st,8);
+	it.card[2]=(short)script_getnum(st,9);
+	it.card[3]=(short)script_getnum(st,10);
+
+	if( it.amount <= 0 )
+		return 0;// nothing to do
+
+	if( buildin_delitem_search(sd, &it, true) )
+	{// success
+		return 0;
+	}
+
+	ShowError("script:delitem2: failed to delete %d items (AID=%d item_id=%d).\n", it.amount, sd->status.account_id, it.nameid);
 	st->state = END;
 	clif_scriptclose(sd, st->oid);
 	return 1;
@@ -6101,13 +6275,13 @@ BUILDIN_FUNC(getpartymember)
 			if(p->party.member[i].account_id){
 				switch (type) {
 				case 2:
-					mapreg_setreg(add_str("$@partymemberaid")+(j<<24),p->party.member[i].account_id);
+					mapreg_setreg(reference_uid(add_str("$@partymemberaid"), j),p->party.member[i].account_id);
 					break;
 				case 1:
-					mapreg_setreg(add_str("$@partymembercid")+(j<<24),p->party.member[i].char_id);
+					mapreg_setreg(reference_uid(add_str("$@partymembercid"), j),p->party.member[i].char_id);
 					break;
 				default:
-					mapreg_setregstr(add_str("$@partymembername$")+(j<<24),p->party.member[i].name);
+					mapreg_setregstr(reference_uid(add_str("$@partymembername$"), j),p->party.member[i].name);
 				}
 				j++;
 			}
@@ -7736,8 +7910,8 @@ BUILDIN_FUNC(getmobdrops)
 		if( itemdb_exists(mob->dropitem[i].nameid) == NULL )
 			continue;
 
-		mapreg_setreg(add_str("$@MobDrop_item") + (j<<24), mob->dropitem[i].nameid);
-		mapreg_setreg(add_str("$@MobDrop_rate") + (j<<24), mob->dropitem[i].p);
+		mapreg_setreg(reference_uid(add_str("$@MobDrop_item"), j), mob->dropitem[i].nameid);
+		mapreg_setreg(reference_uid(add_str("$@MobDrop_rate"), j), mob->dropitem[i].p);
 
 		j++;
 	}
@@ -9270,11 +9444,11 @@ BUILDIN_FUNC(warpwaitingpc)
 		if( sd == NULL )
 		{
 			ShowDebug("script:warpwaitingpc: no user in chat room position 0 (cd->users=%d,%d/%d)\n", cd->users, i, n);
-			mapreg_setreg(add_str("$@warpwaitingpc")+(i<<24), 0);
+			mapreg_setreg(reference_uid(add_str("$@warpwaitingpc"), i), 0);
 			continue;// Broken npc chat room?
 		}
 
-		mapreg_setreg(add_str("$@warpwaitingpc")+(i<<24), sd->bl.id);
+		mapreg_setreg(reference_uid(add_str("$@warpwaitingpc"), i), sd->bl.id);
 
 		if( strcmp(map_name,"Random") == 0 )
 			pc_randomwarp(sd,CLR_TELEPORT);
@@ -10581,7 +10755,7 @@ BUILDIN_FUNC(getitemslots)
 		2 type;
 		3 maxchance = Max drop chance of this item e.g. 1 = 0.01% , etc..
 				if = 0, then monsters don't drop it at all (rare or a quest item)
-				if = 10000, then this item is sold in NPC shops only
+				if = -1, then this item is sold in NPC shops only
 		4 sex;
 		5 equip;
 		6 weight;
@@ -10621,7 +10795,7 @@ BUILDIN_FUNC(getiteminfo)
 		2 type;
 		3 maxchance = Max drop chance of this item e.g. 1 = 0.01% , etc..
 				if = 0, then monsters don't drop it at all (rare or a quest item)
-				if = 10000, then this item is sold in NPC shops only
+				if = -1, then this item is sold in NPC shops only
 		4 sex;
 		5 equip;
 		6 weight;
@@ -10770,18 +10944,18 @@ BUILDIN_FUNC(getinventorylist)
 	if(!sd) return 0;
 	for(i=0;i<MAX_INVENTORY;i++){
 		if(sd->status.inventory[i].nameid > 0 && sd->status.inventory[i].amount > 0){
-			pc_setreg(sd,add_str("@inventorylist_id")+(j<<24),sd->status.inventory[i].nameid);
-			pc_setreg(sd,add_str("@inventorylist_amount")+(j<<24),sd->status.inventory[i].amount);
-			pc_setreg(sd,add_str("@inventorylist_equip")+(j<<24),sd->status.inventory[i].equip);
-			pc_setreg(sd,add_str("@inventorylist_refine")+(j<<24),sd->status.inventory[i].refine);
-			pc_setreg(sd,add_str("@inventorylist_identify")+(j<<24),sd->status.inventory[i].identify);
-			pc_setreg(sd,add_str("@inventorylist_attribute")+(j<<24),sd->status.inventory[i].attribute);
+			pc_setreg(sd,reference_uid(add_str("@inventorylist_id"), j),sd->status.inventory[i].nameid);
+			pc_setreg(sd,reference_uid(add_str("@inventorylist_amount"), j),sd->status.inventory[i].amount);
+			pc_setreg(sd,reference_uid(add_str("@inventorylist_equip"), j),sd->status.inventory[i].equip);
+			pc_setreg(sd,reference_uid(add_str("@inventorylist_refine"), j),sd->status.inventory[i].refine);
+			pc_setreg(sd,reference_uid(add_str("@inventorylist_identify"), j),sd->status.inventory[i].identify);
+			pc_setreg(sd,reference_uid(add_str("@inventorylist_attribute"), j),sd->status.inventory[i].attribute);
 			for (k = 0; k < MAX_SLOTS; k++)
 			{
 				sprintf(card_var, "@inventorylist_card%d",k+1);
-				pc_setreg(sd,add_str(card_var)+(j<<24),sd->status.inventory[i].card[k]);
+				pc_setreg(sd,reference_uid(add_str(card_var), j),sd->status.inventory[i].card[k]);
 			}
-			pc_setreg(sd,add_str("@inventorylist_expire")+(j<<24),sd->status.inventory[i].expire_time);
+			pc_setreg(sd,reference_uid(add_str("@inventorylist_expire"), j),sd->status.inventory[i].expire_time);
 			j++;
 		}
 	}
@@ -10796,9 +10970,9 @@ BUILDIN_FUNC(getskilllist)
 	if(!sd) return 0;
 	for(i=0;i<MAX_SKILL;i++){
 		if(sd->status.skill[i].id > 0 && sd->status.skill[i].lv > 0){
-			pc_setreg(sd,add_str("@skilllist_id")+(j<<24),sd->status.skill[i].id);
-			pc_setreg(sd,add_str("@skilllist_lv")+(j<<24),sd->status.skill[i].lv);
-			pc_setreg(sd,add_str("@skilllist_flag")+(j<<24),sd->status.skill[i].flag);
+			pc_setreg(sd,reference_uid(add_str("@skilllist_id"), j),sd->status.skill[i].id);
+			pc_setreg(sd,reference_uid(add_str("@skilllist_lv"), j),sd->status.skill[i].lv);
+			pc_setreg(sd,reference_uid(add_str("@skilllist_flag"), j),sd->status.skill[i].flag);
 			j++;
 		}
 	}
@@ -12428,7 +12602,7 @@ int buildin_query_sql_sub(struct script_state* st, Sql* handle)
 	const char* query;
 	struct script_data* data;
 	const char* name;
-	int max_rows = 128;// maximum number of rows
+	int max_rows = SCRIPT_MAX_ARRAYSIZE;// maximum number of rows
 	int num_vars;
 	int num_cols;
 
@@ -12575,7 +12749,7 @@ BUILDIN_FUNC(getd)
 		elem = 0;
 
 	// Push the 'pointer' so it's more flexible [Lance]
-	push_val(st->stack, C_NAME, (elem<<24) | add_str(varname));
+	push_val(st->stack, C_NAME, reference_uid(add_str(varname), elem));
 
 	return 0;
 }
@@ -13941,9 +14115,9 @@ BUILDIN_FUNC(waitingroom2bg)
 	for( i = 0; i < n && i < MAX_BG_MEMBERS; i++ )
 	{
 		if( (sd = cd->usersd[i]) != NULL && bg_team_join(bg_id, sd) )
-			mapreg_setreg(add_str("$@arenamembers") + (i<<24), sd->bl.id);
+			mapreg_setreg(reference_uid(add_str("$@arenamembers"), i), sd->bl.id);
 		else
-			mapreg_setreg(add_str("$@arenamembers") + (i<<24), 0);
+			mapreg_setreg(reference_uid(add_str("$@arenamembers"), i), 0);
 	}
 
 	mapreg_setreg(add_str("$@arenamembersnum"), i);

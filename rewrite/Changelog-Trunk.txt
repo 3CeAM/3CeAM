@@ -1,5 +1,63 @@
 Date	Added
 
+2010/12/26
+	* Fixed skill_can_produce_mix not checking, whether or not the produced goods can actually be stored (bugreport:4674). [Ai4rei]
+	* Reverted r14565, as the database version is already properly commented in source and is overwritten upon first sync of account.txt anyway. [Ai4rei]
+	* Cleaned up script command checkweight. [Ai4rei]
+	- Replaced some code parts with calls to pc_checkadditem and pc_inventoryblank (follow up to r13735).
+	- Fixed item id not getting checked for validity properly.
+	* Moved MAX_AMOUNT check in pc_checkadditem to the top of the function, to prevent unnecessary inventory scan before it.
+	* Fixed opening other player's vending terminating currently running NPC conversation. Vending is now unavailable when talking to an NPC (bugreport:2208). [Ai4rei]
+	* Fixed vending not accepting 0 Zeny as sell price. The client asks for confirmation when you attempt to sell items at 0 Zeny (bugreport:2595, since r918 and r11344).
+	* Fixed items, that get dropped at 100% chance, being reported in @iteminfo as 'available in the shops only' (since/replaces r3482). [Ai4rei]
+	* Updated commands @delitem/#delitem. [Ai4rei]
+	- No longer deletes stackable items one by one (bugreport:1914).
+	- Fixed pets not getting deleted when a pet egg was deleted.
+	- Fixed outdated usage message (since r13403).
+2010/12/25
+	* Fixed two-hand weapons not getting recognized as such upon equipping, causing respective one-hand weapon's base ASPD values being used instead (bugreport:4659, related r12599). [Ai4rei]
+	* Updated script commands delitem and delitem2. [Ai4rei]
+	- Items are now deleted only if there is enough of them (as per r14395, related r13368).
+	- Not equipped items are now actually prioritized over equipped ones (related r200).
+	- Fixed item id not getting checked for validity.
+	* Fixed a compile error in txt-converter-char caused by 'save_log' being declared by both SQL and TXT (bugreport:4671, since r14619). [Ai4rei]
+	* Made SQL char-server options 'chars_per_account' and 'char_del_level' work on TXT as well (follow up to r1063 and r8420). [Ai4rei]
+2010/12/24
+	* Added support for new /remove and /recall packets for 2010-08-03aRagexeRE and newer. [Ai4rei]
+	* Synchronized TXT/SQL char-server code a bit. [Ai4rei]
+	* Fixes to char-server. [Ai4rei]
+	- Removed unnecessary #includes from TXT and synchronized them with SQL.
+	- Fixed TXT having start Zeny of 500 instead of 0 by default (follow up to r4409 and r8420).
+	- Fixed TXT using 1024 instead of NAME_LENGTH for 'unknown_char_name' (follow up to r2191).
+	- Fixed SQL potentionally attempting to disconnect a player for account_id == 0 in changesex packet.
+	- Fixed SQL looking for option 'db_path' in 'inter_athena.conf' instead of 'char_athena.conf'.
+	- Fixed char select not sending a reply packet, when selected character was not found.
+	- Made use of safestrncpy instead of strcpy, strncpy and memset for copying strings where appropriate.
+	- Removed unused function 'chardb_final' in TXT (since r4878).
+	- Removed unnecessary WFIFOHEAD in char deletion in SQL (since r11245, related r9307 and r10909).
+2010/12/23
+	* Fixed server processing the sell list (deleting items and giving zeny) for script-controlled shops (OnSellItem), causing the controller script to fail (bugreport:4656, since r6557). [Ai4rei]
+	- This also makes the server first check the sell list and only continue, if all items can be processed, thus no longer causing incomplete deals and the need for client disconnection in such case (since r6557).
+2010/12/22
+	* NPC shop buy list received from the client is now validated for scripted shops (OnBuyItem), before the control is transfered to the script, as well (bugreport:3680, since r5841, related r8525). [Ai4rei]
+	* Resolved random compiler warnings. [Ai4rei]
+	- Silenced pointer size mismatch gcc warning for variables passed to script_setarray_pc (bugreport:4661, since r14613).
+	* Fixed sql mapreg loading code specifying output buffer size for SqlStmt_BindColumn without zero-terminator, leading to truncations of variable names and/or their values when using the maximum length (bugreport:1939, since r11245). [Ai4rei]
+2010/12/21
+	* Added script_setarray_pc for setting temporary character array variables outside of script.c without requiring them to use script-interal code (add_str and reference_uid). [Ai4rei]
+	- Applied script_setarray_pc to assignment of dynamic shop arrays (related r5841).
+	* Replaced in-place generation of uid of script array elements with reference_uid macro (follow up to r10813). [Ai4rei]
+	* Fixed dynamic shop arrays @bought_nameid, @bought_quantity, @sold_nameid and @sold_quantity not getting reset to zero before use, thus providing attached script with wrong/old data, if it did not clear them by itself in previous call (bugreport:1574, since r5841). [Ai4rei]
+	* Removed 'strsignal' forward-declaration from 'sig' plugin to prevent random gcc distributions from failing to compile due to mismatched declaration already present in <string.h> (bugreport:4644, topic:262284, follow up to r14591). [Ai4rei]
+	- Removed WIN32 conditions in non-WIN32 code in 'sig' plugin (follow up to r4380).
+2010/12/19
+	* Fixes to the dynamic shop sample script. [Ai4rei]
+	- Fixed wrong check in ::OnSellItem, causing not-enough-items condition not getting detected (since r11829).
+	- Fixed an exploit in ::OnSellItem, causing Zeny to be given to the player, even if the items fail to delete (since r5842).
+	- Fixed missing 'close' in ::OnSellItem (since r5842).
+	- Replaced 'end' with 'close' in ::OnBuyItem (since r5842, followup to r11829).
+	* Replaced maximum script array size literals with a define (constant). [Ai4rei]
+	- Fixed an off-by-one mistake in copyarray, allowing to copy 1 element more into the target array, than allowed (since r10813).
 2010/12/18
 	* Renamed item array in 'struct guild_storage' from 'storage_' to 'items' to match 'struct storage_data' (related r12933). [Ai4rei]
 	* Bunch of intif_parse_LoadGuildStorage fixes. [Ai4rei]
@@ -1031,7 +1089,7 @@ Date	Added
 2008/11/11
 	* Updated script_commands.txt [FlavioJS]
 	* Made scripts terminate with an error: (fixes bugreport:2429)
-	- when getitem/getitem2 tries to delete more items than the player has
+	- when delitem/delitem2 tries to delete more items than the player has
 	- when trying to set Zeny to a negative number.
 2008/11/09
 	* Added a check to make sure killed monster's level was greater than half of the mercenary owner's level before incrementing mercenary's killcount. (bugreport:2410) [Paradox924X]
