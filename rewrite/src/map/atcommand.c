@@ -6548,7 +6548,7 @@ ACMD_FUNC(mobsearch)
 	clif_displaymessage(fd, atcmd_output);
 
 	it = mapit_geteachmob();
-	while( true )
+	for(;;)
 	{
 		TBL_MOB* md = (TBL_MOB*)mapit_next(it);
 		if( md == NULL )
@@ -6702,7 +6702,7 @@ ACMD_FUNC(users)
 
 	// count users on each map
 	iter = mapit_getallusers();
-	while( true )
+	for(;;)
 	{
 		struct map_session_data* sd2 = (struct map_session_data*)mapit_next(iter);
 		if( sd2 == NULL )
@@ -7281,7 +7281,7 @@ ACMD_FUNC(showmobs)
 	clif_displaymessage(fd, atcmd_output);
 
 	it = mapit_geteachmob();
-	while( true )
+	for(;;)
 	{
 		TBL_MOB* md = (TBL_MOB*)mapit_next(it);
 		if( md == NULL )
@@ -7634,12 +7634,12 @@ ACMD_FUNC(iteminfo)
 		sprintf(atcmd_output, "NPC Buy:%dz, Sell:%dz | Weight: %.1f ", item_data->value_buy, item_data->value_sell, item_data->weight/10. );
 		clif_displaymessage(fd, atcmd_output);
 
-		if (item_data->maxchance == 10000)
-			strcpy(atcmd_output, " - Available in the shops only");
+		if (item_data->maxchance == -1)
+			strcpy(atcmd_output, " - Available in the shops only.");
 		else if (item_data->maxchance)
 			sprintf(atcmd_output, " - Maximal monsters drop chance: %02.02f%%", (float)item_data->maxchance / 100 );
 		else
-			strcpy(atcmd_output, " - Monsters don't drop this item");
+			strcpy(atcmd_output, " - Monsters don't drop this item.");
 		clif_displaymessage(fd, atcmd_output);
 
 	}
@@ -8714,58 +8714,68 @@ ACMD_FUNC(stats)
 ACMD_FUNC(delitem)
 {
 	char item_name[100];
-	int i, number = 0, item_id, item_position, count;
-	struct item_data *item_data;
-	char output[CHAT_SIZE_MAX];
+	int nameid, amount = 0, total, idx;
+	struct item_data* id;
 
 	nullpo_retr(-1, sd);
 
-	memset(item_name, '\0', sizeof(item_name));
-	memset(output, '\0', sizeof(output));
-
-	if (!message || !*message || (
-		sscanf(message, "\"%99[^\"]\" %d", item_name, &number) < 2 &&
-		sscanf(message, "%s %d", item_name, &number) < 2
-	) || number < 1) {
-		clif_displaymessage(fd, "Please, enter an item name/id, a quantity and a player name (usage: #delitem <item_name_or_ID> <quantity> <player>).");
+	if( !message || !*message || ( sscanf(message, "\"%99[^\"]\" %d", item_name, &amount) < 2 && sscanf(message, "%99s %d", item_name, &amount) < 2 ) || amount < 1 )
+	{
+		clif_displaymessage(fd, "Please, enter an item name/id, a quantity and a player name (usage: #delitem <player> <item_name_or_ID> <quantity>).");
 		return -1;
 	}
 
-	item_id = 0;
-	if ((item_data = itemdb_searchname(item_name)) != NULL ||
-	    (item_data = itemdb_exists(atoi(item_name))) != NULL)
-		item_id = item_data->nameid;
-	
-	if (item_id > 500) {
-		item_position = pc_search_inventory(sd, item_id);
-		if (item_position >= 0) {
-			count = 0;
-			for(i = 0; i < number && item_position >= 0; i++) {
-
-				//Logs (A)dmins items [Lupus]
-				if(log_config.enable_logs&0x400)
-					log_pick_pc(sd, "A", sd->status.inventory[item_position].nameid, -1, &sd->status.inventory[item_position]);
-
-				pc_delitem(sd, item_position, 1, 0, 0);
-				count++;
-				item_position = pc_search_inventory(sd, item_id); // for next loop
-			}
-			sprintf(output, msg_txt(113), count); // %d item(s) removed by a GM.
-			clif_displaymessage(sd->fd, output);
-			if (number == count)
-				sprintf(output, msg_txt(114), count); // %d item(s) removed from the player.
-			else
-				sprintf(output, msg_txt(115), count, count, number); // %d item(s) removed. Player had only %d on %d items.
-			clif_displaymessage(fd, output);
-		} else {
-			clif_displaymessage(fd, msg_txt(116)); // Character does not have the item.
-			return -1;
-		}
+	if( ( id = itemdb_searchname(item_name) ) != NULL || ( id = itemdb_exists(atoi(item_name)) ) != NULL )
+	{
+		nameid = id->nameid;
 	}
 	else
 	{
 		clif_displaymessage(fd, msg_txt(19)); // Invalid item ID or name.
 		return -1;
+	}
+
+	total = amount;
+
+	// delete items
+	while( amount && ( idx = pc_search_inventory(sd, nameid) ) != -1 )
+	{
+		int delamount = ( amount < sd->status.inventory[idx].amount ) ? amount : sd->status.inventory[idx].amount;
+
+		if( sd->inventory_data[idx]->type == IT_PETEGG && sd->status.inventory[idx].card[0] == CARD0_PET )
+		{// delete pet
+			intif_delete_petdata(MakeDWord(sd->status.inventory[idx].card[1], sd->status.inventory[idx].card[2]));
+		}
+
+		//Logs (A)dmins items [Lupus]
+		if( log_config.enable_logs&0x400 )
+		{
+			log_pick_pc(sd, "A", nameid, -delamount, &sd->status.inventory[idx]);
+		}
+
+		pc_delitem(sd, idx, delamount, 0, 0);
+
+		amount-= delamount;
+	}
+
+	// notify target
+	sprintf(atcmd_output, msg_txt(113), total-amount); // %d item(s) removed by a GM.
+	clif_displaymessage(sd->fd, atcmd_output);
+
+	// notify source
+	if( amount == total )
+	{
+		clif_displaymessage(fd, msg_txt(116)); // Character does not have the item.
+	}
+	else if( amount )
+	{
+		sprintf(atcmd_output, msg_txt(115), total-amount, total-amount, total); // %d item(s) removed. Player had only %d on %d items.
+		clif_displaymessage(fd, atcmd_output);
+	}
+	else
+	{
+		sprintf(atcmd_output, msg_txt(114), total); // %d item(s) removed from the player.
+		clif_displaymessage(fd, atcmd_output);
 	}
 
 	return 0;

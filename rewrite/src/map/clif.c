@@ -9837,7 +9837,8 @@ void clif_parse_DropItem(int fd, struct map_session_data *sd)
 {
 	int item_index = RFIFOW(fd,packet_db[sd->packet_ver][RFIFOW(fd,0)].pos[0])-2;
 	int item_amount = RFIFOW(fd,packet_db[sd->packet_ver][RFIFOW(fd,0)].pos[1]);
-	do {
+
+	for(;;) {
 		if (pc_isdead(sd))
 			break;
 
@@ -9857,7 +9858,7 @@ void clif_parse_DropItem(int fd, struct map_session_data *sd)
 			break;
 
 		return;
-	} while (0);
+	}
 
 	//Because the client does not like being ignored.
 	clif_dropitem(sd, item_index,0);
@@ -11398,10 +11399,11 @@ void clif_parse_CloseVending(int fd, struct map_session_data* sd)
  *------------------------------------------*/
 void clif_parse_VendingListReq(int fd, struct map_session_data* sd)
 {
-	vending_vendinglistreq(sd,RFIFOL(fd,2));
-
 	if( sd->npc_id )
-		npc_event_dequeue(sd);
+	{// using an NPC
+		return;
+	}
+	vending_vendinglistreq(sd,RFIFOL(fd,2));
 }
 
 /*==========================================
@@ -11918,10 +11920,11 @@ void clif_parse_GMKickAll(int fd, struct map_session_data* sd)
 }
 
 /*==========================================
- * /shift <name>
+ * /remove <account name>
+ * /shift <char name>
  *------------------------------------------*/
 void clif_parse_GMShift(int fd, struct map_session_data *sd)
-{	
+{// FIXME: remove is supposed to receive account name for clients prior 20100803RE
 	char *player_name;
 	int lv;
 
@@ -11940,11 +11943,47 @@ void clif_parse_GMShift(int fd, struct map_session_data *sd)
 	}
 }
 
+
+/// Warps oneself to the location of the character given by account id ( /remove <account id> ).
+/// R 0843 <account id>.L
+void clif_parse_GMRemove2(int fd, struct map_session_data* sd)
+{
+	int account_id, lv;
+	struct map_session_data* pl_sd;
+
+	if( battle_config.atc_gmonly && !pc_isGM(sd) )
+	{
+		return;
+	}
+
+	if( pc_isGM(sd) < ( lv = get_atcommand_level(atcommand_jumpto) ) )
+	{
+		return;
+	}
+
+	account_id = RFIFOL(fd,packet_db[sd->packet_ver][RFIFOW(fd,0)].pos[0]);
+
+	if( ( pl_sd = map_id2sd(account_id) ) != NULL && pc_isGM(sd) >= pc_isGM(pl_sd) )
+	{
+		pc_warpto(sd, pl_sd);
+	}
+
+	if( log_config.gm && lv >= log_config.gm )
+	{
+		char message[32];
+
+		sprintf(message, "/remove %d", account_id);
+		log_atcommand(sd, message);
+	}
+}
+
+
 /*==========================================
- * /recall <name>
+ * /recall <account name>
+ * /summon <char name>
  *------------------------------------------*/
 void clif_parse_GMRecall(int fd, struct map_session_data *sd)
-{
+{// FIXME: recall is supposed to receive account name for clients prior 20100803RE
 	char *player_name;
 	int lv;
 
@@ -11963,6 +12002,41 @@ void clif_parse_GMRecall(int fd, struct map_session_data *sd)
 		log_atcommand(sd, message);
 	}
 }
+
+
+/// Summons a character given by account id to one's own position ( /recall <account id> )
+/// R 0842 <account id>.L
+void clif_parse_GMRecall2(int fd, struct map_session_data* sd)
+{
+	int account_id, lv;
+	struct map_session_data* pl_sd;
+
+	if( battle_config.atc_gmonly && !pc_isGM(sd) )
+	{
+		return;
+	}
+
+	if( pc_isGM(sd) < ( lv = get_atcommand_level(atcommand_recall) ) )
+	{
+		return;
+	}
+
+	account_id = RFIFOL(fd,packet_db[sd->packet_ver][RFIFOW(fd,0)].pos[0]);
+
+	if( ( pl_sd = map_id2sd(account_id) ) != NULL && pc_isGM(sd) >= pc_isGM(pl_sd) )
+	{
+		pc_recall(sd, pl_sd);
+	}
+
+	if( log_config.gm && lv >= log_config.gm )
+	{
+		char message[32];
+
+		sprintf(message, "/recall %d", account_id);
+		log_atcommand(sd, message);
+	}
+}
+
 
 /*==========================================
  * /monster /item 
@@ -15096,6 +15170,8 @@ static int packetdb_readdb(void)
 		{clif_parse_GMShift,"shift"},
 		{clif_parse_GMChangeMapType,"changemaptype"},
 		{clif_parse_GMRc,"rc"},
+		{clif_parse_GMRecall2,"recall2"},
+		{clif_parse_GMRemove2,"remove2"},
 
 		{clif_parse_NoviceDoriDori,"sndoridori"},
 		{clif_parse_NoviceExplosionSpirits,"snexplosionspirits"},
