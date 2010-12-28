@@ -3049,7 +3049,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
  *------------------------------------------*/
 struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list *target,int skill_num,int skill_lv,int mflag)
 {
-	int i, nk, s_level, s_job_level;
+	int i, nk, s_level, s_job_level = 50;
 	short s_ele = skill_get_ele(skill_num, skill_lv);
 	unsigned int skillratio = 100;	//Skill dmg modifiers.
 
@@ -3083,11 +3083,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 		
 	// Max Job Level bonus that skills should receive. Acording to battle_config.max_joblvl_nerf [Pinky]
 	if( sd && battle_config.max_joblvl_nerf)
-	{
-		s_job_level = sd->status.job_level;
-		if(s_job_level > battle_config.max_joblvl_nerf)
-			s_job_level = battle_config.max_joblvl_nerf;
-	}
+		s_job_level = min(sd->status.job_level,battle_config.max_joblvl_nerf);
 	else if ( sd )
 		s_job_level = sd->status.job_level;
 
@@ -3394,8 +3390,10 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						{
 							struct status_change *tsc = status_get_sc(target);
 							if( tsc && tsc->data[SC_FREEZING] )
+							{
 								skillratio = (skillratio + 900 + 300 * skill_lv);
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+								if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+							}
 							else
 								skillratio = (int)( (skillratio + 100 * skill_lv) * (1 + ((sd) ? s_job_level : 0) / 100. ) );
 						}
