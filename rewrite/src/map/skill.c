@@ -4140,7 +4140,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		if( tsc && (tsc->option&(OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK) || tsc->data[SC__INVISIBILITY]) )
 			break; // Doesn't hit/cause Freezing to invisible enemy
 		// Causes Freezing status through walls.
-		sc_start(bl,status_skill2sc(skillid),(int)((20+12*skilllv)*(1+(sd)?sd->status.job_level/200.:0)),skilllv,skill_get_time(skillid,skilllv));
+		sc_start(bl,status_skill2sc(skillid),(int)( (20+12*skilllv)*(1+(sd?s_job_level/200.:0)) ),skilllv,skill_get_time(skillid,skilllv));
 		// Doesn't deal damage through non-shootable walls.
 		if( path_search(NULL,src->m,src->x,src->y,bl->x,bl->y,1,CELL_CHKWALL) )
 			skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag);
