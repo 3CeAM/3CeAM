@@ -1370,7 +1370,7 @@ static bool mob_ai_sub_hard(struct mob_data *md, unsigned int tick)
 			&&  ( //Can't attack back and can't reach back.
 			      (!can_move && DIFF_TICK(tick, md->ud.canmove_tick) > 0 && (battle_config.mob_ai&0x2 || (md->sc.data[SC_SPIDERWEB] && md->sc.data[SC_SPIDERWEB]->val1)
 				  || md->sc.data[SC_BITE] || md->sc.data[SC_VACUUM_EXTREME] || md->sc.data[SC_CRYSTALIZE] || md->sc.data[SC_THORNSTRAP]
-				  || md->sc.data[SC_MANHOLE])) // Not yet confirmed if boss will teleport once it can't reach target.
+				  || md->sc.data[SC__MANHOLE])) // Not yet confirmed if boss will teleport once it can't reach target.
 			      || !mob_can_reach(md, tbl, md->min_chase, MSS_RUSH)
 			    )
 			&&  md->state.attacked_count++ >= RUDE_ATTACKED_COUNT
@@ -1393,7 +1393,7 @@ static bool mob_ai_sub_hard(struct mob_data *md, unsigned int tick)
 				&& ( // Reach check
 					(!can_move && DIFF_TICK(tick, md->ud.canmove_tick) > 0 && (battle_config.mob_ai&0x2 || (md->sc.data[SC_SPIDERWEB] && md->sc.data[SC_SPIDERWEB]->val1)
 					|| md->sc.data[SC_BITE] || md->sc.data[SC_VACUUM_EXTREME] || md->sc.data[SC_CRYSTALIZE] || md->sc.data[SC_THORNSTRAP]
-					|| md->sc.data[SC_MANHOLE])) // Not yet confirmed if boss will teleport once it can't reach target.
+					|| md->sc.data[SC__MANHOLE])) // Not yet confirmed if boss will teleport once it can't reach target.
 					|| !mob_can_reach(md, abl, dist+md->db->range3, MSS_RUSH)
 				)
 				) )
