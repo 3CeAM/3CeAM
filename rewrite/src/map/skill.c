@@ -9207,7 +9207,10 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		if( sc->data[SC_CAMOUFLAGE] )
 			status_change_end(src,SC_CAMOUFLAGE,-1);
 		if( sc->data[SC_CURSEDCIRCLE_ATKER] )
+		{
+			sc->data[SC_CURSEDCIRCLE_ATKER]->val3 = 1;
 			status_change_end(src,SC_CURSEDCIRCLE_ATKER,-1);
+		}
 	}
 
 	switch (skillid) { //Skill effect.
