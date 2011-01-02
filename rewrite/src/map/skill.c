@@ -13138,8 +13138,8 @@ int skill_castfix(struct block_list *bl, int skill_id, int skill_lv)
 			max_fixedReduction = sc->data[SC_SECRAMENT]->val2;
 	}
 
-	if( sd && pc_checkskill(sd, WL_RADIUS) && skill_id >= WL_WHITEIMPRISON && skill_id <= WL_FREEZE_SP ) // Note: There is no check whether this reduction should be applied ( bigger than max reduction )
-		max_fixedReduction = 5 + 5 * pc_checkskill(sd, WL_RADIUS); // 10 15 20% of Fixed Cast Time reduced.
+	if( sd && pc_checkskill(sd, WL_RADIUS) && skill_id >= WL_WHITEIMPRISON && skill_id <= WL_FREEZE_SP )
+		max_fixedReduction = max(max_fixedReduction, 5+5*pc_checkskill(sd, WL_RADIUS)); // 10 15 20% of Fixed Cast Time reduced.
 
 	// fixed cast time mod by equip/card bonuses/penalties
 	if( !(skill_get_castnodex(skill_id, skill_lv)&4) && sd )
