@@ -1213,20 +1213,6 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 
 	}
 
-	// Mechanic Overheat
-	if( sd )
-		switch( skillid )
-		{
-		case NC_BOOSTKNUCKLE:
-		case NC_PILEBUNKER:
-		case NC_VULCANARM:
-		case NC_FLAMELAUNCHER:
-		case NC_COLDSLOWER:
-		case NC_ARMSCANNON:
-			pc_overheat(sd,1);
-			break;
-		}
-
 	if (md && battle_config.summons_trigger_autospells && md->master_id && md->special_state.ai)
 	{	//Pass heritage to Master for status causing effects. [Skotlex]
 		sd = map_id2sd(md->master_id);
@@ -3300,12 +3286,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case GC_VENOMPRESSURE:
 	case AB_DUPLELIGHT_MELEE:
 	case RA_AIMEDBOLT:
-	case NC_BOOSTKNUCKLE:
-	case NC_PILEBUNKER:
-	case NC_VULCANARM:
-	case NC_FLAMELAUNCHER:
-	case NC_COLDSLOWER:
-	case NC_ARMSCANNON:
 	case NC_AXEBOOMERANG:
 	case NC_POWERSWING:
 	case SC_TRIANGLESHOT:
@@ -3324,6 +3304,17 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case WM_SEVERE_RAINSTORM_MELEE:
 	case WM_GREAT_ECHO:
 	case GN_SLINGITEM_RANGEMELEEATK:
+		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
+		break;
+
+	case NC_BOOSTKNUCKLE:
+	case NC_PILEBUNKER:
+	case NC_VULCANARM:
+	case NC_FLAMELAUNCHER:
+	case NC_COLDSLOWER:
+	case NC_ARMSCANNON:
+		// Heat of the mado
+		if (sd) pc_overheat(sd,1);
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
@@ -8826,7 +8817,7 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 			inf2 = skill_get_inf2(ud->skillid);
 
 			if(inf&INF_ATTACK_SKILL || (inf&INF_SELF_SKILL && inf2&INF2_NO_TARGET_SELF) || //Combo skills
-				ud->skillid == SR_DRAGONCOMBO && src == target)	// Casted through combo.
+				(ud->skillid == SR_DRAGONCOMBO && src == target) )	// Casted through combo.
 				inf = BCT_ENEMY; //Offensive skill.
 			else if(inf2&INF2_NO_ENEMY)
 				inf = BCT_NOENEMY;
@@ -13043,8 +13034,7 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
  *----------------------------------------------*/
 int skill_castfix(struct block_list *bl, int skill_id, int skill_lv)
 {
-	int base_time, variable_time, fixed_time = 0, max_fixedReduction = 0, final_time;
-	double scale = 0;
+	int base_time, variable_time, fixed_time = 0, max_fixedReduction = 0, scale = 0, final_time;
 	struct map_session_data *sd;
 	struct status_change *sc;
 
@@ -13063,7 +13053,7 @@ int skill_castfix(struct block_list *bl, int skill_id, int skill_lv)
 		{
 			scale = battle_config.castrate_dex_scale - status_get_dex(bl);
 			if( scale > 0 )	// not instant cast
-				variable_time = variable_time * (int)scale / battle_config.castrate_dex_scale;
+				variable_time = variable_time * scale / battle_config.castrate_dex_scale;
 			else return 0;	// instant cast
 		}
 	}
@@ -13080,13 +13070,13 @@ int skill_castfix(struct block_list *bl, int skill_id, int skill_lv)
 			variable_time = base_time - fixed_time;
 		else
 		{
-			variable_time = base_time * 80 /100;
-			fixed_time = base_time * 20 /100;
+			variable_time = base_time * 80 / 100;
+			fixed_time = base_time * 20 / 100;
 		}
 
 		// calculate variable cast time reduced by dex and int
 		if( !(skill_get_castnodex(skill_id, skill_lv)&1) )
-			scale = cap_value((status_get_dex(bl) * 2 + status_get_int(bl)) * 10000, INT_MIN, INT_MAX);
+			scale = cap_value((status_get_dex(bl) * 2 + status_get_int(bl)) * 10000, 0, INT_MAX);
 	}
 
 	// variable cast time mod by status changes
@@ -14707,8 +14697,6 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 			break;
 
 			case UNT_REVERBERATION:
-			{ 
-				struct block_list *ss = map_id2bl(group->src_id);
 				if( unit->val1 <= 0 ) // If it was deactivated.
 				{
 					skill_delunit(unit);
@@ -14719,7 +14707,6 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 				group->limit = DIFF_TICK(tick,group->tick) + 1500;
 				unit->limit = DIFF_TICK(tick,group->tick) + 1500;
 				group->unit_id = UNT_USED_TRAPS;
-			}
 			break;
 
 			case UNT_FEINTBOMB:
@@ -15359,13 +15346,16 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 						qty = 10;
 						break;
 				}
+				make_per = 100000; //100% success rate.
+				break;
 			case GN_S_PHARMACY:
+				// Note: This is not the chosen skill level but the highest available. Need confirmation/fix.
 				switch( pc_checkskill(sd,GN_S_PHARMACY) )
 				{
-					case 6: case 7: case 8: qty = 3; break; //3 items to make at once.
-					case 9: qty = 3 + rand()%3; break; //3~5 items to make at once.
-					case 10: qty = 4 + rand()%3; break; //4~6 items to make at once.
-					default: qty = 2; //2 item to make at once.
+					case 6: case 7: case 8: qty = 3; break;				//3 items to make at once.
+					case 9: qty = 3 + rand()%3; break;					//3~5 items to make at once.
+					case 10: qty = 4 + rand()%3; break;					//4~6 items to make at once.
+					default: qty = 2;									//2 item to make at once.
 				}
 				make_per = 100000; //100% success rate.
 				break;
