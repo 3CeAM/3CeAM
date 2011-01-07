@@ -4213,7 +4213,7 @@ static signed short status_calc_critical(struct block_list *bl, struct status_ch
 	if(sc->data[SC_CLOAKING])
 		critical += critical;
 	if(sc->data[SC_STRIKING])
-		critical += critical * sc->data[SC_STRIKING]->val1 / 100;
+		critical += sc->data[SC_STRIKING]->val1;
 	if(sc->data[SC__INVISIBILITY])
 		critical += critical * sc->data[SC__INVISIBILITY]->val3 / 100;
 	if(sc->data[SC_CAMOUFLAGE])
@@ -9402,7 +9402,7 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		{
 			struct block_list *src = map_id2bl(sce->val2);
 			int damage;
-			if( !src || (src && status_isdead(src) || (src && src->m != bl->m) ) || (src && distance_bl(src, bl) >= 12) )
+			if( !src || (src && (status_isdead(src) || src->m != bl->m || distance_bl(src, bl) >= 12)) )
 				break;
 			map_freeblock_lock();
 			damage = skill_attack(skill_get_type(GN_BLOOD_SUCKER), src, src, bl, GN_BLOOD_SUCKER, sce->val1, tick, 0);

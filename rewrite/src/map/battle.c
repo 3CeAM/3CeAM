@@ -3029,7 +3029,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 		status_zap(src, hp, 0);
 	}
 
-	if( sc && sc->data[SC_ENCHANTBLADE] && !skill_num && (sd && (flag.rh && sd->weapontype1) || (flag.lh && sd->weapontype2)) ) // Only regular melee attacks are increased. A weapon must be equiped. [pakpil]
+	if( sc && sc->data[SC_ENCHANTBLADE] && !skill_num && sd && ((flag.rh && sd->weapontype1) || (flag.lh && sd->weapontype2)) ) // Only regular melee attacks are increased. A weapon must be equiped. [pakpil]
 	{	// Magic damage from Enchant Blade
 		struct Damage md = battle_calc_magic_attack(src, target, RK_ENCHANTBLADE, ((TBL_PC*)src)->status.skill[RK_ENCHANTBLADE].lv, wflag);
 		wd.damage += md.damage;
