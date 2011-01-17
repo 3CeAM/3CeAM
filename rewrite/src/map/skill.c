@@ -1143,7 +1143,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl, SC_STOP, 100, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case SR_TIGERCANNON:
-		status_percent_damage(src, bl, 0, 5+1*skilllv, false);
+		status_percent_damage(src, bl, 0, 5+1*skilllv, false); // The hell is this? [Rytech]
 		break;
 	case SR_WINDMILL:
 		if( dstsd )

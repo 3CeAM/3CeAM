@@ -2225,32 +2225,34 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio += 40 * skill_lv;
 					break;
 				case SR_SKYNETBLOW:
-					skillratio += 50 + 50 * skill_lv + ( sstatus->agi * 4 );
+					skillratio += 80 * skill_lv - 100 + ( sstatus->agi * 4 );
 					break;
 				case SR_EARTHSHAKER:
-					skillratio += 50 * (skill_lv -1);
+					skillratio += 50 * skill_lv - 50;
 					break;
 				case SR_FALLENEMPIRE:
-					if( tsd && tsd->weight )
-						skillratio = (100 + 150 * skill_lv) * tsd->weight / 10000;
-					else if( !sd )
-						skillratio = (100 + 150 * skill_lv) * 600 / 100;
+					skillratio += 150 * skill_lv; // Need official on how much enemy players weight affects damage. [Rytech]
+					//if( tsd && tsd->weight )
+					//	skillratio = (100 + 150 * skill_lv) * tsd->weight / 10000;
+					//else if( !sd )
+					//	skillratio = (100 + 150 * skill_lv) * 600 / 100;
 					break;
 				case SR_TIGERCANNON:
 					if( battle_config.skillsbonus_maxhp_SR && sstatus->hp > battle_config.skillsbonus_maxhp_SR )
 						skillratio = 2000 + ( battle_config.skillsbonus_maxhp_SR * ( 10 + 2 * skill_lv ) / 100 );
 					else
-						skillratio = 2000 + ( sstatus->hp * ( 10 + 2 * skill_lv ) / 100 );
+					//	skillratio = 2000 + ( sstatus->hp * ( 10 + 2 * skill_lv ) / 100 );
+						skillratio = 2000; // Its appears the sacrificed HP is added as fixed damage (reduceable) Will have to do later. [Rytech]
 					break;
 				case SR_RAMPAGEBLASTER:
 					if( sd && sd->spiritball_old > 0 )
-						skillratio = 50 * skill_lv * sd->spiritball_old; //250% at Lv 5 * # of spiritballs
-					if( sc && sc->data[SC_EXPLOSIONSPIRITS] ) //assumed chance percentage to deal x2~x3 damage if in fury state. [Jobbie]
-						skillratio = skillratio * ( (rand()%100 < 35) ? 3 : 2 );
+						skillratio += 50 * skill_lv * sd->spiritball_old - 100; //250% at Lv 5 * # of spiritballs
+					//if( sc && sc->data[SC_EXPLOSIONSPIRITS] ) //assumed chance percentage to deal x2~x3 damage if in fury state. [Jobbie]
+					//	skillratio = skillratio * ( (rand()%100 < 35) ? 3 : 2 ); // Fix me. Disabled due to it currently giving %100 chance for 2x damage.
 					break;
 				case SR_KNUCKLEARROW:
 					if( wflag&4 )
-						skillratio = 150 * skill_lv; //+Knockback Damage
+						skillratio = 150 * skill_lv; //+Knockback Damage (Must check and test. [Rytech])
 					else
 						skillratio += 400 + (100 * skill_lv);
 					break;
@@ -2280,7 +2282,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					}
 					break;
 				case SR_GENTLETOUCH_QUIET:
-					skillratio += 100 * (skill_lv - 1) + sstatus->dex;
+					skillratio += 100 * skill_lv - 100 + sstatus->dex;
 					break;
 				case SR_HOWLINGOFLION:
 					skillratio += 300 * skill_lv - 100;
