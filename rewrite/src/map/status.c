@@ -502,7 +502,7 @@ void initChangeTables(void)
 	set_sc( SR_RAISINGDRAGON            , SC_RAISINGDRAGON        , SI_RAISINGDRAGON            , SCB_REGEN|SCB_MAXHP|SCB_MAXSP/*|SCB_ASPD*/ );
 	set_sc( SR_GENTLETOUCH_ENERGYGAIN   , SC_GT_ENERGYGAIN        , SI_GENTLETOUCH_ENERGYGAIN   , SCB_NONE );
 	set_sc( SR_GENTLETOUCH_CHANGE       , SC_GT_CHANGE            , SI_GENTLETOUCH_CHANGE       , SCB_BATK|SCB_ASPD|SCB_DEF|SCB_MDEF );
-	set_sc( SR_GENTLETOUCH_REVITALIZE   , SC_GT_REVITALIZE        , SI_GENTLETOUCH_REVITALIZE   , SCB_VIT|SCB_MAXHP|SCB_DEF2|SCB_REGEN|SCB_ASPD|SCB_SPEED );
+	set_sc( SR_GENTLETOUCH_REVITALIZE   , SC_GT_REVITALIZE        , SI_GENTLETOUCH_REVITALIZE   , SCB_MAXHP|SCB_DEF2|SCB_REGEN|SCB_ASPD|SCB_SPEED );
 
 	set_sc( WA_SWING_DANCE                , SC_SWINGDANCE              , SI_SWINGDANCE                , SCB_SPEED|SCB_ASPD );
 	set_sc( WA_SYMPHONY_OF_LOVER          , SC_SYMPHONYOFLOVER         , SI_SYMPHONYOFLOVERS          , SCB_MDEF );
@@ -3893,8 +3893,6 @@ static unsigned short status_calc_vit(struct block_list *bl, struct status_chang
 		vit += sc->data[SC_MINOR_BBQ]->val1;
 	if(sc->data[SC_INSPIRATION])
 		vit += sc->data[SC_INSPIRATION]->val3;
-	if(sc->data[SC_GT_REVITALIZE])
-		vit += sc->data[SC_GT_REVITALIZE]->val2;
 	if(sc->data[SC_STOMACHACHE])
 		vit -= sc->data[SC_STOMACHACHE]->val1;
 
@@ -4865,11 +4863,11 @@ static unsigned int status_calc_maxhp(struct block_list *bl, struct status_chang
 	if(sc->data[SC_INSPIRATION]) //Custom value.
 		maxhp += maxhp * 3 * sc->data[SC_INSPIRATION]->val1 / 100;
 	if(sc->data[SC_RAISINGDRAGON])
-		maxhp += maxhp / 100 * (2 + sc->data[SC_RAISINGDRAGON]->val1);
+		maxhp += maxhp * (2 + sc->data[SC_RAISINGDRAGON]->val1) / 100;
 	if(sc->data[SC_GT_CHANGE])
 		maxhp -= maxhp * (2 * sc->data[SC_GT_CHANGE]->val1) / 100;
 	if(sc->data[SC_GT_REVITALIZE])
-		maxhp += maxhp * (6 * sc->data[SC_GT_REVITALIZE]->val1) / 100;
+		maxhp += maxhp * (3 * sc->data[SC_GT_REVITALIZE]->val1) / 100;
 	if(sc->data[SC_SOLID_SKIN_OPTION])
 		maxhp += 2000;// Fix amount.
 	if(sc->data[SC_POWER_OF_GAIA])
@@ -4892,7 +4890,7 @@ static unsigned int status_calc_maxsp(struct block_list *bl, struct status_chang
 	if(sc->data[SC_MERC_SPUP])
 		maxsp += maxsp * sc->data[SC_MERC_SPUP]->val2/100;
 	if(sc->data[SC_RAISINGDRAGON])
-		maxsp += maxsp / 100 * (2 + sc->data[SC_RAISINGDRAGON]->val1);
+		maxsp += maxsp * (2 + sc->data[SC_RAISINGDRAGON]->val1) / 100;
 
 	return cap_value(maxsp,1,UINT_MAX);
 }
