@@ -2214,7 +2214,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case LG_RAYOFGENESIS:
-					skillratio = (skillratio + 200 + 300 * skill_lv);
+					skillratio = skillratio + 200 + 300 * skill_lv;
 					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case LG_EARTHDRIVE:
@@ -2234,7 +2234,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio += 150 * skill_lv; // Need official on how much enemy players weight affects damage. [Rytech]
 					//if( tsd && tsd->weight )
 					//	skillratio = (100 + 150 * skill_lv) * tsd->weight / 10000;
-					//else if( !sd )
+					//else
 					//	skillratio = (100 + 150 * skill_lv) * 600 / 100;
 					break;
 				case SR_TIGERCANNON:
@@ -2318,7 +2318,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						skillratio += 10 * sc->data[SC_GN_CARTBOOST]->val1;
 					break;
 				case GN_CARTCANNON:
-					skillratio += 200 + (25 * skill_lv-1);
+					skillratio += 200 + 25 * (skill_lv-1);
 					if( sc && sc->data[SC_GN_CARTBOOST] )
 						skillratio += 10 * sc->data[SC_GN_CARTBOOST]->val1;
 					break;
@@ -3385,7 +3385,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						}
 						break;
 					case WL_FROSTMISTY:
-						skillratio = (skillratio + 100 + 100 * skill_lv);
+						skillratio = skillratio + 100 + 100 * skill_lv;
 					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						break;
 					case WL_JACKFROST:
@@ -3508,7 +3508,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						break;
 					case SO_VARETYR_SPEAR: //Assumed Formula.
 						skillratio += -100 + (sstatus->int_ * skill_lv);
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+						if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						if( sc && sc->data[SC_BLAST_OPTION] )
 							skillratio += skillratio * sc->data[SC_BLAST_OPTION]->val2 / 100;
 						break;

@@ -2353,8 +2353,9 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 				dir_x = dirx[(direction+4)%8];
 				dir_y = diry[(direction+4)%8];
 				if( map_getcell(bl->m, bl->x+dir_x, bl->y+dir_y, CELL_CHKNOPASS) != 0 )
-					skill_addtimerskill(src, tick + 600, bl->id, 0, 0, LG_OVERBRAND_PLUSATK, skilllv, BF_WEAPON, flag );	
-			}
+					skill_addtimerskill(src, tick + status_get_amotion(src), bl->id, 0, 0, LG_OVERBRAND_PLUSATK, skilllv, BF_WEAPON, flag );
+			} else
+				skill_addtimerskill(src, tick + status_get_amotion(src), bl->id, 0, 0, LG_OVERBRAND_PLUSATK, skilllv, BF_WEAPON, flag );
 		}
 		else
 			skill_blown(dsrc,bl,dmg.blewcount,direction,0);
@@ -4224,7 +4225,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		break;
 
 	case LG_OVERBRAND_BRANDISH:
-		skill_addtimerskill(src, tick + 300, bl->id, 0, 0, skillid, skilllv, BF_WEAPON, flag|SD_LEVEL);
+		skill_addtimerskill(src, tick + status_get_amotion(src)*8/10, bl->id, 0, 0, skillid, skilllv, BF_WEAPON, flag|SD_LEVEL);
 		break;
 
 	case SR_DRAGONCOMBO:
@@ -9733,15 +9734,18 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		skill_blown(src,src,6,unit_getdir(src),0);
 		break;
 
+	/* LG_OVERBRAND_BRANDISH iterated first, because even if an enemy was knocked back from the area of LG_OVERBRAND_BRANDISH because of LG_OVERBRAND should receive the damage.
+	LG_OVERBRAND_BRANDISH has delayed damage, so LG_OVERBRAND's damage will apply first anyways. */
 	case LG_OVERBRAND:
 		{
 			int dir = map_calc_dir(src, x, y);
-			struct s_skill_nounit_layout *layout = skill_get_nounit_layout(skillid,skilllv,src,x,y,dir);
-			for( i = 0; i < layout->count; i++ )
-				map_foreachincell(skill_area_sub, src->m, x+layout->dx[i], y+layout->dy[i], BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY,skill_castend_damage_id);
+			struct s_skill_nounit_layout  *layout;
 			layout = skill_get_nounit_layout(LG_OVERBRAND_BRANDISH,skilllv,src,x,y,dir);
 			for( i = 0; i < layout->count; i++ )
 				map_foreachincell(skill_area_sub, src->m, x+layout->dx[i], y+layout->dy[i], BL_CHAR, src, LG_OVERBRAND_BRANDISH, skilllv, tick, flag|BCT_ENEMY,skill_castend_damage_id);
+			layout = skill_get_nounit_layout(skillid,skilllv,src,x,y,dir);
+			for( i = 0; i < layout->count; i++ )
+				map_foreachincell(skill_area_sub, src->m, x+layout->dx[i], y+layout->dy[i], BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY,skill_castend_damage_id);
 		}
 		break;
 
@@ -10745,6 +10749,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			case UNT_ANKLESNARE: //These happen when a trap is splash-triggered by multiple targets on the same cell.
 			case UNT_FIREPILLAR_ACTIVE:
 			case UNT_ELECTRICSHOCKER:
+			case UNT_MANHOLE:
 				return 0;
 			default:
 				ShowError("skill_unit_onplace_timer: interval error (unit id %x)\n", sg->unit_id);
@@ -11315,7 +11320,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 
 		case UNT_BANDING:
 			if( battle_check_target(ss,bl,BCT_ENEMY) > 0 && !(status_get_mode(bl)&MD_BOSS) && !(tsc && tsc->data[SC_BANDING_DEFENCE]) )
-				sc_start(bl,SC_BANDING_DEFENCE,100,90,skill_get_time(sg->skill_id,sg->skill_lv));
+				sc_start(bl,SC_BANDING_DEFENCE,100,90,skill_get_time2(sg->skill_id,sg->skill_lv));
 			break;
 
 		case UNT_FIRE_MANTLE:
@@ -16489,7 +16494,7 @@ void skill_init_nounit_layout (void)
 		pos++;
 	}
 
-	overbrand_brandish_nounit_pos = pos;
+	overbrand_nounit_pos = pos;
 	for( i = 0; i < 8; i++ )
 	{
 		if( i&1 )
@@ -16595,7 +16600,7 @@ void skill_init_nounit_layout (void)
 		pos++;
 	}
 
-	overbrand_nounit_pos = pos;
+	overbrand_brandish_nounit_pos = pos;
 	for( i = 0; i < 8; i++ )
 	{
 		if( i&1 )
