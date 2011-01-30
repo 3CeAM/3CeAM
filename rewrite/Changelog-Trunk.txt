@@ -1,7 +1,107 @@
 Date	Added
 
-2010/12/26
+2011/01/29
+	* Removed @aw/@away which duplicates and collides with client's /am (away message) (bugreport:1235, topic:163083, since r4351). [Ai4rei]
+	* Fixed a map-server crash when invalid items are deleted (option 'item_check') from a logging-in character (bugreport:2604). [Ai4rei]
+	- This removes the pc_checkitem call from pc_authok, as the check is done in clif_parse_LoadEndAck as well, after first status calc has taken place.
+	- Inventory list is now sent before pc_checkitem in clif_parse_LoadEndAck, so that deleted items do not show up as 'unknown item'.
+2011/01/27
+	* Fixed @accept not checking, whether or not a duel is already full (bugreport:2740, since r4111). [Ai4rei]
+	* Resolving allow/deny IP rules not working (bugreport:2632). [Ai4rei]
+	- Fixed 'mask' being filled with 'ip' when standard mask was specified (since r9647).
+	- Fixed 'ip' and 'mask' (bit mask) being stored in wrong byte order (network order instead of host order) (since r10162).
+2011/01/26
+	* Fixed buyers, that are currently in a vending shop could be fooled into buying an item at different price than they see by reopening the vending shop (bugreport:4728). [Ai4rei]
+	- This implements the official vending shop unique id handling (previously mistaken for char id), made compatible with packets before it's introduction (follow up to r14234).
+2011/01/24
+	* Added documentation for undocumented bonuses (bugreport:4727, follow up to r302, r354, r485, r699, r928, r1116, r6221, r7982, r10031, r13596 and r14018). [Ai4rei]
+2011/01/23
+	* Some cleaning here and there. [Ai4rei]
+	- Fixed a typo in basejob_baseclass_upper sample script (since r3893).
+	- Fixed (for sake of consistency) usage of 'sd' before corresponding nullpo check in party_invite (bugreport:2752).
+	- Fixed atcommand config reading would not cap level for charcommands, when using atcommand level as fallback (bugreport:2961, since r13409).
+	- Removed orphaned clif_mob_hp declaration from clif.h (bugreport:2788, since r2092).
+	- Removed unnecessary look-up in itemdb_available macro, as dummy_item is considered unavailable.
+	- Removed leftover shortlist linked-list struct (followup to r10507).
+2011/01/19
+	* Fixed solo dance/star gladiator warm AoE no longer following the owner and cloaking wall rules no longer working (bugreport:4720, since r14671). [Ai4rei]
+2011/01/16
+	* Fixed a map-server crash, when a script attempts to call a local function, which has only a forward declaration. Such functions now count as script parse error (bugreport:4009, since r3422). [Ai4rei]
+	* Fixed definitions of local functions would set a label reference, even when their name was already taken (follow up to r14600, since r3422).
+2011/01/15
+	* Various accumulated insignificant fixes to documentation, examples and comments. [Ai4rei]
+2011/01/14
+	* Added 'birthdate' field to account data. For SQL apply upgrade_svn14672.sql to upgrade table `login`; for TXT no action is necessary, as it upgrades itself. [Ai4rei]
+	- Control panel developers are encouraged to enable players to modify this value, as it is required for new character deletion (2010-08-03aRagexeRE and later, not yet implemented).
+	* Removed unconditional redundant status change checks before status_change_end calls (follow up to r12890). [Ai4rei]
+	* Replaced remaining occurences of '-1' with 'INVALID_TIMER', where appropriate (follow up to r12998). [Ai4rei]
+	* Removed 'gui' plug-in (support plug-in for 3rd party eAthena GUI front-ends) (topic:262934). [Ai4rei]
+2011/01/13
+	* Fixed mapflags 'restricted', 'nocommand', 'bexp' and 'jexp' still not getting completely initialized upon @reloadscript (bugreport:4710, follow up to r14548). [Ai4rei]
+	* Removed ladmin (remote administration tool), all related support code and the checkversion.pl tool with it's support code, which was shared with ladmin (topic:262934, related bugreport:1147, bugreport:1889, r9408 and r9610). [Ai4rei]
+	* Fixed chrif-packet processing considering free/unused packet IDs incorrectly as variable length packets (-1 = variable length, 0 = disabled packet). [Ai4rei]
+	* Added support for creating account through the console-plugin on login-server (replaces ladmin functionality unavailable through atcommands). [Ai4rei]
+	* Reformatting and minor cleanups to console-plugin related code. [Ai4rei]
+2011/01/10
+	* Fixed script command 'cleararray' setting 1 element more, than it is told to (bugreport:2047, since r12253). [Ai4rei]
+	- Fixed 'inaccessible element 127' issue in 'cleararray', 'setarray' (since r10813) and 'copyarray' (since r14608) script commands (bugreport:864, related r12253, follow up to r14608).
+	* Fixed monster level not getting updated in monster name (option 'show_mob_info'), when a monster levels up (option 'mobs_level_up') (follow up to r8644, related r187). [Ai4rei]
+	* Made script command 'charisalpha' always return 1 when 'isaplha' is true, rather than to return the return value of 'isalpha' which is only defined as zero/non-zero and can be different from 1 (bugreport:2024, related r2003). [Ai4rei]
+2011/01/09
+	* Fixed packet_len entry for packet 0x289 (ZC_PC_CASH_POINT_UPDATE) not matching the actual size used in clif_cashshop_ack (bugreport:4701, since r14639, follow up to r12264). [Ai4rei]
+2011/01/08
+	* Fixed script command 'progressbar' resuming fails on second invocation, when there was no script pause between the first and second call (bugreport:4698, since r14024). [Ai4rei]
+	* Fixed kill steal protection result in skill casting (unit_skilluse_id2) not getting evaluated (bugreport:1808, since r12203). [Ai4rei]
+	- Moved kill steal protection in skill casting to be only executed, after the actual target has been determined and validated (since r12203).
+	* Applied fix provided by Valaris to make /pvpinfo actually work. (bugreport:1785, since r1602). [Ai4rei]
+	- Filled-in missing packet fields and documented the packet. Note, that this command does not show anything outside of PvP maps (client-side limitation).
+	* Fixed @homlevel usage message stating, that deleveling is possible, although it is not (bugreport:1485, since r10272). [Ai4rei]
+	- The command now fails, if it is given a zero or negative value.
+2011/01/07
+	* Fixed @alootid using 'autolootitem' (internal name) in it's usage message (bugreport:1445, since r12203). [Ai4rei]
+2011/01/06
+	* Fixed script command 'deletearray' deleting incorrect amount of array elements from arrays with empty elements (bugreport:4628). [Ai4rei]
+2011/01/05
+	* Fixed ends of statement blocks missing script EOL processing, thus causing 'next line' label (-) to misbehave in statement blocks without additional curly braces (bugreport:4417, since r3422). [Ai4rei]
+2011/01/04
+	* Added support for removal of trailing comments to sv_readdb (bugreport:4680). [Ai4rei]
+2011/01/01
+	* Fixed local files could not be aliased with resnametable.txt in grfio (bugreport:2203, since r5152). [Ai4rei]
+	* Cleanups to grfio. [Ai4rei]
+	- Replaced strncpy with safestrncpy (bugreport:3080).
+	- Ensured, that all local paths are normalized and work whether or not the data dir ends with '/'.
+	- Local files are no longer added to the GRF+alias file list (apparently served to cache file size, with no performance gain).
+	- Buffer for files is no longer allocated with 1024 extra bytes, but only 1 for zero-termination of text files.
+	* Updates to map cache generator tool. [Ai4rei]
+	- Removed unmaintained grfio library copy and made the tool use the one in /common instead (related r12726).
+	- Updated makefile to use compile options/libraries determined by configure (bugreport:1109).
+	- Fixed error messages from the tool and grfio library overlapping each other (bugreport:2403).
+2010/12/31
+	* Pending trade requests no longer prevent a character from trading someone else instead (official). [Ai4rei]
+	- This fixes trade window displaying wrong name when attempting to deal multiple characters (bugreport:344).
+2010/12/30
+	* Fixed improper use of itemdb_search. It does not return NULL but a dummy item, if the item id is invalid. [Ai4rei]
+2010/12/29
+	* Made remaining csv databases (guild, castle, homunculus, itemdb, mercenary) use sv_readdb, where applicable (follow up to r14524, r14526 and r14532). [Ai4rei]
+	- Few databases remain unchanged, which have either a custom layout or are otherwise incompatible with sv_readdb.
+	* Collection of random insignificant changes. [Ai4rei]
+	- Added progress indication on map-server shutdown when objects are removed from maps, as it takes significant amount of time to complete.
+	- Moved ers_free in db_obj_vclear, so that the node pointer is not used for comparison after it has been freed.
+	- Some documentation of shop packets.
+	* Fixed 'console' plugin not working on Windows, due to NULL passed to CreateThread instead of required pointer to thread id variable. [Ai4rei]
+	- Fixed 'console' plugin causing delete_timer error when it fails to load, due to uninitialized variable.
+	* Renamed plugin.def to sample.def and added 'sample' plugin exports into it, as it's purpose is nothing than a sample right now.
+	- Also added .def files for 'gui' and 'pid' plugins as MSVC does not export everything automatically and missing event export cause the plugins silently failing.
+	- Added VS6, VS8 and VS9 projects for compiling plug-ins, which can be used on Windows.
+	* The plug-in system will now report, if it cannot import an event function.
+2010/12/28
+	* Fixed char-server making assumptions about RFIFO data length in character deletion packet (since r10909). [Ai4rei]
+	* Fixed login-server discarding RFIFO data, when the length is 1 byte; minimum packet size is 2 bytes (since r5027).
+	- Fixed login-server not skipping packet 0x2728's data on failure (since r12043).
+	* Removed unmaintained and broken 'adduser' tool (topic:262284). [Ai4rei]
+2010/12/27
 	* Fixed skill_can_produce_mix not checking, whether or not the produced goods can actually be stored (bugreport:4674). [Ai4rei]
+2010/12/26
 	* Reverted r14565, as the database version is already properly commented in source and is overwritten upon first sync of account.txt anyway. [Ai4rei]
 	* Cleaned up script command checkweight. [Ai4rei]
 	- Replaced some code parts with calls to pc_checkadditem and pc_inventoryblank (follow up to r13735).
