@@ -1191,7 +1191,7 @@ int mob_unlocktarget(struct mob_data *md, unsigned int tick)
 
 	switch (md->state.skillstate) {
 	case MSS_WALK:
-		if (md->ud.walktimer != -1)
+		if (md->ud.walktimer != INVALID_TIMER)
 			break;
 		//Because it is not unset when the mob finishes walking.
 		md->state.skillstate = MSS_IDLE;
@@ -1282,7 +1282,7 @@ int mob_warpchase(struct mob_data *md, struct block_list *target)
 	if (target->m == md->bl.m && check_distance_bl(&md->bl, target, AREA_SIZE))
 		return 0; //No need to do a warp chase.
 
-	if (md->ud.walktimer != -1 &&
+	if (md->ud.walktimer != INVALID_TIMER &&
 		map_getcell(md->bl.m,md->ud.to_x,md->ud.to_y,CELL_CHKNPC))
 		return 1; //Already walking to a warp.
 
@@ -1314,10 +1314,10 @@ static bool mob_ai_sub_hard(struct mob_data *md, unsigned int tick)
 
 	md->last_thinktime = tick;
 
-	if( md->ud.skilltimer != -1 )
+	if (md->ud.skilltimer != INVALID_TIMER)
 		return false;
 
-	if( md->ud.walktimer != -1 && md->ud.walkpath.path_pos <= 3 )
+	if(md->ud.walktimer != INVALID_TIMER && md->ud.walkpath.path_pos <= 3)
 		return false;
 
 	// Abnormalities
@@ -1340,8 +1340,8 @@ static bool mob_ai_sub_hard(struct mob_data *md, unsigned int tick)
 	{	//Check validity of current target. [Skotlex]
 		tbl = map_id2bl(md->target_id);
 		if( !tbl || tbl->m != md->bl.m ||
-			(md->ud.attacktimer == -1 && !status_check_skilluse(&md->bl, tbl, 0, 0, 0)) ||
-			(md->ud.walktimer != -1 && !(battle_config.mob_ai&0x1) && !check_distance_bl(&md->bl, tbl, md->min_chase)) ||
+			(md->ud.attacktimer == INVALID_TIMER && !status_check_skilluse(&md->bl, tbl, 0, 0, 0)) ||
+			(md->ud.walktimer != INVALID_TIMER && !(battle_config.mob_ai&0x1) && !check_distance_bl(&md->bl, tbl, md->min_chase)) ||
 			(
 				tbl->type == BL_PC &&
 				((((TBL_PC*)tbl)->state.gangsterparadise && !(mode&MD_BOSS)) ||
@@ -1467,7 +1467,7 @@ static bool mob_ai_sub_hard(struct mob_data *md, unsigned int tick)
 	if (tbl->type == BL_ITEM)
 	{	//Loot time.
 		struct flooritem_data *fitem;
-		if (md->ud.target == tbl->id && md->ud.walktimer != -1)
+		if (md->ud.target == tbl->id && md->ud.walktimer != INVALID_TIMER)
 			return true; //Already locked.
 		if (md->lootitem == NULL)
 		{	//Can't loot...
@@ -1489,7 +1489,7 @@ static bool mob_ai_sub_hard(struct mob_data *md, unsigned int tick)
 			return true;
 		}
 		//Within looting range.
-		if (md->ud.attacktimer != -1)
+		if (md->ud.attacktimer != INVALID_TIMER)
 			return true; //Busy attacking?
 
 		fitem = (struct flooritem_data *)tbl;
@@ -1517,7 +1517,7 @@ static bool mob_ai_sub_hard(struct mob_data *md, unsigned int tick)
 	}
 	//Attempt to attack.
 	//At this point we know the target is attackable, we just gotta check if the range matches.
-	if (md->ud.target == tbl->id && md->ud.attacktimer != -1) //Already locked.
+	if (md->ud.target == tbl->id && md->ud.attacktimer != INVALID_TIMER) //Already locked.
 		return true;
 	
 	if (battle_check_range (&md->bl, tbl, md->status.rhw.range))
@@ -1546,7 +1546,7 @@ static bool mob_ai_sub_hard(struct mob_data *md, unsigned int tick)
 		return true;
 	}
 
-	if (md->ud.walktimer != -1 && md->ud.target == tbl->id &&
+	if (md->ud.walktimer != INVALID_TIMER && md->ud.target == tbl->id &&
 		(
 			!(battle_config.mob_ai&0x1) ||
 			check_distance_blxy(tbl, md->ud.to_x, md->ud.to_y, md->status.rhw.range)
@@ -2462,7 +2462,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 		md->status.hp = 1;
 	}
 
-	if(md->deletetimer!=-1) {
+	if(md->deletetimer != INVALID_TIMER) {
 		delete_timer(md->deletetimer,mob_timer_delete);
 		md->deletetimer = INVALID_TIMER;
 	}
@@ -2930,7 +2930,7 @@ int mobskill_use(struct mob_data *md, unsigned int tick, int event)
 	nullpo_ret(md);
 	nullpo_ret(ms = md->db->skill);
 
-	if (!battle_config.mob_skill_rate || md->ud.skilltimer != -1 || !md->db->maxskill)
+	if (!battle_config.mob_skill_rate || md->ud.skilltimer != INVALID_TIMER || !md->db->maxskill)
 		return 0;
 
 	if (event == -1 && DIFF_TICK(md->ud.canact_tick, tick) > 0)
@@ -4153,7 +4153,7 @@ static bool mob_parse_row_mobskilldb(char** str, int columns, int current)
 			ms->target = MST_TARGET;
 		}
 	} else if (ms->target > MST_MASTER) {
-		ShowWarning("mob_parse_row_mobskilldb: Wrong mob skill target 'around' for non-ground skill %d (%s) for %s\n.",
+		ShowWarning("mob_parse_row_mobskilldb: Wrong mob skill target 'around' for non-ground skill %d (%s) for %s.\n",
 			ms->skill_id, skill_get_name(ms->skill_id),
 			mob_id < 0?"all mobs":mob_db_data[mob_id]->sprite);
 		ms->target = MST_TARGET;
