@@ -3280,7 +3280,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case RK_SONICWAVE:
 	case RK_HUNDREDSPEAR:
 	case RK_WINDCUTTER:
-	case RK_DRAGONBREATH:
 	case GC_CROSSIMPACT:
 	case GC_VENOMPRESSURE:
 	case AB_DUPLELIGHT_MELEE:
@@ -3299,7 +3298,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case SR_CRESCENTELBOW_AUTOSPELL:
 	case SR_GATEOFHELL:
 	case SR_GENTLETOUCH_QUIET:
-	case WM_METALICSOUND:
 	case WM_SEVERE_RAINSTORM_MELEE:
 	case WM_GREAT_ECHO:
 	case GN_SLINGITEM_RANGEMELEEATK:
@@ -3696,6 +3694,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case AB_HIGHNESSHEAL:
 	case AB_DUPLELIGHT_MAGIC:
 	case WL_HELLINFERNO:
+	case WM_METALICSOUND:
 	case SO_EARTHGRAVE:
 	case SO_DIAMONDDUST:
 		skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag);
@@ -3789,6 +3788,8 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case NPC_SMOKING:
 	case GS_FLING:
 	case NJ_ZENYNAGE:
+	case RK_DRAGONBREATH:
+	case GN_HELLS_PLANT_ATK:
 		skill_attack(BF_MISC,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
