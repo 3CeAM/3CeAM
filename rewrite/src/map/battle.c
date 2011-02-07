@@ -849,6 +849,7 @@ int battle_calc_gvg_damage(struct block_list *src,struct block_list *bl,int dama
 	case PA_PRESSURE:
 	case HW_GRAVITATION:
 	case NJ_ZENYNAGE:
+	case RK_DRAGONBREATH:
 	case GN_HELLS_PLANT_ATK:
 		break;
 	default:
@@ -1619,12 +1620,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				if( sc && sc->data[SC_GLOOMYDAY_SK] )
 					ATK_ADD(50 + 5 * sc->data[SC_GLOOMYDAY_SK]->val1);
 				break;
-			case RK_DRAGONBREATH:
-				if( battle_config.skillsbonus_maxhp_RK && status_get_hp(src) > battle_config.skillsbonus_maxhp_RK ) // [Pinky]
-					wd.damage = (battle_config.skillsbonus_maxhp_RK * 16 / 1000) + (status_get_sp(src) * 192 / 1000);
-				else
-					wd.damage = (status_get_hp(src) * 16 / 1000) + (status_get_sp(src) * 192 / 1000);
-				break;
 			case NC_AXEBOOMERANG:
 				//TODO: Need to get official value of weight % as addition to skill damage. [Jobbie]
 				if( sd )
@@ -2039,10 +2034,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					if( sstatus->rhw.ele == ELE_FIRE )	skillratio +=  skillratio / 2;	// Bonus by fire element endow.
 					break;
-				case RK_DRAGONBREATH: // Sugested formula from irowiki.
-					skillratio *= skill_lv;
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
-					break;
 				case RK_CRUSHSTRIKE:	// Sugested formula from irowiki.
 					skillratio += 550;
 					if( sd )
@@ -2056,7 +2047,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					}
 					break;
 				case RK_STORMBLAST:
-					skillratio += -100 + 100 * (sd ? pc_checkskill(sd,RK_RUNEMASTERY) : 1) +  sstatus->int_ / 4;
+					skillratio += -100 + 100 * (sd ? pc_checkskill(sd,RK_RUNEMASTERY) : 1) +  100 * (sstatus->int_ / 4);
 					break;
 				case RK_PHANTOMTHRUST: // TODO: How much Spear Mastery affects?.
 					skillratio += 20 * (skill_lv - 1);
@@ -2291,14 +2282,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					if( sd && sd->spiritball_old > 0 )
 						skillratio += (100 * skill_lv) + sstatus->dex * sd->spiritball_old;
 					break;
-				case WM_METALICSOUND:
-					skillratio += 450 + (50 * skill_lv);
-					if( sd )
-						skillratio += pc_checkskill(sd,WM_LESSON);
-					break;
 				case WM_REVERBERATION_MELEE:
-					if( sd )
-						skillratio += 200 + 100 * pc_checkskill(sd, WM_REVERBERATION);
+					skillratio += 200 + 100 * pc_checkskill(sd, WM_REVERBERATION);
 					break;
 				case WM_SEVERE_RAINSTORM_MELEE:
 					skillratio = 50 + 50 * skill_lv;
@@ -2340,7 +2325,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 								skillratio += 400;	// Unconfirded
 								break;
 							case 13264: // Banana Bomb 2000%
-								skillratio += 2000;
+								skillratio += 1900;
 								break;
 							case 13265: skillratio -= 75; break; // Black Lump 25%
 							case 13266: skillratio -= 25; break; // Hard Black Lump 75%
@@ -2491,10 +2476,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 			case NC_AXETORNADO:
 				if( (sstatus->rhw.ele) == ELE_WIND || (sstatus->lhw.ele) == ELE_WIND )
 					ATK_ADDRATE(50);
-				break;
-			case RK_DRAGONBREATH:
-				if( sd && (i = pc_checkskill(sd,RK_DRAGONTRAINING)-1) > 0 )
-					ATK_ADDRATE(5 * i);
 				break;
 			case SR_EARTHSHAKER:
 				if( tsc && (tsc->data[SC_HIDING] || tsc->data[SC_CLOAKING] || tsc->data[SC_CHASEWALK] || tsc->data[SC_CLOAKINGEXCEED]) )
@@ -3456,6 +3437,9 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						skillratio = (skillratio + 200) * skill_lv;
 					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						break;
+					case WM_METALICSOUND:
+					skillratio += 120 * skill_lv + 40 * pc_checkskill(sd, WM_LESSON) - 100;
+					break;
 					case WM_SEVERE_RAINSTORM:
 						skillratio += 50 * skill_lv;
 						break;
@@ -3508,7 +3492,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						break;
 					case SO_VARETYR_SPEAR: //Assumed Formula.
 						skillratio += -100 + (sstatus->int_ * skill_lv);
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						if( sc && sc->data[SC_BLAST_OPTION] )
 							skillratio += skillratio * sc->data[SC_BLAST_OPTION]->val2 / 100;
 						break;
@@ -3864,6 +3848,19 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		break;
 	case NPC_EVILLAND:
 		md.damage = skill_calc_heal(src,target,skill_num,skill_lv,false);
+		break;
+	case RK_DRAGONBREATH:
+		if( battle_config.skillsbonus_maxhp_RK && status_get_hp(src) > battle_config.skillsbonus_maxhp_RK ) // [Pinky]
+		md.damage = ((battle_config.skillsbonus_maxhp_RK * 16 / 1000) + (status_get_sp(src) * 192 / 1000)) * skill_lv;
+		else
+		md.damage = ((status_get_hp(src) * 16 / 1000) + (status_get_sp(src) * 192 / 1000)) * skill_lv;
+		// Need someone to properly code this part in here however its supposed to be.
+		//if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+		//
+		// How can I increase a fixed damage attack by a % when it doesent use ATK or MATK???
+		//case RK_DRAGONBREATH:
+		//if( sd && (i = pc_checkskill(sd,RK_DRAGONTRAINING)-1) > 0 )
+		//ATK_ADDRATE(5 * i);
 		break;
 	case RA_CLUSTERBOMB:
 	case RA_FIRINGTRAP:
