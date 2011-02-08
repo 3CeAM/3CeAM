@@ -3789,6 +3789,8 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case GS_FLING:
 	case NJ_ZENYNAGE:
 	case RK_DRAGONBREATH:
+	case GN_THORNS_TRAP:
+	case GN_BLOOD_SUCKER:
 	case GN_HELLS_PLANT_ATK:
 		skill_attack(BF_MISC,src,src,bl,skillid,skilllv,tick,flag);
 		break;
@@ -7807,7 +7809,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		{
 			if( sd->status.skill[sd->reproduceskill_id].id || sd->status.skill[sd->cloneskill_id].id )
 			{
-				sc_start(src,SC_STOP,100,skilllv,-1);
+				sc_start(src,SC_STOP,100,skilllv,-1);// The skilllv is stored in val1 used in skill_select_menu to determine the used skill lvl [Xazax]
 				clif_skill_select_request(sd);
 				clif_skill_nodamage(src,bl,skillid,1,1);
 			}
@@ -8338,7 +8340,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				improv_skillid = skill_improvise_db[i].skillid;
 			}
 			while( improv_skillid == 0 || rand()%10000 >= skill_improvise_db[i].per );
-			improv_skilllv = 4 + (sd)?pc_checkskill(sd,skillid):5; // Assume max level on mobs.
+			improv_skilllv = 4 + skilllv;
 			clif_skill_nodamage (src, bl, skillid, skilllv, 1);
 
 			if( sd )
@@ -15805,9 +15807,13 @@ int skill_select_menu(struct map_session_data *sd,int flag,int skill_id)
 {
 	int id, lv, aslvl, prob;
 	nullpo_ret(sd);
-	status_change_end(&sd->bl,SC_STOP,-1);
+	if (sd->sc.data[SC_STOP])
+	{
+		aslvl = sd->sc.data[SC_STOP]->val1;
+		status_change_end(&sd->bl,SC_STOP,-1);
+	}
 
-	if( (aslvl = pc_checkskill(sd,SC_AUTOSHADOWSPELL)) <= 0 || (id = sd->status.skill[skill_id].id) == 0 || sd->status.skill[skill_id].flag != 13 || skill_id >= GS_GLITTERING || skill_get_type(skill_id) != BF_MAGIC )
+	if( (id = sd->status.skill[skill_id].id) == 0 || sd->status.skill[skill_id].flag != 13 || skill_id >= GS_GLITTERING || skill_get_type(skill_id) != BF_MAGIC )
 	{
 		clif_skill_fail(sd,SC_AUTOSHADOWSPELL,0,0,0);
 		return 0;
@@ -15817,7 +15823,6 @@ int skill_select_menu(struct map_session_data *sd,int flag,int skill_id)
 	lv = min(lv,sd->status.skill[skill_id].lv);
 	prob = (aslvl == 10) ? 15 : (32 - 2 * aslvl); // Probability at level 10 was increased to 15.
 	sc_start4(&sd->bl,SC__AUTOSHADOWSPELL,100,id,lv,prob,0,skill_get_time(SC_AUTOSHADOWSPELL,aslvl));
-	status_change_end(&sd->bl,SC_STOP,-1);
 	return 0;
 }
 
