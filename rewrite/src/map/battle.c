@@ -788,6 +788,8 @@ int battle_calc_bg_damage(struct block_list *src, struct block_list *bl, int dam
 		case PA_PRESSURE:
 		case HW_GRAVITATION:
 		case NJ_ZENYNAGE:
+		case RK_DRAGONBREATH:
+		case GN_HELLS_PLANT_ATK:
 			break;
 		default:
 			if( flag&BF_SKILL )
@@ -2024,7 +2026,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case RK_WINDCUTTER: // Sugested formula from irowiki.
 					skillratio += 50 * skill_lv; // Base skillratio
-					if( s_level > 50 ) skillratio += skillratio * (s_level - 50) / 200;	// x1.5 at base level 150
+					if( s_level > 50 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
 					break;
 				case RK_IGNITIONBREAK: // Sugested formula from irowiki.
 					i = distance_bl(src,target) / 2;
@@ -2076,11 +2078,11 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case RA_ARROWSTORM:
 					skillratio += 100 + 50 * skill_lv;
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Need official value.
+					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case RA_AIMEDBOLT:
 					skillratio += 400 + 50 * skill_lv;
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Need official value.
+					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					if( tsc && (tsc->data[SC_BITE] || tsc->data[SC_ANKLE] || tsc->data[SC_ELECTRICSHOCKER]) )
 						wd.div_ = tstatus->size + 2 + rand()%2;
 					break;
@@ -3854,13 +3856,8 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		md.damage = ((battle_config.skillsbonus_maxhp_RK * 16 / 1000) + (status_get_sp(src) * 192 / 1000)) * skill_lv;
 		else
 		md.damage = ((status_get_hp(src) * 16 / 1000) + (status_get_sp(src) * 192 / 1000)) * skill_lv;
-		// Need someone to properly code this part in here however its supposed to be.
-		//if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
-		//
-		// How can I increase a fixed damage attack by a % when it doesent use ATK or MATK???
-		//case RK_DRAGONBREATH:
-		//if( sd && (i = pc_checkskill(sd,RK_DRAGONTRAINING)-1) > 0 )
-		//ATK_ADDRATE(5 * i);
+		if (sd) md.damage += md.damage * 5 * (pc_checkskill(sd,RK_DRAGONTRAINING) -1) / 100;// Damaged is increased if you know Dragon Training [Rytech]
+		if (status_get_lv(src) > 100) md.damage += md.damage * (s_level - 100) / 200;// Base level bonus.
 		break;
 	case RA_CLUSTERBOMB:
 	case RA_FIRINGTRAP:
