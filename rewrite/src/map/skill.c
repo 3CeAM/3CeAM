@@ -1157,9 +1157,6 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 	case SR_HOWLINGOFLION:
 		sc_start(bl, SC_FEAR, 5 + 5 * skilllv, skilllv, skill_get_time(skillid, skilllv));
 		break;
-	case WM_METALICSOUND:
-		sc_start(bl, SC_CHAOS, 20 + 5 * skilllv, skilllv, skill_get_time(skillid,skilllv));
-		break;
 	case SO_EARTHGRAVE:
 		sc_start(bl, SC_BLEEDING, 10 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));	// Need official rate. [LimitLine]
 		break;
@@ -2468,6 +2465,9 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 		clif_damage(src, bl, tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, dmg.type, dmg.damage2 );
 		return ATK_NONE;
 	}
+	
+	if ( skillid == WM_METALICSOUND )
+		status_zap(bl, 0, damage*battle_config.metallicsound_spburn_rate/(100*(110-pc_checkskill(sd,WM_LESSON)*10)));
 
 	if( sc && sc->data[SC_WATER_SCREEN_OPTION] && sc->data[SC_WATER_SCREEN_OPTION]->val1 && damage > 0)
 	{
@@ -8141,12 +8141,21 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case WA_SWING_DANCE:
-	case WA_SYMPHONY_OF_LOVER:
 	case WA_MOONLIT_SERENADE:
+		if( sd == NULL || sd->status.party_id == 0 || (flag & 1) )
+			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
+		else if( sd )
+		{	// Only shows effects on caster.
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+			party_foreachsamemap(skill_area_sub, sd, skill_get_splash(skillid, skilllv), src, skillid, skilllv, tick, flag|BCT_PARTY|1, skill_castend_nodamage_id);
+		}
+		break;
+
+	case WA_SYMPHONY_OF_LOVER:
 	case MI_RUSH_WINDMILL:
 	case MI_ECHOSONG:
 		if( sd == NULL || sd->status.party_id == 0 || (flag & 1) )
-			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
+			sc_start4(bl,type,100,skilllv,6*skilllv,(sd?pc_checkskill(sd,WM_LESSON):0),(sd?sd->status.job_level:0),skill_get_time(skillid,skilllv));
 		else if( sd )
 		{	// Only shows effects on caster.
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
@@ -12992,12 +13001,12 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 							req.spiritball = 3;
 							break;
 						case CH_CHAINCRUSH:	//It should consume whatever is left as long as it's at least 1.
-							req.spiritball = sd->spiritball?sd->spiritball:1;
+							req.spiritball = (sd && sd->spiritball)?sd->spiritball:1;
 							break;
 					}
 				}
 				else if( sc->data[SC_RAISINGDRAGON] ) //Only Asura will consume all remaining balls under RD status. [Jobbie]
-					req.spiritball = sd->spiritball ? sd->spiritball : 15;
+					req.spiritball = (sd && sd->spiritball) ? sd->spiritball : 15;
 			}
 			break;
 		case LG_RAGEBURST:
@@ -15336,11 +15345,11 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 			case GN_CHANGEMATERIAL:
 				switch( nameid )
 				{
-					case 1010: qty = 8; break;
-					case 1061: qty = 2; break;
+					case 1010: qty *= 8; break;
+					case 1061: qty *= 2; break;
 					// Throwable potions
 					case 13275: case 13278:
-						qty = 10;
+						qty *= 10;
 						break;
 				}
 				make_per = 100000; //100% success rate.
@@ -15905,7 +15914,7 @@ int skill_elementalanalysis(struct map_session_data* sd, int n, int skill_lv, un
 
 int skill_changematerial(struct map_session_data *sd, int n, unsigned short *item_list)
 {
-	int i, j, k, c, nameid, amount;
+	int i, j, k, c, p, nameid, amount;
 	
 	nullpo_ret(sd);
 	nullpo_ret(item_list);
@@ -15915,30 +15924,33 @@ int skill_changematerial(struct map_session_data *sd, int n, unsigned short *ite
 	{
 		if( skill_produce_db[i].itemlv == 26 )
 		{
-			c = 0;
-			
-			// Verification of overlap between the objects required and the list submitted.
-			for( j = 0; j < MAX_PRODUCE_RESOURCE; j++ )
+			p = 0;
+			do
 			{
-				if( skill_produce_db[i].mat_id[j] > 0 )
+				c = 0;
+				// Verification of overlap between the objects required and the list submitted.
+				for( j = 0; j < MAX_PRODUCE_RESOURCE; j++ )
 				{
-					for( k = 0; k < n; k++ )
+					if( skill_produce_db[i].mat_id[j] > 0 )
 					{
-						int idx = item_list[k*2+0]-2;
-						nameid = sd->status.inventory[idx].nameid;
-						amount = item_list[k*2+1];
+						for( k = 0; k < n; k++ )
+						{
+							int idx = item_list[k*2+0]-2;
+							nameid = sd->status.inventory[idx].nameid;
+							amount = item_list[k*2+1];
 
-						if( nameid == skill_produce_db[i].mat_id[j] && amount == skill_produce_db[i].mat_amount[j] )
-							c++; // match
+							if( nameid == skill_produce_db[i].mat_id[j] && (amount-p*skill_produce_db[i].mat_amount[j]) >= skill_produce_db[i].mat_amount[j] )
+								c++; // match
+						}
 					}
+					else
+						break;	// No more items required
 				}
-				else
-					break;	// No more items required
-			}
-			if( n == j && c == n )
+				p++;
+			} while(n == j && c == n);
+			if ( p > 0 )
 			{
-				// Item found, go to produce it!!
-				skill_produce_mix(sd,GN_CHANGEMATERIAL,skill_produce_db[i].nameid,0,0,0,1);
+				skill_produce_mix(sd,GN_CHANGEMATERIAL,skill_produce_db[i].nameid,0,0,0,p-1);
 				return 1;
 			}
 		}

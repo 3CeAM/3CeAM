@@ -3440,8 +3440,8 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						break;
 					case WM_METALICSOUND:
-					skillratio += 120 * skill_lv + 40 * pc_checkskill(sd, WM_LESSON) - 100;
-					break;
+						skillratio += 120 * skill_lv + 40 * pc_checkskill(sd, WM_LESSON) - 100;
+						break;
 					case WM_SEVERE_RAINSTORM:
 						skillratio += 50 * skill_lv;
 						break;
@@ -5349,6 +5349,7 @@ static const struct _battle_data {
 	{ "max_joblvl_nerf_misc",               &battle_config.max_joblvl_nerf_misc,             100,   0,      INT_MAX,        },
 	{ "skillsbonus_maxhp_RK",               &battle_config.skillsbonus_maxhp_RK,             0,     0,      INT_MAX,        },
 	{ "skillsbonus_maxhp_SR",               &battle_config.skillsbonus_maxhp_SR,             0,     0,      INT_MAX,        },
+	{ "metallicsound_spburn_rate",          &battle_config.metallicsound_spburn_rate,        100,   0,      INT_MAX,        },
 };
 
 
