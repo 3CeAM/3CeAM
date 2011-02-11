@@ -507,6 +507,8 @@ extern struct Battle_Config
 	int max_joblvl_nerf_misc; // [Pinky]
 	int skillsbonus_maxhp_RK; // [Pinky]
 	int skillsbonus_maxhp_SR; // [Pinky]
+	
+	int metallicsound_spburn_rate;
 } battle_config;
 
 void do_init_battle(void);
