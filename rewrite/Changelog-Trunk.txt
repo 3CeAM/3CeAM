@@ -1,5 +1,43 @@
 Date	Added
 
+2011/02/09
+	* Fixed script command 'bpet' (Pet Incubator) displaying an empty egg list when attempting to hatch a pet while already having one out (bugreport:3313). [Ai4rei]
+2011/02/08
+	* Moved script constant manipulation code into separate functions script_get_constant / script_set_constant. [Ai4rei]
+	- Added protection against overwriting existing names in script constant creation code.
+2011/02/07
+	* Added support for new delayed character deletion. [Ai4rei]
+	- Asks for birth date associated with the account and has a waiting time of 24 hours by default (setting).
+	- For SQL apply upgrade_svn14700.sql to upgrade table `char`; for TXT no action is necessary, as it upgrades itself.
+	- This completes support for clients 2010-08-03aRagexeRE and later.
+	* Updated login sql engine version, missed during `birthdate` addition (follow up to r14672).
+	* Updates to various client packets. [Ai4rei]
+	- Renamed clif_set0199 and clif_send0199 to clif_map_property and clif_map_property_mapall respectively and added an enumeration for currently known map properties.
+	- Renamed clif_set01D6 to clif_map_type and added an enumeration for currently known map types.
+	- Resolved undocumented field of packet 0x22e (ZC_PROPERTY_HOMUN) to attack range.
+	- Fixed aspd field of packet 0xbd (ZC_STATUS) getting filled with karma value.
+	- Removed commented clif_skillinfo (duplicate of clif_item_skill).
+	- Other minor comment updates and 'FIXME' assignments.
+2011/02/06
+	* Replaced 'nameid < 500' checks in script commands 'countitem', 'countitem2' and 'autoequip' with stricter ones. [Ai4rei]
+	- This should stop meaningless itemdb_search warnings from said commands when an invalid item id is used.
+2011/02/05
+	* Fixed NPCs with closing parenthesis in their name could not be duplicated (bugreport:3235). [Ai4rei]
+	* Fixed closing 'switch' curly not causing script EOL processing to trigger, leading to the script line after the switch being handled as belonging to the curly-less statement block (bugreport:3273, since r3422). [Ai4rei]
+	* Removed unnecessary getlogincount.pl, mapcheck.sh and mapchecker.sh tools (topic:262934). [Ai4rei]
+2011/02/02
+	* Fixed non-windows 'findfile' utils function missing a 'closedir' call (bugreport:4739, since r1629). [Ai4rei]
+2011/01/31
+	* Inventory and Cart item arrays are no longer getting compacted on each log-in/teleport/warp. [Ai4rei]
+	- This also resolves yet another issue caused by r14685 (bugreport:2604).
+	* Various accumulated cleanups and fixes. [Ai4rei]
+	- Improved the compile speed for files which include common/socket.h on windows builds (related r10471).
+	- Moved FIFOSIZE_SERVERLINK define from common/mmo.h to common/socket.h (since it is a server connection FIFO size setting).
+	- Fixed script command 'areamobuseskill' canceling monster's skill cast before it determined it's new target, which could be 'none' (bugreport:3272, since r13897).
+	- Added a protection against attempts to read an empty backup / write to a full backup in skill_dance_switch as per TODO from r11347.
+	* Fixed faulty WFIFO reallocation causing memory exhaustion (bugreport:4737, since r1816, related r11503, r11571, r11886 and r12232). [Ai4rei]
+2011/01/30
+	* Fixed equipped items' bonus no longer working after log-in until next status recalc, due to missing pc_setequipindex which was previously called by pc_checkitem (bugreport:2604, since r14685). [Ai4rei]
 2011/01/29
 	* Removed @aw/@away which duplicates and collides with client's /am (away message) (bugreport:1235, topic:163083, since r4351). [Ai4rei]
 	* Fixed a map-server crash when invalid items are deleted (option 'item_check') from a logging-in character (bugreport:2604). [Ai4rei]
