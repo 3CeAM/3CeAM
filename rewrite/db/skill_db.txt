@@ -893,9 +893,7 @@
 2005,1,6,2,4,0x2,2,5,1,yes,0,0,0,weapon,3,	RK_WINDCUTTER,Wind Cutter
 2006,0,6,4,-1,0x2,5,0,0,no,0,0,0,weapon,0,	RK_IGNITIONBREAK,Ignition Break
 2007,0,0,0,0,0,0,5,0,no,0,0,0,weapon,0,		RK_DRAGONTRAINING,Dragon Training
-
 2008,9,6,2,3,0xC2,1:1:1:2:2:2:3:3:4:4,10,1,no,0,0,0,misc,0,	RK_DRAGONBREATH,Dragon Breath
-
 2009,0,8,4,0,0x3,3:4:5:6:7,5,0,yes,0,0,0,weapon,0,	RK_DRAGONHOWLING,Dragon Howling
 2010,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		RK_RUNEMASTERY,Rune Mastery
 2011,0,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	RK_MILLENNIUMSHIELD,Millenium Shield
@@ -1080,7 +1078,7 @@
 2321,2,8,2,6,0x2,5,5,-7,yes,0,0,0,weapon,0,	LG_RAYOFGENESIS,Ray of Genesis
 2322,7,6,16,0,0x3,1,5,1,yes,0,0,0,none,0,	LG_PIETY,Piety
 2323,0,8,4,2,0x2,1:1:2:2:3,5,-5,yes,0,0,0,weapon,0,	LG_EARTHDRIVE,Earth Drive
-2324,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		LG_HESPERUSLIT,Hesperus Lit
+2324,1,8,1,-1,0,0,5,3,no,0,0,0,weapon,0,	LG_HESPERUSLIT,Hesperus Lit
 2325,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		LG_INSPIRATION,Inspiration
 
 // Sura
@@ -1094,19 +1092,19 @@
 2333,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		SR_CRESCENTELBOW,Crescent Elbow
 2334,0,6,4,0,0x3,1:1:2:2:3,5,1,no,0,0,0,none,0,	SR_CURSEDCIRCLE,Cursed Circle
 2335,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		SR_LIGHTNINGWALK,Lightning Walk
-2336,9,6,1,-1,0,0,5,1,no,0,0,0,weapon,2,	SR_KNUCKLEARROW,Knuckle Arrow
+2336,7,6,1,-1,0,0,5,1,no,0,0,0,weapon,5,	SR_KNUCKLEARROW,Knuckle Arrow
 2337,0,6,4,-1,0x2,2,1,1,no,0,0,0,weapon,0,	SR_WINDMILL,Windmill
 2338,0,6,4,0,0x1,0,10,1,yes,0,0,0,none,0,	SR_RAISINGDRAGON,Raising Dragon
 2339,0,0,0,0,0,0,5,1,no,0,0,0,none,0,		SR_GENTLETOUCH,Gentle Touch// What is this for? o.O [LimitLine]
 2340,0,6,4,0,0x3,2,1,1,yes,0,0,0,none,0,	SR_ASSIMILATEPOWER,Assimilate Power
 2341,9,6,16,0,0x1,0,1,1,yes,0,0x200,0,none,0,	SR_POWERVELOCITY,Power Velocity
 2342,4,6,1,-1,0x20,0,5,1,no,0,0,0,weapon,3,	SR_CRESCENTELBOW_AUTOSPELL,Crescent Elbow Autospell
-2343,7,8,1,0,0,0,10,1,no,0,0,0,weapon,0,	SR_GATEOFHELL,Gate of Hell
+2343,1:2:3:3:4:4:5:5:6:7,8,1,0,0,0,10,7,no,0,0,0,weapon,0,	SR_GATEOFHELL,Gate of Hell
 2344,2,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	SR_GENTLETOUCH_QUIET,Gentle Touch - Quiet
 2345,2,6,16,0,0x1,0,5,1,no,0,0,0,magic,0,	SR_GENTLETOUCH_CURE,Gentle Touch - Cure
-2346,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		SR_GENTLETOUCH_ENERGYGAIN,Gentle Touch - Energy Drain
-2347,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		SR_GENTLETOUCH_CHANGE,Gentle Touch - Change
-2348,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		SR_GENTLETOUCH_REVITALIZE,Gentle Touch - Revitalize
+2346,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		SR_GENTLETOUCH_ENERGYGAIN,Gentle Touch - Energy Gain
+2347,0,6,16,0,0x1,0,5,1,no,0,0,0,none,0,		SR_GENTLETOUCH_CHANGE,Gentle Touch - Change
+2348,0,6,16,0,0x1,0,5,1,no,0,0,0,none,0,		SR_GENTLETOUCH_REVITALIZE,Gentle Touch - Revitalize
 
 // Wanderer
 2350,0,6,4,0,0x3,-1,5,1,yes,0,0,0,magic,0,	WA_SWING_DANCE,Swing Dance
@@ -1120,7 +1118,7 @@
 
 // Minstrel/Wanderer
 2412,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		WM_LESSON,Lesson
-2413,9,6,1,-1,0,0,5,1,no,0,0,0,magic,0,		WM_METALICSOUND,Metallic Sound
+2413,9,8,1,-1,0,0,5,-2:-2:-3:-3:-4,no,0,0,0,magic,0,		WM_METALICSOUND,Metallic Sound
 2414,9,6,2,-1,0x1,1,5,1,no,0,0,3,none,0,	WM_REVERBERATION,Reverberation
 2415,0,0,0,-1,0,0,5,1,no,0,0,0,weapon,0,	WM_REVERBERATION_MELEE,Reverberation Melee
 2416,0,0,0,-1,0,0,5,1,no,0,0,0,magic,0,		WM_REVERBERATION_MAGIC,Reverberation Magic
@@ -1136,7 +1134,7 @@
 2426,9,6,2,-1,0x2,2:3:3:4:4,5,1,no,0,0x2000,0,weapon,0,	WM_GREAT_ECHO,Great Echo
 2427,0,6,4,0,0x3,-1,5,0,no,0,0x2000,0,none,0,	WM_SONG_OF_MANA,Song of Mana
 2428,0,6,4,0,0x3,-1,5,1,no,0,0x2000,0,none,0,	WM_DANCE_WITH_WUG,Dance With A Warg
-2429,9,6,1,0,0x3,2:3:3:4:4,5,1,no,0,0x2000,0,none,0,	WM_SOUND_OF_DESTRUCTION,Sound of Destruction
+2429,9,6,1,-1,0x2,2:2:3:3:4,5,1,no,0,0x2000,0,weapon,0,	WM_SOUND_OF_DESTRUCTION,Sound of Destruction
 2430,0,6,4,0,0x3,-1,5,1,no,0,0x2000,0,none,0,	WM_SATURDAY_NIGHT_FEVER,Saturday Night Fever
 2431,0,6,4,0,0x3,-1,5,1,no,0,0x2000,0,magic,0,	WM_LERADS_DEW,Lerad's Dew
 2432,0,6,4,0,0x3,-1,5,1,no,0,0x2000,0,none,0,	WM_MELODYOFSINK,Melody of Sink

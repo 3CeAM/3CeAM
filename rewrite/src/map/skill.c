@@ -3292,6 +3292,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case LG_SHIELDPRESS:
 	case LG_RAGEBURST:
 	case LG_RAYOFGENESIS:
+	case LG_HESPERUSLIT:
 	case SR_SKYNETBLOW:
 	case SR_FALLENEMPIRE:
 	case SR_RAMPAGEBLASTER:
@@ -3526,6 +3527,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case SR_RIDEINLIGHTNING:
 	case SR_TIGERCANNON:
 	case WM_REVERBERATION:
+	case WM_SOUND_OF_DESTRUCTION:
 	case SO_VARETYR_SPEAR:
 	case GN_CART_TORNADO:
 		if( flag&1 )
@@ -8296,7 +8298,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 
-	case WM_SOUND_OF_DESTRUCTION:
+	/*case WM_SOUND_OF_DESTRUCTION:
 		if( flag&1 )
 		{
 			if( tsc && tsc->count )
@@ -8338,7 +8340,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid,skilllv),BL_PC, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
-		break;
+		break;*/
 
 	case WM_RANDOMIZESPELL:
 		{
