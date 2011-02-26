@@ -2214,6 +2214,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio = (skillratio + 100) * skill_lv;
 					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
+				case LG_HESPERUSLIT:
+					skillratio += 120 * skill_lv - 100;
+					break;
 				case SR_DRAGONCOMBO:
 					skillratio += 40 * skill_lv;
 					break;
@@ -2253,26 +2256,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio += 150;
 					break;
 				case SR_GATEOFHELL:
-					{ //TODO: Fill up with correct formula. Although this calculation is close to official but still its custom. [Jobbie]
-						int hp_rate = sstatus->hp * 100 / sstatus->max_hp;
-						int GOHMAX_HP;
-
-						if( battle_config.skillsbonus_maxhp_SR && sstatus->max_hp > battle_config.skillsbonus_maxhp_SR )
-							GOHMAX_HP = battle_config.skillsbonus_maxhp_SR;
-						else
-							GOHMAX_HP = sstatus->max_hp;
-
-						if( hp_rate <= 100 && hp_rate >= 80 )
-							skillratio = 50 * skill_lv + ( GOHMAX_HP * 2 / 100 );
-						else if( hp_rate <= 79 && hp_rate >= 60 )
-							skillratio = 50 * skill_lv + ( GOHMAX_HP * 4 / 100 );
-						else if( hp_rate <= 59 && hp_rate >= 40 )
-							skillratio = 50 * skill_lv + ( GOHMAX_HP * 6 / 100 );
-						else if( hp_rate <= 39 && hp_rate >= 20 )
-							skillratio = 50 * skill_lv + ( GOHMAX_HP * 8 / 100 );
-						else
-							skillratio = 50 * skill_lv + ( GOHMAX_HP * 10 / 100 );
-					}
+					skillratio += 500 * skill_lv -100;
 					break;
 				case SR_GENTLETOUCH_QUIET:
 					skillratio += 100 * skill_lv - 100 + sstatus->dex;
@@ -2281,8 +2265,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio += 300 * skill_lv - 100;
 					break;
 				case SR_RIDEINLIGHTNING:
-					if( sd && sd->spiritball_old > 0 )
-						skillratio += (100 * skill_lv) + sstatus->dex * sd->spiritball_old;
+					skillratio += 200 * skill_lv -100;
 					break;
 				case WM_REVERBERATION_MELEE:
 					skillratio += 200 + 100 * pc_checkskill(sd, WM_REVERBERATION);
@@ -2297,6 +2280,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						short lv = (short)skill_lv;
 						skillratio += 20 * skill_check_pc_partner(sd,skill_num,&lv,skill_get_splash(skill_num,skill_lv),0);
 					}
+					break;
+				case WM_SOUND_OF_DESTRUCTION:
+					skillratio += 150;
 					break;
 				case GN_CART_TORNADO:
 					skillratio += 50 * skill_lv + (sd) ? pc_checkskill(sd, GN_REMODELING_CART) * 50 : 250;
@@ -3440,7 +3426,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						break;
 					case WM_METALICSOUND:
-						skillratio += 120 * skill_lv + 40 * pc_checkskill(sd, WM_LESSON) - 100;
+						skillratio += 120 * skill_lv + 55 * pc_checkskill(sd, WM_LESSON) - 100;
 						break;
 					case WM_SEVERE_RAINSTORM:
 						skillratio += 50 * skill_lv;
