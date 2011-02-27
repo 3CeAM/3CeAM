@@ -9167,7 +9167,7 @@ int do_init_pc(void)
 	add_timer_func_list(pc_spiritball_timer, "pc_spiritball_timer");
 	add_timer_func_list(pc_follow_timer, "pc_follow_timer");
 	add_timer_func_list(pc_endautobonus, "pc_endautobonus");
-	add_timer_func_list(pc_rageball_timer, "pc_rageball_timer"),
+	add_timer_func_list(pc_rageball_timer, "pc_rageball_timer");
 
 	add_timer(gettick() + autosave_interval, pc_autosave, 0, 0);
 

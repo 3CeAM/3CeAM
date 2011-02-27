@@ -66,9 +66,9 @@ Job: Equippable jobs. Uses the following bitmask table:
 	Soul Linker    (2^23): 0x00800000
 	Gunslinger     (2^24): 0x01000000
 	Ninja          (2^25): 0x02000000
-	Gangsi         (2^25): 0x04000000
-	Death Knight   (2^25): 0x08000000
-	Dark Collector (2^25): 0x10000000
+	Gangsi         (2^26): 0x04000000
+	Death Knight   (2^27): 0x08000000
+	Dark Collector (2^28): 0x10000000
 
 Upper: Equippable upper-types. Uses the following bitmasks to set type of job the player
 is required to be to beable to use that item:

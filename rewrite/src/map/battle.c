@@ -764,6 +764,35 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 
 	if( sd && pc_isriding(sd,OPTION_MADO) && (element == ELE_FIRE || element == ELE_WATER) && rand()%100 < 50 )
 		pc_overheat(sd,element == ELE_FIRE ? 1 : -1);
+		
+	if( sc && sc->data[SC__SHADOWFORM]  )
+	{
+		struct block_list *s_bl = map_id2bl(sc->data[SC__SHADOWFORM]->val2);
+		if( !s_bl )
+		{ // If the shadow form target is not present remove the sc.
+			status_change_end(bl, SC__SHADOWFORM, -1);
+		}
+		else if( status_isdead(s_bl) )
+		{ // If the shadow form target is dead remove the sc in both.
+			status_change_end(bl, SC__SHADOWFORM, -1);
+			if( s_bl->type == BL_PC )
+				((TBL_PC*)s_bl)->shadowform_id = 0;
+		}
+		else
+		{
+			if( (--sc->data[SC__SHADOWFORM]->val3) < 0 )
+			{ // If you have exceded max hits supported, remove the sc in both.
+				status_change_end(bl, SC__SHADOWFORM, -1);
+				if( s_bl->type == BL_PC )
+					((TBL_PC*)s_bl)->shadowform_id = 0;
+			}
+			else
+			{
+				status_damage(src, s_bl, damage, 0, clif_damage(s_bl, s_bl, gettick(), 500, 500, damage, -1, 0, 0), 0);
+				return ATK_NONE;
+			}
+		}
+	}
 
 	return damage;
 }
@@ -3348,7 +3377,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						{
 							struct status_change *tsc = status_get_sc(target);
 							skillratio = (skillratio + 300 + 100 * skill_lv + status_get_int(src));
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+							if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 							if( tsc && tsc->data[SC_WHITEIMPRISON] )
 								skillratio <<= 1;
 						}
@@ -4370,7 +4399,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 					skill_blown(target,src,skill_get_blewcount(SR_CRESCENTELBOW_AUTOSPELL,tsc->data[SC_CRESCENTELBOW]->val1),unit_getdir(src),0);
 					status_damage(NULL,target,rdamage/10,0,0,1);
 					clif_damage(target, target, tick, wd.amotion, wd.dmotion, rdamage/10, wd.div_ , wd.type, wd.damage2);
-					status_change_end(target,SC_CRESCENTELBOW,-1);
+					status_change_end(target, SC_CRESCENTELBOW, INVALID_TIMER);
 				}
 				rdelay = clif_damage(src, src, tick, wd.amotion, sstatus->dmotion, rdamage, 1, 4, 0);
 				//Use Reflect Shield to signal this kind of skill trigger. [Skotlex]
@@ -4398,37 +4427,6 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 				status_change_end(target, SC_DEVOTION, INVALID_TIMER);
 		}
 
-		if( tsc->data[SC__SHADOWFORM] && damage > 0 )
-		{
-			struct block_list *s_bl = map_id2bl(tsc->data[SC__SHADOWFORM]->val2);
-			if( !s_bl )
-			{ // If the shadow form target is not present remove the sc.
-				status_change_end(target, SC__SHADOWFORM, -1);
-			}
-			else if( status_isdead(s_bl) )
-			{ // If the shadow form target is dead remove the sc in both.
-				status_change_end(target, SC__SHADOWFORM, -1);
-				if( s_bl->type == BL_PC )
-				((TBL_PC*)s_bl)->shadowform_id = 0;
-			}
-			else
-			{
-				if( (--tsc->data[SC__SHADOWFORM]->val3) < 0 )
-				{ // If you have exceded max hits supported, remove the sc in both.
-					status_change_end(target, SC__SHADOWFORM, -1);
-					if( s_bl->type == BL_PC )
-						((TBL_PC*)s_bl)->shadowform_id = 0;
-				}
-				else
-				{
-					clif_damage(s_bl, s_bl, tick, wd.amotion, wd.dmotion, damage, wd.div_ , wd.type, wd.damage2);
-					status_damage(target, s_bl, damage, 0, 0, 32);
-				}
-			}
-			// Just show damage in target.
-			clif_damage(src, target, tick, wd.damage, wd.dmotion, damage, wd.div_, wd.type, wd.damage2 );
-			return ATK_NONE;
-		}
 		if( tsc->data[SC_CIRCLE_OF_FIRE_OPTION] && (wd.flag&BF_SHORT) && target->type == BL_PC )
 		{
 			struct elemental_data *ed = ((TBL_PC*)target)->ed;
