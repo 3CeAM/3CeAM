@@ -5536,6 +5536,8 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 		sc_def = 3 + status->vit;
 		break;
 	case SC_SLEEP:
+		sc_def = 3 +status->int_;
+		break;
 	case SC_DEEPSLEEP:
 		tick_def = status->int_ / 10 + status_get_lv(bl) * 65 / 1000; // Seems to be -1 sec every 10 int and -5% chance every 10 int.
 		sc_def = 5 * status->int_ /10;
