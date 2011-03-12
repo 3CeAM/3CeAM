@@ -1011,7 +1011,7 @@
 2256,11,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	NC_BOOSTKNUCKLE,Boost Knuckle
 2257,1,6,1,-1,0,0,3,1,no,0,0,0,weapon,0,	NC_PILEBUNKER,Pile Bunker // Need official range.
 2258,13,8,1,-1,0,0,3,1,no,0,0,0,weapon,0,	NC_VULCANARM,Vulcan Arm
-2259,5,6,1,3,0x1,0,3,1,no,0,0,0,weapon,0,	NC_FLAMELAUNCHER,Flame Launcher
+2259,5,8,1,3,0,2,3,1,no,0,0,5,weapon,0,		NC_FLAMELAUNCHER,Flame Launcher
 2260,7,6,2,1,0x2,2:3:4,3,1,no,0,0,0,weapon,0,	NC_COLDSLOWER,Cold Slower
 2261,7,6,2,-1,0x42,3:2:1,3,1,no,0,0,0,weapon,0,	NC_ARMSCANNON,Arm Cannon
 2262,0,6,4,0,0x1,0,3,1,yes,0,0,0,none,0,	NC_ACCELERATION,Acceleration
@@ -1032,7 +1032,7 @@
 2277,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		NC_RESEARCHFE,Research Fire/Earth
 2278,5:6:7:8:9,6,1,-1,0,0,5,1,no,0,0,0,weapon,3,	NC_AXEBOOMERANG,Axe Boomerang
 2279,4,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	NC_POWERSWING,Power Swing
-2280,0,8,4,-1,0x2,1,5,-3,yes,0,0,0,weapon,0,	NC_AXETORNADO,Axe Tornado
+2280,0,8,4,-1,0x2,2,5,-3,yes,0,0,0,weapon,0,	NC_AXETORNADO,Axe Tornado
 2281,4,6,2,0,0x1,0,5,1,no,0,0,2,none,0,		NC_SILVERSNIPER,FAW - Silver Sniper
 2282,4,6,2,0,0x1,0,5,1,no,0,0,2,none,0,		NC_MAGICDECOY,FAW - Magic Decoy
 2283,2,6,1,0,0x1,0,1,1,no,0,0,0,none,0,		NC_DISJOINT,FAW Removal
@@ -1061,7 +1061,7 @@
 2304,0,6,4,-1,0x3,2,3,1,yes,0,0,0,weapon,0,	SC_FEINTBOMB,Feint Bomb
 
 // Royal Guard
-2307,11,6,1,-1,0x02,1,5,1,no,0,0,10,weapon,0,	LG_CANNONSPEAR,Cannon Spear
+2307,11,8,1,-1,0,2,5,1,no,0,0,10,weapon,0,	LG_CANNONSPEAR,Cannon Spear
 2308,7,6,1,-1,0,0,10,1,yes,0,0,0,weapon,0,	LG_BANISHINGPOINT,Banishing Point
 2309,0,6,4,0,0x3,2,5,0,no,0,0,0,none,0,		LG_TRAMPLE,Trample
 2310,3,6,1,0,0,0,5,1,no,0,0,0,weapon,0,		LG_SHIELDPRESS,Shield Press
@@ -1099,7 +1099,7 @@
 2340,0,6,4,0,0x3,2,1,1,yes,0,0,0,none,0,	SR_ASSIMILATEPOWER,Assimilate Power
 2341,9,6,16,0,0x1,0,1,1,yes,0,0x200,0,none,0,	SR_POWERVELOCITY,Power Velocity
 2342,4,6,1,-1,0x20,0,5,1,no,0,0,0,weapon,3,	SR_CRESCENTELBOW_AUTOSPELL,Crescent Elbow Autospell
-2343,1:2:3:3:4:4:5:5:6:7,8,1,0,0,0,10,7,no,0,0,0,weapon,0,	SR_GATEOFHELL,Gate of Hell
+2343,1:2:3:3:4:4:5:5:6:7,8,1,0,0,0,10,-7,yes,0,0,0,weapon,0,	SR_GATEOFHELL,Gate of Hell
 2344,2,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	SR_GENTLETOUCH_QUIET,Gentle Touch - Quiet
 2345,2,6,16,0,0x1,0,5,1,no,0,0,0,magic,0,	SR_GENTLETOUCH_CURE,Gentle Touch - Cure
 2346,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		SR_GENTLETOUCH_ENERGYGAIN,Gentle Touch - Energy Gain
@@ -1142,17 +1142,17 @@
 2434,0,6,4,0,0x3,-1,5,1,no,0,0x2000,0,none,0,	WM_UNLIMITED_HUMMING_VOICE,Unlimited Humming Voice
 
 // Sorcerer
-2443,0,6,4,3,0,0,5,-1,yes,0,0,8:10:12:14:16,magic,0,	SO_FIREWALK,Fire Walk
-2444,0,6,4,4,0,0,5,-1,yes,0,0,8:10:12:14:16,magic,0,	SO_ELECTRICWALK,Electric Walk
+2443,0,6,4,3,0,0,5,1,yes,0,0,8:10:12:14:16,magic,0,	SO_FIREWALK,Fire Walk
+2444,0,6,4,4,0,0,5,1,yes,0,0,8:10:12:14:16,magic,0,	SO_ELECTRICWALK,Electric Walk
 2445,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		SO_SPELLFIST,Spell Fist
 2446,9,6,2,2,0x2,3:3:3:4:4,5,-3,yes,0,0,0,magic,0,	SO_EARTHGRAVE,Earth Grave
 2447,9,6,2,1,0x2,3:3:3:4:4,5,-5,yes,0,0,0,magic,0,	SO_DIAMONDDUST,Diamond Dust
-2448,9,6,1,5,0,0,5,1,yes,0,0,0,magic,0,		SO_POISON_BUSTER,Poison Buster
-2449,9,8,2,0,0,3:3:4:4:5,5,1,yes,0,0,0,magic,0,	SO_PSYCHIC_WAVE,Psychic Wave
-2450,9,6,2,0,0x1,3,5,-1,yes,0,0,0,magic,0,	SO_CLOUD_KILL,Cloud Kill
+2448,9,6,1,5,0x02,1:2:3:4:5,5,1,yes,0,0,0,magic,0,		SO_POISON_BUSTER,Poison Buster
+2449,9,8,2,0,0,0,5,1,yes,0,0,0,magic,0,	SO_PSYCHIC_WAVE,Psychic Wave
+2450,9,6,2,5,0,0,5,1,yes,0,0,0,magic,0,	SO_CLOUD_KILL,Cloud Kill
 2451,9,6,16,0,0x1,0,5,1,yes,0,0,0,none,0,	SO_STRIKING,Striking
-2452,9,6,2,0,0x1,-1,5,1,yes,0,0,0,magic,0,	SO_WARMER,Warmer
-2453,9,6,2,0,0x1,1:1:2:2:3,5,1,yes,0,0,0,magic,0,	SO_VACUUM_EXTREME,Vacuum Extreme
+2452,9,6,2,3,0x1,0,5,1,yes,0,0,0,magic,0,	SO_WARMER,Warmer
+2453,9,6,2,0,0x1,0,5,1,yes,0,0,0,magic,0,	SO_VACUUM_EXTREME,Vacuum Extreme
 2454,9,6,1,4,0x2,1:1:2:2:3,5,1,yes,0,0,0,magic,0,	SO_VARETYR_SPEAR,Varetyr Spear
 2455,9,6,1,0,0x3,1:1:2:2:3,5,1,yes,0,0,0,magic,0,	SO_ARRULLO,Arrullo
 2456,0,6,4,0,0x01,0,4,1,no,0,0,0,none,0,	SO_EL_CONTROL,Spirit Control
@@ -1173,11 +1173,11 @@
 2474,0,0,0,0,0,0,5,0,no,0,0,0,weapon,0,		GN_TRAINING_SWORD,Sword Training
 2475,0,0,0,0,0,0,5,0,no,0,0,0,weapon,0,		GN_REMODELING_CART,Cart Remodeling
 2476,0,6,4,-1,0x02,2,5,1,no,0,0,0,weapon,2,	GN_CART_TORNADO,Cart Tornado
-2477,7,6,1,-1,0,2,5,0,yes,0,0,0,weapon,0,	GN_CARTCANNON,Cart Cannon
+2477,11,6,1,-1,0x02,1:1:2:2:3,5,1,yes,0,0,0,weapon,0,	GN_CARTCANNON,Cart Cannon
 2478,0,6,4,0,0x1,0,5,1,no,0,0,0,weapon,0,	GN_CARTBOOST,Cart Boost
 2479,6,6,2,0,0x1,0,5,1,yes,0,0x80,1,misc,0,	GN_THORNS_TRAP,Thorn Trap
 2480,9,6,1,0,0x1,0,5,0,no,0,0,3,misc,0,		GN_BLOOD_SUCKER,Blood Sucker
-2481,9,6,1,-1,0,1:2:3:4:5,5,1,yes,0,0,0,weapon,0,	GN_SPORE_EXPLOSION,Spore Explosion
+2481,9,6,1,-1,0x02,1:2:3:4:5,5,1,yes,0,0,0,weapon,0,	GN_SPORE_EXPLOSION,Spore Explosion
 2482,6,6,16,0,0x1,0,5,-1,yes,0,0,1,weapon,2,	GN_WALLOFTHORN,Wall of Thorns
 2483,9,6,2,0,0x2,3,10,1,yes,0,0,0,weapon,0,	GN_CRAZYWEED,Crazy Weed
 2484,0,6,1,2,0,0,10,0,no,0,0,0,weapon,0,	GN_CRAZYWEED_ATK,Crazy Weed Attack

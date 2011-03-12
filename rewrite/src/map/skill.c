@@ -3275,7 +3275,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case NC_BOOSTKNUCKLE:
 	case NC_PILEBUNKER:
 	case NC_VULCANARM:
-	case NC_FLAMELAUNCHER:
 	case NC_COLDSLOWER:
 	case NC_ARMSCANNON:
 		// Heat of the mado
@@ -3346,11 +3345,12 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		}
 		break;
 
-	case GN_CARTCANNON:
-		clif_skill_nodamage(src, bl, skillid, skilllv, 1);
+	case NC_FLAMELAUNCHER:
+		if (sd) pc_overheat(sd,1);
 	case SN_SHARPSHOOTING:
 	case MA_SHARPSHOOTING:
 	case NJ_KAMAITACHI:
+	case LG_CANNONSPEAR:
 		//It won't shoot through walls since on castend there has to be a direct
 		//line of sight between caster and target.
 		skill_area_temp[1] = bl->id;
@@ -3497,6 +3497,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case WM_SOUND_OF_DESTRUCTION:
 	case SO_VARETYR_SPEAR:
 	case GN_CART_TORNADO:
+	case GN_CARTCANNON:
 		if( flag&1 )
 		{	//Recursive invocation
 			// skill_area_temp[0] holds number of targets in area
@@ -3517,7 +3518,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		}
 		else
 		{
-			if( skillid == NJ_BAKUENRYU || skillid == LG_EARTHDRIVE )
+			if( skillid == NJ_BAKUENRYU || skillid == LG_EARTHDRIVE || GN_CARTCANNON )
 				clif_skill_nodamage(src,bl,skillid,skilllv,1);
 			if( skillid == LG_MOONSLASHER )
 				clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
@@ -4145,7 +4146,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		}
 		break;
 		
-	case LG_CANNONSPEAR:
+	/*case LG_CANNONSPEAR:// Clean Up Later If Found Not Needed
 		{
 			int length = skill_get_maxcount(skillid,skilllv);
 			int dir = map_calc_dir(src,bl->x,bl->y);
@@ -4168,7 +4169,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 				skill_get_splash(skillid, skilllv),length, splash_target(src),
 				skill_get_type(skillid),src,src,skillid,skilllv,tick,flag,BCT_ENEMY);
 		}
-		break;
+		break;*/
 
 	case LG_PINPOINTATTACK:
 		if( !map_flag_gvg(src->m) && !map[src->m].flag.battleground && unit_movepos(src, bl->x, bl->y, 1, 1) )
@@ -7676,7 +7677,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		map_foreachinrange(skill_area_sub,src,skill_get_splash(skillid,skilllv),BL_CHAR|BL_SKILL,src,skillid,skilllv,tick,flag|BCT_ENEMY,skill_castend_damage_id);
 		break;
 
-	case NC_FLAMELAUNCHER:
+	/*case NC_FLAMELAUNCHER:// Clean Up Later If Found Not Needed
 		{
 			int dir = map_calc_dir(src,bl->x,bl->y);
 			int c, x = src->x, y = src->y, mx = 0, my = 0, x1 = 0, x2 = 0, y1 = 0, y2 = 0;
@@ -7703,7 +7704,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				map_foreachincell(skill_area_sub,src->m,x+x2,y+y2,BL_CHAR,src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
 			}
 		}
-		break;
+		break;*/
 
 	case NC_F_SIDESLIDE:
 	case NC_B_SIDESLIDE:
