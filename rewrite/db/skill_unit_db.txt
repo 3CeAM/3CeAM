@@ -119,14 +119,14 @@
 2414,0xda,    ,  0, 1,1000,enemy, 0x008	//WM_REVERBERATION
 2418,0xdb,    ,  0, 5, 300,enemy, 0x800	//WM_SEVERE_RAINSTORM
 2419,0xde,    ,  0, 3,1000,enemy, 0x010  //WM_POEMOFNETHERWORLD
-2443,0xdc,    ,  0, 1,1000,enemy, 0x00A	//SO_FIREWALK
-2444,0xdd,    ,  0, 1,1000,enemy, 0x00A	//SO_ELECTRICWALK
+2443,0xdc,    ,  0, 0,1000,enemy, 0x00A	//SO_FIREWALK
+2444,0xdd,    ,  0, 0,1000,enemy, 0x00A	//SO_ELECTRICWALK
 2449,0xdf,    ,  0, 3:3:4:4:5,500,enemy,0x000	//SO_PSYCHIC_WAVE
 2450,0xe0,    ,  3, 0, 500,enemy, 0x010	//SO_CLOUD_KILL
-2452,0xe4,    ,  0, 3,3000,all, 0x010	//SO_WARMER
+2452,0xe4,    ,  0, 3,3000,  all, 0x010	//SO_WARMER
 2453,0xeb,    ,  0, 1:1:2:2:3,1000,enemy,0x010	//SO_VACUUM_EXTREME
 2479,0xe5,    ,  0, 1,1000,enemy, 0x000	//GN_THORNS_TRAP
-2482,0xe6,0x7f, -1, 1,  -1,all, 0x000	//GN_WALLOFTHORN
+2482,0xe6,0x7f, -1, 1,  -1,  all, 0x000	//GN_WALLOFTHORN
 2485,0xe7,    ,  0, 3,1000,enemy, 0x080	//GN_DEMONIC_FIRE
 2487,0xe8,    ,  0, 3,1000,enemy, 0x000	//GN_FIRE_EXPANSION_SMOKE_POWDER
 2488,0xe9,    ,  0, 3,1000,enemy, 0x000	//GN_FIRE_EXPANSION_TEAR_GAS
