@@ -4,7 +4,7 @@
 //= A reference manual for the eAthena scripting language.
 //= Commands are sorted depending on their functionality.
 //===== Version ===========================================
-//= 3.35.20110106
+//= 3.39.20110322
 //=========================================================
 //= 1.0 - First release, filled will as much info as I could
 //=       remember or figure out, most likely there are errors,
@@ -155,6 +155,17 @@
 //=       Spellcheck. [Ai4rei]
 //= 3.35.20110106
 //=       Removed bug warning from 'deletearray'. [Ai4rei]
+//= 3.36.20110219
+//=       Added 'buyingstore' command. [Ai4rei]
+//= 3.37.20110306
+//=       Added 'searchstores' command. [Ai4rei]
+//= 3.38.20110313
+//=       Added 'cooking' command. [Ai4rei]
+//=       Fixed item levels in 'produce' command.
+//= 3.39.20110322
+//=       Added 'bg_getareausers' and 'bg_get_data' commands. [Ai4rei]
+//=       Updated description of 'waitingroom2bg_single' command.
+//=       Documented optional parameter 'npc name' of 'waitingroom2bg' command.
 //=========================================================
 
 This document is a reference manual for all the scripting commands and functions 
@@ -4314,11 +4325,38 @@ Valid item levels are:
  1   - Level 1 Weapons
  2   - Level 2 Weapons
  3   - Level 3 Weapons
- 16  - Blacksmith's Stones and Metals
- 32  - Alchemist's Potions
- 64  - Whitesmith's Coins
- 123 - Whitesmith's Nuggets
- 256 - Assassin Cross's Deadly Poison
+ 21  - Blacksmith's Stones and Metals
+ 22  - Alchemist's Potions, Holy Water, Assassin Cross's Deadly Poison
+ 23  - Elemental Converters
+
+---------------------------------------
+
+*cooking <dish level>;
+
+This command will open a produce window on the client connected to the invoking 
+character. The 'dish level' is the number which determines what kind of dish
+level you can produce. You can see the full list of dishes that can be produced in 
+'db/produce_db.txt'.
+
+The window will be shown empty if the invoking character does not have enough of
+the required incredients to cook a dish.
+
+Valid dish levels are:
+
+11 - Level 1 Dish
+12 - Level 2 Dish
+13 - Level 3 Dish
+14 - Level 4 Dish
+15 - Level 5 Dish
+16 - Level 6 Dish
+17 - Level 7 Dish
+18 - Level 8 Dish
+19 - Level 9 Dish
+20 - Level 10 Dish
+
+Altough it's required to set a dish level, it doesn't matter if you set it to 1
+and you want to cook a level 10 dish, as long as you got the required incredients
+to cook the dish the command works.
 
 ---------------------------------------
 
@@ -4423,6 +4461,39 @@ Example(s):
 	
 //The invoked character will no longer automatically equip a falchion.
 	autoequip 1104,0;
+
+---------------------------------------
+
+*buyingstore <slots>;
+
+Invokes buying store preparation window like the skill 'Open Buying Store',
+without the item requirement. Amount of slots is limited by the server to
+a maximum of 5 slots by default.
+
+Example:
+
+	// Gives the player oppurtunity to buy 4 different kinds of items.
+	buyingstore 4;
+
+---------------------------------------
+
+*searchstores <uses>,<effect>;
+
+Invokes the store search window, which allows to search for both vending
+and buying stores. Parameter uses indicates, how many searches can be
+started, before the window has to be reopened. Effect value affects,
+what happens, when a result item is double-clicked and can be one of the
+following:
+
+	0 = Shows the store's position on the mini-map and highlights the
+		shop sign with yellow color, when the store is on same map
+		as the invoking player.
+	1 = Directly opens the shop, regardless of distance.
+
+Example:
+
+	// Item Universal_Catalog_Gold (10 uses, effect: open shop)
+	searchstores 10,1;
 
 ---------------------------------------
 //
@@ -6099,7 +6170,7 @@ illustration without displaying a new one, an empty file name and position 255
 must be used.
 
     // Displays the Comodo Kafra illustration in lower right corner.
-    cutin "kafra_7",2;
+    cutin "kafra_07",2;
 
     // Typical way to end a script, which displayed an illustration during a
     // dialog with a player.
@@ -6773,9 +6844,9 @@ instance times out while inactive.
 
 ---------------------------------------
 
-========================
+=========================
 |8.- Quest Log commands.|
-========================
+=========================
 ---------------------------------------
 
 *setquest <ID>;
@@ -6844,13 +6915,20 @@ color can be:
 
 ----------------------------------------
 
-===========================
+============================
 |9.- Battleground commands.|
-===========================
+============================
 ---------------------------------------
 
-*waitingroom2bg_single("<mapname>",<x>,<y>,"<On Quit Event>","<On Death Event>");
-*waitingroom2bg("<mapname>",<x>,<y>,"<On Quit Event>","<On Death Event>");
+*waitingroom2bg_single(<battle group>,"<mapname>",<x>,<y>,"<npc name>");
+
+Adds the first waiting player from the chat room of given NPC to an
+existing battleground group and warps it to specified coordinates on
+given map.
+
+---------------------------------------
+
+*waitingroom2bg("<mapname>",<x>,<y>,"<On Quit Event>","<On Death Event>"{,"<npc name>"});
 
 <Mapname> and X Y coordinates refer to where the "respawn" base is, where the player group will respawn when they die.
 <On Quit Event> refers to an NPC label that attaches to the character and is run when they relog.
@@ -6858,6 +6936,8 @@ color can be:
 
 Unlike the prior command, the latter will attach a GROUP in a waiting room to the battleground, and 
 sets the array $@arenamembers[0] where 0 holds the IDs of the first group, and 1 holds the IDs of the second.
+
+If the option parameter is left out, the waiting room of the current NPC is used.
 
 Example:
 	// Battle Group will be referred to as $@KvM01BG_id1, and when they die, respawn at bat_c01,52,129.
@@ -6956,9 +7036,16 @@ Example:
 
 *bg_get_data(<Battle Group>,<type>);
 
+Retrieves data related to given battle group. Type can be one of the following:
+
+    0 - Amount of players currently belonging to the group.
+
 ----------------------------------------
 
-*bg_getareausers
+*bg_getareausers(<battle group>,<map name>,<x0>,<y0>,<x1>,<y1>);
+
+Retrieves amount of players belonging to given battle group on given
+map within an specified rectangular area.
 
 ----------------------------------------
 

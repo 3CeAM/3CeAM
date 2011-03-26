@@ -1664,12 +1664,12 @@
 //2816,Radar_Ring1,Radar Ring,
 //2817,Radar_Ring2,Radar Ring,
 //2818,Radar_Ring3,Radar Ring,
-//2819,Swordsman_Manual,Swordsman Manual,
-//2820,Thief_Manual,Thief Manual,
-//2821,Acolyte_Manual,Acolyte Manual,
-//2822,Archer_Manual,Archer Manual,
-//2823,Merchant_Manual,Merchant Manual,
-//2824,Mage_Manual,Mage Manual,
+2819,Swordsman_Manual,Swordsman Manual,5,,,100,,0,,0,0x00000001,7,2,136,,1,0,0,{ bonus bMaxSP,100; skill "SM_BASH",1; skill "SM_PROVOKE",1; skill "SM_MAGNUM",1; },{},{}
+2820,Thief_Manual,Thief Manual,5,,,100,,0,,0,0x00000001,7,2,136,,1,0,0,{ bonus bMaxSP,100; skill "TF_DOUBLE",3; skill "TF_STEAL",1; skill "TF_HIDING",1; skill "TF_POISON",1; },{},{}
+2821,Acolyte_Manual,Acolyte Manual,5,,,100,,0,,0,0x00000001,7,2,136,,1,0,0,{ bonus bMaxSP,100; skill "AL_HEAL",1; skill "AL_INCAGI",1; skill "AL_BLESSING",1; },{},{}
+2822,Archer_Manual,Archer Manual,5,,,100,,0,,0,0x00000001,7,2,136,,1,0,0,{ bonus bMaxSP,100; skill "AC_OWL",1; skill "AC_CONCENTRATION",1; },{},{}
+2823,Merchant_Manual,Merchant Manual,5,,,100,,0,,0,0x00000001,7,2,136,,1,0,0,{ bonus bMaxSP,100; skill "MC_DISCOUNT",1; skill "MC_OVERCHARGE",10; skill "MC_IDENTIFY",1; skill "MC_MAMMONITE",1; },{},{}
+2824,Mage_Manual,Mage Manual,5,,,100,,0,,0,0x00000001,7,2,136,,1,0,0,{ bonus bMaxSP,100; skill "MG_SRECOVERY",1; skill "MG_COLDBOLT",1; skill "MG_FIREWALL",1; skill "MG_FIREBOLT",1; },{},{}
 2825,Shaman_Earrings_,Shaman Earrings,5,0,,100,,0,,0,0xFFFFFFFF,7,2,136,,1,0,0,{ bonus bInt,2; },{},{}
 2826,Dark_Knight_Belt_,Dark Knight Belt,5,0,,500,,1,,0,0xFFFFFFFF,7,2,136,,80,0,0,{ bonus bDex,2; bonus bAgi,1; },{},{}
 2827,Dark_Knight_Glove_,Dark Knight Glove,5,0,,500,,1,,0,0xFFFFFFFF,7,2,136,,80,0,0,{ autobonus "{ bonus bMaxHPRate,10; }",10,10000,0,"{ specialeffect2 EF_POTION_BERSERK; }"; },{},{}
@@ -2973,7 +2973,7 @@
 6025,Towel_Of_Memory,Towel of Memory,3,0,,10,,,,,,,,,,,,,{},{},{}
 6026,Marriage_Covenant,Written Oath Of Marriage,3,0,,10,,,,,,,,,,,,,{},{},{}
 6027,Crystal_Of_Feardoom,Crystal Of Feardom,3,0,,10,,,,,,,,,,,,,{},{},{}
-6028,Seal_Scroll,Sealed Scroll,3,0,,10,,,,,,,,,,,,,{},{},{}
+6028,Seal_Scroll,Sealed Scroll,3,0,,0,,,,,,,,,,,,,{},{},{}
 6029,Morocc_Tracing_Log,Morocc Tracing Log,3,0,,10,,,,,,,,,,,,,{},{},{}
 6030,Glitering_PaperA,Glittering Paper,3,0,,10,,,,,,,,,,,,,{},{},{}
 6031,Glitering_PaperB,Glittering Paper,3,0,,10,,,,,,,,,,,,,{},{},{}
@@ -3293,7 +3293,7 @@
 //6362,Yellow_Wish_Point,Yellow Wish Point,3,100,,5,,,,,,,,,,,,,{},{},{}
 //6363,Lime_Green_Point,Lime Green Point,3,100,,5,,,,,,,,,,,,,{},{},{}
 //6376,KVM_Badge
-//6377,Buy_Stall_Permit,Purchase Street Stall License,3,200,,10,,,,,,,,,,,,,{},{},{}
+6377,Buy_Stall_Permit,Purchase Street Stall License,3,200,,10,,,,,,,,,,,,,{},{},{}
 //6378
 //6379
 //6380
@@ -4823,13 +4823,16 @@
 //12471,LV5_Adrenaline_Scroll,
 //12472,Convex_Mirror,
 //12475,Cure_Free,
-//12548,Shabby_Purchase_Street_Stall_License,
+12548,Shabby_Purchase_Street_Stall_License,Shabby Purchase Street Stall License,2,500,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ buyingstore 2; },{},{}
 //12553,Brysingamen_Piece_Box,
 //12554,Asprika_Piece_Box,
 //12555,Brynhild_Piece_Box,
 //12556,Sleipnir_Piece_Box,
 //12557,Mjolnir_Piece_Box,
 //12558,Megingiorde_Piece_Box,
+12580,Universal_Catalog_Silver,Universal Catalog Silver,2,200,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ searchstores 10,0; },{},{}
+12581,Universal_Catalog_Gold,Universal Catalog Gold,2,0,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ searchstores 10,1; },{},{}
+12591,Universal_Catalog_Bronze,Universal Catalog Bronze,2,0,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ searchstores 10,1; },{},{}
 12701,Old_Blue_Box_F,Old Blue Box,2,,,200,,,,,0xFFFFFFFF,7,2,,,,,,{},{},{}
 12702,Old_Bleu_Box,Old Navy Box,2,0,,200,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem groupranditem(IG_BleuBox),1; getitem groupranditem(IG_BleuBox),1; },{},{}
 12703,Holy_Egg_2,Holy Egg,11,0,,50,,,,,0xFFFFFFFF,7,2,,,,,,{},{},{}
@@ -6183,6 +6186,12 @@
 //16588,Thoughtful_Hat_Box
 //16589,Thoughtful_Hat_Box
 //16590,Thoughtful_Hat_Box
+16677,Universal_Catalog_Gold_Box10,Universal Catalog Gold 10 Box,2,0,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 12581,10; },{},{}
+16678,Universal_Catalog_Gold_Box50,Universal Catalog Gold 50 Box,2,0,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 12581,50; },{},{}
+16679,Universal_Catalog_Gold_Box10,Universal Catalog Gold 10 Box,2,0,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 12581,10; },{},{}
+16680,Universal_Catalog_Gold_Box50,Universal Catalog Gold 50 Box,2,0,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 12581,50; },{},{}
+16776,Universal_Catalog_Gold_Box10,Universal Catalog Gold 10 Box,2,0,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 12581,10; },{},{}
+16777,Universal_Catalog_Gold_Box50,Universal Catalog Gold 50 Box,2,0,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 12581,50; },{},{}
 //18000,Cannon_Ball
 //18001,Holy_Cannon_Ball
 //18002,Dark_Cannon_Ball

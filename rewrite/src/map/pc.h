@@ -7,10 +7,12 @@
 #include "../common/mmo.h" // JOB_*, MAX_FAME_LIST, struct fame_list, struct mmo_charstatus
 #include "../common/timer.h" // INVALID_TIMER
 #include "battle.h" // battle_config
+#include "buyingstore.h"  // struct s_buyingstore
 #include "itemdb.h" // MAX_ITEMGROUP
 #include "map.h" // RC_MAX
 #include "pc.h" // struct map_session_data
 #include "script.h" // struct script_reg, struct script_regstr
+#include "searchstore.h"  // struct s_search_store_info
 #include "status.h" // OPTION_*, struct weapon_atk
 #include "unit.h" // unit_stop_attack(), unit_stop_walking()
 #include "vending.h" // struct s_vending
@@ -113,7 +115,6 @@ struct map_session_data {
 		unsigned gangsterparadise : 1;
 		unsigned rest : 1;
 		unsigned storage_flag : 2; //0: closed, 1: Normal Storage open, 2: guild storage open [Skotlex]
-		unsigned snovice_call_flag : 2; //Summon Angel (stage 1~3)
 		unsigned snovice_dead_flag : 1; //Explosion spirits on death: 0 off, 1 used.
 		unsigned abra_flag : 1; // Abracadabra bugfix by Aru
 		unsigned autocast : 1; // Autospell flag [Inkfish]
@@ -137,6 +138,7 @@ struct map_session_data {
 		unsigned doridori : 1;
 		unsigned ignoreAll : 1;
 		unsigned debug_remove_map : 1; // temporary state to track double remove_map's [FlavioJS]
+		unsigned buyingstore : 1;
 		unsigned short autoloot;
 		unsigned short autolootid; // [Zephyrus]
 		unsigned noks : 3; // [Zeph Kill Steal Protection]
@@ -374,6 +376,11 @@ struct map_session_data {
 	char message[MESSAGE_SIZE];
 	struct s_vending vending[MAX_VENDING];
 
+	unsigned int buyer_id;  // uid of open buying store
+	struct s_buyingstore buyingstore;
+
+	struct s_search_store_info searchstore;
+
 	struct pet_data *pd;
 	struct homun_data *hd;	// [blackhole89]
 	struct mercenary_data *md;
@@ -545,9 +552,9 @@ extern int duel_count;
 #define pc_setsit(sd)         ( (sd)->state.dead_sit = (sd)->vd.dead_sit = 2 )
 #define pc_isdead(sd)         ( (sd)->state.dead_sit == 1 )
 #define pc_issit(sd)          ( (sd)->vd.dead_sit == 2 )
-#define pc_isidle(sd)         ( (sd)->chatID || (sd)->vender_id || DIFF_TICK(last_tick, (sd)->idletime) >= battle_config.idle_no_share )
-#define pc_istrading(sd)      ( (sd)->npc_id || (sd)->vender_id || (sd)->state.trading )
-#define pc_cant_act(sd)       ( (sd)->npc_id || (sd)->vender_id || (sd)->chatID || ((sd)->sc.opt1 && (sd)->sc.opt1 != OPT1_BURNING) || (sd)->state.trading || (sd)->state.storage_flag )
+#define pc_isidle(sd)         ( (sd)->chatID || (sd)->vender_id || (sd)->state.buyingstore || DIFF_TICK(last_tick, (sd)->idletime) >= battle_config.idle_no_share )
+#define pc_istrading(sd)      ( (sd)->npc_id || (sd)->vender_id || (sd)->state.buyingstore || (sd)->state.trading )
+#define pc_cant_act(sd)       ( (sd)->npc_id || (sd)->vender_id || (sd)->state.buyingstore || (sd)->chatID || ((sd)->sc.opt1 && (sd)->sc.opt1 != OPT1_BURNING) || (sd)->state.trading || (sd)->state.storage_flag )
 #define pc_setdir(sd,b,h)     ( (sd)->ud.dir = (b) ,(sd)->head_dir = (h) )
 #define pc_setchatid(sd,n)    ( (sd)->chatID = n )
 #define pc_ishiding(sd)       ( (sd)->sc.option&(OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK) )

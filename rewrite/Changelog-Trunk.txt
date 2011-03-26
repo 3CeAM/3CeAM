@@ -1,5 +1,102 @@
 Date	Added
 
+2011/03/25
+	* Fixed battlegrounds chat packet 0x2dc (ZC_BATTLEFIELD_CHAT) being sent with the battleground id rather than the account id of the talking player (since r13593). [Ai4rei]
+2011/03/22
+	* Documentation updates and fixes. [Ai4rei]
+	- Added documentation for script commands 'bg_getareausers' and 'bg_get_data' (bugreport:3034).
+	- Fixed documentation for script command 'waitingroom2bg_single' (bugreport:4770, since r14373).
+	- Documented optional parameter 'npc name' for script command 'waitingroom2bg'.
+	* Fixed possible client crash when monster is class-changing to mob_avail'd one. [Gepard]
+2011/03/20
+	* Random accumulated tweaks and fixes. [Ai4rei]
+	- Added a error message to npc_enable, to spot disablenpc/enablenpc/hideoffnpc/hideonnpc on non-existing NPCs (related r14750).
+	- Replaced inlined npc_name2id code with calls to npc_name2id.
+	- Open Buying Store skill is now exempted from noskill mapflag like Vending as well (bugreport:4815, follow up to r14713).
+	- Fixed signed constant being returned as unsigned value in get_percentage (bugreport:4765, since r12679).
+	- Replaced strlen checks, which checked whether or not a string is empty, with first-byte checks.
+	- Fixed enabling 'fakename' not clearing party and guild name and cleaned up atcommand 'fakename' code.
+	- Cleaned up party/guild name code in clif_charnameack (follow up to r14737).
+	* Fixed battleground kvm02 and kvm03 scripts referring to NPCs in the custom battleground kvm (bugreport:4812, since r14369). [Ai4rei]
+	- Fixed kvm02 printing different amount of points, than it actually gives.
+	* Updates the to configure script. [Ai4rei]
+	- Added check, whether or not '-Wno-pointer-sign' can actually be used (caused warnings with g++).
+	- Math library is no longer considered required, when math functions are available without it (made configure fail on platforms, where no separate math library is present).
+2011/03/19
+	* Removed leftovers of old charcommand config (follow-up to r13403). [Gepard]
+	* Added check to ensure character `rename` status will be saved if changed. [Gepard]
+	* Fixed Beast Strafing (HT_POWER) damage formula provided by Playtester (bugreport:4675, since r4392). [Gepard]
+2011/03/15
+	* Fixed pet database reading displaying wrong amount of read entries per file (bugreport:4797). [Ai4rei]
+	* Fixed canceling item appraisal window (Magnifier and Identify) would prevent players from using any follow up skills (bugreport:4809, since r14545). [Ai4rei]
+	* Fixed monsters getting warped when stepping on an NPC warp when at least one of the bits of setting 'mob_warp' was set (bugreport:4766, since r12757). [Ai4rei]
+2011/03/14
+	* Fixed a typo in npc_touchnext_areanpc (NPC's map being used as it's x-coordinate), which caused ::OnTouch_ invokation to affect different area than intended (bugreport:4814, since r14097). [Ai4rei]
+2011/03/13
+	* Script commands documentation updates. [Ai4rei]
+	- Added missing description for script command 'cooking' provided by Masao (bugreport:3372, follow up to r13628).
+	- Fixed wrong item levels being listed in the description to script command 'produce'.
+2011/03/08
+	* Fixed @item2 and script command 'getitem2' not taking MAX_REFINE define into consideration (bugreport:4804). [Ai4rei]
+	* Fixed @str/@agi/@vit/@int/@dex/@luk commands setting a stat to 0 (rather than 1), when exact amount is subtracted (bugreport:4803, since r14493). [Ai4rei]
+2011/03/07
+	* Cleaned up packet dumping code. [Ai4rei]
+	- Replaced utils function 'dump' with 'WriteDump' (files) and 'ShowDump' (console), and used those to replace inlined code in clif (related r10947).
+	- Fixed clif_parse_debug not printing anything, when it is used with a variable length packet.
+	- Added ability to dump invalid packets through define DUMP_INVALID_PACKET (clif.c).
+	- Removed code to dump all incoming packets, as that can be achieved with the DUMP_UNKNOWN_PACKET code as well when needed (from r1009).
+2011/03/06
+	* Implemented search store info system (aka. vending and buying store search) together with related items. [Ai4rei]
+	- Requires 2010-08-03aRagexeRE or later and can be disabled in 'conf/battle/feature.conf'.
+2011/03/05
+	* Fixed possible crash in script_reportdata, when a script string becomes NULL for whatever reason. [Ai4rei]
+2011/03/04
+	* Fixed recursive map_quit invocation when a buying store is auto-closed (login when @autotrade/logout) (bugreport:4796, since r14724). [Ai4rei]
+2011/03/02
+	* Updates to the super novice's guardian angel prayer effect and related handling code. [Ai4rei]
+	- Removed the server-side chat tracking code (since r492) responsible for invoking the effect, since this functionality is handled by the client (invocation also processed by the server). This also fixes the missing 7 lines requirement on the server-side handling (bugreport:4786).
+	- Updated the checks in the client-invoked code part and documented the packet.
+	- Now only the prayer in client-side data\msgstringtable.txt (lines 791~794) applies.
+	- The prayer is no longer blocked by noskill-restrictions.
+	- Exp at 0% and 100% no longer causes the effect to trigger.
+	- Fixed the exp percent check to also check one digit after the decimal point (requirement is 10.0% not 10%).
+2011/03/01
+	* Fixed packet 0x839 (new guild member expel notification) was expected on clients 2010-06-08aRagexeRE~2010-07-30aRagexeRE, although those do not implement it (bugreport:4789, since r14718, related r14368). [Ai4rei]
+2011/02/26
+	* Reduced MAX_GUILD_STORAGE from 1000 to 600 (like MAX_STORAGE), since storage with 1000 items causes too large packets that are dropped then, which in turn gives the impression that the items are lost (follow up to r14503). [Ai4rei]
+	- Note: When updating an existing server, keep in mind that excess items in guild storage get lost, when MAX_GUILD_STORAGE is reduced.
+2011/02/23
+	* Updates to various custom stuff that buying stores might/are expected to support (follow up to r14713). [Ai4rei]
+	- Buying store no longer works on novending maps/cells (bugreport:4778).
+	- MANNER_NOROOM mute flag now affects buying stores as well (like vending).
+	- Enabled @autotrade for buying stores.
+	* Fixed whispering to NPCs (::OnWhisperGlobal) not working for NPCs whose unique name is different from the display name (bugreport:4776, since r2624). [Ai4rei]
+2011/02/20
+	* Fixed SP regen not stopping when Maximize Power (BS_MAXIMIZE) is in effect. [Ai4rei]
+	* Fixed missing </File> end-tag in VC8 map-server sql project file (since r14713). [Ai4rei]
+2011/02/19
+	* Updated guild expel notification packet 0x15c (ZC_ACK_BAN_GUILD) for clients 2010-06-08aRagexeRE and newer to 0x839. [Ai4rei]
+	* Removed '.txt' from log config info messages, as the values already have an extension (since r197, related r196). [Ai4rei]
+	* Fixed gcc compile warnings in char-server and console plug-in (bugreport:4771, topic:208746, since r9631 and r14700). [Ai4rei]
+	* Fixed buying stores could be opened and sold to regardless of distance between seller and buyer (since r14713). [Ai4rei]
+	* Fixed 'feature.conf' not getting loaded and a typo buying store feature setting name (follow up to r14713). [Ai4rei]
+	* Implemented buying store system (aka. reverse vending, purchase shop) together with related skill and items, without NPCs. [Ai4rei]
+	- For SQL apply upgrade_svn14713_log.sql to upgrade tables `picklog` and `zenylog`; for TXT no action is necessary.
+	- Requires 2010-04-20aRagexeRE or later and can be disabled in 'conf/battle/feature.conf'.
+2011/02/17
+	* Merged enumeration update from renewal [14699/branches/renewal] for a future commit. [Ai4rei]
+2011/02/16
+	* Updated configure/make scripts to resolve various issues. [Ai4rei]
+	- Added detection whether or not -fPIC switch is required when compiling shared objects (plug-ins) to resolve compile issues on 64-bit platforms (topic:208746).
+	- Native 'strnlen' implementations are now detected and disable the one in strlib (bugreport:1261).
+	- Define 'DB_MANUAL_CAST_TO_UNION' is now set when necessary (bugreport:1261).
+2011/02/15
+	* Added support for client GM command /check (related r12076). [Ai4rei]
+2011/02/14
+	* Fixed drop list of map flag 'pvp_nightmaredrop' not getting cleared upon @reloadscript (bugreport:4282, follow up to r14668). [Ai4rei]
+	* Fixed GMs with GM level equal to 'lowest_gm_level' being treated as normal players in 'gm_can_party' check (bugreport:4162, since r13143). [Ai4rei]
+	* Fixed a crash when script 'npctalk' is given too long string (bugreport:4759, related r2145). [Ai4rei]
+	- Fixed related buffer overflows in message related clif functions (since r1182, r14270).
 2011/02/09
 	* Fixed script command 'bpet' (Pet Incubator) displaying an empty egg list when attempting to hatch a pet while already having one out (bugreport:3313). [Ai4rei]
 2011/02/08

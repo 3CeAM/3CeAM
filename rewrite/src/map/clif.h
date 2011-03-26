@@ -458,7 +458,7 @@ int clif_guild_xy_remove(struct map_session_data *sd);
 int clif_bg_hp(struct map_session_data *sd);
 int clif_bg_xy(struct map_session_data *sd);
 int clif_bg_xy_remove(struct map_session_data *sd);
-int clif_bg_message(struct battleground_data *bg, const char *name, const char *mes, int len);
+int clif_bg_message(struct battleground_data *bg, int src_id, const char *name, const char *mes, int len);
 int clif_bg_updatescore(int m);
 int clif_bg_updatescore_single(struct map_session_data *sd);
 int clif_sendbgemblem_area(struct map_session_data *sd);
@@ -614,6 +614,26 @@ void clif_PartyBookingDeleteNotify(struct map_session_data* sd, int index);
 void clif_PartyBookingInsertNotify(struct map_session_data* sd, struct party_booking_ad_info* pb_ad);
 
 void clif_showdigit(struct map_session_data* sd, unsigned char type, int value);
+
+/// Buying Store System
+void clif_buyingstore_open(struct map_session_data* sd);
+void clif_buyingstore_open_failed(struct map_session_data* sd, unsigned short result, unsigned int weight);
+void clif_buyingstore_myitemlist(struct map_session_data* sd);
+void clif_buyingstore_entry(struct map_session_data* sd);
+void clif_buyingstore_entry_single(struct map_session_data* sd, struct map_session_data* pl_sd);
+void clif_buyingstore_disappear_entry(struct map_session_data* sd);
+void clif_buyingstore_disappear_entry_single(struct map_session_data* sd, struct map_session_data* pl_sd);
+void clif_buyingstore_itemlist(struct map_session_data* sd, struct map_session_data* pl_sd);
+void clif_buyingstore_trade_failed_buyer(struct map_session_data* sd, short result);
+void clif_buyingstore_update_item(struct map_session_data* sd, unsigned short nameid, unsigned short amount);
+void clif_buyingstore_delete_item(struct map_session_data* sd, short index, unsigned short amount, int price);
+void clif_buyingstore_trade_failed_seller(struct map_session_data* sd, short result, unsigned short nameid);
+
+/// Search Store System
+void clif_search_store_info_ack(struct map_session_data* sd);
+void clif_search_store_info_failed(struct map_session_data* sd, unsigned char reason);
+void clif_open_search_store_info(struct map_session_data* sd);
+void clif_search_store_info_click_ack(struct map_session_data* sd, short x, short y);
 
 void clif_equip_damaged(struct map_session_data *sd, int equip_index);
 void clif_millenniumshield(struct map_session_data *sd, short shields );
