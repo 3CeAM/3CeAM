@@ -3519,7 +3519,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		}
 		else
 		{
-			if( skillid == NJ_BAKUENRYU || skillid == LG_EARTHDRIVE || GN_CARTCANNON )
+			if( skillid == NJ_BAKUENRYU || skillid == LG_EARTHDRIVE || skillid == GN_CARTCANNON )
 				clif_skill_nodamage(src,bl,skillid,skilllv,1);
 			if( skillid == LG_MOONSLASHER )
 				clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
@@ -15930,9 +15930,10 @@ int skill_changematerial(struct map_session_data *sd, int n, unsigned short *ite
 				}
 				p++;
 			} while(n == j && c == n);
+			p--;
 			if ( p > 0 )
 			{
-				skill_produce_mix(sd,GN_CHANGEMATERIAL,skill_produce_db[i].nameid,0,0,0,p-1);
+				skill_produce_mix(sd,GN_CHANGEMATERIAL,skill_produce_db[i].nameid,0,0,0,p);
 				return 1;
 			}
 		}
