@@ -1168,7 +1168,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl, SC_CRYSTALIZE, rate, skilllv, skill_get_time2(skillid, skilllv));
 		break;
 	case SO_VARETYR_SPEAR:
-		sc_start(bl, SC_STUN, 20, skilllv, skill_get_time2(skillid, skilllv));
+		sc_start(bl, SC_STUN, 5 + 5 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
 		break;
 	case GN_HELLS_PLANT_ATK:
 		sc_start(bl, SC_STUN, 5 + 5 * skilllv, skilllv, skill_get_time(skillid, skilllv));
