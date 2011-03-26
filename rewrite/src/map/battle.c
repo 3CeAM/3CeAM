@@ -1752,8 +1752,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case MC_MAMMONITE:
 					skillratio += 50*skill_lv;
 					break;
-				case HT_POWER: //FIXME: How exactly is the STR based damage supposed to be done? [Skotlex]
-					skillratio += 5*sstatus->str;
+				case HT_POWER:
+					skillratio += -50+8*sstatus->str;
 					break;
 				case AC_DOUBLE:
 				case MA_DOUBLE:
@@ -5135,7 +5135,6 @@ static const struct _battle_data {
 	{ "show_picker.item_type",              &battle_config.show_picker_item_type,           112,    0,      INT_MAX,        },
 	{ "party_update_interval",              &battle_config.party_update_interval,           1000,   100,    INT_MAX,        },
 	{ "party_item_share_type",              &battle_config.party_share_type,                0,      0,      1|2|3,          },
-	{ "show_party_name",                    &battle_config.show_party_name,                 0,      0,      1,              }, // [Jobbie]
 	{ "attack_attr_none",                   &battle_config.attack_attr_none,                ~BL_PC, BL_NUL, BL_ALL,         },
 	{ "gx_allhit",                          &battle_config.gx_allhit,                       0,      0,      1,              },
 	{ "gx_disptype",                        &battle_config.gx_disptype,                     1,      0,      1,              },
@@ -5314,6 +5313,12 @@ static const struct _battle_data {
 	{ "autospell_check_range",              &battle_config.autospell_check_range,           0,      0,      1,              },
 	{ "client_reshuffle_dice",              &battle_config.client_reshuffle_dice,           0,      0,      1,              },
 	{ "client_sort_storage",                &battle_config.client_sort_storage,             0,      0,      1,              },
+	{ "gm_check_minlevel",                  &battle_config.gm_check_minlevel,               60,     0,      100,            },
+	{ "feature.buying_store",               &battle_config.feature_buying_store,            1,      0,      1,              },
+	{ "feature.search_stores",              &battle_config.feature_search_stores,           1,      0,      1,              },
+	{ "searchstore_querydelay",             &battle_config.searchstore_querydelay,         10,      0,      INT_MAX,        },
+	{ "searchstore_maxresults",             &battle_config.searchstore_maxresults,         30,      1,      INT_MAX,        },
+	{ "display_party_name",                 &battle_config.display_party_name,              0,      0,      1,              },
 // BattleGround Settings
 	{ "bg_update_interval",                 &battle_config.bg_update_interval,              1000,   100,    INT_MAX,        },
 	{ "bg_short_attack_damage_rate",        &battle_config.bg_short_damage_rate,            80,     0,      INT_MAX,        },

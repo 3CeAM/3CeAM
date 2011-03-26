@@ -475,7 +475,8 @@ int mmo_char_tosql(int char_id, struct mmo_charstatus* p)
 		(p->party_id != cp->party_id) || (p->guild_id != cp->guild_id) ||
 		(p->pet_id != cp->pet_id) || (p->weapon != cp->weapon) || (p->hom_id != cp->hom_id) ||
 		(p->ele_id != cp->ele_id) || (p->shield != cp->shield) || (p->head_top != cp->head_top) ||
-		(p->head_mid != cp->head_mid) || (p->head_bottom != cp->head_bottom) || (p->delete_date != cp->delete_date)
+		(p->head_mid != cp->head_mid) || (p->head_bottom != cp->head_bottom) || (p->delete_date != cp->delete_date) ||
+		(p->rename != cp->rename)
 	)
 	{	//Save status
 		if( SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `base_level`='%d', `job_level`='%d',"
@@ -495,7 +496,7 @@ int mmo_char_tosql(int char_id, struct mmo_charstatus* p)
 			p->weapon, p->shield, p->head_top, p->head_mid, p->head_bottom,
 			mapindex_id2name(p->last_point.map), p->last_point.x, p->last_point.y,
 			mapindex_id2name(p->save_point.map), p->save_point.x, p->save_point.y, p->rename,
-			TOL(p->delete_date),  // FIXME: platform-dependent size
+			(unsigned long)p->delete_date,  // FIXME: platform-dependent size
 			p->account_id, p->char_id) )
 		{
 			Sql_ShowDebug(sql_handle);
@@ -3165,7 +3166,7 @@ static void char_delete2_req(int fd, struct char_session_data* sd)
 	// success
 	delete_date = time(NULL)+char_del_delay;
 
-	if( SQL_SUCCESS != Sql_Query(sql_handle, "UPDATE `%s` SET `delete_date`='%lu' WHERE `char_id`='%d'", char_db, TOL(delete_date), char_id) )
+	if( SQL_SUCCESS != Sql_Query(sql_handle, "UPDATE `%s` SET `delete_date`='%lu' WHERE `char_id`='%d'", char_db, (unsigned long)delete_date, char_id) )
 	{
 		Sql_ShowDebug(sql_handle);
 		char_delete2_ack(fd, char_id, 3, 0);

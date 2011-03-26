@@ -466,6 +466,7 @@ int skillnotok(int skillid, struct map_session_data *sd)
 			break;
 		case MC_VENDING:
 		case MC_IDENTIFY:
+		case ALL_BUYING_STORE:
 			return 0; // always allowed
 		case WZ_ICEWALL:
 			// noicewall flag [Valaris]
@@ -7135,6 +7136,12 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case NPC_TALK:
 	case ALL_WEWISH:
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		break;
+	case ALL_BUYING_STORE:
+		if( sd )
+		{// players only, skill allows 5 buying slots
+			clif_skill_nodamage(src, bl, skillid, skilllv, buyingstore_setup(sd, MAX_BUYINGSTORE_SLOTS));
+		}
 		break;
 	case RK_ENCHANTBLADE:
 		clif_skill_nodamage(src,bl,skillid,skilllv,

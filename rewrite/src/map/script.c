@@ -483,7 +483,14 @@ static void script_reportdata(struct script_data* data)
 		break;
 	case C_STR:
 	case C_CONSTSTR:// string
-		ShowDebug("Data: string value=\"%s\"\n", data->u.str);
+		if( data->u.str )
+		{
+			ShowDebug("Data: string value=\"%s\"\n", data->u.str);
+		}
+		else
+		{
+			ShowDebug("Data: string value=NULL\n");
+		}
 		break;
 	case C_NAME:// reference
 		if( reference_tovariable(data) )
@@ -5689,7 +5696,7 @@ BUILDIN_FUNC(getitem2)
 		if (item_data == NULL)
 			return -1;
 		if(item_data->type==IT_WEAPON || item_data->type==IT_ARMOR){
-			if(ref > 10) ref = 10;
+			if(ref > MAX_REFINE) ref = MAX_REFINE;
 		}
 		else if(item_data->type==IT_PETEGG) {
 			iden = 1;
@@ -11878,17 +11885,17 @@ BUILDIN_FUNC(message)
 BUILDIN_FUNC(npctalk)
 {
 	const char* str;
-	char message[255];
+	char name[NAME_LENGTH], message[256];
 
 	struct npc_data* nd = (struct npc_data *)map_id2bl(st->oid);
 	str = script_getstr(st,2);
 
-	if(nd) {
-		memcpy(message, nd->name, NAME_LENGTH);
-		strtok(message, "#"); // discard extra name identifier if present
-		strcat(message, " : ");
-		strncat(message, str, 254); //Prevent overflow possibility. [Skotlex]
-		clif_message(&(nd->bl), message);
+	if(nd)
+	{
+		safestrncpy(name, nd->name, sizeof(name));
+		strtok(name, "#"); // discard extra name identifier if present
+		safesnprintf(message, sizeof(message), "%s : %s", name, str);
+		clif_message(&nd->bl, message);
 	}
 
 	return 0;
@@ -14871,6 +14878,56 @@ BUILDIN_FUNC(pushpc)
 	return 0;
 }
 
+
+/// Invokes buying store preparation window
+/// buyingstore <slots>;
+BUILDIN_FUNC(buyingstore)
+{
+	struct map_session_data* sd;
+
+	if( ( sd = script_rid2sd(st) ) == NULL )
+	{
+		return 0;
+	}
+
+	buyingstore_setup(sd, script_getnum(st,2));
+	return 0;
+}
+
+
+/// Invokes search store info window
+/// searchstores <uses>,<effect>;
+BUILDIN_FUNC(searchstores)
+{
+	unsigned short effect;
+	unsigned int uses;
+	struct map_session_data* sd;
+
+	if( ( sd = script_rid2sd(st) ) == NULL )
+	{
+		return 0;
+	}
+
+	uses   = script_getnum(st,2);
+	effect = script_getnum(st,3);
+
+	if( !uses )
+	{
+		ShowError("buildin_searchstores: Amount of uses cannot be zero.\n");
+		return 1;
+	}
+
+	if( effect > 1 )
+	{
+		ShowError("buildin_searchstores: Invalid effect id %hu, specified.\n", effect);
+		return 1;
+	}
+
+	searchstore_open(sd, uses, effect);
+	return 0;
+}
+
+
 // declarations that were supposed to be exported from npc_chat.c
 #ifdef PCRE_SUPPORT
 BUILDIN_FUNC(defpattern);
@@ -15235,6 +15292,8 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(areamobuseskill,"siiiiviiiii"),
 	BUILDIN_DEF(progressbar,"si"),
 	BUILDIN_DEF(pushpc,"ii"),
+	BUILDIN_DEF(buyingstore,"i"),
+	BUILDIN_DEF(searchstores,"ii"),
 	// WoE SE
 	BUILDIN_DEF(agitstart2,""),
 	BUILDIN_DEF(agitend2,""),

@@ -294,7 +294,6 @@ extern struct Battle_Config
 	int party_share_type;
 	int party_hp_mode;
 	int party_show_share_picker;
-	int show_party_name; // [Jobbie]
 	int show_picker_item_type;
 	int attack_attr_none;
 	int item_rate_mvp, item_rate_common, item_rate_common_boss, item_rate_card, item_rate_card_boss,
@@ -486,6 +485,12 @@ extern struct Battle_Config
 	int autospell_check_range;	//Enable range check for autospell bonus. [L0ne_W0lf]
 	int client_reshuffle_dice;  // Reshuffle /dice
 	int client_sort_storage;
+	int gm_check_minlevel;  // min GM level for /check
+	int feature_buying_store;
+	int feature_search_stores;
+	int searchstore_querydelay;
+	int searchstore_maxresults;
+	int display_party_name;
 
 	// [BattleGround Settings]
 	int bg_update_interval;
