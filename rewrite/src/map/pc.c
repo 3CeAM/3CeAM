@@ -1447,7 +1447,7 @@ int pc_calc_skilltree(struct map_session_data *sd)
 
 	if( battle_config.gm_allskill > 0 && pc_isGM(sd) >= battle_config.gm_allskill )
 	{
-		for( i = 0; i < 1020; i++ )
+		for( i = 0; i < MAX_SKILL; i++ )
 		{
 			if( skill_get_inf2(i)&(INF2_NPC_SKILL|INF2_GUILD_SKILL) )
 				continue; //Only skills you can't have are npc/guild ones

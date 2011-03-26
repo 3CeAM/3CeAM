@@ -3507,7 +3507,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						}
 						break;
 					case SO_VARETYR_SPEAR: //Assumed Formula.
-						skillratio += -100 + (sstatus->int_ * skill_lv);
+						skillratio += -100 + ( 100 * pc_checkskill(sd, SA_LIGHTNINGLOADER) + sstatus->int_ * skill_lv );
 					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						if( sc && sc->data[SC_BLAST_OPTION] )
 							skillratio += skillratio * sc->data[SC_BLAST_OPTION]->val2 / 100;
