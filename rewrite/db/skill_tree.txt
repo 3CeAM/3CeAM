@@ -4147,6 +4147,7 @@
 4086,2281,5,2277,2,0,0,0,0,0,0,0,0 //NC_SILVERSNIPER#FAW - Silver Sniper#
 4086,2282,5,2277,2,0,0,0,0,0,0,0,0 //NC_MAGICDECOY#FAW - Magic Decoy#
 4086,2283,1,2281,1,0,0,0,0,0,0,0,0 //NC_DISJOINT#FAW Removal#
+4086,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
 //Mechanic Mount (Trans 2nd to 3rd)
 4087,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4087,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -4220,6 +4221,7 @@
 4087,2281,5,2277,2,0,0,0,0,0,0,0,0 //NC_SILVERSNIPER#FAW - Silver Sniper#
 4087,2282,5,2277,2,0,0,0,0,0,0,0,0 //NC_MAGICDECOY#FAW - Magic Decoy#
 4087,2283,1,2281,1,0,0,0,0,0,0,0,0 //NC_DISJOINT#FAW Removal#
+4087,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
 //Baby Rune Knight
 4096,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4096,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -4498,6 +4500,7 @@
 4100,2281,5,2277,2,0,0,0,0,0,0,0,0 //NC_SILVERSNIPER#FAW - Silver Sniper#
 4100,2282,5,2277,2,0,0,0,0,0,0,0,0 //NC_MAGICDECOY#FAW - Magic Decoy#
 4100,2283,1,2281,1,0,0,0,0,0,0,0,0 //NC_DISJOINT#FAW Removal#
+4100,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
 //Baby Guillotine Cross
 4101,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4101,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -4895,6 +4898,7 @@
 4107,2495,2,2497,1,0,0,0,0,0,0,0,0 //GN_MIX_COOKING#Mix Cooking#
 4107,2496,2,2495,1,0,0,0,0,0,0,0,0 //GN_MAKEBOMB#Create Bomb#
 4107,2497,10,0,0,0,0,0,0,0,0,0,0 //GN_S_PHARMACY#Special Pharmacy#
+4107,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
 //Baby Shadow Chaser
 4108,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4108,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -5169,6 +5173,7 @@
 4112,2281,5,2277,2,0,0,0,0,0,0,0,0 //NC_SILVERSNIPER#FAW - Silver Sniper#
 4112,2282,5,2277,2,0,0,0,0,0,0,0,0 //NC_MAGICDECOY#FAW - Magic Decoy#
 4112,2283,1,2281,1,0,0,0,0,0,0,0,0 //NC_DISJOINT#FAW Removal#
+4112,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
 // Super Novice (Enhanced)
 //4190,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 //4190,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
