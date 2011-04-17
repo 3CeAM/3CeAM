@@ -2139,8 +2139,6 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 		break;
 	case WL_SOULEXPANSION:
 	case WL_COMET:
-	case SO_EARTHGRAVE:
-	case SO_DIAMONDDUST:
 		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,skillid,skilllv,8);
 		break;
 	case WL_CHAINLIGHTNING_ATK:
@@ -3666,8 +3664,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case AB_DUPLELIGHT_MAGIC:
 	case WL_HELLINFERNO:
 	case WM_METALICSOUND:
-	case SO_EARTHGRAVE:
-	case SO_DIAMONDDUST:
 		skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
@@ -5353,6 +5349,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case NC_EMERGENCYCOOL:
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		status_change_end(src,SC_OVERHEAT_LIMITPOINT,-1);
+		status_change_end(src,SC_OVERHEAT,-1);
 		break;
 	case NC_INFRAREDSCAN:
 	case GC_COUNTERSLASH:
@@ -8141,16 +8138,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case MI_HARMONIZE:
-		{
-			status_change_end(bl,SC_SWINGDANCE,-1);
-			status_change_end(bl,SC_SYMPHONYOFLOVER,-1);
-			status_change_end(bl,SC_MOONLITSERENADE,-1);
-			status_change_end(bl,SC_RUSHWINDMILL,-1);
-			status_change_end(bl,SC_ECHOSONG,-1);
-			status_change_end(bl,SC_HARMONIZE,-1);
-			clif_skill_nodamage(src, bl, skillid, skilllv,
-				sc_start(bl, type, 100, skilllv, skill_get_time(skillid,skilllv)));
-		}
+			clif_skill_nodamage(src, bl, skillid, skilllv,sc_start(bl, type, 100, skilllv, skill_get_time(skillid,skilllv)));
 		break;
 
 	case WM_DEADHILLHERE:
@@ -9335,6 +9323,8 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case GN_THORNS_TRAP:
 	case GN_DEMONIC_FIRE:
 	case GN_HELLS_PLANT:
+	case SO_EARTHGRAVE:
+	case SO_DIAMONDDUST:
 	case SO_FIRE_INSIGNIA:
 	case SO_WATER_INSIGNIA:
 	case SO_WIND_INSIGNIA:
@@ -9606,8 +9596,6 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case NC_ARMSCANNON:
 	case RK_DRAGONBREATH:
 	case WM_LULLABY_DEEPSLEEP:
-	case SO_EARTHGRAVE:
-	case SO_DIAMONDDUST:
 		i = skill_get_splash(skillid,skilllv);
 		map_foreachinarea(skill_area_sub,src->m,x-i,y-i,x+i,y+i,BL_CHAR,
 			src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
@@ -16689,8 +16677,8 @@ int skill_stasis_check(struct block_list *bl, int src_id, int skillid)
 	switch( skillid )
 	{
 		case NV_FIRSTAID:		case TF_HIDING:			case AS_CLOAKING:		case WZ_SIGHTRASHER:	
-		case RG_STRIPWEAPON:	case RG_STRIPSHIELD:	case RG_STRIPARMOR:		case WZ_METEOR:
-		case RG_STRIPHELM:		case SC_STRIPACCESSARY:	case ST_FULLSTRIP:		case WZ_SIGHTBLASTER:
+		case RG_STRIPWEAPON:		case RG_STRIPSHIELD:		case RG_STRIPARMOR:		case WZ_METEOR:
+		case RG_STRIPHELM:		case SC_STRIPACCESSARY:		case ST_FULLSTRIP:		case WZ_SIGHTBLASTER:
 		case ST_CHASEWALK:		case SC_ENERVATION:		case SC_GROOMY:			case WZ_ICEWALL:
 		case SC_IGNORANCE:		case SC_LAZINESS:		case SC_UNLUCKY:		case WZ_STORMGUST:
 		case SC_WEAKNESS:		case AL_RUWACH:			case AL_PNEUMA:			case WZ_JUPITEL:
@@ -16698,24 +16686,24 @@ int skill_stasis_check(struct block_list *bl, int src_id, int skillid)
 		case AL_TELEPORT:		case AL_WARP:			case AL_HOLYWATER:		case WZ_EARTHSPIKE:
 		case AL_HOLYLIGHT:		case PR_IMPOSITIO:		case PR_ASPERSIO:		case WZ_HEAVENDRIVE:
 		case PR_SANCTUARY:		case PR_STRECOVERY:		case PR_MAGNIFICAT:		case WZ_QUAGMIRE:
-		case ALL_RESURRECTION:	case PR_LEXDIVINA:		case PR_LEXAETERNA:		case HW_GRAVITATION:
+		case ALL_RESURRECTION:		case PR_LEXDIVINA:		case PR_LEXAETERNA:		case HW_GRAVITATION:
 		case PR_MAGNUS:			case PR_TURNUNDEAD:		case MG_SRECOVERY:		case HW_MAGICPOWER:
 		case MG_SIGHT:			case MG_NAPALMBEAT:		case MG_SAFETYWALL:		case HW_GANBANTEIN:
 		case MG_SOULSTRIKE:		case MG_COLDBOLT:		case MG_FROSTDIVER:		case WL_DRAINLIFE:
 		case MG_STONECURSE:		case MG_FIREBALL:		case MG_FIREWALL:		case WL_SOULEXPANSION:
-		case MG_FIREBOLT:		case MG_LIGHTNINGBOLT:	case MG_THUNDERSTORM:	case MG_ENERGYCOAT:
-		case WL_WHITEIMPRISON:	case WL_SUMMONFB:		case WL_SUMMONBL:		case WL_SUMMONWB:
-		case WL_SUMMONSTONE:	case WL_SIENNAEXECRATE:	case WL_RELEASE:		case WL_EARTHSTRAIN:
-		case WL_RECOGNIZEDSPELL: case WL_READING_SB:	case SA_MAGICROD:		case SA_SPELLBREAKER:
-		case SA_DISPELL:		case SA_FLAMELAUNCHER:	case SA_FROSTWEAPON:	case SA_LIGHTNINGLOADER:
-		case SA_SEISMICWEAPON:	case SA_VOLCANO:		case SA_DELUGE:			case SA_VIOLENTGALE:
-		case SA_LANDPROTECTOR:	case PF_HPCONVERSION:	case PF_SOULCHANGE:		case PF_SPIDERWEB:
+		case MG_FIREBOLT:		case MG_LIGHTNINGBOLT:		case MG_THUNDERSTORM:		case MG_ENERGYCOAT:
+		case WL_WHITEIMPRISON:		case WL_SUMMONFB:		case WL_SUMMONBL:		case WL_SUMMONWB:
+		case WL_SUMMONSTONE:		case WL_SIENNAEXECRATE:		case WL_RELEASE:		case WL_EARTHSTRAIN:
+		case WL_RECOGNIZEDSPELL: 	case WL_READING_SB:		case SA_MAGICROD:		case SA_SPELLBREAKER:
+		case SA_DISPELL:		case SA_FLAMELAUNCHER:		case SA_FROSTWEAPON:		case SA_LIGHTNINGLOADER:
+		case SA_SEISMICWEAPON:		case SA_VOLCANO:		case SA_DELUGE:			case SA_VIOLENTGALE:
+		case SA_LANDPROTECTOR:		case PF_HPCONVERSION:		case PF_SOULCHANGE:		case PF_SPIDERWEB:
 		case PF_FOGWALL:		case TK_RUN:			case TK_HIGHJUMP:		case TK_SEVENWIND:
 		case SL_KAAHI:			case SL_KAUPE:			case SL_KAITE:
 		// Skills that need to be confirmed.
-		case SO_FIREWALK:		case SO_ELECTRICWALK:	case SO_SPELLFIST:		case SO_EARTHGRAVE:
-		case SO_DIAMONDDUST:	case SO_POISON_BUSTER:	case SO_PSYCHIC_WAVE:	case SO_CLOUD_KILL:
-		case SO_STRIKING:		case SO_WARMER:			case SO_VACUUM_EXTREME:	case SO_VARETYR_SPEAR:
+		case SO_FIREWALK:		case SO_ELECTRICWALK:		case SO_SPELLFIST:		case SO_EARTHGRAVE:
+		case SO_DIAMONDDUST:		case SO_POISON_BUSTER:		case SO_PSYCHIC_WAVE:		case SO_CLOUD_KILL:
+		case SO_STRIKING:		case SO_WARMER:			case SO_VACUUM_EXTREME:		case SO_VARETYR_SPEAR:
 		case SO_ARRULLO:
 			return 1;	// Can't do it.
 

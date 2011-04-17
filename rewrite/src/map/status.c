@@ -411,27 +411,27 @@ void initChangeTables(void)
 	add_sc( SA_ELEMENTGROUND     , SC_ELEMENTALCHANGE );
 	add_sc( SA_ELEMENTWIND       , SC_ELEMENTALCHANGE );
 
-	set_sc( RK_ENCHANTBLADE      , SC_ENCHANTBLADE    , SI_ENCHANTBLADE    , SCB_NONE );
-	set_sc( RK_DEATHBOUND        , SC_DEATHBOUND      , SI_DEATHBOUND      , SCB_NONE );
-	set_sc( RK_WINDCUTTER        , SC_FEAR            , SI_BLANK           , SCB_FLEE|SCB_HIT );
+	set_sc( RK_ENCHANTBLADE      , SC_ENCHANTBLADE    , SI_ENCHANTBLADE      , SCB_NONE );
+	set_sc( RK_DEATHBOUND        , SC_DEATHBOUND      , SI_DEATHBOUND        , SCB_NONE );
+	set_sc( RK_WINDCUTTER        , SC_FEAR            , SI_BLANK             , SCB_FLEE|SCB_HIT );
 	add_sc( RK_DRAGONBREATH      , SC_BURNING         );
-	set_sc( RK_DRAGONHOWLING     , SC_FEAR            , SI_BLANK           , SCB_FLEE|SCB_HIT );
-	set_sc( RK_MILLENNIUMSHIELD  , SC_BERKANA         , SI_MILLENNIUMSHIELD   , SCB_NONE );
-	set_sc( RK_REFRESH           , SC_NAUTHIZ         , SI_REFRESH            , SCB_NONE );
-	set_sc( RK_GIANTGROWTH       , SC_THURISAZ        , SI_GIANTGROWTH        , SCB_STR );
-	set_sc( RK_STONEHARDSKIN     , SC_HAGALAZ         , SI_STONEHARDSKIN      , SCB_NONE );
-	set_sc( RK_VITALITYACTIVATION       , SC_ISA      , SI_VITALITYACTIVATION , SCB_REGEN );
-	set_sc( RK_FIGHTINGSPIRIT    , SC_OTHILA          , SI_FIGHTINGSPIRIT     , SCB_WATK|SCB_ASPD );
-	set_sc( RK_ABUNDANCE         , SC_URUZ            , SI_ABUNDANCE          , SCB_NONE );
+	set_sc( RK_DRAGONHOWLING     , SC_FEAR            , SI_BLANK             , SCB_FLEE|SCB_HIT );
+	set_sc( RK_MILLENNIUMSHIELD  , SC_BERKANA         , SI_MILLENNIUMSHIELD  , SCB_NONE );
+	set_sc( RK_REFRESH           , SC_NAUTHIZ         , SI_REFRESH           , SCB_NONE );
+	set_sc( RK_GIANTGROWTH       , SC_THURISAZ        , SI_GIANTGROWTH       , SCB_STR );
+	set_sc( RK_STONEHARDSKIN     , SC_HAGALAZ         , SI_STONEHARDSKIN     , SCB_NONE );
+	set_sc( RK_VITALITYACTIVATION, SC_ISA             , SI_VITALITYACTIVATION, SCB_REGEN );
+	set_sc( RK_FIGHTINGSPIRIT    , SC_OTHILA          , SI_FIGHTINGSPIRIT    , SCB_WATK|SCB_ASPD );
+	set_sc( RK_ABUNDANCE         , SC_URUZ            , SI_ABUNDANCE         , SCB_NONE );
 
-	set_sc( GC_VENOMIMPRESS      , SC_VENOMIMPRESS    , SI_VENOMIMPRESS       , SCB_NONE );
-	set_sc( GC_POISONINGWEAPON   , SC_POISONINGWEAPON , SI_POISONINGWEAPON    , SCB_NONE );
-	set_sc( GC_WEAPONBLOCKING    , SC_WEAPONBLOCKING  , SI_WEAPONBLOCKING     , SCB_NONE );
-	set_sc( GC_CLOAKINGEXCEED    , SC_CLOAKINGEXCEED  , SI_CLOAKINGEXCEED     , SCB_SPEED );
-	set_sc( GC_HALLUCINATIONWALK , SC_HALLUCINATIONWALK , SI_HALLUCINATIONWALK , SCB_FLEE );
-	set_sc( GC_ROLLINGCUTTER     , SC_ROLLINGCUTTER   , SI_ROLLINGCUTTER      , SCB_NONE );
+	set_sc( GC_VENOMIMPRESS      , SC_VENOMIMPRESS     , SI_VENOMIMPRESS     , SCB_NONE );
+	set_sc( GC_POISONINGWEAPON   , SC_POISONINGWEAPON  , SI_POISONINGWEAPON  , SCB_NONE );
+	set_sc( GC_WEAPONBLOCKING    , SC_WEAPONBLOCKING   , SI_WEAPONBLOCKING   , SCB_NONE );
+	set_sc( GC_CLOAKINGEXCEED    , SC_CLOAKINGEXCEED   , SI_CLOAKINGEXCEED   , SCB_SPEED );
+	set_sc( GC_HALLUCINATIONWALK , SC_HALLUCINATIONWALK, SI_HALLUCINATIONWALK, SCB_FLEE );
+	set_sc( GC_ROLLINGCUTTER     , SC_ROLLINGCUTTER    , SI_ROLLINGCUTTER    , SCB_NONE );
 
-	set_sc( AB_ADORAMUS          , SC_ADORAMUS          , SI_ADORAMUS          , SCB_AGI|SCB_SPEED );
+	set_sc( AB_ADORAMUS          , SC_ADORAMUS        , SI_ADORAMUS        , SCB_AGI|SCB_SPEED );
 	add_sc( AB_CLEMENTIA         , SC_BLESSING );
 	add_sc( AB_CANTO             , SC_INCREASEAGI );
 	add_sc( AB_PRAEFATIO         , SC_KYRIE );
@@ -452,7 +452,7 @@ void initChangeTables(void)
 
 	set_sc( RA_FEARBREEZE        , SC_FEARBREEZE      , SI_FEARBREEZE      , SCB_NONE );
 	set_sc( RA_ELECTRICSHOCKER   , SC_ELECTRICSHOCKER , SI_ELECTRICSHOCKER , SCB_NONE );
-	set_sc( RA_WUGDASH           , SC_WUGDASH         , SI_WUGDASH		   , SCB_SPEED );
+	set_sc( RA_WUGDASH           , SC_WUGDASH         , SI_WUGDASH         , SCB_SPEED );
 	set_sc( RA_CAMOUFLAGE        , SC_CAMOUFLAGE      , SI_CAMOUFLAGE      , SCB_CRI|SCB_SPEED );
 	add_sc( RA_MAGENTATRAP       , SC_ELEMENTALCHANGE );
 	add_sc( RA_COBALTTRAP        , SC_ELEMENTALCHANGE );
@@ -461,75 +461,67 @@ void initChangeTables(void)
 	add_sc( RA_FIRINGTRAP        , SC_BURNING         );
 	set_sc( RA_ICEBOUNDTRAP      , SC_FREEZING        , SI_FROSTMISTY      , SCB_NONE );
 
-	set_sc( NC_ACCELERATION      , SC_ACCELERATION     , SI_ACCELERATION    , SCB_SPEED );
-	set_sc( NC_HOVERING          , SC_HOVERING         , SI_HOVERING        , SCB_SPEED );
-	set_sc( NC_SHAPESHIFT        , SC_SHAPESHIFT       , SI_SHAPESHIFT      , SCB_DEF_ELE );
-	set_sc( NC_INFRAREDSCAN      , SC_INFRAREDSCAN     , SI_INFRAREDSCAN    , SCB_FLEE );
-	set_sc( NC_ANALYZE           , SC_ANALYZE          , SI_ANALYZE         , SCB_DEF|SCB_DEF2|SCB_MDEF|SCB_MDEF2 );
-	set_sc( NC_MAGNETICFIELD     , SC_MAGNETICFIELD    , SI_MAGNETICFIELD   , SCB_NONE );
-	set_sc( NC_NEUTRALBARRIER    , SC_NEUTRALBARRIER   , SI_NEUTRALBARRIER  , SCB_NONE );
-	set_sc( NC_STEALTHFIELD      , SC_STEALTHFIELD     , SI_STEALTHFIELD    , SCB_NONE );
+	set_sc( NC_ACCELERATION      , SC_ACCELERATION    , SI_ACCELERATION    , SCB_SPEED );
+	set_sc( NC_HOVERING          , SC_HOVERING        , SI_HOVERING        , SCB_SPEED );
+	set_sc( NC_SHAPESHIFT        , SC_SHAPESHIFT      , SI_SHAPESHIFT      , SCB_DEF_ELE );
+	set_sc( NC_INFRAREDSCAN      , SC_INFRAREDSCAN    , SI_INFRAREDSCAN    , SCB_FLEE );
+	set_sc( NC_ANALYZE           , SC_ANALYZE         , SI_ANALYZE         , SCB_DEF|SCB_DEF2|SCB_MDEF|SCB_MDEF2 );
+	set_sc( NC_MAGNETICFIELD     , SC_MAGNETICFIELD   , SI_MAGNETICFIELD   , SCB_NONE );
+	set_sc( NC_NEUTRALBARRIER    , SC_NEUTRALBARRIER  , SI_NEUTRALBARRIER  , SCB_NONE );
+	set_sc( NC_STEALTHFIELD      , SC_STEALTHFIELD    , SI_STEALTHFIELD    , SCB_NONE );
 
-	set_sc( SC_REPRODUCE         , SC__REPRODUCE         , SI_REPRODUCE         , SCB_NONE );
-	set_sc( SC_AUTOSHADOWSPELL   , SC__AUTOSHADOWSPELL   , SI_AUTOSHADOWSPELL   , SCB_NONE );
-	set_sc( SC_SHADOWFORM        , SC__SHADOWFORM        , SI_SHADOWFORM        , SCB_NONE );
-	set_sc( SC_BODYPAINT         , SC__BODYPAINT         , SI_BODYPAINTING      , SCB_ASPD );
-	set_sc( SC_INVISIBILITY      , SC__INVISIBILITY      , SI_INVISIBILITY      , SCB_ASPD|SCB_CRI|SCB_ATK_ELE );
-	set_sc( SC_DEADLYINFECT      , SC__DEADLYINFECT      , SI_DEADLYINFECT      , SCB_NONE );
-	set_sc( SC_ENERVATION        , SC__ENERVATION        , SI_ENERVATION        , SCB_BATK  );
-	set_sc( SC_GROOMY            , SC__GROOMY            , SI_GROOMY            , SCB_ASPD|SCB_HIT|SCB_SPEED );
-	set_sc( SC_IGNORANCE         , SC__IGNORANCE         , SI_IGNORANCE         , SCB_NONE );
-	set_sc( SC_LAZINESS          , SC__LAZINESS          , SI_LAZINESS          , SCB_FLEE );
-	set_sc( SC_UNLUCKY           , SC__UNLUCKY           , SI_UNLUCKY           , SCB_CRI|SCB_FLEE2 );
-	set_sc( SC_WEAKNESS          , SC__WEAKNESS          , SI_WEAKNESS          , SCB_FLEE2|SCB_MAXHP );
-	set_sc( SC_STRIPACCESSARY    , SC__STRIPACCESSORY    , SI_STRIPACCESSORY    , SCB_DEX|SCB_INT|SCB_LUK );
-	set_sc( SC_MANHOLE           , SC__MANHOLE           , SI_MANHOLE           , SCB_NONE );
+	set_sc( SC_REPRODUCE         , SC__REPRODUCE      , SI_REPRODUCE       , SCB_NONE );
+	set_sc( SC_AUTOSHADOWSPELL   , SC__AUTOSHADOWSPELL, SI_AUTOSHADOWSPELL , SCB_NONE );
+	set_sc( SC_SHADOWFORM        , SC__SHADOWFORM     , SI_SHADOWFORM      , SCB_NONE );
+	set_sc( SC_BODYPAINT         , SC__BODYPAINT      , SI_BODYPAINTING    , SCB_ASPD );
+	set_sc( SC_INVISIBILITY      , SC__INVISIBILITY   , SI_INVISIBILITY    , SCB_ASPD|SCB_CRI|SCB_ATK_ELE );
+	set_sc( SC_DEADLYINFECT      , SC__DEADLYINFECT   , SI_DEADLYINFECT    , SCB_NONE );
+	set_sc( SC_ENERVATION        , SC__ENERVATION     , SI_ENERVATION      , SCB_BATK  );
+	set_sc( SC_GROOMY            , SC__GROOMY         , SI_GROOMY          , SCB_ASPD|SCB_HIT|SCB_SPEED );
+	set_sc( SC_IGNORANCE         , SC__IGNORANCE      , SI_IGNORANCE       , SCB_NONE );
+	set_sc( SC_LAZINESS          , SC__LAZINESS       , SI_LAZINESS        , SCB_FLEE );
+	set_sc( SC_UNLUCKY           , SC__UNLUCKY        , SI_UNLUCKY         , SCB_CRI|SCB_FLEE2 );
+	set_sc( SC_WEAKNESS          , SC__WEAKNESS       , SI_WEAKNESS        , SCB_FLEE2|SCB_MAXHP );
+	set_sc( SC_STRIPACCESSARY    , SC__STRIPACCESSORY , SI_STRIPACCESSORY  , SCB_DEX|SCB_INT|SCB_LUK );
+	set_sc( SC_MANHOLE           , SC__MANHOLE        , SI_MANHOLE         , SCB_NONE );
 	add_sc( SC_CHAOSPANIC        , SC_CHAOS );
-	set_sc( SC_BLOODYLUST        , SC__BLOODYLUST        , SI_BLOODYLUST        , SCB_DEF|SCB_DEF2|SCB_BATK|SCB_WATK );
-	
-	add_sc( LG_REFLECTDAMAGE     , SC_REFLECTDAMAGE );
-	set_sc( LG_FORCEOFVANGUARD   , SC_FORCEOFVANGUARD    , SI_FORCEOFVANGUARD   , SCB_MAXHP|SCB_DEF );
-	set_sc( LG_PRESTIGE          , SC_PRESTIGE           , SI_PRESTIGE          , SCB_DEF2 );
-	set_sc( LG_PIETY             , SC_BENEDICTIO         , SI_BENEDICTIO        , SCB_DEF_ELE );
-	set_sc( LG_EXEEDBREAK        , SC_EXEEDBREAK         , SI_EXEEDBREAK        , SCB_NONE );
-	set_sc( LG_BANDING           , SC_BANDING            , SI_BANDING           , SCB_DEF2|SCB_WATK );// Renewal: atk2 & def2
-	set_sc( LG_INSPIRATION       , SC_INSPIRATION		 , SI_INSPIRATION       , SCB_MAXHP|SCB_WATK|SCB_HIT|SCB_VIT|SCB_AGI|SCB_STR|SCB_DEX|SCB_INT|SCB_LUK);
-	set_sc( LG_EARTHDRIVE        , SC_EARTHDRIVE         , SI_EARTHDRIVE        , SCB_DEF|SCB_ASPD );
+	set_sc( SC_BLOODYLUST        , SC__BLOODYLUST     , SI_BLOODYLUST      , SCB_DEF|SCB_DEF2|SCB_BATK|SCB_WATK );
 
-	set_sc( SR_CRESCENTELBOW            , SC_CRESCENTELBOW        , SI_CRESCENTELBOW            , SCB_NONE );
-	set_sc( SR_CURSEDCIRCLE             , SC_CURSEDCIRCLE_TARGET  , SI_CURSEDCIRCLE_TARGET      , SCB_NONE );
-	set_sc( SR_LIGHTNINGWALK            , SC_LIGHTNINGWALK        , SI_LIGHTNINGWALK            , SCB_NONE );
-	set_sc( SR_RAISINGDRAGON            , SC_RAISINGDRAGON        , SI_RAISINGDRAGON            , SCB_REGEN|SCB_MAXHP|SCB_MAXSP/*|SCB_ASPD*/ );
-	set_sc( SR_GENTLETOUCH_ENERGYGAIN   , SC_GT_ENERGYGAIN        , SI_GENTLETOUCH_ENERGYGAIN   , SCB_NONE );
-	set_sc( SR_GENTLETOUCH_CHANGE       , SC_GT_CHANGE            , SI_GENTLETOUCH_CHANGE       , SCB_BATK|SCB_ASPD|SCB_DEF|SCB_MDEF );
-	set_sc( SR_GENTLETOUCH_REVITALIZE   , SC_GT_REVITALIZE        , SI_GENTLETOUCH_REVITALIZE   , SCB_MAXHP|SCB_DEF2|SCB_REGEN|SCB_ASPD|SCB_SPEED );
+	set_sc( LG_REFLECTDAMAGE     , SC_REFLECTDAMAGE   , SI_LG_REFLECTDAMAGE, SCB_NONE );
+	set_sc( LG_FORCEOFVANGUARD   , SC_FORCEOFVANGUARD , SI_FORCEOFVANGUARD , SCB_MAXHP|SCB_DEF );
+	set_sc( LG_PRESTIGE          , SC_PRESTIGE        , SI_PRESTIGE        , SCB_DEF2 );
+	set_sc( LG_PIETY             , SC_BENEDICTIO      , SI_BENEDICTIO      , SCB_DEF_ELE );
+	set_sc( LG_EXEEDBREAK        , SC_EXEEDBREAK      , SI_EXEEDBREAK      , SCB_NONE );
+	set_sc( LG_BANDING           , SC_BANDING         , SI_BANDING         , SCB_DEF2|SCB_WATK );// Renewal: atk2 & def2
+	set_sc( LG_INSPIRATION       , SC_INSPIRATION     , SI_INSPIRATION     , SCB_MAXHP|SCB_WATK|SCB_HIT|SCB_VIT|SCB_AGI|SCB_STR|SCB_DEX|SCB_INT|SCB_LUK);
+	set_sc( LG_EARTHDRIVE        , SC_EARTHDRIVE      , SI_EARTHDRIVE      , SCB_DEF|SCB_ASPD );
 
-	set_sc( WA_SWING_DANCE                , SC_SWINGDANCE              , SI_SWINGDANCE                , SCB_SPEED|SCB_ASPD );
-	set_sc( WA_SYMPHONY_OF_LOVER          , SC_SYMPHONYOFLOVER         , SI_SYMPHONYOFLOVERS          , SCB_MDEF );
-	set_sc( WA_MOONLIT_SERENADE           , SC_MOONLITSERENADE         , SI_MOONLITSERENADE           , SCB_MATK );
-	set_sc( MI_RUSH_WINDMILL              , SC_RUSHWINDMILL            , SI_RUSHWINDMILL              , SCB_BATK  );
-	set_sc( MI_ECHOSONG                   , SC_ECHOSONG                , SI_ECHOSONG                  , SCB_DEF2  );
-	set_sc( MI_HARMONIZE                  , SC_HARMONIZE               , SI_HARMONIZE                 , SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK );
-	set_sc( WM_POEMOFNETHERWORLD          , SC_STOP                    , SI_NETHERWORLD               , SCB_NONE );
-	set_sc( WM_VOICEOFSIREN               , SC_VOICEOFSIREN            , SI_VOICEOFSIREN              , SCB_NONE );
-	set_sc( WM_LULLABY_DEEPSLEEP          , SC_DEEPSLEEP               , SI_DEEPSLEEP                 , SCB_NONE );
-	set_sc( WM_SIRCLEOFNATURE             , SC_SIRCLEOFNATURE          , SI_SIRCLEOFNATURE            , SCB_NONE );
-	set_sc( WM_GLOOMYDAY                  , SC_GLOOMYDAY               , SI_GLOOMYDAY                 , SCB_FLEE|SCB_ASPD );
-	set_sc( WM_SONG_OF_MANA               , SC_SONGOFMANA              , SI_SONGOFMANA                , SCB_NONE );
-	set_sc( WM_DANCE_WITH_WUG             , SC_DANCEWITHWUG            , SI_DANCEWITHWUG              , SCB_ASPD );
-	set_sc( WM_SATURDAY_NIGHT_FEVER       , SC_SATURDAYNIGHTFEVER      , SI_SATURDAYNIGHTFEVER        , SCB_BATK|SCB_DEF|SCB_FLEE|SCB_SPEED|SCB_ASPD|SCB_MAXHP|SCB_REGEN );
-	set_sc( WM_LERADS_DEW                 , SC_LERADSDEW               , SI_LERADSDEW                 , SCB_MAXHP );
-	set_sc( WM_MELODYOFSINK               , SC_MELODYOFSINK            , SI_MELODYOFSINK              , SCB_BATK|SCB_MATK );
-	set_sc( WM_BEYOND_OF_WARCRY           , SC_BEYONDOFWARCRY          , SI_WARCRYOFBEYOND            , SCB_BATK|SCB_MATK );
-	set_sc( WM_UNLIMITED_HUMMING_VOICE    , SC_UNLIMITEDHUMMINGVOICE   , SI_UNLIMITEDHUMMINGVOICE     , SCB_NONE );
+	set_sc( SR_CRESCENTELBOW         , SC_CRESCENTELBOW      , SI_CRESCENTELBOW         , SCB_NONE );
+	set_sc( SR_CURSEDCIRCLE          , SC_CURSEDCIRCLE_TARGET, SI_CURSEDCIRCLE_TARGET   , SCB_NONE );
+	set_sc( SR_LIGHTNINGWALK         , SC_LIGHTNINGWALK      , SI_LIGHTNINGWALK         , SCB_NONE );
+	set_sc( SR_RAISINGDRAGON         , SC_RAISINGDRAGON      , SI_RAISINGDRAGON         , SCB_REGEN|SCB_MAXHP|SCB_MAXSP/*|SCB_ASPD*/ );
+	set_sc( SR_GENTLETOUCH_ENERGYGAIN, SC_GT_ENERGYGAIN      , SI_GENTLETOUCH_ENERGYGAIN, SCB_NONE );
+	set_sc( SR_GENTLETOUCH_CHANGE    , SC_GT_CHANGE          , SI_GENTLETOUCH_CHANGE    , SCB_BATK|SCB_ASPD|SCB_DEF|SCB_MDEF );
+	set_sc( SR_GENTLETOUCH_REVITALIZE, SC_GT_REVITALIZE      , SI_GENTLETOUCH_REVITALIZE, SCB_MAXHP|SCB_DEF2|SCB_REGEN|SCB_ASPD|SCB_SPEED );
 
-	set_sc( GN_CARTBOOST                   , SC_GN_CARTBOOST    , SI_CARTSBOOST                  , SCB_SPEED );
-	set_sc( GN_THORNS_TRAP                 , SC_THORNSTRAP      , SI_THORNTRAP                   , SCB_NONE );
-	set_sc( GN_BLOOD_SUCKER                , SC_BLOODSUCKER     , SI_BLOODSUCKER                 , SCB_NONE );
-	set_sc( GN_WALLOFTHORN                 , SC_STOP            , SI_BLANK                       , SCB_NONE );
-	set_sc( GN_FIRE_EXPANSION_SMOKE_POWDER , SC_SMOKEPOWDER     , SI_FIRE_EXPANSION_SMOKE_POWDER , SCB_NONE );
-	set_sc( GN_FIRE_EXPANSION_TEAR_GAS     , SC_TEARGAS         , SI_FIRE_EXPANSION_TEAR_GAS     , SCB_NONE );
-	set_sc( GN_MANDRAGORA                  , SC_MANDRAGORA      , SI_MANDRAGORA                  , SCB_INT );
+	set_sc( WA_SWING_DANCE            , SC_SWINGDANCE           , SI_SWINGDANCE           , SCB_SPEED|SCB_ASPD );
+	set_sc( WA_SYMPHONY_OF_LOVER      , SC_SYMPHONYOFLOVER      , SI_SYMPHONYOFLOVERS     , SCB_MDEF );
+	set_sc( WA_MOONLIT_SERENADE       , SC_MOONLITSERENADE      , SI_MOONLITSERENADE      , SCB_MATK );
+	set_sc( MI_RUSH_WINDMILL          , SC_RUSHWINDMILL         , SI_RUSHWINDMILL         , SCB_BATK  );
+	set_sc( MI_ECHOSONG               , SC_ECHOSONG             , SI_ECHOSONG             , SCB_DEF2  );
+	set_sc( MI_HARMONIZE              , SC_HARMONIZE            , SI_HARMONIZE            , SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK );
+	set_sc( WM_POEMOFNETHERWORLD      , SC_STOP                 , SI_NETHERWORLD          , SCB_NONE );
+	set_sc( WM_VOICEOFSIREN           , SC_VOICEOFSIREN         , SI_VOICEOFSIREN         , SCB_NONE );
+	set_sc( WM_LULLABY_DEEPSLEEP      , SC_DEEPSLEEP            , SI_DEEPSLEEP            , SCB_NONE );
+	set_sc( WM_SIRCLEOFNATURE         , SC_SIRCLEOFNATURE       , SI_SIRCLEOFNATURE       , SCB_NONE );
+	set_sc( WM_GLOOMYDAY              , SC_GLOOMYDAY            , SI_GLOOMYDAY            , SCB_FLEE|SCB_ASPD );
+	set_sc( WM_SONG_OF_MANA           , SC_SONGOFMANA           , SI_SONGOFMANA           , SCB_NONE );
+	set_sc( WM_DANCE_WITH_WUG         , SC_DANCEWITHWUG         , SI_DANCEWITHWUG         , SCB_ASPD );
+	set_sc( WM_SATURDAY_NIGHT_FEVER   , SC_SATURDAYNIGHTFEVER   , SI_SATURDAYNIGHTFEVER   , SCB_BATK|SCB_DEF|SCB_FLEE|SCB_SPEED|SCB_ASPD|SCB_MAXHP|SCB_REGEN );
+	set_sc( WM_LERADS_DEW             , SC_LERADSDEW            , SI_LERADSDEW            , SCB_MAXHP );
+	set_sc( WM_MELODYOFSINK           , SC_MELODYOFSINK         , SI_MELODYOFSINK         , SCB_BATK|SCB_MATK );
+	set_sc( WM_BEYOND_OF_WARCRY       , SC_BEYONDOFWARCRY       , SI_WARCRYOFBEYOND       , SCB_BATK|SCB_MATK );
+	set_sc( WM_UNLIMITED_HUMMING_VOICE, SC_UNLIMITEDHUMMINGVOICE, SI_UNLIMITEDHUMMINGVOICE, SCB_NONE );
 
 	set_sc( SO_FIREWALK          , SC_PROPERTYWALK    , SI_PROPERTYWALK    , SCB_NONE );
 	set_sc( SO_ELECTRICWALK      , SC_PROPERTYWALK    , SI_PROPERTYWALK    , SCB_NONE );
@@ -539,6 +531,14 @@ void initChangeTables(void)
 	set_sc( SO_STRIKING          , SC_STRIKING        , SI_STRIKING        , SCB_WATK|SCB_CRI );
 	set_sc( SO_ARRULLO           , SC_DEEPSLEEP       , SI_DEEPSLEEP       , SCB_NONE );
 	set_sc( SO_SPELLFIST         , SC_SPELLFIST       , SI_SPELLFIST       , SCB_NONE );
+
+	set_sc( GN_CARTBOOST                  , SC_GN_CARTBOOST, SI_CARTSBOOST                 , SCB_SPEED );
+	set_sc( GN_THORNS_TRAP                , SC_THORNSTRAP  , SI_THORNTRAP                  , SCB_NONE );
+	set_sc( GN_BLOOD_SUCKER               , SC_BLOODSUCKER , SI_BLOODSUCKER                , SCB_NONE );
+	set_sc( GN_WALLOFTHORN                , SC_STOP        , SI_BLANK                      , SCB_NONE );
+	set_sc( GN_FIRE_EXPANSION_SMOKE_POWDER, SC_SMOKEPOWDER , SI_FIRE_EXPANSION_SMOKE_POWDER, SCB_NONE );
+	set_sc( GN_FIRE_EXPANSION_TEAR_GAS    , SC_TEARGAS     , SI_FIRE_EXPANSION_TEAR_GAS    , SCB_NONE );
+	set_sc( GN_MANDRAGORA                 , SC_MANDRAGORA  , SI_MANDRAGORA                 , SCB_INT );
 
 	set_sc( HLIF_AVOID           , SC_AVOID           , SI_BLANK           , SCB_SPEED );
 	set_sc( HLIF_CHANGE          , SC_CHANGE          , SI_BLANK           , SCB_VIT|SCB_INT );
@@ -571,32 +571,32 @@ void initChangeTables(void)
 	set_sc( MER_INCAGI           , SC_INCREASEAGI     , SI_INCREASEAGI     , SCB_AGI|SCB_SPEED );
 
 	// Elemental Spirit summoner's 'side' status changes.
-	set_sc( EL_PYROTECHNIC       , SC_PYROTECHNIC_OPTION     , SI_PYROTECHNIC_OPTION , SCB_WATK );
-	set_sc( EL_HEATER            , SC_HEATER_OPTION          , SI_HEATER_OPTION   , SCB_WATK );
-	set_sc( EL_TROPIC            , SC_TROPIC_OPTION          , SI_TROPIC_OPTION   , SCB_WATK );
-	set_sc( EL_CIRCLE_OF_FIRE    , SC_CIRCLE_OF_FIRE_OPTION  , SI_CIRCLE_OF_FIRE_OPTION , SCB_NONE );
-	set_sc( EL_FIRE_CLOAK        , SC_FIRE_CLOAK_OPTION      , SI_FIRE_CLOAK_OPTION , SCB_ALL );
-	set_sc( EL_AQUAPLAY          , SC_AQUAPLAY_OPTION        , SI_AQUAPLAY_OPTION , SCB_MATK );
-	set_sc( EL_WATER_SCREEN      , SC_WATER_SCREEN_OPTION    , SI_WATER_SCREEN_OPTION , SCB_NONE );
-	set_sc( EL_COOLER            , SC_COOLER_OPTION          , SI_COOLER_OPTION   , SCB_MATK );
-	set_sc( EL_WATER_DROP        , SC_WATER_DROP_OPTION      , SI_WATER_DROP_OPTION , SCB_ALL );
-	set_sc( EL_CHILLY_AIR        , SC_CHILLY_AIR_OPTION      , SI_CHILLY_AIR_OPTION , SCB_MATK );
-	set_sc( EL_WATER_BARRIER     , SC_WATER_BARRIER          , SI_WATER_BARRIER       , SCB_MDEF|SCB_WATK|SCB_MATK|SCB_FLEE );
-	set_sc( EL_TIDAL_WEAPON      , SC_TIDAL_WEAPON_OPTION    , SI_TIDAL_WEAPON_OPTION , SCB_ALL );
-	set_sc( EL_GUST              , SC_GUST_OPTION            , SI_GUST_OPTION     , SCB_NONE );
-	set_sc( EL_WIND_STEP         , SC_WIND_STEP_OPTION       , SI_WIND_STEP_OPTION  , SCB_SPEED|SCB_FLEE );
-	set_sc( EL_BLAST             , SC_BLAST_OPTION           , SI_BLAST_OPTION    , SCB_NONE );
-	set_sc( EL_WILD_STORM        , SC_WILD_STORM_OPTION      , SI_WILD_STORM_OPTION , SCB_NONE );
-	set_sc( EL_WIND_CURTAIN      , SC_WIND_CURTAIN_OPTION    , SI_WIND_CURTAIN_OPTION , SCB_ALL );
-	set_sc( EL_ZEPHYR            , SC_ZEPHYR                 , SI_ZEPHYR              , SCB_FLEE );
-	set_sc( EL_PETROLOGY         , SC_PETROLOGY_OPTION       , SI_PETROLOGY_OPTION  , SCB_NONE );
-	set_sc( EL_SOLID_SKIN        , SC_SOLID_SKIN_OPTION      , SI_SOLID_SKIN_OPTION   , SCB_DEF|SCB_MAXHP );
-	set_sc( EL_CURSED_SOIL       , SC_CURSED_SOIL_OPTION     , SI_CURSED_SOIL_OPTION     , SCB_NONE );
-	set_sc( EL_STONE_SHIELD      , SC_STONE_SHIELD_OPTION    , SI_STONE_SHIELD_OPTION , SCB_ALL );
-	set_sc( EL_UPHEAVAL          , SC_UPHEAVAL_OPTION        , SI_UPHEAVAL_OPTION   , SCB_NONE );
-	set_sc( EL_POWER_OF_GAIA     , SC_POWER_OF_GAIA          , SI_POWER_OF_GAIA       , SCB_MAXHP|SCB_DEF|SCB_SPEED );
-	set_sc( EL_ROCK_CRUSHER      , SC_ROCK_CRUSHER           , SI_ROCK_CRUSHER      ,   SCB_DEF );
-	set_sc( EL_ROCK_CRUSHER_ATK  , SC_ROCK_CRUSHER_ATK       , SI_ROCK_CRUSHER_ATK  ,   SCB_SPEED );
+	set_sc( EL_PYROTECHNIC     , SC_PYROTECHNIC_OPTION   , SI_PYROTECHNIC_OPTION   , SCB_WATK );
+	set_sc( EL_HEATER          , SC_HEATER_OPTION        , SI_HEATER_OPTION        , SCB_WATK );
+	set_sc( EL_TROPIC          , SC_TROPIC_OPTION        , SI_TROPIC_OPTION        , SCB_WATK );
+	set_sc( EL_CIRCLE_OF_FIRE  , SC_CIRCLE_OF_FIRE_OPTION, SI_CIRCLE_OF_FIRE_OPTION, SCB_NONE );
+	set_sc( EL_FIRE_CLOAK      , SC_FIRE_CLOAK_OPTION    , SI_FIRE_CLOAK_OPTION    , SCB_ALL );
+	set_sc( EL_AQUAPLAY        , SC_AQUAPLAY_OPTION      , SI_AQUAPLAY_OPTION      , SCB_MATK );
+	set_sc( EL_WATER_SCREEN    , SC_WATER_SCREEN_OPTION  , SI_WATER_SCREEN_OPTION  , SCB_NONE );
+	set_sc( EL_COOLER          , SC_COOLER_OPTION        , SI_COOLER_OPTION        , SCB_MATK );
+	set_sc( EL_WATER_DROP      , SC_WATER_DROP_OPTION    , SI_WATER_DROP_OPTION    , SCB_ALL );
+	set_sc( EL_CHILLY_AIR      , SC_CHILLY_AIR_OPTION    , SI_CHILLY_AIR_OPTION    , SCB_MATK );
+	set_sc( EL_WATER_BARRIER   , SC_WATER_BARRIER        , SI_WATER_BARRIER        , SCB_MDEF|SCB_WATK|SCB_MATK|SCB_FLEE );
+	set_sc( EL_TIDAL_WEAPON    , SC_TIDAL_WEAPON_OPTION  , SI_TIDAL_WEAPON_OPTION  , SCB_ALL );
+	set_sc( EL_GUST            , SC_GUST_OPTION          , SI_GUST_OPTION          , SCB_NONE );
+	set_sc( EL_WIND_STEP       , SC_WIND_STEP_OPTION     , SI_WIND_STEP_OPTION     , SCB_SPEED|SCB_FLEE );
+	set_sc( EL_BLAST           , SC_BLAST_OPTION         , SI_BLAST_OPTION         , SCB_NONE );
+	set_sc( EL_WILD_STORM      , SC_WILD_STORM_OPTION    , SI_WILD_STORM_OPTION    , SCB_NONE );
+	set_sc( EL_WIND_CURTAIN    , SC_WIND_CURTAIN_OPTION  , SI_WIND_CURTAIN_OPTION  , SCB_ALL );
+	set_sc( EL_ZEPHYR          , SC_ZEPHYR               , SI_ZEPHYR               , SCB_FLEE );
+	set_sc( EL_PETROLOGY       , SC_PETROLOGY_OPTION     , SI_PETROLOGY_OPTION     , SCB_NONE );
+	set_sc( EL_SOLID_SKIN      , SC_SOLID_SKIN_OPTION    , SI_SOLID_SKIN_OPTION    , SCB_DEF|SCB_MAXHP );
+	set_sc( EL_CURSED_SOIL     , SC_CURSED_SOIL_OPTION   , SI_CURSED_SOIL_OPTION   , SCB_NONE );
+	set_sc( EL_STONE_SHIELD    , SC_STONE_SHIELD_OPTION  , SI_STONE_SHIELD_OPTION  , SCB_ALL );
+	set_sc( EL_UPHEAVAL        , SC_UPHEAVAL_OPTION      , SI_UPHEAVAL_OPTION      , SCB_NONE );
+	set_sc( EL_POWER_OF_GAIA   , SC_POWER_OF_GAIA        , SI_POWER_OF_GAIA        , SCB_MAXHP|SCB_DEF|SCB_SPEED );
+	set_sc( EL_ROCK_CRUSHER    , SC_ROCK_CRUSHER         , SI_ROCK_CRUSHER         , SCB_DEF );
+	set_sc( EL_ROCK_CRUSHER_ATK, SC_ROCK_CRUSHER_ATK     , SI_ROCK_CRUSHER_ATK     , SCB_SPEED );
 
 	set_sc( GD_LEADERSHIP        , SC_GUILDAURA       , SI_BLANK           , SCB_STR|SCB_AGI|SCB_VIT|SCB_DEX );
 	set_sc( GD_BATTLEORDER       , SC_BATTLEORDERS    , SI_BLANK           , SCB_STR|SCB_INT|SCB_DEX );
@@ -6266,9 +6266,8 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	case SC_ECHOSONG:
 	case SC_HARMONIZE:
 	case SC_VOICEOFSIREN:
+	case SC_DEEPSLEEP:
 	case SC_SIRCLEOFNATURE:
-	case SC_GLOOMYDAY_SK:
-	case SC_GLOOMYDAY:
 		if( sc->data[type] ) // Don't remove same sc.
 			break;
 		status_change_end(bl,SC_SWINGDANCE,-1);
@@ -6278,10 +6277,8 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		status_change_end(bl,SC_ECHOSONG,-1);
 		status_change_end(bl,SC_HARMONIZE,-1);
 		status_change_end(bl,SC_VOICEOFSIREN,-1);
+		status_change_end(bl,SC_DEEPSLEEP,-1);
 		status_change_end(bl,SC_SIRCLEOFNATURE,-1);
-		status_change_end(bl,SC_GLOOMYDAY_SK,-1);
-		status_change_end(bl,SC_GLOOMYDAY,-1);
-		if( type != MI_HARMONIZE ) // Harmonize isn't stackable with other 3rd class dances and Chorus skills.
 			break;
 	case SC_SONGOFMANA:
 	case SC_DANCEWITHWUG:
@@ -6291,7 +6288,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	case SC_UNLIMITEDHUMMINGVOICE:
 		if( sc->data[type] ) // Don't remove same sc.
 			break;
-		status_change_end(bl,SC_HARMONIZE,-1);
 		status_change_end(bl,SC_SONGOFMANA,-1);
 		status_change_end(bl,SC_DANCEWITHWUG,-1);
 		status_change_end(bl,SC_LERADSDEW,-1);
