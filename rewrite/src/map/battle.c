@@ -2299,11 +2299,11 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio = 50 + 50 * skill_lv;
 					break;
 				case WM_GREAT_ECHO:
-					skillratio += 900 + 100 * skill_lv;
+					skillratio += 800 + 100 * skill_lv;
 					if( sd )	// Still need official value [pakpil]
 					{
 						short lv = (short)skill_lv;
-						skillratio += 20 * skill_check_pc_partner(sd,skill_num,&lv,skill_get_splash(skill_num,skill_lv),0);
+						skillratio += 100 * skill_check_pc_partner(sd,skill_num,&lv,skill_get_splash(skill_num,skill_lv),0);
 					}
 					break;
 				case WM_SOUND_OF_DESTRUCTION:
@@ -3238,9 +3238,8 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						{
 							if ( sc->data[SC_SPELLFIST] ) 
 							{
-								skillratio *= ad.div_;
-								skillratio += skillratio / sc->data[SC_SPELLFIST]->val4 * sc->data[SC_SPELLFIST]->val2;
-								ad.div_ = 1;				// ad mods, to make it work similar to regular hits [Xazax]
+								skillratio += (sc->data[SC_SPELLFIST]->val4 * 100) + (sc->data[SC_SPELLFIST]->val2 * 100) - 100;// val4 = used bolt level, val2 = used spellfist level. [Rytech]
+								ad.div_ = 1;// ad mods, to make it work similar to regular hits [Xazax]
 								ad.flag = BF_WEAPON|BF_SHORT;
 								ad.type = 0;
 							}
@@ -3258,8 +3257,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						{
 							if ( sc->data[SC_SPELLFIST] )
 							{
-								skillratio *= ad.div_;
-								skillratio += skillratio / sc->data[SC_SPELLFIST]->val4 * sc->data[SC_SPELLFIST]->val2;
+								skillratio += (sc->data[SC_SPELLFIST]->val4 * 100) + (sc->data[SC_SPELLFIST]->val2 * 100) - 100;
 								ad.div_ = 1;
 								ad.flag = BF_WEAPON|BF_SHORT;
 								ad.type = 0;
@@ -3273,8 +3271,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						{
 							if ( sc->data[SC_SPELLFIST] )
 							{
-								skillratio *= ad.div_;
-								skillratio += skillratio / sc->data[SC_SPELLFIST]->val4 * sc->data[SC_SPELLFIST]->val2;
+								skillratio += (sc->data[SC_SPELLFIST]->val4 * 100) + (sc->data[SC_SPELLFIST]->val2 * 100) - 100;
 								ad.div_ = 1;
 								ad.flag = BF_WEAPON|BF_SHORT;
 								ad.type = 0;
@@ -3477,8 +3474,8 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					case SO_EARTHGRAVE:
 						skillratio = ( 200 * pc_checkskill(sd, SA_SEISMICWEAPON) + sstatus->int_ * skill_lv );
 					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
-						if( sc && sc->data[SC_BLAST_OPTION] )
-							skillratio += skillratio * sc->data[SC_BLAST_OPTION]->val2 / 100;
+						if( sc && sc->data[SC_CURSED_SOIL_OPTION] )
+							skillratio += skillratio * sc->data[SC_CURSED_SOIL_OPTION]->val2 / 100;
 						break;
 					case SO_DIAMONDDUST:
 						skillratio = ( 200 * pc_checkskill(sd, SA_FROSTWEAPON) + sstatus->int_ * skill_lv );
