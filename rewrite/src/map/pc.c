@@ -3545,7 +3545,10 @@ int pc_payzeny(struct map_session_data *sd,int zeny)
 	nullpo_ret(sd);
 
 	if( zeny < 0 )
-	  	return pc_getzeny(sd, -zeny);
+	{
+		ShowError("pc_payzeny: Paying negative Zeny (zeny=%d, account_id=%d, char_id=%d).\n", zeny, sd->status.account_id, sd->status.char_id);
+		return 1;
+	}
 
 	if( sd->status.zeny < zeny )
 		return 1; //Not enough.
@@ -3601,7 +3604,10 @@ int pc_getzeny(struct map_session_data *sd,int zeny)
 	nullpo_ret(sd);
 
 	if( zeny < 0 )
-		return pc_payzeny(sd, -zeny);
+	{
+		ShowError("pc_getzeny: Obtaining negative Zeny (zeny=%d, account_id=%d, char_id=%d).\n", zeny, sd->status.account_id, sd->status.char_id);
+		return 1;
+	}
 
 	if( zeny > MAX_ZENY - sd->status.zeny )
 		zeny = MAX_ZENY - sd->status.zeny;
@@ -3746,7 +3752,7 @@ int pc_dropitem(struct map_session_data *sd,int n,int amount)
 	if(sd->status.inventory[n].nameid <= 0 ||
 		sd->status.inventory[n].amount <= 0 ||
 		sd->status.inventory[n].amount < amount ||
-		sd->state.trading || sd->vender_id != 0 ||
+		sd->state.trading || sd->state.vending ||
 		!sd->inventory_data[n] //pc_delitem would fail on this case.
 		)
 		return 0;
@@ -4216,7 +4222,7 @@ int pc_putitemtocart(struct map_session_data *sd,int idx,int amount)
 	
 	item_data = &sd->status.inventory[idx];
 
-	if( item_data->nameid == 0 || amount < 1 || item_data->amount < amount || sd->vender_id )
+	if( item_data->nameid == 0 || amount < 1 || item_data->amount < amount || sd->state.vending )
 		return 1;
 
 	if( pc_cart_additem(sd,item_data,amount) == 0 )
@@ -4256,7 +4262,7 @@ int pc_getitemfromcart(struct map_session_data *sd,int idx,int amount)
 	
 	item_data=&sd->status.cart[idx];
 
-	if(item_data->nameid==0 || amount < 1 || item_data->amount<amount || sd->vender_id )
+	if(item_data->nameid==0 || amount < 1 || item_data->amount<amount || sd->state.vending )
 		return 1;
 	if((flag = pc_additem(sd,item_data,amount)) == 0)
 		return pc_cart_delitem(sd,idx,amount,0);
@@ -8227,7 +8233,7 @@ int pc_checkitem(struct map_session_data *sd)
 
 	nullpo_ret(sd);
 
-	if( sd->vender_id ) //Avoid reorganizing items when we are vending, as that leads to exploits (pointed out by End of Exam)
+	if( sd->state.vending ) //Avoid reorganizing items when we are vending, as that leads to exploits (pointed out by End of Exam)
 		return 0;
 
 	if( battle_config.item_check )
