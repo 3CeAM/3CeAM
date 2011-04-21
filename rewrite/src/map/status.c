@@ -9715,6 +9715,9 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC_FOOD_DEX_CASH:
 			case SC_FOOD_INT_CASH:
 			case SC_FOOD_LUK_CASH:
+			case SC_EXPBOOST:
+			case SC_JEXPBOOST:
+			case SC_ITEMBOOST:			
 			case SC_ELECTRICSHOCKER:
 			case SC__MANHOLE:
 			case SC_THURISAZ:
