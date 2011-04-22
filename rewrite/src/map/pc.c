@@ -4973,6 +4973,12 @@ int pc_jobid2mapid(unsigned short b_class)
 			class_ |= JOBL_2_2;
 			class_ |= MAPID_GANGSI;
 			break;
+		case JOB_SUPER_NOVICE_E:
+			class_|= JOBL_THIRD|JOBL_2_1;
+			break;
+		case JOB_SUPER_BABY_E:
+			class_|= JOBL_THIRD|JOBL_BABY|JOBL_2_1;
+			break;
 		default:
 			return -1;
 	}
@@ -5104,8 +5110,8 @@ int pc_mapid2jobid(unsigned short class_, int sex)
 		case MAPID_BABY_GENETIC:          return JOB_BABY_GENETIC;
 		case MAPID_BABY_CHASER:           return JOB_BABY_CHASER;
 	// Extra
-		//case MAPID_SUPER_NOVICE_E:    return JOB_SUPER_NOVICE_E;
-		//case MAPID_SUPER_BABY_E:      return JOB_SUPER_BABY_E;
+		case MAPID_SUPER_NOVICE_E:    return JOB_SUPER_NOVICE_E;
+		case MAPID_SUPER_BABY_E:      return JOB_SUPER_BABY_E;
 		default:
 			return -1;
 	}
@@ -5320,14 +5326,14 @@ char* job_name(int class_)
 	case JOB_BABY_MECHANIC2:
 		return msg_txt(642);
 
-	//case JOB_SUPER_NOVICE_E:
-		//return msg_txt(571);
+	case JOB_SUPER_NOVICE_E:
+		return msg_txt(651);
 
-	//case JOB_SUPER_BABY_E:
-		//return msg_txt(615);
+	case JOB_SUPER_BABY_E:
+		return msg_txt(652);
 
 	default:
-		return msg_txt(651);
+		return msg_txt(653);
 	}
 }
 
