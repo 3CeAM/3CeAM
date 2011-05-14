@@ -1979,6 +1979,8 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 			src = tbl;
 			sd = BL_CAST(BL_PC, src);
 			tsd = BL_CAST(BL_PC, bl);
+			sc = status_get_sc(bl);
+			if (sc && !sc->count) sc = NULL; //Don't need it.
 
 			//Spirit of Wizard blocks Kaite's reflection
 			if( type == 2 && sc && sc->data[SC_SPIRIT] && sc->data[SC_SPIRIT]->val2 == SL_WIZARD )
@@ -2416,7 +2418,7 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 		if( skillid == RG_INTIMIDATE && rand()%100 < (50 + skilllv * 5 + status_get_lv(src) - status_get_lv(bl)) )
 			skill_addtimerskill(src,tick + 800,bl->id,0,0,skillid,skilllv,0,flag);
 		else if( skillid == SC_FATALMENACE )
-			skill_addtimerskill(bl,tick + 800,bl->id,skill_area_temp[4],skill_area_temp[5],skillid,skilllv,0,flag);
+			skill_addtimerskill(src,tick + 800,bl->id,skill_area_temp[4],skill_area_temp[5],skillid,skilllv,0,flag);
 	}
 
 	if( skillid == CR_GRANDCROSS || skillid == NPC_GRANDDARKNESS )
@@ -2953,7 +2955,13 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 					break;
 				case SC_FATALMENACE:
 					if( src == target ) // Casters Part
-						unit_warp(target, -1, skl->x, skl->y, 3);
+						unit_warp(src, -1, skl->x, skl->y, 3);
+					else
+					{ // Target's Part
+						short x = skl->x, y = skl->y;
+						map_search_freecell(NULL, target->m, &x, &y, 2, 2, 1);
+						unit_warp(target,-1,x,y,3);
+					}
 					break;
 				case LG_MOONSLASHER:
 				case SR_WINDMILL:
@@ -3003,13 +3011,6 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 				case WL_EARTHSTRAIN:
 					// skl->type = original direction, to avoid change it if caster walks in the waves progress.
 					skill_unitsetting(src,skl->skill_id,skl->skill_lv,skl->x,skl->y,(skl->type<<16)|skl->flag);
-					break;
-				case SC_FATALMENACE:
-					{ // Target's Part
-						short x = skl->x, y = skl->y;
-						map_search_freecell(NULL, src->m, &x, &y, 2, 2, 1);
-						unit_warp(src,-1,x,y,3);
-					}
 					break;
 			}
 		}
@@ -3126,7 +3127,7 @@ static int skill_destroy_trap( struct block_list *bl, va_list ap )
 				map_foreachinrange(skill_trap_splash,&su->bl, skill_get_splash(sg->skill_id, sg->skill_lv), sg->bl_flag, &su->bl,tick);
 				break;
 		}
-		// Traps aren't not recovered.
+		// Traps aren't recovered.
 		skill_delunit(su);
 	}
 	return 0;
@@ -7847,7 +7848,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				status_change_end(bl, SC__INVISIBILITY, -1);
 
 				sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
-				sc_start(bl,SC_BLIND,10 + 5 * skilllv,skilllv,skill_get_time(skillid,skilllv));
+				sc_start(bl,SC_BLIND,53 + 2 * skilllv,skilllv,skill_get_time(skillid,skilllv));
 			}
 		}
 		else
