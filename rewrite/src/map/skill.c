@@ -11269,8 +11269,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 				status_heal(bl, hp, 0, 0);
 				if( tstatus->hp != tstatus->max_hp )
 					clif_skill_nodamage(&src->bl, bl, AL_HEAL, hp, 0);
-				if( tsc && (tsc->data[SC_FREEZE] || tsc->data[SC_FREEZING]) ) // It only affects if the target is under Freeze or Freezing status.
-					sc_start(bl, type, 100, sg->skill_lv, sg->interval + 100);
+					sc_start(bl, SC_WARMER, 100, sg->skill_lv, skill_get_time2(sg->skill_id,sg->skill_lv));
 			}
 			break;
 
