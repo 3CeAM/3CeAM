@@ -1301,48 +1301,48 @@
 8240,9,6,16,0,0x1,0,10,1,yes,0,0,0,magic,0,	MER_INCAGI,Increase Agility
 
 // Elemental Spirits Skills
-8401,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_CIRCLE_OF_FIRE,Circle of Fire
-8402,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_FIRE_CLOAK,Fire Cloak
-8403,0,6,4,0,0x1,0,3,1,no,0,0,3,magic,2,	EL_FIRE_MANTLE,Fire Mantle
-8404,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_WATER_SCREEN,Water Screen
-8405,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_WATER_DROP,Water Drop
-8406,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_WATER_BARRIER,Water Barrier
-8407,0,6,4,0,0x1,0,3,1,no,0,0,0,none,5,		EL_WIND_STEP,Wind Step
-8408,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_WIND_CURTAIN,Wind Curtain
-8409,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_ZEPHYR,Zephyr
-8410,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_SOLID_SKIN,Solid Skin
-8411,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_STONE_SHIELD,Stone Shield
-8412,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_POWER_OF_GAIA,Power of Gaia
-8413,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_PYROTECHNIC,Pyrotechnic
-8414,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_HEATER,Heater
-8415,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_TROPIC,Tropic
-8416,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_AQUAPLAY,Aqua Play
-8417,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_COOLER,Cooler
-8418,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_CHILLY_AIR,Cool Air
-8419,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_GUST,Gust
-8420,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_BLAST,Blast
-8421,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_WILD_STORM,Wild Storm
-8422,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_PETROLOGY,Petrology
-8423,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_CURSED_SOIL,Cursed Soil
-8424,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		EL_UPHEAVAL,Upheaval
-8425,5,6,1,3,0,0,3,1,no,0,0,0,weapon,0,		EL_FIRE_ARROW,Fire Arrow
-8426,4,6,1,3,0,1,3,1,no,0,0,0,magic,0,		EL_FIRE_BOMB,Fire Bomb
-8427,0,6,0,3,0,0,3,1,no,0,0,0,weapon,0,		EL_FIRE_BOMB_ATK,Fire Bomb Attack
-8428,1,6,1,3,0,1,3,1,no,0,0,0,magic,0,		EL_FIRE_WAVE,Fire Wave
-8429,0,6,0,3,0,0,3,1,no,0,0,0,weapon,0,		EL_FIRE_WAVE_ATK,Fire Wave Attack
-8430,2,6,1,1,0,0,3,1,no,0,0,0,magic,0,		EL_ICE_NEEDLE,Ice Needle
-8431,4,6,1,1,0,1,3,1,no,0,0,0,magic,0,		EL_WATER_SCREW,Water Screw
-8432,0,6,0,1,0,0,3,1,no,0,0,0,weapon,0,		EL_WATER_SCREW_ATK,Water Screw Attack
-8433,5,6,1,1,0,0,3,1,no,0,0,0,weapon,0,		EL_TIDAL_WEAPON,Tidal Weapon
-8434,10,6,1,4,0,0,3,1,no,0,0,0,magic,0,		EL_WIND_SLASH,Wind Slasher
-8435,10,6,1,4,0,1,3,1,no,0,0,0,magic,0,		EL_HURRICANE,Hurricane Rage
-8436,0,6,0,4,0,0,3,1,no,0,0,0,weapon,0,		EL_HURRICANE_ATK,Hurricane Rage Attack
-8437,10,6,1,4,0,1,3,1,no,0,0,0,magic,0,		EL_TYPOON_MIS,Typhoon Missile
-8438,0,6,0,4,0,0,3,1,no,0,0,0,weapon,0,		EL_TYPOON_MIS_ATK,Typhoon Missile Attack
-8439,9,6,1,2,0,0,3,1,no,0,0,0,weapon,0,		EL_STONE_HAMMER,Stone Hammer
-8440,6,6,1,2,0,1,3,1,no,0,0,0,weapon,0,		EL_ROCK_CRUSHER,Rock Launcher
-8441,0,6,0,2,0,0,3,1,no,0,0,0,magic,0,		EL_ROCK_CRUSHER_ATK,Rock Launcher Attack
-8442,6,6,1,2,0,1,3,-5,no,0,0,0,weapon,0,	EL_STONE_RAIN,Stone Rain
+8401,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		EL_CIRCLE_OF_FIRE,Circle of Fire
+8402,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		EL_FIRE_CLOAK,Fire Cloak
+8403,0,6,4,0,0x1,0,1,1,no,0,0,3,magic,2,	EL_FIRE_MANTLE,Fire Mantle
+8404,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		EL_WATER_SCREEN,Water Screen
+8405,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		EL_WATER_DROP,Water Drop
+8406,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		EL_WATER_BARRIER,Water Barrier
+8407,0,6,4,0,0x1,0,1,1,no,0,0,0,none,5,		EL_WIND_STEP,Wind Step
+8408,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		EL_WIND_CURTAIN,Wind Curtain
+8409,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		EL_ZEPHYR,Zephyr
+8410,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		EL_SOLID_SKIN,Solid Skin
+8411,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		EL_STONE_SHIELD,Stone Shield
+8412,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		EL_POWER_OF_GAIA,Power of Gaia
+8413,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		EL_PYROTECHNIC,Pyrotechnic
+8414,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		EL_HEATER,Heater
+8415,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		EL_TROPIC,Tropic
+8416,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		EL_AQUAPLAY,Aqua Play
+8417,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		EL_COOLER,Cooler
+8418,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		EL_CHILLY_AIR,Cool Air
+8419,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		EL_GUST,Gust
+8420,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		EL_BLAST,Blast
+8421,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		EL_WILD_STORM,Wild Storm
+8422,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		EL_PETROLOGY,Petrology
+8423,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		EL_CURSED_SOIL,Cursed Soil
+8424,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		EL_UPHEAVAL,Upheaval
+8425,5,6,1,3,0,0,1,1,no,0,0,0,weapon,0,		EL_FIRE_ARROW,Fire Arrow
+8426,4,6,1,3,0,1,1,1,no,0,0,0,magic,0,		EL_FIRE_BOMB,Fire Bomb
+8427,0,6,0,3,0,0,1,1,no,0,0,0,weapon,0,		EL_FIRE_BOMB_ATK,Fire Bomb Attack
+8428,1,6,1,3,0,1,1,1,no,0,0,0,magic,0,		EL_FIRE_WAVE,Fire Wave
+8429,0,6,0,3,0,0,1,1,no,0,0,0,weapon,0,		EL_FIRE_WAVE_ATK,Fire Wave Attack
+8430,2,6,1,1,0,0,1,1,no,0,0,0,magic,0,		EL_ICE_NEEDLE,Ice Needle
+8431,4,6,1,1,0,1,1,1,no,0,0,0,magic,0,		EL_WATER_SCREW,Water Screw
+8432,0,6,0,1,0,0,1,1,no,0,0,0,weapon,0,		EL_WATER_SCREW_ATK,Water Screw Attack
+8433,5,6,1,1,0,0,1,1,no,0,0,0,weapon,0,		EL_TIDAL_WEAPON,Tidal Weapon
+8434,10,6,1,4,0,0,1,1,no,0,0,0,magic,0,		EL_WIND_SLASH,Wind Slasher
+8435,10,6,1,4,0,1,1,1,no,0,0,0,magic,0,		EL_HURRICANE,Hurricane Rage
+8436,0,6,0,4,0,0,1,1,no,0,0,0,weapon,0,		EL_HURRICANE_ATK,Hurricane Rage Attack
+8437,10,6,1,4,0,1,1,1,no,0,0,0,magic,0,		EL_TYPOON_MIS,Typhoon Missile
+8438,0,6,0,4,0,0,1,1,no,0,0,0,weapon,0,		EL_TYPOON_MIS_ATK,Typhoon Missile Attack
+8439,9,6,1,2,0,0,1,1,no,0,0,0,weapon,0,		EL_STONE_HAMMER,Stone Hammer
+8440,6,6,1,2,0,1,1,1,no,0,0,0,weapon,0,		EL_ROCK_CRUSHER,Rock Launcher
+8441,0,6,0,2,0,0,1,1,no,0,0,0,magic,0,		EL_ROCK_CRUSHER_ATK,Rock Launcher Attack
+8442,6,6,1,2,0,1,1,-5,no,0,0,0,weapon,0,	EL_STONE_RAIN,Stone Rain
 
 // Guild Skills
 10000,0,0,0,0,0,0,1,0,no,0,0x10,0,none,0,        GD_APPROVAL,Official Guild Approval

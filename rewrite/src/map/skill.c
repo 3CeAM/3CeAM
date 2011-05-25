@@ -12975,10 +12975,10 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 		case LG_RAGEBURST:
 			req.spiritball = sd->rageball?sd->rageball:1;
 			break;
-		case SR_CRESCENTELBOW:
-			if( sd->spiritball <= 0 )
-				req.spiritball = 0;	// Only consumes spirit spheres if these are pressent. Is a bug?
-			break;
+//		case SR_CRESCENTELBOW:// Remove later if found not needed. [Rytech]
+//			if( sd->spiritball <= 0 )
+//				req.spiritball = 0;	// Only consumes spirit spheres if these are pressent. Is a bug?
+//			break;
 		case SR_RAMPAGEBLASTER:
 			req.spiritball = sd->spiritball?sd->spiritball:15;
 			break;
