@@ -4065,7 +4065,7 @@ int battle_calc_return_damage(struct block_list *src, struct block_list *bl, int
 			rdamage += (*damage) * sd->short_weapon_damage_return / 100;
 			if(rdamage < 1) rdamage = 1;
 		}
-		if( sc && sc->data[SC_DEATHBOUND] )
+		if( sc && sc->data[SC_DEATHBOUND] && !is_boss(src) )
 		{
 			int dir = map_calc_dir(bl,src->x,src->y),
 				t_dir = unit_getdir(bl), rd1 = 0;
@@ -4094,7 +4094,7 @@ int battle_calc_return_damage(struct block_list *src, struct block_list *bl, int
 			rdamage += (*damage) / 100;
 			rdamage = cap_value(rdamage,1,max_damage);
 		}
-		if( sc && sc->data[SC_CRESCENTELBOW] && !is_boss(bl) && rand()%100 < sc->data[SC_CRESCENTELBOW]->val2 )
+		if( sc && sc->data[SC_CRESCENTELBOW] && !(flag&BF_SKILL) && !is_boss(src) && rand()%100 < sc->data[SC_CRESCENTELBOW]->val2 )
 		{	// Stimated formula from test
 			rdamage += (int)((*damage) + (*damage) * status_get_hp(src) * 2.15 / 100000);	// 
 			if( rdamage < 1 ) rdamage = 1;
@@ -4375,10 +4375,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			skill_attack(skill_get_type(skillid), src, src, target, skillid, sc->data[SC_DUPLELIGHT]->val1, tick, SD_LEVEL);
 		}
 
-		if( tsc && tsc->data[SC_DEATHBOUND] && (sstatus->mode&MD_BOSS)  )
-			rdamage = 0; // Does not work on boss monsters.
-		else
-			rdamage = battle_calc_return_damage(src, target, &damage, wd.flag);
+		rdamage = battle_calc_return_damage(src, target, &damage, wd.flag);
 
 		if( rdamage > 0 )
 		{
