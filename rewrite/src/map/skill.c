@@ -3983,7 +3983,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 				}
 
 				skill_addtimerskill(src,tick+status_get_adelay(src)*i,bl->id,k,0,subskill,skilllv,i,flag);
-				status_change_end(src,spheres[i],-1);
+				status_change_end(src, spheres[i], INVALID_TIMER);
 			}
 		}
 		break;
@@ -4013,9 +4013,9 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 					memmove(&sd->rsb[0],&sd->rsb[1],sizeof(sd->rsb) - sizeof(sd->rsb[0]));
 
 				if( sd->rsb[0].skillid == 0 )
-					status_change_end(&sd->bl,SC_READING_SB,-1);
+					status_change_end(src, SC_READING_SB, INVALID_TIMER);
 
-				status_change_end(src,SC_MAGICPOWER,-1);
+				status_change_end(src, SC_MAGICPOWER, INVALID_TIMER);
 
 				clif_skill_nodamage(src,bl,skillid,skilllv,1);
 				if( !skill_check_condition_castbegin(sd,rsb_skillid,rsb_skilllv) )
@@ -4067,7 +4067,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 							swap(spheres[i],spheres[k]);
 						}
 
-				status_change_end(src,SC_MAGICPOWER,-1);
+				status_change_end(src, SC_MAGICPOWER, INVALID_TIMER);
 
 				if( skilllv == 1 ) j = 1; // Limit only to one ball
 				for( i = 0; i < j; i++ )
@@ -4075,7 +4075,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 					skele = WL_RELEASE - 5 + sc->data[spheres[i]]->val1 - WLS_FIRE; // Convert Ball Element into Skill ATK for balls
 					// WL_SUMMON_ATK_FIRE, WL_SUMMON_ATK_WIND, WL_SUMMON_ATK_WATER, WL_SUMMON_ATK_GROUND
 					skill_addtimerskill(src,tick+status_get_adelay(src)*i,bl->id,0,0,skele,skilllv,BF_MAGIC,flag|SD_LEVEL);
-					status_change_end(src,spheres[i],-1); // Eliminate ball
+					status_change_end(src, spheres[i], INVALID_TIMER); // Eliminate ball
 				}
 				clif_skill_nodamage(src,bl,skillid,0,1);
 			}
@@ -15201,9 +15201,9 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 		while( j >= 0 && x > 0 );
 	}
 
-	if( (equip = itemdb_isequip(nameid)) )
+	if( (equip = (itemdb_isequip(nameid) && skill_id != GN_CHANGEMATERIAL && skill_id != GN_MAKEBOMB )) )
 		wlv = itemdb_wlv(nameid);
-	if( !equip || skill_id == GN_CHANGEMATERIAL )
+	if( !equip )
 	{
 		switch( skill_id )
 		{
@@ -15375,7 +15375,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 		tmp_item.nameid = nameid;
 		tmp_item.amount = 1;
 		tmp_item.identify = 1;
-		if( equip && skill_id != GN_CHANGEMATERIAL )
+		if( equip )
 		{
 			tmp_item.card[0] = CARD0_FORGE;
 			tmp_item.card[1] = ((sc*5)<<8)+ele;
@@ -15429,7 +15429,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 //			log_produce(sd,nameid,slot1,slot2,slot3,1);
 //TODO update PICKLOG
 
-		if( equip && skill_id != GN_CHANGEMATERIAL )
+		if( equip )
 		{
 			clif_produceeffect(sd,0,nameid);
 			clif_misceffect(&sd->bl,3);
@@ -15537,7 +15537,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 //		log_produce(sd,nameid,slot1,slot2,slot3,0);
 //TODO update PICKLOG
 
-	if( equip && skill_id != GN_CHANGEMATERIAL )
+	if( equip )
 	{
 		clif_produceeffect(sd,1,nameid);
 		clif_misceffect(&sd->bl,2);
