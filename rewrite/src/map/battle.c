@@ -2353,29 +2353,33 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					if( sc && sc->data[SC_BLAST_OPTION] )
 						skillratio += skillratio * sc->data[SC_BLAST_OPTION]->val2 / 100;
 					break;
+				// Physical Elemantal Spirits Attack Skills
+				case EL_CIRCLE_OF_FIRE:
 				case EL_FIRE_BOMB_ATK:
-				case EL_WATER_SCREW_ATK:
-					skillratio += 100 * skill_lv;
+				case EL_STONE_RAIN:
+					skillratio += 200;
 					break;
-				case EL_FIRE_ARROW:
-				case EL_STONE_HAMMER:
-					skillratio += 200 * skill_lv;
+				case EL_FIRE_WAVE_ATK:
+					skillratio += 500;
 					break;
 				case EL_TIDAL_WEAPON:
-					skillratio += 1000 * skill_lv;
+					skillratio += 1400;
 					break;
-				case EL_HURRICANE_ATK:
-				case EL_TYPOON_MIS_ATK:
-
-				case EL_FIRE_WAVE_ATK:
-				case EL_ROCK_CRUSHER_ATK:
-						skillratio += 200 + 100 * skill_lv;
-						break;
-				case EL_STONE_RAIN:
-					if( wflag&1 )
-						skillratio += 500 + 100 * skill_lv;
-					else
-						skillratio += 200 + 100 * skill_lv;
+				case EL_WIND_SLASH:
+					skillratio += 100;
+					break;
+				case EL_HURRICANE:
+					skillratio += 600;
+					break;
+				case EL_TYPOON_MIS:
+				case EL_WATER_SCREW_ATK:
+					skillratio += 900;
+					break;
+				case EL_STONE_HAMMER:
+					skillratio += 400;
+					break;
+				case EL_ROCK_CRUSHER:
+					skillratio += 700;
 					break;
 			}
 			// Some skill under EDP status have been nerfed. http://www.eathena.ws/board/index.php?showtopic=234419&hl=enchant+deadly
@@ -3527,27 +3531,23 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						else
 							skillratio += 110 + 20 * skill_lv;
 						break;
-					case EL_CIRCLE_OF_FIRE:
-						skillratio += 300 * skill_lv;
+					// Magical Elemental Spirits Attack Skills
+					case EL_FIRE_MANTLE:
+					case EL_WATER_SCREW:
+						skillratio += 900;
+						break;
+					case EL_FIRE_ARROW:
+					case EL_ROCK_CRUSHER_ATK:
+						skillratio += 200;
 						break;
 					case EL_FIRE_BOMB:
-					case EL_WATER_SCREW:
-						skillratio += 600 * skill_lv;
-						break;
-					case EL_HURRICANE:
-					case EL_TYPOON_MIS:
-						skillratio += 1000 * skill_lv;
-						break;
-					case EL_FIRE_MANTLE:
-						skillratio += 100 * skill_lv;
-						break;
 					case EL_ICE_NEEDLE:
-					case EL_WIND_SLASH:
-						skillratio += 200 * skill_lv;
+					case EL_HURRICANE_ATK:
+						skillratio += 400;
 						break;
 					case EL_FIRE_WAVE:
-					case EL_ROCK_CRUSHER:
-						skillratio += 100 + 100 * skill_lv;
+					case EL_TYPOON_MIS_ATK:
+						skillratio += 1100;
 						break;
 				}
 
