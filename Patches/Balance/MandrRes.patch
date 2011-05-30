@@ -1,0 +1,14 @@
+Index: status.c
+===================================================================
+--- status.c	(revision 525)
++++ status.c	(working copy)
+@@ -5565,6 +5591,9 @@
+ 	case SC_OBLIVIONCURSE:
+ 		sc_def = status->int_*4/5; //FIXME: info said this is the formula of status chance. Check again pls. [Jobbie]
+ 		break;
++	case SC_MANDRAGORA:
++		sc_def = status->vit/2 + status->luk/3;
++		break;
+ 	case SC_ELECTRICSHOCKER:
+ 	case SC_BITE:
+ 		{

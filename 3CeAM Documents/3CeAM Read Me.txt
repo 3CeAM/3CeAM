@@ -1,0 +1,166 @@
+===== 3CeAM Documnent ===================================
+= 3CeAM Read Me
+===== Description =======================================
+= Explains 3CeAM and the basics to users.
+===== By ================================================
+= Rytech
+===== Version ===========================================
+= 1.0
+=========================================================
+= 1.0 - Typed and completed the 3CeAM read me. [Rytech]
+=========================================================
+
+================================
+Project 3CeAM Read Me
+
+1. Welcome To 3CeAM
+
+2. What Is 3CeAM?
+
+3. Features
+
+4. Things To Be Aware Of
+
+5. Final Notes
+================================
+
+===== 1. Welcome To 3CeAM =====
+Hello and welcome to 3CeAM. Were very excited to bring you and everyone else something that
+the community has been waiting for. The team put a lot of work into the project to make it
+close to the official behavior of the 3rd jobs as possiable, while at the same time, provideing
+a clean and stable program mod.
+
+As some of you may allready know, 3CeAM was founded about 1 week after the Rune Knight and Arch Bishop
+jobs were released to the RE test server. (December 24, 2008) When I started the project, I recruited
+people into the project to help with the development. Some of those people are still in the team today.
+However, during the development, we did some more recruiting and ended up running into problems.
+
+Some of the people that were recruited did very little, or no work at all and used our work for their own
+purposes. We had people try to steal, leech, mess up our work, and also try to take the code and pass
+it off and take the credit for themselfs. We also had people repeatly try to buy the code from us. One
+guy tried to buy it from me for $1,600. Then we ended up haveing people try to trick us into accidently
+leaking info. Enough was enough.
+
+Because of these problems, it was best to go into hideing. So around the 2nd week of May 2009, the topic
+was closed and we never said another work about the project to the community. So it ended up looking like
+the project died, yet it never died at all, nor did it ever come to a halt. During that time, we spent
+a lot of our free time going to the RE server makeing charactors into 3rd jobs, testing skills up and down,
+doing packet captures, learning about new features, and then takeing all the data collected and codeing it
+into the eA program. it was a rough start in the beginning, but everything ended up going smoothly after.
+One of the member even setup a test server for us to test our work on.
+
+So your probely wondering why we have returned? Few reasons for this one, but I wont go into full detail here.
+Mainly, a lot happened the pass few months and as time passed we ended up learning that it was just about time
+that its best to make our first release since we perty much reached our goal.
+
+So here we are. We hope that everyone will enjoy and have fun with what we have released for the community.
+
+===== 2. What Is 3CeAM? =====
+3CeAM (pronouced as "Three Ceam") stands for 3rd Class eAthena Mod. This project was designed to add the 3rd jobs
+into the eAthena program, while also keeping the orginal mechanics. This means that none of the mechanics was changed.
+So the jobs in this mod are running on the orginal Ragnarok mechanics thats been in the eAthena program since eA existed.
+
+This mod also serves some other intresting purposes. One of them was the adding support for RE client. RE clients are
+important since they give access to the newest sprites, skills, animations, interfeace and features, etc. We cant work
+without them. Another purpose is to add some intresting features.
+
+===== 3. Features =====
+3CeAM comes with many features. Both features that can be used right now, and some that will be usable in the future.
+So what all does 3CeAM come with? The mod adds the following features...
+
+= Added 3rd Jobs
+The main reason this project exists. Adds 3rd jobs along with skills, items, mounts, anything haveing to do with the
+new jobs. However, their are no quest NPC's made for them as we dont know how to do the quest, nor can we read kroean.
+
+= Added RE support
+Another must. Diablo's RE support has been added to allow RE clients to work. Without this...well you wont beable to play
+all of the new jobs properly. Plus we gotta test our work somehow. Also, full Captcha support has been added to work with
+the latest clients.
+
+= Added eA Code Cleanups
+Some things in the eA code makes things difficult to do or figure out. So we cleaned and organized a few things.
+
+Example: You want to use a command to change your job, but you sometimes might need the job ID. The average GM
+will end up typeing "@jobchange" without anything after it to make the list of jobs and ID's appear. However, this list
+is messy and at times can be annoying to find the ID you need. One of those cleanups provided with this mod replaces
+that list with a totally redone list thats properly organizes each job and ID by categorys (Job type and branch) and all
+in ID order.
+
+= Added Support For Future Jobs
+They may not be out yet, but the client supports them...well what exists of them. Support for the Gangsi, Death Knight
+and Dark Collector jobs has been added. However, since the jobs havent been released, the support on them is very limited.
+But when they do come out, youll beable to access them right away without needing to do anything to the code. Youll just
+need the latest client that suports the new sprites when released.
+
+= More information about all of these features and more can be found in the "3CeAM Documnents" folder.
+
+===== 4. Things To Be Aware Of =====
+Because these new jobs are orginally made for the use on renewal mechanics, we had to think about a few things
+when working on this project. One of them was to stay true to the orginal RO mechanics and keep things ballanced.
+Now in the old RO, max level and stats went up to 99 (counting just base stats). But the new jobs are made to go
+up to base level 150 and max stats 120. Allowing it would create ballance issues. Below is info you must read before
+setting up.
+
+= Max Level and Stats
+The max level and stats setting as been put at the orginal 99 to keep ballance
+and preserve the concept of the orginal mechanics. Levels and stats over 99 are
+a renewal thing and the orginal mechanics arnt ballanced for anything higher then 99.
+
+A good example is the fact that you need 150 DEX to get instant casting. Imagine the
+stats limit being 120??? Waaaaay to easy to get instant casting. Also, if base level
+could go to 150, thats more stats to make it easier to max stats or bring all stats close to 99.
+
+However, if you wish to raise these settings, you can. The MAX_LEVEL setting in
+the map.h file has been set to 1000 so you can adjust your exp tables to allow up
+to level 1000. Be sure to check out the exp.txt file in your database and scroll to
+the bottom. All 3rd job base and job level limits are set there.
+
+The stats limit is a bit different here. Go to the conf/battle/player.conf file
+and look for this...
+
+// Same as max_parameter, but for third classes.
+// Note: Value must be equal to or higher then the value set for max_parameter.
+max_third_parameter: 99
+
+The max_parameter setting will still work as it allways did and is set to 99 and
+work for novice, 1st, and 2nd jobs, as well as extended jobs.
+The new setting above is to set the max stat limit for the 3rd jobs. This means you can for
+example, set a stat limit for 1st and 2nd jobs, and allow a stat limit raise when a
+player becomes a 3rd job.
+
+Note: The max_third_parameter value MUST BE EUQAL OR HIGHER THEN THE max_parameter value.
+Setting it lower then the max_parameter will prevent players from raiseing
+their stats anymore once they change into a 3rd job.
+
+Here's some recommanded info on how to use these settings for enjoyment.
+
+Low Rate: 1x-25x
+Strongly recommanded that your max level and stats are set to 99 if you
+want the ballanced RO experience to remain in your server. Plus getting
+levels after 99 will be too much of a pain for players.
+
+Mid Rate: 26x-150x
+Perty much the same as low rates, but it would probely be ok to set max level
+to 150 and stat limit to 120. Depends in what your looking for in your server.
+Just remember to be aware that allowing a stat limit that high will make it easier
+to get instant casting.
+
+High Rate: 151x-10,000x
+The 150 level and 120 stat limit would for sure be ok in this area if the rates
+are perty high. Some server may choose to change the required DEX need for instant
+casting from what I know if their looking to keep cast times and cool downs ballanced.
+
+Super High Rate: 10,001x and Higher
+Rates this high...well everyone puts the limits up to really high settings.
+Not really anything I can recommand here since its mainly big time PVP servers.
+
+===== 5. Final Notes =====
+To finish off, we would like everyone to try 3CeAM out, test it, and leave us feedback.
+Feedback is very important as it can help us improve greatly. If you find a bug, report it to us.
+But before you do, please make sure you can reproduce the bug before posting. You dont want to post a bug report
+that you cant back up and may be false, do you?
+
+Also if you have any questions, post them and well try our best to answer them when we get the chance.
+
+Finally, if your looking to learn more about the project, features, and how things work, their's a
+"3CeAM Documnents" folder with many documnents. Be sure to check that out.

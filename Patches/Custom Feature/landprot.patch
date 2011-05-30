@@ -1,0 +1,49 @@
+Index: db/skill_db.txt
+===================================================================
+--- db/skill_db.txt	(revision 605)
++++ db/skill_db.txt	(working copy)
+@@ -37,6 +37,7 @@
+ //    0x0800- usable only on guild-mates (and enemies if skill is offensive)
+ //    0x1000- disable usage on enemies (for non-offensive skills).
+ //    0x2000- chorus skill
++//    0x4000- blocked by land protector. (Only works for non unit AoE skills. Unit skills are blocked automatically.)
+ // 13 maxcount: max amount of skill instances to place on the ground when
+ //    player_land_skill_limit/monster_land_skill_limit is enabled. For skills
+ //    that attack using a path, this is the path length to be used.
+@@ -1145,8 +1146,8 @@
+ 2443,0,6,4,3,0,0,5,1,yes,0,0,8:10:12:14:16,magic,0,	SO_FIREWALK,Fire Walk
+ 2444,0,6,4,4,0,0,5,1,yes,0,0,8:10:12:14:16,magic,0,	SO_ELECTRICWALK,Electric Walk
+ 2445,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		SO_SPELLFIST,Spell Fist
+-2446,9,6,2,2,0x2,3:3:3:4:4,5,-3,yes,0,0,0,magic,0,	SO_EARTHGRAVE,Earth Grave
+-2447,9,6,2,1,0x2,3:3:3:4:4,5,-5,yes,0,0,0,magic,0,	SO_DIAMONDDUST,Diamond Dust
++2446,9,6,2,2,0x2,3:3:3:4:4,5,-3,yes,0,0x4000,0,magic,0,	SO_EARTHGRAVE,Earth Grave
++2447,9,6,2,1,0x2,3:3:3:4:4,5,-5,yes,0,0x4000,0,magic,0,	SO_DIAMONDDUST,Diamond Dust
+ 2448,9,6,1,5,0x02,1:2:3:4:5,5,1,yes,0,0,0,magic,0,		SO_POISON_BUSTER,Poison Buster
+ 2449,9,8,2,0,0,0,5,1,yes,0,0,0,magic,0,	SO_PSYCHIC_WAVE,Psychic Wave
+ 2450,9,6,2,5,0,0,5,1,yes,0,0,0,magic,0,	SO_CLOUD_KILL,Cloud Kill
+Index: src/map/skill.c
+===================================================================
+--- src/map/skill.c	(revision 605)
++++ src/map/skill.c	(working copy)
+@@ -3129,6 +3129,9 @@
+ 
+ 	if( status_isdead(bl) )
+ 		return 1;
++		
++	if( (skill_get_inf2(skillid)&INF2_BLOCKED_BY_LP) && map_getcell(bl->m, bl->x, bl->y, CELL_CHKLANDPROTECTOR) )
++		return 1;
+ 
+ 	// Max Job Level bonus that skills should receive. Acording to battle_config.max_joblvl_nerf [Pinky]
+ 	if( sd && battle_config.max_joblvl_nerf)
+Index: src/map/skill.h
+===================================================================
+--- src/map/skill.h	(revision 605)
++++ src/map/skill.h	(working copy)
+@@ -62,6 +62,7 @@
+ #define INF2_GUILD_ONLY 0x800
+ #define INF2_NO_ENEMY 0x1000
+ #define INF2_CHORUS_SKILL 0x2000
++#define INF2_BLOCKED_BY_LP 0x4000
+ 
+ //Walk intervals at which chase-skills are attempted to be triggered.
+ #define WALK_SKILL_INTERVAL 5

@@ -1,0 +1,373 @@
+Index: db/const.txt
+===================================================================
+--- db/const.txt	(revision 612)
++++ db/const.txt	(working copy)
+@@ -1174,6 +1174,7 @@
+ SC_BANANA_BOMB_SITDOWN	554
+ SC_STOMACHACHE	555
+ SC_MYSTERIOUS_POWDER	556
++SC_ALL_RIDING	557
+ 
+ e_gasp	0
+ e_what	1
+Index: db/item_db2.txt
+===================================================================
+--- db/item_db2.txt	(revision 612)
++++ db/item_db2.txt	(working copy)
+@@ -473,3 +473,4 @@
+ // Purchase Shop Items
+ //6377,Buy_Stall_Permit,Buy Stall Permit,3,200,,10,,,,,,,,,,,,,{},{},{}
+ //12548,Buy_Shabby_Stall_Permit,Buy Shabby Stall Permit,11,500,,10,,,,,0xFFFFFFFF,8,2,,,,,,{ itemskill "ALL_BUYING_STORE",1; },{},{}
++12622,Reins_Of_Mounts,Reins Of Mounts,2,0,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ sc_start SC_ALL_RIDING,9999,0; getitem 12622,1; },{},{}
+Index: db/packet_db.txt
+===================================================================
+--- db/packet_db.txt	(revision 612)
++++ db/packet_db.txt	(working copy)
+@@ -56,7 +56,7 @@
+ 0x008c,-1,globalmessage,2:4
+ 0x008d,-1
+ 0x008e,-1
+-//0x008f,-1
++//0x008f,0
+ 0x0090,7,npcclicked,2
+ 0x0091,22
+ 0x0092,28
+@@ -86,7 +86,7 @@
+ 0x00aa,7
+ 0x00ab,4,unequipitem,2
+ 0x00ac,7
+-//0x00ad,-1
++//0x00ad,0
+ 0x00ae,-1
+ 0x00af,6
+ 0x00b0,8
+@@ -303,7 +303,7 @@
+ 0x0183,10,guilddelalliance,2:6
+ 0x0184,10
+ 0x0185,34
+-//0x0186,-1
++//0x0186,0
+ 0x0187,6
+ 0x0188,8
+ 0x0189,4
+@@ -371,7 +371,7 @@
+ 0x01c7,2
+ 0x01c8,13
+ 0x01c9,97
+-//0x01ca,-1
++//0x01ca,0
+ 0x01cb,9
+ 0x01cc,9
+ 0x01cd,30
+@@ -436,8 +436,8 @@
+ 0x0208,11,friendslistreply,2:6:10
+ 0x0209,36
+ 0x020a,10
+-//0x020b,-1
+-//0x020c,-1
++//0x020b,0
++//0x020c,0
+ 0x020d,-1
+ 
+ //2004-07-05aSakexe
+@@ -733,7 +733,7 @@
+ 0x0113,33,useskilltopos,12:15:18:31
+ 0x0116,12,dropitem,3:10
+ 0x0190,24,actionrequest,11:23
+-0x0216,-1
++0x0216,0
+ 0x023d,-1
+ 0x023e,4
+ 
+@@ -767,7 +767,7 @@
+ 0x0248,68
+ 0x0249,3
+ 0x024a,70
+-0x024b,4,auctioncancelreg,0
++0x024b,4,auctioncancelreg,2
+ 0x024c,8,auctionsetitem,0
+ 0x024d,14
+ 0x024e,6,auctioncancel,0
+@@ -799,7 +799,7 @@
+ 0x0251,4
+ 
+ //2005-08-08aSakexe
+-0x024d,12,auctionregister,0
++0x024d,12,auctionregister,2:6:10
+ 0x024e,4
+ 
+ //2005-08-17aSakexe
+@@ -810,7 +810,7 @@
+ 0x0240,-1
+ 0x0248,-1,mailsend,2:4:28:68
+ 0x0255,5
+-0x0256,-1
++0x0256,0
+ 0x0257,8
+ 
+ //2005-09-12bSakexe
+@@ -830,7 +830,7 @@
+ 
+ //2005-10-17aSakexe
+ 0x007a,58
+-0x025d,6,auctionclose,0
++0x025d,6,auctionclose,2
+ 0x025e,4
+ 
+ //2005-10-24aSakexe
+@@ -933,8 +933,8 @@
+ 0x029d,-1
+ 0x029e,11
+ 0x029f,3,mermenu,0
+-0x02a0,-1
+-0x02a1,-1
++0x02a0,0
++0x02a1,0
+ 0x02a2,8
+ 
+ //2007-01-08aSakexe
+@@ -961,8 +961,8 @@
+ 
+ //2007-01-29aSakexe
+ 0x029b,72
+-0x02a3,-1
+-0x02a4,-1
++0x02a3,0
++0x02a4,0
+ 0x02a5,8
+ 
+ // 2007-02-05aSakexe
+@@ -1082,8 +1082,8 @@
+ 0x02ef,8
+ 
+ //2008-03-18aSakexe
+-0x02bf,-1
+-0x02c0,-1
++0x02bf,0
++0x02c0,0
+ 0x02f0,10
+ 0x02f1,2,progressbar,0
+ 0x02f2,2
+@@ -1408,7 +1408,7 @@
+ 
+ //2009-09-29aRagexeRE
+ //0x07ea,2
+-//0x07eb,-1
++//0x07eb,0
+ //0x07ec,6
+ //0x07ed,8
+ //0x07ee,6
+@@ -1586,5 +1586,24 @@
+ 0x0842,6,recall2,2
+ 0x0843,6,remove2,2
+ 
++//2010-11-24aRagexeRE
++packet_ver: 26
++0x0436,19,wanttoconnection,2:6:10:14:18
++0x035f,5,walktoxy,2
++0x0360,6,ticksend,2
++0x0361,5,changedir,2:4
++0x0362,6,takeitem,2
++0x0363,6,dropitem,2:4
++0x0364,8,movetokafra,2:4
++0x0365,8,movefromkafra,2:4
++0x0366,10,useskilltopos,2:4:6:8
++0x0367,90,useskilltoposinfo,2:4:6:8:10
++0x0368,6,getcharnamerequest,2
++0x0369,6,solvecharname,2
++0x0856,-1
++0x0857,-1
++0x0858,-1
++0x0859,-1
++
+ //Add new packets here
+-//packet_ver: 26
++//packet_ver: 27
+Index: src/char/char.c
+===================================================================
+--- src/char/char.c	(revision 612)
++++ src/char/char.c	(working copy)
+@@ -1828,7 +1828,7 @@
+ // Writes char data to the buffer in the format used by the client.
+ // Used in packets 0x6b (chars info) and 0x6d (new char info)
+ // Returns the size
+-#define MAX_CHAR_BUF 132 //Max size (for WFIFOHEAD calls)
++#define MAX_CHAR_BUF 136 //Max size (for WFIFOHEAD calls)
+ int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p)
+ {
+ 	unsigned short offset = 0;
+@@ -1892,6 +1892,10 @@
+ 	WBUFL(buf,124) = TOL(p->delete_date);
+ 	offset += 4;
+ #endif
++#if PACKETVER >= 20110111
++	WBUFL(buf,128) = 0;  // robe sprite id
++	offset += 4;
++#endif
+ 	return 106+offset;
+ }
+ 
+Index: src/char_sql/char.c
+===================================================================
+--- src/char_sql/char.c	(revision 612)
++++ src/char_sql/char.c	(working copy)
+@@ -1553,7 +1553,7 @@
+ // Writes char data to the buffer in the format used by the client.
+ // Used in packets 0x6b (chars info) and 0x6d (new char info)
+ // Returns the size
+-#define MAX_CHAR_BUF 132 //Max size (for WFIFOHEAD calls)
++#define MAX_CHAR_BUF 136 //Max size (for WFIFOHEAD calls)
+ int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p)
+ {
+ 	unsigned short offset = 0;
+@@ -1617,6 +1617,10 @@
+ 	WBUFL(buf,124) = TOL(p->delete_date);
+ 	offset += 4;
+ #endif
++#if PACKETVER >= 20110111
++	WBUFL(buf,128) = 0;  // robe sprite id
++	offset += 4;
++#endif
+ 	return 106+offset;
+ }
+ 
+Index: src/common/mmo.h
+===================================================================
+--- src/common/mmo.h	(revision 612)
++++ src/common/mmo.h	(working copy)
+@@ -44,10 +44,11 @@
+ // 20100721 - 2010-07-21aRagexeRE+ - 0x6b, 0x6d
+ // 20100727 - 2010-07-27aRagexeRE+ - 0x6b, 0x6d
+ // 20100803 - 2010-08-03aRagexeRE+ - 0x6b, 0x6d, 0x827, 0x828, 0x829, 0x82a, 0x82b, 0x82c, 0x842, 0x843
++// 20110111 - 2011-01-11aRagexeRE+ - 0x6b, 0x6d
+ 
+ #ifndef PACKETVER
+ 	//#define PACKETVER	20081126
+-	#define PACKETVER 20100629
++	#define PACKETVER 20110111
+ #endif
+ // backward compatible PACKETVER 8 and 9
+ #if PACKETVER == 8
+Index: src/map/clif.c
+===================================================================
+--- src/map/clif.c	(revision 612)
++++ src/map/clif.c	(working copy)
+@@ -9822,7 +9822,8 @@
+ 			sd->sc.data[SC_DEATHBOUND] ||
+ 			sd->sc.data[SC_BLADESTOP] ||
+ 			(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOITEM) ||
+-			sd->sc.data[SC_CURSEDCIRCLE_TARGET]
++			sd->sc.data[SC_CURSEDCIRCLE_TARGET] ||
++			sd->sc.data[SC_ALL_RIDING]
+ 		))
+ 			break;
+ 
+Index: src/map/clif.h
+===================================================================
+--- src/map/clif.h	(revision 612)
++++ src/map/clif.h	(working copy)
+@@ -29,7 +29,7 @@
+ #include <stdarg.h>
+ // packet DB
+ #define MAX_PACKET_DB		0x900
+-#define MAX_PACKET_VER		25
++#define MAX_PACKET_VER		26
+ 
+ struct s_packet_db {
+ 	short len;
+Index: src/map/pc.c
+===================================================================
+--- src/map/pc.c	(revision 612)
++++ src/map/pc.c	(working copy)
+@@ -7417,7 +7417,7 @@
+ {
+ 	int option = 0, skillnum = 0;
+ 
+-	if( sd->sc.data[SC__GROOMY] )
++	if( sd->sc.data[SC__GROOMY] || sd->sc.data[SC_ALL_RIDING] )
+ 		return 0;
+ 	
+ 	if( (sd->class_&MAPID_UPPERMASK) == MAPID_KNIGHT || (sd->class_&MAPID_UPPERMASK) == MAPID_CRUSADER )
+Index: src/map/status.c
+===================================================================
+--- src/map/status.c	(revision 612)
++++ src/map/status.c	(working copy)
+@@ -740,6 +740,8 @@
+ 	StatusIconChangeTable[SC_LIFE_FORCE_F] |= SI_LIFE_FORCE_F;
+ 	StatusIconChangeTable[SC_STOMACHACHE] = SI_STOMACHACHE;
+ 	StatusIconChangeTable[SC_MYSTERIOUS_POWDER] = SI_MYSTERIOUS_POWDER;
++	
++	StatusIconChangeTable[SC_ALL_RIDING] = SI_ALL_RIDING;
+ 
+ 	//Other SC which are not necessarily associated to skills.
+ 	StatusChangeFlagTable[SC_ASPDPOTION0] = SCB_ASPD;
+@@ -823,6 +825,8 @@
+ 	StatusChangeFlagTable[SC_BANANA_BOMB] = SCB_LUK;
+ 	StatusChangeFlagTable[SC_STOMACHACHE] |= SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK;
+ 	StatusChangeFlagTable[SC_MYSTERIOUS_POWDER] |= SCB_MAXHP;
++	
++	StatusChangeFlagTable[SC_ALL_RIDING] = SCB_SPEED;
+ 
+ 	if( !battle_config.display_hallucination ) //Disable Hallucination.
+ 		StatusIconChangeTable[SC_HALLUCINATION] = SI_BLANK;
+@@ -1424,8 +1428,9 @@
+ 				sc->data[SC__IGNORANCE] || // Target afflicted with this debuff cannot use skills or magic.
+ 				sc->data[SC_DEEPSLEEP] ||
+ 				sc->data[SC_SATURDAYNIGHTFEVER] ||
+-				sc->data[SC_CURSEDCIRCLE_TARGET]
+-			))
++				sc->data[SC_CURSEDCIRCLE_TARGET] ||
++				sc->data[SC_ALL_RIDING]
++				))
+ 				return 0;
+ 
+ 			//Skill blocking.
+@@ -4665,6 +4670,9 @@
+ 				val = max( val, 25 );
+ 			if( sd && sd->speed_rate + sd->speed_add_rate < 0 ) // permanent item-based speedup
+ 				val = max( val, -(sd->speed_rate + sd->speed_add_rate) );
++				
++			if( sc->data[SC_ALL_RIDING])
++				val = max( val, 25 );
+ 
+ 			speed_rate -= val;
+ 		}
+@@ -7750,6 +7758,16 @@
+ 			val4 = tick / 10000;
+ 			tick = 10000;
+ 			break;
++			
++		case SC_ALL_RIDING:
++			if ( sc->data[SC_ALL_RIDING] )
++			{
++				status_change_end(bl, SC_ALL_RIDING, -1);
++				return 0;
++			}
++			if (pc_isriding(sd,OPTION_RIDING|OPTION_RIDING_DRAGON|OPTION_RIDING_WUG|OPTION_MADO))
++				return 0;
++			break;
+ 
+ 		default:
+ 			if( calc_flag == SCB_NONE && StatusSkillChangeTable[type] == 0 && StatusIconChangeTable[type] == 0 )
+Index: src/map/status.h
+===================================================================
+--- src/map/status.h	(revision 612)
++++ src/map/status.h	(working copy)
+@@ -541,6 +541,8 @@
+ 	SC_BANANA_BOMB_SITDOWN,
+ 	SC_STOMACHACHE,
+ 	SC_MYSTERIOUS_POWDER,
++	
++	SC_ALL_RIDING,
+ 
+ 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
+ } sc_type;
+@@ -1161,7 +1163,7 @@
+ //	SI_SPIRITS_SAVEINFO2 = 610,
+ //	SI_MAGIC_CANDY = 611,
+ //	SI_ = 612,
+-//	SI_ALL_RIDING = 613,
++	SI_ALL_RIDING = 613,
+ //	SI_ = 614,
+ //	SI_MACRO = 615,
+ //	SI_MACRO_POSTDELAY = 616,

@@ -1,0 +1,9 @@
+@@ -4073,6 +4074,8 @@
+ 				if( !skill_check_condition_castbegin(sd,rsb_skillid,rsb_skilllv) )
+ 					break;
+ 
++				if ( rsb_skillid == WL_COMET ) skill_blockpc_start(sd, WL_READING_SB, skill_get_cooldown(WL_COMET, pc_checkskill(sd, WL_COMET)));
++				skill_blockpc_start(sd, rsb_skillid, skill_get_cooldown(rsb_skillid, pc_checkskill(sd, rsb_skillid)));
+ 				switch( skill_get_casttype(rsb_skillid) )
+ 				{
+ 					case CAST_GROUND:

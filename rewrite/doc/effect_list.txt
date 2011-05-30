@@ -18,6 +18,8 @@
 //= 2.0 - New Effects, up to 2008/07/15 Sakexe. [Au{R}oN]
 //= 2.1 - New Effects, up to 2008/08/06a Sakexe. [Au{R}oN]
 //= 2.2 - New Effects, up to 2009/01/21a Sakexe. [Au{R}oN]
+//= 2.3 - Added new animation from 2010/06/16 RagexeRE.
+//= List is incomplete, but will be completed soon. [Rytech]
 //===== Description =======================================
 //= A list of client-side effects sorted by their ID
 //=========================================================
@@ -762,4 +764,334 @@ number	description
 729.	Effect like Close Confine (Probably something related Warlock)
 730.	Little Explosion (Probably something related Warlock)
 731.	An effect like Mob's Skill Scream (Probably something related a 3th classes)
-732+.	No More Effects From 2009/01/21a Sakexe.
+732.	No More Effects From 2009/01/21a Sakexe.
+
+701.	
+702.	
+703.	
+704.	
+705.	
+706.	
+707.	
+708.	
+709.	
+710.	
+
+711.	
+712.	
+713.	
+714.	
+715.	
+716.	
+717.	
+718.	Judex
+719.	Adoramus 1 (Light Shine)
+720.	Sonic Wave (Beta 1 Version)
+
+721.	Adoramus 2 (Blue Energy Strike)
+722.	Ignition Break
+723.	Hundred Spear
+724.	Wind Cutter
+725.	Oratio 1 (White Spread Animation)
+726.	Frosty Misty
+727.	Crimson Rock
+728.	Hell Inferno 1 (Fire Animation)
+729.	Marsh of Abyss
+730.	Soul Expansion (Fire Animation)
+
+731.	Dragon Howling
+732.	Unknown Animation (Beta Earth Strain? Kinda like a earth element Ice Wall unit)
+733.	Sonice Wave (Beta 2 Version)
+734.	Chain Lightning
+735.	(Unused ID)
+736.	(Unused ID)
+737.	(Unused ID)
+738.	(Unused ID)
+739.	Bata Ranger Trap Unit
+740.	Bata Ranger Trap Unit
+
+741.	Bata Ranger Trap Unit
+742.	Bata Ranger Trap Unit
+743.	Bata Ranger Trap Unit
+744.	Camouflage
+745.	Aimed Bolt
+746.	Arrow Storm
+747.	Lauda Agnus ?
+748.	Lauda Ramus ?
+749.	Millenium Shield
+750.	
+
+751.	Release
+752.	
+753.	Clearance
+754.	Epiclesis (Beta)
+755.	Oratio 2 (Status showing affected targets)
+756.	Enchant Blade, Giant Growth, Stone Hard Skin, Fighting Spirit
+757.	3rd Job Aura 1 (1st of 3 that make up the entire aura)
+758.	Rolling Cutter 1 (1st of 10 counters)
+759.	Rolling Cutter 2 (2nd of 10 counters)
+760.	Rolling Cutter 3 (3rd of 10 counters)
+
+761.	Rolling Cutter 4 (4th of 10 counters)
+762.	Rolling Cutter 5 (5th of 10 counters)
+763.	Rolling Cutter 6 (6th of 10 counters)
+764.	Rolling Cutter 7 (7th of 10 counters)
+765.	Rolling Cutter 8 (8th of 10 counters)
+766.	Rolling Cutter 9 (9th of 10 counters)
+767.	Rolling Cutter 10 (10th of 10 counters)
+768.	Weapon Blocking, Phantom Menace
+769.	Cross Ripper Slasher
+770.	Weapon Crush
+
+771.	Poisoning Weapon
+772.	
+773.	Phantom Menace
+774.	Axe Boomerang
+775.	Self Destruction, Axe Tornado (Cast Animation)
+776.	Vulcan Arm
+777.	Acceleration
+778.	Front-Side Slide, Back-Side Slide
+779.	Shape Shift
+780.	Infrared Scan 1 (Red Spread Animation)
+
+781.	Magnetic Field
+782.	Neutral Barrier 1 (Main Animation)
+783.	Neutral Barrier 2 (Unit Animation)
+784.	Stealth Field (Unit Animation)
+785.	Repair
+786.	Analyze
+787.	Flame Launcher
+788.	
+789.	Freezing Status
+790.	Burning Status
+
+791.	Cold Slower
+792.	
+793.	
+794.	Infrared Scan 2 (Scanning Animation)
+795.	Power Swing
+796.	Axe Tornado (Beta Version)
+797.	Sienna Execrate
+798.	Soul Expansion 2 (Expanding Animation)
+799.	Stasis
+800.	Hell Inferno 2 (Red Light Rays)
+
+801.	Jack Frost
+802.	White Imprison
+803.	Recognized Spell
+804.	Tetra Vortex 1 (Main Animation)
+805.	Tetra Vortex 2 (Casting Animation)
+806.	Boost Knuckle
+807.	Fatal Menace
+808.	Reproduce (Beta)
+809.	Shadow Forum (Beta)
+810.	Triangle Shot
+
+811.	Body Painting
+812.	Deadly Infect
+813.	Masquerade - Enervation
+814.	Masquerade - Gloomy
+815.	Masquerade - Ignorance
+816.	Masquerade - Laziness
+817.	Masquerade - Unlucky
+818.	Masquerade - Weakness
+819.	
+820.	Strip Accessory
+
+821.	Brasilis Field Waterfall
+822.	Man Hole 1 (Unit Animation)
+823.	Man Hole 2 (Main Animation)
+824.	
+825.	Dimension Door (Unit Animation)
+826.	
+827.	Chaos Panic (Unit Animation)
+828.	Maelstrom
+829.	Bloody Lust
+830.	
+
+831.	
+832.	Sonic Wave (Final Animation)
+833.	
+834.	
+835.	
+836.	
+837.	
+838.	Brasilis Field Water Sparkle
+839.	Gives error messages looking for effect\w_comp_00.tga and effect\w_comp_24.tga. (Error Animation)
+840.	
+
+841.	
+842.	
+843.	
+844.	
+845.	
+846.	
+847.	Swing Dance, Symphony of Lovers, Moonlit Serenade
+848.	Windmill Rush Attack, Echo Song
+849.	
+850.	
+
+851.	
+852.	
+853.	Valley of Death
+854.	Metallic Sound
+855.	
+856.	
+857.	Severe Rainstorm
+858.	Deep Sleep Lullaby
+859.	Circle of Nature's Sound (Affected Targets)
+860.	
+
+861.	
+862.	Randomized Spell
+863.	Dominion Impulse
+864.	Gloomy Day
+865.	Song of Mana 1 (Affected Target)
+866.	Dance With A Warg (Main Animation)
+867.	Dance With A Warg (Affected Target)
+868.	Song of Mana 2 (Main Animation)
+869.	Sound of Destruction
+870.	Saturday Night Fever
+
+871.	Lerad's Dew (Affected Target)
+872.	Lerad's Dew (Main Animation)
+873.	Melody of Sink (Affected Target)
+874.	Melody of Sink (Main Animation)
+875.	Warcry of Beyond (Affected Target)
+876.	Warcry of Beyond (Main Animation)
+877.	Unlimited Humming Voice (Affected Target)
+878.	Unlimited Humming Voice (Main Animation)
+879.	
+880.	3rd Job Aura 2 (2nd of 3 that make up the entire aura)
+
+881.	3rd Job Aura 3 (3rd of 3 that make up the entire aura)
+882.	Exceed Break
+883.	Epiclesis (Final Animation) (Unit Animation)
+884.	
+885.	
+886.	
+887.	
+888.	Earth Shaker
+889.	Tiger Cannon
+890.	
+
+891.	Rampage Blaster
+892.	Dragon Combo
+893.	Knuckle Arrow
+894.	Howling of Lion
+895.	
+896.	
+897.	
+898.	
+899.	Ride In Lightening
+900.	
+
+901.	Spore Explosion
+902.	
+903.	Flameing Casting Aura (Skill Unknown)
+904.	
+905.	Trample
+906.	Shield Press
+907.	Pinpoint Attack
+908.	Prestige
+909.	Banding
+910.	Inspiration
+
+911.	Genetic Skill Casting Aura
+912.	Wall of Thorns (Unit Animation)
+913.	Cart Cannon
+914.	
+915.	Crazy Weed
+916.	Demonic Fire
+917.	Fire Expansion Smoke Powder
+918.	Fire Expansion Tear Gas
+919.	Hell's Plant
+920.	Fire Walk (Unit Animation)
+
+921.	Vacuum Extreme (Unit Animation)
+922.	Psychic Wave
+923.	Poison Buster
+924.	
+925.	
+926.	Electric Walk
+927.	Earth Grave
+928.	
+929.	Warmer (Unit Animation)
+930.	Varetyr Spear
+
+931.	
+932.	
+933.	Gives error messages looking for sprite\¿Ã∆—∆Æ\chareffect.spr and .act. (Error Animation)
+934.	Elemental Action
+935.	
+936.	
+937.	
+938.	
+939.	
+940.	
+
+941.	
+942.	
+943.	
+944.	Stone Rain
+945.	
+946.	
+947.	
+948.	
+949.	
+950.	
+
+951.	
+952.	
+953.	
+954.	
+955.	
+956.	
+957.	
+958.	
+959.	
+960.	
+
+961.	
+962.	
+963.	
+964.	
+965.	
+966.	
+967.	
+968.	
+969.	
+970.	
+
+971.	
+972.	
+973.	
+974.	
+975.	
+976.	
+977.	
+978.	
+979.	
+980.	
+
+981.	
+982.	
+983.	
+984.	
+985.	
+986.	
+987.	
+988.	
+989.	
+990.	
+
+991.	
+992.	
+993.	
+994.	
+995.	
+996.	
+997.	
+998.	
+999.	
+1000.	
