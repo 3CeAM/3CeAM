@@ -1,0 +1,26 @@
+Index: pc.c
+===================================================================
+--- pc.c	(revision 529)
++++ pc.c	(working copy)
+@@ -4627,6 +4627,8 @@
+  *------------------------------------------*/
+ int pc_checkskill(struct map_session_data *sd,int skill_id)
+ {
++	int m;
++
+ 	if( sd == NULL )
+ 		return 0;
+ 
+@@ -4638,7 +4640,11 @@
+ 		return 0;
+ 	}
+ 
+-	if( sd->status.skill[skill_id].id == skill_id )
++	m = sd->bl.m;
++	if(map[m].flag.restricted && map[m].zone && skill_get_nocast (skill_id) & (8*map[m].zone))
++		return 0;
++
++	if(sd->status.skill[skill_id].id == skill_id)
+ 		return (sd->status.skill[skill_id].lv);
+ 
+ 	return 0;

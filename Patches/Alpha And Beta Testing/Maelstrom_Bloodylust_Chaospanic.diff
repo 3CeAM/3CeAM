@@ -1,0 +1,206 @@
+Index: rewrite/db/const.txt
+===================================================================
+--- rewrite/db/const.txt	(revision 532)
++++ rewrite/db/const.txt	(working copy)
+@@ -1037,7 +1037,7 @@
+ SC__MANHOLE	416
+ SC_CHAOS	417
+ SC__BLOODYLUST	418
+-//SC__MAELSTROM	419
++SC__MAELSTROM	419
+ SC_GN_CARTBOOST	420
+ SC_BLOODSUCKER	421
+ SC_THORNSTRAP	422
+Index: rewrite/db/skill_unit_db.txt
+===================================================================
+--- rewrite/db/skill_unit_db.txt	(revision 532)
++++ rewrite/db/skill_unit_db.txt	(working copy)
+@@ -15,6 +15,7 @@
+ //      0x200(UF_ENSEMBLE)	Ensemble skill
+ //      0x400(UF_SONG)		Song skill
+ //      0x800(UF_DUALMODE)	Spell has effects both at an interval and when you step in/out
++//		0x1000(UF_RANGEDSINGLEUNIT)	Skill unit with layout higher than 0 that don't display every unit in the client.
+ // 	Example: 0x006 = 0x002+0x004 -> Cannot be stacked nor cast near targets
+ //
+ // Notes:
+@@ -111,9 +112,9 @@
+ 2274,0xe3,    ,  1, 0, 300,all,   0x000	//NC_STEALTHFIELD
+ 2299,0xcc,    ,  0, 1,1000,all,   0x006	//SC_MANHOLE
+ 2300,0xcd,    ,  0, 1,1000,all,   0x006	//SC_DIMENSIONDOOR
+-2301,0xce,    ,  0, 2,  -1,all,   0x00E	//SC_CHAOSPANIC
+-2302,0xcf,    ,  0, 2,  -1,all,   0x002	//SC_MAELSTROM
+-2303,0xd0,    ,  0, 1,  -1,all,   0x018	//SC_BLOODYLUST
++2301,0xce,    ,  1, 0,  -1,all,   0x100E	//SC_CHAOSPANIC
++2302,0xcf,    ,  2, 0,  -1,all,   0x1002	//SC_MAELSTROM
++2303,0xd0,    ,  1, 0,  -1,all,   0x1018	//SC_BLOODYLUST
+ 2304,0xd1,    ,  0, 2,  -1,enemy, 0x000	//SC_FEINTBOMB
+ 2319,0xec,    ,  0, 3,5000,all,   0x000	//LG_BANDING
+ 2414,0xda,    ,  0, 2,1000,enemy, 0x018	//WM_REVERBERATION
+Index: rewrite/src/map/battle.c
+===================================================================
+--- rewrite/src/map/battle.c	(revision 532)
++++ rewrite/src/map/battle.c	(working copy)
+@@ -433,7 +433,7 @@
+ 			return 0;
+ 		}
+ 		
+-		if( map_getcell(bl->m,bl->x,bl->y,CELL_CHKMAELSTROM) && (flag&BF_MAGIC) && skill_num && (skill_get_inf(skill_num)&INF_GROUND_SKILL) )
++		if( sc->data[SC__MAELSTROM] && (flag&BF_MAGIC) && skill_num && (skill_get_inf(skill_num)&INF_GROUND_SKILL) )
+ 		{
+ 			int sp = damage * 20 / 100; // Steel need official value.
+ 			status_heal(bl,0,sp,3);
+Index: rewrite/src/map/clif.c
+===================================================================
+--- rewrite/src/map/clif.c	(revision 532)
++++ rewrite/src/map/clif.c	(working copy)
+@@ -4349,6 +4349,8 @@
+ 	WFIFOW(fd,12)=unit->bl.y;
+ 	if (battle_config.traps_setting&1 && skill_get_inf2(unit->group->skill_id)&INF2_TRAP)
+ 		WFIFOB(fd,14)=UNT_DUMMYSKILL; //Use invisible unit id for traps.
++	else if( skill_get_unit_flag(unit->group->skill_id)&UF_RANGEDSINGLEUNIT && !(unit->val2&UF_RANGEDSINGLEUNIT) )
++		WFIFOB(fd,14) = UNT_DUMMYSKILL;
+ 	else
+ 		WFIFOB(fd,14)=unit->group->unit_id;
+ 	WFIFOB(fd,15)=1; // ignored by client (always gets set to 1)
+@@ -5056,10 +5058,12 @@
+ 	WBUFW(buf,10)=unit->bl.x;
+ 	WBUFW(buf,12)=unit->bl.y;
+ 	if (unit->group->state.song_dance&0x1 && unit->val2&UF_ENSEMBLE)
+-		WBUFB(buf,14)=unit->val2&UF_SONG?UNT_DISSONANCE:UNT_UGLYDANCE;
++		WBUFB(buf,14) = unit->val2&UF_SONG?UNT_DISSONANCE:UNT_UGLYDANCE;
++	else if( skill_get_unit_flag(unit->group->skill_id)&UF_RANGEDSINGLEUNIT && !(unit->val2&UF_RANGEDSINGLEUNIT) )
++		WBUFB(buf,14) = UNT_DUMMYSKILL;	// Only display the unit at center.
+ 	else
+-		WBUFB(buf,14)=unit->group->unit_id;
+-	WBUFB(buf,15)=1; // ignored by client (always gets set to 1)
++		WBUFB(buf,14) = unit->group->unit_id;
++	WBUFB(buf,15) = 1; // ignored by client (always gets set to 1)
+ 	clif_send(buf,packet_len(0x11f),&unit->bl,AREA);
+ }
+ 
+Index: rewrite/src/map/map.c
+===================================================================
+--- rewrite/src/map/map.c	(revision 532)
++++ rewrite/src/map/map.c	(working copy)
+@@ -2606,8 +2606,6 @@
+ 			return (cell.novending);
+ 		case CELL_CHKNOCHAT:
+ 			return (cell.nochat);
+-		case CELL_CHKMAELSTROM:
+-			return (cell.maelstrom);
+ 
+ 		// special checks
+ 		case CELL_CHKPASS:
+@@ -2660,7 +2658,6 @@
+ 		case CELL_LANDPROTECTOR: map[m].cell[j].landprotector = flag; break;
+ 		case CELL_NOVENDING:     map[m].cell[j].novending = flag;     break;
+ 		case CELL_NOCHAT:        map[m].cell[j].nochat = flag;        break;
+-		case CELL_MAELSTROM:	 map[m].cell[j].maelstrom = flag;	  break;
+ 		default:
+ 			ShowWarning("map_setcell: invalid cell type '%d'\n", (int)cell);
+ 			break;
+Index: rewrite/src/map/map.h
+===================================================================
+--- rewrite/src/map/map.h	(revision 532)
++++ rewrite/src/map/map.h	(working copy)
+@@ -404,8 +404,7 @@
+ 	CELL_BASILICA,
+ 	CELL_LANDPROTECTOR,
+ 	CELL_NOVENDING,
+-	CELL_NOCHAT,
+-	CELL_MAELSTROM,
++	CELL_NOCHAT
+ } cell_t;
+ 
+ // used by map_getcell()
+@@ -426,8 +425,7 @@
+ 	CELL_CHKBASILICA,
+ 	CELL_CHKLANDPROTECTOR,
+ 	CELL_CHKNOVENDING,
+-	CELL_CHKNOCHAT,
+-	CELL_CHKMAELSTROM,
++	CELL_CHKNOCHAT
+ } cell_chk;
+ 
+ struct mapcell
+@@ -444,8 +442,7 @@
+ 		basilica : 1,
+ 		landprotector : 1,
+ 		novending : 1,
+-		nochat : 1,
+-		maelstrom : 1;
++		nochat : 1;
+ 
+ #ifdef CELL_NOSTACK
+ 	unsigned char cell_bl; //Holds amount of bls in this cell.
+Index: rewrite/src/map/skill.c
+===================================================================
+--- rewrite/src/map/skill.c	(revision 532)
++++ rewrite/src/map/skill.c	(working copy)
+@@ -10447,6 +10447,9 @@
+ 			break;
+ 		}
+ 
++		if( skill_get_unit_flag(skillid)&UF_RANGEDSINGLEUNIT && i == (layout->count/2))
++			val2 |= UF_RANGEDSINGLEUNIT; // center.
++
+ 		if( range <= 0 )
+ 			map_foreachincell(skill_cell_overlap,src->m,ux,uy,BL_SKILL,skillid,&alive, src);
+ 		if( !alive )
+@@ -14171,9 +14174,6 @@
+ 	case HP_BASILICA:
+ 		skill_unitsetmapcell(unit,HP_BASILICA,group->skill_lv,CELL_BASILICA,true);
+ 		break;
+-	case SC_MAELSTROM:
+-		skill_unitsetmapcell(unit,SC_MAELSTROM,group->skill_lv,CELL_MAELSTROM,true);
+-		break;
+ 	default:
+ 		if (group->state.song_dance&0x1) //Check for dissonance.
+ 			skill_dance_overlap(unit, 1);
+@@ -14225,9 +14225,6 @@
+ 	case HP_BASILICA:
+ 		skill_unitsetmapcell(unit,HP_BASILICA,group->skill_lv,CELL_BASILICA,false);
+ 		break;
+-	case SC_MAELSTROM:
+-		skill_unitsetmapcell(unit,SC_MAELSTROM,group->skill_lv,CELL_MAELSTROM,false);
+-		break;
+ 	case RA_ELECTRICSHOCKER:
+ 		{
+ 			struct block_list* target = map_id2bl(group->val2);
+Index: rewrite/src/map/skill.h
+===================================================================
+--- rewrite/src/map/skill.h	(revision 532)
++++ rewrite/src/map/skill.h	(working copy)
+@@ -186,6 +186,7 @@
+ 	UF_ENSEMBLE      = 0x0200,	// Duet
+ 	UF_SONG          = 0x0400,	// Song
+ 	UF_DUALMODE      = 0x0800,	// Spells should trigger both ontimer and onplace/onout/onleft effects.
++	UF_RANGEDSINGLEUNIT = 0x1000,	// To display one unit in the client only.
+ };
+ 
+ // アイテム作成デ?タベ?ス
+Index: rewrite/src/map/status.c
+===================================================================
+--- rewrite/src/map/status.c	(revision 532)
++++ rewrite/src/map/status.c	(working copy)
+@@ -485,6 +485,7 @@
+ 	set_sc( SC_MANHOLE           , SC__MANHOLE           , SI_MANHOLE           , SCB_NONE );
+ 	add_sc( SC_CHAOSPANIC        , SC_CHAOS );
+ 	set_sc( SC_BLOODYLUST        , SC__BLOODYLUST        , SI_BLOODYLUST        , SCB_DEF|SCB_DEF2|SCB_BATK|SCB_WATK );
++	add_sc( SC_MAELSTROM         , SC__MAELSTROM );
+ 	
+ 	add_sc( LG_REFLECTDAMAGE     , SC_REFLECTDAMAGE );
+ 	set_sc( LG_FORCEOFVANGUARD   , SC_FORCEOFVANGUARD    , SI_FORCEOFVANGUARD   , SCB_MAXHP|SCB_DEF );
+Index: rewrite/src/map/status.h
+===================================================================
+--- rewrite/src/map/status.h	(revision 532)
++++ rewrite/src/map/status.h	(working copy)
+@@ -402,7 +402,7 @@
+ 	SC__MANHOLE,
+ 	SC_CHAOS,
+ 	SC__BLOODYLUST,
+-	//SC__MAELSTROM,
++	SC__MAELSTROM,
+ 	SC_GN_CARTBOOST,
+ 	SC_BLOODSUCKER,
+ 	SC_THORNSTRAP,

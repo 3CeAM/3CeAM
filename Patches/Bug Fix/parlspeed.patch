@@ -1,0 +1,22 @@
+Index: status.c
+===================================================================
+--- status.c	(revision 525)
++++ status.c	(working copy)
+@@ -798,7 +798,7 @@
+ 	
+ 	StatusChangeFlagTable[SC_STEALTHFIELD_MASTER] |= SCB_SPEED;
+ 	StatusChangeFlagTable[SC_HALLUCINATIONWALK_POSTDELAY] |= SCB_ASPD|SCB_SPEED;
+-	StatusChangeFlagTable[SC_PARALYSE] |= SCB_ASPD|SCB_FLEE; // |SCB_SPEED; Speed Part is not working currently on Kro
++	StatusChangeFlagTable[SC_PARALYSE] |= SCB_ASPD|SCB_FLEE|SCB_SPEED; // Speed Part is not working currently on Kro
+ 	StatusChangeFlagTable[SC_MAGICMUSHROOM] |= SCB_REGEN;
+ 	StatusChangeFlagTable[SC_VENOMBLEED] |= SCB_MAXHP;
+ 	StatusChangeFlagTable[SC_PYREXIA] |= SCB_FLEE|SCB_HIT;
+@@ -4549,7 +4575,7 @@
+ 
+ 				if( sc->data[SC_DECREASEAGI] || sc->data[SC_ADORAMUS] )
+ 					val = max( val, 25 );
+-				if( sc->data[SC_QUAGMIRE] || sc->data[SC_HALLUCINATIONWALK_POSTDELAY] /*|| sc->data[SC_PARALYSE]*/ )
++				if( sc->data[SC_QUAGMIRE] || sc->data[SC_HALLUCINATIONWALK_POSTDELAY] || sc->data[SC_PARALYSE] )
+ 					val = max( val, 50 );
+ 				if( sc->data[SC_DONTFORGETME] )
+ 					val = max( val, sc->data[SC_DONTFORGETME]->val3 );

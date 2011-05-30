@@ -1,0 +1,86 @@
+Index: script.c
+===================================================================
+--- script.c	(revision 529)
++++ script.c	(working copy)
+@@ -8632,6 +8632,22 @@
+ 	return 0;
+ }
+ 
++BUILDIN_FUNC(sc_end3rd)
++{
++	struct block_list* bl;
++	int type;
++	
++	bl = map_id2bl(st->rid);
++	
++	if( !bl ) return 0;
++	
++	type = script_getnum(st,2);
++	
++	status_change_3rdclear(bl);
++	
++	return 0;
++}
++
+ /*==========================================
+  * 状態異常耐性を計算した確率を返す
+  *------------------------------------------*/
+@@ -14849,5 +14881,8 @@
+ 	BUILDIN_DEF(checkquest, "i*"),
+ 	BUILDIN_DEF(changequest, "ii"),
+ 	BUILDIN_DEF(showevent, "ii"),
++
++	BUILDIN_DEF(sc_end3rd,""),
++
+ 	{NULL,NULL,NULL},
+ };
+Index: status.c
+===================================================================
+--- status.c	(revision 529)
++++ status.c	(working copy)
+@@ -8048,6 +8048,33 @@
+ 	return 1;
+ }
+ 
++int status_change_3rdclear(struct block_list* bl)
++{
++	struct status_change* sc;
++	int i;
++
++	sc = status_get_sc(bl);
++
++	if (!sc || !sc->count)
++		return 0;
++
++	for(i = 350; i < SC_MAX; i++)
++	{
++		if(!sc->data[i])
++		  continue;
++		status_change_end(bl, (sc_type)i, INVALID_TIMER);
++	}
++
++	sc->opt1 = 0;
++	sc->opt2 = 0;
++	sc->opt3 = 0;
++	sc->option &= OPTION_MASK;
++
++	clif_changeoption(bl);
++
++	return 1;
++}
++
+ /*==========================================
+  * ステータス異常終了
+  *------------------------------------------*/
+Index: status.h
+===================================================================
+--- status.h	(revision 529)
++++ status.h	(working copy)
+@@ -1540,6 +1540,7 @@
+ int status_change_clear(struct block_list* bl, int type);
+ int status_change_clear_buffs(struct block_list* bl, int type);
+ int status_change_spread( struct block_list *src, struct block_list *bl );
++int status_change_3rdclear(struct block_list* bl);
+ 
+ #define status_calc_bl(bl, flag) status_calc_bl_(bl, flag, false)
+ #define status_calc_mob(md, first) status_calc_bl_(&(md)->bl, SCB_ALL, first)

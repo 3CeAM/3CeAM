@@ -1,0 +1,109 @@
+Index: trunk/rewrite/src/map/status.c
+===================================================================
+--- trunk/rewrite/src/map/status.c	(revision 554)
++++ trunk/rewrite/src/map/status.c	(working copy)
+@@ -1675,52 +1675,73 @@
+ //Fills in the misc data that can be calculated from the other status info (except for level)
+ void status_calc_misc(struct block_list *bl, struct status_data *status, int level)
+ {
++	int val;
+ 	//Non players get the value set, players need to stack with previous bonuses.
+ 	if( bl->type != BL_PC )
+-		status->batk = 
+-		status->hit = status->flee =
+-		status->def2 = status->mdef2 =
+-		status->cri = status->flee2 = 0;
++		status->batk  = status->hit   = status->flee =
++		status->def2  = status->mdef2 = status->cri  =
++		status->flee2 = 0;
+ 
+ 	status->matk_min = status_base_matk_min(status);
+ 	status->matk_max = status_base_matk_max(status);
+ 
+-	status->hit += level + status->dex;
+-	status->flee += level + status->agi;
+-	status->def2 += status->vit;
+-	status->mdef2 += status->int_ + (status->vit>>1);
++	val = level + status->dex;
++	status->hit += cap_value(val,0,SHRT_MAX);
++	
++	val = level + status->agi;
++	status->flee = cap_value(val,0,SHRT_MAX);
++	
++	val = status->vit;
++	status->def2 = cap_value(val,0,SHRT_MAX);
++	
++	val = status->int_ + (status->vit>>1);
++	status->mdef2 = cap_value(val,0,SHRT_MAX);
+ 
+ 	if( bl->type&battle_config.enable_critical )
+-		status->cri += status->luk*3 + 10;
++	{
++		val = status->luk * 3 + 10;
++		status->cri = cap_value(val,0,SHRT_MAX);
++	}
+ 	else
+ 		status->cri = 0;
+ 
+-	if (bl->type&battle_config.enable_perfect_flee)
+-		status->flee2 += status->luk + 10;
++	if( bl->type&battle_config.enable_perfect_flee )
++	{
++		val = status->luk + 10;
++		status->flee2 = cap_value(val,0,SHRT_MAX);
++	}
+ 	else
+ 		status->flee2 = 0;
+ 
+-	if (status->batk) {
+-		int temp = status->batk + status_base_atk(bl, status);
+-		status->batk = cap_value(temp, 0, USHRT_MAX);
+-	} else
++	if( status->batk )
++	{
++		val = status->batk + status_base_atk(bl, status);
++		status->batk = cap_value(val, 0, USHRT_MAX);
++	}
++	else
+ 		status->batk = status_base_atk(bl, status);
+-	if (status->cri)
+-	switch (bl->type) {
+-	case BL_MOB:
+-		if(battle_config.mob_critical_rate != 100)
+-			status->cri = status->cri*battle_config.mob_critical_rate/100;
+-		if(!status->cri && battle_config.mob_critical_rate)
+-		  	status->cri = 10;
+-		break;
+-	case BL_PC:
+-		//Players don't have a critical adjustment setting as of yet.
+-		break;
+-	default:
+-		if(battle_config.critical_rate != 100)
+-			status->cri = status->cri*battle_config.critical_rate/100;
+-		if (!status->cri && battle_config.critical_rate)
+-			status->cri = 10;
++
++	if( status->cri )
++	{
++		switch( bl->type )
++		{
++			case BL_MOB:
++				if( battle_config.mob_critical_rate != 100 )
++					val = status->cri * battle_config.mob_critical_rate / 100;
++				if( !status->cri && battle_config.mob_critical_rate )
++					val = 10;
++				status->cri = cap_value(val,0,SHRT_MAX);
++				break;
++			case BL_PC:
++				//Players don't have a critical adjustment setting as of yet.
++				break;
++			default:
++				if( battle_config.critical_rate != 100 )
++					val = status->cri*battle_config.critical_rate / 100;
++				if( !status->cri && battle_config.critical_rate )
++					val = 10;
++				status->cri = cap_value(val,0,SHRT_MAX);
++		}
+ 	}
+ 	if(bl->type&BL_REGEN)
+ 		status_calc_regen(bl, status, status_get_regen_data(bl));

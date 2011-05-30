@@ -74,7 +74,7 @@ Upper: Equippable upper-types. Uses the following bitmasks to set type of job th
 is required to be to beable to use that item:
 	1: All existing jobs can use it (All Base, Trans, Babys, and Thirds)
 	2: Trans and higher jobs/ Baby Thirds (All Trans, Thirds, and Third Babys)
-	4: Babys only (Just all baby jobs can use it)
+	4: Babys only (Only baby jobs can use it)
 	8: Thirds (Thirds and Third Babys)
 
 Gender: Gender restriction. 0 is female, 1 is male, 2 for both.

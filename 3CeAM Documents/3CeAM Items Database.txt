@@ -1,0 +1,94 @@
+===== 3CeAM Documnent ===================================
+= 3CeAM Items V2.0
+===== Description =======================================
+= Explains 3CeAM's edits to the item database and how
+= items for 3rd jobs work.
+===== By ================================================
+= Rytech
+===== Version ===========================================
+= 2.5
+=========================================================
+= 1.0 - Typed and completed the 3CeAM Info Doc. [Rytech]
+= 2.0 - Updated for the item system that works with the
+= V2.0 job system. [Rytech]
+= 2.5 Updated to reflect the modified system that allows
+= existing items from eAthena in the item_db to work
+= without the need to change the upper settings. [Rytech]
+=========================================================
+
+================================
+Contents
+
+1. 3CeAM 3rd Jobs Item Handleing
+
+2. Item Database Edits
+
+3. 3rd Jobs Item Database
+
+4. New Item Settings
+
+================================
+
+===== 1. 3CeAM 3rd Jobs Item Handleing =====
+In 3CeAM, the item database has been edited to allow support for 3rd jobs and also make eAthena's item_db backwords compatible.
+This was done to make all existing items compatible with the new jobs without the need to edit any items (except for one with
+certain bonus scripts that does job checks), as well as add in support for special 3rd class items and equips.
+
+Lets see how fimilar jobs handle items. Their's 2 things that set what jobs are able to use what item and equips.
+The Job masks, and the Upper setting. Their's masks for base 1st and 2nd jobs, as well as some extended jobs, but lets focus
+on the regular jobs. By setting a mask for a 1st or 2nd job and giveing a upper of 1, itl work for all jobs. If the
+upper setting was set to 2, the item would be accessable to reborns, and all 3rds including 3rd babys, if set to 4, it would be
+accessable only to all baby jobs. The need to add numbers together for the upper setting is no longer needed.
+
+So how does 3rd jobs handle items??? Since 3rd jobs use upper masks, they require upper settings as well.
+
+ 8: Third Jobs
+
+So how does it know what 3rd job to work for, and which not to work for? Use of job masks. If we wanted to make a
+Rune Knight only equip, we would give the item a Knight mask 0x00000080 and a upper of 8. The Knight mask was given to
+serve the same purpose as it would serve for a Lord Knight only item. Knight with a upper setting of 2. If we wanted a
+Royal Guard only item, we would give the item a Crusader mask 0x00004000 and a upper of 8. Its kinda like the same thing
+as makeing a item for a Paladin, but with a different upper setting set.
+
+===== 2. Item Database Edits =====
+Ok thats cool. So since these new jobs have their own upper setting, would all of the items in the item_db need to have
+their upper setting changed??? The answer is no since its backwords compatible. So you can use the one from eAthena and itl
+work, but the only thing to keep a eye on is any bonus scripts that checks for certain jobs.
+
+Example is the poison bottles. That required adding a check for Guillotines.
+
+===== 3. 3rd Jobs Item Database =====
+All items for the 3rd jobs have been added to the item_db2.txt file in the database. This makes it easier to add, find, and
+edit items. Its strongly recommand you use the item_db2 provided with 3CeAM since we do all our item work in there.
+
+===== 4. New Item Settings =====
+These are the new job masks and upper settings added to the item database
+
+Upper: Equippable upper-types. Uses the following bitmasks to set type of job the player
+is required to be to beable to use that item:
+	1: All existing jobs can use it (All Base, Trans, Babys, and Thirds)
+	2: Trans and higher jobs/ Baby Thirds (All Trans, Thirds, and Third Babys)
+	4: Babys only (Only baby jobs can use it)
+	8: Thirds (Thirds and Third Babys)
+
+= How to set equip and upper mask for 3rd jobs only usage
+
+	    Job Name        Job Mask   Upper  Sex
+	Ext Super Novice: 0x00000001 / 8 /    2
+
+	Rune Knight	: 0x00000080 / 8 /    2
+	Arch Bishop	: 0x00000100 / 8 /    2
+	Warlock		: 0x00000200 / 8 /    2
+	Mechanic	: 0x00000400 / 8 /    2
+	Ranger		: 0x00000800 / 8 /    2
+	Guillotine Cross: 0x00001000 / 8 /    2
+
+	Royal Guard	: 0x00004000 / 8 /    2
+	Sura		: 0x00008000 / 8 /    2
+	Sorcerer	: 0x00010000 / 8 /    2
+	Shadow Chaser	: 0x00020000 / 8 /    2
+	Genetic		: 0x00040000 / 8 /    2
+	Minstrel	: 0x00080000 / 8 /    0
+	Wanderer	: 0x00080000 / 8 /    1
+
+Thats it.

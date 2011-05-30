@@ -1,0 +1,310 @@
+===== 3CeAM Documnent ===================================
+= 3CeAM Job System V2.0
+===== Description =======================================
+= Explains 3CeAM's job system addin's and how server 
+= manages the new jobs.
+===== By ================================================
+= Rytech
+===== Version ===========================================
+= 2.0
+=========================================================
+= 1.0 - Typed and completed the 3CeAM Info Doc. [Rytech]
+= 1.2 - Added 2 more chapters. [Rytech]
+= 2.0 - Updated to explain the V2.0 version of the job
+= system. [Rytech]
+= 2.1 - Added more jobs and MAPID's to the table. [Rytech]
+=========================================================
+
+================================
+Contents
+
+1. 3CeAM 3rd Jobs and Job System
+
+2. Simple Example and Explaining
+
+3. Job ID's, MAPID's, and Masks
+
+================================
+
+===== 1. 3CeAM 3rd Jobs and Job System =====
+This will fully explain how the job system works in 3CeAM in full detail. If you want a short explaining, just go to
+chapter 2.
+
+3CeAM currently adds support for all 12 jobs (13 if you count the split between Minstrel/Wanderer), as well as both
+versions for each job. What do we mean by versions your wondering??? Well, what job you are when your changeing to a
+3rd job will determand which of the 2 versions youll become. Before going any further, lets go over how the server
+handles the jobs. Well be focusing on the paths of regular jobs.
+
+The way jobs work is that its kinda like a tree, and the path you choose determands which direction you will walk, and
+you will keep on walking until you reach the end of one of the tree's branches. When you start, you start off as a novice
+at the bottom of the tree. After you kill a few things, you get to choose one of the 6 regular jobs...Swordman, Mage,
+Archer, Acolyte, Merchant, and Thief. Once you do, you start walking your path.
+
+Novice and all 1st jobs are marked as base jobs in the system, or the "root" as you may call it. Also note that all jobs
+are assigned a MAPID in the server to help arrange them better in the system. These base jobs are recognized by the server
+by reading the last 2 hex digits of your job's MAPID. Lets choose to walk the path of the Swordman. Your MAPID gets changed
+0x01. Remember that this value is different for each base job. So now were a Swordman and we kill and level for a while,
+and its now time to get our 2nd job. Once again you have more then 1 choice for your next job.
+
+This time you have a choice of 2 jobs. What your 1st job is determands what 2 jobs youll have to choose from. The choice
+between the 2 jobs youll beable to choose from are jobs that will behave kinda similar to your first job, and each base job
+has their own unique choice of 2 2nd jobs. So how does the system do this??? Simple. By the use of 2 simple masks called
+Branch Masks. Here they are below...
+
+JOBL_2_1 0x100
+JOBL_2_2 0x200
+
+The path you choose for your 2nd job determand which one will be used. If our Swordman chooses to become a Knight, the
+2-1 branch mask will be assigned. If he chooses to become a Crusader, he will be given the 2-2 branch mask. The hex value
+at the end of the mask is for value for that branch. So we choose a Knight. The system now assigns the 2-1 branch mask and
+adds its hex value to your 1st jobs value. So adding hex here, 100 + 01 = 101. So the value is now 101. If he would of
+chosen the other job, it would of became 201 insteaed. Note that the 3rd number to the left is the Branch number.
+
+|-Branch MAPID Number (Number 3 to the left)
+| - Base MAPID Number (Numbers 1 and 2)
+|/|
+101
+
+Things get a little more complexed here, so try to keep up with me. The next part has to do with the 3rd jobs.
+After fighting many battle and becomeing true and fimilar to your job, your now perty much unstopable, but it doesent end
+there. Your now at another split in the path, but this isnt a path where you can choose your next job. Its a decission
+were you can choose to proceed straight to your 3rd job, or chose the path that will make you more stronger then the other
+path will lead you to. How much stronger the other path will make you will be explained later. Lets focus on how things were
+before 3rd jobs existed first.
+
+Orginal when a player would reach level 99, they are given the opition to be reborn to be much stronger and get goodies like
+a %25 higher HP/SP MAX, access to stronger skills, a chance to earn 20 extra job points, and access to even more powerful
+equips, however theirs a catch. Reborn means being reborn as in, forgeting everything you know and starting fresh as a
+novice. Sounds lame doesent it? Well its worth it. Upon being reborn, your givein a special kind of mask called a UPPER mask.
+
+JOBL_UPPER 0x1000
+
+Since your a novice again, you end up with a base value of 0x00 and with the Upper added its brough to a MAPID of 0x1000.
+So lets start again. Kill kill kill, yes. You can get your 1st job...again. Note that you dont have choices in jobs like
+you did last time. So looks like your following the same path again. HIGH SWORDMAN!!!! High versions of 1st jobs have the
+same base MAPID value as their regular versions. So that means your base value is now 0x01 again, and dont forget your
+rebornand and have UPPER, so that makes it 0x1001. Kill kill kill kill...yes JOB U...WOA!!! Upon job up to your 2nd job
+again you get assigned that same Branch mask, but you look different. Thats because your 2nd class job has been upgraded
+to a more powerful version, the Lord Knight. This is where you get access to a wider range of skills on your 2nd job.
+
+So how did you get this job instead? Simple. Its UPPER. Uupper + 2-1 + Swordman. So thats 1000 + 100 + 01 = 1101 MAPID
+So this is what you end up with...
+
+  |-- Upper MAPID Number (4th number to the left)
+  ||-Branch MAPID Number (3rd number to the left)
+  || - Base MAPID Number (1st and 2nd number to the left)
+  ||/|
+0x1101
+
+Now that you know that, you should also know that theirs a 2nd UPPER mask called JOBL_BABY and has a hex value of 2000.
+Currently, haveing Baby for your UPPER mask instead of the Upper will make you a baby charactor. No just because its value
+is bigger doesent make them stronger. It just gives them a different job, mainly base versions of 1st and 2nd jobs, but for
+babys.
+
+Ok. Cool. Now that we got that out of the way, lets return to that split in the path between 3rd job and being reborn.
+If you choose the path of the 3rd job, you become your next job, which will be Rune Knight. So how does the job system
+handle the new job? We allready have a Base value, and we allready have a Branch assigned to our MAPID, and its not like
+were getting a choice between 2 more jobs or branches. So whats the server to do??? Simple. Assigned it a UPPER to give it
+a new MAPID and a new job.
+
+JOBL_THIRD 0x4000
+
+This mask is in charge of all the base versions of 3rd jobs, versions which are after base 2nd jobs. Now remember that we
+were a base 2nd job and not reborn when we changed. So were had a MAPID of 101 before, and with this UPPER added, which is
+4000 + 101 = 4101 MAPID for the Rune Knight. Their's a total of 13 Job ID's for the base versions of 3rd jobs, as well as
+8 for MOUNTS.(5 for each of Rune Knights different colored Dragon mounts, 1 for Royal Guard Gryphon, 1 for Ranger, and 1
+for Mechanic's MADO). So this is the end of this path. More skills, better equips, yea you feel stronger, but what if you
+wold of taken the path to be reborn??? How would that have helped? Ok lets go back and take it to find out. BACK TRACK!!!!
+
+Ok were no back in time where our charactor was a base 2nd class job, the Knight. So what of that other path??? Well do you
+remember what youve read earlier? Ok recall that and lets take that path and fast foward. Your now a Lord Knight again. You
+fought hard to get back to your 2nd job to become a stronger version of your 2nd job, but wait.....whats this...you can job
+up again??? Yes its true. You can be reborn, get toy our 2nd job, and you can still be a 3rd job. So before changeing into
+that 3rd job, lets recall your MAPID, which is 1101. You allready have a UPPER, so how is the server goina change you into
+3rd??? Look below...
+
+JOBL_UPPER 0x1000
+JOBL_THIRD 0x4000
+
+Your upper mask UPPER is kept and a 2nd upper mask is added, being the same THIRD mask. So you retain the bonuses and skills
+from your trans job. Sooo...what does this mean, and why? First off, no this does not mean your 3rd job will be any
+different. You will still have access to the same skills, have the same job name, same outfit, yea. So what was the extra
+work for? Well the things you did in the past follows on to your 3rd job. Things like you %25 HP/SP MAX increase, trans
+skills, and those extra 20 skill points if youve level your job level to 70 before becomeing 3rd. Perty cool huh? Told you
+you would end up stronger from chooseing the reborn path.
+
+So now your with a Rune Knight with %25 higher HP/SP MAX then what a non reborn Rune Knight would end up with, PLUS you have
+transcendent skills. So its worth the extra work. SOOO, why the different UPPER mask? mainly, the 2 version of each job has
+access to different skill trees. One with no trans skills, and one with trans skills. Also UPPER and TRANS_UPPER mask both
+give the %25 HP/SP MAX boost, while THIRD doesent. In order for 2 seprate trees to exist, a 2nd set of job ID's is needed
+for thr trans versions of 3rd jobs and their mounts.
+
+Makes since doesent it???
+
+Now baby 3rd jobs are slightly different. They perty much use the same bae and branch masks and the same third upper mask.
+However, they use the baby and third masks together to give them baby penalitys.
+
+JOBL_BABY 0x2000
+JOBL_THIRD 0x4000
+
+===== 2. Simple Example and Explaining =====
+Ok if your reading this, then chances are you didnt want to see all the detail. So here goes.
+
+Their's 2 versions of each job. Base and Trans. They both have the same job name, same access range to 3rd job skills, same
+job outfit, and same equipment permissions. The only difference is that the trans version has a %25 higher HP/SP MAX then
+the base version. Also, the trans version has access to trans skills, while the base version does not. So perty much,
+depending on if your job is base 2nd or trans 2nd will determand this. So for reborns, it mainly means that HP/SP bonus and
+the trans skills you learn pass on with you to your 3rd job.
+
+Here's a example for a Swordman going for Rune Knight. Top path if he choses to proceed to 3rd, bottom path if he choses
+to be reborn.
+
+				  --> Rune Knight
+				 /
+Novice --> Swordman --> Knight --
+				 \
+				  --> High Novice --> High Swordman --> Lord Knight --> Rune Knight
+
+Yes the reborn path is longer, but getting that HP/SP MAX boost and trans skills can make all the difference. Plus High
+Novice get some extra stat points.
+
+Babys however are forced to move straight to their 3rd jobs since they can be reborn. Below is the flow for a Rune Knight.
+
+Baby Novice --> Baby Swordman --> Knight --> Rune Knight
+
+They cant get any trans abilitys or skills, but they CAN equip trans equips since 3rd jobs are a higher class then 2nd trans.
+Even tho their 3rd jobs, they still get the limits that lower baby jobs get, even the -%30 HP/SP max.
+
+===== 3. Job ID's, MAPID's, and Masks =====
+The following are info for each of the jobs...
+
+===== Clients Job ID's =====
+The format is as follow...
+Job ID / Job Skill Tag Mark / Job Name / Extra Info
+
+4050 MB  Gangsi		(Duel Name ID. Orginal name is Gangsi. Shows as Bongun if your a male or Munak if your a female)
+4051 DE  Death Knight
+4052 DA  Dark Collector
+4053 N/A  N/A		(Named THIRDJOB_BEGIN to define where the list of 3rd job ID's start)
+4054 RK  Rune Knight	(Base 2nd to 3rd)
+4055 WL  Warlock	(Base 2nd to 3rd)
+4056 RA  Ranger		(Base 2nd to 3rd)
+4057 AB  Arch Bishop	(Base 2nd to 3rd)
+4058 NC  Mechanic	(Base 2nd to 3rd)
+4059 GC  Guillotine Cross(Base 2nd to 3rd)
+4060 RK  Rune Knight	(Trans 2nd to 3rd)
+4061 WL  Warlock	(Trans 2nd to 3rd)
+4062 RA  Ranger		(Trans 2nd to 3rd)
+4063 AB  Arch Bishop	(Trans 2nd to 3rd)
+4064 NC  Mechanic	(Trans 2nd to 3rd)
+4065 GC  Guillotine Cross (Trans 2nd to 3rd)
+4066 LG  Royal Guard	(Base 2nd to 3rd)
+4067 SO  Sorcerer	(Base 2nd to 3rd)
+4068 MI  Minstrel	(Base 2nd to 3rd)
+4069 WA  Wanderer	(Base 2nd to 3rd)
+4070 SR  Sura		(Base 2nd to 3rd)
+4071 GN  Genetic	(Base 2nd to 3rd)
+4072 SC  Shadow Chaser	(Base 2nd to 3rd)
+4073 LG  Royal Guard	(Trans 2nd to 3rd)
+4074 SO  Sorcerer	(Trans 2nd to 3rd)
+4075 MI  Minstrel	(Trans 2nd to 3rd)
+4076 WA  Wanderer	(Trans 2nd to 3rd)
+4077 SR  Sura		(Trans 2nd to 3rd)
+4078 GN  Genetic	(Trans 2nd to 3rd)
+4079 SC  Shadow Chaser	(Trans 2nd to 3rd)
+4080 RK  Rune Knight Mount	(Base 2nd to 3rd)	(Green Dragon)
+4081 RK  Rune Knight Mount	(Trans 2nd to 3rd)	(Green Dragon)
+4082 LG  Royal Guard Mount	(Base 2nd to 3rd)
+4083 LG  Royal Guard Mount	(Trans 2nd to 3rd)
+4084 RA  Ranger Mount		(Base 2nd to 3rd)
+4085 RA  Ranger Mount		(Trans 2nd to 3rd)
+4086 NC  Mechanic Mount		(Base 2nd to 3rd)
+4087 NC  Mechanic Mount		(Trans 2nd to 3rd)
+4088 RK  Rune Knight Mount	(Base 2nd to 3rd)	(Black Dragon)
+4089 RK  Rune Knight Mount	(Trans 2nd to 3rd)	(Black Dragon)
+4090 RK  Rune Knight Mount	(Base 2nd to 3rd)	(White Dragon)
+4091 RK  Rune Knight Mount	(Trans 2nd to 3rd)	(White Dragon)
+4092 RK  Rune Knight Mount	(Base 2nd to 3rd)	(Blue Dragon)
+4093 RK  Rune Knight Mount	(Trans 2nd to 3rd)	(Blue Dragon)
+4094 RK  Rune Knight Mount	(Base 2nd to 3rd)	(Red Dragon)
+4095 RK  Rune Knight Mount	(Trans 2nd to 3rd)	(Red Dragon)
+4096 RK  Baby Rune Knight	(Baby Version of 3rd Job) (Named Baby Rune)
+4097 WL  Baby Warlock		(Baby Version of 3rd Job) (Named Baby Warlock)
+4098 RA  Baby Ranger		(Baby Version of 3rd Job) (Named Baby Ranger)
+4099 AB  Baby Arch Bishop	(Baby Version of 3rd Job) (Named Baby Bishop)
+4100 NC  Baby Mechanic		(Baby Version of 3rd Job) (Named Baby Mechanic)
+4101 GC  Baby Guillotine Cross	(Baby Version of 3rd Job) (Named Baby Cross)
+4102 LG  Baby Royal Guard	(Baby Version of 3rd Job) (Named Baby Guard)
+4103 SO  Baby Sorcerer		(Baby Version of 3rd Job) (Named Baby Sorcerer)
+4104 MI  Baby Minstrel		(Baby Version of 3rd Job) (Named Baby Minstrel)
+4105 WA  Baby Wanderer		(Baby Version of 3rd Job) (Named Baby Wanderer)
+4106 SR  Baby Sura		(Baby Version of 3rd Job) (Named Baby Sura)
+4107 GN  Baby Genetic		(Baby Version of 3rd Job) (Named Baby Genetic)
+4108 SC  Baby Shadow Chaser	(Baby Version of 3rd Job) (Named Baby Chaser)
+4109 RK  Baby Rune Knight Mount	(Baby Version of 3rd Job) (Named Baby Rune)
+4110 LG  Baby Royal Guard Mount	(Baby Version of 3rd Job) (Named Baby Guard)
+4111 RA  Baby Ranger Mount	(Baby Version of 3rd Job) (Named Baby Ranger)
+4112 NC  Baby Mechanic Mount	(Baby Version of 3rd Job) (Named Baby Mechanic)
+
+4190 N/A Super Novice		(Listed as SUPERNOVICE2 in the lub files)	(This is the Extended Super Novice)
+4191 N/A Baby Super Novice	(Listed as SUPERNOVICE2_B in the lub files)	(Named Super Baby in game, is the Extended Super Baby)
+
+===== Job MAPID's =====
+These are the map ID's the server recognizes these jobs by...
+
+EAJ_GANGSI	0x0D
+EAJ_DEATH_KNIGHT	0x10D
+EAJ_DARK_COLLECTOR	0x20D
+
+EAJ_SUPER_NOVICE_E	0x4100
+EAJ_RUNE_KNIGHT	0x4101
+EAJ_WARLOCK	0x4102
+EAJ_RANGER	0x4103
+EAJ_ARCH_BISHOP	0x4104
+EAJ_MECHANIC	0x4105
+EAJ_GUILLOTINE_CROSS	0x4106
+
+EAJ_ROYAL_GUARD	0x4201
+EAJ_SORCERER	0x4202
+EAJ_MINSTRELWANDERER	0x4203
+EAJ_SURA	0x4204
+EAJ_GENETIC	0x4205
+EAJ_SHADOW_CHASER	0x4206
+
+EAJ_RUNE_KNIGHT_T	0x5101
+EAJ_WARLOCK_T	0x5102
+EAJ_RANGER_T	0x5103
+EAJ_ARCH_BISHOP_T	0x5104
+EAJ_MECHANIC_T	0x5105
+EAJ_GUILLOTINE_CROSS_T	0x5106
+
+EAJ_ROYAL_GUARD_T	0x5201
+EAJ_SORCERER_T	0x5202
+EAJ_MINSTRELWANDERER_T	0x5203
+EAJ_SURA_T	0x5204
+EAJ_GENETIC_T	0x5205
+EAJ_SHADOW_CHASER_T	0x5206
+
+EAJ_SUPER_BABY_E	0x6100
+EAJ_BABY_RUNE		0x6101
+EAJ_BABY_WARLOCK	0x6102
+EAJ_BABY_RANGER		0x6103
+EAJ_BABY_BISHOP		0x6104
+EAJ_BABY_MECHANIC	0x6105
+EAJ_BABY_CROSS		0x6106
+
+EAJ_BABY_GUARD		0x6201
+EAJ_BABY_SORCERER	0x6202
+EAJ_BABY_MINSTRELWANDERER	0x6203
+EAJ_BABY_SURA		0x6204
+EAJ_BABY_GENETIC	0x6205
+EAJ_BABY_CHASER		0x6206
+
+===== Masks =====
+These are the masks created for use by the job system for the 3rd jobs...
+
+// Upper masks
+EAJL_THIRD	0x4000
+
+// Check mask for thirds
+MAPID_THIRD 0xffff

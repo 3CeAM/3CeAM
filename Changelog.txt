@@ -1,0 +1,512 @@
+// Format:
+// Date (mm/dd/yr)
+// rNumber [Author]
+// 	* Modifications.
+// 	- Details.
+//========================================
+
+03/25/2010
+	r283 [Rytech]
+	*Added baby mount ID's to the 3CeAM Job System 2.0 documnent.
+
+03/23/2010
+	r279 [Rytech]
+	*Added the "Rewrite Doc's" folder to the 3CeAM Documnents folder.
+	-This folder contains information on the 3CeAM V2.0 job system and item settings.
+
+03/11/2010
+	r242 [Rytech]
+	*Added the "rewrite stable" branch.
+	-This branch is a copy of the rewritten data from trunk. Current eA version for this is trunk r14260.
+	-As of this time, the orginal stable (known as r13980) is now discontinued and will no longer be supported.
+
+12/27/2009
+	r80 [Rytech]
+	*Added Royal Guard V2 and Minstrel Wanderer V2 translation files to the Google Translated folder.
+	-I didnt replace the old ones since I need them for compareing.
+
+	*Updated Stable. Check the change log in there for more info.
+
+12/27/2009
+	r79 [Rytech]
+	*Added LUB files for 2009-12-15 and older clients.
+
+12/19/2009
+	r61 [Jobbie]
+	* Implemented renewal cast time settings to enable fixed and variable cast time.
+	* Renovatio's cast time is not affected by dex.
+	* Sacrament( fixed cast time reduced ) and Freezing( fixed cast time increased ) are now functional.
+	* Fixed the AfterCastDelay? which is not showing the paw icon and did not trigger after cast delay of skill.
+
+	r60 [Jobbie]
+	* Added RA_WUGDASH and RA_RESEARCHTRAP skill.
+	* Fixed electric shocker and cluster bomb their unit must not affected by arrow shower.
+	* Fixed usable skills while riding a warg.
+
+12/18/2009
+	r59 [Jobbie]
+	* Fixed white imprison which cannot be attacked by ghost property skill or item.
+	* Fixed venom pressure skill. (followed up r48)
+	* Fixed a typo in skill SR_RIDEINLIGHTNING.
+
+	r58 [Jobbie]
+	* Cleaned up some note in job_db2. Just to point out that all 3-1 and 3-2 jobs have their official job bonuses.
+	* Fixed renewal cast time settings. ( Fixed by Inkfish )
+
+12/14/2009
+	r57 [Jobbie]
+	* Corrected bonus stat given by Harmonize skill.
+	* Corrected bonus stat given by Clementia and Canto skill it should be based on AGI and BLESS skillLv
+
+12/13/2009
+	r56 [Jobbie]
+	* Quick fix forgot to remove the ShowInfo thing. (followed up r55)	
+
+	r55 [Jobbie]
+	* Implemented renewal cast time setting to enable variable and fixed cast time.
+	- Info: Original cast time is splitted into two parts which is fixed and variable.
+		80% of the original cast time is variable and 20% of it is fixed. Only
+		variable cast time be reduced by dex, int, item cast reduction, card cast reduction
+		such as kathrene keyon card and suffragium for example. Fixed cast time cannot be reduce by suffra,
+		only Sacrament or Radius( Warlock exclusive ) and fixed cast time special item could reduce
+		it.
+	* Fixed official calculation of Freezing status.
+	* Added AB_RENOVATIO skill in skill_castnodex_db casting time of this skill cannot be reduced by dex
+	* Fixed the AfterCastDelay which is not showing the paw icon and did not trigger after cast delay of skill.
+
+	r54 [Jobbie]
+	* Quick fixed while merging with latest eA update something messed up.
+
+	r53 [Jobbie]
+	* Merge eAthena Updates upto r14198(TRUNK)
+
+	r52 [Jobbie]
+	* Merge eAthena Updates upto r14198
+
+12/12/2009
+	r51 [Jobbie]
+	* Fixed missing else in state.improve_flag which affects the abracadabra not to work.
+
+	r50 [Rytech]
+	*Added RETURN_TO_ELDICASTES to the database.
+	-Everything needed is perty much added in. All thats left is to code where to make this skill warp you when used.
+
+12/07/09
+	r49 [Jobbie]
+	* Fixed reflect damage not giving exp. Thanks spritiual_kid for pointing out
+
+12/05/2009
+	r48 [Jobbie]
+	* Fixed Venom Pressure causing map-server to crash and its range change to 1 cell.
+	* Poisoning Weapon status should be removed when Poison Smoke is used.
+	* Fixed a typo in @job command
+
+	r47 [Jobbie]
+	* Fixed skill couldn't be copied even by rouge and stalker class with plagiarism upgraded.
+	* Reproduce can copy all skill ( 1st, 2nd, 3rd and Expanded Class ) except transcendent skills.
+
+12/1/2009
+	r46[Rytech]
+	*Bunch of database fixes and ballance updates.
+	-All Mado equipment is now equiptable only on Mechanics. Yes its normal for a Mechanic to equip them without a Mado right now
+	-as we dont know all the exact details on how the server handles the Mado.
+	-Foxed the Mechanics Silver Sniper tower which is trying to loot items. Its AI is now the same as the Magic Decoy towers.
+	-Tetra Vortex timer settings added. Cast time is now 12 seconds, after cast delay is 2 seconds, and skill cooldown is 15 seconds.
+	-Comet is now Neutral element.
+	-Added a small commet to the item_db documnent.
+
+11/30/2009
+	r45 [Jobbie]
+	* Wug Dash should consume SP when you use again while you're in dash status. (followed up r44).
+	* Added missing packet 0x1de of the skill RK_DEATHBOUND which should display effect. A .5sec duration to amplify the damage return.
+
+	r44 [Jobbie]
+	* Recoded RA_WUGDASH now it behaves same to official.
+	- iROwiki and test based information.
+		* SP cost is 40
+		* The skill wouldn't bounce back unlike sprint.
+		* Damage calculation is about 600%.
+		* The skill doesn't require warg strike to be learned even in the description said so.
+
+	r43 [Jobbie]
+	* Fixed Reflect shield causing map server to crash when knockback. There is a messed up in the code when LG_REFLECTDAMAGE is implemented.
+
+	r42 [Jobbie]
+	* Fixed and merge the function of Renovatio from trunk to avoid server crash when used in town.
+	* Renovatio only damage undead monster and a player who armored undead property. iROwiki stated.
+
+11/29/2009
+	r41 [Jobbie]
+	* Fixed missing duration for Adoramus blind and decrease agi in skill_cast_db.txt
+	* Preserve skill should not preserve 3rd Class skills.
+
+	r40 [Jobbie]
+	* Added Ranger Trap only related skills.
+	- Changes:
+		* Icebound and Firing Trap deals neutral damage to enemy based on official info.
+		* Clusterbomb is a MiSC type of attack same to Icebound and Firing Trap.
+		* Applied Clusterbomb, Firing, Icebound damage formula based of official info from iROwiki.
+	* Added a commented missed OPT_BURNING display icon implementation. 
+
+11/28/2009
+	r39 [Jobbie]
+	* Added GN_REMODELING_CART cart weight bonus which is missed during implementation on r33.
+	* Follow up implementation for GN_TRAINING_SWORD for its bonus hitrate. Follow up r33.
+	* Switch packet_db to default and mmo.h to RagRE compatible so that RagexeRE client will be allowed.
+
+	r38 [Jobbie]
+	* Fixed the show_party_name option in party.conf. The code was messed up during the update from r30.
+	
+	r37 [Jobbie]
+	* Minor fix to Power Velocity skill not checking of the requirement for atleast 5 spirit balls.
+	* Fix RA_RANGERMAIN which is not implemented in the proper place. Thanks Spiritual_Kid for pointing out.
+	* Fix NC_RESEARCHFE 
+	- which is not putted in proper place for the resistance against fire and earth element.
+	- damage bonus is not place in proper place.
+	* Minor update to SC_RAISINGDRAGON status when ended only that sc not including SC_EXPLOISONSPIRIT will be removed.
+	* Fixed some sc which displaying NULL error after it is ended.
+
+11/26/2009
+	r36 [LimitLine]
+	* Updated Sorcerer cast times, cooldowns and aftercast delays according to http://forums.irowiki.org/showpost.php?p=559786&postcount=437 .
+	* Next, I'll update their behaviors and other things I left out.
+
+	r35 [LimitLine]
+	* Fixed an error when compiling char-server in TXT mode.
+	* Fixed hitrate bonus for Cart Remodeling, thanks to Spiritual_Kid.
+	- http://www.eathena.ws/board/index.php?s=&showtopic=233391&view=findpost&p=1280383
+	* Fixed Striking's weapon damage bonus, once again thanks to Spiritual_Kid.
+	- http://www.eathena.ws/board/index.php?s=&showtopic=233391&view=findpost&p=1280383
+
+	r34 [LimitLine]
+	* Restored scripts_main.conf. Sorry =x
+
+	r33 [LimitLine]
+	* Added Sorcerer and Genetic Skills.
+	- Fire Expansion Lv1-4 still being worked on.
+	- A few skill formulas and damage increments based on base level are custom. Look inside battle.c to find out which.
+	- Sling Item, Change Material, Special Pharmacy not included.
+	- Cast times and cooldowns are also custom. I'll update those when I get official info about them.
+	* Minor cleanup in skill_db.txt and skill_cast_db.txt
+	- Made all skills not yet implemented passive and removed them from skill_cast_db.
+
+	r32 [pakpil]
+	* Added all Rune Knight skills rewrited.
+	* Fixed WL_SMUMMON... skills that wasn't showing spheres correctly.
+	* Fixed pc_setoption, pc_setriding and pc_isriding.
+	- Removed #define pc_isriding and added a new function to check if a pc is riding bassed in its class. (test version).
+
+11/24/2009
+	r31 [pakpil]
+	* Minor fix of a mistake in my last update. Srry :(
+
+??/??/2009
+	r30 [???]
+	- ???
+
+11/23/2009
+	r29 [pakpil]
+	*Full update to eA revision 14162.
+	*Merged item_db, item_db2 & skill_cast_db.
+	-Added Cooldown column.
+	*Initialized Rune Knight skill rewrite update.
+
+11/22/2009
+	r27 [Jobbie]
+	* Fixed pc_setriding where Royal Guard couldn't mount Gryphon when setriding script command executed on a script.
+	* Fixed Enchant Blade causes map server to crash when used to a mob.
+
+	r26 [Jobbie]
+	* Fixed items for Mechanic exclusive jobs that cannot be equipped.
+
+	r25 [Jobbie]
+	* Updated AB_EPICLESIS requirement added holy water.
+	* Updated damage calculation of Renovatio based on info in iRO wiki.
+
+11/21/2009
+	r24 [Jobbie]
+	* Fixed Mado Option when female mechanic tries to mount a mado and it doesn't appear. It uses same option mask from male mado.
+
+	r23 [Jobbie]
+	* Applied the bonus damage of RA_AIMEDBOLT skill based on target size when it is immobile.
+	* Updated AB_CLEARANCE it is a self target skill and only party members can be targeted. Cannot target self.
+	- RE has a official bug of this skill only one target can be cleared. But 3CeAM implements it according to description.
+
+11/19/2009
+	r22 [pakpil]
+	* Fixed some skills that caused server crash when was used by clones.
+	* Fixed SC_MANHOLE & SC_DIMENSIONDOOR that officialy can't be placed near/on targets.
+	* Minor fix to give support to the new options in clones.
+
+11/18/2009
+	r21 [pakpil]
+	* Fixed some skills that caused server crash when was used by clones and caused minor errors.
+	* Fixed WL_RADIUS.
+	- http://www.eathena.ws/board/index.php?showtopic=233391&view=findpost&p=1275732
+
+11/18/2009
+	r20 [pakpil]
+	* Fixed some issues that could cause server crash.
+	* Fixed RK_PHANTOMTHRUST addjusted to the official behavior bassed in tests in kRO RE.
+
+11/18/2009
+	r19 [LimitLine]
+	* Fixed the "miss" message appearing whenever you attack. (Thanks to Spiritual_Kid)
+	- http://www.eathena.ws/board/index.php?s=&showtopic=233391&view=findpost&p=1275442
+
+11/16/2009
+	r18 [pakpil]
+	*Fixed SC_DIMENSIONDOOR adjusting its behavior to the official. This skill don't work with mobs.
+	-Added a new value in conf/mob.conf to Enable that mobs'll teleport when standing in Dimensional Doors portals.
+
+11/16/2009
+	r17 [pakpil]
+	*Fixed AB_EPICLESIS that caused map_server crashes when the caster was within the area when skill began.
+
+11/16/2009
+	r16 [pakpil]
+	*Fixed Valkyrie Helm's upper in item_db.txt
+	*Fixed client crashes produced when some equipment was broken.
+
+11/15/2009
+	r15 [LimitLine]
+	* Fixed Soul Expansion not doing doubled damage when under White Imprison.
+
+	r14 [LimitLine]
+	* Fixed changelog conflict. sorry.
+	* Added doc file regarding the rewrite branch.
+
+	r13 [LimitLine]
+	* Added rewritten Arch Bishop and Warlock skills to the trunk/rewrite folder.
+	- Things missing: Editted item_db.txt with support for third class bitmasks.
+		Current job system of stable/r13890, which is cleaner and more functional.
+	- BEWARE! Everything in the trunk folder should be used for testing purposes only,
+		though we do need your help reporting any bugs you might find so we can merge it to
+		their respective /stable folder.
+	* Moved '3CeAM Docunments' folder to svn root.
+	* Added a general Changelog to svn root, which'll contain changes made to all branches.
+
+	r12 [Jobbie]
+	* Minor update for skill_cast_db related to Rune Knight.
+
+11/13/2009
+	r11 [Jobbie]
+	* Fixed RK_HUNDREDSPEAR casted spiral pierce instead of spear boomerang,
+	
+	r10 [Jobbie]
+	* iRO Wiki stated that chances of auto trigger of Warg strike and Warg bite skill is the same to blitz bits.
+
+	r9 [Jobbie]
+	* Updated the cooldowns and aftercast of some ranger skills.
+	* Fixed the one which i can say official behavior of RA_AIMEDBOLT Skill.
+	
+	r8 [LimitLine]
+	* Fixed Chain Lightning showing no animation.
+	* Cleaned up Earth Strain's code.
+	* Fixed Comet's cooldown. 18000 -> 180000
+
+	r7 [pakpil]
+	*Fixed RK_DRAGONHOWLING.
+	*Fixed Fear status walking delay.
+	*Minor fix in wL_STASIS.
+	*Fixed AB_EPICLESIS that causes "incomplete resurrections".
+	*Fixed AB_RENOVATIO that causes damage instead heals.
+
+11/12/2009
+	r6 [pakpil]
+	*Fixed RK_WINDCUTTER, RK_PHANTOMTHRUST, RK_SONICWAVE, RK_HUNDREDSPEAR, RK_STORMBLAST, RK_CRUSHSTRIKE and RK_DRAGONBREATH.
+	*Added messed issue in the item use check.
+
+11/11/2009
+	r5 [pakpil]
+	*Added file "upgrade_eAitemdb_to_3CeAMitemdb.sql" into sql-files to be able to update item_db and item_db2 tables in SQL.
+
+11/11/2009
+	r4 [pakpil]
+	*Fixed RA_AIMEDBOLT.
+	-Number of hits depends on the target's size: small = 2 hits, medium = 3 hits & large = 4 hits.
+	-When used against an immobile status target (Ankle Snare, Electric Shocker, Warg Bite effect), deals a huge amount of damage.
+	-Deals additional damage based on the size of the target.
+	-The damage is divided between the number of hits.
+	*Fixed WL_RADIUS.
+	-Test says that this skill only work with expecifics Warlock's skills.
+	*Added messed code in r3. Sry :/
+
+11/11/2009
+	r3 [pakpil]
+	*Fixed a little mystake in clif_damage.
+	*Fixed mmo_char_tobuf to avoid a posible client crash when ussing some clints.
+
+11/11/2009
+	r2 [pakpil]
+	*Fixed Riding Wurg.
+	*Fixed Dragon Breath damage.
+	- Removed double damage calculation.
+	*Fixed Heat status change. 
+	-Until we get confirmation, you'll lose your mado when you HP reaches to 0 and you're HP/SP become 1;
+
+=================================================================================================================
+
+11/10/2009
+	r31 [Rytech]
+	*Redid exp tables to feel more correct for orginal mechanics use.
+
+	*exp.txt is the official exp table for the orginal RO mechanics.
+	-Base 3rd versions are in the Base Normal table and Trans 3rd versions are in the Base Trans table.
+	-All 3rd jobs are in the normal 2nd classes jobs table as their behavior is base jobs and their not trans jobs.
+	-Support for levels over 99 WILL NOT BE SUPPORTED in this table since this is a official exp table.
+	-Levels higher then 99 and needed exp tables for levels higher then 99 dont exist on the orginal mehcanics.
+
+	*exp2.txt is for use for levels over 99. 3rd class get their own exp tables.
+	-Base 3rd use a copy of the Base Normal table and Trans 3rd uses a copy of the Base Trans table.
+	-This allows for a fixed level limit for 1st and 2nd classes, and a raised level limit for 3rd in case anyone wants the level 99 to 150 setup.
+	-All 3rd jobs use a copy of the 2nd class Job exp table as these jobs are really like a base 3rd job.
+
+11/10/2009
+	r30 [pakpil]
+	*Fixed some mistake in my last update.
+	*Revomded my captcha code cause i have found some errors when compiling with VC and added Diablo's one until i have it finished.
+	NOTE: You guys redone or revert my exp tables update if you want.. i think all's enough fine to release it. You decide.
+	Sorry. :/
+
+11/10/2009
+	r29 [pakpil]
+	*Removed Advance refinery.
+	*Fixed atcommand_mount.
+	*Fixed an issue with captcha.
+	*Removed char_rename from char_txt
+	*Added messed pc_isridinggryphon.
+	*Removed some unused entries in battle_conf
+	*Fixed minor error with messed battle_confs.
+	*Updated db folder.
+
+11/9/2009
+	r28 [Rytech]
+	*Tweaked MAX_LEVEL to 1000 to allow max levels to go up to 1000. So level adjustment will be done by adjusting your exp tables to allow it.
+	*MAX_SKILL_TREE has been lowered to 72 since the biggest skill tree is the trans version of Mechanic.
+	*Added documents for 3CeAM. Still have a few more to do.
+
+11/8/2009
+	r27 [Rytech]
+	*Changed max level and stats to 99 to keep the orginal mechanics true and ballanced.
+	*Updated the jobs in const.txt to be recognized with the latest MAPID's.
+	*Added Gangsi, Death Knight, and Dark Collector item masks.
+	*Checked all settings and changed all settings back to default.
+
+11/05/2009
+	r24 [LimitLine]
+	* Fixed a few errors in Sura and Shadow Chaser skills which could lead to a map-server crash.
+
+	r23 [pakpil]
+	* Removed skill_cooldown.txt file and added cooldown to skill_cast_db.txt file.
+	* Re-updated some RK skills.
+	* Fixed LG_REFLECTDAMAGE and SR_CURSEDCIRCLE.
+	* Rewrited status_chage_start and clif_status_change.
+
+11/5/2009
+	r22 [Rytech]
+	*Added in the redone and fully clean coded job system.
+	-The system is now marked as completed and professionally coded and clean.
+	-Thankyou Pakpil for helping find what was missing in the code.
+
+	*Corrected settings in the exp.conf file.
+
+11/04/2009
+	r20 [pakpil]
+	* General update in db folder.
+
+11/04/2009
+	r18 [pakpil]
+	* Updated code added in r15 to handle captcha, this make it work and can be enabled/disabled in char_athena.conf by "enable_captcha: yes/no".
+	- Still need add some characters but it's enough to work fine.
+	* Removed some sql files to add new sc's val then will not necessary in the future.
+
+11/3/2009
+	r16 [Rytech]
+	*Updated the packet_db with the latest one from Diablo.
+	-Added code to char.c to handle packet 7e5 and make logging in possiable again. (LimitLine)
+
+11/03/2009
+	r13 [pakpil]
+	*Temporary fix to r4 about refinery system. Still need fix it.
+	* Removed extra values in status changes.
+	- Now, when a sc need send any value to the client we must uses "val_flag" in status_change_start.
+		val_flag |= 1 to send val1
+		val_flag |= 2 to send val2
+		val_falg |= 3 to send val3
+	* Fixed RK_ENCHANTBLADE.
+	
+11/3/2009
+	r12 [Rytech]
+	*Fixed bugs that was reported by VC during compileing.
+	-Added fixes for the refinement system (Credit goes to Pakpil)
+
+11/2/2009
+	r11 [Rytech]
+	*Added in some files that was supposed to be in here a long time ago.
+	-Im sick of haveing to take files from a different SVN to beable to use or compile this.
+	-Also updated all npcs to the latest revision, 14112.
+
+	*Folders with files that was not updated. These will require a merge...
+	- Conf, DB, and Src
+
+10/28/2009
+	r8 [Rytech]
+	*Did some work in the database.
+	-Organized the item_db2 some.
+	-Added known SP requirements for Sorcerer skills.
+	-Updated skill trees.
+
+	*Extra Files
+	*Added 10/28/2009 patch text files to the changes detection folder.
+	*Updated the skill desc translations for Warlock, Genetic, and Sorcerer.
+
+
+10/26/2009
+	r7 [Rytech]
+	*Did a full cleanup on the job system.
+	-Removed extra codeing that wasnt needed and removed Rikter's orginal code as it was very messy and old.
+	-Adding missing job tag, grouped 2 certain jobs together as they used the same mask.
+	-Organized how masks are assigned to 3rd jobs.
+
+	*Extra Files
+	*Added all latest txt files as of 10/21/2009 to the changes detection folder.
+
+10/23/2009
+	r6 [Rytech]
+	* Corrected some skill tag placements in skill_db.
+	- Fixed a bug with thorn trap where its max level was 0. Its now correctly set to 5.
+	- Also added needed lines in skill_require_db, and added tags in the skill.h source.
+
+	* Things for me to do. These will be my tasks for this week...
+	- 1. Check all skill trees to see if any corrections and updates are needed.
+	- 2. Check if any 3rd class item ID's have been missed and need to be added.
+	- 3. Check if any skill SP requirements need to be added or updated.
+	- 4. Update all information in the Extra Files folder to see if anything changed since last update.
+	- 5. Cleanup the job system. Rikter's code needs to be redone, as well as organize the system.
+
+10/23/2009
+	r5 [pakpil]
+	* Added Cooldown to the skill_cast_db.
+	- This is the new structure: 
+		SkillID,CastingTime,AfterCastActDelay,Cooldown,AfterCastWalkDelay,Duration1,Duration2.
+	* Added RK_ENCHANTBLADE. Seems to be working like official.
+
+10/19/2009
+	r4 [pakpil]
+	* Applied a general update to eA r14093
+	- NOTE: Some of these changes need use ./configure when you'll recompile with cygwin.
+	* Fixed some Rune Kinght skills.
+	- Appled restriction to RK_ENCHANTBLADE to normal melee attacks.
+	* Minor fix in SR_RIDEINLIGHTNING that causes overpowered damage with spheres.
+	* Added SC_FEINTBOMB working like the official.
+	* Added LG_RAGEBURST, LG_EARTHDRIVE, LG_MOONSLASHER, LG_REFLECTDAMAGE, LG_TRAMPLE, LG_PRESTIGE, LG_FORCEOFVANGUARD, LG_PIETY
+	- I have made a new function to drain the same damage with all enemies arround the Royal Guard.
+	- LG_REFLECTDAMAGE still need some fixes.
+	  This damage must apply element reductions and these things.
+	* Added GN_CART_TORNADO, GN_CARTCANNON, GN_THORNS_TRAP, GN_WALLOFTHORN, GN_REMODELING_CART, GN_CARTBOOST, GN_SWORDTRAINING
+	* Added support to the new upgrade system.
+	- Added customs upgrade ratios since level 11 to level 20.
+	- NOTE: I haven't applied the new def by upgrade cause I think can break balances.
+	* Added NC_SHAPESHIFT skill.
+	* Cleaned some SC's
