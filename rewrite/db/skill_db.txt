@@ -851,17 +851,17 @@
 687,0,6,4,0,0x1,0,1,1,yes,0,0x2,0,none,0,	NPC_ALLHEAL,Full Heal
 
 // Additional Skill (??)
-//688,9,0,0,0,0,0,1,0,no,0,0,0,none,0,		GM_SANDMAN,GM Sandman
+//688,9,6,1,0,0x1,0,1,1,no,0,0,0,none,0,	GM_SANDMAN,GM Sandman
 689,0,6,4,0,0x3,-1,10,1,yes,0,0x2,0,magic,0,	CASH_BLESSING,Party Blessing
 690,0,6,4,0,0x3,-1,10,1,yes,0,0x2,0,magic,0,	CASH_INCAGI,Party Increase AGI
 691,0,6,4,0,0x3,-1,5,1,yes,0,0x2,0,magic,0,	CASH_ASSUMPTIO,Party Assumptio
-//692,0,0,0,0,0,0,1,0,no,0,0x2,0,none,0,	ALL_CATCRY,Cat Cry
-//693,0,0,0,0,0,0,10,0,no,0,0x2,0,none,0,	ALL_PARTYFLEE,Party Flee
-//694,6,0,0,0,0,0,1,0,no,0,0x2,0,none,0,	ALL_ANGEL_PROTECT,Angel's Protection
-//695,0,0,0,0,0,0,1,0,no,0,0x2,0,none,0,	ALL_DREAM_SUMMERNIGHT,Summer Night Dream
+692,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		ALL_CATCRY,Cat Cry
+//693,0,6,4,0,0x1,0,10,1,no,0,0x2,0,none,0,	ALL_PARTYFLEE,Party Flee
+//694,6,6,16,0,0x1,0,1,1,no,0,0x2,0,none,0,	ALL_ANGEL_PROTECT,Angel's Protection
+695,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		ALL_DREAM_SUMMERNIGHT,Summer Night Dream
 //696,0,0,0,0,0,0,9,0,no,0,0x2,0,none,0,	NPC_CHANGEUNDEAD2,Change Undead
 //697,0,6,4,0,0x1,0,1,1,yes,0,0x2,0,magic,0,	ALL_REVERSEORCISH,Reverse Orcish
-698,0,6,4,0,0x01,0,1,1,no,0,0x2,0,none,0,	ALL_WEWISH,Christmas Carol
+698,0,6,4,0,0x01,0,1,1,no,0,0,0,none,0,		ALL_WEWISH,Christmas Carol
 //699,0,0,0,0,0,0,9,0,no,0,0x2,0,none,0,	ALL_SONKRAN,ALL_SONKRAN
 
 // Second Class Quest Skills
@@ -951,8 +951,8 @@
 // Warlock
 2201,9,6,16,0,0x1,0,5,0,yes,0,0,0,magic,0,	WL_WHITEIMPRISON,White Imprison
 2202,9,8,1,8,0x2,1:1:1:2:2,5,-2,yes,0,0,0,magic,0,	WL_SOULEXPANSION,Soul Expansion
-2203,9,8,4,1,0x2,-1,5,-3:-4:-5:-6:-7,yes,0,0,0,magic,0,	WL_FROSTMISTY,Frosty Misty
-2204,0,8,4,1,0x3,-1,5,-5,yes,0,0,0,magic,0,	WL_JACKFROST,Jack Frost
+2203,9,8,4,1,0x2,13,5,-3:-4:-5:-6:-7,yes,0,0,0,magic,0,	WL_FROSTMISTY,Frosty Misty
+2204,0,8,4,1,0x2,13,5,-5,yes,0,0,0,magic,0,	WL_JACKFROST,Jack Frost
 2205,9,6,1,0,0x1,0,5,0,yes,0,0,0,magic,0,	WL_MARSHOFABYSS,Marsh of Abyss
 2206,0,6,4,0,0x1,0,5,1,yes,0,0,0,magic,0,	WL_RECOGNIZEDSPELL,Recognized Spell
 2207,7,6,1,2,0x3,3,5,0,yes,0,0,0,magic,0,	WL_SIENNAEXECRATE,Sienna Execrate
