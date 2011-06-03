@@ -886,132 +886,132 @@
 1019,9,6,1,4,0x1,0,1,1,yes,0,0x1,0,magic,0,	SA_ELEMENTWIND,Elemental Change Wind
 
 // Rune Knight
-2001,9,6,16,0,0x1,0,5,1,yes,0,0,0,magic,0,	RK_ENCHANTBLADE,Enchant Blade
-2002,11,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	RK_SONICWAVE,Sonic Wave
+2001,1,6,16,0,0x1,0,5,1,yes,0,0,0,magic,0,	RK_ENCHANTBLADE,Enchant Blade //CHECK Does this have to be Magic type, or can be set to none?
+2002,7:8:9:10:11,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	RK_SONICWAVE,Sonic Wave
 2003,0,6,4,0,0x1,0,10,1,no,0,0,0,weapon,0,	RK_DEATHBOUND,Death Bound
-2004,1,8,1,-1,0,1,10,-5,no,0,0,0,weapon,0,	RK_HUNDREDSPEAR,Hundred Spear
+2004,1,8,1,-1,0,0,10,-5,no,0,0,0,weapon,0,	RK_HUNDREDSPEAR,Hundred Spear
 2005,1,6,2,4,0x2,2,5,1,no,0,0,0,weapon,3,	RK_WINDCUTTER,Wind Cutter
-2006,0,6,4,-1,0x2,5,0,0,no,0,0,0,weapon,0,	RK_IGNITIONBREAK,Ignition Break
+2006,0,6,4,-1,0x2,5,5,1,no,0,0,0,weapon,0,	RK_IGNITIONBREAK,Ignition Break
 2007,0,0,0,0,0,0,5,0,no,0,0,0,weapon,0,		RK_DRAGONTRAINING,Dragon Training
-2008,9,6,2,3,0xC2,1:1:1:2:2:2:3:3:4:4,10,1,no,0,0,0,misc,0,	RK_DRAGONBREATH,Dragon Breath
-2009,0,8,4,0,0x3,3:4:5:6:7,5,0,yes,0,0,0,weapon,0,	RK_DRAGONHOWLING,Dragon Howling
+2008,9,6,2,3,0xC2,1:1:1:2:2:2:3:3:4:4,10,1,no,0,0,0,misc,0,	RK_DRAGONBREATH,Dragon Breath //CHECK May have to change this back to a weapon type attack.
+2009,0,6,4,0,0x3,3:4:5:6:7,5,1,yes,0,0,0,weapon,0,	RK_DRAGONHOWLING,Dragon Howling
 2010,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		RK_RUNEMASTERY,Rune Mastery
-2011,0,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	RK_MILLENNIUMSHIELD,Millenium Shield
-2012,3,6,1,-1,0,0x8,1,1,yes,0,0,0,weapon,0,	RK_CRUSHSTRIKE,Crush Strike
-2013,9,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	RK_REFRESH,Refresh
-2014,9,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	RK_GIANTGROWTH,Giant Growth
-2015,9,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	RK_STONEHARDSKIN,Stone Hard Skin
-2016,9,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	RK_VITALITYACTIVATION,Vitality Activation
+2011,0,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	RK_MILLENNIUMSHIELD,Millenium Shield //CHECK Most runes showing no attack type. Recheck later.
+2012,1,6,1,-1,0,0x8,1,1,yes,0,0,0,weapon,0,	RK_CRUSHSTRIKE,Crush Strike
+2013,0,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	RK_REFRESH,Refresh
+2014,0,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	RK_GIANTGROWTH,Giant Growth
+2015,0,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	RK_STONEHARDSKIN,Stone Hard Skin
+2016,0,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	RK_VITALITYACTIVATION,Vitality Activation
 2017,0,6,4,-1,0x2,3,1,1,no,0,0,0,weapon,7,	RK_STORMBLAST,Storm Blast
-2018,0,6,4,0,0x3,-1,1,1,yes,0,0,0,magic,0,	RK_FIGHTINGSPIRIT,Fighting Spirit
+2018,0,6,4,0,0x3,-1,1,1,yes,0,0,0,magic,0,	RK_FIGHTINGSPIRIT,Fighting Spirit //CHECK Is this splash needed?
 2019,9,6,4,6,0x1,0,1,1,yes,0,0,0,magic,0,	RK_ABUNDANCE,Abundance
-2020,5:6:7:8:9,6,1,0,0,0,5,1,yes,0,0,0,weapon,0,	RK_PHANTOMTHRUST,Phantom Thrust
+2020,5:6:7:8:9,6,1,-1,0,0,5,1,yes,0,0,0,weapon,0,	RK_PHANTOMTHRUST,Phantom Thrust
 
 // Guillotine Cross
-2021,5,6,1,5,0x1,0,5,1,no,0,0,0,weapon,0,	GC_VENOMIMPRESS,Venom Impress
+2021,5,6,1,0,0x1,0,5,1,no,0,0,0,none,0,		GC_VENOMIMPRESS,Venom Impress //CHECK Its a debuff. This doesent need a element right?
 2022,3,8,1,-1,0,0,5,-7,no,0,0,0,weapon,0,	GC_CROSSIMPACT,Cross Impact
-2023,3:4:5:6:7,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	GC_DARKILLUSION,Dark Illusion
+2023,3:4:5:6:7,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,GC_DARKILLUSION,Dark Illusion
 2024,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		GC_RESEARCHNEWPOISON,Research New Poison
-2025,0,6,4,0,0x1,0,1,0,no,0,0,0,none,0,		GC_CREATENEWPOISON,Create New Poison
+2025,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		GC_CREATENEWPOISON,Create New Poison
 2026,5,6,16,0,0x1,0,1,1,no,0,0,0,none,0,	GC_ANTIDOTE,Antidote
-2027,0,6,4,0,0x1,0,5,1,no,0,0,0,weapon,0,	GC_POISONINGWEAPON,Poisoning Weapon
+2027,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		GC_POISONINGWEAPON,Poisoning Weapon //CHECK Can the attack type be changed to none?
 2028,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		GC_WEAPONBLOCKING,Weapon Blocking
-2029,-2,6,4,-1,0x2,1,5,1,no,0,0,0,weapon,3,	GC_COUNTERSLASH,Counter Slash
-2030,-2,6,4,-1,0x1,0,5,1,no,0,0x200,0,weapon,0,	GC_WEAPONCRUSH,Weapon Crush
-2031,1,6,1,5,0,0,5,1,no,0,0,0,weapon,0,		GC_VENOMPRESSURE,Venom Pressure
-2032,2,6,2,5,0x1,0,5,1,yes,0,0,1,weapon,0,	GC_POISONSMOKE,Poison Smoke
-2033,0,6,4,0,0x1,0,5,1,no,0,0,0,weapon,0,	GC_CLOAKINGEXCEED,Cloaking Exceed
+2029,-2,6,4,-1,0x2,1,5,1,no,0,0,0,weapon,3,	GC_COUNTERSLASH,Counter Slash //CHECK No info saying their knockback. Remove if found true.
+2030,-2,6,4,-1,0x1,0,5,1,no,0,0x200,0,weapon,0,	GC_WEAPONCRUSH,Weapon Crush //CHECK SHould this and the above skill have INF2 0x200?
+2031,1,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	GC_VENOMPRESSURE,Venom Pressure
+2032,5,6,2,0,0x1,0,5,1,yes,0,0,1,none,0,	GC_POISONSMOKE,Poison Smoke //CHECK Check my AoE please.
+2033,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		GC_CLOAKINGEXCEED,Cloaking Exceed
 2034,0,6,4,-1,0x2,3,1,1,no,0,0,0,weapon,0,	GC_PHANTOMMENACE,Phantom Menace
-2035,0,6,4,0,0x1,0,5,1,no,0,0,0,weapon,0,	GC_HALLUCINATIONWALK,Hallucination Walk
-2036,0,8,4,-1,0x2,1,5,1,no,0,0,0,weapon,0,	GC_ROLLINGCUTTER,Rolling Cutter
-2037,7,8,1,-1,0,0,5,1,no,0,0,0,weapon,0,	GC_CROSSRIPPERSLASHER,Cross Ripper Slasher
+2035,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		GC_HALLUCINATIONWALK,Hallucination Walk
+2036,0,6,4,-1,0x2,1,5,1,no,0,0,0,weapon,0,	GC_ROLLINGCUTTER,Rolling Cutter //CHECK Changed from repeating to single hit. Check if counter is still working.
+2037,7,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	GC_CROSSRIPPERSLASHER,Cross Ripper Slasher
 
-// Arch Bishop
-2038,3,8,1,6,0x2,1,5,-3,yes,0,0,0,magic,0,	AB_JUDEX,Judex
+// Arch Bishop //CHECK Some attack types for buffs are none. Should I set those to none here?
+2038,11,8,1,6,0x2,3,5,-3,yes,0,0,0,magic,0,	AB_JUDEX,Judex
 2039,0,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	AB_ANCILLA,Ancilla
-2040,9,8,1,6,0,3,10,-10,yes,0,0,0,magic,0,	AB_ADORAMUS,Adoramus
-2041,9,6,4,0,0x3,3:7:15,3,1,yes,0,0,0,magic,0,	AB_CLEMENTIA,Crementia
-2042,9,6,4,0,0x3,3:7:15,3,1,yes,0,0,0,magic,0,	AB_CANTO,Canto Candidus
-2043,9,6,4,6,0x3,3:7:15,3,1,yes,0,0,0,magic,0,	AB_CHEAL,Coluceo Heal
-2044,7,6,2,6,0x21,0,5,1,yes,0,0,1,magic,1,	AB_EPICLESIS,Epiclesis
-2045,0,6,4,0,0x3,-1,10,1,yes,0,0,0,magic,0,	AB_PRAEFATIO,Praefatio
-2046,0,6,4,0,0x3,-1,10,1,yes,0,0,0,magic,0,	AB_ORATIO,Oratio
-2047,0,6,4,0,0x3,-1,4,1,yes,0,0,0,magic,0,	AB_LAUDAAGNUS,Lauda Agnus
-2048,0,6,4,0,0x3,-1,4,1,yes,0,0,0,magic,0,	AB_LAUDARAMUS,Lauda Ramus
+2040,11,8,1,6,0,0,10,-10,yes,0,0,0,magic,0,	AB_ADORAMUS,Adoramus
+2041,0,6,4,6,0x3,3:7:15,3,1,yes,0,0,0,magic,0,	AB_CLEMENTIA,Crementia
+2042,0,6,4,6,0x3,3:7:15,3,1,yes,0,0,0,magic,0,	AB_CANTO,Canto Candidus
+2043,0,6,4,6,0x3,3:7:15,3,1,yes,0,0,0,magic,0,	AB_CHEAL,Coluceo Heal
+2044,11,6,2,6,0x1,0,5,1,yes,0,0,1,magic,0,	AB_EPICLESIS,Epiclesis
+2045,0,6,4,6,0x3,15,10,1,yes,0,0,0,magic,0,	AB_PRAEFATIO,Praefatio
+2046,0,6,4,6,0x3,15,10,1,yes,0,0,0,magic,0,	AB_ORATIO,Oratio
+2047,0,6,4,6,0x3,15,4,1,yes,0,0,0,magic,0,	AB_LAUDAAGNUS,Lauda Agnus
+2048,0,6,4,6,0x3,15,4,1,yes,0,0,0,magic,0,	AB_LAUDARAMUS,Lauda Ramus
 2049,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		AB_EUCHARISTICA,Eucharistica
-2050,9,6,16,0,0x1,0,1,1,yes,0,0,0,magic,0,	AB_RENOVATIO,Renovatio
-2051,9,6,16,6,0x21,0,5,1,yes,0,0,0,magic,0,	AB_HIGHNESSHEAL,Highness Heal
-2052,9,6,1,0:0:0:0:0:-1,0x1,0,5,1,yes,0,0xE00,0,magic,0,	AB_CLEARANCE,Clearance
-2053,9,6,4,0,0x1,0,5,1,yes,0,0,0,magic,0,	AB_EXPIATIO,Expiatio
-2054,0,6,4,0,0x1,0,10,1,yes,0,0,0,none,0,	AB_DUPLELIGHT,Duple Light
+2050,11,6,16,6,0x1,0,1,1,yes,0,0,0,magic,0,	AB_RENOVATIO,Renovatio
+2051,11,6,16,6,0x21,0,5,1,yes,0,0,0,magic,0,	AB_HIGHNESSHEAL,Highness Heal //CHECK Info shows this has magic attack.
+2052,11,6,1,0,0x1,0,5,1,yes,0,0xA00,0,magic,0,	AB_CLEARANCE,Clearance //CHECK Also shows this as a magic attack. Why?
+2053,0,6,4,0,0x1,0,5,1,yes,0,0,0,magic,0,	AB_EXPIATIO,Expiatio //CHECK Does this also give the buff to party members?
+2054,0,6,4,6,0x1,0,10,1,yes,0,0,0,none,0,	AB_DUPLELIGHT,Duple Light
 2055,-1,6,1,-1,0,0,10,1,no,0,0,0,weapon,0,	AB_DUPLELIGHT_MELEE,Duple Light Melee
 2056,-1,6,1,0,0,0,10,1,no,0,0,0,magic,0,	AB_DUPLELIGHT_MAGIC,Duple Light Magic
-2057,0,6,4,0,0x3,4:5:6:7:8,5,1,yes,0,0,0,none,0,	AB_SILENTIUM,Silentium
+2057,0,6,4,6,0x3,4:5:6:7:8,5,1,yes,0,0,0,magic,0,	AB_SILENTIUM,Silentium //CHECk Marked magic attack as well. Hmmmm....
 
 // Warlock
-2201,9,6,16,0,0x1,0,5,0,yes,0,0,0,magic,0,	WL_WHITEIMPRISON,White Imprison
-2202,9,8,1,8,0x2,1:1:1:2:2,5,-2,yes,0,0,0,magic,0,	WL_SOULEXPANSION,Soul Expansion
-2203,9,8,4,1,0x2,13,5,-3:-4:-5:-6:-7,yes,0,0,0,magic,0,	WL_FROSTMISTY,Frosty Misty
+2201,11,6,16,0,0,0,5,1,yes,0,0,0,magic,0,	WL_WHITEIMPRISON,White Imprison
+2202,11,8,1,8,0x2,1:1:1:2:2,5,-2,yes,0,0,0,magic,0,	WL_SOULEXPANSION,Soul Expansion
+2203,0,8,4,1,0x2,13,5,-3:-4:-5:-6:-7,yes,0,0,0,magic,0,	WL_FROSTMISTY,Frosty Misty
 2204,0,8,4,1,0x2,13,5,-5,yes,0,0,0,magic,0,	WL_JACKFROST,Jack Frost
-2205,9,6,1,0,0x1,0,5,0,yes,0,0,0,magic,0,	WL_MARSHOFABYSS,Marsh of Abyss
+2205,11,6,1,0,0x1,0,5,1,yes,0,0,0,magic,0,	WL_MARSHOFABYSS,Marsh of Abyss
 2206,0,6,4,0,0x1,0,5,1,yes,0,0,0,magic,0,	WL_RECOGNIZEDSPELL,Recognized Spell
-2207,7,6,1,2,0x3,3,5,0,yes,0,0,0,magic,0,	WL_SIENNAEXECRATE,Sienna Execrate
+2207,7,6,1,2,0x3,1:2:2:3:3,5,1,yes,0,0,0,magic,0,	WL_SIENNAEXECRATE,Sienna Execrate //CHECK Element shown as none. Recheck later.
 2208,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		WL_RADIUS,Radius
 2209,0,6,4,0,0x3,9:10:11:12:13,5,1,yes,0,0,0,magic,0,	WL_STASIS,Stasis
-2210,9,8,1,0,0,0,5,1,yes,0,0,0,magic,0,		WL_DRAINLIFE,Drain Life
-2211,9,8,1,3,0x2,3,5,-7,yes,0,0,0,magic,3,	WL_CRIMSONROCK,Crimson Rock
-2212,9,6,1,3,0,0,5,1,yes,0,0,0,magic,0,		WL_HELLINFERNO,Hell Inferno
-2213,9,8,2,0,0x2,15,5,-20,yes,0,0,0,magic,2,	WL_COMET,Comet
-2214,9,6,1,0,0,3,5,1,yes,0,0,0,magic,0,		WL_CHAINLIGHTNING,Chain Lightning
-2215,9,6,1,4,0,0,5,1,no,0,0,0,magic,0,		WL_CHAINLIGHTNING_ATK,Chain Lightning Attack
-2216,3,8,2,2,0x1,0,5,-6:-7:-8:-9:-10,yes,0,0,0,magic,0,	WL_EARTHSTRAIN,Earth Strain
-2217,9,6,1,0,0,0,5,1,yes,0,0,0,magic,0,		WL_TETRAVORTEX,Tetra Vortex
-2218,9,6,1,3,0,0,5,1,no,0,0,0,magic,0,		WL_TETRAVORTEX_FIRE,Tetra Vortex Fire
-2219,9,6,1,1,0,0,5,1,no,0,0,0,magic,0,		WL_TETRAVORTEX_WATER,Tetra Vortex Water
-2220,9,6,1,4,0,0,5,1,no,0,0,0,magic,0,		WL_TETRAVORTEX_WIND,Tetra Vortex Wind
-2221,9,6,1,2,0,0,5,1,no,0,0,0,magic,0,		WL_TETRAVORTEX_GROUND,Tetra Vortex Earth
-2222,0,6,4,3,0x1,0,5,1,yes,0,0,0,magic,0,	WL_SUMMONFB,Summon Fire Ball
+2210,11,6,1,0,0,0,5,1,yes,0,0,0,magic,0,	WL_DRAINLIFE,Drain Life
+2211,11,8,1,3,0x2,3,5,-7,yes,0,0,0,magic,3,	WL_CRIMSONROCK,Crimson Rock
+2212,11,6,1,3,0,0,5,1,yes,0,0,0,magic,0,	WL_HELLINFERNO,Hell Inferno
+2213,11,8,2,0,0x2,15,5,-20,yes,0,0,0,magic,2,	WL_COMET,Comet //CHECK Fear of changing the splash value as it might break the skill damage code.
+2214,11,6,1,0,0,3,5,1,yes,0,0,0,magic,0,		WL_CHAINLIGHTNING,Chain Lightning //CHECK Is the splash being used for the target search?
+2215,11,6,1,4,0,0,5,1,no,0,0,0,magic,0,		WL_CHAINLIGHTNING_ATK,Chain Lightning Attack
+2216,3,8,2,2,0,0,5,-6:-7:-8:-9:-10,yes,0,0,0,magic,0,	WL_EARTHSTRAIN,Earth Strain
+2217,11,6,1,0,0,0,5,1,yes,0,0,0,magic,0,	WL_TETRAVORTEX,Tetra Vortex
+2218,11,6,1,3,0,0,5,1,no,0,0,0,magic,0,		WL_TETRAVORTEX_FIRE,Tetra Vortex Fire
+2219,11,6,1,1,0,0,5,1,no,0,0,0,magic,0,		WL_TETRAVORTEX_WATER,Tetra Vortex Water
+2220,11,6,1,4,0,0,5,1,no,0,0,0,magic,0,		WL_TETRAVORTEX_WIND,Tetra Vortex Wind
+2221,11,6,1,2,0,0,5,1,no,0,0,0,magic,0,		WL_TETRAVORTEX_GROUND,Tetra Vortex Earth
+2222,0,6,4,3,0x1,0,5,1,yes,0,0,0,magic,0,	WL_SUMMONFB,Summon Fire Ball //CHECK Summon skills themselfs showing they have no element. Should I remove them?
 2223,0,6,4,4,0x1,0,5,1,yes,0,0,0,magic,0,	WL_SUMMONBL,Summon Lightning Ball
 2224,0,6,4,1,0x1,0,5,1,yes,0,0,0,magic,0,	WL_SUMMONWB,Summon Water Ball
-2225,9,6,1,3,0,0,5,1,no,0,0,1,magic,0,		WL_SUMMON_ATK_FIRE,Summon Attack Fire
-2226,9,6,1,4,0,0,5,1,no,0,0,1,magic,0,		WL_SUMMON_ATK_WIND,Summon Attack Wind
-2227,9,6,1,1,0,0,5,1,no,0,0,1,magic,0,		WL_SUMMON_ATK_WATER,Summon Attack Water
-2228,9,6,1,2,0,0,5,1,no,0,0,1,magic,0,		WL_SUMMON_ATK_GROUND,Summon Attack Earth
+2225,11,6,1,3,0,0,5,1,no,0,0,1,magic,0,		WL_SUMMON_ATK_FIRE,Summon Attack Fire //CHECK Summon attack ID's dont appear to have a range.
+2226,11,6,1,4,0,0,5,1,no,0,0,1,magic,0,		WL_SUMMON_ATK_WIND,Summon Attack Wind
+2227,11,6,1,1,0,0,5,1,no,0,0,1,magic,0,		WL_SUMMON_ATK_WATER,Summon Attack Water
+2228,11,6,1,2,0,0,5,1,no,0,0,1,magic,0,		WL_SUMMON_ATK_GROUND,Summon Attack Earth
 2229,0,6,4,2,0x1,0,5,1,yes,0,0,0,magic,0,	WL_SUMMONSTONE,Summon Stone
-2230,9,8,1,0,0,0,2,1,yes,0,0,0,magic,0,		WL_RELEASE,Release
+2230,11,8,1,0,0,0,2,1,yes,0,0,0,magic,0,	WL_RELEASE,Release //CHECK Should it be left to do multi hit or single hit?
 2231,0,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	WL_READING_SB,Reading Spellbook
 2232,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		WL_FREEZE_SP,Freeze Spell
 
 // Ranger
-2233,9,8,1,-1,0x2,2:2:2:2:2:3:3:3:3:4,10,3,yes,0,0,0,weapon,0,	RA_ARROWSTORM,Arrow Storm
-2234,0,8,4,0,0,0,5,5,no,0,0,0,none,0,		RA_FEARBREEZE,Fear Breeze
+2233,9,8,1,-1,0x2,2:2:2:2:2:3:3:3:3:4,10,3,yes,0,0,0,weapon,0,	RA_ARROWSTORM,Arrow Storm //CHECK Must confirm the number of hits
+2234,0,8,4,0,0,0,5,1,yes,0,0,0,none,0,		RA_FEARBREEZE,Fear Breeze //CHECK Should the multi hit say, or change to single? Changed 5 hits to 1. Must test.
 2235,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		RA_RANGERMAIN,Ranger Main
 2236,9,8,1,-1,0,0,10,1,yes,0,0,0,weapon,0,	RA_AIMEDBOLT,Aimed Bolt
 2237,9,6,2,0,0x3,3,1,1,no,0,0,0,none,0,		RA_DETONATOR,Detonator
-2238,3,6,2,0,0x3,2,5,1,no,0,0x80,3,misc,0,	RA_ELECTRICSHOCKER,Electric Shocker
+2238,3,6,2,0,0x3,2,5,1,no,0,0x80,3,misc,0,	RA_ELECTRICSHOCKER,Electric Shocker //CHECK Is splash needed even tho they use UNITS?
 2239,3,6,2,0,0x42,3,5,1,no,0,0x80,3,misc,0,	RA_CLUSTERBOMB,Cluster Bomb
-2240,0,6,4,0,0,0,1,0,no,0,0,0,none,0,		RA_WUGMASTERY,Warg Mastery
-2241,0,6,4,0,0,0,3,0,no,0,0,0,none,0,		RA_WUGRIDER,Warg Rider
-2242,0,6,4,0,0x2,1,1,0,no,0,0,0,weapon,0,	RA_WUGDASH,Warg Dash
-2243,9,8,1,-1,0,0,5,1,no,0,0,0,weapon,0,	RA_WUGSTRIKE,Warg Strike
-2244,9,8,1,-1,0,0,5,1,no,0,0,0,weapon,0,	RA_WUGBITE,Warg Bite
+2240,0,6,4,0,0,0,1,1,no,0,0,0,none,0,		RA_WUGMASTERY,Warg Mastery //CHECK Waug skills state checks need to be looked at.
+2241,0,6,4,0,0,0,3,1,no,0,0,0,none,0,		RA_WUGRIDER,Warg Rider
+2242,0,6,4,-1,0x2,1,1,0,no,0,0,0,weapon,0,	RA_WUGDASH,Warg Dash
+2243,9,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	RA_WUGSTRIKE,Warg Strike
+2244,9,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	RA_WUGBITE,Warg Bite
 2245,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		RA_TOOTHOFWUG,Tooth of Warg
-2246,0,6,4,0,0x2,3:4:5:6:7,5,0,no,0,0,0,weapon,0,	RA_SENSITIVEKEEN,Sensitive Keen
-2247,0,6,4,0,0x1,0,5,0,no,0,0,0,weapon,0,	RA_CAMOUFLAGE,Camouflage
+2246,0,6,4,0,0x2,3:4:5:6:7,5,1,no,0,0,0,weapon,0,	RA_SENSITIVEKEEN,Sensitive Keen
+2247,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		RA_CAMOUFLAGE,Camouflage
 2248,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		RA_RESEARCHTRAP,Research Trap
-2249,3,6,2,3,0x40,2,1,1,no,0,0x80,1,misc,0,	RA_MAGENTATRAP,Magenta Trap
-2250,3,6,2,1,0x40,2,1,1,no,0,0x80,1,misc,0,	RA_COBALTTRAP,Cobalt Trap
-2251,3,6,2,2,0x40,2,1,1,no,0,0x80,1,misc,0,	RA_MAIZETRAP,Maize Trap
-2252,3,6,2,4,0x40,2,1,1,no,0,0x80,1,misc,0,	RA_VERDURETRAP,Verdure Trap
-2253,3,6,2,0,0x42,2,5,1,no,0,0x80,2,misc,0,	RA_FIRINGTRAP,Firing Trap
+2249,3,6,2,3,0x43,2,1,1,no,0,0x80,1,misc,0,	RA_MAGENTATRAP,Magenta Trap
+2250,3,6,2,1,0x43,2,1,1,no,0,0x80,1,misc,0,	RA_COBALTTRAP,Cobalt Trap
+2251,3,6,2,2,0x43,2,1,1,no,0,0x80,1,misc,0,	RA_MAIZETRAP,Maize Trap
+2252,3,6,2,4,0x43,2,1,1,no,0,0x80,1,misc,0,	RA_VERDURETRAP,Verdure Trap
+2253,3,6,2,0,0x42,2,5,1,no,0,0x80,2,misc,0,	RA_FIRINGTRAP,Firing Trap //CHECK Info says its weapon attack. Is this a no damage skill?
 2254,3,6,2,0,0x42,2,5,1,no,0,0x80,2,misc,0,	RA_ICEBOUNDTRAP,Icebound Trap
 
 // Mechanic
 2255,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		NC_MADOLICENCE,Mado License
 2256,11,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	NC_BOOSTKNUCKLE,Boost Knuckle
-2257,1,6,1,-1,0,0,3,1,no,0,0,0,weapon,0,	NC_PILEBUNKER,Pile Bunker // Need official range.
-2258,13,8,1,-1,0,0,3,1,no,0,0,0,weapon,0,	NC_VULCANARM,Vulcan Arm
-2259,5,8,1,3,0,2,3,1,no,0,0,5,weapon,0,		NC_FLAMELAUNCHER,Flame Launcher
+2257,3,6,1,-1,0,0,3,1,no,0,0,0,weapon,0,	NC_PILEBUNKER,Pile Bunker
+2258,13,6,1,-1,0,0,3,1,no,0,0,0,weapon,0,	NC_VULCANARM,Vulcan Arm
+2259,5,6,1,3,0,2,3,1,no,0,0,5,weapon,0,		NC_FLAMELAUNCHER,Flame Launcher
 2260,7,6,2,1,0x2,2:3:4,3,1,no,0,0,0,weapon,0,	NC_COLDSLOWER,Cold Slower
 2261,7,6,2,-1,0x42,3:2:1,3,1,no,0,0,0,weapon,0,	NC_ARMSCANNON,Arm Cannon
 2262,0,6,4,0,0x1,0,3,1,no,0,0,0,none,0,		NC_ACCELERATION,Acceleration
@@ -1020,21 +1020,21 @@
 2265,0,6,4,0,0x1,0,1,1,no,0,0,0,none,7,		NC_B_SIDESLIDE,Back-Side Slide
 2266,0,0,0,0,0,0,4,0,no,0,0,0,none,0,		NC_MAINFRAME,Mainframe Restructure
 2267,0,6,4,-1,0x2,2:3:4,3,1,no,0,0,0,misc,5,	NC_SELFDESTRUCTION,Self Destruction
-2268,0,6,4,0,0x1,0,4,0,yes,0,0,0,none,0,	NC_SHAPESHIFT,Shape Shift
-2269,0,6,4,0,0x1,0,1,0,no,0,0,0,none,0,		NC_EMERGENCYCOOL,Emergency Cool
+2268,0,6,4,0,0x1,0,4,1,yes,0,0,0,none,0,	NC_SHAPESHIFT,Shape Shift
+2269,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		NC_EMERGENCYCOOL,Emergency Cool
 2270,0,6,4,0,0x3,7,1,1,yes,0,0,0,none,0,	NC_INFRAREDSCAN,Infrared Scan
 2271,9,6,1,0,0x1,0,3,1,yes,0,0,0,none,0,	NC_ANALYZE,Analyze
 2272,0,6,4,0,0x3,1:2:3,3,1,yes,0,0,0,none,0,	NC_MAGNETICFIELD,Magnetic Field
 2273,0,6,4,0,0x1,0,3,1,yes,0,0,0,none,0,	NC_NEUTRALBARRIER,Neutral Barrier
 2274,0,6,4,0,0x1,0,3,1,yes,0,0,0,none,0,	NC_STEALTHFIELD,Stealth Field
-2275,5,6,16,0,0x21,0,5,1,yes,0,0,0,magic,0,	NC_REPAIR,Repair
+2275,5,6,16,0,0x1,0,5,1,yes,0,0,0,magic,0,	NC_REPAIR,Repair
 2276,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		NC_TRAININGAXE,Axe Training
 2277,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		NC_RESEARCHFE,Research Fire/Earth
-2278,5:6:7:8:9,6,1,-1,0,0,5,1,no,0,0,0,weapon,3,	NC_AXEBOOMERANG,Axe Boomerang
-2279,4,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	NC_POWERSWING,Power Swing
-2280,0,8,4,-1,0x2,2,5,-3,no,0,0,0,weapon,0,	NC_AXETORNADO,Axe Tornado
-2281,4,6,2,0,0x1,0,5,1,yes,0,0,2,none,0,	NC_SILVERSNIPER,FAW - Silver Sniper
-2282,4,6,2,0,0x1,0,5,1,yes,0,0,2,none,0,	NC_MAGICDECOY,FAW - Magic Decoy
+2278,4:5:6:7:8,6,1,-1,0,0,5,1,no,0,0,0,weapon,2:3:4:5:6,	NC_AXEBOOMERANG,Axe Boomerang
+2279,1,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	NC_POWERSWING,Power Swing
+2280,0,8,4,-1,0x2,2:2:3:3:3,5,-6,no,0,0,0,weapon,0,	NC_AXETORNADO,Axe Tornado //CHECK Need to find official sub hits.
+2281,2,6,2,0,0x1,0,5,1,yes,0,0,2,none,0,	NC_SILVERSNIPER,FAW - Silver Sniper
+2282,2,6,2,0,0x1,0,5,1,yes,0,0,2,none,0,	NC_MAGICDECOY,FAW - Magic Decoy
 2283,2,6,1,0,0x1,0,1,1,no,0,0,0,none,0,		NC_DISJOINT,FAW Removal
 
 // Shadow Chaser
@@ -1197,7 +1197,7 @@
 2498,11,6,1,0,0,0,1,1,no,0,0,0,weapon,0,	GN_SLINGITEM_RANGEMELEEATK,Sling Item Attack
 
 // More 3rd Job Skills
-2515,9,6,16,0,0x1,0,5,1,yes,0,0,0,magic,0,	AB_SECRAMENT,Sacrament
+2515,11,6,16,0,0x1,0,5,1,yes,0,0,0,magic,0,	AB_SECRAMENT,Sacrament //CHECK Marked with none attack type. Recheck soon.
 2516,0,0,1,-1,0x2,5,5,0,no,0,0,0,weapon,0,	WM_SEVERE_RAINSTORM_MELEE,Severe Rainstorm Melee
 2517,0,6,4,-1,0x2,3:4:5:6:7,5,1,no,0,0,0,weapon,0,	SR_HOWLINGOFLION,Howling of Lion
 2518,9,6,2,-1,0x2,2:2:3:3:4,5,1,no,0,0,0,weapon,0,	SR_RIDEINLIGHTNING,Ride In Lightening
