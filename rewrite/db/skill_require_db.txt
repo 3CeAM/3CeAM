@@ -662,7 +662,7 @@
 2006,0,0,35:40:45:50:55,0,0,0,1:2:3:4:5,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 //RK_IGNITIONBREAK#Ignition Break#
 //2007,0,0,0,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RK_DRAGONTRAINING#Dragon Training#	(Passive Skill. Not Needed)
 2008,0,0,30:35:40:45:50:55:60:65:70:75,0,0,0,99,0,0,dragon,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RK_DRAGONBREATH#Dragon Breath#
-2009,0,0,5:10:15:20:25,0,0,0,99,0,0,dragon,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RK_DRAGONHOWLING#Dragon Howling#	(No SP requirement??? Is this passive??? SP set to 1)
+2009,0,0,70,0,0,0,99,0,0,dragon,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RK_DRAGONHOWLING#Dragon Howling#	(No SP requirement??? Is this passive??? SP set to 1)
 //2010,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RK_RUNEMASTERY#Rune Mastery#		(Passive Skill. Not Needed)
 2011,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RK_MILLENNIUMSHIELD#Millenium Shield#
 2012,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RK_CRUSHSTRIKE#Crush Strike#
@@ -677,7 +677,7 @@
 
 // Guillotine Cross
 2021,0,0,12:16:20:24:28,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//GC_VENOMIMPRESS#Venom Impress#
-2022,0,0,25,0,0,0,99,0,0,move_enable,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//GC_CROSSIMPACT#Cross Impact#
+2022,0,0,25,0,0,0,99,0,0,move_enable,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//GC_CROSSIMPACT#Cross Impact# //CHECK Is this move_enable needed?
 2023,0,0,40,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//GC_DARKILLUSION#Dark Illusion#
 //2024,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//GC_RESEARCHNEWPOISON#Research New Poison# (Passive Skill)
 2025,0,0,10,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//GC_CREATENEWPOISON#Create New Poison#
@@ -747,7 +747,7 @@
 2228,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//WL_SUMMON_ATK_GROUND#Summon Attack Earth#
 2229,0,0,10:12:14:16:18,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//WL_SUMMONSTONE#Summon Stone#
 2230,0,0,3:20,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//WL_RELEASE#Release#
-2231,0,0,3:20,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//WL_READING_SB#Reading Spellbook#
+2231,0,0,40,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//WL_READING_SB#Reading Spellbook#
 //2232,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//WL_FREEZE_SP#Freeze Spell# (Passive Skill)
 
 // Ranger
@@ -759,8 +759,8 @@
 2238,0,0,35,0,0,0,99,0,0,none,0,7940,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RA_ELECTRICSHOCKER#Electric Shocker#
 2239,0,0,20,0,0,0,99,0,0,none,0,7940,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RA_CLUSTERBOMB#Cluster Bomb#
 2240,0,0,5,0,0,0,99,0,0,none,0,6124,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RA_WUGMASTERY#Warg Mastery#
-2241,0,0,2,0,0,0,99,0,0,ridingwarg,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0		//RA_WUGRIDER#Warg Rider#
-2242,0,0,4,0,0,0,99,0,0,move_enable,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RA_WUGDASH#Warg Dash#
+2241,0,0,20,0,0,0,99,0,0,ridingwarg,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0		//RA_WUGRIDER#Warg Rider#
+2242,0,0,40,0,0,0,99,0,0,move_enable,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RA_WUGDASH#Warg Dash#
 2243,0,0,20:22:24:26:28,0,0,0,99,0,0,ridingwarg,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RA_WUGSTRIKE#Warg Strike#
 2244,0,0,42:44:46:48:50,0,0,0,99,0,0,warg,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RA_WUGBITE#Warg Bite#
 //2245,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RA_TOOTHOFWUG#Tooth of Warg# (Passive Skill)
@@ -778,7 +778,7 @@
 //2255,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//NC_MADOLICENCE#Mado License# (Passive Skill)
 2256,0,0,3:6:9:12:15,0,0,0,99,0,0,mado,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//NC_BOOSTKNUCKLE#Boost Knuckle#
 2257,0,0,50,0,0,0,99,0,0,mado,0,1549,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//NC_PILEBUNKER#Pile Bunker#
-2258,0,0,2:4:6,0,0,0,99,0,0,mado,0,6145,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//NC_VULCANARM#Vulcan Arm#
+2258,0,0,2,0,0,0,99,0,0,mado,0,6145,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//NC_VULCANARM#Vulcan Arm#
 2259,0,0,20,0,0,0,99,0,0,mado,0,2139,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//NC_FLAMELAUNCHER#Flame Launcher#
 2260,0,0,20,0,0,0,99,0,0,mado,0,6147,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//NC_COLDSLOWER#Cold Slower#
 2261,0,0,30:45:60,0,0,0,99,8,1,mado,0,6146,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//NC_ARMSCANNON#Arm Cannon#
@@ -787,8 +787,8 @@
 2264,0,0,5,0,0,0,99,0,0,mado,0,6146,1,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//NC_F_SIDESLIDE#Front - Side Slide#
 2265,0,0,5,0,0,0,99,0,0,mado,0,6146,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//NC_B_SIDESLIDE#Back - Side Slide#
 //2266,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//NC_MAINFRAME#Mainframe Restructure# (Passive Skill)
-2267,0,0,5,0,0,0,99,0,0,mado,0,6146,5,2802,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//NC_SELFDESTRUCTION#Self Destruction#
-2268,0,0,100,0,0,0,99,0,0,mado,0,994,1,997,1,996,1,995,1,6146,2,2803,0,0,0,0,0,0,0,0,0	//NC_SHAPESHIFT#Shape Shift#
+2267,0,0,200,0,0,0,99,0,0,mado,0,6146,5,2802,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//NC_SELFDESTRUCTION#Self Destruction#
+2268,0,0,100,0,0,0,99,0,0,mado,0,994,1,997,1,996,1,995,1,6146,2,2803,0,0,0,0,0,0,0,0,0	//NC_SHAPESHIFT#Shape Shift# //CHECK Shouldnt the different stones all be in the same slot?
 2269,0,0,20,0,0,0,99,0,0,mado,0,6146,2,2804,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//NC_EMERGENCYCOOL#Emergency Cool#
 2270,0,0,45,0,0,0,99,0,0,mado,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//NC_INFRAREDSCAN#Infrared Scan#
 2271,0,0,30,0,0,0,99,0,0,mado,0,6146,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//NC_ANALYZE#Analyze#

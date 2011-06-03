@@ -4176,31 +4176,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 			clif_skill_damage(src,src,tick,status_get_amotion(src),0,-30000,1,skillid,skilllv,6);
 		}
 		break;
-		
-	/*case LG_CANNONSPEAR:// Clean Up Later If Found Not Needed
-		{
-			int length = skill_get_maxcount(skillid,skilllv);
-			int dir = map_calc_dir(src,bl->x,bl->y);
-			short src_x = src->x, src_y = src->y;
-			short dst_x = src_x, dst_y = src_y;
-			// Normalize attack direction.
-			switch( dir )
-			{
-				case 0:	src_y++; dst_y += length; break;
-				case 1: src_x--; src_y++; dst_x -= length; dst_y += length; break;
-				case 2: src_x--; dst_x -= length; break;
-				case 3: src_x--; src_y--; dst_x -= length; dst_y -= length; break;
-				case 4: src_y--; dst_y -= length; break;
-				case 5: src_x++; src_y--; dst_x += length; dst_y -= length; break;
-				case 6: src_x++; dst_x += length; break;
-				case 7: src_x++; src_y++; dst_x += length; dst_y += length; break;
-			}
-			clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
-			map_foreachinpath(skill_attack_area,src->m,src_x,src_y,dst_x,dst_y,
-				skill_get_splash(skillid, skilllv),length, splash_target(src),
-				skill_get_type(skillid),src,src,skillid,skilllv,tick,flag,BCT_ENEMY);
-		}
-		break;*/
 
 	case LG_PINPOINTATTACK:
 		if( !map_flag_gvg(src->m) && !map[src->m].flag.battleground && unit_movepos(src, bl->x, bl->y, 1, 1) )
@@ -7716,35 +7691,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		clif_skill_damage(src,src,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
 		map_foreachinrange(skill_area_sub,src,skill_get_splash(skillid,skilllv),BL_CHAR|BL_SKILL,src,skillid,skilllv,tick,flag|BCT_ENEMY,skill_castend_damage_id);
 		break;
-
-	/*case NC_FLAMELAUNCHER:// Clean Up Later If Found Not Needed
-		{
-			int dir = map_calc_dir(src,bl->x,bl->y);
-			int c, x = src->x, y = src->y, mx = 0, my = 0, x1 = 0, x2 = 0, y1 = 0, y2 = 0;
-			clif_skill_nodamage(src,bl,skillid,skilllv,1);
-
-			switch( dir )
-			{
-			case 0: my = 1; x1 = -1; x2 = 1; break;
-			case 2: mx = -1; y1 = -1; y2 = 1; break;
-			case 4: my = -1; x1 = -1; x2 = 1; break;
-			case 6: mx = 1; y1 = -1; y2 = 1; break;
-
-			case 1: mx = -1; my = 1; x1 = -1; y2 = 1; break;
-			case 3: mx = -1; my = -1; x1 = -1; y2 = -1; break;
-			case 5: mx = 1; my = -1; x1 = 1; y2 = -1; break;
-			case 7: mx = 1; my = 1; x1 = 1; y2 = 1; break;
-			}
-
-			for( c = 0; c < 5; c++ )
-			{
-				x = x + mx; y = y + my;
-				map_foreachincell(skill_area_sub,src->m,x,y,BL_CHAR,src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
-				map_foreachincell(skill_area_sub,src->m,x+x1,y+y1,BL_CHAR,src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
-				map_foreachincell(skill_area_sub,src->m,x+x2,y+y2,BL_CHAR,src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
-			}
-		}
-		break;*/
 
 	case NC_F_SIDESLIDE:
 	case NC_B_SIDESLIDE:
