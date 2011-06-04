@@ -1739,8 +1739,9 @@ enum {
 	UNT_EARTH_INSIGNIA,
 	UNT_POISON_MIST,
 	UNT_LAVA_SLIDE,
+	UNT_VOLCANIC_ASH,
 
-	UNT_MAX = 0xf7
+	UNT_MAX = 0xf8
 };
 
 enum gx_poison {

@@ -259,11 +259,14 @@ int skill_get_range2(struct block_list *bl, int id, int lv)
 	{
 		case AC_SHOWER:			case MA_SHOWER:
 		case AC_DOUBLE:			case MA_DOUBLE:
-		case HT_BLITZBEAT:		case RA_ARROWSTORM:
-		case AC_CHARGEARROW:	case RA_AIMEDBOLT:
-		case MA_CHARGEARROW:	case RA_WUGBITE:
+		case HT_BLITZBEAT:
+		case AC_CHARGEARROW:
+		case MA_CHARGEARROW:
 		case SN_FALCONASSAULT:
 		case HT_POWER:
+		case RA_ARROWSTORM:
+		case RA_AIMEDBOLT:
+		case RA_WUGBITE:
 			if( bl->type == BL_PC )
 				range += pc_checkskill((TBL_PC*)bl, AC_VULTURE);
 			else
@@ -284,20 +287,29 @@ int skill_get_range2(struct block_list *bl, int id, int lv)
 			if( bl->type == BL_PC)
 				range = skill_get_range(NJ_SHADOWJUMP,pc_checkskill((TBL_PC*)bl,NJ_SHADOWJUMP));
 			break;
-		case WL_WHITEIMPRISON:		case WL_CRIMSONROCK:
-		case WL_SOULEXPANSION:		case WL_HELLINFERNO:
-		case WL_FROSTMISTY:			case WL_COMET:
-		case WL_JACKFROST:			case WL_CHAINLIGHTNING:
-		case WL_MARSHOFABYSS:		case WL_EARTHSTRAIN:
-		case WL_SIENNAEXECRATE:		case WL_TETRAVORTEX:
-		case WL_DRAINLIFE:			case WL_RELEASE:
+		case WL_WHITEIMPRISON:
+		case WL_SOULEXPANSION:
+		case WL_FROSTMISTY:
+		case WL_MARSHOFABYSS:
+		case WL_SIENNAEXECRATE:
+		case WL_DRAINLIFE:
+		case WL_CRIMSONROCK:
+		case WL_HELLINFERNO:
+		case WL_COMET:
+		case WL_CHAINLIGHTNING:
+		case WL_TETRAVORTEX:
+		case WL_RELEASE:
+		//case WL_READING_SP:// Code shows this in here. Why when its self casted?
 			if( bl->type == BL_PC )
 				range += pc_checkskill((TBL_PC*)bl, WL_RADIUS);
 			break;
 		//Added to allow increasing traps range
-		case HT_LANDMINE:		case HT_FREEZINGTRAP:
-		case HT_BLASTMINE:		case HT_CLAYMORETRAP:
-		case RA_CLUSTERBOMB:	case RA_FIRINGTRAP:
+		case HT_LANDMINE:
+		case HT_FREEZINGTRAP:
+		case HT_BLASTMINE:
+		case HT_CLAYMORETRAP:
+		case RA_CLUSTERBOMB:
+		case RA_FIRINGTRAP:
 		case RA_ICEBOUNDTRAP:
 			if( bl->type == BL_PC )
 				range += (1 + pc_checkskill((TBL_PC*)bl, RA_RESEARCHTRAP))/2;
@@ -9571,7 +9583,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 
 	case WL_EARTHSTRAIN:
 		{
-			int i, wave = skilllv + 2, dir = map_calc_dir(src,x,y);
+			int i, wave = skilllv + 4, dir = map_calc_dir(src,x,y);
 			int sx = x, sy = y;
 
 			if( sc && sc->data[SC_MAGICPOWER] )
@@ -9586,7 +9598,8 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 				case 2: sx = src->x - i; break;
 				case 6: sx = src->x + i; break;
 				}
-				skill_addtimerskill(src,gettick() + (250 * i),0,sx,sy,skillid,skilllv,dir,flag&2);
+				skill_addtimerskill(src,gettick() + (200 * i),0,sx,sy,skillid,skilllv,dir,flag&2); // Temp code until animation is replaced. [Rytech]
+				//skill_addtimerskill(src,gettick() + (150 * i),0,sx,sy,skillid,skilllv,dir,flag&2); // Official steping timer, but disabled due to too much noise.
 			}
 		}
 		break;
@@ -16341,13 +16354,16 @@ void skill_init_unit_layout (void)
 	earthstrain_unit_pos = pos;
 	for( i = 0; i < 8; i++ )
 	{ // For each Direction
-		skill_unit_layout[pos].count = 3; // 3 Heaven's Drive, each 5x5
+		skill_unit_layout[pos].count = 3; // Temp code being used as the official method makes too much noise in game. [Rytech]
+		//skill_unit_layout[pos].count = 15; // This line is here to replace the above one once gravity changes the animation.
 		switch( i )
 		{
 		case 0: case 1: case 3: case 4: case 5: case 7:
 			{
 				int dx[] = {-5, 0, 5};
 				int dy[] = { 0, 0, 0};
+				//int dx[] = {-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7}; // Leave this here for future use.
+				//int dy[] = { 0,  0,  0,  0,  0,  0,  0, 0, 0, 0, 0, 0, 0, 0, 0};
 				memcpy(skill_unit_layout[pos].dx,dx,sizeof(dx));
 				memcpy(skill_unit_layout[pos].dy,dy,sizeof(dy));
 			}
@@ -16357,6 +16373,8 @@ void skill_init_unit_layout (void)
 			{
 				int dx[] = { 0, 0, 0};
 				int dy[] = {-5, 0, 5};
+				//int dx[] = { 0,  0,  0,  0,  0,  0,  0, 0, 0, 0, 0, 0, 0, 0, 0}; // Leave this here for future use.
+				//int dy[] = {-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7};
 				memcpy(skill_unit_layout[pos].dx,dx,sizeof(dx));
 				memcpy(skill_unit_layout[pos].dy,dy,sizeof(dy));
 			}
