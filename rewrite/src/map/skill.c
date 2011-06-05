@@ -15272,7 +15272,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 					case 1010: qty *= 8; break;
 					case 1061: qty *= 2; break;
 					// Throwable potions
-					case 13275: case 13278:
+					case 13275: case 13276: case 13277: case 13278: case 13279: case 13280:
 						qty *= 10;
 						break;
 				}
