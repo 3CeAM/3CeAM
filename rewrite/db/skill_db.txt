@@ -1038,7 +1038,7 @@
 2283,2,6,1,0,0x1,0,1,1,no,0,0,0,none,0,		NC_DISJOINT,FAW Removal
 
 // Shadow Chaser
-2284,1,6,1,-1,0x2,1,5,1,no,0,0,0,weapon,0,	SC_FATALMENACE,Fatal Menace //CHECK Is the splash needed for warping multiple enemys?
+2284,1,6,1,-1,0x2,1,5,1,no,0,0,0,weapon,0,	SC_FATALMENACE,Fatal Menace
 2285,0,6,4,0,0x1,0,10,1,no,0,0,0,none,0,	SC_REPRODUCE,Reproduce
 2286,0,6,4,0,0x1,0,10,1,yes,0,0,0,none,0,	SC_AUTOSHADOWSPELL,Auto Shadow Spell
 2287,5,6,1,0,0x1,0,5,1,no,0,0,0,none,0,		SC_SHADOWFORM,Shadow Form
@@ -1053,7 +1053,7 @@
 2296,3,6,1,0,0x1,0,3,1,yes,0,0,0,none,0,	SC_UNLUCKY,Masquerade - Unlucky
 2297,3,6,1,0,0x1,0,3,1,yes,0,0,0,none,0,	SC_WEAKNESS,Masquerade - Weakness
 2298,3,6,1,0,0x1,0,5,1,yes,0,0,0,weapon,0,	SC_STRIPACCESSARY,Strip Accessory //CHECK Is weapon attack type needed?
-2299,7,6,2,0,0x1,0,3,1,yes,0,0,3,misc,0,	SC_MANHOLE,Man Hole //CHECK Can the attack type be changed to none?
+2299,7,6,2,0,0x1,0,3,1,yes,0,0,3,none,0,	SC_MANHOLE,Man Hole
 2300,7,6,2,0,0x1,0,3,1,yes,0,0,1,none,0,	SC_DIMENSIONDOOR,Dimension Door
 2301,7,6,2,0,0x1,0,3,1,yes,0,0,0,none,0,	SC_CHAOSPANIC,Chaos Panic
 2302,7,6,2,0,0x1,0,3,1,yes,0,0,0,none,0,	SC_MAELSTROM,Maelstrom
@@ -1061,15 +1061,15 @@
 2304,0,6,4,-1,0,0,3,1,no,0,0,0,weapon,0,	SC_FEINTBOMB,Feint Bomb
 
 // Royal Guard
-2307,11,8,1,-1,0,2,5,1,no,0,0,10,weapon,0,	LG_CANNONSPEAR,Cannon Spear //CHECK Hit count type may need to be 8 so the straight line splash will work.
+2307,11,8,1,-1,0,2,5,1,no,0,0,10,weapon,0,	LG_CANNONSPEAR,Cannon Spear
 2308,7,6,1,-1,0,0,10,1,no,0,0,0,weapon,0,	LG_BANISHINGPOINT,Banishing Point
 2309,0,6,4,0,0x3,2,5,1,no,0,0,0,none,0,		LG_TRAMPLE,Trample
 2310,1,6,1,0,0,0,5,1,no,0,0,0,weapon,0,		LG_SHIELDPRESS,Shield Press
 2311,0,6,4,0,0x3,3,5,1,no,0,0,0,none,0,	LG_REFLECTDAMAGE,Reflect Damage
 2312,5,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	LG_PINPOINTATTACK,Pinpoint Attack
-2313,0,6,4,0,0x1,0,5,1,yes,0,0,0,weapon,0,	LG_FORCEOFVANGUARD,Force of Vanguard //CHECK This doesent have to be weapon type right? Its a buff.
+2313,0,6,4,0,0x1,0,5,1,yes,0,0,0,none,0,	LG_FORCEOFVANGUARD,Force of Vanguard
 2314,1,6,1,-1,0,0,1,1,no,0,0,0,weapon,0,	LG_RAGEBURST,Rage Burst
-2315,0,6,4,0,0x1,3,3,1,yes,0,0,0,none,2,	LG_SHIELDSPELL,Shield Spell //CHECK Info says nothing about splash or knockback. Is this needed?
+2315,0,6,4,0,0x2,3,3,1,yes,0,0,0,none,2,	LG_SHIELDSPELL,Shield Spell
 2316,0,6,4,0,0x1,0,5,1,yes,0,0,0,none,0,	LG_EXEEDBREAK,Exceed Break
 2317,1,6,2,-1,0x2,5,5,1,yes,0,0,0,none,3:4:5:6:7,	LG_OVERBRAND,Over Brand //CHECK I know the splash is needed somehow for the strange AoE it gives.
 2318,0,6,4,0,0x1,0,5,1,yes,0,0,0,none,0,	LG_PRESTIGE,Prestige
@@ -1083,10 +1083,10 @@
 
 // Sura
 2326,-2,8,1,-1,0,0,10,2,no,0,0,0,weapon,0,	SR_DRAGONCOMBO,Dragon Combo //CHECK Is this 2 regular hits or sub hits?
-2327,0,6,4,-1,0x2,2,5,-3,no,0,0,0,weapon,3,	SR_SKYNETBLOW,Sky Net Blow //CHECK Video shows 3 hits. Its sub hits right?
+2327,0,8,4,-1,0x2,2,5,-3,no,0,0,0,weapon,3,	SR_SKYNETBLOW,Sky Net Blow //CHECK Video shows 3 hits. Its sub hits right?
 2328,0,6,4,-1,0x2,1:2:3:4:5,5,1,no,0,0,0,weapon,0,	SR_EARTHSHAKER,Earth Shaker
-2329,-2,8,4,-1,0,0,5,1,no,0,0x200,0,weapon,0,	SR_FALLENEMPIRE,Fallen Empire //CHECK This deals 1 hit right?
-2330,-2,6,1,-1,0x42,1:1:1:1:1:2:2:2:2:2,10,1,yes,0,0x200,0,weapon,0,	SR_TIGERCANNON,Tiger Cannon
+2329,-2,8,4,-1,0,0,5,-2,no,0,0x200,0,weapon,0,	SR_FALLENEMPIRE,Fallen Empire //CHECK Video shows 2 hits. Is it sub hits?
+2330,-2,6,1,-1,0x42,1:1:1:1:1:2:2:2:2:2,10,1,yes,0,0,0,weapon,0,	SR_TIGERCANNON,Tiger Cannon //CHECK Need to fix to be enemy targeted and also combo after Fallen Empire.
 2331,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		SR_HELLGATE,Hell Gate
 2332,5,6,4,-1,0x2,3,5,1,no,0,0,0,weapon,0,	SR_RAMPAGEBLASTER,Rampage Blaster
 2333,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		SR_CRESCENTELBOW,Crescent Elbow //CHECK Check the autospell ID.
@@ -1095,26 +1095,26 @@
 2336,7:8:9:10:11,6,1,-1,0,0,5,1,no,0,0,0,weapon,2:3:4:5:6,	SR_KNUCKLEARROW,Knuckle Arrow
 2337,0,6,4,-1,0x2,2,1,1,yes,0,0,0,weapon,0,	SR_WINDMILL,Windmill
 2338,0,6,4,0,0x1,0,10,1,no,0,0,0,none,0,	SR_RAISINGDRAGON,Raising Dragon
-2339,0,0,0,0,0,0,5,1,no,0,0,0,none,0,		SR_GENTLETOUCH,Gentle Touch// What is this for? o.O [LimitLine]
+2339,0,0,0,0,0,0,5,1,no,0,0,0,none,0,		SR_GENTLETOUCH,Gentle Touch
 2340,0,6,4,0,0x3,2,1,1,no,0,0,0,none,0,	SR_ASSIMILATEPOWER,Assimilate Power
 2341,3,6,16,0,0x1,0,1,1,yes,0,0x200,0,none,0,	SR_POWERVELOCITY,Power Velocity
 2342,1,6,1,-1,0x20,0,5,1,no,0,0,0,weapon,3,	SR_CRESCENTELBOW_AUTOSPELL,Crescent Elbow Autospell //CHECK Does this ignore defense?
-2343,1:2:3:3:4:4:5:5:6:7,8,1,0,0,0,10,-7,yes,0,0,0,weapon,0,	SR_GATEOFHELL,Gate of Hell
+2343,1:2:3:3:4:4:5:5:6:7,8,1,0,0,0,10,-7,yes,0,0,0,weapon,0,	SR_GATEOFHELL,Gate of Hell //CHECK Need to fix to be enemy targeted and also combo after Fallen Empire
 2344,2,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	SR_GENTLETOUCH_QUIET,Gentle Touch - Quiet
-2345,2,6,16,0,0x1,0,5,1,no,0,0,0,magic,0,	SR_GENTLETOUCH_CURE,Gentle Touch - Cure //CHECK Its a healing skill. Guessing it has to be magic type?
+2345,2,6,16,0,0x1,0,5,1,no,0,0,0,magic,0,	SR_GENTLETOUCH_CURE,Gentle Touch - Cure //CHECK Its a healing skill. Guessing it has to be magic type? Healing isnt working.
 2346,0,6,4,0,0x1,0,5,1,yes,0,0,0,none,0,	SR_GENTLETOUCH_ENERGYGAIN,Gentle Touch - Energy Gain
 2347,2,6,16,0,0x1,0,5,1,yes,0,0,0,none,0,	SR_GENTLETOUCH_CHANGE,Gentle Touch - Change
 2348,2,6,16,0,0x1,0,5,1,yes,0,0,0,none,0,	SR_GENTLETOUCH_REVITALIZE,Gentle Touch - Revitalize
 
 // Wanderer
-2350,0,6,4,0,0x3,7:8:9:10:11,5,1,yes,0,0,0,magic,0,	WA_SWING_DANCE,Swing Dance //CHECK The 3 Min and Wan buffs here shouldnt be magic type right?
-2351,0,6,4,0,0x3,7:8:9:10:11,5,1,yes,0,0,0,magic,0,	WA_SYMPHONY_OF_LOVER,Symphony of Lovers
-2352,0,6,4,0,0x3,7:8:9:10:11,5,1,yes,0,0,0,magic,0,	WA_MOONLIT_SERENADE,Moonlit Serenade
+2350,0,6,4,0,0x3,7:8:9:10:11,5,1,yes,0,0,0,none,0,	WA_SWING_DANCE,Swing Dance
+2351,0,6,4,0,0x3,7:8:9:10:11,5,1,yes,0,0,0,none,0,	WA_SYMPHONY_OF_LOVER,Symphony of Lovers
+2352,0,6,4,0,0x3,7:8:9:10:11,5,1,yes,0,0,0,none,0,	WA_MOONLIT_SERENADE,Moonlit Serenade
 
 // Minstrel
-2381,0,6,4,0,0x3,7:8:9:10:11,5,1,yes,0,0,0,magic,0,	MI_RUSH_WINDMILL,Windmill Rush Attack
-2382,0,6,4,0,0x3,7:8:9:10:11,5,1,yes,0,0,0,magic,0,	MI_ECHOSONG,Echo Song
-2383,9,6,16,0,0x1,0,5,1,yes,0,0,0,magic,0,	MI_HARMONIZE,Harmonize
+2381,0,6,4,0,0x3,7:8:9:10:11,5,1,yes,0,0,0,none,0,	MI_RUSH_WINDMILL,Windmill Rush Attack
+2382,0,6,4,0,0x3,7:8:9:10:11,5,1,yes,0,0,0,none,0,	MI_ECHOSONG,Echo Song
+2383,9,6,16,0,0x1,0,5,1,yes,0,0,0,none,0,	MI_HARMONIZE,Harmonize
 
 // Minstrel/Wanderer
 2412,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		WM_LESSON,Lesson
@@ -1124,17 +1124,17 @@
 2416,0,6,1,-1,0x2,1,5,1,no,0,0,0,magic,0,	WM_REVERBERATION_MAGIC,Reverberation Magic
 2417,11,6,2,0,0x3,5,1,1,no,0,0,0,none,0,	WM_DOMINION_IMPULSE,Dominion Impulse
 2418,9,6,2,-1,0x1,0,5,1,yes,0,0,0,none,0,	WM_SEVERE_RAINSTORM,Severe Rainstorm
-2419,9,6,0,0,0x3,1,5,1,yes,0,0x80,5,none,0,	WM_POEMOFNETHERWORLD,Poem of The Netherworld
+2419,9,6,2,0,0x3,1,5,1,yes,0,0x80,5,none,0,	WM_POEMOFNETHERWORLD,Poem of The Netherworld //CHECK May need to recode too.
 2420,0,6,4,0,0x2,2:3:4:5:6,5,1,yes,0,0,0,none,0,	WM_VOICEOFSIREN,Voice of Siren
-2421,7,6,16,0,0x1,0,5,1,yes,0,0,0,none,0,	WM_DEADHILLHERE,Valley of Death //CHECK Info says enemy target. Will check into this.
-2422,7,6,2,0,0x3,5:6:7:8:9,5,1,yes,0,0,0,misc,0,	WM_LULLABY_DEEPSLEEP,Deep Sleep Lullaby //CHECK Misc attack type isnt needed. Check later.
+2421,7,6,16,0,0x1,0,5,1,yes,0,0,0,none,0,	WM_DEADHILLHERE,Valley of Death
+2422,7,6,2,0,0x3,5:6:7:8:9,5,1,yes,0,0,0,none,0,	WM_LULLABY_DEEPSLEEP,Deep Sleep Lullaby
 2423,0,6,4,0,0x3,3:4:5:6:7,5,1,yes,0,0,0,none,0,	WM_SIRCLEOFNATURE,Circle of Nature's Sound
 2424,9,6,4,0,0x1,0,5,1,yes,0,0,0,magic,0,	WM_RANDOMIZESPELL,Improvised Song
 2425,9,6,16,0,0x1,0,5,1,yes,0,0,0,none,0,	WM_GLOOMYDAY,Gloomy Day
-2426,9,6,2,-1,0x2,2:3:3:4:4,5,1,yes,0,0x2000,0,weapon,0,	WM_GREAT_ECHO,Great Echo //CHECK Does it take weapon element?
+2426,9,6,2,0,0x2,2:3:3:4:4,5,1,yes,0,0x2000,0,weapon,0,	WM_GREAT_ECHO,Great Echo
 2427,0,6,4,0,0x3,5:6:7:8:9,5,1,yes,0,0x2000,0,none,0,	WM_SONG_OF_MANA,Song of Mana
 2428,0,6,4,0,0x3,5:6:7:8:9,5,1,yes,0,0x2000,0,none,0,	WM_DANCE_WITH_WUG,Dance With A Warg
-2429,9,6,1,-1,0x2,2:2:3:3:4,5,1,yes,0,0x2000,0,weapon,0,	WM_SOUND_OF_DESTRUCTION,Sound of Destruction //CHECK Does it take weapon element? Also says its a magic attack?
+2429,9,6,1,0,0x2,2:2:3:3:4,5,1,yes,0,0x2000,0,weapon,0,	WM_SOUND_OF_DESTRUCTION,Sound of Destruction
 2430,0,6,4,0,0x3,3:4:5:6:7,5,1,yes,0,0x2000,0,none,0,	WM_SATURDAY_NIGHT_FEVER,Saturday Night Fever
 2431,0,6,4,0,0x3,5,5,1,yes,0,0x2000,0,magic,0,	WM_LERADS_DEW,Lerad's Dew
 2432,0,6,4,0,0x3,5,5,1,yes,0,0x2000,0,none,0,	WM_MELODYOFSINK,Melody of Sink
@@ -1173,23 +1173,23 @@
 2474,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		GN_TRAINING_SWORD,Sword Training
 2475,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		GN_REMODELING_CART,Cart Remodeling
 2476,0,6,4,-1,0x2,2,5,1,no,0,0,0,weapon,2,	GN_CART_TORNADO,Cart Tornado
-2477,7:8:9:10:11,6,1,-1,0x2,1:1:2:2:3,5,1,yes,0,0,0,weapon,0,	GN_CARTCANNON,Cart Cannon //CHECK Says its neutral element. Or at least old data says.
-2478,0,6,4,0,0x1,0,5,1,yes,0,0,0,weapon,0,	GN_CARTBOOST,Cart Boost //CHECK We wont need this weapon type attack right?
+2477,7:8:9:10:11,6,1,-1,0x2,1:1:2:2:3,5,1,yes,0,0,0,weapon,0,	GN_CARTCANNON,Cart Cannon
+2478,0,6,4,0,0x1,0,5,1,yes,0,0,0,none,0,	GN_CARTBOOST,Cart Boost
 2479,9,6,2,0,0,0,5,1,yes,0,0x80,5,misc,0,	GN_THORNS_TRAP,Thorn Trap
-2480,11,6,1,0,0,0,5,1,yes,0,0,3,misc,0,	GN_BLOOD_SUCKER,Blood Sucker //CHECK Data says its a magic attack. Hmmmm....
-2481,11,6,1,-1,0x2,1:2:3:4:5,5,1,yes,0,0,0,weapon,0,	GN_SPORE_EXPLOSION,Spore Explosion //CHECK Data says its element is set to neutral.
+2480,11,6,1,0,0,0,5,1,yes,0,0,3,misc,0,		GN_BLOOD_SUCKER,Blood Sucker //CHECK Data says its a magic attack. Hmmmm....
+2481,11,6,1,-1,0x2,1:2:3:4:5,5,1,yes,0,0,0,weapon,0,	GN_SPORE_EXPLOSION,Spore Explosion //CHECK Data says its element is set to neutral. Need to confirm.
 2482,11,6,16,0,0,0,5,1,yes,0,0,1,weapon,2,	GN_WALLOFTHORN,Wall of Thorns
 2483,11,6,2,0,0x3,4,10,1,yes,0,0,0,weapon,0,	GN_CRAZYWEED,Crazy Weed
 2484,0,6,2,2,0x2,2,10,1,no,0,0,0,weapon,0,	GN_CRAZYWEED_ATK,Crazy Weed Attack
 2485,9,6,2,3,0,0,5,1,yes,0,0,0,magic,0,		GN_DEMONIC_FIRE,Demonic Fire
-2486,9,6,2,0,0,0,5,1,yes,0,0,0,weapon,0,	GN_FIRE_EXPANSION,Fire Expansion //CHECK The weapon type isnt needed here right? Same for the 2 below.
-2487,9,6,2,0,0,0,1,1,no,0,0,0,weapon,0,		GN_FIRE_EXPANSION_SMOKE_POWDER,Fire Expansion Smoke Powder
-2488,9,6,2,0,0,0,1,1,no,0,0,0,weapon,0,		GN_FIRE_EXPANSION_TEAR_GAS,Fire Expansion Tear Gas
+2486,9,6,2,0,0,0,5,1,yes,0,0,0,none,0,		GN_FIRE_EXPANSION,Fire Expansion //CHECK FIX ME!!!! Level 1 is reducing the damage. Should increase it by 50%
+2487,9,6,2,0,0,0,1,1,no,0,0,0,none,0,		GN_FIRE_EXPANSION_SMOKE_POWDER,Fire Expansion Smoke Powder
+2488,9,6,2,0,0,0,1,1,no,0,0,0,none,0,		GN_FIRE_EXPANSION_TEAR_GAS,Fire Expansion Tear Gas
 2489,11,6,1,0,0,0,10,1:2:3:4:5:6:7:8:9:10,no,0,0,0,weapon,0,		GN_FIRE_EXPANSION_ACID,Fire Expansion Acid
 2490,9,6,2,0,0x3,1,5,1,yes,0,0x80,2:3:4:5:6,none,0,	GN_HELLS_PLANT,Hell's Plant
 2491,0,6,1,0,0x90,0,5,1,no,0,0,0,misc,0,	GN_HELLS_PLANT_ATK,Hell's Plant Attack
 2492,0,6,4,0,0x3,6:7:8:9:10,5,1,yes,0,0,0,none,0,	GN_MANDRAGORA,Howling of Mandragora
-2493,11,6,16,0,0x1,0,1,1,yes,0,0,0,none,0,	GN_SLINGITEM,Sling Item //CHECK Data shows it as a enemy targeted. Testing needed. Also shows it as magic type???
+2493,11,6,16,0,0x1,0,1,1,yes,0,0,0,none,0,	GN_SLINGITEM,Sling Item
 2494,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		GN_CHANGEMATERIAL,Change Material
 2495,0,6,4,0,0x1,0,2,1,no,0,0,0,none,0,		GN_MIX_COOKING,Mix Cooking
 2496,0,6,4,0,0x1,0,2,1,no,0,0,0,none,0,		GN_MAKEBOMB,Create Bomb

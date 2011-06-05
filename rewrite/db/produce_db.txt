@@ -451,15 +451,15 @@
 // Throwable HP Increase Potion (Small) [10] <-- GN_CHANGEMATERIAL Lv1, 10 'Throwing Bottle', 10 HP Potions (Small)
 13275,26,2494,1,6297,10,12422,10
 // Throwable HP Increase Potion (Medium) [10] <-- GN_CHANGEMATERIAL Lv1, 10 'Throwing Bottle', 10 HP Potions (Medium)
-//13276,26,2494,1,6297,10,12423,10
+13276,26,2494,1,6297,10,12423,10
 // Throwable HP Increase Potion (Large) [10] <-- GN_CHANGEMATERIAL Lv1, 10 'Throwing Bottle', 10 HP Potions (Large)
-//13277,26,2494,1,6297,10,12424,10
+13277,26,2494,1,6297,10,12424,10
 // Throwable SP Increase Potion (Small) [10] <-- GN_CHANGEMATERIAL Lv1, 10 'Throwing Bottle', 10 SP Potions (Small)
 13278,26,2494,1,6297,10,12425,10
 // Throwable SP Increase Potion (Medium) [10] <-- GN_CHANGEMATERIAL Lv1, 10 'Throwing Bottle', 10 SP Potions (Medium)
-//13279,26,2494,1,6297,10,12426,10
+13279,26,2494,1,6297,10,12426,10
 // Throwable SP Increase Potion (Large) [10] <-- GN_CHANGEMATERIAL Lv1, 10 'Throwing Bottle', 10 SP Potions (Large)
-//13280,26,2494,1,6297,10,12427,10
+13280,26,2494,1,6297,10,12427,10
 
 //----- Mix Cooking ---- ItemLV=27 -------------
 //-- Savage Full Roast <-- GN_MIX_COOKING & Mix Cooking Ingredient Book & 1 Chowder Pot, 1 Savage Meat, 1 Iron Cooking Skewer, 1 Black Charcoal
