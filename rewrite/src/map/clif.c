@@ -4582,14 +4582,7 @@ int clif_skillcasting(struct block_list* bl,
 	int src_id,int dst_id,int dst_x,int dst_y,int skill_num,int pl, int casttime)
 {
 	unsigned char buf[32];
-	int cmd = 0x13e;
-
-#if PACKETVER >= 20091118
-	if( bl->type == BL_PC ) // Seems to be used with chars only. [pakpil]
-		cmd = 0x7fb;
-#endif
-
-	WBUFW(buf,0) = cmd;
+	WBUFW(buf,0) = 0x13e;
 	WBUFL(buf,2) = src_id;
 	WBUFL(buf,6) = dst_id;
 	WBUFW(buf,10) = dst_x;
@@ -4597,16 +4590,12 @@ int clif_skillcasting(struct block_list* bl,
 	WBUFW(buf,14) = skill_num;
 	WBUFL(buf,16) = pl<0?0:pl; //Avoid sending negatives as element [Skotlex]
 	WBUFL(buf,20) = casttime;
-#if PACKETVER >= 20091118
-	if( bl->type == BL_PC )
-		WBUFB(buf,24) = 0; // flag?
-#endif
 	if (disguised(bl)) {
 		clif_send(buf,packet_len(0x13e), bl, AREA_WOS);
 		WBUFL(buf,2) = -src_id;
-		clif_send(buf,packet_len(cmd), bl, SELF);
+		clif_send(buf,packet_len(0x13e), bl, SELF);
 	} else
-		clif_send(buf,packet_len(cmd), bl, AREA);
+		clif_send(buf,packet_len(0x13e), bl, AREA);
 
 	return 0;
 }
@@ -6206,12 +6195,6 @@ int clif_party_invite(struct map_session_data *sd,struct map_session_data *tsd)
 	int fd;
 	struct party_data *p;
 
-#if PACKETVER < 20070821
-	const int cmd = 0xfe;
-#else
-	const int cmd = 0x2c6;
-#endif
-
 	nullpo_ret(sd);
 	nullpo_ret(tsd);
 
@@ -6220,15 +6203,11 @@ int clif_party_invite(struct map_session_data *sd,struct map_session_data *tsd)
 	if( (p = party_search(sd->status.party_id)) == NULL )
 		return 0;
 
-	WFIFOHEAD(fd,packet_len(cmd));
-	WFIFOW(fd,0) = cmd;
-#if PACKETVER < 20071002
+	WFIFOHEAD(fd,packet_len(0xfe));
+	WFIFOW(fd,0) = 0xfe;
 	WFIFOL(fd,2) = sd->status.account_id;
-#else
-	WFIFOL(fd,2) = p->party.party_id;
-#endif
 	memcpy(WFIFOP(fd,6),p->party.name,NAME_LENGTH);
-	WFIFOSET(fd,packet_len(cmd));
+	WFIFOSET(fd,packet_len(0xfe));
 	return 0;
 }
 

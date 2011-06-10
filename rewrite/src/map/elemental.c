@@ -862,6 +862,7 @@ int read_elemental_skilldb(void)
 void reload_elementaldb(void)
 {
 	read_elementaldb();
+	read_elemental_skilldb();
 }
 
 void reload_elemental_skilldb(void)
