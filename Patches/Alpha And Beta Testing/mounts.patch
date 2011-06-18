@@ -1,6 +1,6 @@
 Index: db/const.txt
 ===================================================================
---- db/const.txt	(revision 612)
+--- db/const.txt	(revision 627)
 +++ db/const.txt	(working copy)
 @@ -1174,6 +1174,7 @@
  SC_BANANA_BOMB_SITDOWN	554
@@ -12,18 +12,72 @@ Index: db/const.txt
  e_what	1
 Index: db/item_db2.txt
 ===================================================================
---- db/item_db2.txt	(revision 612)
+--- db/item_db2.txt	(revision 627)
 +++ db/item_db2.txt	(working copy)
-@@ -473,3 +473,4 @@
+@@ -482,3 +482,4 @@
  // Purchase Shop Items
  //6377,Buy_Stall_Permit,Buy Stall Permit,3,200,,10,,,,,,,,,,,,,{},{},{}
  //12548,Buy_Shabby_Stall_Permit,Buy Shabby Stall Permit,11,500,,10,,,,,0xFFFFFFFF,8,2,,,,,,{ itemskill "ALL_BUYING_STORE",1; },{},{}
-+12622,Reins_Of_Mounts,Reins Of Mounts,2,0,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ sc_start SC_ALL_RIDING,9999,0; getitem 12622,1; },{},{}
++12622,Reins_Of_Mounts,Reins Of Mounts,11,0,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ progressbar "0x00FF00",1; sc_start SC_ALL_RIDING,600000,0; },{},{}
 Index: src/map/clif.c
 ===================================================================
---- src/map/clif.c	(revision 612)
+--- src/map/clif.c	(revision 628)
 +++ src/map/clif.c	(working copy)
-@@ -9822,7 +9822,8 @@
+@@ -1172,6 +1172,8 @@
+ 				clif_sendbgemblem_area(sd);
+ 			if( sd->sc.count && sd->sc.data[SC_BANDING] )
+ 				clif_status_change(&sd->bl,SI_BANDING,1,9999,sd->sc.data[SC_BANDING]->val1,0,0);
++			if( sd->sc.count && sd->sc.data[SC_ALL_RIDING] )
++				clif_status_change(&sd->bl,SI_ALL_RIDING,1,9999,sd->sc.data[SC_ALL_RIDING]->val1,0,0);
+ 		}
+ 		break;
+ 	case BL_MOB:
+@@ -3909,7 +3911,9 @@
+ 			if( tsd->state.bg_id && map[tsd->bl.m].flag.battleground )
+ 				clif_sendbgemblem_single(sd->fd,tsd);
+ 			if( tsd->sc.count && tsd->sc.data[SC_BANDING] )
+-				clif_display_banding(&sd->bl,&tsd->bl,tsd->sc.data[SC_BANDING]->val1);
++				clif_statuschange_single(&sd->bl,&tsd->bl,SI_BANDING,1,9999,tsd->sc.data[SC_BANDING]->val1,0,0);
++			if( tsd->sc.count && tsd->sc.data[SC_ALL_RIDING] )
++				clif_statuschange_single(&sd->bl,&tsd->bl,SI_ALL_RIDING,1,9999,tsd->sc.data[SC_ALL_RIDING]->val1,0,0);
+ 		}
+ 		break;
+ 	case BL_MER: // Devotion Effects
+@@ -5230,10 +5234,10 @@
+ 
+ 
+ /*==========================================
+- * Display Banding when someone under this
++ * Display status when someone under this
+  * status change walk into your view range.
+  *------------------------------------------*/
+-void clif_display_banding(struct block_list *dst, struct block_list *bl, int val1)
++void clif_statuschange_single(struct block_list *dst, struct block_list *bl, int type, int flag, unsigned int tick, int val1, int val2, int val3)
+ {
+ 	unsigned char buf[32];
+ 
+@@ -5244,15 +5248,15 @@
+ 		WBUFW(buf, 0) = 0x043f;
+ 	else
+ 		WBUFW(buf, 0)= 0x0196;
+-	WBUFW(buf, 2) = SI_BANDING;
++	WBUFW(buf, 2) = type;
+ 	WBUFL(buf, 4) = bl->id;
+-	WBUFB(buf, 8) = 1;
++	WBUFB(buf, 8) = flag;
+ 	if( battle_config.display_status_timers )
+ 	{
+-		WBUFL(buf, 9) = 0;
++		WBUFL(buf, 9) = tick;
+ 		WBUFL(buf,13) = val1;
+-		WBUFL(buf,17) = 0;
+-		WBUFL(buf,21) = 0;
++		WBUFL(buf,17) = val2;
++		WBUFL(buf,21) = val3;
+ 	}
+ 	clif_send(buf,packet_len(WBUFW(buf,0)),dst,SELF);
+ }
+@@ -9801,7 +9805,8 @@
  			sd->sc.data[SC_DEATHBOUND] ||
  			sd->sc.data[SC_BLADESTOP] ||
  			(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOITEM) ||
@@ -33,9 +87,22 @@ Index: src/map/clif.c
  		))
  			break;
  
+Index: src/map/clif.h
+===================================================================
+--- src/map/clif.h	(revision 627)
++++ src/map/clif.h	(working copy)
+@@ -637,7 +637,7 @@
+ 
+ void clif_equip_damaged(struct map_session_data *sd, int equip_index);
+ void clif_millenniumshield(struct map_session_data *sd, short shields );
+-void clif_display_banding(struct block_list *dst, struct block_list *bl, int val1);
++void clif_statuschange_single(struct block_list *dst, struct block_list *bl, int type, int flag, unsigned int tick, int val1, int val2, int val3);
+ 
+ // Elementals
+ void clif_elemental_info(struct map_session_data *sd);
 Index: src/map/pc.c
 ===================================================================
---- src/map/pc.c	(revision 612)
+--- src/map/pc.c	(revision 627)
 +++ src/map/pc.c	(working copy)
 @@ -7417,7 +7417,7 @@
  {
@@ -48,7 +115,7 @@ Index: src/map/pc.c
  	if( (sd->class_&MAPID_UPPERMASK) == MAPID_KNIGHT || (sd->class_&MAPID_UPPERMASK) == MAPID_CRUSADER )
 Index: src/map/status.c
 ===================================================================
---- src/map/status.c	(revision 612)
+--- src/map/status.c	(revision 627)
 +++ src/map/status.c	(working copy)
 @@ -740,6 +740,8 @@
  	StatusIconChangeTable[SC_LIFE_FORCE_F] |= SI_LIFE_FORCE_F;
@@ -109,7 +176,7 @@ Index: src/map/status.c
  			if( calc_flag == SCB_NONE && StatusSkillChangeTable[type] == 0 && StatusIconChangeTable[type] == 0 )
 Index: src/map/status.h
 ===================================================================
---- src/map/status.h	(revision 612)
+--- src/map/status.h	(revision 627)
 +++ src/map/status.h	(working copy)
 @@ -541,6 +541,8 @@
  	SC_BANANA_BOMB_SITDOWN,
@@ -123,9 +190,9 @@ Index: src/map/status.h
 @@ -1161,7 +1163,7 @@
  //	SI_SPIRITS_SAVEINFO2 = 610,
  //	SI_MAGIC_CANDY = 611,
- //	SI_ = 612,
+ //	SI_SEARCH_STORE_INFO = 612,
 -//	SI_ALL_RIDING = 613,
 +	SI_ALL_RIDING = 613,
- //	SI_ = 614,
+ //	SI_ALL_RIDING_REUSE_LIMIT = 614,
  //	SI_MACRO = 615,
  //	SI_MACRO_POSTDELAY = 616,
