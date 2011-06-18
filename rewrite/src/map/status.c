@@ -6125,7 +6125,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		break;
 	case SC_INCREASEAGI:
 		status_change_end(bl, SC_DECREASEAGI, INVALID_TIMER);
-		status_change_end(bl,SC_ADORAMUS,-1);
+		status_change_end(bl, SC_ADORAMUS, INVALID_TIMER);
 		break;
 	case SC_QUAGMIRE:
 		status_change_end(bl, SC_CONCENTRATE, INVALID_TIMER);
@@ -6144,7 +6144,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		status_change_end(bl, SC_TWOHANDQUICKEN, INVALID_TIMER);
 		status_change_end(bl, SC_ONEHAND, INVALID_TIMER);
 		status_change_end(bl, SC_MERC_QUICKEN, INVALID_TIMER);
-		status_change_end(bl,SC_ACCELERATION,-1);
+		status_change_end(bl, SC_ACCELERATION, INVALID_TIMER);
 		break;
 	case SC_ONEHAND:
 	  	//Removes the Aspd potion effect, as reported by Vicious. [Skotlex]
@@ -6195,7 +6195,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		if(sc->data[SC_DECREASEAGI] || sc->data[SC_ADORAMUS])
 		{	//Cancel Decrease Agi, but take no further effect [Skotlex]
 			status_change_end(bl, SC_DECREASEAGI, INVALID_TIMER);
-			status_change_end(bl,SC_ADORAMUS,-1);
+			status_change_end(bl, SC_ADORAMUS, INVALID_TIMER);
 			return 0;
 		}
 		break;
@@ -6250,7 +6250,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		status_change_end(bl, SC_LUKFOOD, INVALID_TIMER);
 		break;
 	case SC_OTHILA:
-		status_change_end(bl,type,-1); // Remove previous one.
+		status_change_end(bl, type, INVALID_TIMER); // Remove previous one.
 		break;
 	case SC_SWINGDANCE:
 	case SC_SYMPHONYOFLOVER:
@@ -6263,15 +6263,15 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	case SC_SIRCLEOFNATURE:
 		if( sc->data[type] ) // Don't remove same sc.
 			break;
-		status_change_end(bl,SC_SWINGDANCE,-1);
-		status_change_end(bl,SC_SYMPHONYOFLOVER,-1);
-		status_change_end(bl,SC_MOONLITSERENADE,-1);
-		status_change_end(bl,SC_RUSHWINDMILL,-1);
-		status_change_end(bl,SC_ECHOSONG,-1);
-		status_change_end(bl,SC_HARMONIZE,-1);
-		status_change_end(bl,SC_VOICEOFSIREN,-1);
-		status_change_end(bl,SC_DEEPSLEEP,-1);
-		status_change_end(bl,SC_SIRCLEOFNATURE,-1);
+		status_change_end(bl, SC_SWINGDANCE, INVALID_TIMER);
+		status_change_end(bl, SC_SYMPHONYOFLOVER, INVALID_TIMER);
+		status_change_end(bl, SC_MOONLITSERENADE, INVALID_TIMER);
+		status_change_end(bl, SC_RUSHWINDMILL, INVALID_TIMER);
+		status_change_end(bl, SC_ECHOSONG, INVALID_TIMER);
+		status_change_end(bl, SC_HARMONIZE, INVALID_TIMER);
+		status_change_end(bl, SC_VOICEOFSIREN, INVALID_TIMER);
+		status_change_end(bl, SC_DEEPSLEEP, INVALID_TIMER);
+		status_change_end(bl, SC_SIRCLEOFNATURE, INVALID_TIMER);
 			break;
 	case SC_SONGOFMANA:
 	case SC_DANCEWITHWUG:
@@ -6281,39 +6281,36 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	case SC_UNLIMITEDHUMMINGVOICE:
 		if( sc->data[type] ) // Don't remove same sc.
 			break;
-		status_change_end(bl,SC_SONGOFMANA,-1);
-		status_change_end(bl,SC_DANCEWITHWUG,-1);
-		status_change_end(bl,SC_LERADSDEW,-1);
-		status_change_end(bl,SC_MELODYOFSINK,-1);
-		status_change_end(bl,SC_BEYONDOFWARCRY,-1);
-		status_change_end(bl,SC_UNLIMITEDHUMMINGVOICE,-1);
+		status_change_end(bl, SC_SONGOFMANA, INVALID_TIMER);
+		status_change_end(bl, SC_DANCEWITHWUG, INVALID_TIMER);
+		status_change_end(bl, SC_LERADSDEW, INVALID_TIMER);
+		status_change_end(bl, SC_MELODYOFSINK, INVALID_TIMER);
+		status_change_end(bl, SC_BEYONDOFWARCRY, INVALID_TIMER);
+		status_change_end(bl, SC_UNLIMITEDHUMMINGVOICE, INVALID_TIMER);
 		break;
 	case SC_REFLECTSHIELD:
-		status_change_end(bl,SC_REFLECTDAMAGE,-1);
+		status_change_end(bl, SC_REFLECTDAMAGE, INVALID_TIMER);
 		break;
 	case SC_REFLECTDAMAGE:
-		status_change_end(bl,SC_REFLECTSHIELD,-1);
+		status_change_end(bl, SC_REFLECTSHIELD, INVALID_TIMER);
 		break;
 	// Remove previous status changes.
-	case SC_SHIELDSPELL_DEF:
+	case SC_SHIELDSPELL_DEF: // Should it remove the same sc?
 	case SC_SHIELDSPELL_MDEF:
 	case SC_SHIELDSPELL_REF:
-		status_change_end(bl,SC_MAGNIFICAT,-1);
-		status_change_end(bl,SC_SHIELDSPELL_DEF,-1);
-		status_change_end(bl,SC_SHIELDSPELL_MDEF,-1);
-		status_change_end(bl,SC_SHIELDSPELL_REF,-1);
+		status_change_end(bl, SC_MAGNIFICAT, INVALID_TIMER);
+		status_change_end(bl, SC_SHIELDSPELL_DEF, INVALID_TIMER);
+		status_change_end(bl, SC_SHIELDSPELL_MDEF, INVALID_TIMER);
+		status_change_end(bl, SC_SHIELDSPELL_REF, INVALID_TIMER);
 		break;
 	case SC_GT_ENERGYGAIN:
-		status_change_end(bl, SC_GT_CHANGE, -1);
-		status_change_end(bl, SC_GT_REVITALIZE, -1);
-		break;
 	case SC_GT_CHANGE:
-		status_change_end(bl, SC_GT_ENERGYGAIN, -1);
-		status_change_end(bl, SC_GT_REVITALIZE, -1);
-		break;
 	case SC_GT_REVITALIZE:
-		status_change_end(bl, SC_GT_ENERGYGAIN, -1);
-		status_change_end(bl, SC_GT_CHANGE, -1);
+		if( sc->data[type] ) // Don't remove same sc.
+			break;
+		status_change_end(bl, SC_GT_REVITALIZE, INVALID_TIMER);
+		status_change_end(bl, SC_GT_ENERGYGAIN, INVALID_TIMER);
+		status_change_end(bl, SC_GT_CHANGE, INVALID_TIMER);
 		break;
 	}
 
@@ -9173,7 +9170,7 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 			else
 				damage += 7 * status->vit;
 			
-			unit_skillcastcancel(bl,0);
+			unit_skillcastcancel(bl,2);
 			
 			map_freeblock_lock();
 			status_zap(bl,damage,0);

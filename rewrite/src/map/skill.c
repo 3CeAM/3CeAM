@@ -2449,7 +2449,7 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 		if( sc && sc->data[SC_REFLECTDAMAGE] )
 		{
 			if( src != bl )// Don't reflect your own damage (Grand Cross)
-				map_foreachinrange(battle_damage_area,bl,skill_get_splash(LG_REFLECTDAMAGE,1),BL_CHAR,tick,bl,dmg.amotion,sstatus->dmotion,rdamage,tstatus->race);
+				map_foreachinshootrange(battle_damage_area,bl,skill_get_splash(LG_REFLECTDAMAGE,1),BL_CHAR,tick,bl,dmg.amotion,sstatus->dmotion,rdamage,tstatus->race);
 		}
 		else
 		{
@@ -7270,7 +7270,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				count += (short)tsc->data[SC_ROLLINGCUTTER]->val1;
 				if( count > 10 )
 					count = 10; // Max coounter
-				status_change_end(bl,SC_ROLLINGCUTTER,-1);
+				status_change_end(bl, SC_ROLLINGCUTTER, INVALID_TIMER);
 			}
 			sc_start(bl,SC_ROLLINGCUTTER,100,count,skill_get_time(skillid,skilllv));
 			clif_skill_nodamage(src,src,skillid,skilllv,1);
@@ -7279,7 +7279,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 	case GC_WEAPONBLOCKING:
 		if( tsc && tsc->data[SC_WEAPONBLOCKING] )
-			status_change_end(bl,SC_WEAPONBLOCKING,-1);
+			status_change_end(bl, SC_WEAPONBLOCKING, INVALID_TIMER);
 		else
 			sc_start(bl,SC_WEAPONBLOCKING,100,skilllv,skill_get_time(skillid,skilllv));
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
@@ -7305,14 +7305,14 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		if( tsc )
 		{
-			status_change_end(bl,SC_PARALYSE,-1);
-			status_change_end(bl,SC_PYREXIA,-1);
-			status_change_end(bl,SC_DEATHHURT,-1);
-			status_change_end(bl,SC_LEECHESEND,-1);
-			status_change_end(bl,SC_VENOMBLEED,-1);
-			status_change_end(bl,SC_MAGICMUSHROOM,-1);
-			status_change_end(bl,SC_TOXIN,-1);
-			status_change_end(bl,SC_OBLIVIONCURSE,-1);
+			status_change_end(bl, SC_PARALYSE, INVALID_TIMER);
+			status_change_end(bl, SC_PYREXIA, INVALID_TIMER);
+			status_change_end(bl, SC_DEATHHURT, INVALID_TIMER);
+			status_change_end(bl, SC_LEECHESEND, INVALID_TIMER);
+			status_change_end(bl, SC_VENOMBLEED, INVALID_TIMER);
+			status_change_end(bl, SC_MAGICMUSHROOM, INVALID_TIMER);
+			status_change_end(bl, SC_TOXIN, INVALID_TIMER);
+			status_change_end(bl, SC_OBLIVIONCURSE, INVALID_TIMER);
 		}
 		break;
 
@@ -8413,7 +8413,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case GN_BLOOD_SUCKER:
-		if( skill_unitsetting(src, skillid, skilllv, bl->x, bl->y, 0) )
+		if( skill_unitsetting(src, skillid, skilllv, bl->x, bl->y, 0) ) // Do we need this unit setting? [Xazax]
 		{
 			clif_skill_nodamage(src, bl, skillid, skilllv, 1);
 			sc_start2(bl, type, 100, skilllv, src->id, skill_get_time(skillid,skilllv));
@@ -11213,8 +11213,9 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			break;
 
 		case UNT_HELLS_PLANT:
-			if( skill_attack(skill_get_type(GN_HELLS_PLANT_ATK), ss, &src->bl, bl, GN_HELLS_PLANT_ATK, sg->skill_lv, tick, 0) )
-				sg->limit = DIFF_TICK(tick, sg->tick) + 100;
+			if( battle_check_target(&src->bl,bl,BCT_ENEMY) > 0 )
+				skill_attack(skill_get_type(GN_HELLS_PLANT_ATK), ss, &src->bl, bl, GN_HELLS_PLANT_ATK, sg->skill_lv, tick, 0);
+			sg->limit = DIFF_TICK(tick, sg->tick) + 100;
 			break;
 
 		case UNT_CLOUD_KILL:
@@ -11526,7 +11527,7 @@ static int skill_check_condition_char_sub (struct block_list *bl, va_list ap)
 	skillid = va_arg(ap,int);
 	lv = va_arg(ap,int);
 
-	if( ((skillid != PR_BENEDICTIO && *c >=1) || *c >=2) && !skill_get_inf2(skillid)&INF2_CHORUS_SKILL )
+	if( ((skillid != PR_BENEDICTIO && *c >=1) || *c >=2) && !(skill_get_inf2(skillid)&INF2_CHORUS_SKILL) )
 		return 0; //Partner found for ensembles, or the two companions for Benedictio. Chorus skills should search for all[Skotlex]*/
 
 	if (bl == src)

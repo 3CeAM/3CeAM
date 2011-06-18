@@ -2503,7 +2503,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				break;
 			case SR_RIDEINLIGHTNING:
 				if( (sstatus->rhw.ele) == ELE_WIND || (sstatus->lhw.ele) == ELE_WIND )
-					ATK_ADDRATE(20);
+					ATK_ADDRATE(skill_lv*5);
 				break;
 		}
 		
@@ -3864,9 +3864,9 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		break;
 	case RK_DRAGONBREATH:
 		if( battle_config.skillsbonus_maxhp_RK && status_get_hp(src) > battle_config.skillsbonus_maxhp_RK ) // [Pinky]
-		md.damage = ((battle_config.skillsbonus_maxhp_RK * 16 / 1000) + (status_get_sp(src) * 192 / 1000)) * skill_lv;
+			md.damage = ((battle_config.skillsbonus_maxhp_RK * 16 / 1000) + (status_get_sp(src) * 192 / 1000)) * skill_lv;
 		else
-		md.damage = ((status_get_hp(src) * 16 / 1000) + (status_get_sp(src) * 192 / 1000)) * skill_lv;
+			md.damage = ((status_get_hp(src) * 16 / 1000) + (status_get_sp(src) * 192 / 1000)) * skill_lv;
 		if (sd) md.damage += md.damage * 5 * (pc_checkskill(sd,RK_DRAGONTRAINING) -1) / 100;// Damaged is increased if you know Dragon Training [Rytech]
 		if (status_get_lv(src) > 100) md.damage += md.damage * (s_level - 100) / 200;// Base level bonus.
 		break;
@@ -4171,8 +4171,7 @@ int battle_damage_area( struct block_list *bl, va_list ap)
 	dmotion=va_arg(ap,int);
 	damage=va_arg(ap,int);
 
-	if( bl != src && battle_check_target(src,bl,BCT_ENEMY) > 0 && !(bl->type == BL_MOB && ((TBL_MOB*)bl)->class_ == MOBID_EMPERIUM) &&
-		!( map[bl->m].flag.battleground && bl->type == BL_MOB && (((TBL_MOB*)bl)->class_ == 1914 || ((TBL_MOB*)bl)->class_ == 1915)) )
+	if( bl != src && battle_check_target(src,bl,BCT_ENEMY) > 0 && !(bl->type == BL_MOB && ((TBL_MOB*)bl)->class_ == MOBID_EMPERIUM) )
 	{
 		map_freeblock_lock();
 		if( amotion )
