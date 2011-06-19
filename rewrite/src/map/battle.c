@@ -689,7 +689,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			if( sd ) pc_addspiritball(sd, duration, sce->val1);
 		}
 		
-		if( sc->data[SC__DEADLYINFECT] && damage > 0 && rand()%100 < 65 + 5 * skill_lv )
+		if( sc->data[SC__DEADLYINFECT] && damage > 0 && rand()%100 < 65 + 5 * sc->data[SC__DEADLYINFECT]->val1 )
 			status_change_spread(bl, src); // Deadly infect attacked side
 	}
 
@@ -721,7 +721,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 		}
 		if( tsc->data[SC_POISONINGWEAPON] && skill_num != GC_VENOMPRESSURE && (flag&BF_WEAPON) && damage > 0 && rand()%100 < tsc->data[SC_POISONINGWEAPON]->val3 )
 			sc_start(bl,tsc->data[SC_POISONINGWEAPON]->val2,100,tsc->data[SC_POISONINGWEAPON]->val1,skill_get_time2(GC_POISONINGWEAPON,tsc->data[SC_POISONINGWEAPON]->val1));
-		if( tsc->data[SC__DEADLYINFECT] && damage > 0 && rand()%100 < 65 + 5 * skill_lv )
+		if( tsc->data[SC__DEADLYINFECT] && damage > 0 && rand()%100 < 65 + 5 * tsc->data[SC__DEADLYINFECT]->val1 )
 			status_change_spread(src, bl);
 	}
 
@@ -4360,7 +4360,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 	if( damage > 0 && src != target )
 	{
 		
-		if( sc && sc->data[SC_DUPLELIGHT] && (wd.flag&BF_SHORT) && rand()%100 <= 30 )//Chance of activation for either physical and magical is 10% + 2% * Skill LV. [Rytech]
+		if( sc && sc->data[SC_DUPLELIGHT] && (wd.flag&BF_SHORT) && rand()%100 <= 10+2*sc->data[SC_DUPLELIGHT]->val1 )
 		{	// Activates it only from melee damage
 			int skillid;
 			if( rand()%2 == 1 )
@@ -4469,7 +4469,9 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 					skill_castend_nodamage_id(src, target, skillid, skilllv, tick, flag);
 					break;
 				case CAST_DAMAGE:
+					status_change_end(bl, SC_SPELLFIST, INVALID_TIMER); // To avoid autocasted bolts acting as spell fisted ones [Xazax]
 					skill_castend_damage_id(src, target, skillid, skilllv, tick, flag);
+					// TODO: Restore Spellfist status here?
 					break;
 			}
 		}

@@ -1072,8 +1072,8 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		{
 			int rate = 0, i;
 			const int pos[5] = { EQP_WEAPON, EQP_HELM, EQP_SHIELD, EQP_ARMOR, EQP_ACC };
-			rate = (6 + (skilllv > 2)?6:0 + 2 * skilllv) * status_get_lv(src) / 100;
-			rate *= 1 - tstatus->dex / 200; // Reduced by Target Dex
+			rate = (5 + skilllv) * skilllv * status_get_lv(src) / 100;
+			rate -= rate * tstatus->dex / 200; // Reduced by Target Dex
 
 			for( i = 0; i < skilllv; i++ )
 				skill_strip_equip(bl,pos[i],rate,skilllv,skill_get_time2(skillid,skilllv));
@@ -1135,7 +1135,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		}
 		break;
 	case LG_MOONSLASHER:
-		rate = 40 + (skilllv > 1) ? 8 * skilllv : 0;
+		rate = 32 + 8 * skilllv;
 		if( rand()%100 < rate && dstsd ) // Uses skill_addtimerskill to avoid damage and setsit packet overlaping. Officially clif_setsit is received about 500 ms after damage packet.
 			skill_addtimerskill(src,tick+500,bl->id,0,0,skillid,skilllv,BF_WEAPON,0);
 		else if( dstmd && !is_boss(bl) )
@@ -8005,18 +8005,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			clif_skill_nodamage(bl,src,skillid,skilllv,
 				sc_start(bl, type, 100, skilllv, skill_get_time(skillid, skilllv)));
 		}
-		break;
-
-	case SR_TIGERCANNON:
-		{
-			int hp = sstatus->max_hp*(10 + 2 * skilllv) / 100;
-			int sp = sstatus->max_sp*(5 + 1 * skilllv) / 100;
-			if( sstatus->hp <= hp )
-				hp = sstatus->hp - 1;//Prevent to kill the source.
-			status_zap(src, hp, sp);
-		}
-		clif_skill_damage(src, bl, tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
-		map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), splash_target(src), src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_damage_id);
 		break;
 
 	case SR_CURSEDCIRCLE:
