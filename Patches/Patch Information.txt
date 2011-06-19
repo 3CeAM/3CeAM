@@ -60,15 +60,16 @@
 //= 3rd Job Skill Base/Job Ratio Effect Removal
 //=
 //= Patch File Name - 3rdSkillBJR = for r517
-//= 		     3rdSkillBJR588 = for r588
+//= 		      3rdSkillBJR588 = for r588
+//=		      3rdSkillBJR627 = for r627
 //=
 //= Patch Type - Balanceing
 //=
 //= Official ? - Unofficial
 //=
-//= Patch Revision Creation - r588 Trunk
+//= Patch Revision Creation - r627 Trunk
 //=
-//= Last Known Good Rev - r588 Trunk
+//= Last Known Good Rev - r627 Trunk
 //=
 //= Description - This patch modifies all the 3rd jobs skills so a players Base/Job level will
 //= no longer affect the skill's damage ratios.

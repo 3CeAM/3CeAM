@@ -496,6 +496,8 @@ void initChangeTables(void)
 	set_sc( LG_INSPIRATION       , SC_INSPIRATION     , SI_INSPIRATION     , SCB_MAXHP|SCB_WATK|SCB_HIT|SCB_VIT|SCB_AGI|SCB_STR|SCB_DEX|SCB_INT|SCB_LUK);
 	set_sc( LG_EARTHDRIVE        , SC_EARTHDRIVE      , SI_EARTHDRIVE      , SCB_DEF|SCB_ASPD );
 
+	add_sc( SR_DRAGONCOMBO           , SC_STUN            );
+	add_sc( SR_EARTHSHAKER           , SC_STUN            );
 	set_sc( SR_CRESCENTELBOW         , SC_CRESCENTELBOW      , SI_CRESCENTELBOW         , SCB_NONE );
 	set_sc( SR_CURSEDCIRCLE          , SC_CURSEDCIRCLE_TARGET, SI_CURSEDCIRCLE_TARGET   , SCB_NONE );
 	set_sc( SR_LIGHTNINGWALK         , SC_LIGHTNINGWALK      , SI_LIGHTNINGWALK         , SCB_NONE );
@@ -963,7 +965,7 @@ int status_damage(struct block_list *src,struct block_list *target,int hp, int s
 		if( sc ) {
 			struct status_change_entry *sce;
 			if (sc->data[SC_STONE] && sc->opt1 == OPT1_STONE)
-				status_change_end(target, SC_STONE, INVALID_TIMER);
+			status_change_end(target, SC_STONE, INVALID_TIMER);
 			status_change_end(target, SC_FREEZE, INVALID_TIMER);
 			status_change_end(target, SC_SLEEP, INVALID_TIMER);
 			status_change_end(target, SC_WINKCHARM, INVALID_TIMER);
@@ -4256,7 +4258,7 @@ static signed short status_calc_hit(struct block_list *bl, struct status_change 
 		hit -= hit * 20 / 100;
 	if(sc->data[SC_INSPIRATION])
 		hit += 5 * sc->data[SC_INSPIRATION]->val1;
-	if( sc->data[SC_MARSHOFABYSS] ) // [Zephyrus] : I am sure, by Videos, it's a Hit reduction, not Flee
+	if( sc->data[SC_MARSHOFABYSS] ) // [Zephyrus] : I am sure, by Videos, it's a Hit reduction, not Flee // A quicksand like skill should make it hard for you to move and dodge things. This bug must be removed soon. [Rytech]
 		hit -= (9 * sc->data[SC_MARSHOFABYSS]->val3 / 10 + sc->data[SC_MARSHOFABYSS]->val2 / 10) * (bl->type == BL_MOB ? 2 : 1);
 	return (short)cap_value(hit,1,SHRT_MAX);
 }
@@ -4790,7 +4792,7 @@ static short status_calc_aspd_rate(struct block_list *bl, struct status_change *
 	if( sc->data[SC_PARALYSE] )
 		aspd_rate += 100;
 	if( sc->data[SC__BODYPAINT] )
-		aspd_rate += aspd_rate * 5 * sc->data[SC__BODYPAINT]->val1 / 100;
+		aspd_rate += aspd_rate * (20 + 5 * sc->data[SC__BODYPAINT]->val1 / 100);
 	if( sc->data[SC__INVISIBILITY] )
 		aspd_rate += aspd_rate * sc->data[SC__INVISIBILITY]->val2 / 100;
 	if( sc->data[SC__GROOMY] )
@@ -4964,7 +4966,7 @@ unsigned char status_calc_attack_element(struct block_list *bl, struct status_ch
 	if(sc->data[SC_GHOSTWEAPON] || sc->data[SC__INVISIBILITY])
 		return ELE_GHOST;
 	if(sc->data[SC_EXPIATIO])
-		return ELE_HOLY;
+		return ELE_HOLY;// Does Expiatio really change your weapon element to Holy? [Rytech]
 	if(sc->data[SC_TIDAL_WEAPON_OPTION] || sc->data[SC_TIDAL_WEAPON] )
 		return ELE_WATER;
 	return (unsigned char)cap_value(element,0,UCHAR_MAX);
@@ -6104,8 +6106,8 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC_LEECHESEND:
 
 			// Ranger Effects
-			//case SC_BITE:
-			//case SC_ELECTRICSHOCKER:
+			case SC_BITE:
+			case SC_ELECTRICSHOCKER:
 			case SC_MAGNETICFIELD:
 				return 0;
 		}

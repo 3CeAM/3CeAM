@@ -689,7 +689,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			if( sd ) pc_addspiritball(sd, duration, sce->val1);
 		}
 		
-		if( sc->data[SC__DEADLYINFECT] && damage > 0 && rand()%100 < 20 )
+		if( sc->data[SC__DEADLYINFECT] && damage > 0 && rand()%100 < 65 + 5 * skill_lv )
 			status_change_spread(bl, src); // Deadly infect attacked side
 	}
 
@@ -721,7 +721,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 		}
 		if( tsc->data[SC_POISONINGWEAPON] && skill_num != GC_VENOMPRESSURE && (flag&BF_WEAPON) && damage > 0 && rand()%100 < tsc->data[SC_POISONINGWEAPON]->val3 )
 			sc_start(bl,tsc->data[SC_POISONINGWEAPON]->val2,100,tsc->data[SC_POISONINGWEAPON]->val1,skill_get_time2(GC_POISONINGWEAPON,tsc->data[SC_POISONINGWEAPON]->val1));
-		if( tsc->data[SC__DEADLYINFECT] && damage > 0 && rand()%100 < 20 )
+		if( tsc->data[SC__DEADLYINFECT] && damage > 0 && rand()%100 < 65 + 5 * skill_lv )
 			status_change_spread(src, bl);
 	}
 
@@ -1233,8 +1233,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 	flag.infdef =(tstatus->mode&MD_PLANT) ? 1 : 0;
 	if( !flag.infdef && (target->type == BL_SKILL && ((TBL_SKILL*)target)->group->unit_id == UNT_REVERBERATION) )
 		flag.infdef = 1; // Reberberation takes 1 damage
-	if( flag.infdef && skill_num == GN_CART_TORNADO )
-		flag.infdef = 0;	// Full damage on plants.
 
 	//Initial Values
 	wd.type = 0; //Normal attack
@@ -2249,7 +2247,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio += 80 * skill_lv - 100 + ( sstatus->agi * 4 );
 					break;
 				case SR_EARTHSHAKER:
-					skillratio += 50 * skill_lv - 50;
+					skillratio += 50 * skill_lv - 50;// Need to code a check to make the ratio 3x when hitting a hidden player. [Rytech]
 					break;
 				case SR_FALLENEMPIRE:
 					skillratio += 150 * skill_lv; // Need official on how much enemy players weight affects damage. [Rytech]
@@ -2307,7 +2305,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					}
 					break;
 				case WM_SOUND_OF_DESTRUCTION:
-					skillratio += 150;
+					skillratio += 400;
 					break;
 				case GN_CART_TORNADO:
 					skillratio += 50 * skill_lv + pc_checkskill(sd, GN_REMODELING_CART) * 100 - 100;
@@ -2552,8 +2550,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 							flag.idef2 = 1;
 				}
 			}
-			if( skill_num == GN_CART_TORNADO && (tstatus->mode&MD_PLANT) )
-				flag.idef = 1; // ignore def on plants
 		}
 
 		if (!flag.idef || !flag.idef2)
@@ -4328,7 +4324,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		if( sc->data[SC_GT_ENERGYGAIN] )
 		{
 			int duration = skill_get_time(MO_CALLSPIRITS, sc->data[SC_GT_ENERGYGAIN]->val1); 
-			if( sd && rand()%100 < 10 + sc->data[SC_GT_ENERGYGAIN]->val1 * 5 )
+			if( sd && rand()%100 < 10 + 5 * sc->data[SC_GT_ENERGYGAIN]->val1)
 				pc_addspiritball(sd, duration, sc->data[SC_GT_ENERGYGAIN]->val1);
 		}
 	}
@@ -4364,7 +4360,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 	if( damage > 0 && src != target )
 	{
 		
-		if( sc && sc->data[SC_DUPLELIGHT] && (wd.flag&BF_SHORT) && rand()%100 <= 25 )//Chance of activation for either physical and magical is 25%
+		if( sc && sc->data[SC_DUPLELIGHT] && (wd.flag&BF_SHORT) && rand()%100 <= 30 )//Chance of activation for either physical and magical is 10% + 2% * Skill LV. [Rytech]
 		{	// Activates it only from melee damage
 			int skillid;
 			if( rand()%2 == 1 )

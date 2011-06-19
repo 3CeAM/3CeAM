@@ -943,7 +943,7 @@
 2051,11,6,16,6,0x21,0,5,1,yes,0,0,0,magic,0,	AB_HIGHNESSHEAL,Highness Heal //CHECK Info shows this has magic attack.
 2052,11,6,1,0,0x1,0,5,1,yes,0,0xA00,0,magic,0,	AB_CLEARANCE,Clearance //CHECK Also shows this as a magic attack. Why?
 2053,0,6,4,0,0x1,0,5,1,yes,0,0,0,magic,0,	AB_EXPIATIO,Expiatio //CHECK Does this also give the buff to party members?
-2054,0,6,4,6,0x1,0,10,1,yes,0,0,0,none,0,	AB_DUPLELIGHT,Duple Light
+2054,0,6,4,6,0x1,0,10,1,yes,0,0,0,none,0,	AB_DUPLELIGHT,Duple Light //CHECK Had issues adding a skill level check to make the % go higher with the skills level. Will do later.
 2055,-1,6,1,-1,0,0,10,1,no,0,0,0,weapon,0,	AB_DUPLELIGHT_MELEE,Duple Light Melee
 2056,-1,6,1,0,0,0,10,1,no,0,0,0,magic,0,	AB_DUPLELIGHT_MAGIC,Duple Light Magic
 2057,0,6,4,6,0x3,4:5:6:7:8,5,1,yes,0,0,0,magic,0,	AB_SILENTIUM,Silentium //CHECk Marked magic attack as well. Hmmmm....
@@ -1018,7 +1018,7 @@
 2263,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		NC_HOVERING,Hovering
 2264,0,6,4,0,0x1,0,1,1,no,0,0,0,none,7,		NC_F_SIDESLIDE,Front-Side Slide
 2265,0,6,4,0,0x1,0,1,1,no,0,0,0,none,7,		NC_B_SIDESLIDE,Back-Side Slide
-2266,0,0,0,0,0,0,4,0,no,0,0,0,none,0,		NC_MAINFRAME,Mainframe Restructure
+2266,0,0,0,0,0,0,4,0,no,0,0,0,none,0,		NC_MAINFRAME,Mainframe Restructure // Check me. Part of the code notes translated to "The amount of fuel have".
 2267,0,6,4,-1,0x2,2:3:4,3,1,no,0,0,0,misc,5,	NC_SELFDESTRUCTION,Self Destruction
 2268,0,6,4,0,0x1,0,4,1,yes,0,0,0,none,0,	NC_SHAPESHIFT,Shape Shift
 2269,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		NC_EMERGENCYCOOL,Emergency Cool
@@ -1032,7 +1032,7 @@
 2277,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		NC_RESEARCHFE,Research Fire/Earth
 2278,4:5:6:7:8,6,1,-1,0,0,5,1,no,0,0,0,weapon,2:3:4:5:6,	NC_AXEBOOMERANG,Axe Boomerang
 2279,1,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	NC_POWERSWING,Power Swing
-2280,0,8,4,-1,0x2,2:2:3:3:3,5,-6,no,0,0,0,weapon,0,	NC_AXETORNADO,Axe Tornado
+2280,0,8,4,-1,0x2,2:2:3:3:3,5,-6,no,0,0,0,weapon,0,	NC_AXETORNADO,Axe Tornado // Check me. Takes 20 * Skill LV amount of HP each use.
 2281,2,6,2,0,0x1,0,5,1,yes,0,0,2,none,0,	NC_SILVERSNIPER,FAW - Silver Sniper
 2282,2,6,2,0,0x1,0,5,1,yes,0,0,2,none,0,	NC_MAGICDECOY,FAW - Magic Decoy //CHECK FIX ME!!!! Wind and Earth stones spawning opposite decoys.
 2283,2,6,1,0,0x1,0,1,1,no,0,0,0,none,0,		NC_DISJOINT,FAW Removal
@@ -1084,7 +1084,7 @@
 // Sura
 2326,-2,8,1,-1,0,0,10,2,no,0,0,0,weapon,0,	SR_DRAGONCOMBO,Dragon Combo //CHECK Is this 2 regular hits or sub hits?
 2327,0,8,4,-1,0x2,2,5,-3,no,0,0,0,weapon,3,	SR_SKYNETBLOW,Sky Net Blow //CHECK Video shows 3 hits. Its sub hits right?
-2328,0,6,4,-1,0x2,1:2:3:4:5,5,1,no,0,0,0,weapon,0,	SR_EARTHSHAKER,Earth Shaker
+2328,0,6,4,-1,0x2,1:2:3:4:5,5,1,no,0,0,0,weapon,0,	SR_EARTHSHAKER,Earth Shaker //CHECK Must add a check in battle.c to triple damage if hitting a hidden target.
 2329,-2,8,4,-1,0,0,5,-2,no,0,0x200,0,weapon,0,	SR_FALLENEMPIRE,Fallen Empire //CHECK Video shows 2 hits. Is it sub hits?
 2330,-2,6,1,-1,0x42,1:1:1:1:1:2:2:2:2:2,10,1,yes,0,0,0,weapon,0,	SR_TIGERCANNON,Tiger Cannon //CHECK Need to fix to be enemy targeted and also combo after Fallen Empire.
 2331,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		SR_HELLGATE,Hell Gate
@@ -1134,7 +1134,7 @@
 2426,9,6,2,0,0x2,2:3:3:4:4,5,1,yes,0,0x2000,0,weapon,0,	WM_GREAT_ECHO,Great Echo
 2427,0,6,4,0,0x3,5:6:7:8:9,5,1,yes,0,0x2000,0,none,0,	WM_SONG_OF_MANA,Song of Mana
 2428,0,6,4,0,0x3,5:6:7:8:9,5,1,yes,0,0x2000,0,none,0,	WM_DANCE_WITH_WUG,Dance With A Warg
-2429,9,6,1,0,0x2,2:2:3:3:4,5,1,yes,0,0x2000,0,weapon,0,	WM_SOUND_OF_DESTRUCTION,Sound of Destruction
+2429,9,6,1,0,0x2,2:2:3:3:4,5,1,yes,0,0x2000,0,weapon,0,	WM_SOUND_OF_DESTRUCTION,Sound of Destruction //CHECK Source shows its magic attack. Need to confirm before changing.
 2430,0,6,4,0,0x3,3:4:5:6:7,5,1,yes,0,0x2000,0,none,0,	WM_SATURDAY_NIGHT_FEVER,Saturday Night Fever
 2431,0,6,4,0,0x3,5,5,1,yes,0,0x2000,0,magic,0,	WM_LERADS_DEW,Lerad's Dew
 2432,0,6,4,0,0x3,5,5,1,yes,0,0x2000,0,none,0,	WM_MELODYOFSINK,Melody of Sink
