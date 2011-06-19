@@ -796,9 +796,6 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 	case WZ_METEOR:
 		sc_start(bl,SC_STUN,3*skilllv,skilllv,skill_get_time2(skillid,skilllv));
 		break;
-	case WL_CRIMSONROCK:
-		sc_start(bl, SC_STUN, 40, skilllv, skill_get_time(skillid, skilllv));
-		break;
 
 	case WZ_VERMILION:
 		sc_start(bl,SC_BLIND,4*skilllv,skilllv,skill_get_time2(skillid,skilllv));
@@ -1045,15 +1042,15 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 	case NPC_CRITICALWOUND:
 		sc_start(bl,SC_CRITICALWOUND,100,skilllv,skill_get_time2(skillid,skilllv));
 		break;
-	case RK_WINDCUTTER:
-		sc_start(bl,SC_FEAR,3+2*skilllv,skilllv,skill_get_time(skillid,skilllv));
-		break;
 	case RK_HUNDREDSPEAR:
 		if( !sd || pc_checkskill(sd,KN_SPEARBOOMERANG) == 0 )
 			break; // Spear Boomerang auto cast chance only works if you have mastered Spear Boomerang.
 		rate = 10 + 3 * skilllv;
 		if( rand()%100 < rate )
 			skill_castend_damage_id(src,bl,KN_SPEARBOOMERANG,1,tick,0);
+		break;
+	case RK_WINDCUTTER:
+		sc_start(bl,SC_FEAR,3+2*skilllv,skilllv,skill_get_time(skillid,skilllv));
 		break;
 	case RK_DRAGONBREATH:
 		sc_start4(bl,SC_BURNING,5+5*skilllv,skilllv,1000,src->id,0,skill_get_time(skillid,skilllv));
@@ -1064,6 +1061,9 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 	case AB_ADORAMUS:
 		if( tsc && !tsc->data[SC_DECREASEAGI] ) //Prevent duplicate agi-down effect.
 			sc_start(bl, SC_ADORAMUS, 100, skilllv, skill_get_time(skillid, skilllv));
+		break;
+	case WL_CRIMSONROCK:
+		sc_start(bl, SC_STUN, 40, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case WL_COMET:
 		sc_start4(bl,SC_BURNING,100,skilllv,1000,src->id,0,skill_get_time(skillid,skilllv));
@@ -1086,7 +1086,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl, SC_BITE, 70, skilllv, skill_get_time(skillid, skilllv) + (sd ? pc_checkskill(sd,RA_TOOTHOFWUG) * 1000 : 0)); // Need official chance.
 		break;
 	case RA_SENSITIVEKEEN:
-		if( rand()%100 < 8*skilllv )
+		if( rand()%100 < 8 * skilllv )
 			skill_castend_damage_id(src, bl, RA_WUGBITE, sd ? pc_checkskill(sd, RA_WUGBITE):skilllv, tick, SD_ANIMATION);
 		break;
 	case RA_MAGENTATRAP:
@@ -1098,7 +1098,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		break;
 	case RA_FIRINGTRAP:
 	case RA_ICEBOUNDTRAP:
-		sc_start(bl, (skillid == RA_FIRINGTRAP) ? SC_BURNING:SC_FREEZING, 10 * skilllv + 40, skilllv, skill_get_time2(skillid, skilllv));
+		sc_start(bl, (skillid == RA_FIRINGTRAP) ? SC_BURNING:SC_FREEZING, 40 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
 		break;
 	case NC_PILEBUNKER:
 		if( rand()%100 < 5 + 15*skilllv )
@@ -1114,8 +1114,8 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start4(bl, SC_BURNING, 50 + 10 * skilllv, skilllv, 1000, src->id, 0, skill_get_time2(skillid, skilllv));
 		break;
 	case NC_COLDSLOWER:
-		sc_start(bl, SC_FREEZING, 20 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
 		sc_start(bl, SC_FREEZE, 10 * skilllv, skilllv, skill_get_time(skillid, skilllv));
+		sc_start(bl, SC_FREEZING, 20 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
 		break;
 	case NC_POWERSWING:
 		sc_start(bl, SC_STUN, 5*skilllv, skilllv, skill_get_time(skillid, skilllv));
@@ -1204,10 +1204,10 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		}
 		break;
 	case SO_EARTHGRAVE:
-		sc_start(bl, SC_BLEEDING, 10 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));	// Need official rate. [LimitLine]
+		sc_start(bl, SC_BLEEDING, 5 * skilllv, skilllv, skill_get_time2(skillid, skilllv));	// Need official rate. [LimitLine]
 		break;
 	case SO_DIAMONDDUST:
-		rate = 10 + 10 * skilllv;
+		rate = 5 + 5 * skilllv;
 		if( sc && sc->data[SC_COOLER_OPTION] )
 			rate += rate * sc->data[SC_COOLER_OPTION]->val2 / 100;
 		sc_start(bl, SC_CRYSTALIZE, rate, skilllv, skill_get_time2(skillid, skilllv));
@@ -4260,7 +4260,8 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 				status_change_end(bl, SC_CLOAKING, -1);
 				status_change_end(bl, SC_CHASEWALK, -1);
 				status_change_end(bl, SC_CLOAKINGEXCEED, -1);
-				skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv+4, tick, flag);
+				sc_start(bl,SC_STUN, 25 + 5 * skilllv,skilllv,skill_get_time(skillid,skilllv));//Does it apply the stun chance to targets knocked out of hiding, or it applys allways? [Rytech]
+				skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv, tick, flag);
 			}
 			else
 				skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv, tick, flag);
@@ -7728,7 +7729,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case NC_ANALYZE:
 		clif_skill_damage(src, bl, tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
 		clif_skill_nodamage(src, bl, skillid, skilllv,
-			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
+			sc_start(bl,type, 30 + 12 * skilllv,skilllv,skill_get_time(skillid,skilllv)));
 		if( sd ) pc_overheat(sd,1);
 		break;
 
@@ -8307,7 +8308,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 	case SO_ARRULLO:
 		if( flag&1 )
-			sc_start2(bl, type, 80, skilllv, 1, skill_get_time(skillid, skilllv));
+			sc_start2(bl, type, 88 + 2 * skilllv, skilllv, 1, skill_get_time(skillid, skilllv));
 		else
 		{
 			clif_skill_nodamage(src, bl, skillid, 0, 1);
