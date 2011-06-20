@@ -620,6 +620,10 @@ void initChangeTables(void)
 	SkillStatusChangeTable[SL_BLACKSMITH]  = (sc_type)MAPID_BLACKSMITH,
 	SkillStatusChangeTable[SL_HUNTER]      = (sc_type)MAPID_HUNTER,
 	SkillStatusChangeTable[SL_SOULLINKER]  = (sc_type)MAPID_SOUL_LINKER,
+	SkillStatusChangeTable[SL_DEATHKNIGHT] = (sc_type)MAPID_DEATH_KNIGHT,
+	SkillStatusChangeTable[SL_COLLECTOR]   = (sc_type)MAPID_DARK_COLLECTOR,
+	SkillStatusChangeTable[SL_NINJA]       = (sc_type)MAPID_NINJA,
+	SkillStatusChangeTable[SL_GUNNER]      = (sc_type)MAPID_GUNSLINGER,
 
 	//Status that don't have a skill associated.
 	StatusIconChangeTable[SC_WEIGHT50] = SI_WEIGHT50;

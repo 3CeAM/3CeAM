@@ -4469,7 +4469,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 					skill_castend_nodamage_id(src, target, skillid, skilllv, tick, flag);
 					break;
 				case CAST_DAMAGE:
-					status_change_end(bl, SC_SPELLFIST, INVALID_TIMER); // To avoid autocasted bolts acting as spell fisted ones [Xazax]
+					//status_change_end(bl, SC_SPELLFIST, INVALID_TIMER); // To avoid autocasted bolts acting as spell fisted ones [Xazax]
 					skill_castend_damage_id(src, target, skillid, skilllv, tick, flag);
 					// TODO: Restore Spellfist status here?
 					break;

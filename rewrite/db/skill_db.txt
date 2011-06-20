@@ -694,120 +694,120 @@
 544,-5,6,1,0,0x40,0,10,1,no,0,0,0,weapon,0,	NJ_ISSEN,Final Strike
 
 // Gangsi (Bongun/Munak)
-//545,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MB_FIGHTING,
-//546,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MB_NEUTRAL,
-//547,0,0,0,0,0,0,7,0,no,0,0,0,none,0,		MB_TAIMING_PUTI,
-//548,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		MB_WHITEPOTION,
-//549,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		MB_MENTAL,
-//550,9,0,0,0,0,0,10,0,no,0,0,0,none,0,		MB_CARDPITCHER,
-//551,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		MB_PETPITCHER,
-//552,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		MB_BODYSTUDY,
-//553,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		MB_BODYALTER,
-//554,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		MB_PETMEMORY,
-//555,9,0,0,0,0,0,5,0,no,0,0,0,none,0,		MB_M_TELEPORT,
-//556,9,0,0,0,0,0,7,0,no,0,0,0,none,0,		MB_B_GAIN,
-//557,9,0,0,0,0,0,7,0,no,0,0,0,none,0,		MB_M_GAIN,
-//558,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		MB_MISSION,
-//559,4,0,0,0,0,0,1,0,no,0,0,0,none,0,		MB_MUNAKKNOWLEDGE,
-//560,9,0,0,0,0,0,10,0,no,0,0,0,none,0,		MB_MUNAKBALL,
-//561,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		MB_SCROLL,
-//562,0,0,0,0,0,0,7,0,no,0,0,0,none,0,		MB_B_GATHERING,
-//563,0,0,0,0,0,0,7,0,no,0,0,0,none,0,		MB_M_GATHERING,
-//564,9,0,0,0,0,0,5,0,no,0,0,0,none,0,		MB_B_EXCLUDE,
-//565,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MB_B_DRIFT,
-//566,0,0,0,0,0,0,7,0,no,0,0,0,none,0,		MB_B_WALLRUSH,
-//567,0,0,0,0,0,0,7,0,no,0,0,0,none,0,		MB_M_WALLRUSH,
-//568,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MB_B_WALLSHIFT,
-//569,0,0,0,0,0,0,7,0,no,0,0,0,none,0,		MB_M_WALLCRASH,
-//570,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MB_M_REINCARNATION,
-//571,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		MB_B_EQUIP,
+//545,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MB_FIGHTING,Munak Fighting
+//546,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		MB_NEUTRAL,Bongun Neutral
+//547,0,0,0,0,0,0,7,0,no,0,0,0,none,0,		MB_TAIMING_PUTI,Pet Friend
+//548,0,6,4,0,0,0,1,1,no,0,0,0,none,0,		MB_WHITEPOTION,White Potion Delivery
+//549,0,6,4,0,0,0,1,1,no,0,0,0,none,0,		MB_MENTAL,Mental Delivery
+//550,9,6,1,0,0,0,10,1,no,0,0,0,none,0,		MB_CARDPITCHER,Card Fling
+//551,0,6,4,0,0,0,10,1,no,0,0,0,weapon,0,	MB_PETPITCHER,Pet Fling
+//552,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		MB_BODYSTUDY,Body Study
+//553,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		MB_BODYALTER,Body Altering
+//554,0,6,4,0,0,0,1,1,no,0,0,0,none,0,		MB_PETMEMORY,Pet Memory
+//555,9,6,1,0,0,0,5,1,no,0,0,0,none,0,		MB_M_TELEPORT,Munak Teleport
+//556,9,6,1,0,0,0,7,1,no,0,0,0,weapon,0,	MB_B_GAIN,Bongun Gain
+//557,9,6,1,0,0,0,7,1,no,0,0,0,none,0,		MB_M_GAIN,Munak Gain
+//558,0,6,4,0,0,0,1,1,no,0,0,0,none,0,		MB_MISSION,Tame Mission
+//559,4,6,2,0,0,0,1,1,no,0,0,0,none,0,		MB_MUNAKKNOWLEDGE,Tame Mastery
+//560,9,6,1,0,0,0,10,1,no,0,0,0,magic,0,	MB_MUNAKBALL,Munak Ball
+//561,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		MB_SCROLL,Bongun Scroll
+//562,0,6,4,0,0,0,7,1,no,0,0,0,none,0,		MB_B_GATHERING,Bongun Gathering
+//563,0,6,4,0,0,0,7,1,no,0,0,0,none,0,		MB_M_GATHERING,Munak Gathering
+//564,9,6,1,0,0,0,5,1,no,0,0,0,none,0,		MB_B_EXCLUDE,Bongun Exclude
+//565,0,6,4,0,0,0,5,1,no,0,0,0,none,0,		MB_B_DRIFT,Bongun Drift
+//566,1,6,1,0,0,0,7,1,no,0,0,0,weapon,0,	MB_B_WALLRUSH,Bongun Wall Rush
+//567,1,6,1,0,0,0,7,1,no,0,0,0,weapon,0,	MB_M_WALLRUSH,Munak Wall Rush
+//568,0,6,4,0,0,0,5,1,no,0,0,0,none,0,		MB_B_WALLSHIFT,Bongun Wall Shift
+//569,1,6,1,0,0,0,7,1,no,0,0,0,weapon,0,	MB_M_WALLCRASH,Munak Wall Crash
+//570,0,6,4,0,0,0,5,1,no,0,0,0,none,0,		MB_M_REINCARNATION,Munak Reincarnation
+//571,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		MB_B_EQUIP,Bongun Almighty
 
 // New Soul Linker And Soul Link Enabled Skills
-//572,9,6,16,0,0x1,0,5,1,yes,0,0x200,0,magic,0,	SL_DEATHKNIGHT,
-//573,9,6,16,0,0x1,0,5,1,yes,0,0x200,0,magic,0,	SL_COLLECTOR,
-//574,9,6,16,0,0x1,0,5,1,yes,0,0x200,0,magic,0,	SL_NINJA,
-//575,9,6,16,0,0x1,0,5,1,yes,0,0x200,0,magic,0,	SL_GUNNER,
-//576,0,6,4,0,0x1,0,1,0,no,0,0x8,0,none,0,	AM_TWILIGHT4,
-//577,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		DA_RESET, // (Skill level guessed based on DE_RESET)
-//578,0,0,0,0,0,0,1,0,no,0,0x8,0,none,0,	DE_BERSERKAIZER,
-//579,9,0,0,0,0,0,1,0,no,0,0x8,0,none,0,	DA_DARKPOWER,
+572,9,6,16,0,0x1,0,5,1,yes,0,0x200,0,magic,0,	SL_DEATHKNIGHT,Death Knight Spirit
+573,9,6,16,0,0x1,0,5,1,yes,0,0x200,0,magic,0,	SL_COLLECTOR,Dark Collector Spirit
+574,9,6,16,0,0x1,0,5,1,yes,0,0x200,0,magic,0,	SL_NINJA,Ninja Spirit
+575,9,6,16,0,0x1,0,5,1,yes,0,0x200,0,magic,0,	SL_GUNNER,Gunslinger Spirit
+//576,0,6,4,0,0x1,0,1,0,no,0,0x8,0,none,0,	AM_TWILIGHT4,Twilight Alchemy 4
+//577,0,6,4,0,0,0,1,1,no,0,0,0,none,0,		DA_RESET,Dark Optimize // (Skill level and settings guessed based on DE_RESET)
+//578,0,6,4,0,0,0,1,1,no,0,0x8,0,none,0,	DE_BERSERKAIZER,Berserkaizer
+//579,9,6,1,0,0,0,1,1,no,0,0x8,0,none,0,	DA_DARKPOWER,Dark Soul Power
 
 // Death Knight
-//580,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		DE_PASSIVE,
-//581,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DE_PATTACK,
-//582,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DE_PSPEED,
-//583,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DE_PDEFENSE,
-//584,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DE_PCRITICAL,
-//585,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DE_PHP,
-//586,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DE_PSP,
-//587,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		DE_RESET,
-//588,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		DE_RANKING,
-//589,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		DE_PTRIPLE,
-//590,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		DE_ENERGY,
-//591,4,0,0,0,0,0,1,0,no,0,0,0,none,0,		DE_NIGHTMARE,
-//592,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		DE_SLASH,
-//593,7,0,0,0,0,0,7,0,no,0,0,0,none,0,		DE_COIL,
-//594,0,0,0,0,0,0,7,0,no,0,0,0,none,0,		DE_WAVE,
-//595,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		DE_REBIRTH,
-//596,0,0,0,0,0,0,7,0,no,0,0,0,none,0,		DE_AURA,
-//597,7,0,0,0,0,0,7,0,no,0,0,0,none,0,		DE_FREEZER,
-//598,0,0,0,0,0,0,7,0,no,0,0,0,none,0,		DE_CHANGEATTACK,
-//599,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DE_PUNISH,
-//600,0,0,0,0,0,0,7,0,no,0,0,0,none,0,		DE_POISON,
-//601,0,0,0,0,0,0,7,0,no,0,0,0,none,0,		DE_INSTANT,
-//602,7,0,0,0,0,0,7,0,no,0,0,0,none,0,		DE_WARNING,
-//603,7,0,0,0,0,0,7,0,no,0,0,0,none,0,		DE_RANKEDKNIFE,
-//604,0,0,0,0,0,0,7,0,no,0,0,0,none,0,		DE_RANKEDGRADIUS,
-//605,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		DE_GAUGE,
-//606,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		DE_GTIME,
-//607,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		DE_GPAIN,
-//608,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DE_GSKILL,
-//609,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		DE_GKILL,
-//610,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		DE_ACCEL,
-//611,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		DE_BLOCKDOUBLE,
-//612,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		DE_BLOCKMELEE,
-//613,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		DE_BLOCKFAR,
-//614,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DE_FRONTATTACK,
-//615,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DE_DANGERATTACK,
-//616,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DE_TWINATTACK,
-//617,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DE_WINDATTACK,
-//618,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DE_WATERATTACK,
+//580,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		DE_PASSIVE,Death Passive
+//581,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DE_PATTACK,Death Attack Passive
+//582,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DE_PSPEED,Death Speed Passive
+//583,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DE_PDEFENSE,Death Defense Passive
+//584,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DE_PCRITICAL,Death Critical Passive
+//585,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DE_PHP,Death Recovery Passive
+//586,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DE_PSP,Death Magic Passive
+//587,0,6,4,0,0,0,1,1,no,0,0,0,none,0,		DE_RESET,Death Optimize
+//588,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		DE_RANKING,Death Ranking Passive
+//589,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		DE_PTRIPLE,Death Triple Passive
+//590,0,6,4,0,0,0,5,1,no,0,0,0,none,0,		DE_ENERGY,Death Energy
+//591,4,6,2,0,0,0,1,1,no,0,0,0,none,0,		DE_NIGHTMARE,Death Nightmare
+//592,1,6,1,0,0,0,5,1,no,0,0,0,weapon,0,	DE_SLASH,Death Slash
+//593,7,6,1,0,0,0,7,1,no,0,0,0,none,0,		DE_COIL,Death Coil
+//594,0,6,4,0,0,0,7,1,no,0,0,0,weapon,0,	DE_WAVE,Death Wave
+//595,0,0,0,0,0,0,3,0,no,0,0,0,none,0,		DE_REBIRTH,Death Reverse Energy
+//596,0,6,4,0,0,0,7,1,no,0,0,0,weapon,0,	DE_AURA,Death Aura
+//597,7,6,1,0,0,0,7,1,no,0,0,0,weapon,0,	DE_FREEZER,Death Freezer
+//598,1,6,1,0,0,0,7,1,no,0,0,0,weapon,0,	DE_CHANGEATTACK,Death Attack Change
+//599,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DE_PUNISH,Death Punish
+//600,1,6,1,0,0,0,7,1,no,0,0,0,weapon,0,	DE_POISON,Death Poison Slash
+//601,0,6,4,0,0,0,7,1,no,0,0,0,none,0,		DE_INSTANT,Death Instant Barrier
+//602,7,6,1,0,0,0,7,1,no,0,0,0,none,0,		DE_WARNING,Death Warning
+//603,7,6,1,0,0,0,7,1,no,0,0,0,weapon,0,	DE_RANKEDKNIFE,Death Knife
+//604,0,6,4,0,0,0,7,1,no,0,0,0,none,0,		DE_RANKEDGRADIUS,Death Gradius
+//605,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		DE_GAUGE,Mighty Gauge
+//606,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		DE_GTIME,Mighty Time Charge
+//607,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		DE_GPAIN,Mighty Pain Charge
+//608,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DE_GSKILL,Mighty Skill Charge
+//609,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		DE_GKILL,Mighty Kill Charge
+//610,0,6,4,0,0,0,5,1,no,0,0,0,none,0,		DE_ACCEL,Dead Acceleration
+//611,0,6,4,0,0,0,3,1,no,0,0,0,none,0,		DE_BLOCKDOUBLE,Dead Double Blocking
+//612,0,6,4,0,0,0,3,1,no,0,0,0,none,0,		DE_BLOCKMELEE,Dead Near Blocking
+//613,0,6,4,0,0,0,3,1,no,0,0,0,none,0,		DE_BLOCKFAR,Dead Distant Blocking
+//614,0,6,4,0,0,0,10,1,no,0,0,0,weapon,0,	DE_FRONTATTACK,Dead Rush Attack
+//615,1,6,1,0,0,0,10,1,no,0,0,0,weapon,0,	DE_DANGERATTACK,Dangerous Attack
+//616,1,6,1,0,0,0,10,1,no,0,0,0,weapon,0,	DE_TWINATTACK,Dead Twin Attack
+//617,0,6,4,0,0,0,10,1,no,0,0,0,magic,0,	DE_WINDATTACK,Dead Storm Attack
+//618,0,6,4,0,0,0,10,1,no,0,0,0,weapon,0,	DE_WATERATTACK,Dead Water Attack
 
 // Dark Collector
-//619,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		DA_ENERGY,
-//620,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DA_CLOUD,
-//621,9,0,0,0,0,0,5,0,no,0,0,0,none,0,		DA_FIRSTSLOT,
-//622,9,0,0,0,0,0,4,0,no,0,0,0,none,0,		DA_HEADDEF,
-//623,9,0,0,0,0,0,5,0,no,0,0,0,none,0,		DA_SPACE,
-//624,9,0,0,0,0,0,5,0,no,0,0,0,none,0,		DA_TRANSFORM,
-//625,9,0,0,0,0,0,5,0,no,0,0,0,none,0,		DA_EXPLOSION,
-//626,9,0,0,0,0,0,1,0,no,0,0,0,none,0,		DA_REWARD,
-//627,9,0,0,0,0,0,5,0,no,0,0,0,none,0,		DA_CRUSH,
-//628,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		DA_ITEMREBUILD,
-//629,9,0,0,0,0,0,5,0,no,0,0,0,none,0,		DA_ILLUSION,
-//630,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		DA_NUETRALIZE,
-//631,3,0,0,0,0,0,5,0,no,0,0,0,none,0,		DA_RUNNER,
-//632,3,0,0,0,0,0,5,0,no,0,0,0,none,0,		DA_TRANSFER,
-//633,9,0,0,0,0,0,5,0,no,0,0,0,none,0,		DA_WALL,
-//634,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		DA_ZENY, // (Temp max level until official is found)
-//635,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		DA_REVENGE,
-//636,9,0,0,0,0,0,5,0,no,0,0,0,none,0,		DA_EARPLUG,
-//637,9,0,0,0,0,0,1,0,no,0,0,0,none,0,		DA_CONTRACT,
-//638,9,0,0,0,0,0,5,0,no,0,0,0,none,0,		DA_BLACK,
-//639,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		DA_DREAM,
-//640,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		DA_MAGICCART,
-//641,9,0,0,0,0,0,1,0,no,0,0,0,none,0,		DA_COPY,
-//642,9,0,0,0,0,0,1,0,no,0,0,0,none,0,		DA_CRYSTAL,
-//643,9,0,0,0,0,0,1,0,no,0,0,0,none,0,		DA_EXP,
-//644,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DA_CARTSWING,
-//645,9,0,0,0,0,0,1,0,no,0,0,0,none,0,		DA_REBUILD,
-//646,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DA_JOBCHANGE,
-//647,9,0,0,0,0,0,5,0,no,0,0,0,none,0,		DA_EDARKNESS,
-//648,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		DA_EGUARDIAN,
-//649,9,0,0,0,0,0,3,0,no,0,0,0,none,0,		DA_TIMEOUT,
-//650,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		ALL_TIMEIN,
-//651,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		DA_ZENYRANK,
-//652,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		DA_ACCESSORYMIX,
+//619,0,6,4,0,0,0,5,1,no,0,0,0,none,0,		DA_ENERGY,Dark Energy
+//620,0,6,4,0,0,0,10,1,no,0,0,0,magic,0,	DA_CLOUD,Dark Cloud
+//621,9,6,16,0,0,0,5,1,no,0,0,0,magic,0,	DA_FIRSTSLOT,Dark First Fantasy
+//622,9,6,16,0,0,0,4,1,no,0,0,0,magic,0,	DA_HEADDEF,Dark Head Defense
+//623,9,6,1,0,0,0,5,1,no,0,0,0,none,0,		DA_SPACE,Dark Twilight
+//624,9,6,1,0,0,0,5,1,no,0,0,0,none,0,		DA_TRANSFORM,Dark Transformation
+//625,9,6,1,0,0,0,5,1,no,0,0,0,magic,0,		DA_EXPLOSION,Dark Explosion
+//626,9,6,1,0,0,0,1,1,no,0,0,0,none,0,		DA_REWARD,Dark Reward
+//627,9,6,1,0,0,0,5,1,no,0,0,0,none,0,		DA_CRUSH,Dark Crush
+//628,0,6,4,0,0,0,5,1,no,0,0,0,none,0,		DA_ITEMREBUILD,Dark Item Rebuild
+//629,9,6,1,0,0,0,5,1,no,0,0,0,none,0,		DA_ILLUSION,Dark Illusion
+//630,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		DA_NUETRALIZE,Dark Neutralization
+//631,3,6,2,0,0,0,5,1,no,0,0,0,none,0,		DA_RUNNER,Dark Runner
+//632,3,6,2,0,0,0,5,1,no,0,0,0,none,0,		DA_TRANSFER,Dark Transfer
+//633,9,6,1,0,0,0,5,1,no,0,0,0,magic,0,		DA_WALL,Dark Wall
+//634,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		DA_ZENY,Dark Zeny // (Temp max level until official is found)
+//635,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		DA_REVENGE,Dark Revenge
+//636,9,6,16,0,0,0,5,1,no,0,0,0,magic,0,	DA_EARPLUG,Dark Earplug
+//637,9,6,1,0,0,0,1,1,no,0,0,0,none,0,		DA_CONTRACT,Black Gemstone Contract
+//638,9,6,1,0,0,0,5,1,no,0,0,0,none,0,		DA_BLACK,Black Gemstone Magic
+//639,0,6,4,0,0,0,5,1,no,0,0,0,magic,0,		DA_DREAM,Black Gemstone Dream//CHECK Has a flag of 4. Cast time cannot be reduced.
+//640,0,6,4,0,0,0,5,1,no,0,0,0,none,0,		DA_MAGICCART,Collector Magic Cart
+//641,9,6,1,0,0,0,1,1,no,0,0,0,none,0,		DA_COPY,Collector Copy
+//642,9,6,1,0,0,0,1,1,no,0,0,0,none,0,		DA_CRYSTAL,Collector Crystal
+//643,9,6,1,0,0,0,1,1,no,0,0,0,none,0,		DA_EXP,Collector EXP
+//644,0,6,4,0,0,0,10,1,no,0,0,0,weapon,0,	DA_CARTSWING,Collector Magical Cart Swing
+//645,9,6,1,0,0,0,1,1,no,0,0,0,none,0,		DA_REBUILD,Collector Human Rebuild
+//646,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		DA_JOBCHANGE,Collector Novice Job Change
+//647,9,6,1,0,0,0,5,1,no,0,0,0,none,0,		DA_EDARKNESS,Collector Emperium Darkness
+//648,0,6,4,0,0,0,5,1,no,0,0,0,none,0,		DA_EGUARDIAN,Collector Emperium Guardian
+//649,9,6,1,0,0,0,3,1,no,0,0,0,none,0,		DA_TIMEOUT,Collector Time Out
+//650,0,6,4,0,0,0,1,1,no,0,0,0,none,0,		ALL_TIMEIN,Time In//CHECK Flag 4. Cast time cannot be reduced.
+//651,0,6,4,0,0,0,1,1,no,0,0,0,none,0,		DA_ZENYRANK,Collector Ranking
+//652,0,6,4,0,0,0,1,1,no,0,0,0,none,0,		DA_ACCESSORYMIX,Collector Mix
 
 // Additional NPC Skills (Episode 11.3)
 653,0,8,4,0,0x6,5:7:9:11:13:5:7:9:11:13,10,1,no,0,0x2,0,magic,0,	NPC_EARTHQUAKE,Earthquake

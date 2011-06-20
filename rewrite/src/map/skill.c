@@ -6878,6 +6878,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SL_STAR:
 	case SL_SUPERNOVICE:
 	case SL_WIZARD:
+	case SL_DEATHKNIGHT:
+	case SL_COLLECTOR:
+	case SL_NINJA:
+	case SL_GUNNER:
 		//NOTE: here, 'type' has the value of the associated MAPID, not of the SC_SPIRIT constant.
 		if (sd && !(dstsd && (dstsd->class_&MAPID_UPPERMASK) == type)) {
 			clif_skill_fail(sd,skillid,0,0,0);
