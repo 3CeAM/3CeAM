@@ -6166,7 +6166,14 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_JEXPBOOST:	 			case SC_INVINCIBLE:  			case SC_INVINCIBLEOFF:
 				case SC_HELLPOWER:	 			case SC_MANU_ATK:    			case SC_MANU_DEF:
 				case SC_SPL_ATK:	 			case SC_SPL_DEF:	  			case SC_MANU_MATK:
-				case SC_SPL_MATK:    			case SC_ELECTRICSHOCKER:		case SC__STRIPACCESSORY:
+				case SC_SPL_MATK:    			case SC_RICHMANKIM:				case SC_ETERNALCHAOS:
+				case SC_DRUMBATTLE:				case SC_NIBELUNGEN:				case SC_ROKISWEIL:
+				case SC_INTOABYSS:				case SC_SIEGFRIED:				case SC_WHISTLE:
+				case SC_ASSNCROS:				case SC_POEMBRAGI:				case SC_APPLEIDUN:
+				case SC_HUMMING:				case SC_DONTFORGETME:			case SC_FORTUNE:
+				case SC_SERVICE4U:				case SC_FOOD_STR_CASH:			case SC_FOOD_AGI_CASH:
+				case SC_FOOD_VIT_CASH:			case SC_FOOD_DEX_CASH:			case SC_FOOD_INT_CASH:
+				case SC_FOOD_LUK_CASH:			case SC_ELECTRICSHOCKER:		case SC__STRIPACCESSORY:
 				case SC_SAVAGE_STEAK:			case SC_COCKTAIL_WARG_BLOOD:	case SC_MINOR_BBQ:
 				case SC_SIROMA_ICE_TEA:			case SC_DROCERA_HERB_STEAMED:	case SC_PUTTI_TAILS_NOODLES:
 				case SC_NEUTRALBARRIER_MASTER:	case SC_NEUTRALBARRIER:			case SC_STEALTHFIELD_MASTER:
@@ -7830,9 +7837,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SC_UNLUCKY:
 	case SC_WEAKNESS:
 		if( !(tsc && tsc->data[type]) )
-		{ // p = 0.1 + (1 - Ta/Cd)^2 + (1.5 * (floor(Cd/60) - floor(Ta/60)) * (Ta * (Cd - Ta)/(Cd^2)) iROwiki information
-			int rate = (int)(10000 * (0.1 + pow(1 - tstatus->agi/(float)sstatus->dex,2) + (1.5 * floor(sstatus->dex/60.) + floor(tstatus->agi/60.)) * (tstatus->agi * (sstatus->dex - tstatus->agi)/(float)(pow(sstatus->dex,2)))));
-			rate = cap_value(rate,0,10000);
+		{ //((rand(myDEX / 12, myDEX / 4) + myJobLevel + 10 * skLevel) + myLevel / 10) - (targetLevel / 10 + targetLUK / 10 + (targetMaxWeight - targetWeight) / 1000 + rand(targetAGI / 6, targetAGI / 3))
+			int rate = ( rand()%(sstatus->dex/6) + sstatus->dex/4 + 10*skilllv + (sd)?s_job_level:0 + status_get_lv(src) ) -
+				( status_get_lv(bl) + tstatus->luk/10 + (dstsd)?(dstsd->max_weight-dstsd->weight)/10000:0 + rand()%(sstatus->agi/6)+sstatus->agi/6 );
+			rate = cap_value(rate,0,100);
 			clif_skill_nodamage(src,bl,skillid,0,
 				status_change_start(bl,type,rate,skilllv,0,0,0,skill_get_time(skillid,skilllv),0));
 		}
@@ -7841,12 +7849,19 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case SC_IGNORANCE:
-		if( !(tsc && tsc->data[type]) && clif_skill_nodamage(src,bl,skillid,0,sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv))) )
+		if( !(tsc && tsc->data[type]) )
 		{
-			int sp = 200 * skilllv;
-			if( dstmd ) sp = dstmd->level * 2;
-			if( status_zap(bl,0,sp) )
-				status_heal(src,0,sp/2,3);
+			int rate = ( rand()%(sstatus->dex/6) + sstatus->dex/4 + 10*skilllv + (sd)?s_job_level:0 + status_get_lv(src) ) -
+				( status_get_lv(bl) + tstatus->luk/10 + (dstsd)?(dstsd->max_weight-dstsd->weight)/10000:0 + rand()%(sstatus->agi/6)+sstatus->agi/6 );
+			rate = cap_value(rate,0,100);
+			if (clif_skill_nodamage(src,bl,skillid,0,sc_start(bl,type,rate,skilllv,skill_get_time(skillid,skilllv))))
+			{
+				int sp = 200 * skilllv;
+				if( dstmd ) sp = dstmd->level * 2;
+				if( status_zap(bl,0,sp) )
+					status_heal(src,0,sp/2,3);
+			}
+			else if( sd ) clif_skill_fail(sd,skillid,0,0,0);
 		}
 		else if( sd )
 			clif_skill_fail(sd,skillid,0,0,0);
@@ -12129,7 +12144,7 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 	case AB_ADORAMUS:
 		if( skill_check_pc_partner(sd,skill,&lv,1,0) <= 0 && ((i = pc_search_inventory(sd,require.itemid[0])) < 0 || sd->status.inventory[i].amount < require.amount[0]) )
 		{
-			clif_skill_fail(sd,skill,0x47,2,0x2cc);
+			clif_skill_fail(sd,skill,0x47,require.amount[0],require.itemid[0]);
 			return 0;
 		}
 		break;
@@ -12440,7 +12455,7 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		break;
 	case ST_ELEMENTALSPIRIT:
 		if(!sd->ed) {
-			clif_skill_fail(sd,skill,0,0,0x4f);
+			clif_skill_fail(sd,skill,0x4f,0,0);
 			return 0;
 		}
 	}

@@ -14636,7 +14636,11 @@ BUILDIN_FUNC(instance_npcname)
  		script_pushconststr(st,npcname);
 	}
 	else
-		script_pushconststr(st,"");
+	{
+		ShowError("script:instance_npcname: invalid instance NPC (instance_id: %d, NPC name: \"%s\".)\n", instance_id, str);
+		st->state = END;
+		return 1;
+	}
 
 	return 0;
 }
