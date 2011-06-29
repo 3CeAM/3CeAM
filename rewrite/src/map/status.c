@@ -7572,6 +7572,9 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			break;
 		case SC_REFLECTDAMAGE:
 			val2 = 15 + 5 * val1;
+			val3 = (val1==5)?20:(val1+4)*2; // SP consumption
+			val4 = tick/10000;
+			tick = 10000;
 			break;
 		case SC_FORCEOFVANGUARD: // This is not the official way to handle it but I think we should use it. [pakpil]
 			val2 = 20 + 12 * (val1 - 1); // Chance
@@ -7701,7 +7704,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val2 = 10;
 			val3 = 33;
 			val4 = 2;
-			val_flag |= 1|2|3;
+			val_flag |= 1|2|4;
 			break;
 		case SC_UPHEAVAL_OPTION:
 			val2 = WZ_EARTHSPIKE;
@@ -9481,6 +9484,15 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 			return 0;
 		}
 		break;
+		
+	case SC_REFLECTDAMAGE:
+		if( --(sce->val4) >= 0 ) {
+			if( !status_charge(bl,0,sce->val3) )
+				break;
+			sc_timer_next(10000 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
 
 	case SC_OVERHEAT_LIMITPOINT:
 		if( --(sce->val1) > 0 ) // Cooling
@@ -9522,15 +9534,12 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 
 	case SC_INSPIRATION:
 		if(--(sce->val4) >= 0)
-		{ // Custom value of 1% Hp/Sp drain.
-			int hp = status->max_hp / 100;
-			int sp = status->max_sp / 100;
+		{
+			int hp = status->max_hp * (7-sce->val1) / 100;
+			int sp = status->max_sp * (9-sce->val1) / 100;
 			
-			if( status->sp <= sp )
-				status_change_end(bl,type,-1);
+			if( !status_charge(bl,hp,sp) ) break;
 			
-			status_zap(bl, hp, sp);
-			if( !sc->data[type] ) break;
 			sc_timer_next(1000+tick,status_change_timer,bl->id, data);
 			return 0;
 		}
