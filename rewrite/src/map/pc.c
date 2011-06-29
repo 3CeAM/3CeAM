@@ -1041,8 +1041,6 @@ int pc_isequip(struct map_session_data *sd,int n)
 		if( item->class_upper&2 && sd->class_&(JOBL_UPPER|JOBL_THIRD) ) break;
 		if( item->class_upper&4 && sd->class_&JOBL_BABY ) break;
 		if( item->class_upper&8 && sd->class_&JOBL_THIRD ) break;
-		if( item->class_upper&16 && sd->class_&JOBL_THIRD && sd->class_&JOBL_UPPER ) break;
-		if( item->class_upper&24 && sd->class_&JOBL_THIRD && sd->class_&JOBL_BABY ) break;
 		return 0;
 	}
 
@@ -3979,8 +3977,6 @@ int pc_isUseitem(struct map_session_data *sd,int n)
 		if( item->class_upper&2 && sd->class_&(JOBL_UPPER|JOBL_THIRD) ) break;
 		if( item->class_upper&4 && sd->class_&JOBL_BABY ) break;
 		if( item->class_upper&8 && sd->class_&JOBL_THIRD ) break;
-		if( item->class_upper&16 && sd->class_&JOBL_THIRD && sd->class_&JOBL_UPPER ) break;
-		if( item->class_upper&24 && sd->class_&JOBL_THIRD && sd->class_&JOBL_BABY ) break;
 		return 0;
 	}
 
