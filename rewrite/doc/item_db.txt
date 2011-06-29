@@ -72,7 +72,7 @@ Job: Equippable jobs. Uses the following bitmask table:
 
 Upper: Equippable upper-types. Uses the following bitmasks to set type of job the player
 is required to be to beable to use that item:
-	1: All existing jobs can use it (All Base, Trans, Babys, and Thirds)
+	1: Only base/normal jobs can use it. (Supposed to allow all jobs to use it. Code needs fixing for this later.)
 	2: Trans and higher jobs/ Baby Thirds (All Trans, Thirds, and Third Babys)
 	4: Babys only (Only baby jobs can use it)
 	8: Thirds (Thirds and Third Babys)
@@ -81,16 +81,23 @@ Gender: Gender restriction. 0 is female, 1 is male, 2 for both.
 
 Loc: Equipment's placement. Values are:
 
-	2^8 256 = Upper Headgear
-	2^9 512 = Middle Headgear
-	2^0 001 = Lower Headgear
-	2^4 016 = Armor
-	2^1 002 = Weapon
-	2^5 032 = Shield
-	2^2 004 = Garment
-	2^6 064 = Footgear
-	2^3 008 = Accessory 1
-	2^7 128 = Accessory 2
+	Equipment Tab
+	2^8  256 = Upper Headgear
+	2^9  512 = Middle Headgear
+	2^0  001 = Lower Headgear
+	2^4  016 = Armor
+	2^1  002 = Weapon
+	2^5  032 = Shield
+	2^2  004 = Garment
+	2^6  064 = Footgear
+	2^3  008 = Accessory 1
+	2^7  128 = Accessory 2
+
+	Costume Tab
+	2^10 1024 = Costume - Upper Headgear
+	2^11 2048 = Costume - Middle Headgear
+	2^12 4096 = Costume - Lower Headgear
+	2^13 8192 = Costume - Armor
 
 wLV: Weapon level.
 

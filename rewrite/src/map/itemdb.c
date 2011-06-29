@@ -196,9 +196,7 @@ const char* itemdb_typename(int type)
 		case IT_PETARMOR:       return "Pet Accessory";
 		case IT_AMMO:           return "Arrow/Ammunition";
 		case IT_DELAYCONSUME:   return "Delay-Consume Usable";
-		case IT_THROWWEAPON:  	return "Throwing Item";
 		case IT_CASH:           return "Cash Usable";
-		case IT_CANNONBALL:  	return "Cannon Ball";
 	}
 	return "Unknown Type";
 }
@@ -346,8 +344,6 @@ int itemdb_isequip(int nameid)
 		case IT_WEAPON:
 		case IT_ARMOR:
 		case IT_AMMO:
-		case IT_THROWWEAPON:
-		case IT_CANNONBALL:
 			return 1;
 		default:
 			return 0;
@@ -364,8 +360,6 @@ int itemdb_isequip2(struct item_data *data)
 		case IT_WEAPON:
 		case IT_ARMOR:
 		case IT_AMMO:
-		case IT_THROWWEAPON:
-		case IT_CANNONBALL:
 			return 1;
 		default:
 			return 0;
