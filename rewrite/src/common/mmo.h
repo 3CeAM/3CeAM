@@ -190,26 +190,26 @@
 #define EL_CLASS_MAX (EL_CLASS_BASE+MAX_ELEMENTAL_CLASS-1)
 
 enum item_types {
-	IT_HEALING = 0,				//IT_HEAL				= 0x00
-	IT_UNKNOWN, //1				//IT_SCHANGE			= 0x01
-	IT_USABLE,  //2				//IT_SPECIAL			= 0x02
-	IT_ETC,     //3				//IT_EVENT				= 0x03
-	IT_WEAPON,  //4				//IT_ARMOR				= 0x04
-	IT_ARMOR,   //5				//IT_WEAPON				= 0x05
-	IT_CARD,    //6				//IT_CARD				= 0x06
-	IT_PETEGG,  //7				//IT_QUEST				= 0x07
-	IT_PETARMOR,//8				//IT_BOW				= 0x08
-	IT_UNKNOWN2,//9				//IT_BOTHHAND			= 0x09
-	IT_AMMO,    //10			//IT_ARROW				= 0x0a
-	IT_DELAYCONSUME,//11		//IT_ARMORTM			= 0x0b
-								//IT_ARMORTB			= 0x0c
-								//IT_ARMORMB			= 0x0d
-								//IT_ARMORTMB			= 0x0e
-								//IT_GUN				= 0x0f
-								//IT_AMMO				= 0x10
-	IT_THROWWEAPON = 17,		//IT_THROWWEAPON		= 0x11
-	IT_CASH = 18,				//IT_CASH_POINT_ITEM	= 0x12
-	IT_CANNONBALL = 19,			//IT_CANNONBALL			= 0x13
+	IT_HEALING = 0,		//IT_HEAL		= 0x00
+	IT_UNKNOWN, //1		//IT_SCHANGE		= 0x01
+	IT_USABLE,  //2		//IT_SPECIAL		= 0x02
+	IT_ETC,     //3		//IT_EVENT		= 0x03
+	IT_WEAPON,  //4		//IT_ARMOR		= 0x04
+	IT_ARMOR,   //5		//IT_WEAPON		= 0x05
+	IT_CARD,    //6		//IT_CARD		= 0x06
+	IT_PETEGG,  //7		//IT_QUEST		= 0x07
+	IT_PETARMOR,//8		//IT_BOW		= 0x08
+	IT_UNKNOWN2,//9		//IT_BOTHHAND		= 0x09
+	IT_AMMO,    //10	//IT_ARROW		= 0x0a
+	IT_DELAYCONSUME,//11	//IT_ARMORTM		= 0x0b
+				//IT_ARMORTB		= 0x0c
+				//IT_ARMORMB		= 0x0d
+				//IT_ARMORTMB		= 0x0e
+				//IT_GUN		= 0x0f
+				//IT_AMMO		= 0x10
+				//IT_THROWWEAPON	= 0x11
+	IT_CASH = 18,		//IT_CASH_POINT_ITEM	= 0x12
+				//IT_CANNONBALL		= 0x13
 	IT_MAX 
 };
 
