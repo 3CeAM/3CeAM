@@ -9881,10 +9881,7 @@ void clif_parse_EquipItem(int fd,struct map_session_data *sd)
 	}
 	
 	//Client doesn't send the position for ammo.
-	if( sd->inventory_data[index]->type == IT_AMMO ||
-		sd->inventory_data[index]->type == IT_THROWWEAPON ||
-		sd->inventory_data[index]->type == IT_CANNONBALL
-	   )
+	if(sd->inventory_data[index]->type == IT_AMMO)
 		pc_equipitem(sd,index,EQP_AMMO);
 	else
 		pc_equipitem(sd,index,RFIFOW(fd,4));
