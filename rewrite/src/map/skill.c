@@ -7838,11 +7838,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SC_WEAKNESS:
 		if( !(tsc && tsc->data[type]) )
 		{ //((rand(myDEX / 12, myDEX / 4) + myJobLevel + 10 * skLevel) + myLevel / 10) - (targetLevel / 10 + targetLUK / 10 + (targetMaxWeight - targetWeight) / 1000 + rand(targetAGI / 6, targetAGI / 3))
-			int rate = ( rand()%(sstatus->dex/6) + sstatus->dex/4 + 10*skilllv + (sd)?s_job_level:0 + status_get_lv(src) ) -
-				( status_get_lv(bl) + tstatus->luk/10 + (dstsd)?(dstsd->max_weight-dstsd->weight)/10000:0 + rand()%(sstatus->agi/6)+sstatus->agi/6 );
-			rate = cap_value(rate,0,100);
-			clif_skill_nodamage(src,bl,skillid,0,
-				status_change_start(bl,type,rate,skilllv,0,0,0,skill_get_time(skillid,skilllv),0));
+			int rate = rnd_value(sstatus->dex/12,sstatus->dex/4) + 10*skilllv + (sd?sd->status.job_level:0) + status_get_lv(src)/10
+				- status_get_lv(bl)/10 - tstatus->luk/10 - (dstsd?(dstsd->max_weight-dstsd->weight)/10000:0) - rnd_value(tstatus->agi/6,tstatus->agi/3);
+			rate = cap_value(rate, skilllv+sstatus->dex/20, 100);
+			clif_skill_nodamage(src,bl,skillid,0,sc_start(bl,type,rate,skilllv,skill_get_time(skillid,skilllv)));
 		}
 		else if( sd )
 			 clif_skill_fail(sd,skillid,0,0,0);
@@ -7851,9 +7850,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SC_IGNORANCE:
 		if( !(tsc && tsc->data[type]) )
 		{
-			int rate = ( rand()%(sstatus->dex/6) + sstatus->dex/4 + 10*skilllv + (sd)?s_job_level:0 + status_get_lv(src) ) -
-				( status_get_lv(bl) + tstatus->luk/10 + (dstsd)?(dstsd->max_weight-dstsd->weight)/10000:0 + rand()%(sstatus->agi/6)+sstatus->agi/6 );
-			rate = cap_value(rate,0,100);
+			int rate = rnd_value(sstatus->dex/12,sstatus->dex/4) + 10*skilllv + (sd?sd->status.job_level:0) + status_get_lv(src)/10
+				- status_get_lv(bl)/10 - tstatus->luk/10 - (dstsd?(dstsd->max_weight-dstsd->weight)/10000:0) - rnd_value(tstatus->agi/6,tstatus->agi/3);
+			rate = cap_value(rate, skilllv+sstatus->dex/20, 100);
 			if (clif_skill_nodamage(src,bl,skillid,0,sc_start(bl,type,rate,skilllv,skill_get_time(skillid,skilllv))))
 			{
 				int sp = 200 * skilllv;
