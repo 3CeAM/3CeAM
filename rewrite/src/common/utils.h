@@ -23,6 +23,8 @@ bool exists(const char* filename);
 /// calculates the value of A / B, in percent (rounded down)
 unsigned int get_percentage(const unsigned int A, const unsigned int B);
 
+int32 rnd_value(int32 min, int32 max);
+
 //////////////////////////////////////////////////////////////////////////
 // byte word dword access [Shinomori]
 //////////////////////////////////////////////////////////////////////////
