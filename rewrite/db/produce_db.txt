@@ -356,8 +356,6 @@
 7138,22,228,1,7131,0,713,1,1050,1,1051,1
 //-- Glistening Coat <-- AM_PHARMACY & Glistening Coat Creation Guide & 1 Alcohol, 1 Heart of Mermaid, 1 Zenorcs Fang, 1 Empty Bottle
 7139,22,228,1,7132,0,970,1,950,1,1044,1,713,1
-//-- Ancilla <-- AB_ANCILLA & 1 Blue Gemstone
-12333,24,2039,1,717,1
 //----------------------------------------------
 
 //---- Elemental-resist Potions ----------------
@@ -398,118 +396,132 @@
 
 //==============================================
 
-//===== Rune Stones ============ ItemLV=24 =====
-//-- Rune Stone Thurisaz <-- RK_RUNEMASTERY Lv1, 1 Elder's Branch, 1 Blue Hair, 1 Claw of Desert Wolf
-12731,24,2010,1,7939,1,1034,1,7030,1
-//-- Rune Stone Isa <-- RK_RUNEMASTERY Lv2, 1 Elder's Branch, 1 Burning Heart
-12728,24,2010,2,7939,1,7097,1
-//-- Rune Stone Wyrd <-- RK_RUNEMASTERY Lv3, 1 Light Partacle, 1 Elder's Branch, 1 Tangled Chains, 1 Dragon Canine
-12732,24,2010,3,7938,1,7939,1,7221,1,1035,1
-//-- Rune Stone Hagalaz <-- RK_RUNEMASTERY Lv4, 1 Elder's Branch, 1 Round Shell, 1 Dragon Skin
-12733,24,2010,4,7939,1,1096,1,7123,1
-//-- Rune Stone Othila <-- RK_RUNEMASTERY Lv5, 1 Light Partacle, 1 Elder's Branch, 1 Orge Tooth
-12729,24,2010,5,7938,1,7939,1,7002,1
-//-- Rune Stone Uruz <-- RK_RUNEMASTERY Lv6, 1 Elder's Branch, 1 Honey, 1 Horrendous Hair
-12730,24,2010,6,7939,1,518,1,1048,1
-//-- Rune Stone Raido <-- RK_RUNEMASTERY Lv7, 1 Light Partacle, 1 Elder's Branch, 1 Red Gemstone
-12726,24,2010,7,7938,1,7939,1,716,1
-//-- Rune Stone Nauthiz <-- RK_RUNEMASTERY Lv8, 1 Light Partacle, 1 Elder's Branch, 1 Destroyed Armor, 1 Word Out Scroll
-12725,24,2010,8,7938,1,7939,1,7069,1,618,1
-//-- Rune Stone Berkana <-- RK_RUNEMASTERY Lv9, 1 Elder's Branch, 1 Armor Piece of Dullahan
-12727,24,2010,9,7939,1,7210,1
+
+//===== Ancilla And Runes === ItemLV=24 ========
+//---- Ancilla ---------------------------------
+//-- Ancilla <-- AB_ANCILLA & 1 Blue Gemstone
+12333,24,2039,1,717,1
+
+//---- Rune Stones -----------------------------
+//-- Runstone Nosiege <-- RK_RUNEMASTERY Lv8, 1 Broken Armor Piece, 1 Old Magic Circle, 1 Light Granule, 1 Elder Branch
+12725,24,2010,8,7069,1,7099,1,7938,1,7939,1
+//-- Runstone Rhydo <-- RK_RUNEMASTERY Lv7, 1 Red Gemstone, 1 Light Granule, 1 Elder Branch
+12726,24,2010,7,716,1,7938,1,7939,1
+//-- Runstone Verkana <-- RK_RUNEMASTERY Lv9, 1 Dullahan Armor, 1 Elder Branch
+12727,24,2010,9,7210,1,7939,1
+//-- Runstone Isia <-- RK_RUNEMASTERY Lv2, 1 Burning Heart, 1 Elder Branch
+12728,24,2010,2,7097,1,7939,1
+//-- Runstone Asir <-- RK_RUNEMASTERY Lv5, 1 Ogre Tooth, 1 Light Granule, 1 Elder Branch
+12729,24,2010,5,7002,1,7938,1,7939,1
+//-- Runstone Urj <-- RK_RUNEMASTERY Lv6, 1 Honey, 1 Slender Snake, 1 Elder Branch
+12730,24,2010,6,518,1,1048,1,7939,1
+//-- Runstone Turisus <-- RK_RUNEMASTERY Lv1, 1 Cobold Hair, 1 Claw Of Desert Wolf, 1 Elder Branch
+12731,24,2010,1,1034,1,7030,1,7939,1
+//-- Runstone Pertz <-- RK_RUNEMASTERY Lv3, 1 Dragon Canine, 1 Tangled Chain, 1 Light Granule, 1 Elder Branch
+12732,24,2010,3,1035,1,7221,1,7938,1,7939,1
+//-- Runstone Hagalas <-- RK_RUNEMASTERY Lv4, 1 Round Shell, 1 Dragon's Skin, 1 Elder Branch
+12733,24,2010,4,1096,1,7123,1,7939,1
 //==============================================
 
-//===== Guillotine Cross Poisons ===ItemLv=25 ==
-//-- Paralize <-- GC_RESEARCHNEWPOISON Lv1, 20 Poison Toad Skin, 1 Amoena
-12717,25,2024,1,7931,1,7155,20,7937,1,7134,1
-//-- Pyrexia <-- GC_RESEARCHNEWPOISON Lv2, 20 Anolian Skin, 1 Lantana
-12722,25,2024,2,7931,1,7003,20,7933,1,7134,1
-//-- Disheart <-- GC_RESEARCHNEWPOISON Lv3, 10 Decayed Nail, 1 Celatom
-12720,25,2024,3,7931,1,957,10,7935,1,7134,1
-//-- Leech End <-- GC_RESEARCHNEWPOISON Lv4, 1 Nerium, 1 Scoforia
-12718,25,2024,4,7931,1,7932,1,7936,1,7134,1
-//-- Antidote <-- GC_RESEARCHNEWPOISON Lv5, 2 Green Herbs, 1 Blue Herb, 1 White Herb
-6128,25,2024,5,7931,1,509,1,510,1,511,2,7134,1
-//-- Venom Bleed <-- GC_RESEARCHNEWPOISON Lv6, 10 Sticky Poison, 1 Isildor
-12724,25,2024,6,7931,1,7565,10,709,1,7134,1
-//-- Magic Mushroom <-- GC_RESEARCHNEWPOISON Lv7, 10 Poison Spore, 1 Makulrata
-12723,25,2024,7,7931,1,7033,10,7934,1,7134,1
-//-- Toxin <-- GC_RESEARCHNEWPOISON Lv8, 10 Sticky Poison, 1 Nerium
-12721,25,2024,8,7931,1,7565,10,7932,1,7134,1
-//-- Oblivion Curse <-- GC_RESEARCHNEWPOISON Lv9, 10 Mermaid Heart, 1 Isildor
-12719,25,2024,9,7931,1,950,10,709,1,7134,1
+//===== Guillotine Cross Poisons === ItemLv=25 =
+//-- Guillotine Antidote <-- GC_RESEARCHNEWPOISON Lv5, 1 White Herb, 1 Blue Herb, 2 Green Herb
+6128,25,2024,5,509,1,510,1,511,2
+//-- Poison Paralysis <-- GC_RESEARCHNEWPOISON Lv1, 1 Medicine Bowl, 20 Poison Toad's Skin, 1 Poison Kit, 1 Poison Herb Amoena
+12717,25,2024,1,7134,1,7155,20,7931,1,7937,1
+//-- Poison Leech <-- GC_RESEARCHNEWPOISON Lv4, 1 Medicine Bowl, 1 Poison Kit, 1 Poison Herb Nerium, 1 Poison Herb Scopolia
+12718,25,2024,4,7134,1,7931,1,7932,1,7936,1
+//-- Poison Oblivion <-- GC_RESEARCHNEWPOISON Lv9, 1 Izidor, 10 Heart Of Mermaid, 1 Medicine Bowl, 1 Poison Kit
+12719,25,2024,9,709,1,950,10,7134,1,7931,1
+//-- Poison Contamination <-- GC_RESEARCHNEWPOISON Lv3, 25 Decayed Nail, 1 Medicine Bowl, 1 Poison Kit, 1 Poison Herb Seratum
+12720,25,2024,3,957,25,7134,1,7931,1,7935,1
+//-- Poison Numb <-- GC_RESEARCHNEWPOISON Lv8, 1 Medicine Bowl, 10 Sticky Poison, 1 Poison Kit, 1 Poison Herb Nerium
+12721,25,2024,8,7134,1,7565,10,7931,1,7932,1
+//-- Poison Fever <-- GC_RESEARCHNEWPOISON Lv2, 20 Anolian Skin, 1 Medicine Bowl, 1 Poison Kit, 1 Poison Herb Rantana
+12722,25,2024,2,7003,20,7134,1,7931,1,7933,1
+//-- Poison Laughing <-- GC_RESEARCHNEWPOISON Lv7, 10 Poison Spore, 1 Medicine Bowl, 1 Poison Kit, 1 Poison Herb Makulata
+12723,25,2024,7,7033,10,7134,1,7931,1,7934,1
+//-- Poison Fatigue <-- GC_RESEARCHNEWPOISON Lv6, 1 Izidor, 1 Medicine Bowl, 10 Sticky Poison, 1 Poison Kit
+12724,25,2024,6,709,1,7134,1,7565,10,7931,1
 //==============================================
 
 //==============================================
-// Genetic Item Creation
+// Genetic Foods And Potions  (LV= 26 -> 29)
 //==============================================
-//----- Change Material ---- ItemLV=26 ---------
-//-- Phracon [8] <-- GN_CHANGEMATERIAL Lv1, 40 Spawn, 40 Glass Bead
-1010,26,2494,1,908,40,746,40
-//-- Witch Starsand [2] <-- GN_CHANGEMATERIAL Lv1, 10 Insect Feeler, 15 Chung Jah
-1061,26,2494,1,928,10,735,15
-// Throwable HP Increase Potion (Small) [10] <-- GN_CHANGEMATERIAL Lv1, 10 'Throwing Bottle', 10 HP Potions (Small)
+//---- Change Material --- ItemLV=26 -----------
+//-- Phracon [8] <-- GN_CHANGEMATERIAL Lv1, 40 Glass Bead, 45 Spawn
+1010,26,2494,1,746,40,908,45
+//-- Witch Starsand [2] <-- GN_CHANGEMATERIAL Lv1, 15 Blue Porcelain, 10 InsectFeeler
+1061,26,2494,1,735,15,928,10
+//-- Throwable HP Increase Potion (Small) [10] <-- GN_CHANGEMATERIAL Lv1, 10 Throwing Bottle, 10 HP Potions (Small)
 13275,26,2494,1,6297,10,12422,10
-// Throwable HP Increase Potion (Medium) [10] <-- GN_CHANGEMATERIAL Lv1, 10 'Throwing Bottle', 10 HP Potions (Medium)
+//-- Throwable HP Increase Potion (Medium) [10] <-- GN_CHANGEMATERIAL Lv1, 10 Throwing Bottle, 10 HP Potions (Medium)
 13276,26,2494,1,6297,10,12423,10
-// Throwable HP Increase Potion (Large) [10] <-- GN_CHANGEMATERIAL Lv1, 10 'Throwing Bottle', 10 HP Potions (Large)
+//-- Throwable HP Increase Potion (Large) [10] <-- GN_CHANGEMATERIAL Lv1, 10 Throwing Bottle, 10 HP Potions (Large)
 13277,26,2494,1,6297,10,12424,10
-// Throwable SP Increase Potion (Small) [10] <-- GN_CHANGEMATERIAL Lv1, 10 'Throwing Bottle', 10 SP Potions (Small)
+//-- Throwable SP Increase Potion (Small) [10] <-- GN_CHANGEMATERIAL Lv1, 10 Throwing Bottle, 10 SP Potions (Small)
 13278,26,2494,1,6297,10,12425,10
-// Throwable SP Increase Potion (Medium) [10] <-- GN_CHANGEMATERIAL Lv1, 10 'Throwing Bottle', 10 SP Potions (Medium)
+//-- Throwable SP Increase Potion (Medium) [10] <-- GN_CHANGEMATERIAL Lv1, 10 Throwing Bottle, 10 SP Potions (Medium)
 13279,26,2494,1,6297,10,12426,10
-// Throwable SP Increase Potion (Large) [10] <-- GN_CHANGEMATERIAL Lv1, 10 'Throwing Bottle', 10 SP Potions (Large)
+//-- Throwable SP Increase Potion (Large) [10] <-- GN_CHANGEMATERIAL Lv1, 10 Throwing Bottle, 10 SP Potions (Large)
 13280,26,2494,1,6297,10,12427,10
+//-- Throwable Enrich White Potion Z [10] <-- GN_CHANGEMATERIAL Lv1, 10 Throwing Bottle, 10 Enrich White Potion Z
+13281,26,2494,1,6297,10,12428,10
+//-- Vitata 500 [10] <-- GN_CHANGEMATERIAL Lv1, 10 Throwing Bottle, 10 Vitata 500
+13282,26,2494,1,6297,10,12436,10
+//-- Enrich Celermine Juice [10] <-- GN_CHANGEMATERIAL Lv1, 10 Throwing Bottle, 10 Enrich Celermine Juice
+13283,26,2494,1,6297,10,12437,10
 
-//----- Mix Cooking ---- ItemLV=27 -------------
-//-- Savage Full Roast <-- GN_MIX_COOKING & Mix Cooking Ingredient Book & 1 Chowder Pot, 1 Savage Meat, 1 Iron Cooking Skewer, 1 Black Charcoal
+//---- Mix Cooking --- ItemLV=27 ---------------
+//-- Savage BBQ <-- GN_MIX_COOKING Lv1, Mix Cook Book, 1 Melange Pot, 1 Savage Meat, 1 Cooking Skewer, 1 Black Charcoal
 12429,27,2495,1,11022,0,6248,1,6249,1,6250,1,6251,1
-//-- Cocktail Warg Blood <-- GN_MIX_COOKING & Mix Cooking Ingredient Book & 3 Wolf's Blood, 2 Cold Ice
-12430,27,2495,1,11022,0,6252,3,6253,2
-//-- Minor Stew <-- GN_MIX_COOKING & Mix Cooking Ingredient Book & 1 Comodo Tropical Fruit, 2 Seasoned Tough Meat, 1 Large Pan
-12431,27,2495,1,11022,0,6258,1,6254,2,6255,1
-//-- Siroma Iced Tea <-- GN_MIX_COOKING & Mix Cooking Ingredient Book & 1 Comodo Tropical Fruit, 3 Powdered Ice, 2 Ice Crystal
-12432,27,2495,1,11022,0,6258,1,6256,3,6257,2
-//-- Drosera Tentacle <-- GN_MIX_COOKING & Mix Cooking Ingredient Book & 3 Drosera Tentacle, 3 Red Herb, 3 Blue Herb, 3 White Herb, 1 Large Pan
-12433,27,2495,1,11022,0,6259,3,507,3,509,3,510,3,6255,1
-//-- Petite Tail Noodles <-- GN_MIX_COOKING & Mix Cooking Ingredient Book & 2 Petite Tail, 1 Fine Noodles, 1 Cold Noodles Soup
-12434,27,2495,1,11022,0,6260,2,6261,1,6262,1
+//-- Wug Blood Cocktail <-- GN_MIX_COOKING Lv1, Mix Cook Book, 1 Melange Pot, 3 Wolf Blood, 2 Cold Ice
+12430,27,2495,1,11022,0,6248,1,6252,3,6253,2
+//-- Minor Brisket <-- GN_MIX_COOKING Lv1, Mix Cook Book, 1 Melange Pot, 2 Beef Head Meat, 1 Large Cookpot
+12431,27,2495,1,11022,0,6248,1,6254,2,6255,1
+//-- Siroma Icetea <-- GN_MIX_COOKING Lv1, Mix Cook Book, 1 Melange Pot, 3 Ice Fragment, 2 Ice Crystal, 1 Comodo Tropic Fruit
+12432,27,2495,1,11022,0,6248,1,6256,3,6257,2,6258,1
+//-- Drocera Herb Stew <-- GN_MIX_COOKING Lv1, Mix Cook Book, 3 Red Herb, 3 White Herb, 3 Blue Herb, 1 Melange Pot, 1 Large Cookpot, 1 Drocera Tentacle
+12433,27,2495,1,11022,0,507,3,509,3,510,3,6248,1,6255,1,6259,3
+//-- Petti Tail Noodle <-- GN_MIX_COOKING Lv1, Mix Cook Book, 1 Melange Pot, 2 Petti Tail, 1 Fine Noodle, 1 Cool Gravy
+12434,27,2495,1,11022,0,6248,1,6260,2,6261,1,6262,1
 
-//----- Create Bomb ---- ItemLV=28 -------------
-//-- Apple Bomb <-- GN_MAKEBOMB & Apple Bomb Guide & Apple & Scell & Dark Powder & Detonator
-13260,28,2496,1,6279,0,512,1,911,1,6244,1,1051,1
-//-- Coconut Bomb <-- GN_MAKEBOMB & Coconut Bomb Guide & Coconut & 2 Dark Powder & Detonator
-13261,28,2496,1,6281,0,6263,1,6244,2,1051,1
-//-- Melon Bomb <-- GN_MAKEBOMB & Melon Bomb Guide & Melon & Sticky Mucus & 2 Dark Powder & Detonator
-13262,28,2496,1,6282,0,6264,1,938,1,6244,2,1051,1
-//-- Pineapple Bomb <-- GN_MAKEBOMB & Pineapple Bomb Guide & Pineapple & Cactus Needle & 3 Dark Powder & Detonator
-13263,28,2496,1,6280,0,6265,1,952,1,6244,3,1051,1
-//-- Banana Bomb <-- GN_MAKEBOMB & Banana Bomb Guide & Banana & 4 Dark Powder & Detonator & (missing item mold powder?)
-13264,28,2496,1,6283,0,513,1,6244,4,1051,1
+//---- Create Bomb --- ItemLV=28 ---------------
+//-- Apple Bomb <-- GN_MAKEBOMB Lv1, Apple Bomb CB, 1 Apple, 1 Scell, 1 Detonator, 1 Gun Powder
+13260,28,2496,1,6279,0,512,1,911,1,1051,1,6244,1
+//-- Coconut Bomb <-- GN_MAKEBOMB Lv1, Coconut Bomb CB, 1 Detonator, 1 Coconut Fruit, 2 Gun Powder
+13261,28,2496,1,6281,0,1051,1,6263,1,6244,2
+//-- Melon Bomb <-- GN_MAKEBOMB Lv1, Melon Bomb CB, 1 Sticky Mucus, 1 Detonator, 2 Gun Powder, 1 Melon
+13262,28,2496,1,6282,0,938,1,1051,1,6244,2,6264,1
+//-- Pineapple Bomb <-- GN_MAKEBOMB Lv1, Pinepple Bomb CB, 1 Cactus Needle, 1 Detonator, 3 Gun Powder, 1 Pineapple
+13263,28,2496,1,6280,0,952,1,1051,1,6244,3,6265,1
+//-- Banana Bomb <-- GN_MAKEBOMB Lv1, Banana Bomb CB, 1 Banana, 1 Detonator, 4 Gun Powder, 1 Mould Powder
+13264,28,2496,1,6283,0,513,1,1051,1,6244,4,7001,1
 
-//----- Special Pharmacy ---- ItemLV=29 --------
-//-- HP Potions (Small) <-- GN_S_PHARMACY & 10 Empty Bottles, 5 Monster Food, 10 White Herb, 1 Spicy Sauce
-12422,29,2497,1,713,10,528,5,509,10,7455,1
-//-- HP Potions (Medium) <-- GN_S_PHARMACY & 10 Empty Bottles, 10 White Herb, 10 Yellow Herb, 1 Spicy Sauce
-12423,29,2497,1,713,10,509,10,508,10,7455,1
-//-- HP Potions (Large) <-- GN_S_PHARMACY & 10 Empty Bottles, 15 White Herb, Mastella 3, 1 Holy Water, 1 Spicy Sauce
-12424,29,2497,1,713,10,509,15,522,3,523,1,7455,1
-//-- SP Potions (Small) <-- GN_S_PHARMACY & 10 Empty Bottles, 10 Lemon, 10 Grapes, 1 Sweet Sauce
-12425,29,2497,1,713,10,568,10,514,10,7453,1
-//-- SP Potions (Medium) <-- GN_S_PHARMACY & 10 Empty Bottles, 10 Honey, 10 Blue Herb, 1 Sweet Sauce
-12426,29,2497,1,713,10,518,10,510,10,7453,1
-//-- SP Potions (Large) <-- GN_S_PHARMACY & 10 Empty Bottles, 10 Royal Jelly, 10 Blue Herb, 1 Sweet Sauce
-12427,29,2497,1,713,10,526,10,510,10,7453,1
-//-- White Potion Z <-- GN_S_PHARMACY & Improved Potion Creation Manual & 20 White Potion, 10 Test Tube, 10 White Herb, 1 Alcohol
-12428,29,2497,1,6285,0,504,20,1092,10,509,10,970,1
-//-- Vitata 500 <-- GN_S_PHARMACY & Improved Potion Creation Manual & 10 Test Tube, 10 Grapes, 10 Honey, 10 Blue Herb
-12436,29,2497,1,6285,0,1092,10,514,10,518,10,510,10
-//-- Concentrated Ceromain Soup <-- GN_S_PHARMACY & & Improved Potion Creation Manual 10 Test Tube, 6 Awakening Potion, 5 Concentration Potion, 5 Spicy Sauce
-12437,29,2497,1,6285,0,1092,10,645,5,656,6,7455,5
-//-- Thorny Seed <-- GN_S_PHARMACY & Plant Genetic Cultivation Guide & 10 Prickly Fruit
+//---- Special Pharmacy --- ItemLV=29 ----------
+//-- Seed Of Horny Plant <-- GN_S_PHARMACY Lv1, Plant Genetic Grow, 10 Prickly Fruit
 6210,29,2497,1,6284,0,576,10
-//-- Bloodsucker Seed <-- GN_S_PHARMACY & Plant Genetic Cultivation Guide & 10 Maneater Root
+//-- Bloodsuck Plant Seed <-- GN_S_PHARMACY Lv1, Plant Genetic Grow, 10 Root Of Maneater
 6211,29,2497,1,6284,0,1033,10
-//-- Bomb Mushroom Seed <-- GN_S_PHARMACY & Plant Genetic Cultivation Guide & 10 Mushroom Spore, 5 Poison Mushroom Spore, 2 Black Powder
-6212,29,2497,1,6284,0,921,10,7033,5,6245,2
+//-- Bomb Mushroom Spore <-- GN_S_PHARMACY Lv1, Plant Genetic Grow, 10 Mushroom Spore, 2 Gun Powder, 5 Poison Spore
+6212,29,2497,1,6284,0,921,10,6244,2,7033,5
+//-- HP Increase Potion (Small) <-- GN_S_PHARMACY Lv1, Increase Stamina Study, 10 White Herb, 5 Monster's Feed, 10 Empty Bottle, 1 Hot Sauce
+12422,29,2497,1,11023,0,509,10,528,5,713,10,7455,1
+//-- HP Increase Potion (Medium) <-- GN_S_PHARMACY Lv1, Increase Stamina Study, 10 Yellow Herb, 10 White Herb, 10 Empty Bottle, 1 Hot Sauce
+12423,29,2497,1,11023,0,508,10,509,10,713,10,7455,1
+//-- HP Increase Potion (Large) <-- GN_S_PHARMACY Lv1, Increase Stamina Study, 15 White Herb, 3 Fruit Of Mastela, 1 Holy Water, 10 Empty Bottle, 1 Hot Sauce
+12424,29,2497,1,11023,0,509,15,522,3,523,1,713,10,7455,1
+//-- SP Increase Potion (Small) <-- GN_S_PHARMACY Lv1, Vital Drink CB, 10 Grape, 10 Lemon, 10 Empty Bottle, 1 Sweet Sauce
+12425,29,2497,1,11024,0,514,10,568,10,713,10,7453,1
+//-- SP Increase Potion (Medium) <-- GN_S_PHARMACY Lv1, Vital Drink CB, 10 Blue Herb, 10 Honey, 10 Empty Bottle, 1 Sweet Sauce
+12426,29,2497,1,11024,0,510,10,518,10,713,10,7453,1
+//-- SP Increase Potion (Large) <-- GN_S_PHARMACY Lv1, Vital Drink CB, 15 Blue Herb, 10 Royal Jelly, 10 Empty Bottle, 1 Sweet Sauce
+12427,29,2497,1,11024,0,510,15,526,10,713,10,7453,1
+//-- Enrich White Potion Z <-- GN_S_PHARMACY Lv1, Quality Potion Book, 20 White Potion, 10 White Herb, 1 Alchol, 10 Empty Cylinder
+12428,29,2497,1,6285,0,504,20,509,10,970,1,1092,10
+//-- Vitata 500 <-- GN_S_PHARMACY Lv1, Quality Potion Book, 10 Blue Herb, 10 Grape, 10 Honey, 10 Empty Cylinder
+12436,29,2497,1,6285,0,510,10,514,10,518,10,1092,10
+//-- Enrich Celermine Juice <-- GN_S_PHARMACY Lv1, Quality Potion Book, 5 Center Potion, 5 Awakening Potion, 10 Empty Cylinder, 5 Hot Sauce
+12437,29,2497,1,6285,0,645,5,656,5,1092,10,7455,5
+//-- Cure Free <-- GN_S_PHARMACY Lv1, Quality Potion Book, 20 Green Herb, 1 Fruit Of Mastela, 5 Panacea, 1 Leaf Of Yggdrasil, 10 Empty Cylinder
+12475,29,2497,1,6285,0,511,20,522,1,525,5,610,1,1092,10
 //===============================================
