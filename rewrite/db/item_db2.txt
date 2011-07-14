@@ -97,6 +97,9 @@
 6122,Paint_Brush,Paint Brush,3,10,,0,,,,,,,,,,,,,{},{},{}
 6123,Surface_Paint,Surface Paint,3,200,,30,,,,,,,,,,,,,{},{},{}
 
+// Rangar Waug Flute
+6124,Wolf's_Flute,Wolf's Flute,3,10,,0,,,,,,,,,,,,,{},{},{}
+
 // Guillotine Cross Poison Antidote
 6128,Antidote,Antidote,3,0,,0,,,,,,,,,,,,,{},{},{}
 
@@ -110,23 +113,23 @@
 6186,Monkey_Wrench,Monkey Wrench,3,500,,10,,,,,,,,,,,,,{},{},{}
 
 // Warlock's Magic Spellbooks
-6189,Magic_Book_FB,Magic Book (Fire Bolt),3,0,,0,,,,,,,,,,,,,{},{},{}
-6190,Magic_Book_CB,Magic Book (Cold Bolt),3,0,,0,,,,,,,,,,,,,{},{},{}
-6191,Magic_Book_LB,Magic Book (Lightning Bolt),3,0,,0,,,,,,,,,,,,,{},{},{}
-6192,Magic_Book_SG,Magic Book (Storm Gust),3,0,,0,,,,,,,,,,,,,{},{},{}
-6193,Magic_Book_LOV,Magic Book (Lord Of Vermillion),3,0,,0,,,,,,,,,,,,,{},{},{}
-6194,Magic_Book_MS,Magic Book (Meteor Storm),3,0,,0,,,,,,,,,,,,,{},{},{}
-6195,Magic_Book_CM,Magic Book (Comet),3,0,,0,,,,,,,,,,,,,{},{},{}
-6196,Magic_Book_TV,Magic Book (Tetra Vortex),3,0,,0,,,,,,,,,,,,,{},{},{}
-6197,Magic_Book_TS,Magic Book (Thunder Storm),3,0,,0,,,,,,,,,,,,,{},{},{}
-6198,Magic_Book_JT,Magic Book (Jupitel Thunder),3,0,,0,,,,,,,,,,,,,{},{},{}
-6199,Magic_Book_WB,Magic Book (Water_Ball),3,0,,0,,,,,,,,,,,,,{},{},{}
-6200,Magic_Book_HD,Magic Book (Heaven's Drive),3,0,,0,,,,,,,,,,,,,{},{},{}
-6201,Magic_Book_ES,Magic Book (Earth Spike),3,0,,0,,,,,,,,,,,,,{},{},{}
-6202,Magic_Book_ES_,Magic Book (Earth Strain),3,0,,0,,,,,,,,,,,,,{},{},{}
-6203,Magic_Book_CL,Magic Book (Chain Lightning),3,0,,0,,,,,,,,,,,,,{},{},{}
-6204,Magic_Book_CR,Magic Book (Crimson_Rock),3,0,,0,,,,,,,,,,,,,{},{},{}
-6205,Magic_Book_DL,Magic Book (Drain Life),3,0,,0,,,,,,,,,,,,,{},{},{}
+6189,Magic_Book_FB,Spell Book (Fire Bolt),3,0,,0,,,,,,,,,,,,,{},{},{}
+6190,Magic_Book_CB,Spell Book (Cold Bolt),3,0,,0,,,,,,,,,,,,,{},{},{}
+6191,Magic_Book_LB,Spell Book (Lightning Bolt),3,0,,0,,,,,,,,,,,,,{},{},{}
+6192,Magic_Book_SG,Spell Book (Storm Gust),3,0,,0,,,,,,,,,,,,,{},{},{}
+6193,Magic_Book_LOV,Spell Book (Lord Of Vermillion),3,0,,0,,,,,,,,,,,,,{},{},{}
+6194,Magic_Book_MS,Spell Book (Meteor Storm),3,0,,0,,,,,,,,,,,,,{},{},{}
+6195,Magic_Book_CM,Spell Book (Comet),3,0,,0,,,,,,,,,,,,,{},{},{}
+6196,Magic_Book_TV,Spell Book (Tetra Vortex),3,0,,0,,,,,,,,,,,,,{},{},{}
+6197,Magic_Book_TS,Spell Book (Thunder Storm),3,0,,0,,,,,,,,,,,,,{},{},{}
+6198,Magic_Book_JT,Spell Book (Jupitel Thunder),3,0,,0,,,,,,,,,,,,,{},{},{}
+6199,Magic_Book_WB,Spell Book (Water_Ball),3,0,,0,,,,,,,,,,,,,{},{},{}
+6200,Magic_Book_HD,Spell Book (Heaven's Drive),3,0,,0,,,,,,,,,,,,,{},{},{}
+6201,Magic_Book_ES,Spell Book (Earth Spike),3,0,,0,,,,,,,,,,,,,{},{},{}
+6202,Magic_Book_ES_,Spell Book (Earth Strain),3,0,,0,,,,,,,,,,,,,{},{},{}
+6203,Magic_Book_CL,Spell Book (Chain Lightning),3,0,,0,,,,,,,,,,,,,{},{},{}
+6204,Magic_Book_CR,Spell Book (Crimson_Rock),3,0,,0,,,,,,,,,,,,,{},{},{}
+6205,Magic_Book_DL,Spell Book (Drain Life),3,0,,0,,,,,,,,,,,,,{},{},{}
 
 // Genetic Skill Required Items
 6210,Seed_Of_Horny_Plant,Thorny Seed,3,600,,1,,,,,,,,,,,,,{},{},{}
@@ -206,6 +209,9 @@
 // Minstrel And Wanderer Cough Drop
 11513,Protect_Neck_Candy,Cough Drop,0,200,,1,,,,,0xFFFFFFFF,7,2,,,,,,{ itemheal rand(5,25),0; },{},{}
 
+// Arch Bishop Ancilla
+12333,Ancilla,Ancilla,0,0,,10,,,,,0x00000100,8,2,,,,,,{ percentheal 0,15; },{},{}
+
 // Ranger Special Alloy Trap Box
 12341,Special_Alloy_Trap_Box,Special Alloy Trap Box,2,20000,,100,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 7940,100; },{},{}
 
@@ -249,15 +255,15 @@
 
 12475,Cure_Free,Cure Free,2,20,,50,,,,,0xFFFFFFFF,7,2,,,,,,{ sc_end SC_Bleeding; sc_end SC_Curse; sc_end SC_Silence; itemheal rand(1000,1200),0; },{},{}
 
-// Guillotine Cross Poisons //Shadow Chasers shouldnt be allowed to use these? Should check in the script if a Guillotine is trying to consume.
-12717,Poison_Paralysis,Paralyze,2,2,,20,,,,,0xFFFFFFFF,7,2,,,,,,{ if(rand(10000) < 10) sc_start SC_PARALYSE,300000,0; },{},{}
-12718,Poison_Leech,Leech End,2,2,,20,,,,,0xFFFFFFFF,7,2,,,,,,{ if(rand(10000) < 10) sc_start SC_LEECHESEND,300000,0; },{},{}
-12719,Poison_Oblivion,Oblivion Curse,2,2,,20,,,,,0xFFFFFFFF,7,2,,,,,,{ if(rand(10000) < 10) sc_start SC_OBLIVIONCURSE,300000,0; },{},{}
-12720,Poison_Contamination,Disheart,2,2,,20,,,,,0xFFFFFFFF,7,2,,,,,,{ if(rand(10000) < 10) sc_start SC_DEATHHURT,300000,0; },{},{}
-12721,Poison_Numb,Toxin,2,2,,20,,,,,0xFFFFFFFF,7,2,,,,,,{ if(rand(10000) < 10) sc_start SC_TOXIN,300000,0; },{},{}
-12722,Poison_Fever,Pyrexia,2,2,,20,,,,,0xFFFFFFFF,7,2,,,,,,{ if(rand(10000) < 10) sc_start SC_PYREXIA,300000,0; },{},{}
-12723,Poison_Laughing,Magic Mushroom,2,2,,20,,,,,0xFFFFFFFF,7,2,,,,,,{ if(rand(10000) < 10) sc_start SC_MAGICMUSHROOM,300000,0; },{},{}
-12724,Poison_Fatigue,Venom Bleed,2,2,,20,,,,,0xFFFFFFFF,7,2,,,,,,{ if(rand(10000) < 10) sc_start SC_VENOMBLEED,15000,0; },{},{}
+// Guillotine Cross Poisons // Only Guillotines are allowed to consume these upon clicking the item???
+12717,Poison_Paralysis,Paralyze,2,2,,20,,,,,0x00001000,7,2,,,,,,{ if(rand(10000) < 10) sc_start SC_PARALYSE,300000,0; },{},{}
+12718,Poison_Leech,Leech End,2,2,,20,,,,,0x00001000,7,2,,,,,,{ if(rand(10000) < 10) sc_start SC_LEECHESEND,300000,0; },{},{}
+12719,Poison_Oblivion,Oblivion Curse,2,2,,20,,,,,0x00001000,7,2,,,,,,{ if(rand(10000) < 10) sc_start SC_OBLIVIONCURSE,300000,0; },{},{}
+12720,Poison_Contamination,Disheart,2,2,,20,,,,,0x00001000,7,2,,,,,,{ if(rand(10000) < 10) sc_start SC_DEATHHURT,300000,0; },{},{}
+12721,Poison_Numb,Toxin,2,2,,20,,,,,0x00001000,7,2,,,,,,{ if(rand(10000) < 10) sc_start SC_TOXIN,300000,0; },{},{}
+12722,Poison_Fever,Pyrexia,2,2,,20,,,,,0x00001000,7,2,,,,,,{ if(rand(10000) < 10) sc_start SC_PYREXIA,300000,0; },{},{}
+12723,Poison_Laughing,Magic Mushroom,2,2,,20,,,,,0x00001000,7,2,,,,,,{ if(rand(10000) < 10) sc_start SC_MAGICMUSHROOM,300000,0; },{},{}
+12724,Poison_Fatigue,Venom Bleed,2,2,,20,,,,,0x00001000,7,2,,,,,,{ if(rand(10000) < 10) sc_start SC_VENOMBLEED,15000,0; },{},{}
 
 // Rune Knight's Rune Stones
 12725,Runstone_Nosiege,Nauthiz Rune,11,2,,100,,,,,0xFFFFFFFF,7,2,,,,,,{ itemskill "RK_REFRESH",1; },{},{}
