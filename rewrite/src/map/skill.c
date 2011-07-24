@@ -12970,7 +12970,7 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 }
 
 /*================================================
- * Renewal Cast Time Settings (variable and fixed) [Jobbie] [Inkfish]
+ * Renewal Cast Time Settings (variable and fixed) [Jobbie] [Inkfish] [Rytech]
  *----------------------------------------------*/
 int skill_castfix(struct block_list *bl, int skill_id, int skill_lv)
 {
@@ -12984,35 +12984,34 @@ int skill_castfix(struct block_list *bl, int skill_id, int skill_lv)
 
 	base_time = skill_get_cast(skill_id, skill_lv);
 
-	if( !battle_config.renewal_cast_enable )
+	if( !battle_config.renewal_cast_enable
+		|| ( bl->type == BL_PC && pc_mapid2jobid(((TBL_PC*)bl)->class_, ((TBL_PC*)bl)->status.sex) < JOB_RUNE_KNIGHT )
+		|| skill_id < RK_ENCHANTBLADE)
 	{ // config to disable renewal cast settings.
 		variable_time = base_time;
 
 		// calculate base cast time (reduced by dex)
 		if( !(skill_get_castnodex(skill_id, skill_lv)&1) )
 		{
-			scale = battle_config.castrate_dex_scale - status_get_dex(bl);
+			int rate = battle_config.castrate_dex_scale;
+			if( bl->type == BL_PC && pc_mapid2jobid(((TBL_PC*)bl)->class_, ((TBL_PC*)bl)->status.sex) >= JOB_RUNE_KNIGHT )
+				rate = battle_config.castrate_dex_scale2;
+			scale = rate - status_get_dex(bl);
 			if( scale > 0 )	// not instant cast
-				variable_time = variable_time * scale / battle_config.castrate_dex_scale;
+				variable_time = variable_time * (int)scale / rate;
 			else return 0;	// instant cast
 		}
 	}
 	else
 	{
 		fixed_time = skill_get_fixed_cast(skill_id, skill_lv);
-		if( fixed_time < 0 )
+		if( fixed_time = 0 )
 		{
-			fixed_time = 0;
 			variable_time = base_time;
 		}
 		else
-		if( fixed_time )
+			fixed_time = skill_get_fixed_cast(skill_id, skill_lv);
 			variable_time = base_time - fixed_time;
-		else
-		{
-			variable_time = base_time * 80 / 100;
-			fixed_time = base_time * 20 / 100;
-		}
 
 		// calculate variable cast time reduced by dex and int
 		if( !(skill_get_castnodex(skill_id, skill_lv)&1) )
@@ -15282,7 +15281,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 					case 1010: qty *= 8; break;
 					case 1061: qty *= 2; break;
 					// Throwable potions
-					case 13275: case 13276: case 13277: case 13278: case 13279: case 13280:
+					case 13275: case 13276: case 13277: case 13278: case 13279: case 13280: case 13281: case 13282: case 13283:
 						qty *= 10;
 						break;
 				}
