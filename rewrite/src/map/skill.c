@@ -13005,7 +13005,7 @@ int skill_castfix(struct block_list *bl, int skill_id, int skill_lv)
 	else
 	{
 		fixed_time = skill_get_fixed_cast(skill_id, skill_lv);
-		if( fixed_time = 0 )
+		if( fixed_time == 0 )
 		{
 			variable_time = base_time;
 		}
