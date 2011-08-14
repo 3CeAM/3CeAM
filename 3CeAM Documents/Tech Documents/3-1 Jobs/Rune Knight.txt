@@ -1,0 +1,154 @@
+//Rune Knight Skill Data, Info, and Progress....
+//
+//Info about skills. Not all of these lines will be used for each skill. Examples like if no bugs exist no bug lines will be placed....
+//
+//Formula = The official formula for the skill.
+//
+//Used Code = The used formula code in 3CeAM. The code should give the exact same results.
+//
+//Note = Any extra info to say about the skill will be listed here.
+//
+//Status = Lists if the skill is Uncoded, Unofficial, Mostly Working, or Completed.
+//Uncoded - Skill has not been coded yet.
+//Unofficial - Skill was coded, but is not officially coded. Could happen if lacking a lot of extra needed info.
+//Bugged - If any known bugs exist thats causing issues, this will be marked.
+//Mostly Working - Close to official, but formula is not exactly 100% accurate and/or missing some misc details. Chance of also being bugged, or may not be bugged to current info.
+//Completed - Skill is 100% official and fully working.
+//
+//Bugs = Lists if any bugs are present with the current skill in 3CeAM if any.
+//
+//Note: skillratio always starts out at 100% damage by default. Also, damage will always be in a % ratio unless noted as a different type of damage. Like fixed amount for example.
+//
+
+Enchant Blade = Formula: -- 20 * (RK_ENCHANTBLADE-LV-USED + 5) + BaseLv / 10 + Int + MATK
+
+		Used Code: -- 100+20*skilllv+sstatus->int_/2+status_get_lv(bl)/10
+
+		Note: The main MATK part is controled in battle.c as if its a full magic attack as well. The above formula is just added in after as a fixed amount.
+		Status: Completed
+
+Sonic Wave = 	Formula: -- 500 + 100 * RK_SONICWAVE-LV-USED
+
+		Used Code: -- skillratio += 400 + 100 * skill_lv;
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Note: I didnt see anything about base level increasing damage, but then again I could find the call for getting the ratio.
+		So info on the iRO Wiki Forums most likly correct.
+		Status: Completed
+
+Death Bound = 	Formula: -- ((500 + 100 * RK_DEATHBOUND-LV-USED) * BaseLv) / 100
+
+		Used Code: -- ????
+
+		Note: Their appears to be some other formulas in the code as well. Maybe how much percent to reflect back at the attacker and how much you receive???
+		Also need to test if your base level really does affect how much the damaged is increased.
+		Status: Unofficial and Bugged
+		Bug: Amount reflected at target and how much you receive may be incorrect since I found other formulas for those parts. Also ive herd its difficult to
+		trigger the skill when used and waiting for a enemy. Is it correctly checking for the pos of the attacker and direction your facing like how Auto COunter works?
+
+Hundred Spear = Formula: -- ((BaseLv - 100) / 200.0 + 1.0) * (40 * (RK_HUNDREDSPEAR-LV-USED + 15))
+
+		Used Code: -- skillratio += 500 + 40 * skill_lv;
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Status: Completed
+
+Wind Cutter = 	Formula: -- 100 + 50 * RK_WINDCUTTER-LV-USED
+
+		Used Code: -- skillratio += 50 * skill_lv;
+		if( s_level > 50 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
+
+		Status: Completed
+
+Ignition Break = Formula: -- Damage split into 3 formulas for each range zone...
+		Inner Zone -- (200 * RK_IGNITIONBREAK-LV-USED + 200) * ((BaseLv - 100) / 200.0 + 1.0)
+		Middle Zone - (200 * RK_IGNITIONBREAK-LV-USED + 100) * ((BaseLv - 100) / 200.0 + 1.0)
+		Outer Zone -- 100 * (RK_IGNITIONBREAK-LV-USED + 1) * ((BaseLv - 100) / 200.0 + 1.0)
+		If Weapon Is Fire Element -- Damage-Formula * 1.5
+
+		Used Code: -- i = distance_bl(src,target);
+		skillratio += 100 * skill_lv;
+		if( i < 4 ) skillratio += 100 * skill_lv;
+		if( i < 2 ) skillratio += 100;
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+		if( sstatus->rhw.ele == ELE_FIRE )	skillratio +=  skillratio / 2;	// Bonus by fire element endow.
+
+		Status: Completed
+
+Dragon Training = Status: Completed
+
+Dragon Breath = Formula: -- (CurrentHP / 50 + MaxSP / 4) * (RK_DRAGONBREATH-LV-USED * BaseLv) / 150.0 * (100 + 5 * (RK_DRAGONTRAINING-LV-LEARNED - 1)) / 100.0
+
+		Code Used: -- md.damage = ((status_get_hp(src) / 50) + (status_get_max_sp(src) / 4)) * skill_lv;
+		if (status_get_lv(src) > 100) md.damage = md.damage * s_level / 150;// Base level bonus.
+		if (sd) md.damage = md.damage * (100 + 5 * (pc_checkskill(sd,RK_DRAGONTRAINING) - 1)) / 100;
+
+		Status: Mostly Working
+
+		Bugs: Dragon Breath is a tricky skill to code. Theirs reports of many random things like what reduces its damage, what blocks it, what can affect the damage,
+		etc. A good bit of research, coding, and testing will need to be done to get this skill official. At least the above formula is finally officially coded in.
+
+Dragon Howling = Formula: -- 50 + 6 * RK_DRAGONHOWLING-LV-USED
+
+		Used Code: 50 + 6 * skilllv
+
+		Status: Completed
+
+		Note: May have to test if the Fear status is working as it should.
+
+Rune Mastery =  Status: Mostly Working
+
+		Note: The success chances needs to be fully rechecked as they might not entirely be official.
+
+Millenium Shield = Formula: -- The % chance of getting a certain number of shields works as follow...
+			Chance to get 4 shields =  50% <-- If random chance fails, it will try for 3 shields next.
+			Chance to get 3 shields =  80% <-- If random chance fails, it will try for 2 shields next.
+			Chance to get 2 shields = 100%
+			Each shield has 1000 HP???
+
+		Used Code: -- short shields = short shields = (rand()%100<50) ? 4 : ((rand()%100<80) ? 3 : 2);
+		sc_start4(bl,type,100,skilllv,shields,1000,0,skill_get_time(skillid,skilllv));
+
+		Status: Complete
+
+		Note: Is the shields fully blocking attacks even if they deal more damage then the HP of the shield? Must Test
+
+Crush Strike =  Formula: -- WeaponATK + 100 * WeaponLevel * (RefineLevel + 6)
+
+		Used Code: -- skillratio = sstatus->rhw.atk + 100 * sd->inventory_data[index]->wlv * (sd->status.inventory[index].refine + 6);
+
+		Status: Mostly Working
+
+		Bugs: While the formula is now official, we need to confirm if ATK% cards, Race% cards, and other similars work with this skill.
+		With it being so powering and throwing all damage in on 1 hit this must be tested soon.
+
+Refresh = 	N/A
+
+Giant Growth =  N/A
+
+Stone Hard Skin = Note: Shows in the official code that it takes 20% of your current HP while 3CeAM's code takes 25% as outside sources say it should.
+		Theirs also what appears to be a set % chance of breaking a enemys weapon which is 30% and is the same % chance for lowering a attacking mosnters attack.
+
+Vitality Activation = N/A
+
+Storm Blast = 	Formula: -- ???? (Code isnt showing it properly)
+
+		Used Code: -- skillratio = 100 * (sd ? pc_checkskill(sd,RK_RUNEMASTERY) : 1) +  100 * (sstatus->int_ / 4);
+
+		Status: Mostly Working
+
+		Note: The formula provided by the community is close to official, but were not sure how much since were not able to see the official one in the code.
+
+Fighting Spirit = Note: The formula for how the number of party members affects this skill is hard to understand and im not bothering with this one.
+
+Abundance = 	N/A
+
+Phantom Thrust = Formula: -- (10 * (KN_SPEARMASTERY-LV-LEARNED + 5 * RK_PHANTOMTHRUST-LV-USED)) * BaseLv / 150.0
+
+		Used Code: -- skillratio = 50 * skill_lv + 10 * pc_checkskill(sd,KN_SPEARMASTERY);
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Status: Mostly Working
+
+		Bugs: While it says the damage is Damage * BaseLv / 150, I left the (s_level - 100) / 200 code since the official one would force
+		a level 100 player using level 1 of this skill to deal 33% damage which just insanely low.
