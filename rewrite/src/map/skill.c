@@ -1107,7 +1107,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 			status_change_end(bl, SC_ASSUMPTIO, -1);
 			status_change_end(bl, SC_STEELBODY, -1);
 			status_change_end(bl, SC_AUTOGUARD, -1);
-			status_change_end(bl, SC_BERKANA, -1);
+			status_change_end(bl, SC_MILLENNIUMSHIELD, -1);
 		}
 		break;
 	case NC_FLAMELAUNCHER:
@@ -1277,7 +1277,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 			rate = battle_config.equip_natural_break_rate;
 			if( sc )
 			{
-				if(sc->data[SC_THURISAZ])
+				if(sc->data[SC_GIANTGROWTH])
 					rate += 1;
 				if(sc->data[SC_OVERTHRUST])
 					rate += 10;
@@ -6177,9 +6177,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_SAVAGE_STEAK:			case SC_COCKTAIL_WARG_BLOOD:	case SC_MINOR_BBQ:
 				case SC_SIROMA_ICE_TEA:			case SC_DROCERA_HERB_STEAMED:	case SC_PUTTI_TAILS_NOODLES:
 				case SC_NEUTRALBARRIER_MASTER:	case SC_NEUTRALBARRIER:			case SC_STEALTHFIELD_MASTER:
-				case SC_STEALTHFIELD:			case SC_THURISAZ:				case SC_BERKANA:
-				case SC_NAUTHIZ:				case SC_HAGALAZ:				case SC_ISA:
-				case SC_OTHILA:					case SC_URUZ:					case SC__SHADOWFORM:
+				case SC_STEALTHFIELD:			case SC_GIANTGROWTH:			case SC_MILLENNIUMSHIELD:
+				case SC_REFRESH:				case SC_STONEHARDSKIN:			case SC_VITALITYACTIVATION:
+				case SC_FIGHTINGSPIRIT:			case SC_ABUNDANCE:				case SC__SHADOWFORM:
 					continue;
 				case SC_ASSUMPTIO:
 					if( bl->type == BL_MOB )

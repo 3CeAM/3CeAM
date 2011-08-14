@@ -6931,7 +6931,7 @@ int pc_itemheal(struct map_session_data *sd,int itemid, int hp,int sp)
 	hp -= hp * bonus / 100;
 	sp -= sp * bonus / 100;
 
-	if( sd->sc.data[SC_ISA] )
+	if( sd->sc.data[SC_VITALITYACTIVATION] )
 	{
 		hp += hp / 2; // 1.5 times
 		sp -= sp / 2;
