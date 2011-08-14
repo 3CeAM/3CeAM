@@ -7177,11 +7177,11 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 	case RK_ENCHANTBLADE:
 		clif_skill_nodamage(src,bl,skillid,skilllv,
-			sc_start2(bl,type,100,skilllv,100+20*skilllv+status_get_status_data(src)->matk_min/2,skill_get_time(skillid,skilllv)));
+			sc_start2(bl,type,100,skilllv,100+20*skilllv+sstatus->int_/2+status_get_lv(bl)/10,skill_get_time(skillid,skilllv)));
 		break;
 	case RK_DRAGONHOWLING:
 		if( flag&1)
-			sc_start(bl,type,(50 + 6 * skilllv),skilllv,skill_get_time(skillid,skilllv));
+			sc_start(bl,type,50 + 6 * skilllv,skilllv,skill_get_time(skillid,skilllv));
 		else
 		{
 			skill_area_temp[2] = 0;
@@ -7228,7 +7228,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case RK_MILLENNIUMSHIELD:
 		if( sd && pc_checkskill(sd,RK_RUNEMASTERY) >= 9 )
 		{
-			short shields = 2 + rand()%3;
+			short shields = (rand()%100<50) ? 4 : ((rand()%100<80) ? 3 : 2);
 			sc_start4(bl,type,100,skilllv,shields,1000,0,skill_get_time(skillid,skilllv));
 			clif_millenniumshield(sd,shields);
 			clif_skill_nodamage(src,bl,skillid,1,1);

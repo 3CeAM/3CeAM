@@ -980,9 +980,9 @@ int battle_addmastery(struct map_session_data *sd,struct block_list *target,int 
 		case W_2HSPEAR:
 			if((skill = pc_checkskill(sd,KN_SPEARMASTERY)) > 0) {
 				if(!pc_isriding(sd, OPTION_RIDING|OPTION_RIDING_DRAGON))
-					damage += (skill * (4 + pc_checkskill(sd,RK_DRAGONTRAINING)));
+					damage += skill * 4;
 				else
-					damage += (skill * (5 + pc_checkskill(sd,RK_DRAGONTRAINING)));
+					damage += skill * (5 + pc_checkskill(sd,RK_DRAGONTRAINING));//Mastery damage is higher when on a Dragon Mount. [Rytech]
 			}
 			break;
 		case W_1HAXE:
@@ -2039,45 +2039,41 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case NPC_VAMPIRE_GIFT:
 					skillratio += ((skill_lv-1)%5+1)*100;
 					break;
-				case RK_SONICWAVE: // Sugested formula from irowiki.
-					skillratio += 400 + 100 * skill_lv; // Base skillratio.
+				case RK_SONICWAVE:
+					skillratio += 400 + 100 * skill_lv;
 					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
-				case RK_HUNDREDSPEAR: // Sugested formula from irowiki.
-					skillratio += 500 + 40 * skill_lv; // Base skillratio.
+				case RK_HUNDREDSPEAR:
+					skillratio += 500 + 40 * skill_lv;
 					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
-				case RK_WINDCUTTER: // Sugested formula from irowiki.
-					skillratio += 50 * skill_lv; // Base skillratio
+				case RK_WINDCUTTER:
+					skillratio += 50 * skill_lv;
 					if( s_level > 50 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
 					break;
-				case RK_IGNITIONBREAK: // Sugested formula from irowiki.
-					i = distance_bl(src,target) / 2;
+				case RK_IGNITIONBREAK:
+					i = distance_bl(src,target);
 					skillratio += 100 * skill_lv;
 					if( i < 4 ) skillratio += 100 * skill_lv;
 					if( i < 2 ) skillratio += 100;
 					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					if( sstatus->rhw.ele == ELE_FIRE )	skillratio +=  skillratio / 2;	// Bonus by fire element endow.
 					break;
-				case RK_CRUSHSTRIKE:	// Sugested formula from irowiki.
-					skillratio += 550;
+				case RK_CRUSHSTRIKE:
 					if( sd )
 					{
 						short index = sd->equip_index[EQI_HAND_R];
 						if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_WEAPON )
-						{
-							skillratio += 100 * sd->status.inventory[index].refine;	// Increased by weapon refine.
-							skillratio *= sd->inventory_data[index]->wlv; // Increased by weapon level.
-						}
+							skillratio = sstatus->rhw.atk + 100 * sd->inventory_data[index]->wlv * (sd->status.inventory[index].refine + 6);
 					}
 					break;
 				case RK_STORMBLAST:
-					skillratio += -100 + 100 * (sd ? pc_checkskill(sd,RK_RUNEMASTERY) : 1) +  100 * (sstatus->int_ / 4);
+					skillratio = 100 * (sd ? pc_checkskill(sd,RK_RUNEMASTERY) : 1) +  100 * (sstatus->int_ / 4);
 					break;
-				case RK_PHANTOMTHRUST: // TODO: How much Spear Mastery affects?.
-					skillratio += 20 * (skill_lv - 1);
+				case RK_PHANTOMTHRUST:
+					skillratio = 50 * skill_lv + 10 * pc_checkskill(sd,KN_SPEARMASTERY);
+					//if( s_level > 100 ) skillratio += skillratio * s_level / 150;	// Base level bonus. This is official, but is disabled until I can confirm something with was changed or not. [Rytech]
 					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
-					if( sd ) skillratio += pc_checkskill(sd, KN_SPEARMASTERY) * 10; // Temporary value.
 					break;
 				case GC_CROSSIMPACT:
 					skillratio += 1050 + 50 * skill_lv;
@@ -3859,12 +3855,12 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		md.damage = skill_calc_heal(src,target,skill_num,skill_lv,false);
 		break;
 	case RK_DRAGONBREATH:
-		if( battle_config.skillsbonus_maxhp_RK && status_get_hp(src) > battle_config.skillsbonus_maxhp_RK ) // [Pinky]
-			md.damage = ((battle_config.skillsbonus_maxhp_RK * 16 / 1000) + (status_get_sp(src) * 192 / 1000)) * skill_lv;
-		else
-			md.damage = ((status_get_hp(src) * 16 / 1000) + (status_get_sp(src) * 192 / 1000)) * skill_lv;
-		if (sd) md.damage += md.damage * 5 * (pc_checkskill(sd,RK_DRAGONTRAINING) -1) / 100;// Damaged is increased if you know Dragon Training [Rytech]
-		if (status_get_lv(src) > 100) md.damage += md.damage * (s_level - 100) / 200;// Base level bonus.
+ 		if( battle_config.skillsbonus_maxhp_RK && status_get_hp(src) > battle_config.skillsbonus_maxhp_RK ) // [Pinky]
+			md.damage = ((battle_config.skillsbonus_maxhp_RK / 50) + (status_get_max_sp(src) / 4)) * skill_lv;
+ 		else
+			md.damage = ((status_get_hp(src) / 50) + (status_get_max_sp(src) / 4)) * skill_lv;
+		if (status_get_lv(src) > 100) md.damage = md.damage * s_level / 150;// Base level bonus.
+		if (sd) md.damage = md.damage * (100 + 5 * (pc_checkskill(sd,RK_DRAGONTRAINING) - 1)) / 100;
 		break;
 	case RA_CLUSTERBOMB:
 	case RA_FIRINGTRAP:
