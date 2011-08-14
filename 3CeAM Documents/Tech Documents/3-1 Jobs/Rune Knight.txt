@@ -75,6 +75,8 @@ Ignition Break = Formula: -- Damage split into 3 formulas for each range zone...
 
 		Status: Completed
 
+		Note: Inner Zone is 3x3, Middle Zone is 5x5 - 7x7, Outer Zone is 9x9 - 11x11.
+
 Dragon Training = Status: Completed
 
 Dragon Breath = Formula: -- (CurrentHP / 50 + MaxSP / 4) * (RK_DRAGONBREATH-LV-USED * BaseLv) / 150.0 * (100 + 5 * (RK_DRAGONTRAINING-LV-LEARNED - 1)) / 100.0
