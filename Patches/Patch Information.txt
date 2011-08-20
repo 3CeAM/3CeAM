@@ -279,7 +279,7 @@
 //=
 //= Notes - They are only supported in new clients, that may have some compatibility issues
 //= with our current code. Tested with 2011-02-28aRagexeRE.
-//= Some importnat note about the requirements:
+//= Some important note about the requirements:
 //= You need a client above 2011-02-08.
 //= You need updated lua files to make this work.
 //= You need updated grfs to make this patch work.
