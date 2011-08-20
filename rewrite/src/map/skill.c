@@ -2268,6 +2268,10 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 		case WM_SEVERE_RAINSTORM_MELEE:
 			copy_skill = WM_SEVERE_RAINSTORM;
 			break;
+		case LG_OVERBRAND_BRANDISH:
+		case LG_OVERBRAND_PLUSATK:
+			copy_skill = LG_OVERBRAND;
+			break;
 		}
 
 		if( can_copy(tsd,copy_skill,bl) && (!tsd->status.skill[copy_skill].id || tsd->status.skill[copy_skill].flag >= 13) )
@@ -4628,7 +4632,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			break;
 		{
 			int per = 0, sper = 0;
-			if (tsc->data[SC_HELLPOWER])
+			if (tsc && tsc->data[SC_HELLPOWER])
 				break;
 
 			if (map[bl->m].flag.pvp && dstsd && dstsd->pvp_point < 0)
@@ -7446,8 +7450,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		if( flag&1 || (i = skill_get_splash(skillid, skilllv)) < 1 )
 		{ //As of the behavior in official server Clearance is just a super version of Dispell skill. [Jobbie]
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
-			if((dstsd && (dstsd->class_&MAPID_UPPERMASK) == MAPID_SOUL_LINKER)
-				|| (tsc && tsc->data[SC_SPIRIT]) || rand()%100 >= 30 + 10 * skilllv)
+			if((dstsd && (dstsd->class_&MAPID_UPPERMASK) == MAPID_SOUL_LINKER) || rand()%100 >= 30 + 10 * skilllv)
 			{
 				if (sd)
 					clif_skill_fail(sd,skillid,0,0,0);
@@ -7468,7 +7471,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_INTFOOD:     case SC_DEXFOOD:     case SC_LUKFOOD:
 				case SC_HITFOOD:     case SC_FLEEFOOD:    case SC_BATKFOOD:
 				case SC_WATKFOOD:    case SC_MATKFOOD:    case SC_DANCING:
-				case SC_GUILDAURA:   case SC_EDP:         case SC_AUTOBERSERK:
+				case SC_GUILDAURA:   case SC_SPIRIT:      case SC_AUTOBERSERK:
 				case SC_CARTBOOST:   case SC_MELTDOWN:    case SC_SAFETYWALL:
 				case SC_SMA:         case SC_SPEEDUP0:    case SC_NOCHAT:
 				case SC_ANKLE:       case SC_SPIDERWEB:   case SC_JAILED:
