@@ -1072,8 +1072,8 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		{
 			int rate = 0, i;
 			const int pos[5] = { EQP_WEAPON, EQP_HELM, EQP_SHIELD, EQP_ARMOR, EQP_ACC };
-			rate = (5 + skilllv) * skilllv * status_get_lv(src) / 100;
-			rate -= rate * tstatus->dex / 200; // Reduced by Target Dex
+			rate = 6 * skilllv + sstatus->dex / 10 + sd->status.job_level / 4 - tstatus->dex /5;// The tstatus->dex / 5 part is unofficial, but players gotta have some kind of way to have resistance. [Rytech]
+			//rate -= rate * tstatus->dex / 200; // Disabled until official resistance is found.
 
 			for( i = 0; i < skilllv; i++ )
 				skill_strip_equip(bl,pos[i],rate,skilllv,skill_get_time2(skillid,skilllv));
@@ -3940,11 +3940,10 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case WL_DRAINLIFE:
 		{
 			int heal = skill_attack(skill_get_type(skillid), src, src, bl, skillid, skilllv, tick, flag);
-			int rate = 25 + 5 * skilllv;
-			if( sd )
-				rate = (int)( rate * (1 + s_job_level / 50. ) );
+			int rate = 70 + 4 * skilllv + s_job_level / 5;// Is this int at the beginning really needed? [Rytech]
 
-			heal = heal * 8 * skilllv * status_get_lv(src) / 10000;
+			heal = 8 * skilllv;
+			if( status_get_lv(src) > 100 ) heal = heal * status_get_lv(src) / 100;	// Base level bonus.
 
 			if( bl->type == BL_SKILL )
 				heal = 0;	// Don't absorb heal from Ice Walls or other skill units.
@@ -4144,7 +4143,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		if( tsc && (tsc->option&(OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK) || tsc->data[SC__INVISIBILITY]) )
 			break; // Doesn't hit/cause Freezing to invisible enemy
 		// Causes Freezing status through walls.
-		sc_start(bl,status_skill2sc(skillid),(int)( (20+12*skilllv)*(1+(sd?s_job_level/200.:0)) ),skilllv,skill_get_time(skillid,skilllv));
+		sc_start(bl,status_skill2sc(skillid),20+12*skilllv+s_job_level/5,skilllv,skill_get_time(skillid,skilllv));
 		// Doesn't deal damage through non-shootable walls.
 		if( path_search(NULL,src->m,src->x,src->y,bl->x,bl->y,1,CELL_CHKWALL) )
 			skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag);
@@ -7258,7 +7257,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		if( flag&1 )
 		{
 			if( src == bl )
-				sc_start2(bl,type,100,skill_area_temp[5],40*(sd?pc_checkskill(sd,RK_RUNEMASTERY):10),skill_get_time(skillid,skilllv));
+				sc_start2(bl,type,100,skill_area_temp[5],10*(sd?pc_checkskill(sd,RK_RUNEMASTERY):10),skill_get_time(skillid,skilllv));
 			else
 				sc_start(bl,type,100,skill_area_temp[5]/4,skill_get_time(skillid,skilllv));
 		}
@@ -7533,8 +7532,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case WL_WHITEIMPRISON:
 		if( !(tsc && tsc->data[type]) && (src == bl || battle_check_target(src, bl, BCT_ENEMY)) )
 		{
-			int rate = 50 + 3 * skilllv;
-			if( sd ) rate = (int)( rate * (1 + s_job_level / 100. ) );
+			int rate = 50 + 3 * skilllv + s_job_level / 4;
 			i = sc_start2(bl,type,rate,skilllv,src->id,(src == bl)?skill_get_time2(skillid,skilllv):skill_get_time(skillid, skilllv));
 			clif_skill_nodamage(src,bl,skillid,skilllv,i);
 			if( sd && i )
@@ -7573,18 +7571,17 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			if( tsc && tsc->data[SC_STONE] )
 				status_change_end(bl,SC_STONE,-1);
 			else
-				status_change_start(bl,SC_STONE,10000,skilllv,0,0,1000,(7+2*skilllv)*1000,2);
+				status_change_start(bl,SC_STONE,10000,skilllv,0,0,1000,(8+2*skilllv)*1000,2);
 		}
 		else
 		{
-			int rate = 40 + 8 * skilllv;
-			if( sd ) rate = (int)( rate * (1 + s_job_level / 200.) );
+			int rate = 40 + 8 * skilllv + s_job_level / 4;
 			// IroWiki says Rate should be reduced by target stats, but currently unknown
 			if( rand()%100 < rate )
 			{ // Success on First Target
 				rate = 0;
 				if( !tsc->data[SC_STONE] )
-					rate = status_change_start(bl,SC_STONE,10000,skilllv,0,0,1000,(7+2*skilllv)*1000,2);
+					rate = status_change_start(bl,SC_STONE,10000,skilllv,0,0,1000,(8+2*skilllv)*1000,2);
 				else
 				{
 					rate = 1;
@@ -7644,7 +7641,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case WL_READING_SB:
 		if( sd )
 		{
-			int i, preserved = 0, max_preserve = 5 + (4 + 4*pc_checkskill(sd,WL_FREEZE_SP)) + sd->status.base_level/15 + sstatus->int_/10;
+			int i, preserved = 0, max_preserve = 4 * pc_checkskill(sd,WL_FREEZE_SP) + sstatus->int_ / 10 + sd->status.base_level / 10;
 			ARR_FIND(0, MAX_SPELLBOOK, i, sd->rsb[i].skillid == 0); // Search for a Free Slot
 			if( i == MAX_SPELLBOOK )
 			{
@@ -15731,7 +15728,7 @@ int skill_spellbook (struct map_session_data *sd, int nameid)
 		return 0;
 	}
 
-	max_preserve = 5 + (4 + 4*pc_checkskill(sd,WL_FREEZE_SP)) + sd->status.base_level/15 + status_get_int(&sd->bl)/10;
+	max_preserve = 4 * pc_checkskill(sd,WL_FREEZE_SP) + status_get_int(&sd->bl) / 10 + sd->status.base_level / 10;
 	for( i = 0; i < MAX_SPELLBOOK && sd->rsb[i].skillid; i++ )
 		preserved += sd->rsb[i].points;
 
