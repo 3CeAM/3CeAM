@@ -5622,7 +5622,7 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 		tick = max(tick,10000); // Minimum Duration 10s.
 		break;
 	case SC_FREEZING:
-		tick -= 40 * status->vit;
+		tick -= 1000 * ((status->vit + status->dex) / 20);
 		tick = max(tick,10000); // Minimum Duration 10s.
 		break;
 	case SC_OBLIVIONCURSE:

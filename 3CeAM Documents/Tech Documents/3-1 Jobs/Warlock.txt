@@ -1,0 +1,277 @@
+//Warlock Skill Data, Info, and Progress....
+//
+//Info about skills. Not all of these lines will be used for each skill. Examples like if no bugs exist no bug lines will be placed....
+//
+//Formula = The official formula for the skill.
+//
+//Used Code = The used formula code in 3CeAM. The code should give the exact same results.
+//
+//Note = Any extra info to say about the skill will be listed here.
+//
+//Status = Lists if the skill is Uncoded, Unofficial, Mostly Working, or Completed.
+//Uncoded - Skill has not been coded yet.
+//Unofficial - Skill was coded, but is not officially coded. Could happen if lacking a lot of extra needed info.
+//Bugged - If any known bugs exist thats causing issues, this will be marked.
+//Mostly Complete - Close to official, but formula is not exactly 100% accurate and/or missing some misc details. Chance of also being bugged, or may not be bugged to current info.
+//Completed - Skill is 100% official and fully working.
+//
+//Bugs = Lists if any bugs are present with the current skill in 3CeAM if any.
+//
+//Note: skillratio always starts out at 100% damage by default. Also, damage will always be in a % ratio unless noted as a different type of damage. Like fixed amount for example.
+//
+
+White Imprison = Formula: -- JobLv / 4 + 3 * WL_WHITEIMPRISON-LV-USED + 50
+
+		Code Used: -- int rate = 50 + 3 * skilllv + s_job_level / 4;
+
+		Status: Mostly Complete
+
+		Bugs: Now that the success chance is official we need to figure out what the duration reduction formula really is.
+
+Soul Expansion = Formula: -- ((100 * (WL_SOULEXPANSION-LV-USED + 4)) + Int) * BaseLv / 100.0
+
+		Used Code: -- skillratio += 300 + 100 * skill_lv + sstatus->int_;
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Status: Completed
+
+		Note: The part of the code that made it deal double damage on targets affect with White Imprison status was removed since
+		the status itself is supposed to be handleing things like this. The status should double all Ghost element damage.
+
+Frost Misty = 	Formula: -- (BaseLv / 100.0) * (100 * (WL_FROSTMISTY-LV-USED + 2)) + WaterInsigniaBonus
+
+		Used Code: -- skillratio += 100 + 100 * skill_lv;
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Freezing Chance: -- JobLv / 5 + 12 * WL_FROSTMISTY-LV-USED + 20
+
+		Used Code 2: -- 20+12*skilllv+s_job_level/5
+
+		Duration: -- (1000 * (30 - (Dex + Vit) / 20)) + 10000
+
+		Used Code 3: -- tick -= 1000 * ((status->vit + status->dex) / 20);
+		tick = max(tick,10000); // Minimum Duration 10s.
+
+		Status: Mostly Complete
+
+		Note: The code is perty much complete. We just need to add in a check for Insignia's, but thats not until the Insignia
+		skills are coded.
+
+Jack Frost = 	Formula: -- If Not In Freezing = (100 * (WL_JACKFROST-LV-USED + 5)) * BaseLv / 150.0 + WaterInsigniaBonus
+		Formula2: -- If In Freezing = (300 * WL_JACKFROST-LV-USED + 1000) * BaseLv / 100.0 + WaterInsigniaBonus
+
+		Used Code: -- 		struct status_change *tsc = status_get_sc(target);
+		if( tsc && tsc->data[SC_FREEZING] )
+		{
+			skillratio += 900 + 300 * skill_lv;
+			if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+		}
+		else
+			skillratio += 400 + 100 * skill_lv;
+			if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Status: Mostly Complete
+
+		Note: The code is perty much complete. We just need to add in a check for Insignia's, but thats not until the Insignia
+		skills are coded. Also need the Frozen chance.
+
+Marsh of Abyss = Movement Reduction Formula: -- 40 + 10 * WL_MARSHOFABYSS-LV-USED
+
+		Used Code: -- val = max( val, 40 + 10 * sc->data[SC_MARSHOFABYSS]->val1 );
+
+		Status: Mostly Complete
+
+		Note: I didnt look too deep into the official data for this one. I will another time. Theirs other reductions besides movement.
+
+Recognized Spell = Status: Completed
+
+Sienna Execrate = Formula: -- JobLv / 4 + 8 * WL_SIENNAEXECRATE-LV-USED + 40
+
+		Used Code: -- 40 + 8 * skilllv + s_job_level / 4
+
+		Duration: -- 8000 * 2000 * WL_SIENNAEXECRATE-LV-USED
+
+		Used Code: -- (8+2*skilllv)*1000
+
+		Status: Mostly Complete
+
+		Note: Is resistance the same like for Stone Curse?
+
+
+Raidus = 	Status: -- Completed
+
+Stasis = 	Duration: -- 10000 * WL_STASIS-LV-USED - 1000 * (dex + vit) / 20 + 10000
+
+		Used Code: -- ????
+
+		Status: Bugged
+
+		Bugs: Its been a long time since this skill had a full field test and things may have been changed and/or fixed.
+		According to the desc its supposed to stop the use of magic skills for anyone affected. However theirs currently
+		skills in 3CeAM thats being blocked even tho their not magic type. Another bug is the duration. Turns out its partly
+		hard coded, but also partly coded in a outside file in the official code. This is because the main duration is taken
+		and reduced by a formula from players stats, while their's a extra +10000 seconds thats added at the end to prevent
+		it from going below 10 seconds.
+
+		I cant mark this skill as mostly working since its too buggy and far from officially working properly. Also their's other
+		info that we may be lacking. This skill WAS coded at a time before their was any way to reduce the duration, so the current
+		code is perty much outdated.
+
+		Note: Duration cannot go below 10000
+
+Drain Life = 	Formula: -- (Int + 200 * WL_DRAINLIFE-LV-USED) * BaseLv / 100.0
+
+		Used Code: -- skillratio = 200 * skill_lv + sstatus->int_;
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		HP Drain Chance: -- JobLv / 5 + 4 * WL_DRAINLIFE-LV-USED + 70
+
+		Used Code 2: -- 70 + 4 * skilllv + s_job_level / 5;
+
+		HP Drain Amount: -- (BaseLv / 100.0 * (8 * WL_DRAINLIFE-LV-USED)) / 100.0 * v26
+
+		Used Code3: -- heal = 8 * skilllv;
+		if( status_get_lv(src) > 100 ) heal = heal * status_get_lv(src) / 100;	// Base level bonus.
+
+		Status: Mostly Complete
+
+		Note: The percent of HP drain should be very close to official. Their was a small part of the code I couldnt figure out.
+		Must recheck this later in the future.
+
+Crimson Rock =  Formula: -- BaseLv / 100.0 * (300 * WL_CRIMSONROCK-LV-USED) + 1300.0 + FireInsigniaBonus
+
+		Used Code: -- skillratio += 1200 + 300 * skill_lv;
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Status: Mostly Complete....I think.
+
+		Note: The Stun chance and duration is the same as any regular stun from older skills right where the chance and duration
+		is afffected by Vit right???
+
+Hell Inferno =  Formula: -- 300 * WL_HELLINFERNO-LV-USED * Baselv / 100
+
+		Used Code: -- 	if( s_ele == ELE_FIRE )
+			skillratio = 60 * skill_lv;
+		else
+			skillratio = 240 * skill_lv;
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Burning Chance: -- 55 + 5 * WL_HELLINFERNO-LV-USED
+
+		Duration: -- 10000 + 10000 * WL_HELLINFERNO-LV-USED
+
+		Status: Mostly Complete
+
+		Note: In the official code it shows the formula is the full 300 * Hell Inferno which make its 1500% for the full ratio.
+		However it appears the damage is splitted between the fire damage and shadow damage by a percent. The fire damage is then
+		dealed first, and then the shadow damage follows 200ms after the fire damage and hits with shadow damage.
+
+		I will need to do some official testing to confirm the 2 hit attack thing and also see if its correct in 3CeAM.
+
+Comet = 	Formula: -- Theirs 4 different damage formulas. The formula used depends on which of the 4 damage zones the player is standing in.
+		Zone 1: -- 2500 + 500 * WL_COMET-LV-USED
+		Zone 2: -- 1600 + 400 * WL_COMET-LV-USED
+		Zone 3: -- 1200 + 300 * WL_COMET-LV-USED
+		Zone 4: --  800 + 200 * WL_COMET-LV-USED
+
+		Used Code: -- i = distance_xy(target->x, target->y, sc->comet_x, sc->comet_y);
+		if( i < 2 ) skillratio = 2500 + 500 * skill_lv;
+		else
+		if( i < 4 ) skillratio = 1600 + 400 * skill_lv;
+		else
+		if( i < 6 ) skillratio = 1200 + 300 * skill_lv;
+		else
+		skillratio = 800 + 200 * skill_lv;
+
+		Status: Mostly Complete
+
+		Note: A few things needs confirm. Like is the burning chances 100% or set by skill level? Also I need to do some code rework later
+		to make this a full AoE to use the dummy units so itl work official and be blocked by Land Protector. Finally the official code says
+		its a 15x15 AoE, yet the animation is still the huge 27x27 its always been. Need to confirm if the AoE was reduced to 15x15.
+
+		Note 2: Zone 1 = 1x1 - 3x3, Zone 2 = 5x5 - 7x7, Zone 3 = 9x9 - 11x11, Zone 4 = 13x13 - 15x15.
+
+Chain Lightning = Note: Damage is controled by the attack version. See below.
+
+Chain Lightning Attack = Formula: -- (BaseLv / 100.0) * (300 * WL_CHAINLIGHTNING-LV-USED + 200) + WindInsigniaBonus
+
+		Used Code: -- skillratio += 100 + 300 * skill_lv;
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Status: Mostly Complete
+
+		Note: WL_CHAINLIGHTNING_ATK has the same number of levels as WL_CHAINLIGHTNING, but the level used really depends on what level of
+		WL_CHAINLIGHTNING that the caster used.
+
+		Note2: If im correct, the code says the attack hits or chains to the next target every .650 (which is 650) seconds.
+
+Earth Strain =  Formula: -- (BaseLv / 100.0) * (100 * (WL_EARTHSTRAIN-LV-USED + 20)) + EarthInsigniaBonus
+
+		Used Code: -- skillratio += 1900 + 100 * skill_lv;
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Strip Chance: -- 6 * WL_EARTHSTRAIN-LV-USED + JobLv / 4 + Dex / 10
+
+		Used Code: -- rate = 6 * skilllv + sstatus->dex / 10 + s_job_level / 4 - tstatus->dex /5;
+
+		Status: -- Mostly Complete
+
+		Note: The tstatus->dex / 5 part in the strip code is unofficial, but players gotta have some kind of way to have resistance.
+		I dont know the official strip resistance yet, so this will have to do for now.
+
+		Note 2: Think the duration of the strip is ether 20000 or 60000. Cant figure it out.
+
+		Note 3: I see attack motion in here and think the speed of the AoE stepping is your ASPD???
+
+Tetra Vortex
+Tetra Vortex Fire
+Tetra Vortex Water
+Tetra Vortex Wind
+Tetra Vortex Earth =  Full Formula: -- 500 + 500 * WL_TETRAVORTEX-LV-USED
+
+		Used Code: -- skillratio += 400 + 500 * skill_lv
+
+		Status: Bugged
+
+		Bug: Currently the WL_TETRAVORTEX ID is doing all the work and the other 4 are no longer used....for now.
+		This WAS normal when Gravity recoded the skill to allow you to set what element each strike will be. However,
+		that changed a few months ago when the original ID's that did the damage was given animations. Now all of them are used.
+		The skill will have to be partly recoded to use these ID's to match the animations and official workings. Without that setup,
+		the earth element will not properly unhide/uncloak hidden players and enemys.
+
+Summon Fire Ball
+Summon Lightning Ball
+Summon Water Ball
+Summon Stone =  Note: Each element sphere takes 1 SP every 1 (1000) second.
+
+Summon Attack Fire
+Summon Attack Wind
+Summon Attack Water
+Summon Attack Earth = Formula: -- (((WL_SUMMON_ATK-LV-USED - ????) >> 1????) * (BaseLv + JobLv)) * BaseLv / 100.0 + InsigniaBonus
+
+		Used Code: -- skillratio = skill_lv * (s_level + s_job_level);
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Status: Mostly Complete
+
+		Note: Because I was unable to fully understand the first part of the formula, I used what I thought it could be.
+		If the formula is like BaseRatio * (BaseLv + JobLv), then something like the old 50 + 50 * skilllv would make the skill
+		insanely overpowered. Doing skill level times base and job levels combined sounded right as its not overpowered. I still
+		need a confirm on this before marking it as completed.
+
+Release = 	Note: Appears to release spheres at the speed of your ASPD since GetAttackMotionTime is in here.
+
+		Status: Completed
+
+Reading Spellbook = Status: Completed
+
+Freezing Spell = Formula: -- BaseLv / 10 + Int / 10 + 4 * WL_FREEZE_SP-LV-LEARNED
+
+		Used Code: -- 4 * pc_checkskill(sd,WL_FREEZE_SP) + sstatus->int_ / 10 + sd->status.base_level / 10
+
+		Status: Mostly Complete
+
+		Note: Why did I find 2 max_preserve amount formula's and checks in the code???
+
+		Note2: Preserved spells drain SP every 10 (10000) seconds. Amount of SP each preserved skill takes
+		per 10 seconds is 24 - 4 * WL_FREEZE_SP-LV-LEARNED. Current amount in 3CeAM's code may be incorrect.

@@ -67,9 +67,11 @@ Ignition Break = Formula: -- Damage split into 3 formulas for each range zone...
 		If Weapon Is Fire Element -- Damage-Formula * 1.5
 
 		Used Code: -- i = distance_bl(src,target);
-		skillratio += 100 * skill_lv;
-		if( i < 4 ) skillratio += 100 * skill_lv;
-		if( i < 2 ) skillratio += 100;
+		if( i < 2 ) skillratio = 200 + 200 * skill_lv;
+		else
+		if( i < 4 ) skillratio = 100 + 200 * skill_lv;
+		else
+		skillratio = 100 + 100 * skill_lv;
 		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 		if( sstatus->rhw.ele == ELE_FIRE )	skillratio +=  skillratio / 2;	// Bonus by fire element endow.
 
@@ -141,7 +143,17 @@ Storm Blast = 	Formula: -- ???? (Code isnt showing it properly)
 
 		Note: The formula provided by the community is close to official, but were not sure how much since were not able to see the official one in the code.
 
-Fighting Spirit = Note: The formula for how the number of party members affects this skill is hard to understand and im not bothering with this one.
+Fighting Spirit = Said Formula For ASPD Boost: -- 0.4 * RK_RUNEMASTERY_LV_LEARNED
+
+		Used Code: -- 10*(sd?pc_checkskill(sd,RK_RUNEMASTERY):10)
+
+		Status: Mostly Working
+
+		Note: The said formula gives ASPD in a fixed amount. That means a fixed +4 to ASPD at maxed Rune Mastery level. Because 3CeAM doesent
+		support any code for fixed ASPD boosting, I had to find a percentage that would give the same amount. Turns out 10% gives 4 ASPD.
+		So it works just as good for a Rune Knight.
+
+		Note: The formula for how the number of party members affects this skill is hard to understand and im not bothering with this one.
 
 Abundance = 	N/A
 
