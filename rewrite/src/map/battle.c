@@ -2049,7 +2049,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case RK_WINDCUTTER:
 					skillratio += 50 * skill_lv;
-					if( s_level > 50 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
+					if( s_level > 100 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
 					break;
 				case RK_IGNITIONBREAK:
 					i = distance_bl(src,target);
@@ -2111,7 +2111,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio += 100 + 100 * skill_lv;
 					break;
 				case RA_WUGDASH:
-					skillratio += 500;//Damage based from iROwiki info. [Jobbie]
+					skillratio = 500;
 					break;
 				case RA_WUGSTRIKE:
 					skillratio = 200 * skill_lv;
@@ -3357,11 +3357,12 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						skillratio += 100 + 100*skill_lv + 100*(skill_lv/2);
 						break;
 					case AB_JUDEX:
-						skillratio = skillratio + ((skill_lv == 5) ? 300 : 180 + 20 * skill_lv);
+						skillratio += 180 + 20 * skill_lv;
+						if (skill_lv > 4) skillratio += 20;
 						if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						break;
 					case AB_ADORAMUS:
-						skillratio = skillratio + 100 + 100 * skill_lv;
+						skillratio += 400 + 100 * skill_lv;
 						if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						break;
 					case AB_DUPLELIGHT_MAGIC:
@@ -3857,7 +3858,11 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 	case RA_CLUSTERBOMB:
 	case RA_FIRINGTRAP:
  	case RA_ICEBOUNDTRAP:
-		md.damage = (s_level * 2 + ((s_level/50) + 3) * sstatus->dex + 300) * skill_lv + sstatus->int_ * 5 + pc_checkskill(sd,RA_RESEARCHTRAP) * 40;
+		md.damage = (2 * skill_lv * (sstatus->dex + 100));
+		//if (status_get_lv(src) > 100) md.damage += md.damage * (s_level - 50) / 200 + 1.5;// Base level bonus. This formula is official, but left disabled for now for certain reasons. [Rytech]
+		//if (status_get_lv(src) > 100) md.damage += md.damage * (s_level - 50) / 200;// Base level bonus.
+		md.damage = md.damage * 2;// Without BaseLv Bonus
+		md.damage = md.damage + (5 * sstatus->int_) + (40 * pc_checkskill(sd,RA_RESEARCHTRAP));
 		break;
 	case NC_SELFDESTRUCTION:
 		md.damage = (sstatus->hp + sstatus->sp) * 50 * skill_lv / 100;
@@ -3960,7 +3965,7 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 
 	if(md.damage < 0)
 		md.damage = 0;
-	else if(md.damage && tstatus->mode&MD_PLANT && skill_num != RA_CLUSTERBOMB)
+	else if(md.damage && tstatus->mode&MD_PLANT)
 		md.damage = 1;
 
 	if(!(nk&NK_NO_ELEFIX))

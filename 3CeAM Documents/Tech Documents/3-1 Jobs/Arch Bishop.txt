@@ -1,0 +1,60 @@
+//Arch Bishop Skill Data, Info, and Progress....
+//
+//Info about skills. Not all of these lines will be used for each skill. Examples like if no bugs exist no bug lines will be placed....
+//
+//Formula = The official formula for the skill.
+//
+//Used Code = The used formula code in 3CeAM. The code should give the exact same results.
+//
+//Note = Any extra info to say about the skill will be listed here.
+//
+//Status = Lists if the skill is Uncoded, Unofficial, Mostly Working, or Completed.
+//Uncoded - Skill has not been coded yet.
+//Unofficial - Skill was coded, but is not officially coded. Could happen if lacking a lot of extra needed info.
+//Bugged - If any known bugs exist thats causing issues, this will be marked.
+//Mostly Working - Close to official, but formula is not exactly 100% accurate and/or missing some misc details. Chance of also being bugged, or may not be bugged to current info.
+//Completed - Skill is 100% official and fully working.
+//
+//Bugs = Lists if any bugs are present with the current skill in 3CeAM if any.
+//
+//Note: skillratio always starts out at 100% damage by default. Also, damage will always be in a % ratio unless noted as a different type of damage. Like fixed amount for example.
+//
+
+Judex = 	Damage Ratio: 300, 320, 340, 360, 400
+
+		Code Used: -- skillratio += 180 + 20 * skill_lv;
+		if (skill_lv > 4) skillratio += 20;
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Status: Mostly Complete
+
+		Note: Need to confirm if the splash around the target is 3x3 or 7x7.
+
+Adoramus = 	Formula: -- 100 * (AB_ADORAMUS-LV-USED + 5)
+		Status Chance: -- JobLV / 2 + 4 * AB_ADORAMUS-LV-USED
+		Blind Duration: -- 5000 + 1000 * AB_ADORAMUS-LV-USED
+		AGI Reduction Duration: -- 10000 + 5000 * AB_ADORAMUS-LV-USED
+		AGI Reduction: -- 2 + AB_ADORAMUS-LV-USED
+
+		Used Code: -- skillratio += 400 + 100 * skill_lv;
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Used Code 2: -- ????
+
+		Status: Mostly Complete
+
+		Note: Having a bit of trouble finding the rate. Maybe im not looking properly.
+
+Duple Light = 	Melee Formula: -- 100 + 10 * AB_DUPLELIGHT-LV-USED
+
+		Magic Formula: -- 200 + 20 * AB_DUPLELIGHT-LV-USED
+
+		Chance of Trigger: -- ????
+
+		Used Code: -- skillratio += 10 * skill_lv;
+
+		Used Code 2: -- skillratio += 100 + 20 * skill_lv;
+
+		Status: Completed
+
+		Note: The official trigger chance is in 3CeAM, but I forgot what it was and didnt feel like relooking it up.

@@ -2521,8 +2521,6 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		status->dex += skill;
 	if( (skill = pc_checkskill(sd,RA_RESEARCHTRAP)) > 0 )
 		status->int_ += skill;
-	if( (skill = pc_checkskill(sd,WM_LESSON)) > 0 )
-		status->max_sp += 30 * skill;
 
 	// Bonuses from cards and equipment as well as base stat, remember to avoid overflows.
 	i = status->str + sd->status.str + sd->param_bonus[0] + sd->param_equip[0];
@@ -2591,6 +2589,8 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		status->max_sp += status->max_sp * 2 * skill / 100;
 	if( (skill = pc_checkskill(sd,RA_RESEARCHTRAP)) > 0 )
 		status->max_sp += 200 + 20 * skill;
+	if( (skill = pc_checkskill(sd,WM_LESSON)) > 0 )
+		status->max_sp += 30 * skill;
 
 	// Apply relative modifiers from equipment
 	if( sd->sprate < 0 )
@@ -4571,7 +4571,7 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				val = 25;
 			else
 			if( sd && pc_isriding(sd,OPTION_RIDING_WUG) )
-				val = 10 * pc_checkskill(sd, RA_WUGRIDER);
+				val = 15 + 5 * pc_checkskill(sd, RA_WUGRIDER);
 			else
 			if( sd && pc_isriding(sd,OPTION_MADO) )
 			{
