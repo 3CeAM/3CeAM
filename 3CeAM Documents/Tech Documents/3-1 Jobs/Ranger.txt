@@ -1,0 +1,167 @@
+//Ranger Skill Data, Info, and Progress....
+//
+//Info about skills. Not all of these lines will be used for each skill. Examples like if no bugs exist no bug lines will be placed....
+//
+//Formula = The official formula for the skill.
+//
+//Used Code = The used formula code in 3CeAM. The code should give the exact same results.
+//
+//Note = Any extra info to say about the skill will be listed here.
+//
+//Status = Lists if the skill is Uncoded, Unofficial, Mostly Working, or Completed.
+//Uncoded - Skill has not been coded yet.
+//Unofficial - Skill was coded, but is not officially coded. Could happen if lacking a lot of extra needed info.
+//Bugged - If any known bugs exist thats causing issues, this will be marked.
+//Mostly Working - Close to official, but formula is not exactly 100% accurate and/or missing some misc details. Chance of also being bugged, or may not be bugged to current info.
+//Completed - Skill is 100% official and fully working.
+//
+//Bugs = Lists if any bugs are present with the current skill in 3CeAM if any.
+//
+//Note: skillratio always starts out at 100% damage by default. Also, damage will always be in a % ratio unless noted as a different type of damage. Like fixed amount for example.
+//
+
+Arrow Storm = 	Formula: -- 200 + 50 * RA_ARROWSTORM-LV-USED
+
+		Code Used: -- skillratio += 100 + 50 * skill_lv;
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Status: Mostly COmplete
+
+		Note: Even tho the code doesent show any increase by base level, its thought that it has it in more up-to-date code.
+
+Fear Breeze = 	Note: As complex as this skill kinda is right now, im not bothering with this one, but think it works as should.
+
+		Status: Mostly Working
+
+		Note: I think the number of hits it does by chance is the same way Millenium Shield's chance setup is.
+
+Ranger Main = 	Increased damage and resistance on Brute, Insect, and Fish: -- 5 * RA_RANGERMAIN-LV-USED
+
+		Code Used: -- if( (skill = pc_checkskill(sd, RA_RANGERMAIN)) > 0 && (status->race == RC_BRUTE || status->race == RC_PLANT || status->race == RC_FISH) )
+				damage += (skill * 5);
+
+		Code Used 2: -- if( src->type == BL_MOB && (skill=pc_checkskill(tsd,RA_RANGERMAIN))>0 && 
+					(sstatus->race == RC_BRUTE || sstatus->race == RC_FISH || sstatus->race == RC_PLANT) )
+					vit_def += skill*5;
+
+		Status: Complete
+
+Aimed Bolt = 	Formula: -- 500 + 50 * RA_AIMEDBOLT-LV-USED
+
+		Used Code: -- skillratio += 400 + 50 * skill_lv;
+				if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+				if( tsc && (tsc->data[SC_BITE] || tsc->data[SC_ANKLE] || tsc->data[SC_ELECTRICSHOCKER]) )
+					wd.div_ = tstatus->size + 2 + rand()%2;
+
+		Status: Completed
+
+Detonator = 	????
+
+Electric Shocker = ????
+
+Cluster Bomb =  Full Ratio Formula: -- 200 + 100 * RA_CLUSTERBOMB-LV-USED
+
+		Used Code: -- skillratio += 100 + 100 * skill_lv
+
+		Full Fixed Formula: -- 40 * RA_RESEARCHTRAP-LV-LEARNED + (5 * Int) + ((2 * RA_CLUSTERBOMB-LV-USED * (Dex + 100)) * (BaseLv / 100.0 + 1.5))
+
+		Used Code 2: -- md.damage = (2 * skill_lv * (sstatus->dex + 100));
+		md.damage = md.damage * 2;// Without BaseLv Bonus
+		md.damage = md.damage + (5 * sstatus->int_) + (40 * pc_checkskill(sd,RA_RESEARCHTRAP));
+
+		Status: Bugged
+
+		Bugs: The skill is dealing strange damage that is somehow hitting multiple times all at once when multiple monsters are close to each other.
+		The more monsters hit, the more damage thats dealed. This bug should be found and fixed due to it being a damage exploit.
+
+Warg Mastery =  Status: Complete
+
+Warg Rider = 	Formula: -- Full Formula: -- 5 * (RA_WUGRIDER-LV-USED + 3)
+		Note: Above formula is for movement speed increase.
+
+		Used Code: -- val = 15 + 5 * pc_checkskill(sd, RA_WUGRIDER);
+
+		Status: Complete
+
+Warg Dash = 	Formula: -- Do I really have to give a full formula here? Ok. 300 * RA_WUGDASH-LV-USED
+		Theirs only 1 level to this skill. No need for a full detail report.
+
+		Used Code: -- skillratio = 500;
+
+		Status: Mostly Complete
+
+		Note: Says 300 in the code, but says 600 on the wiki, BUT says the damage calculation is bugged. So whats the real ratio?
+		A temp ratio was placed.
+
+Warg Strike = 	Formula: -- 200 * RA_WUGSTRIKE-LV-USED
+
+		Used Code: -- skillratio = 200 * skill_lv;
+
+		Status: Complete???
+
+Waug Bite = 	Formula: -- 400 + 200 * RA_WUGBITE-LV-USED
+
+		Used Code: -- skillratio += 300 + 200 * skill_lv;
+
+		Status: Complete???
+
+Tooth of Warg = Formula: -- 30 * RA_TOOTHOFWUG-LV-LEARNED
+
+		Code Used: -- ATK_ADD(30*pc_checkskill(sd, RA_TOOTHOFWUG));
+
+		Status: Completed
+
+Sensitive Keen = Formula: -- 100 + 50 * RA_SENSITIVEKEEN-LV-USED
+
+		Code Used: -- skillratio += 50 * skill_lv;
+
+		Autocast Waug Bite Chance: 8 * RA_SENSITIVEKEEN-LV-USED
+
+		Used Code 2: -- if( rand()%100 < 8 * skilllv )
+		skill_castend_damage_id(src, bl, RA_WUGBITE, sd ? pc_checkskill(sd, RA_WUGBITE):skilllv, tick, SD_ANIMATION);
+
+		Status: Complete
+
+Camouflage = 	Amount of SP Per Second: 6, 5, 4, 3, 2
+		Walking Speed: 0, 0, 25, 50, 75
+
+		Status: Unknown
+
+Research Trap = Added Fixed Damage Formula: -- 40 * RA_RESEARCHTRAP-LV-LEARNED
+		INT Bonus: -- RA_RESEARCHTRAP-LV-LEARNED
+		SP Bonus: -- 200 + 20 * RA_RESEARCHTRAP-LV-LEARNED
+		Trap Setting Range Bonus: -- 1, 1, 2, 2, 3
+
+		Used Code: Damage is applied through a skill check in trap formulas.
+
+		Used Code 2: if( (skill = pc_checkskill(sd,RA_RESEARCHTRAP)) > 0 )
+				status->int_ += skill;
+
+		Used Code 3: if( (skill = pc_checkskill(sd,RA_RESEARCHTRAP)) > 0 )
+				status->max_sp += 200 + 20 * skill;
+
+		Used Code 4: if( bl->type == BL_PC )
+		range += (1 + pc_checkskill((TBL_PC*)bl, RA_RESEARCHTRAP))/2;
+
+		Status: Completed
+
+Magenta Trap
+Cobalt Trap
+Maize Trap
+Verdure Trap =  Status: Unknown
+
+Firing Trap = Full Formula: -- (5 * Int) + ((2 * RA_FIRINGTRAP-LV-USED * (Dex + 100)) * (BaseLv / 100.0 + 1.5))
+Icebound Trap = Full Formula: -- (5 * Int) + ((2 * RA_ICEBOUNDTRAP-LV-USED * (Dex + 100)) * (BaseLv / 100.0 + 1.5))
+
+		Code Used: -- md.damage = (2 * skill_lv * (sstatus->dex + 100));
+		md.damage = md.damage * 2;// Without BaseLv Bonus
+		md.damage = md.damage + (5 * sstatus->int_) + (40 * pc_checkskill(sd,RA_RESEARCHTRAP));
+
+		Status Chance: -- 40 + 10 * Skill-Level-Used
+
+		Code used 2: -- 40 + 10 * skilllv
+
+		Status: Bugged
+
+		Bugs: The skill is dealing strange damage that is somehow hitting multiple times all at once when multiple monsters are close to each other.
+		The more monsters hit, the more damage thats dealed. This bug should be found and fixed due to it being a damage exploit.
