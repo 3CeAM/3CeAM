@@ -372,7 +372,7 @@
 5754,Blazing_Soul,Burning Spirit,5,20,,100,,6,,1,0x00008000,8,2,256,,100,1,631,{ bonus bStr,1; bonus bVit,1; bonus bMdef,5; if(readparam(bStr)>=120){ bonus bAtk,10; bonus bHit,3; }; },{},{}
 5755,Silent_Executer,Silent Enforcer,5,20,,100,,3,,0,0x00001000,8,2,513,,100,0,632,{ bonus bAgi,1; bonus bMdef,5; if(readparam(bAgi)>=120){ bonus bAtk,10; bonus bFlee2,5; }; },{},{}
 5756,Wind_Whisper,Wispers of Wind,5,20,,100,,6,,1,0x00010000,8,2,256,,100,1,633,{ bonus bInt,1; bonus bDex,1; bonus bMdef,5; if(readparam(bInt)>=120){ bonus bMatkRate,10; bonus bFlee,3; }; },{},{}
-5757,Schmidt_Helm,Reissue Schmitz Helm,5,20,,100,,8,,1,0x00004000,8,2,768,,100,1,634,{ bonus bVit,2; bonus bInt,1; bonus bMdef,5; if(readparam(bInt)>=120){ bonus bMatkRate,10; bonus bDef,5; }; },{},{}
+5757,Schmidt_Helm,Reissue Schmitz Helm,5,20,,100,,8,,1,0x00004000,8,2,768,,100,1,634,{ bonus bVit,2; bonus bInt,1; bonus bMdef,5; if(readparam(bInt)>=120){ bonus bMatkRate,10; bonus bDef,2; }; },{},{}
 5758,Dying_Swan,Resting Swan,5,20,,100,,6,,1,0x00080000,8,0,256,,100,1,635,{ bonus bInt,1; bonus bLuk,1; bonus bMdef,5; bonus bAtkRate,5; bonus bUseSPrate,-10; },{},{}
 //5759,Noah_Hat,Noah's Hat,5,20,,500,,1,,0,0xFFFFFFFF,7,2,256,,1,1,636,{},{},{}// This ID was skiped. But why???
 5760,Driver_Band_,Driver Band,5,20,,100,,6,,1,0x00000400,8,0,256,,100,1,637,{ bonus bStr,1; bonus bDex,1; bonus bMdef,5; if(readparam(bStr)>=120){ bonus bAtk,10; bonus bCritical,3; }; },{},{}

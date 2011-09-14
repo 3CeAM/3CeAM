@@ -100,8 +100,8 @@
 //631,0xc8,    ,  2, 0,1000,enemy, 0x018	//DA_RUNNER
 //632,0xc9,    ,  2, 0,1000,enemy, 0x018	//DA_TRANSFER
 670,0xc7,    ,  1, 4:7:10:13:16:19:22:25:28:31,1000,all,0x008	//NPC_EVILLAND
-2032,0xe1,    ,  2, 0,1000,enemy, 0x000	//GC_POISONSMOKE
-2044,0xca,    ,  0, 3,1000,all,   0x000	//AB_EPICLESIS
+2032,0xe1,    ,  2, 0,1000,enemy, 0x018	//GC_POISONSMOKE
+2044,0xca,    ,  0, 3,1000,all,   0x018	//AB_EPICLESIS
 2214,0x86,    ,  0, 5, 100,enemy, 0x080	//WL_CHAINLIGHTNING
 2216,0xcb,    , -1, 2,2000,enemy, 0x018	//WL_EARTHSTRAIN //Temp code
 //2216,0xcb,    , -1, 0,1000,enemy, 0x018	//WL_EARTHSTRAIN //To be enabled when new animation is added. [Rytech]
@@ -153,7 +153,7 @@
 8210,0x93,    ,  0, 0,1000,enemy, 0x006	//MA_LANDMINE
 8211,0x95,    ,  0, 1,1000,enemy, 0x006	//MA_SANDMAN
 8212,0x97,    ,  0, 1,1000,enemy, 0x006	//MA_FREEZINGTRAP
-8403,0xed,    , -1, 1,1000,enemy, 0x010 //EL_FIRE_MANTLE
-8406,0xee,    ,  0, 0,  -1,friend,0x000	//EL_WATER_BARRIER
-8409,0xef,    ,  0, 0,  -1,friend,0x000	//EL_ZEPHYR
-8412,0xf0,    ,  0, 0,  -1,friend,0x000	//EL_POWER_OF_GAIA
+8403,0xed,    , -1, 1,1000,enemy, 0x018 //EL_FIRE_MANTLE
+8406,0xee,    ,  0, 1,  -1,friend,0x018	//EL_WATER_BARRIER
+8409,0xef,    ,  0, 1,  -1,friend,0x018	//EL_ZEPHYR
+8412,0xf0,    ,  0, 1,  -1,friend,0x018	//EL_POWER_OF_GAIA
