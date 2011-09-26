@@ -1,0 +1,225 @@
+//Mechanic Skill Data, Info, and Progress....
+//
+//Info about skills. Not all of these lines will be used for each skill. Examples like if no bugs exist no bug lines will be placed....
+//
+//Formula = The official formula for the skill.
+//
+//Used Code = The used formula code in 3CeAM. The code should give the exact same results.
+//
+//Note = Any extra info to say about the skill will be listed here.
+//
+//Status = Lists if the skill is Uncoded, Unofficial, Mostly Working, or Completed.
+//Uncoded - Skill has not been coded yet.
+//Unofficial - Skill was coded, but is not officially coded. Could happen if lacking a lot of extra needed info.
+//Bugged - If any known bugs exist thats causing issues, this will be marked.
+//Mostly Working - Close to official, but formula is not exactly 100% accurate and/or missing some misc details. Chance of also being bugged, or may not be bugged to current info.
+//Completed - Skill is 100% official and fully working.
+//
+//Bugs = Lists if any bugs are present with the current skill in 3CeAM if any.
+//
+//Note: skillratio always starts out at 100% damage by default. Also, damage will always be in a % ratio unless noted as a different type of damage. Like fixed amount for example.
+//
+
+Boost Knuckle = Formula: -- (BaseLv * (100 * (NC_BOOSTKNUCKLE-LV-USED + 2) + Dex)) / 150.0
+
+		Used Code: -- skillratio += 100 + 100 * skill_lv + sstatus->dex;
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Status: Complete
+
+Pile Bunker = 	Formula: -- (BaseLv * (100 * (NC_PILEBUNKER-LV-USED + 3) + Str)) / 100.0
+		Chance of Debuff: -- 5 + 15 * NC_PILEBUNKER-LV-USED
+		Status ID's That Are Debuffed: 19, 58, 87, 110
+		Note: Also shows CPCSkill::ResetMillenniumShield in the code.
+
+		Used Code: -- skillratio += 200 + 100 * skill_lv + sstatus->str;
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Used Code 2: -- 		if( rand()%100 < 5 + 15*skilllv )
+		{ //Deactivatable Statuses: Kyrie Eleison, Auto Guard, Steel Body, Assumptio, and Millennium Shield
+			status_change_end(bl, SC_KYRIE, -1);
+			status_change_end(bl, SC_AUTOGUARD, -1);
+			status_change_end(bl, SC_STEELBODY, -1);
+			status_change_end(bl, SC_ASSUMPTIO, -1);
+			status_change_end(bl, SC_MILLENNIUMSHIELD, -1);
+		}
+
+		Status: Complete
+
+Vulcan Arm = 	Formula: -- (BaseLv * (70 * NC_VULCANARM-LV-USED + Dex)) / 150.0
+
+		Code Used: -- skillratio = 70 * skill_lv + sstatus->dex;
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Status: -- Complete
+
+Flame Launcher = Formula: -- 300 * (NC_FLAMELAUNCHER + 1) * BaseLv
+		Full Formula: -- 300 * (NC_FLAMELAUNCHER-LV-USED + 1) ????
+		Burning Chance: -- 50 + 10 * NC_FLAMELAUNCHER-LV-USED
+		Burning Duration: -- 7000 * NC_FLAMELAUNCHER-LV-USED
+
+		Code Used: -- skillratio += 200 + 300 * skill_lv;
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Status: -- Mostly Complete
+
+		Note: Their's no way the full ratio is multiplyed by base level and thats it. It would be overpowered.
+		Is the damage divided by 100 or 150 after that?
+
+Cold Slower = 	Full Formula: -- 300 * (NC_COLDSLOWER-LV-USED + 1) * BaseLv / 150
+		Chance of Frozen: -- 10 * NC_COLDSLOWER-LV-USED
+		Chance of Freezeing: -- 20 + 10 * NC_COLDSLOWER-LV-USED
+
+		Code Used: -- skillratio += 200 + 300 * skill_lv;
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Status: Mostly Complete
+
+		Note: Not sure where the duration times are.
+
+Arms Cannon = 	Formula: -- Get read for this one. Its a big one.
+		First 3 lines are formula that apply depending on the target's size. This will be refered to as SizeDamage and is a ratio.
+		Size - Small -- (500 * NC_ARMSCANNON-LV-USED + 200) * BaseLv / 150
+		Size - Medium -- (400 * NC_ARMSCANNON-LV-USED + 200) * BaseLv / 150
+		Size - Large -- (300 * NC_ARMSCANNON-LV-USED + 200) * BaseLv / 150
+		Formula: -- (in_CannonBallDamage + GetNormalAttackPower + GetPassiveSkillPlusAttackPower) * SizeDamage / 100
+		Full Formula: -- Its hard to figure out when you look at more then just the SizeDamage.
+		Note: The formula doesent sound right when thinking in a ratio percent. It might be additional damage in a fixed amount???
+		Not bothering with this skill anymore until in-game testing can be done and I can get more details about it.
+
+		Code Used: -- switch( tstatus->size )
+		{
+			case 0: skillratio += 100 + 500 * skill_lv; break;// Small
+			case 1: skillratio += 100 + 400 * skill_lv; break;// Medium
+			case 2: skillratio += 100 + 300 * skill_lv; break;// Large
+		}
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Status: Bugged
+
+		Bugs: While the main ratio formula's are correct, their's some other stuff in the code that affects damage.
+		CannonBallDamage....NormalAttackPower....PassiveSkillPlusAttackPower....and how does SizeDamage affect this?
+		Is this damage from the above added fixed damage or does it combine with the SizeDamage somehow?
+		Wont know exactly until actural tests can be done on a official server.
+
+Acceleration =  Skill boosts movement speed, but I cant find how much. Probely the same amount as AGI UP gives.
+
+		Status: Mostly Complete
+
+Hovering = 	N/A
+
+Front-Side Slide
+Back-Side Slide = Code shows it checks your X/Y position when used and something about moveInfo.dir. Might be a similar check like what
+		body relocation does???
+
+		Status: Complete
+
+Main Frame = 	N/A
+
+Self Destruction = Formula: -- (NC_MAINFRAME-LV-LEARNED * NC_SELFDESTRUCTION-LV-USED * BaseLv * (CurrentSP + Vit)) / 150.0 + CurrentHP
+
+		Code Used: -- 	md.damage = pc_checkskill(sd,NC_MAINFRAME) * skill_lv * (status_get_sp(src) + sstatus->vit);
+		if (status_get_lv(src) > 100) md.damage = md.damage * s_level / 150;// Base level bonus.
+		if (sd) md.damage = md.damage + status_get_hp(src);
+		status_set_sp(src, 0, 0);
+
+		Status: Mostly Complete
+
+		Note: Doing the math, I can see this is probely a misc damage skill. Also theirs some settings for this skill
+		that we may need to set, but not until we can confirm things like if players can reduce taken damage somehow.
+
+Emergency Cool = Believe it or not, but the use of Emergency Cool appears to reduce your current amount of heat by a set amount
+		depending on how much heat buildup your mado currently has. Wont go into details with this one right now.
+
+		Status: Bugged....Mostly Complete....Not Sure.
+
+Infrared Scan = N/A
+
+Analyze = 	Chance of Success: -- 30 + 12 * NC_ANALYZE-LV-USED
+		DEF and MDEF reduction %: -- 14 * NC_ANALYZE-LV-USED
+
+Magnetic Field = Time you cant move / Duration of AoE: 15000
+		SP taken every 3 seconds when active: -- 40 + 10 * NC_MAGNETICFIELD-LV-USED
+		Note: Does it also drain SP from the traped players?
+
+Neutral Barrier = Says something like DEF_INC_Percent
+		Clearly shows it increases DEF and MDEF by a percent.
+		DEF/MDEF Increase: -- 10 + 5 * NC_NEUTRALBARRIER-LV-USED
+		Note: Shows LifeTM + 10000 in the code.
+
+Stealth Field = How many seconds you loose 3% SP: -- 6000 - 1000 * NC_NEUTRALBARRIER-LV-USED
+		Note: Shows LifeTM + 10000 in the code.
+
+Axe Training =  Axe / 2 Handed Axe Damage Increase: -- 5 * NC_TRAININGAXE-LV-LEARNED
+		Axe / 2 Handed Axe HIT Increase: -- 3 * NC_TRAININGAXE-LV-LEARNED
+		Mace / 2 Handed Mace Damage Increase: -- 4 * NC_TRAININGAXE-LV-LEARNED
+		Mace / 2 Handed Mace HIT Increase: -- 2 * NC_TRAININGAXE-LV-LEARNED
+		Note: The increased damage and HIT to maces should be the same as axes, but it says different in the code.
+		ill just ignore what the code says and stick to the skill desc for now and recheck later.
+
+		Status: Complete, but may be bugged with Maces.
+
+Research Fire/Earth = Increase attack and resistance against Fire/Earth targets: -- 10 * NC_RESEARCHFE-LV-LEARNED
+
+		Status: Complete
+
+
+Axe Boomerang = Formula: -- 160 + 40 * NC_AXEBOOMERANG-LV-USED + Axe Weight
+		Note: The skill desc says something like ATK 360% + Axe Weight. The Axe Weight has to affect the ratio since
+		a straight added fixed damage from the axe weight would be very weak damage, even with 360% damage.
+		When you think about, Axe Weight of 600 from a Doom Slayer would make it 960% damage if the weapon's weight
+		increased the ratio.
+
+		Used Code: -- skillratio += 60 + 40 * skill_lv;
+		if( sd )
+		{
+			short index = sd->equip_index[EQI_HAND_R];
+			if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_WEAPON )
+			skillratio += sd->inventory_data[index]->weight / 10;// Weight is divided by 10 since 10 weight in coding make 1 whole actural weight. [Rytech]
+		}
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Status: Complete
+
+Power Swing = 	Formula: -- BaseLv * (Str + Dex) / 150.0 + 180 + 20 * NC_POWERSWING-LV-USED
+		Auto Axe Boomerang Chance = 5%?
+
+		Used Code: -- skillratio += 80 + 20 * skill_lv + sstatus->str + sstatus->dex;
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Status: Mostly Complete
+
+		Note: It checks the level of learned NC_AXEBOOMERANG. Currenty we have the autocast % chance set to 5% * NC_POWERSWING-LV-USED
+
+Axe Tornado = 	Formula: -- BaseLv * (100 * (NC_AXETORNADO-LV-USED + 2) + Vit) / 100
+		Consumed HP By Fixed Amount: -- 20 * NC_AXETORNADO-LV-USED
+
+		Used Code: -- skillratio += 100 + 100 * skill_lv + sstatus->vit;
+		if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+
+		Status: Mostly Complete
+
+		Note: If weapon is Wind element the entire damage is increased by 25%. I saw in a video the damage is done in 6 sub hits.
+		May need to reconfirm if its really 6 hits.
+
+Silver Sniper = FAW HP Formula: -- 12 * (25 * NC_SILVERSNIPER-LV-USED + BaseLv) + 3500
+		Bonus Attack: -- 100 * (NC_SILVERSNIPER-LV-USED - 1)
+		Duration For FAW Deplyment: -- 5000 + 5000 * NC_SILVERSNIPER-LV-USED
+
+		Status: Bugged
+
+		Bugs: Silver Sniper FAW's currently use the set HP from the monster database. Also shows it uses the skill NPC_REVENGE Lv 1.
+		Set skill use conditions may be wrong. Can it really heal itself?
+
+Magic Decoy = 	FAW HP Formula: -- 15 * (20 * (NC_MAGICDECOY-LV-USED + 5) + BaseLv)
+
+		Status: Bugged
+
+		Bugs: Magic Decoy FAW's currently use the set HP from the monster database.  Set skill use conditions may be wrong.
+		Can it really heal itself?
+
+FAW Removal = 	Note: Appears to have a percent success formula. Shows as this->m_characterInfo.clevel - CreateLevel + 50
+
+		Status: Complete
+
+		Note 2: Shows the players need to have item 6186 in inventory to use the skill. That item is a Monkey Wench. No wonder what this item was needed for.

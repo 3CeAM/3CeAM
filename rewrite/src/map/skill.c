@@ -1102,11 +1102,11 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		break;
 	case NC_PILEBUNKER:
 		if( rand()%100 < 5 + 15*skilllv )
-		{ //Deactivatable Statuses: Kyrie Eleison, Assumptio, Mental Strength, Auto Guard, Millennium Shield
+		{ //Deactivatable Statuses: Kyrie Eleison, Auto Guard, Steel Body, Assumptio, and Millennium Shield
 			status_change_end(bl, SC_KYRIE, -1);
-			status_change_end(bl, SC_ASSUMPTIO, -1);
-			status_change_end(bl, SC_STEELBODY, -1);
 			status_change_end(bl, SC_AUTOGUARD, -1);
+			status_change_end(bl, SC_STEELBODY, -1);
+			status_change_end(bl, SC_ASSUMPTIO, -1);
 			status_change_end(bl, SC_MILLENNIUMSHIELD, -1);
 		}
 		break;
@@ -2162,7 +2162,6 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 	//Skills that need be passed as a normal attack for the client to display correctly.
 	case HVAN_EXPLOSION:
 	case NPC_SELFDESTRUCTION:
-	case NC_SELFDESTRUCTION:
 		if(src->type==BL_PC)
 			dmg.blewcount = 10;
 		dmg.amotion = 0; //Disable delay or attack will do no damage since source is dead by the time it takes effect. [Skotlex]
@@ -7736,7 +7735,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		if( sd )
 		{
 			pc_setoption(sd, sd->sc.option&~OPTION_MADO);
-			status_zap(src, 0, sd->status.sp);
 			clif_skill_nodamage(src, bl, skillid, skilllv, 1);
 			skill_castend_damage_id(src, src, skillid, skilllv, tick, flag);
 		}
@@ -15689,7 +15687,7 @@ int skill_magicdecoy(struct map_session_data *sd, int nameid)
 	y = sd->menuskill_itemused&0xffff;
 	sd->menuskill_itemused = sd->menuskill_val = 0;
 
-	class_ = (nameid == 990 || nameid == 991) ? 2043 + nameid - 990 : (nameid == 992) ? 2045 : 2046;
+	class_ = (nameid == 990 || nameid == 991) ? 2043 + nameid - 990 : (nameid == 992) ? 2046 : 2045;
 
 
 	md =  mob_once_spawn_sub(&sd->bl, sd->bl.m, x, y, sd->status.name, class_, "");

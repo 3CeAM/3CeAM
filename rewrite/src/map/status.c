@@ -4575,7 +4575,7 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 			else
 			if( sd && pc_isriding(sd,OPTION_MADO) )
 			{
-				val = -10 * (5 - pc_checkskill(sd,NC_MADOLICENCE));
+				val = (- 10 * (5 - pc_checkskill(sd,NC_MADOLICENCE)));
 				if( sc->data[SC_ACCELERATION] )
 					val += 25;
 			}
