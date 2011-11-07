@@ -1242,6 +1242,10 @@ enum si_type {
 //	SI_PHI_DEMON = 658,
 //	SI_GENSOU = 659,
 //	SI_AKAITSUKI = 660,
+//	SI_TETANY = 661,
+//	SI_GM_BATTLE = 662,
+//	SI_GM_BATTLE2 = 663,
+//	SI_2011RWC_SCROLL = 664,
 };
 
 enum wl_spheres {

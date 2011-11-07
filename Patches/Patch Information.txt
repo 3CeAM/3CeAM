@@ -52,9 +52,8 @@
 //= 5. Alpha/Beta Testing
 //=
 //= - Fix for Maelstrom/Bloodylust/Chaospanic
-//= - Add new mounts
-//= - Rental Mounts - Rytech's Code
 //= - Packet Version 26
+//= - Rental Mounts
 //============================================================================================
 //===== Balance Fixes ========================================================================
 //= 3rd Job Skill Base/Job Ratio Effect Removal
@@ -263,51 +262,6 @@
 //= Notes - Could be a solution for certain skills with a behavior similar to Pneuma.
 //--------------------------------------------------------------------------------------------
 //=
-//= Add new mounts
-//=
-//= Patch File Name - mounts.patch
-//=
-//= Patch Type - Alpha/Beta Testing.
-//=
-//= Official ? - Not fully official
-//=
-//= Patch Revision Creation - 612 Trunk.
-//=
-//= Last Known Good Rev - 612 Trunk.
-//=
-//= Description - Add new mounts support.
-//=
-//= Notes - They are only supported in new clients, that may have some compatibility issues
-//= with our current code. Tested with 2011-02-28aRagexeRE.
-//= Some important note about the requirements:
-//= You need a client above 2011-02-08.
-//= You need updated lua files to make this work.
-//= You need updated grfs to make this patch work.
-//--------------------------------------------------------------------------------------------
-//=
-//= Rental Mounts - Rytech's Code
-//=
-//= Patch File Name - rentalmount.patch
-//=
-//= Patch Type - Alpha/Beta
-//=
-//= Official ? - Kinda, but not fully confirmed.
-//=
-//= Patch Revision Creation - r615
-//=
-//= Last Known Good Rev - r615
-//=
-//= Description - Adds support for the rental mounts. 
-//=
-//= Notes - The ALL_RIDING status ID cannot be triggered simply like the other ones and
-//= something special to make it work on OPT3 properly, but we dont know what. So if you come
-//= into anyone's view range they wont see your mount, even if your on it. The item is thought
-//= to be the way to get on and off the mount. I wont be doing anymore coding for this system
-//= until we get official info and packet captures.
-//=
-//= Clinet 2010-11-24 or higher required.
-//--------------------------------------------------------------------------------------------
-//=
 //= Packet Version 26
 //=
 //= Patch File Name - packetv26.patch
@@ -324,4 +278,25 @@
 //= are not supported at this time since the PIN number system isnt coded yet.
 //=
 //= Notes - None I can think of.
+//--------------------------------------------------------------------------------------------
+//=
+//= Rental Mounts
+//=
+//= Patch File Name - Rental_mounts.patch
+//=
+//= Patch Type - Alpha/Beta
+//=
+//= Official ? - Yes
+//=
+//= Patch Revision Creation - r650
+//=
+//= Last Known Good Rev - r650
+//=
+//= Description - Adds support for the rental mounts for all jobs. 
+//=
+//= Notes - This is a patch made by Pakpil that adds official support for rental mounts.
+//= This code was made from testing and packet captures done on the official iRO server
+//= using the actural Reins item.
+//=
+//= Clinet 2010-11-24 or higher required.
 //============================================================================================
