@@ -1,0 +1,247 @@
+Index: db/const.txt
+===================================================================
+--- db/const.txt	(revision 650)
++++ db/const.txt	(working copy)
+@@ -1226,6 +1226,7 @@
+ SC_TIDAL_WEAPON_OPTION		764
+ SC_ROCK_CRUSHER			765
+ SC_ROCK_CRUSHER_ATK		766
++SC_ALL_RIDING			767
+ 
+ e_gasp	0
+ e_what	1
+Index: db/item_db2.txt
+===================================================================
+--- db/item_db2.txt	(revision 650)
++++ db/item_db2.txt	(working copy)
+@@ -400,3 +400,7 @@
+ // Purchase Shop Items
+ //6377,Buy_Stall_Permit,Buy Stall Permit,3,200,,10,,,,,,,,,,,,,{},{},{}
+ //12548,Buy_Shabby_Stall_Permit,Buy Shabby Stall Permit,11,500,,10,,,,,0xFFFFFFFF,8,2,,,,,,{ itemskill "ALL_BUYING_STORE",1; },{},{}
++
++
++// Reins
++12622,Reins_Of_Mounts,Reins Of Mounts,2,500,,0,,,,,0xFFFFFFFF,7,2,,,,,,{ sc_start SC_ALL_RIDING,-1,1; },{},{}
+\ No newline at end of file
+Index: src/map/clif.c
+===================================================================
+--- src/map/clif.c	(revision 650)
++++ src/map/clif.c	(working copy)
+@@ -1172,6 +1172,8 @@
+ 				clif_sendbgemblem_area(sd);
+ 			if( sd->sc.count && sd->sc.data[SC_BANDING] )
+ 				clif_status_change(&sd->bl,SI_BANDING,1,9999,sd->sc.data[SC_BANDING]->val1,0,0);
++			if( sd->sc.count && sd->sc.data[SC_ALL_RIDING] )
++				clif_status_change(&sd->bl,SI_ALL_RIDING,1,9999,sd->sc.data[SC_ALL_RIDING]->val1,sd->sc.data[SC_ALL_RIDING]->val2,0);
+ 		}
+ 		break;
+ 	case BL_MOB:
+@@ -3909,7 +3911,9 @@
+ 			if( tsd->state.bg_id && map[tsd->bl.m].flag.battleground )
+ 				clif_sendbgemblem_single(sd->fd,tsd);
+ 			if( tsd->sc.count && tsd->sc.data[SC_BANDING] )
+-				clif_display_banding(&sd->bl,&tsd->bl,tsd->sc.data[SC_BANDING]->val1);
++				clif_status_change_single(&sd->bl,&tsd->bl,SI_BANDING,1,9999,tsd->sc.data[SC_BANDING]->val1,tsd->sc.data[SC_BANDING]->val2,tsd->sc.data[SC_BANDING]->val3);
++			if( tsd->sc.count && tsd->sc.data[SC_ALL_RIDING] )
++				clif_status_change_single(&sd->bl,&tsd->bl,SI_ALL_RIDING,1,9999,tsd->sc.data[SC_ALL_RIDING]->val1,tsd->sc.data[SC_ALL_RIDING]->val2,0);
+ 		}
+ 		break;
+ 	case BL_MER: // Devotion Effects
+@@ -5230,29 +5234,30 @@
+ 
+ 
+ /*==========================================
+- * Display Banding when someone under this
+- * status change walk into your view range.
++ * Display a status change when someone
++ * under this status change walk into your
++ * view range.
+  *------------------------------------------*/
+-void clif_display_banding(struct block_list *dst, struct block_list *bl, int val1)
++void clif_status_change_single(struct block_list *dst, struct block_list *bl, int type, int flag, unsigned int tick, int val1, int val2, int val3)
+ {
+ 	unsigned char buf[32];
+ 
+ 	nullpo_retv(bl);
+ 	nullpo_retv(dst);
+ 
+-	if( battle_config.display_status_timers )
++	if( flag && battle_config.display_status_timers )
+ 		WBUFW(buf, 0) = 0x043f;
+ 	else
+ 		WBUFW(buf, 0)= 0x0196;
+-	WBUFW(buf, 2) = SI_BANDING;
++	WBUFW(buf, 2) = type;
+ 	WBUFL(buf, 4) = bl->id;
+-	WBUFB(buf, 8) = 1;
+-	if( battle_config.display_status_timers )
++	WBUFB(buf, 8) = flag;
++	if( flag && battle_config.display_status_timers )
+ 	{
+-		WBUFL(buf, 9) = 0;
++		WBUFL(buf, 9) = tick;
+ 		WBUFL(buf,13) = val1;
+-		WBUFL(buf,17) = 0;
+-		WBUFL(buf,21) = 0;
++		WBUFL(buf,17) = val2;
++		WBUFL(buf,21) = val3;
+ 	}
+ 	clif_send(buf,packet_len(WBUFW(buf,0)),dst,SELF);
+ }
+@@ -9467,6 +9472,9 @@
+ 			(sd->sc.data[SC_VOICEOFSIREN] && sd->sc.data[SC_VOICEOFSIREN]->val2 == target_id) )
+ 			return;
+ 
++		if( sd->sc.data[SC_ALL_RIDING] )
++			return;
++
+ 		if (!battle_config.sdelay_attack_enable && pc_checkskill(sd, SA_FREECAST) <= 0) {
+ 			if (DIFF_TICK(tick, sd->ud.canact_tick) < 0) {
+ 				clif_skill_fail(sd, 1, 4, 0, 0);
+@@ -10400,6 +10408,9 @@
+ 	if( sd->sc.data[SC__MANHOLE] )
+ 		return;
+ 
++	if( sd->sc.data[SC_ALL_RIDING] )
++		return;
++
+ 	if( sd->menuskill_id )
+ 	{
+ 		if( sd->menuskill_id == SA_TAMINGMONSTER )
+@@ -10492,6 +10503,9 @@
+ 	
+ 	if( sd->sc.data[SC__MANHOLE] )
+ 		return;
++	
++	if( sd->sc.data[SC_ALL_RIDING] )
++		return;
+ 
+ 	if( sd->menuskill_id )
+ 	{
+@@ -10567,6 +10581,9 @@
+ 	if( sd->sc.data[SC__MANHOLE] )
+ 		return;
+ 
++	if( sd->sc.data[SC_ALL_RIDING] )
++		return;
++
+ 	if( pc_cant_act(sd) )
+ 	{
+ 		sd->menuskill_id = sd->menuskill_val = 0;
+Index: src/map/itemdb.h
+===================================================================
+--- src/map/itemdb.h	(revision 650)
++++ src/map/itemdb.h	(working copy)
+@@ -28,6 +28,7 @@
+ #define ITEMID_MAKEUPBRUSH 6121
+ #define ITEMID_PAINTBRUSH 6122
+ #define ITEMID_SURFACEPAINTS 6123
++#define ITEMID_REINS 12622
+ 
+ //The only item group required by the code to be known. See const.txt for the full list.
+ #define IG_FINDINGORE 6
+Index: src/map/pc.c
+===================================================================
+--- src/map/pc.c	(revision 650)
++++ src/map/pc.c	(working copy)
+@@ -559,7 +559,9 @@
+ 		if( sd->status.inventory[i].expire_time <= time(NULL) )
+ 		{
+ 			clif_rental_expired(sd->fd, sd->status.inventory[i].nameid);
+-			pc_delitem(sd, i, sd->status.inventory[i].amount, 0, 0);
++			if( sd->status.inventory[i].nameid == ITEMID_REINS )
++				status_change_end(&sd->bl, SC_ALL_RIDING, -1);
++			pc_delitem(sd, i, sd->status.inventory[i].amount, 1, 0);
+ 		}
+ 		else
+ 		{
+@@ -4089,8 +4091,8 @@
+ 		clif_useitemack(sd,n,amount,1);
+ 	else
+ 	{
+-		if( sd->status.inventory[n].expire_time == 0 )
+-		{
++		if( sd->status.inventory[n].expire_time == 0 && nameid != ITEMID_REINS )
++		{	// Don't remove Reins.
+ 			clif_useitemack(sd,n,amount-1,1);
+ 
+ 			//Logs (C)onsumable items [Lupus]
+@@ -7218,6 +7220,9 @@
+ 	nullpo_ret(sd);
+ 	p_type = sd->sc.option;
+ 
++	if( (p_type&(OPTION_RIDING|OPTION_RIDING_DRAGON|OPTION_RIDING_WUG|OPTION_MADO)) && sd->sc.data[SC_ALL_RIDING] )
++		return 0;	// Already mounted.
++
+ 	if( p_type&OPTION_MADO && p_type&OPTION_CART) // Don't remove cart when you're removing your mado.
+ 		type |= (p_type&OPTION_CART);
+ 
+Index: src/map/status.c
+===================================================================
+--- src/map/status.c	(revision 650)
++++ src/map/status.c	(working copy)
+@@ -756,6 +756,8 @@
+ 	StatusIconChangeTable[SC_CURSED_SOIL] = SI_CURSED_SOIL;
+ 	StatusIconChangeTable[SC_UPHEAVAL] = SI_UPHEAVAL;
+ 
++	StatusIconChangeTable[SC_ALL_RIDING] = SI_ALL_RIDING;
++
+ 	//Other SC which are not necessarily associated to skills.
+ 	StatusChangeFlagTable[SC_ASPDPOTION0] = SCB_ASPD;
+ 	StatusChangeFlagTable[SC_ASPDPOTION1] = SCB_ASPD;
+@@ -850,6 +852,8 @@
+ 	StatusChangeFlagTable[SC_VITATA_500] |= SCB_REGEN;
+ 	StatusChangeFlagTable[SC_EXTRACT_SALAMINE_JUICE] |= SCB_ASPD;
+ 
++	StatusChangeFlagTable[SC_ALL_RIDING] |= SCB_SPEED;
++
+ 	if( !battle_config.display_hallucination ) //Disable Hallucination.
+ 		StatusIconChangeTable[SC_HALLUCINATION] = SI_BLANK;
+ }
+@@ -4693,6 +4697,8 @@
+ 				val = max( val, sc->data[SC_GT_REVITALIZE]->val2 );
+ 			if( sc->data[SC_WIND_STEP_OPTION] )
+ 				val = max( val, sc->data[SC_WIND_STEP_OPTION]->val2 );
++			if( sc->data[SC_ALL_RIDING] )
++				val = max( val, sc->data[SC_ALL_RIDING]->val2 );
+ 
+ 			//FIXME: official items use a single bonus for this [ultramage]
+ 			if( sc->data[SC_SPEEDUP0] ) // temporary item-based speedup
+@@ -6352,6 +6358,15 @@
+ 		status_change_end(bl, SC_GT_ENERGYGAIN, INVALID_TIMER);
+ 		status_change_end(bl, SC_GT_CHANGE, INVALID_TIMER);
+ 		break;
++	case SC_ALL_RIDING:
++		if( !sd || pc_isriding(sd,OPTION_RIDING|OPTION_RIDING_DRAGON|OPTION_RIDING_WUG|OPTION_MADO) )
++			return 0;
++		if( sc->data[type] )
++		{	// Already mounted, just dismount.
++			status_change_end(bl, SC_ALL_RIDING, -1);
++			return 0;
++		}
++		break;
+ 	}
+ 
+ 	//Check for overlapping fails
+Index: src/map/status.h
+===================================================================
+--- src/map/status.h	(revision 650)
++++ src/map/status.h	(working copy)
+@@ -575,6 +575,8 @@
+ 	SC_ROCK_CRUSHER,
+ 	SC_ROCK_CRUSHER_ATK,
+ 
++	SC_ALL_RIDING,
++
+ 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
+ } sc_type;
+ 
+@@ -1194,7 +1196,7 @@
+ //	SI_SPIRITS_SAVEINFO2 = 610,
+ //	SI_MAGIC_CANDY = 611,
+ //	SI_SEARCH_STORE_INFO = 612,
+-//	SI_ALL_RIDING = 613,
++	SI_ALL_RIDING = 613,
+ //	SI_ALL_RIDING_REUSE_LIMIT = 614,
+ //	SI_MACRO = 615,
+ //	SI_MACRO_POSTDELAY = 616,
