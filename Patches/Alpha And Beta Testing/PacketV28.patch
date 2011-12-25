@@ -1,0 +1,536 @@
+Index: trunk/rewrite/db/packet_db.txt
+===================================================================
+--- trunk/rewrite/db/packet_db.txt	(revision 654)
++++ trunk/rewrite/db/packet_db.txt	(working copy)
+@@ -56,7 +56,7 @@
+ 0x008c,-1,globalmessage,2:4
+ 0x008d,-1
+ 0x008e,-1
+-//0x008f,-1
++//0x008f,0
+ 0x0090,7,npcclicked,2
+ 0x0091,22
+ 0x0092,28
+@@ -86,7 +86,7 @@
+ 0x00aa,7
+ 0x00ab,4,unequipitem,2
+ 0x00ac,7
+-//0x00ad,-1
++//0x00ad,0
+ 0x00ae,-1
+ 0x00af,6
+ 0x00b0,8
+@@ -303,7 +303,7 @@
+ 0x0183,10,guilddelalliance,2:6
+ 0x0184,10
+ 0x0185,34
+-//0x0186,-1
++//0x0186,0
+ 0x0187,6
+ 0x0188,8
+ 0x0189,4
+@@ -371,7 +371,7 @@
+ 0x01c7,2
+ 0x01c8,13
+ 0x01c9,97
+-//0x01ca,-1
++//0x01ca,0
+ 0x01cb,9
+ 0x01cc,9
+ 0x01cd,30
+@@ -436,8 +436,8 @@
+ 0x0208,11,friendslistreply,2:6:10
+ 0x0209,36
+ 0x020a,10
+-//0x020b,-1
+-//0x020c,-1
++//0x020b,0
++//0x020c,0
+ 0x020d,-1
+ 
+ //2004-07-05aSakexe
+@@ -733,7 +733,7 @@
+ 0x0113,33,useskilltopos,12:15:18:31
+ 0x0116,12,dropitem,3:10
+ 0x0190,24,actionrequest,11:23
+-0x0216,-1
++0x0216,0
+ 0x023d,-1
+ 0x023e,4
+ 
+@@ -767,7 +767,7 @@
+ 0x0248,68
+ 0x0249,3
+ 0x024a,70
+-0x024b,4,auctioncancelreg,0
++0x024b,4,auctioncancelreg,2
+ 0x024c,8,auctionsetitem,0
+ 0x024d,14
+ 0x024e,6,auctioncancel,0
+@@ -799,7 +799,7 @@
+ 0x0251,4
+ 
+ //2005-08-08aSakexe
+-0x024d,12,auctionregister,0
++0x024d,12,auctionregister,2:6:10
+ 0x024e,4
+ 
+ //2005-08-17aSakexe
+@@ -810,7 +810,7 @@
+ 0x0240,-1
+ 0x0248,-1,mailsend,2:4:28:68
+ 0x0255,5
+-0x0256,-1
++0x0256,0
+ 0x0257,8
+ 
+ //2005-09-12bSakexe
+@@ -830,7 +830,7 @@
+ 
+ //2005-10-17aSakexe
+ 0x007a,58
+-0x025d,6,auctionclose,0
++0x025d,6,auctionclose,2
+ 0x025e,4
+ 
+ //2005-10-24aSakexe
+@@ -933,8 +933,8 @@
+ 0x029d,-1
+ 0x029e,11
+ 0x029f,3,mermenu,0
+-0x02a0,-1
+-0x02a1,-1
++0x02a0,0
++0x02a1,0
+ 0x02a2,8
+ 
+ //2007-01-08aSakexe
+@@ -961,8 +961,8 @@
+ 
+ //2007-01-29aSakexe
+ 0x029b,72
+-0x02a3,-1
+-0x02a4,-1
++0x02a3,0
++0x02a4,0
+ 0x02a5,8
+ 
+ // 2007-02-05aSakexe
+@@ -1082,8 +1082,8 @@
+ 0x02ef,8
+ 
+ //2008-03-18aSakexe
+-0x02bf,-1
+-0x02c0,-1
++0x02bf,0
++0x02c0,0
+ 0x02f0,10
+ 0x02f1,2,progressbar,0
+ 0x02f2,2
+@@ -1408,7 +1408,7 @@
+ 
+ //2009-09-29aRagexeRE
+ //0x07ea,2
+-//0x07eb,-1
++//0x07eb,0
+ //0x07ec,6
+ //0x07ed,8
+ //0x07ee,6
+@@ -1586,5 +1586,82 @@
+ 0x0842,6,recall2,2
+ 0x0843,6,remove2,2
+ 
++//2010-11-24aRagexeRE
++packet_ver: 26
++0x0436,19,wanttoconnection,2:6:10:14:18
++0x035f,5,walktoxy,2
++0x0360,6,ticksend,2
++0x0361,5,changedir,2:4
++0x0362,6,takeitem,2
++0x0363,6,dropitem,2:4
++0x0364,8,movetokafra,2:4
++0x0365,8,movefromkafra,2:4
++0x0366,10,useskilltopos,2:4:6:8
++0x0367,90,useskilltoposinfo,2:4:6:8:10
++0x0368,6,getcharnamerequest,2
++0x0369,6,solvecharname,2
++0x0856,-1
++0x0857,-1
++0x0858,-1
++0x0859,-1
++
+ //Add new packets here
+-//packet_ver: 26
++packet_ver: 27
++0x022d,19,wanttoconnection,2:6:10:14:18
++0x0437,5,walktoxy,2
++0x035f,6,ticksend,2
++0x0893,5,changedir,2:4
++0x07e4,6,takeitem,2
++0x0362,6,dropitem,2:4
++0x07ec,8,movetokafra,2:4
++0x0364,8,movefromkafra,2:4
++0x0202,10,useskilltopos,2:4:6:8
++0x0366,90,useskilltoposinfo,2:4:6:8:10
++0x08ad,6,getcharnamerequest,2
++0x0368,6,solvecharname,2
++0x0369,7,actionrequest,2:6
++0x083c,10,useskilltoid,2:4:6
++
++// Unknown
++//0x08C7,-1
++//0x08C8,34
++//0x08C9,2
++//0x08CA,-1
++//0x08CB,-1
++//0x08CC,109
++//0x08CD,2
++//0x08CE,10
++//0x08CF,9
++//0x08D0,7
++//0x08D1,10
++//0x08D2,10
++//0x08D3,14
++//0x08D4,-1
++
++packet_ver: 28
++
++//2011-11-02
++//0x083c,19,wanttoconnection,2:6:10:14:18
++//0x088a,6,getcharnamerequest,2
++//0x0817,6,ticksend,2
++//0x0366,5,changedir,2:4
++//0x0364,5,walktoxy,2
++//0x08aa,7,actionrequest,2:6
++//0x02c4,10,useskilltoid,2:4:6
++//0x0369,10,useskilltopos,2:4:6:8
++//0x08ad,90,useskilltoposinfo,2:4:6:8:10
++//0x0885,6,dropitem,2:4
++//0x0815,6,takeitem,2
++
++//2011-11-22
++0x0835,19,wanttoconnection,2:6:10:14:18
++0x0898,6,getcharnamerequest,2
++0x0899,6,ticksend,2
++0x0896,5,changedir,2:4
++0x0892,5,walktoxy,2
++0x022d,7,actionrequest,2:6
++0x08a1,10,useskilltoid,2:4:6
++0x08ad,10,useskilltopos,2:4:6:8
++0x0363,90,useskilltoposinfo,2:4:6:8:10
++0x0436,6,dropitem,2:4
++0x0893,6,takeitem,2
+Index: trunk/rewrite/src/char/char.c
+===================================================================
+--- trunk/rewrite/src/char/char.c	(revision 655)
++++ trunk/rewrite/src/char/char.c	(working copy)
+@@ -1830,7 +1830,7 @@
+ // Writes char data to the buffer in the format used by the client.
+ // Used in packets 0x6b (chars info) and 0x6d (new char info)
+ // Returns the size
+-#define MAX_CHAR_BUF 132 //Max size (for WFIFOHEAD calls)
++#define MAX_CHAR_BUF 144 //Max size (for WFIFOHEAD calls)
+ int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p)
+ {
+ 	unsigned short offset = 0;
+@@ -1894,6 +1894,18 @@
+ 	WBUFL(buf,124) = TOL(p->delete_date);
+ 	offset += 4;
+ #endif
++#if PACKETVER >= 20110111
++	WBUFL(buf,128) = 0;  // robe sprite id
++	offset += 4;
++#endif
++#if PACKETVER >= 20111019
++	WBUFL(buf,132) = 0;
++	offset += 4;
++#endif
++#if PACKETVER >= 20111021
++	WBUFL(buf,136) = 0;
++	offset += 4;
++#endif
+ 	return 106+offset;
+ }
+ 
+@@ -2208,6 +2220,15 @@
+ 				{
+ 					// send characters to player
+ 					mmo_char_send006b(i, sd);
++					#if PACKETVER >= 20110309
++					WFIFOHEAD(i, 12);
++					WFIFOW(i, 0) = 0x08B9;
++					WFIFOW(i, 2) = 0;
++					WFIFOW(i, 4) = 0;
++					WFIFOL(i, 6) = sd->account_id;
++					WFIFOW(i, 10) = 0;
++					WFIFOSET(i, 12);
++					#endif
+ 				}
+ 			}
+ 			RFIFOSKIP(fd,62);
+Index: trunk/rewrite/src/char_sql/char.c
+===================================================================
+--- trunk/rewrite/src/char_sql/char.c	(revision 655)
++++ trunk/rewrite/src/char_sql/char.c	(working copy)
+@@ -1553,7 +1553,7 @@
+ // Writes char data to the buffer in the format used by the client.
+ // Used in packets 0x6b (chars info) and 0x6d (new char info)
+ // Returns the size
+-#define MAX_CHAR_BUF 132 //Max size (for WFIFOHEAD calls)
++#define MAX_CHAR_BUF 144 //Max size (for WFIFOHEAD calls)
+ int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p)
+ {
+ 	unsigned short offset = 0;
+@@ -1617,6 +1617,18 @@
+ 	WBUFL(buf,124) = TOL(p->delete_date);
+ 	offset += 4;
+ #endif
++#if PACKETVER >= 20110111
++	WBUFL(buf,128) = 0;  // robe sprite id
++	offset += 4;
++#endif
++#if PACKETVER >= 20111019
++	WBUFL(buf,132) = 0;
++	offset += 4;
++#endif
++#if PACKETVER >= 20111021
++	WBUFL(buf,136) = 0;
++	offset += 4;
++#endif
+ 	return 106+offset;
+ }
+ 
+@@ -1888,6 +1900,15 @@
+ 				{
+ 					// send characters to player
+ 					mmo_char_send006b(i, sd);
++					#if PACKETVER >= 20110309
++					WFIFOHEAD(i, 12);
++					WFIFOW(i, 0) = 0x08B9;
++					WFIFOW(i, 2) = 0;
++					WFIFOW(i, 4) = 0;
++					WFIFOL(i, 6) = sd->account_id;
++					WFIFOW(i, 10) = 0;
++					WFIFOSET(i, 12);
++					#endif
+ 				}
+ 			}
+ 			RFIFOSKIP(fd,62);
+Index: trunk/rewrite/src/common/mmo.h
+===================================================================
+--- trunk/rewrite/src/common/mmo.h	(revision 655)
++++ trunk/rewrite/src/common/mmo.h	(working copy)
+@@ -44,10 +44,11 @@
+ // 20100721 - 2010-07-21aRagexeRE+ - 0x6b, 0x6d
+ // 20100727 - 2010-07-27aRagexeRE+ - 0x6b, 0x6d
+ // 20100803 - 2010-08-03aRagexeRE+ - 0x6b, 0x6d, 0x827, 0x828, 0x829, 0x82a, 0x82b, 0x82c, 0x842, 0x843
++// 20110111 - 2011-01-11aRagexeRE+ - 0x6b, 0x6d
+ 
+ #ifndef PACKETVER
+ 	//#define PACKETVER	20081126
+-	#define PACKETVER 20100629
++	#define PACKETVER 20111122
+ #endif
+ // backward compatible PACKETVER 8 and 9
+ #if PACKETVER == 8
+Index: trunk/rewrite/src/map/clif.c
+===================================================================
+--- trunk/rewrite/src/map/clif.c	(revision 654)
++++ trunk/rewrite/src/map/clif.c	(working copy)
+@@ -821,13 +821,19 @@
+ 		WBUFW(buf,0) = spawn?0x22b:0x22a;
+ #elif PACKETVER < 20091103
+ 		WBUFW(buf,0) = spawn?0x2ed:0x2ee;
++#elif PACKETVER < 20101124
++		WBUFW(buf,0) = spawn?0x7f8:0x7f9;
+ #else
+-		WBUFW(buf,0) = spawn?0x7f8:0x7f9;
++		WBUFW(buf,0) = spawn?0x858:0x857;
+ #endif
+ 
+ #if PACKETVER >= 20091103
+ 	name = status_get_name(bl);
++#if PACKETVER < 20110111
+ 	WBUFW(buf,2) = (spawn?62:63)+strlen(name);
++#else
++	WBUFW(buf,2) = (spawn?64:65)+strlen(name);
++#endif
+ 	WBUFB(buf,4) = clif_bl_type(bl);
+ 	offset+=3;
+ 	buf = WBUFP(buffer,offset);
+@@ -901,6 +907,11 @@
+ 		return packet_len(0x7c);
+ 	}
+ #endif
++#if PACKETVER >= 20110111
++	WBUFW(buf,34) = 0;
++	offset+= 2;
++	buf = WBUFP(buffer,offset);
++#endif
+ 	WBUFL(buf,34) = status_get_guild_id(bl);
+ 	WBUFW(buf,38) = status_get_emblem_id(bl);
+ 	WBUFW(buf,40) = (sd)? sd->status.manner : 0;
+@@ -970,13 +981,19 @@
+ 	WBUFW(buf, 0) = 0x22c;
+ #elif PACKETVER < 20091103
+ 	WBUFW(buf, 0) = 0x2ec;
++#elif PACKETVER < 20101124
++	WBUFW(buf, 0) = 0x7f7;
+ #else
+-	WBUFW(buf, 0) = 0x7f7;
++	WBUFW(buf, 0) = 0x856;
+ #endif
+ 
+ #if PACKETVER >= 20091103
+ 	name = status_get_name(bl);
++#if PACKETVER < 20110111
+ 	WBUFW(buf, 2) = 69+strlen(name);
++#else
++	WBUFW(buf, 2) = 71+strlen(name);
++#endif
+ 	offset+=2;
+ 	buf = WBUFP(buffer,offset);
+ #endif
+@@ -1013,6 +1030,11 @@
+ 	WBUFW(buf,32) = vd->hair_color;
+ 	WBUFW(buf,34) = vd->cloth_color;
+ 	WBUFW(buf,36) = (sd)? sd->head_dir : 0;
++ #if PACKETVER >= 20110111
++ 	WBUFW(buf,38) = 0;
++ 	offset+= 2;
++ 	buf = WBUFP(buffer,offset);
++ #endif
+ 	WBUFL(buf,38) = status_get_guild_id(bl);
+ 	WBUFW(buf,42) = status_get_emblem_id(bl);
+ 	WBUFW(buf,44) = (sd)? sd->status.manner : 0;
+@@ -5369,11 +5391,7 @@
+ {
+ 	unsigned char *buf = (unsigned char*)aMallocA((16 + len)*sizeof(unsigned char));
+ 
+-#if PACKETVER < 20080820
+ 	WBUFW(buf,0)  = 0x1c3;
+-#else
+-	WBUFW(buf,0)  = 0x40c;
+-#endif
+ 	WBUFW(buf, 2) = len + 16;
+ 	WBUFL(buf, 4) = fontColor;
+ 	WBUFW(buf, 8) = fontType;
+@@ -8439,15 +8457,15 @@
+ 	WFIFOSET(fd, packet_len(0x2da));
+ }
+ 
+-/*==========================================
+- * Sends info about a player's equipped items
+- * R 002d7 <length>.W <name>.24B <class>.w <hairstyle>.w <up-viewid>.w <mid-viewid>.w <low-viewid>.w <haircolor>.w <cloth-dye>.w <gender>.1B {equip item}.26B*
+- * for PACKETVER >= 20100629
+- * R 002d7 <length>.W <name>.24B <class>.w <hairstyle>.w <bottom-viewid>.w <mid-viewid>.w <up-viewid>.w <haircolor>.w <cloth-dye>.w <gender>.1B {equip item}.28B*
+- *------------------------------------------*/
++/// Sends info about a player's equipped items (ZC_EQUIPWIN_MICROSCOPE)
++/// 02d7 <packet len>.W <name>.24B <class>.W <hairstyle>.W <up-viewid>.W <mid-viewid>.W <low-viewid>.W <haircolor>.W <cloth-dye>.W <gender>.B {equip item}.26B*
++/// 02d7 <packet len>.W <name>.24B <class>.W <hairstyle>.W <bottom-viewid>.W <mid-viewid>.W <up-viewid>.W <haircolor>.W <cloth-dye>.W <gender>.B {equip item}.28B* (PACKETVER >= 20100629)
++/// 0859 <packet len>.W <name>.24B <class>.W <hairstyle>.W <bottom-viewid>.W <mid-viewid>.W <up-viewid>.W <haircolor>.W <cloth-dye>.W <gender>.B {equip item}.28B* (PACKETVER >= 20101124)
++/// 0859 <packet len>.W <name>.24B <class>.W <hairstyle>.W <bottom-viewid>.W <mid-viewid>.W <up-viewid>.W <robe>.W <haircolor>.W <cloth-dye>.W <gender>.B {equip item}.28B* (PACKETVER >= 20110111)
+ void clif_viewequip_ack(struct map_session_data* sd, struct map_session_data* tsd)
+ {
+-	int i, n, fd;
++	uint8* buf;
++	int i, n, fd, offset = 0;
+ #if PACKETVER < 20100629
+ 	const int s = 26;
+ #else
+@@ -8458,17 +8476,27 @@
+ 	fd = sd->fd;
+ 	
+ 	WFIFOHEAD(fd, MAX_INVENTORY * s + 43);
++	buf = WFIFOP(fd,0);
+ 
+-	WFIFOW(fd, 0) = 0x2d7;
+-	safestrncpy((char*)WFIFOP(fd, 4), tsd->status.name, NAME_LENGTH);
+-	WFIFOW(fd,28) = tsd->status.class_;
+-	WFIFOW(fd,30) = tsd->vd.hair_style;	
+-	WFIFOW(fd,32) = tsd->vd.head_bottom;
+-	WFIFOW(fd,34) = tsd->vd.head_mid;
+-	WFIFOW(fd,36) = tsd->vd.head_top;
+-	WFIFOW(fd,38) = tsd->vd.hair_color;
+-	WFIFOW(fd,40) = tsd->vd.cloth_color;
+-	WFIFOB(fd,42) = tsd->vd.sex;
++#if PACKETVER < 20101124
++	WBUFW(buf, 0) = 0x2d7;
++#else
++	WBUFW(buf, 0) = 0x859;
++#endif
++	safestrncpy((char*)WBUFP(buf, 4), tsd->status.name, NAME_LENGTH);
++	WBUFW(buf,28) = tsd->status.class_;
++	WBUFW(buf,30) = tsd->vd.hair_style;	
++	WBUFW(buf,32) = tsd->vd.head_bottom;
++	WBUFW(buf,34) = tsd->vd.head_mid;
++	WBUFW(buf,36) = tsd->vd.head_top;
++#if PACKETVER >= 20110111
++	WBUFW(buf,38) = 0;
++	offset+= 2;
++	buf = WBUFP(buf,2);
++#endif
++	WBUFW(buf,38) = tsd->vd.hair_color;
++	WBUFW(buf,40) = tsd->vd.cloth_color;
++	WBUFB(buf,42) = tsd->vd.sex;
+ 	
+ 	for(i=0,n=0; i < MAX_INVENTORY; i++)
+ 	{
+@@ -8478,24 +8506,24 @@
+ 			continue;
+ 	
+ 		// Inventory position
+-		WFIFOW(fd, n*s+43) = i + 2;
++		WBUFW(buf, n*s+43) = i + 2;
+ 		// Add refine, identify flag, element, etc.
+-		clif_item_sub(WFIFOP(fd,0), n*s+45, &tsd->status.inventory[i], tsd->inventory_data[i], pc_equippoint(tsd, i));
++		clif_item_sub(WBUFP(buf,0), n*s+45, &tsd->status.inventory[i], tsd->inventory_data[i], pc_equippoint(tsd, i));
+ 		// Add cards
+-		clif_addcards(WFIFOP(fd, n*s+55), &tsd->status.inventory[i]);	
++		clif_addcards(WBUFP(buf, n*s+55), &tsd->status.inventory[i]);	
+ 		// Expiration date stuff, if all of those are set to 0 then the client doesn't show anything related (6 bytes)
+-		WFIFOL(fd, n*s+63) = tsd->status.inventory[i].expire_time;
+-		WFIFOW(fd, n*s+67) = 0;
++		WBUFL(buf, n*s+63) = tsd->status.inventory[i].expire_time;
++		WBUFW(buf, n*s+67) = 0;
+ #if PACKETVER >= 20100629
+ 		if (tsd->inventory_data[i]->equip&EQP_HELM)
+-			WFIFOW(fd, n*s+69) = tsd->inventory_data[i]->look;
++			WBUFW(buf, n*s+69) = tsd->inventory_data[i]->look;
+ 		else
+-			WFIFOW(fd, n*s+69) = 0;
++			WBUFW(buf, n*s+69) = 0;
+ #endif
+ 		n++;
+ 	}
+ 
+-	WFIFOW(fd, 2) = 43 + n*s;	// Set length
++	WFIFOW(fd, 2) = 43+offset+n*s;	// Set length
+ 	WFIFOSET(fd, WFIFOW(fd, 2));
+ }
+ 
+@@ -15610,6 +15638,11 @@
+ 	    3, -1,  8, -1,  86, 2,  6,  6, -1, -1,  4, 10, 10, 22,  8,  0,
+ 	    0,  0,  0,  0,  6,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+ 	    0,  0,  0,  0,  0, -1, -1,  3,  2, 66,  5,  2, 12,  6,  0,  0,
++ 	//#0x0840
++		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
++		0,  0,  0,  0,  0,  0, -1, -1, -1,  0,  0,  0,  0,  0,  0,  0,
++		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
++		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+ 	};
+ 	struct {
+ 		void (*func)(int, struct map_session_data *);
+Index: trunk/rewrite/src/map/clif.h
+===================================================================
+--- trunk/rewrite/src/map/clif.h	(revision 654)
++++ trunk/rewrite/src/map/clif.h	(working copy)
+@@ -29,7 +29,7 @@
+ #include <stdarg.h>
+ // packet DB
+ #define MAX_PACKET_DB		0x900
+-#define MAX_PACKET_VER		25
++#define MAX_PACKET_VER		28
+ 
+ struct s_packet_db {
+ 	short len;
