@@ -736,7 +736,8 @@ int pc_equippoint(struct map_session_data *sd,int n)
 	if(sd->inventory_data[n]->look == W_DAGGER	||
 		sd->inventory_data[n]->look == W_1HSWORD ||
 		sd->inventory_data[n]->look == W_1HAXE) {
-		if(ep == EQP_HAND_R && (pc_checkskill(sd,AS_LEFT) > 0 || (sd->class_&MAPID_UPPERMASK) == MAPID_ASSASSIN))
+		if(ep == EQP_HAND_R && (pc_checkskill(sd,AS_LEFT) > 0 || (sd->class_&MAPID_UPPERMASK) == MAPID_ASSASSIN || 
+			(sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO))//Kagerou and Oboro can dual wield daggers. [Rytech]
 			return EQP_ARMS;
 	}
 	return ep;
@@ -4975,6 +4976,10 @@ int pc_jobid2mapid(unsigned short b_class)
 		case JOB_SUPER_BABY_E:
 			class_|= JOBL_THIRD|JOBL_BABY|JOBL_2_1;
 			break;
+		case JOB_KAGEROU:
+		case JOB_OBORO:
+			class_ |= JOBL_2_1|MAPID_NINJA;
+			break;
 		default:
 			return -1;
 	}
@@ -5008,6 +5013,7 @@ int pc_mapid2jobid(unsigned short class_, int sex)
 		case MAPID_BLACKSMITH:      return JOB_BLACKSMITH;
 		case MAPID_ASSASSIN:        return JOB_ASSASSIN;
 		case MAPID_STAR_GLADIATOR:  return JOB_STAR_GLADIATOR;
+		case MAPID_KAGEROUOBORO:    return sex?JOB_KAGEROU:JOB_OBORO;
 		case MAPID_DEATH_KNIGHT:    return JOB_DEATH_KNIGHT;
 	//2_2 classes
 		case MAPID_CRUSADER:        return JOB_CRUSADER;
@@ -5323,13 +5329,15 @@ char* job_name(int class_)
 		return msg_txt(642);
 
 	case JOB_SUPER_NOVICE_E:
-		return msg_txt(651);
-
 	case JOB_SUPER_BABY_E:
-		return msg_txt(652);
+		return msg_txt(651 - JOB_SUPER_NOVICE_E+class_);
+
+	case JOB_KAGEROU:
+	case JOB_OBORO:
+		return msg_txt(653 - JOB_KAGEROU+class_);
 
 	default:
-		return msg_txt(653);
+		return msg_txt(655);
 	}
 }
 

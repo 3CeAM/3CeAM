@@ -1374,6 +1374,8 @@ ACMD_FUNC(jobchange)
 			{ "baby chaser",	4108 },
 			{ "super novice e",	4190 },
 			{ "super baby e",	4191 },
+			{ "kagerou",		4211 },
+			{ "oboro",		4212 },
 		};
 
 		for (i=0; i < ARRAYLENGTH(jobs); i++) {
@@ -1417,6 +1419,7 @@ ACMD_FUNC(jobchange)
 			clif_displaymessage(fd, "  23 Super Novice     24 Gunslinger       25 Ninja          4046 Taekwon");
 			clif_displaymessage(fd, "4047 Star Gladiator 4049 Soul Linker    4050 Gangsi         4051 Death Knight");
 			clif_displaymessage(fd, "4052 Dark Collector 4190 Extended Super Novice  4191 Extended Super Baby");
+			clif_displaymessage(fd, "4211 Kagerou        4212 Oboro");
 			clif_displaymessage(fd, "---- 1st And 2nd Baby Class ----");
 			clif_displaymessage(fd, "4023 Baby Novice    4024 Baby Swordsman 4025 Baby Mage      4026 Baby Archer");
 			clif_displaymessage(fd, "4027 Baby Acolyte   4028 Baby Merchant  4029 Baby Thief     4030 Baby Knight");
@@ -1492,6 +1495,7 @@ ACMD_FUNC(jobchange)
 		clif_displaymessage(fd, "  23 Super Novice     24 Gunslinger       25 Ninja          4046 Taekwon");
 		clif_displaymessage(fd, "4047 Star Gladiator 4049 Soul Linker    4050 Gangsi         4051 Death Knight");
 		clif_displaymessage(fd, "4052 Dark Collector 4190 Extended Super Novice  4191 Extended Super Baby");
+		clif_displaymessage(fd, "4211 Kagerou        4212 Oboro");
 		clif_displaymessage(fd, "---- 1st And 2nd Baby Class ----");
 		clif_displaymessage(fd, "4023 Baby Novice    4024 Baby Swordsman 4025 Baby Mage      4026 Baby Archer");
 		clif_displaymessage(fd, "4027 Baby Acolyte   4028 Baby Merchant  4029 Baby Thief     4030 Baby Knight");

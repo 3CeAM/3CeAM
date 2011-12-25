@@ -568,7 +568,7 @@ extern int duel_count;
 #define pc_isinvisible(sd)    ( (sd)->sc.option&OPTION_INVISIBLE )
 #define pc_is50overweight(sd) ( (sd)->weight*100 >= (sd)->max_weight*battle_config.natural_heal_weight_rate )
 #define pc_is90overweight(sd) ( (sd)->weight*10 >= (sd)->max_weight*9 )
-#define pc_maxparameter(sd)   ( ((sd)->class_&JOBL_THIRD ? ((sd)->class_&JOBL_BABY ? battle_config.max_baby_third_paramater : battle_config.max_third_parameter) : ((sd)->class_&JOBL_BABY ? battle_config.max_baby_parameter : battle_config.max_parameter)) )
+#define pc_maxparameter(sd)   ( ((((sd)->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO) || (sd)->class_&JOBL_THIRD ? ((sd)->class_&JOBL_BABY ? battle_config.max_baby_third_paramater : battle_config.max_third_parameter) : ((sd)->class_&JOBL_BABY ? battle_config.max_baby_parameter : battle_config.max_parameter)) )
 
 #define pc_stop_walking(sd, type) unit_stop_walking(&(sd)->bl, type)
 #define pc_stop_attack(sd) unit_stop_attack(&(sd)->bl)
@@ -577,7 +577,7 @@ extern int duel_count;
 #define pc_check_weapontype(sd, type) ((type)&((sd)->status.weapon < MAX_WEAPON_TYPE? \
 	1<<(sd)->status.weapon:(1<<(sd)->weapontype1)|(1<<(sd)->weapontype2)))
 //Checks if the given class value corresponds to a player class. [Skotlex]
-#define pcdb_checkid(class_) (class_ < JOB_MAX_BASIC || (class_ >= JOB_NOVICE_HIGH && class_ <= JOB_DARK_COLLECTOR) || (class_ >= JOB_RUNE_KNIGHT && class_ <= JOB_MECHANIC_T2) || (class_ >= JOB_BABY_RUNE && class_ <= JOB_BABY_MECHANIC2) || (class_ >= JOB_SUPER_NOVICE_E && class_ < JOB_MAX))
+#define pcdb_checkid(class_) (class_ < JOB_MAX_BASIC || (class_ >= JOB_NOVICE_HIGH && class_ <= JOB_DARK_COLLECTOR) || (class_ >= JOB_RUNE_KNIGHT && class_ <= JOB_MECHANIC_T2) || (class_ >= JOB_BABY_RUNE && class_ <= JOB_BABY_MECHANIC2) || (class_ >= JOB_SUPER_NOVICE_E && class_ <= JOB_SUPER_BABY_E) || (class_ >= JOB_KAGEROU && class_ < JOB_MAX))
 
 int pc_class2idx(int class_);
 int pc_isGM(struct map_session_data *sd);

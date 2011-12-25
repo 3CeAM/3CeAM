@@ -69,6 +69,7 @@ Job: Equippable jobs. Uses the following bitmask table:
 	Gangsi         (2^26): 0x04000000
 	Death Knight   (2^27): 0x08000000
 	Dark Collector (2^28): 0x10000000
+	Kagerou/Oboro  (2^29): 0x20000000
 
 Upper: Equippable upper-types. Uses the following bitmasks to set type of job the player
 is required to be to beable to use that item:
