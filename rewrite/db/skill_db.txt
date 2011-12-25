@@ -1212,39 +1212,44 @@
 2537,9,6,16,0,0x1,0,2,1,yes,0,0,0,magic,0,	ALL_ODINS_POWER,Odin's Power
 
 // Kagerou/Oboro
-//3001,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KO_YAMIKUMO,
-//3002,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KO_RIGHT,
-//3003,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KO_LEFT,
-//3004,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KO_JYUMONJIKIRI,
-//3005,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KO_SETSUDAN,
-//3006,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KO_BAKURETSU,
-//3007,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KO_HAPPOKUNAI,
-//3008,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KO_MUCHANAGE,
-//3009,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KO_HUUMARANKA,
-//3010,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KO_MAKIBISHI,
-//3011,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KO_MEIKYOUSISUI,
-//3012,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KO_ZANZOU,
-//3013,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KO_KYOUGAKU,
-//3014,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KO_JYUSATSU,
-//3015,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KO_KAHU_ENTEN,
-//3016,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KO_HYOUHU_HUBUKI,
-//3017,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KO_KAZEHU_SEIRAN,
-//3018,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KO_DOHU_KOUKAI,
-//3019,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KO_KAIHOU,
-//3020,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KO_ZENKAI,
-//3021,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KO_GENWAKU,
-//3022,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KO_IZAYOI,
+3001,0,6,4,0,0,0,1,1,no,0,0,0,none,0,		KO_YAMIKUMO,Dummy1
+3002,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		KO_RIGHT,Dummy2
+3003,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		KO_LEFT,Dummy3
+3004,3:4:5:6:7,8,1,0,0,0,5,2,no,0,0,0,weapon,0,		KO_JYUMONJIKIRI,Dummy4
+3005,2,6,1,0,0,0,5,1,no,0,0,0,weapon,0,		KO_SETSUDAN,Dummy5
+3006,7:8:9:10:11,6,1,0,0,0,5,1,no,0,0,0,weapon,0,		KO_BAKURETSU,Dummy6
+3007,0,6,1,0,0x2,4:4:4:4:5,5,1,no,0,0,0,weapon,0,		KO_HAPPOKUNAI,Dummy7// Truely INF 4, but will be 1 for now to display animation for testing.
+
+3008,11,6,1,0,0,0,10,1,no,0,0,0,weapon,0,		KO_MUCHANAGE,Dummy8
+3009,9:10:11:12:13,6,2,0,0,0,5,1,no,0,0,0,weapon,0,		KO_HUUMARANKA,Dummy9
+3010,7,6,2,0,0,0,5,1,no,0,0,0,none,0,		KO_MAKIBISHI,Dummy10// Skill Info says its ground placed, but I dont see any UNIT animations for this....yet.
+
+3011,0,6,1,0,0,0,5,1,no,0,0,0,none,0,		KO_MEIKYOUSISUI,Dummy11// Is a INF 4 skill, but set to 1 for animation testing. Status is the animation
+3012,0,6,4,0,0,0,5,1,no,0,0,0,none,0,		KO_ZANZOU,Dummy12// Creates a clone of yourself....kinda. Uses monster ID 2308
+3013,5,6,1,0,0,0,5,1,no,0,0,0,none,0,		KO_KYOUGAKU,Dummy13
+3014,5,6,1,0,0,0,5,1,no,0,0,0,none,0,		KO_JYUSATSU,Dummy14
+
+3015,1,6,1,0,0,0,1,1,no,0,0,0,none,0,		KO_KAHU_ENTEN,Dummy15// This and the following 3 skills all appear to have a UNIT ID.
+3016,1,6,1,0,0,0,1,1,no,0,0,0,none,0,		KO_HYOUHU_HUBUKI,Dummy16// So these should be INF 2, but will be set as 1 for animation testing.
+3017,1,6,1,0,0,0,1,1,no,0,0,0,none,0,		KO_KAZEHU_SEIRAN,Dummy17
+3018,1,6,1,0,0,0,1,1,no,0,0,0,none,0,		KO_DOHU_KOUKAI,Dummy18
+
+3019,11,6,1,0,0,0,1,1,no,0,0,0,none,0,		KO_KAIHOU,Dummy19
+3020,1,6,1,0,0,0,1,1,no,0,0,0,none,0,		KO_ZENKAI,Dummy20// No animation. Clear skill desc says Expand the spirits into the ground and create formations that does effects. Is that INF 2 or 4?
+
+3021,5:6:7:8:9,6,1,0,0,0,5,1,no,0,0,0,none,0,		KO_GENWAKU,Dummy21// Sounds like its enemy targeted. Cast animation only works on INF 1
+3022,0,6,1,0,0,0,5,1,no,0,0,0,none,0,		KO_IZAYOI,Dummy22// Sounds like a INF 4 skill, but animation only happens if enemy targeted. Bugged?
 
 // Kagerou
-//3023,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KG_KAGEHUMI,
-//3024,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KG_KYOMU,
-//3025,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		KG_KAGEMUSYA,
+3023,5:7:9:11:13,6,1,0,0,0,5,1,no,0,0,0,none,0,		KG_KAGEHUMI,Dummy23// Is a INF 4 skill, but is set to 1 for animation testing.
+3024,0,6,1,0,0,0,5,1,no,0,0,0,none,0,		KG_KYOMU,Dummy24// Skill desc makes it sound like its a INF 1 type and animation does work on 1.
+3025,0,6,1,0,0,0,5,1,no,0,0,0,none,0,		KG_KAGEMUSYA,Dummy25// Appears to be a INF 4 type, but animation only works on type 1, but requires holding shift.
 
 // Oboro
-//3026,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		OB_ZANGETSU,
-//3027,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		OB_OBOROGENSOU,
-//3028,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		OB_OBOROGENSOU_TRANSITION_ATK,
-//3029,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		OB_AKAITSUKI,
+3026,7,6,1,0,0,0,5,1,no,0,0,0,none,0,		OB_ZANGETSU,Dummy26// Desc says usable on allies and enemys, which is INF 16, but animation only works on 1 and holding shift.
+3027,7,6,1,0,0,0,5,1,no,0,0,0,none,0,		OB_OBOROGENSOU,Dummy27
+3028,1,6,4,0,0,0,5,1,no,0,0,0,none,0,		OB_OBOROGENSOU_TRANSITION_ATK,Dummy28
+3029,7,6,1,0,0,0,5,1,no,0,0,0,none,0,		OB_AKAITSUKI,Dummy29
 
 // Homunculus Skills
 8001,9,6,4,0,0x1,0,5,1,no,0,0,0,magic,0,         HLIF_HEAL,Healing Touch

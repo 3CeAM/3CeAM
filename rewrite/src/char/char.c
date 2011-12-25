@@ -1502,6 +1502,8 @@ char * job_name(int class_)
 	case JOB_BABY_MECHANIC2: return "Baby Mechanic Mado Gear";
 	case JOB_SUPER_NOVICE_E:   return "Extended Super Novice";
 	case JOB_SUPER_BABY_E:   return "Extended Super Baby";
+	case JOB_KAGEROU:   return "Kagerou";
+	case JOB_OBORO:   return "Oboro";
 	}
 	return "Unknown Job";
 }
@@ -2246,7 +2248,8 @@ int parse_fromlogin(int fd)
 					    jobclass == JOB_BABY_BARD || jobclass == JOB_BABY_DANCER ||
 					    jobclass == JOB_MINSTREL || jobclass == JOB_WANDERER ||
 					    jobclass == JOB_MINSTREL_T || jobclass == JOB_WANDERER_T ||
-					    jobclass == JOB_BABY_MINSTREL || jobclass == JOB_BABY_WANDERER) {
+					    jobclass == JOB_BABY_MINSTREL || jobclass == JOB_BABY_WANDERER ||
+					    jobclass == JOB_KAGEROU || jobclass == JOB_OBORO) {
 						// job modification
 						if (jobclass == JOB_BARD || jobclass == JOB_DANCER) {
 							char_dat[i].status.class_ = (sex) ? JOB_BARD : JOB_DANCER;
@@ -2260,6 +2263,8 @@ int parse_fromlogin(int fd)
 							char_dat[i].status.class_ = (sex) ? JOB_MINSTREL_T : JOB_WANDERER_T;
 						} else if (jobclass == JOB_BABY_MINSTREL || jobclass == JOB_BABY_WANDERER) {
 							char_dat[i].status.class_ = (sex) ? JOB_BABY_MINSTREL : JOB_BABY_WANDERER;
+						} else if (jobclass == JOB_KAGEROU || jobclass == JOB_OBORO) {
+							char_dat[i].status.class_ = (sex) ? JOB_KAGEROU : JOB_OBORO;
 						}
 						// remove specifical skills of classes 19, 4020 and 4042
 						for(j = 315; j <= 322; j++) {
