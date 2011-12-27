@@ -387,6 +387,13 @@
 2854,Alchemy_Glove,Glove Of Alchemy,5,20,10,100,,1,,1,0xFFFFFFFF,8,2,136,,125,0,0,{ bonus2 bSkillAtk,"WL_CRIMSONROCK",10; bonus2 bSkillAtk,"SO_FIREWALK",10; bonus bInt,1; autobonus "{ bonus3 bAutoSpell,MG_FIREBALL,5,100; }",50,100,BF_MAGIC,"{ specialeffect2 EF_FIREBALL; }"; },{},{}
 2858,Pendant_Of_Guardian,Guardian's Pendant,5,20,,0,,0,,0,0xFFFFFFFF,7,2,136,,70,0,0,{ skill "ALL_GUARDIAN_RECALL",1; },{},{}
 
+// 5 items below work through skills. Last 4 have a reuse delay of 5 seconds. All have a weight of 1.
+//2916,Elven_Wing,Elven Wing,		<-- Accessory that gives the ECLAGE_RETURN skill. Weights 1 weight and requires base level 90. No defense.
+//12812,Snow_Flip,Snow Flip		<-- Cures Burning, Bleeding, Deep Sleep, Sleep
+//12813,Peony_Mamy,Peony Mamy		<-- Cures Freeze, Freezing, Crystallization
+//12814,Sadagui,Sadagui			<-- Cures Stun, Fear, Chaos, Hallucination
+//12815,Sequoia_Dust,Sequoia Dust	<-- Cures Petrification, Blind, Curse, Poison, Reverse Orcish
+
 //Extra Items With Skill Enabled Bonuses
 //1599,Angra_Manyu,Angra Manyu,4,1,,10,200,,2,0,0xFFFFFFFF,7,2,2,1,1,1,8,{ bonus bAllStats,50; bonus bBaseAtk,3800; bonus bMatkRate,200; bonus2 bHPDrainRate,1000,100; bonus2 bSPDrainRate,1000,20; bonus bHealPower,200; bonus2 bAddRace,RC_NonBoss,100; bonus2 bAddRace,RC_Boss,100; skill "WZ_STORMGUST",10; Skill "WZ_METEOR",10; Skill "WZ_VERMILION",10; skill "GM_SANDMAN",1; },{},{}
 //2199,Ahura_Mazda,Ahura Mazdah,5,1,,10,,100,,0,0xFFFFFFFF,7,2,32,,1,1,0,{ bonus bAllStats,50; bonus bMdef,99; bonus bShortWeaponDamageReturn,100; bonus2 bSubRace,RC_DemiHuman,95; skill "CR_FULLPROTECTION",5; Skill "WZ_ESTIMATION",1; Skill "ST_FULLSTRIP",5; Skill "HW_MAGICPOWER", 10; bonus bMaxHPRate,200; bonus bNoGemStone,0;  bonus bSpeedRate,25; },{ sc_start4 SC_ENDURE,60000,10,0,0,1; },{ sc_end SC_ENDURE; }

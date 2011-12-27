@@ -819,6 +819,7 @@ int battle_calc_bg_damage(struct block_list *src, struct block_list *bl, int dam
 		case NJ_ZENYNAGE:
 		//case RK_DRAGONBREATH:
 		//case GN_HELLS_PLANT_ATK:
+		//case KO_MUCHANAGE:
 			break;
 		default:
 			if( flag&BF_SKILL )
@@ -882,6 +883,7 @@ int battle_calc_gvg_damage(struct block_list *src,struct block_list *bl,int dama
 	case NJ_ZENYNAGE:
 	//case RK_DRAGONBREATH:
 	//case GN_HELLS_PLANT_ATK:
+	//case KO_MUCHANAGE:
 		break;
 	default:
 		/* Uncomment if you want god-mode Emperiums at 100 defense. [Kisuka]
@@ -2342,6 +2344,36 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					if( sc && sc->data[SC_BLAST_OPTION] )
 						skillratio += skillratio * sc->data[SC_BLAST_OPTION]->val2 / 100;
 					break;
+				case KO_JYUMONJIKIRI:
+					skillratio = 150 * skill_lv;
+					{
+						struct status_change *tsc = status_get_sc(target);
+						if( tsc && tsc->data[SC_JYUMONJIKIRI] )// Bonus damage added when attacking target with Cross Slasher status. [Rytech]
+							skillratio += 75 * skill_lv;// Need official bonus damage formula.
+					}
+					break;
+				case KO_SETSUDAN:
+					skillratio = 100 * skill_lv;
+					{
+						struct status_change *tsc = status_get_sc(target);
+						if( tsc && tsc->data[SC_SPIRIT] )// Bonus damage added when target is soul linked. [Rytech]
+							skillratio += 100 * skill_lv * tsc->data[SC_SPIRIT]->val1;// Deals higher damage depending on level of soul link. Need official bonus damage formula.
+					}
+					break;
+				case KO_BAKURETSU:
+					skillratio = pc_checkskill(sd, NJ_TOBIDOUGU) * (10 * skill_lv);
+					break;
+				case KO_HAPPOKUNAI:
+					if( sd )
+					{
+						short index = sd->equip_index[EQI_AMMO];
+						if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_AMMO )
+							skillratio = sd->inventory_data[index]->atk * (50 + 10 * skill_lv);
+					}
+					break;
+				case KO_HUUMARANKA:
+					skillratio = pc_checkskill(sd, NJ_HUUMA) * (sstatus->agi + sstatus->dex) + 150 * skill_lv;
+					break;
 				// Physical Elemantal Spirits Attack Skills
 				case EL_CIRCLE_OF_FIRE:
 				case EL_FIRE_BOMB_ATK:
@@ -2947,17 +2979,29 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 		{	//Dual-wield
 			if( wd.damage )
 			{
-				skill = pc_checkskill(sd,AS_RIGHT);
+				if ((sd->class_&MAPID_UPPERMASK) == MAPID_ASSASSIN)
+				{skill = pc_checkskill(sd,AS_RIGHT);
 				wd.damage = wd.damage * (50 + (skill * 10)) / 100;
 				if( wd.damage < 1 )
-					wd.damage = 1;
+					wd.damage = 1;}
+				else
+				{skill = pc_checkskill(sd,KO_RIGHT);
+				wd.damage = wd.damage * (70 + (skill * 10)) / 100;
+				if( wd.damage < 1 )
+					wd.damage = 1;}
 			}
 			if( wd.damage2 )
 			{
-				skill = pc_checkskill(sd,AS_LEFT);
+				if ((sd->class_&MAPID_UPPERMASK) == MAPID_ASSASSIN)
+				{skill = pc_checkskill(sd,AS_LEFT);
 				wd.damage2 = wd.damage2 * (30 + (skill * 10)) / 100;
 				if( wd.damage2 < 1 )
-					wd.damage2 = 1;
+					wd.damage2 = 1;}
+				else
+				{skill = pc_checkskill(sd,KO_LEFT);
+				wd.damage2 = wd.damage2 * (50 + (skill * 10)) / 100;
+				if( wd.damage2 < 1 )
+					wd.damage2 = 1;}
 			}
 		}
 		else if( sd->status.weapon == W_KATAR && !skill_num )
@@ -3871,6 +3915,13 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		break;
 	case GN_HELLS_PLANT_ATK:
 		md.damage = sstatus->int_ * 4 * skill_lv * (10 / (10 - pc_checkskill(sd,AM_CANNIBALIZE)));//Need accurate official formula. [Rytech]
+		break;
+	case KO_MUCHANAGE:
+		md.damage = skill_get_zeny(skill_num ,skill_lv) / 2;
+		if (!md.damage) md.damage = 10;
+		md.damage =  md.damage + rand()%md.damage;
+		if (is_boss(target) || (tsd))
+			md.damage = md.damage / 2;
 		break;
 	}
 

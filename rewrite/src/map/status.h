@@ -575,6 +575,8 @@ typedef enum sc_type {
 	SC_ROCK_CRUSHER,
 	SC_ROCK_CRUSHER_ATK,
 
+	SC_JYUMONJIKIRI = 780,
+
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
 
@@ -1226,7 +1228,7 @@ enum si_type {
 //	SI_PARTYBOOKING_SEARCH_DEALY = 642,
 //	SI_PARTYBOOKING_REGISTER_DEALY = 643,
 //	SI_PERIOD_TIME_CHECK_DETECT_SKILL = 644,
-//	SI_KO_JYUMONJIKIRI = 645,
+	SI_KO_JYUMONJIKIRI = 645,
 //	SI_MEIKYOUSISUI = 646,
 //	SI_ATTHASTE_CASH = 647,
 //	SI_EQUIPPED_DIVINE_ARMOR = 648,

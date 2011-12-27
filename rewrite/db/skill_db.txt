@@ -1212,17 +1212,18 @@
 2537,9,6,16,0,0x1,0,2,1,yes,0,0,0,magic,0,	ALL_ODINS_POWER,Odin's Power
 
 // Kagerou/Oboro
-3001,0,6,4,0,0,0,1,1,no,0,0,0,none,0,		KO_YAMIKUMO,Dummy1
-3002,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		KO_RIGHT,Dummy2
-3003,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		KO_LEFT,Dummy3
-3004,3:4:5:6:7,8,1,0,0,0,5,2,no,0,0,0,weapon,0,		KO_JYUMONJIKIRI,Dummy4
-3005,2,6,1,0,0,0,5,1,no,0,0,0,weapon,0,		KO_SETSUDAN,Dummy5
-3006,7:8:9:10:11,6,1,0,0,0,5,1,no,0,0,0,weapon,0,		KO_BAKURETSU,Dummy6
-3007,0,6,1,0,0x2,4:4:4:4:5,5,1,no,0,0,0,weapon,0,		KO_HAPPOKUNAI,Dummy7// Truely INF 4, but will be 1 for now to display animation for testing.
+3001,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		KO_YAMIKUMO,Dark Cloud
+3002,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		KO_RIGHT,Right-Hand Training
+3003,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		KO_LEFT,Left-Hand Training
+3004,3:4:5:6:7,8,1,-1,0,0,5,-2,no,0,0,0,weapon,0,	KO_JYUMONJIKIRI,Cross Slasher
 
-3008,11,6,1,0,0,0,10,1,no,0,0,0,weapon,0,		KO_MUCHANAGE,Dummy8
-3009,9:10:11:12:13,6,2,0,0,0,5,1,no,0,0,0,weapon,0,		KO_HUUMARANKA,Dummy9
-3010,7,6,2,0,0,0,5,1,no,0,0,0,none,0,		KO_MAKIBISHI,Dummy10// Skill Info says its ground placed, but I dont see any UNIT animations for this....yet.
+3005,2,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	KO_SETSUDAN,Spirit Breaker
+3006,7:8:9:10:11,6,1,0,0x2,1:1:2:2:3,5,1,no,0,0,0,weapon,0,	KO_BAKURETSU,Exploding Kunai// Need explosive kunai item ID number.
+3007,0,6,4,-1,0x2,4:4:4:4:5,5,1,no,0,0,0,weapon,0,		KO_HAPPOKUNAI,Spray Kunai
+
+3008,11,8,1,0,0,0,10,-10,no,0,0x40,0,misc,0,		KO_MUCHANAGE,Over Throw
+3009,9:10:11:12:13,8,2,-1,0,0,5,-5,no,0,0,0,weapon,0,		KO_HUUMARANKA,Launch Huuma Shuriken
+3010,7,6,2,0,0,0,5,1,no,0,0,0,none,0,		KO_MAKIBISHI,Makibishi// Skill Info says its ground placed, but I dont see any UNIT animations for this....yet.
 
 3011,0,6,1,0,0,0,5,1,no,0,0,0,none,0,		KO_MEIKYOUSISUI,Dummy11// Is a INF 4 skill, but set to 1 for animation testing. Status is the animation
 3012,0,6,4,0,0,0,5,1,no,0,0,0,none,0,		KO_ZANZOU,Dummy12// Creates a clone of yourself....kinda. Uses monster ID 2308
@@ -1250,6 +1251,13 @@
 3027,7,6,1,0,0,0,5,1,no,0,0,0,none,0,		OB_OBOROGENSOU,Dummy27
 3028,1,6,4,0,0,0,5,1,no,0,0,0,none,0,		OB_OBOROGENSOU_TRANSITION_ATK,Dummy28
 3029,7,6,1,0,0,0,5,1,no,0,0,0,none,0,		OB_AKAITSUKI,Dummy29
+
+// Eclage Skills
+3031,7,6,16,0,0x1,0,1,1,no,0,0,0,none,0,	ECL_SNOWFLIP,Snow Flip
+3032,7,6,16,0,0x1,0,1,1,no,0,0,0,none,0,	ECL_PEONYMAMY,Peony Mamy
+3033,7,6,16,0,0x1,0,1,1,no,0,0,0,none,0,	ECL_SADAGUI,Sadagui
+3034,7,6,16,0,0x1,0,1,1,no,0,0,0,none,0,	ECL_SEQUOIADUST,Sequoia Dust
+3035,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		ECLAGE_RECALL,Return To Eclage
 
 // Homunculus Skills
 8001,9,6,4,0,0x1,0,5,1,no,0,0,0,magic,0,         HLIF_HEAL,Healing Touch
