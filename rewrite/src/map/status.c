@@ -419,7 +419,7 @@ void initChangeTables(void)
 	set_sc( RK_MILLENNIUMSHIELD  , SC_MILLENNIUMSHIELD  , SI_MILLENNIUMSHIELD  , SCB_NONE );
 	set_sc( RK_REFRESH           , SC_REFRESH           , SI_REFRESH           , SCB_NONE );
 	set_sc( RK_GIANTGROWTH       , SC_GIANTGROWTH       , SI_GIANTGROWTH       , SCB_STR );
-	set_sc( RK_STONEHARDSKIN     , SC_STONEHARDSKIN     , SI_STONEHARDSKIN     , SCB_NONE );
+	set_sc( RK_STONEHARDSKIN     , SC_STONEHARDSKIN     , SI_STONEHARDSKIN     , SCB_DEF|SCB_MDEF);
 	set_sc( RK_VITALITYACTIVATION, SC_VITALITYACTIVATION, SI_VITALITYACTIVATION, SCB_REGEN );
 	set_sc( RK_FIGHTINGSPIRIT    , SC_FIGHTINGSPIRIT    , SI_FIGHTINGSPIRIT    , SCB_WATK|SCB_ASPD );
 	set_sc( RK_ABUNDANCE         , SC_ABUNDANCE         , SI_ABUNDANCE         , SCB_NONE );
@@ -2479,7 +2479,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	sd->left_weapon.atkmods[1] = atkmods[1][sd->weapontype2];
 	sd->left_weapon.atkmods[2] = atkmods[2][sd->weapontype2];
 
-	if( pc_isriding(sd,OPTION_RIDING) && (sd->status.weapon == W_1HSPEAR || sd->status.weapon == W_2HSPEAR) )
+	if( pc_isriding(sd,OPTION_RIDING|OPTION_RIDING_DRAGON) && (sd->status.weapon == W_1HSPEAR || sd->status.weapon == W_2HSPEAR) )
 	{	//When Riding with spear, damage modifier to mid-class becomes 
 		//same as versus large size.
 		sd->right_weapon.atkmods[1] = sd->right_weapon.atkmods[2];
@@ -4420,6 +4420,8 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 		def -= def * sc->data[SC_STRIPSHIELD]->val2/100;
 	if (sc->data[SC_FLING])
 		def -= def * (sc->data[SC_FLING]->val2)/100;
+	if(sc->data[SC_STONEHARDSKIN])// Final DEF increase divided by 10 since were using classic (pre-renewal) mechanics. [Rytech]
+		def += sc->data[SC_STONEHARDSKIN]->val1;
 	if( sc->data[SC_FREEZING] )
 		def -= def * 3 / 10;
 	if( sc->data[SC_MARSHOFABYSS] )
@@ -4513,6 +4515,8 @@ static signed char status_calc_mdef(struct block_list *bl, struct status_change 
 		mdef += sc->data[SC_ENDURE]->val1;
 	if(sc->data[SC_CONCENTRATION])
 		mdef += 1; //Skill info says it adds a fixed 1 Mdef point.
+	if(sc->data[SC_STONEHARDSKIN])// Final MDEF increase divided by 10 since were using classic (pre-renewal) mechanics. [Rytech]
+		mdef += sc->data[SC_STONEHARDSKIN]->val1;
 	if( sc->data[SC_MARSHOFABYSS] )
 		mdef -= mdef * ( 6 + 6 * sc->data[SC_MARSHOFABYSS]->val3/10 + (bl->type == BL_MOB ? 5 : 3) * sc->data[SC_MARSHOFABYSS]->val2/36 ) / 100;
 	if(sc->data[SC_ANALYZE])
@@ -5774,33 +5778,27 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 
 	if( sc->data[SC_REFRESH] )
 	{
-		if( type >= SC_COMMON_MIN && type <= SC_COMMON_MAX && type != SC_STUN ) // Confirmed.
+		if( type >= SC_COMMON_MIN && type <= SC_COMMON_MAX) // Confirmed.
 			return 0; // Inmune
 		switch( type )
 		{
-		// Confirmed
-		case SC_DEEPSLEEP:
-		case SC_CHAOS:
-		case SC_BURNING:
-		case SC_FEAR:
-		case SC_WHITEIMPRISON:
-		// Not confirmed.
-		case SC_HALLUCINATION:
-		case SC_QUAGMIRE:
-		case SC_SIGNUMCRUCIS:
+		case SC_QUAGMIRE://Tester said it protects against this and decrease agi.
 		case SC_DECREASEAGI:
-		case SC_SLOWDOWN:
-		case SC_MINDBREAKER:
-		case SC_WINKCHARM:
-		case SC_ORCISH:
-		case SC_STRIPWEAPON:
-		case SC_STRIPSHIELD:
-		case SC_STRIPARMOR:
-		case SC_STRIPHELM:
-		case SC_BITE:
-		case SC_MAGNETICFIELD:
-		case SC_ADORAMUS:
-		case SC_VACUUM_EXTREME:
+		case SC_BURNING:
+		case SC_FREEZING:
+		case SC_WHITEIMPRISON://Need confirm. Protected against this in the past. [Rytech]
+		case SC_MARSHOFABYSS:
+		case SC_TOXIN:
+		case SC_PARALYSE:
+		case SC_VENOMBLEED:
+		case SC_MAGICMUSHROOM:
+		case SC_DEATHHURT:
+		case SC_PYREXIA:
+		case SC_OBLIVIONCURSE:
+		case SC_LEECHESEND://Need confirm. If it protects against nearly every Guillotine poison, it should work on this too right? [Rytech]
+		case SC_CRYSTALIZE:
+		case SC_DEEPSLEEP:
+		case SC_MANDRAGORA:
 			return 0;
 		}
 	}
@@ -7336,6 +7334,9 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_DEATHBOUND:
 			val2 = 500 + 100 * val1;
 			break;
+		case SC_STONEHARDSKIN:// Final DEF/MDEF increase divided by 10 since were using classic (pre-renewal) mechanics. [Rytech]
+			val1 = sd->status.job_level * pc_checkskill(sd, RK_RUNEMASTERY) / 4 / 10; //DEF/MDEF Increase
+			break;
 		case SC_FIGHTINGSPIRIT:
 			val_flag |= 1|2;
 			break;
@@ -7344,7 +7345,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			tick = 10000;
 			break;
 		case SC_GIANTGROWTH:
-			val2 = 10; // Triple damage success rate.
+			val2 = 15; // Triple damage success rate.
 			break;
 		case SC_VENOMIMPRESS:
 			val2 = 10 * val1;
