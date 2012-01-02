@@ -1,0 +1,74 @@
+Questions Needing Answers For 2011 Updates....
+
+Death Bound
+Document says skill cooldown is 3 seconds, yet iRO's skill desc says you must wait 5 seconds before re-casting again.
+Which is true?
+Also says you cant move for the 2 second duration of the skill. How do I code that in?
+
+Hundred Spear
+Past info said that the player must master the Spear Boomerang for the autocast chance to work.
+Yet iRO's skill desc says has a chance of activating the highest learned level of [Spear Boomerang] if the caster has learned that skill.
+Which is true?
+
+Wind Cutter
+Whats the fear status duration?
+Is the AoE size really 5x3 or is it 5x5?
+
+Ignition Break
+Is the bonus damage from having a fire element weapon equipt applied and affect by your base level, or its seprate?
+
+Dragon Training
+Document says size modifiers for spears is 100% for all sizes. Is it really 100% for small size or just medium and large sizes?
+
+Dragon Howling
+Is the fear status's immobilization 2 seconds reguardless of how I set fear's duration?
+
+Rune Mastery
+Success formula setup will need to be reworked or maybe entirely recoded since theirs much more to the success then just the skill level.
+Will do this one day when I have time.
+
+Millennium Shield
+Says number of shields summoned: 2 shields at 50% chance, 3 shields at 30% chance, 4 shields at 20% chance.
+I dont know if the way we have it coded makes the chances close to this. Right now its coded to work like this....
+Chance to get 4 shields =  50% <-- If random chance fails, it will try for 3 shields next.
+Chance to get 3 shields =  80% <-- If random chance fails, it will try for 2 shields next.
+Chance to get 2 shields = 100%
+Also says it stuns the player when 1 shield breaks. The stun lasts for 3 seconds and reduced by VIT right? Does this even work in 3CeAM?
+
+Crush Strike
+How do I code it as a self cast? I know how to make it self cast, but not how to apply damage through a status.
+Guess ill do it like Exeed Break? I only updated the damage formula to official for now.
+
+Refresh
+The document doesent say it, but a tester found that it removes and immunes against Decrease AGI and Quagmire. It also worked on
+White Imprison but not sure if it still does on it. Its been left in for now.
+
+Vitality Activation
+The disabled SP regen part is coded, but how do you code it to increase effectiveness of HP potions, heal skills
+and lower effectiveness of SP recovery items?
+
+Storm Blast
+Document says nothing about a aftercast, yet past data showed it had a 1 second cooldown. Then again that aftercast found wasnt from kRO.
+ill go by what the document said since other things in that old data was inaccurate like Earth Strain's item strip chance.
+
+Fighting Spirit
+The ASPD increase part was set to boost it by 2% * RK_RUNEMASTERY-LV-LEARNED as 10% will give a +4 increase to the base.
+But I think the ASPD boost is only working if your in a party, which is incorrect as it should always work.
+The code looks complex and im not bothering to fix it. Someone else can do that.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
