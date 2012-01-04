@@ -3140,7 +3140,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 	nk = skill_get_nk(skill_num);
 	flag.imdef = nk&NK_IGNORE_DEF?1:0;
 
-	// Skill Element Definition
+	// Skill Element Definition// I dont understand why were checking for skill level here. [Rytech]
 	if( skill_num == WL_HELLINFERNO )
 	{
 		if( skill_lv >= 0 )
@@ -3417,11 +3417,11 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						break;
 					case WL_SOULEXPANSION:
 						skillratio += 300 + 100 * skill_lv + sstatus->int_;
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+						if( s_level > 100 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
 						break;
 					case WL_FROSTMISTY:
 						skillratio += 100 + 100 * skill_lv;
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+						if( s_level > 100 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
 						break;
 					case WL_JACKFROST:
 						{
@@ -3429,41 +3429,41 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							if( tsc && tsc->data[SC_FREEZING] )
 							{
 								skillratio += 900 + 300 * skill_lv;
-								if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+								if( s_level > 100 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
 							}
 							else
 								skillratio += 400 + 100 * skill_lv;
-								if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+								if( s_level > 100 ) skillratio += skillratio * s_level / 150;	// Base level bonus.
 						}
 						break;
 					case WL_DRAINLIFE:
 						skillratio = 200 * skill_lv + sstatus->int_;
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+						if( s_level > 100 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
 						break;
 					case WL_CRIMSONROCK:
-						skillratio += 1200 + 300 * skill_lv;
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+						skillratio += 1200 + 300 * skill_lv;//2011 document says the 1300+ is applied after the base level bonus. Must confirm. [Rytech]
+						if( s_level > 100 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
 						break;
 					case WL_HELLINFERNO:
 						if( s_ele == ELE_FIRE )
 							skillratio = 60 * skill_lv;
 						else
 							skillratio = 240 * skill_lv;
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+						if( s_level > 100 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
 						break;
 					case WL_COMET:
 						i = distance_xy(target->x, target->y, sc->comet_x, sc->comet_y);
-						if( i < 2 ) skillratio = 2500 + 500 * skill_lv;
+						if( i < 4 ) skillratio = 2500 + 500 * skill_lv;
 						else
-						if( i < 4 ) skillratio = 1600 + 400 * skill_lv;
+						if( i < 6 ) skillratio = 2000 + 500 * skill_lv;
 						else
-						if( i < 6 ) skillratio = 1200 + 300 * skill_lv;
+						if( i < 8 ) skillratio = 1500 + 500 * skill_lv;
 						else
-						skillratio = 800 + 200 * skill_lv;
+						skillratio = 1000 + 500 * skill_lv;
 						break;
 					case WL_CHAINLIGHTNING_ATK:
-						skillratio += 100 + 300 * skill_lv;
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+						skillratio += 400 + 100 * skill_lv + 500;//Will replace the 500 with the bounce part to the formula soon. [Rytech]
+						if( s_level > 100 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
 						break;
 					case WL_EARTHSTRAIN:
 						skillratio += 1900 + 100 * skill_lv;
