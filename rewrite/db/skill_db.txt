@@ -950,9 +950,9 @@
 
 // Warlock
 2201,11,6,16,0,0,0,5,1,yes,0,0,0,magic,0,	WL_WHITEIMPRISON,White Imprison
-2202,11,8,1,8,0x2,1:1:1:2:2,5,-2,yes,0,0,0,magic,0,	WL_SOULEXPANSION,Soul Expansion
-2203,0,8,4,1,0x2,13,5,-3:-4:-5:-6:-7,yes,0,0,0,magic,0,	WL_FROSTMISTY,Frosty Misty
-2204,0,8,4,1,0x2,13,5,-5,yes,0,0,0,magic,0,	WL_JACKFROST,Jack Frost
+2202,11,8,1,8,0x2,1:1:1:2:2,5,-2,yes,0,0,0,magic,0,	WL_SOULEXPANSION,Soul Expansion// Is it dealing twice the damage on White Imprisoned targets?
+2203,0,8,4,1,0x2,9,5,-3:-4:-5:-6:-7,yes,0,0,0,magic,0,	WL_FROSTMISTY,Frosty Misty
+2204,0,8,4,1,0x2,5:6:7:8:9,5,-5,yes,0,0,0,magic,0,	WL_JACKFROST,Jack Frost
 2205,11,6,1,0,0x1,0,5,1,yes,0,0,0,magic,0,	WL_MARSHOFABYSS,Marsh of Abyss
 2206,0,6,4,0,0x1,0,5,1,yes,0,0,0,magic,0,	WL_RECOGNIZEDSPELL,Recognized Spell
 2207,7,6,1,2,0x3,1:2:2:3:3,5,1,yes,0,0,0,magic,0,	WL_SIENNAEXECRATE,Sienna Execrate
@@ -961,10 +961,10 @@
 2210,11,6,1,0,0,0,5,1,yes,0,0,0,magic,0,	WL_DRAINLIFE,Drain Life
 2211,11,8,1,3,0x2,3,5,-7,yes,0,0,0,magic,3,	WL_CRIMSONROCK,Crimson Rock
 2212,11,6,1,3,0,0,5,1,yes,0,0,0,magic,0,	WL_HELLINFERNO,Hell Inferno
-2213,11,8,2,0,0x2,15,5,-20,yes,0,0,0,magic,2,	WL_COMET,Comet //CHECK AoE in official code appears to be 15 x 15, yet casting circle is much bigger then that.
+2213,11,8,2,0,0x2,9,5,-20,yes,0,0,0,magic,2,	WL_COMET,Comet //Will turn this into a full ground placed AoE to use units one day. [Rytech]
 2214,11,6,1,0,0,3,5,1,yes,0,0,0,magic,0,		WL_CHAINLIGHTNING,Chain Lightning //CHECK Is the splash being used for the target search?
 2215,11,6,1,4,0,0,5,1,no,0,0,0,magic,0,		WL_CHAINLIGHTNING_ATK,Chain Lightning Attack
-2216,3,8,2,2,0,0,5,-6:-7:-8:-9:-10,yes,0,0,0,magic,0,	WL_EARTHSTRAIN,Earth Strain
+2216,6,8,2,2,0,0,5,-6:-7:-8:-9:-10,yes,0,0,0,magic,0,	WL_EARTHSTRAIN,Earth Strain
 2217,11,6,1,0,0,0,5,1,yes,0,0,0,magic,0,	WL_TETRAVORTEX,Tetra Vortex
 2218,11,6,1,3,0,0,5,1,no,0,0,0,magic,0,		WL_TETRAVORTEX_FIRE,Tetra Vortex Fire
 2219,11,6,1,1,0,0,5,1,no,0,0,0,magic,0,		WL_TETRAVORTEX_WATER,Tetra Vortex Water
