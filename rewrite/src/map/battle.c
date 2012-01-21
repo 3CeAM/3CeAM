@@ -1397,7 +1397,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 		}
 		else if( sc && sc->data[SC_FEARBREEZE] && sd->weapontype1 == W_BOW && (i = sd->equip_index[EQI_AMMO]) >= 0 && sd->inventory_data[i] && sd->status.inventory[i].amount > 1 )
 		{
-			short rate[] = { 4, 4, 7, 9, 10 };
+			short rate[] = { 12, 12, 21, 27, 30 };
 			if( sc->data[SC_FEARBREEZE]->val1 > 0 && sc->data[SC_FEARBREEZE]->val1 < 6 && rand()%100 < rate[sc->data[SC_FEARBREEZE]->val1 - 1] )
 			{
 				wd.type = 0x08;
@@ -2096,12 +2096,12 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio += 10 * skill_lv;
 					break;
 				case RA_ARROWSTORM:
-					skillratio += 100 + 50 * skill_lv;
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					skillratio += 900 + 80 * skill_lv;
+					if( s_level > 100 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
 					break;
 				case RA_AIMEDBOLT:
 					skillratio += 400 + 50 * skill_lv;
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( s_level > 100 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
 					if( tsc && (tsc->data[SC_BITE] || tsc->data[SC_ANKLE] || tsc->data[SC_ELECTRICSHOCKER]) )
 						wd.div_ = tstatus->size + 2 + rand()%2;
 					break;
@@ -2109,7 +2109,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio += 100 + 100 * skill_lv;
 					break;
 				case RA_WUGDASH:
-					skillratio = 500;
+					skillratio = 300;
 					break;
 				case RA_WUGSTRIKE:
 					skillratio = 200 * skill_lv;
@@ -2457,6 +2457,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					ATK_ADD(4*skill_lv);
 					break;
 				case RA_WUGDASH:
+					if(sd)
+						ATK_ADD(sd->weight / 8);//Dont need to divide weight here since official formula takes current weight * 10. [Rytech]
 				case RA_WUGSTRIKE:
 				case RA_WUGBITE:
 					if(sd)
@@ -3905,11 +3907,9 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 	case RA_CLUSTERBOMB:
 	case RA_FIRINGTRAP:
  	case RA_ICEBOUNDTRAP:
-		md.damage = (2 * skill_lv * (sstatus->dex + 100));
-		//if (status_get_lv(src) > 100) md.damage += md.damage * (s_level - 50) / 200 + 1.5;// Base level bonus. This formula is official, but left disabled for now for certain reasons. [Rytech]
-		//if (status_get_lv(src) > 100) md.damage += md.damage * (s_level - 50) / 200;// Base level bonus.
-		md.damage = md.damage * 2;// Without BaseLv Bonus
-		md.damage = md.damage + (5 * sstatus->int_) + (40 * pc_checkskill(sd,RA_RESEARCHTRAP));
+		md.damage = skill_lv * sstatus->dex + 5 * sstatus->int_;
+		if (status_get_lv(src) > 100) md.damage = md.damage * 150 / 100 + md.damage * s_level / 100;// Base level bonus.
+		md.damage = md.damage * (20 * pc_checkskill(sd,RA_RESEARCHTRAP)) / 50;
 		break;
 	case NC_SELFDESTRUCTION:
 		md.damage = pc_checkskill(sd,NC_MAINFRAME) * skill_lv * (status_get_sp(src) + sstatus->vit);
