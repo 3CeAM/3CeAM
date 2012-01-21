@@ -111,6 +111,35 @@ The damage formula isnt given in the documents but whats in 3CeAM is very close 
 Reading Spellbook
 Says nothing about cooldown time in the document. Does this mean the cooldown was removed?
 
+Fear Breeze
+The current way this skill is doing its random number of hits effect is not official and will need to be recoded.
+Will do a temp update to the skill for now.
+
+Aimed Bolt
+Will need to recheck and redo the size check and percentage on number of hits code.
+The number of arrows needed for this skill depends on the number of hits that will be done.
+
+Electric Shocker
+Must code in duration reduction formula.
+Where is the code for the percent of SP thats drained per second? I cant find it.
+
+Waug Bite
+Must code in duration reduction formula and how Tooth of Wug affects things.
+
+Tooth of Waug
+Read the info for Waug Bite. Must add that.
+
+Camouflage
+Here's a good one....
+While in Camouflage, CRIT chance and damage increases by 10% and damage increases by +30 (Fixed) per second respectively. However Ranger’s DEF will decrease by 5% per second.
+(CRIT is increased up to 100%, Damage is increased up to +300 (Fixed)
+How the hell do I code this to change every second? The duration is 10 seconds tops. So this means that by the end of the duration the DEF will be -50%?
+I cant even properly read the movement speed code. Skipping this one for now.
+
+Magenta Trap, Cobalt Trap, Maize Trap, Verdure Trap
+Didnt bother to look at or these these. Will one day.
+
+
 
 
 

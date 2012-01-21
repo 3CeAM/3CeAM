@@ -1098,7 +1098,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		break;
 	case RA_FIRINGTRAP:
 	case RA_ICEBOUNDTRAP:
-		sc_start(bl, (skillid == RA_FIRINGTRAP) ? SC_BURNING:SC_FREEZING, 40 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
+		sc_start(bl, (skillid == RA_FIRINGTRAP) ? SC_BURNING:SC_FREEZING, 50 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
 		break;
 	case NC_PILEBUNKER:
 		if( rand()%100 < 5 + 15*skilllv )
@@ -4134,7 +4134,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		}
 		else
 		{
-			struct skill_unit *su = BL_CAST(BL_SKILL,bl);			
+			struct skill_unit *su = BL_CAST(BL_SKILL,bl);
 			struct skill_unit_group* sg;
 
 			if( su && (sg=su->group) && skill_get_inf2(sg->skill_id)&INF2_TRAP && sg->src_id != src->id &&
@@ -6183,23 +6183,23 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_READYSTORM:  			case SC_READYDOWN:   			case SC_READYTURN:
 				case SC_READYCOUNTER:			case SC_DODGE:       			case SC_WARM:
 				case SC_SPEEDUP1:    			case SC_AUTOTRADE:   			case SC_CRITICALWOUND:
-				case SC_JEXPBOOST:	 			case SC_INVINCIBLE:  			case SC_INVINCIBLEOFF:
-				case SC_HELLPOWER:	 			case SC_MANU_ATK:    			case SC_MANU_DEF:
-				case SC_SPL_ATK:	 			case SC_SPL_DEF:	  			case SC_MANU_MATK:
-				case SC_SPL_MATK:    			case SC_RICHMANKIM:				case SC_ETERNALCHAOS:
-				case SC_DRUMBATTLE:				case SC_NIBELUNGEN:				case SC_ROKISWEIL:
-				case SC_INTOABYSS:				case SC_SIEGFRIED:				case SC_WHISTLE:
-				case SC_ASSNCROS:				case SC_POEMBRAGI:				case SC_APPLEIDUN:
-				case SC_HUMMING:				case SC_DONTFORGETME:			case SC_FORTUNE:
-				case SC_SERVICE4U:				case SC_FOOD_STR_CASH:			case SC_FOOD_AGI_CASH:
+				case SC_JEXPBOOST:	 		case SC_INVINCIBLE:  			case SC_INVINCIBLEOFF:
+				case SC_HELLPOWER:	 		case SC_MANU_ATK:    			case SC_MANU_DEF:
+				case SC_SPL_ATK:	 		case SC_SPL_DEF:	  		case SC_MANU_MATK:
+				case SC_SPL_MATK:    			case SC_RICHMANKIM:			case SC_ETERNALCHAOS:
+				case SC_DRUMBATTLE:			case SC_NIBELUNGEN:			case SC_ROKISWEIL:
+				case SC_INTOABYSS:			case SC_SIEGFRIED:			case SC_WHISTLE:
+				case SC_ASSNCROS:			case SC_POEMBRAGI:			case SC_APPLEIDUN:
+				case SC_HUMMING:			case SC_DONTFORGETME:			case SC_FORTUNE:
+				case SC_SERVICE4U:			case SC_FOOD_STR_CASH:			case SC_FOOD_AGI_CASH:
 				case SC_FOOD_VIT_CASH:			case SC_FOOD_DEX_CASH:			case SC_FOOD_INT_CASH:
 				case SC_FOOD_LUK_CASH:			case SC_ELECTRICSHOCKER:		case SC__STRIPACCESSORY:
-				case SC_SAVAGE_STEAK:			case SC_COCKTAIL_WARG_BLOOD:	case SC_MINOR_BBQ:
-				case SC_SIROMA_ICE_TEA:			case SC_DROCERA_HERB_STEAMED:	case SC_PUTTI_TAILS_NOODLES:
-				case SC_NEUTRALBARRIER_MASTER:	case SC_NEUTRALBARRIER:			case SC_STEALTHFIELD_MASTER:
+				case SC_SAVAGE_STEAK:			case SC_COCKTAIL_WARG_BLOOD:		case SC_MINOR_BBQ:
+				case SC_SIROMA_ICE_TEA:			case SC_DROCERA_HERB_STEAMED:		case SC_PUTTI_TAILS_NOODLES:
+				case SC_NEUTRALBARRIER_MASTER:		case SC_NEUTRALBARRIER:			case SC_STEALTHFIELD_MASTER:
 				case SC_STEALTHFIELD:			case SC_GIANTGROWTH:			case SC_MILLENNIUMSHIELD:
-				case SC_REFRESH:				case SC_STONEHARDSKIN:			case SC_VITALITYACTIVATION:
-				case SC_FIGHTINGSPIRIT:			case SC_ABUNDANCE:				case SC__SHADOWFORM:
+				case SC_REFRESH:			case SC_STONEHARDSKIN:			case SC_VITALITYACTIVATION:
+				case SC_FIGHTINGSPIRIT:			case SC_ABUNDANCE:			case SC__SHADOWFORM:
 					continue;
 				case SC_ASSUMPTIO:
 					if( bl->type == BL_MOB )

@@ -1249,27 +1249,27 @@
 
 //===== Ranger =============================
 //-- RA_ARROWSTORM
-2233,2500,0,3000,0,0,0,500
+2233,2000:2200:2400:2600:2800:3000:3200:3400:3600:3800,0,5000:4800:4600:4400:4200:4000:3800:3600:3400:3200,0,0,0,0
 //-- RA_FEARBREEZE
 2234,2000,0,0,0,60000:90000:120000:150000:180000,0,2000
 
 //-- RA_AIMEDBOLT
-2236,5000,1000,0,0,0,0,1000
+2236,4500,1000,0,0,0,0,500
 //-- RA_DETONATOR //CHECK Is this timer needed for this skill at all???
 2237,0,0,0,0,1000,0,0
-//-- RA_ELECTRICSHOCKER //CHECK Is duration 1 and 2 what I think it is?
-2238,0,0,0,0,15000,20000,0
-//-- RA_CLUSTERBOMB //CHECK Thinking the same for this one too.
+//-- RA_ELECTRICSHOCKER //Duration is reduced by targets AGI and VIT.
+2238,0,0,0,0,15000,20000:22000:24000:26000:28000,0
+//-- RA_CLUSTERBOMB
 2239,0,0,0,0,15000,0,0
 //-- RA_WUGMASTERY
 2240,0,1000,0,0,0,0,0
 //-- RA_WUGRIDER
 2241,0,500,0,0,0,0,0
 //-- RA_WUGDASH
-2242,0,2000,0,0,0,0,0
+2242,0,0,0,0,0,0,0
 
-//-- RA_WUGBITE //CHECK Its found that the no movement duration is bugged. Keeping this at 10 sec for now.
-2244,0,2000,5000,0,10000,0,0
+//-- RA_WUGBITE //Must code in duration reduction formula and how Tooth of Wug affects things.
+2244,0,2000,4000:6000:8000:10000:12000,0,1000:2000:3000:4000:5000,0,0
 
 //-- RA_SENSITIVEKEEN
 2246,0,3000,0,0,0,0,0
@@ -1285,9 +1285,9 @@
 //-- RA_VERDURETRAP
 2252,0,2000,0,0,15000,10000,0
 //-- RA_FIRINGTRAP
-2253,0,0,0,0,15000,25000,0
+2253,0,0,0,0,15000,15000,0
 //-- RA_ICEBOUNDTRAP
-2254,0,0,0,0,15000,25000,0
+2254,0,0,0,0,15000,20000,0
 //==========================================
 
 //===== Mechanic ===========================
