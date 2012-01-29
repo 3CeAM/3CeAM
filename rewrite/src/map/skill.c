@@ -371,7 +371,7 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, int skill
 	}
 
 	if( skill_id == AB_HIGHNESSHEAL )
-		hp = (hp * (20 + 3 * (skill_lv - 1))) / 10;
+		hp = (hp * (200 + 30 * (skill_lv - 1))) / 100;
 
 	if( ((target && target->type == BL_MER) || !heal) && skill_id != NPC_EVILLAND )
 		hp >>= 1;
@@ -1060,7 +1060,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		break;
 	case AB_ADORAMUS:
 		if( tsc && !tsc->data[SC_DECREASEAGI] ) //Prevent duplicate agi-down effect.
-			sc_start(bl, SC_ADORAMUS, 100, skilllv, skill_get_time(skillid, skilllv));
+			sc_start(bl, SC_ADORAMUS, 4*skilllv+sd->status.job_level/2, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case WL_CRIMSONROCK:
 		sc_start(bl, SC_STUN, 40, skilllv, skill_get_time(skillid, skilllv));
@@ -7382,8 +7382,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case AB_CLEMENTIA:
 	case AB_CANTO:
 		{
-			int bless_lv = pc_checkskill(sd,AL_BLESSING);
-			int agi_lv = pc_checkskill(sd,AL_INCAGI);
+			int bless_lv = pc_checkskill(sd,AL_BLESSING)+sd->status.job_level/10;
+			int agi_lv = pc_checkskill(sd,AL_INCAGI)+sd->status.job_level/10;
 			if( sd == NULL || sd->status.party_id == 0 || flag&1 )
 				clif_skill_nodamage(bl, bl, skillid, skilllv, sc_start(bl,type,100,
 					(skillid == AB_CLEMENTIA)? bless_lv : (skillid == AB_CANTO)? agi_lv : skilllv, skill_get_time(skillid,skilllv)));
@@ -7426,12 +7426,16 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case AB_LAUDAAGNUS:
 		if( flag&1 || sd == NULL )
 		{
-			if( (tsc && (tsc->data[SC_FREEZE] || tsc->data[SC_STONE] ||
-				tsc->data[SC_BLIND]))&& (rand()%100 < 30+5*skilllv) )
+			if( (tsc && (tsc->data[SC_STONE] || tsc->data[SC_FREEZE] || 
+				tsc->data[SC_BLIND] || tsc->data[SC_BURNING] || 
+				tsc->data[SC_FREEZING] || tsc->data[SC_CRYSTALIZE])) && (rand()%100 < 40+10*skilllv) )
 			{
-				status_change_end(bl, SC_FREEZE, -1);
 				status_change_end(bl, SC_STONE, -1);
+				status_change_end(bl, SC_FREEZE, -1);
 				status_change_end(bl, SC_BLIND, -1);
+				status_change_end(bl, SC_BURNING, -1);
+				status_change_end(bl, SC_FREEZING, -1);
+				status_change_end(bl, SC_CRYSTALIZE, -1);
 			}
 			// Success rate only applies to the curing effect and not stat bonus.
 			clif_skill_nodamage(bl, bl, skillid, skilllv,
@@ -7445,12 +7449,15 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case AB_LAUDARAMUS:
 		if( flag&1 || sd == NULL )
 		{
-			if( (tsc && (tsc->data[SC_SLEEP] || tsc->data[SC_STUN] ||
-				tsc->data[SC_SILENCE]))&& (rand()%100 < 30+5*skilllv) )
+			if( (tsc && (tsc->data[SC_STUN] || tsc->data[SC_SLEEP] || 
+				tsc->data[SC_SILENCE] || tsc->data[SC_DEEPSLEEP] || 
+				tsc->data[SC_MANDRAGORA])) && (rand()%100 < 40+10*skilllv) )
 			{
-				status_change_end(bl, SC_SLEEP, -1);
 				status_change_end(bl, SC_STUN, -1);
+				status_change_end(bl, SC_SLEEP, -1);
 				status_change_end(bl, SC_SILENCE, -1);
+				status_change_end(bl, SC_DEEPSLEEP, -1);
+				status_change_end(bl, SC_MANDRAGORA, -1);
 			}
 			clif_skill_nodamage(bl, bl, skillid, skilllv,
 				sc_start(bl, type, 100, skilllv, skill_get_time(skillid, skilllv)));
@@ -7462,10 +7469,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case AB_CLEARANCE:
-		if( flag&1 || (i = skill_get_splash(skillid, skilllv)) < 1 )
+		if( flag&1 || (i = skill_get_splash(skillid, skilllv)) < 1 )//I dont see any info about the skill splashing anymore. Should I remove? [Rytech]
 		{ //As of the behavior in official server Clearance is just a super version of Dispell skill. [Jobbie]
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
-			if((dstsd && (dstsd->class_&MAPID_UPPERMASK) == MAPID_SOUL_LINKER) || rand()%100 >= 30 + 10 * skilllv)
+			if((dstsd && (dstsd->class_&MAPID_UPPERMASK) == MAPID_SOUL_LINKER) || rand()%100 >= 60 + 8 * skilllv)//Are Soul Linkers immune to this? [Rytech]
 			{
 				if (sd)
 					clif_skill_fail(sd,skillid,0,0,0);
@@ -7530,6 +7537,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 	case AB_SILENTIUM:
 		// Should the level of Lex Divina be equivalent to the level of Silentium or should the highest level learned be used? [LimitLine]
+		// The duration of the inflicted silence ailment is relative to the maximum level of Lex Divina learned. Thats from iRO wiki. [Rytech]
 		map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid, skilllv), BL_CHAR,
 			src, PR_LEXDIVINA, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
 		clif_skill_nodamage(src, bl, skillid, skilllv, 1);

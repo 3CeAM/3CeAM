@@ -3241,9 +3241,8 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 			case AB_EPICLESIS:
 				ad.damage = ??;
 				break;*/
-			case AB_RENOVATIO:
-				//Damage calculation from iRO wiki. [Jobbie]
-				ad.damage = (int)((15 * s_level) + (1.5 * sstatus->int_));
+			case AB_RENOVATIO://Changed to a official formula, but this damage will later be applied differently through a duration. [Rytech]
+				ad.damage = 10 * s_level + sstatus->int_;
 				break;
 			default:
 			{

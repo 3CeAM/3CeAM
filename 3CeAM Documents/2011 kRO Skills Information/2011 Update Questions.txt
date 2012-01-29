@@ -139,6 +139,39 @@ I cant even properly read the movement speed code. Skipping this one for now.
 Magenta Trap, Cobalt Trap, Maize Trap, Verdure Trap
 Didnt bother to look at or these these. Will one day.
 
+Adoramus
+A bit messy looking and may need some parts recoded or cleaned up.
+Also need to check the Blind and AGI Down status.
+
+Coluceo Heal
+Skill appears to cast the skill "Heal" on all party members.
+Well need to recode this part and make it heal using the new official formula one day.
+
+Epiclesis
+Must check what all hidden status's it removes. Currently only removes Hiding and Cloaking status.
+Also is the AoE 5x5 or 7x7? Getting different info from different sources.
+
+Praefatio
+Need to code a seprate formula for the skills barrier HP formula. Now do I add a party member count check?
+Formula is (10 + 2 * Kyrie Eleison SkillLV + Number of Party Members x 2)%
+
+Lauda Agnus and Lauda Ramus
+Supposed to only give the VIT and LUK bonuses on skill cast if the party member is not infected with any of the statuses the skill cures.
+In the 3CeAM code its checking to see if a player is affected with any of the status's the skill heals before attempting to hit a random chance to heal them.
+This isnt really needed is it?
+
+Eucharistica
+Attack and resistance may be incorrect as im not exactly sure on what element or races it works on.
+Also may not be increasing damage properly or at all. Will recheck later.
+
+Renovatio
+Need to change the damage from the skill on undead to the new damage formula.
+Buff should work as a debuff on undead targets and stay active for the duration and deal damage every 5 seconds.
+
+Clearance
+You would not believe the number of status's it can and cant remove. The skill mainly looks like a buffed up version of the Sage's Dispell.
+Only downside is it can remove some buffs as well and cant be used on enemy players. Can only be used on players in your party or enemy monsters.
+Need to test if it works only on monsters and players in party and it should work ONLY on the targeted player.
 
 
 
