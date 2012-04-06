@@ -959,7 +959,7 @@ int battle_addmastery(struct map_session_data *sd,struct block_list *target,int 
 		damage += (skill * 10);
 	
 	if( pc_isriding(sd, OPTION_MADO) )
-		damage += 20 + 20 * pc_checkskill(sd, NC_MADOLICENCE);
+		damage += 15 * pc_checkskill(sd, NC_MADOLICENCE);
 
 	if(type == 0)
 		weapon = sd->weapontype1;
@@ -998,8 +998,8 @@ int battle_addmastery(struct map_session_data *sd,struct block_list *target,int 
 		case W_2HMACE:
 			if((skill = pc_checkskill(sd,PR_MACEMASTERY)) > 0)
 				damage += (skill * 3);
-			if((skill = pc_checkskill(sd,NC_TRAININGAXE)) > 0)//Code shows it also works with Maces, but also shows maces is 4 instead of 5. Will recheck later. [Rytech]
-				damage += (skill * 5);//Reminder to also recheck the HIT for this skill on Maces as well when I do.
+			if((skill = pc_checkskill(sd,NC_TRAININGAXE)) > 0)
+				damage += (skill * 4);
 			break;
 		case W_FIST:
 			if((skill = pc_checkskill(sd,TK_RUN)) > 0)
@@ -2149,7 +2149,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					//NOTE: Their's some other factors that affects damage, but not sure how exactly. Will recheck one day. [Rytech]
 					break;
 				case NC_AXEBOOMERANG:
-					skillratio += 60 + 40 * skill_lv;
+					skillratio += 150 + 50 * skill_lv;
 					if( sd )
 					{
 						short index = sd->equip_index[EQI_HAND_R];
@@ -2159,12 +2159,15 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case NC_POWERSWING:
-					skillratio += 80 + 20 * skill_lv + sstatus->str + sstatus->dex;
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					skillratio += 200 + 100 * skill_lv;
+					if( s_level > 100 ) skillratio += (sstatus->str + sstatus->dex) * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case NC_AXETORNADO:
 					skillratio += 100 + 100 * skill_lv + sstatus->vit;
 					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( sstatus->rhw.ele == ELE_WIND )	skillratio +=  skillratio * 25 / 100;	// 1.25x Damage if the weapon is wind element. [Rytech]
+					i = distance_bl(src,target);
+					if( i > 2 ) skillratio = skillratio * 75 / 100;
 					break;
 				case SC_FATALMENACE:
 					skillratio += 100 * skill_lv;
@@ -3911,7 +3914,7 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		md.damage = md.damage * (20 * pc_checkskill(sd,RA_RESEARCHTRAP)) / 50;
 		break;
 	case NC_SELFDESTRUCTION:
-		md.damage = pc_checkskill(sd,NC_MAINFRAME) * skill_lv * (status_get_sp(src) + sstatus->vit);
+		md.damage = (1 + skill_lv) * (8 + pc_checkskill(sd,NC_MAINFRAME)) * (status_get_sp(src) + sstatus->vit);
 		if (status_get_lv(src) > 100) md.damage = md.damage * s_level / 150;// Base level bonus.
 		if (sd) md.damage = md.damage + status_get_hp(src);
 		status_set_sp(src, 0, 0);

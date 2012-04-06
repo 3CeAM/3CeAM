@@ -4,6 +4,16 @@ Note: Just to toss in here and remember, Frost Nova's freeze chance is incorrect
 
 Note2: Must recheck burning status.
 
+Note3: Recheck all Mechanic skill fuel requirements.
+
+Note4: The changes in the notes im looking at for Auguest 31 are all applied to the main server.
+Im guessing some of them didnt make it in. But then what gets me is if a change was made on sakray, but didnt make it into main,
+then why is their no info of it being changed back on sakray? Thats the confusing part. Needing confirms on these certain things
+makes it difficult to officially update these skills. For now ill have to do the best I can to my knowledge.
+Maybe they forgot to add some stuff to the update notes.
+
+Note5: Keep track of patch notes for April 13, 2011, May 18, 2011, and Auguest 31, 2011 for Mechanic.
+
 Death Bound
 Document says skill cooldown is 3 seconds, yet iRO's skill desc says you must wait 5 seconds before re-casting again.
 Which is true?
@@ -173,16 +183,75 @@ You would not believe the number of status's it can and cant remove. The skill m
 Only downside is it can remove some buffs as well and cant be used on enemy players. Can only be used on players in your party or enemy monsters.
 Need to test if it works only on monsters and players in party and it should work ONLY on the targeted player.
 
+Mado License
+Still requires level 1 to drive a Mado? Looks like it.
 
+Pile Bunker
+Success chance appears to have gone up, even tho the balance notes says it was decreased.
+Balance notes say range is 3/4/5, but was changed back to 3 cells for all levels on March 7, 2012.
 
+Cold Slower
+Says duration is 7 * SkillLV seconds. Is this true for both status?
 
+Arms Cannon
+SP requirement in skillinfolist.lub and whats said in the balance update is different. Which is correct?
+Also remembering what I found in the zone their may be some extra damage formula data.
+I couldnt figure out what it was exactly. Think something about the cannonball and its element or weight?
+Balance note from April of 2011 says changed from ground targeted to enemy targeted with splash AoE. Doesent say it in Auguest notes tho or in balance document.
+Must check for confirm for the above.
 
+Hovering
+Does it still boost movement speed? Will leave it set to 10 until confirm.
+Their's a good number of skills that wont affect the Mechanic when in this status. Will have to do this later.
 
+Self Destruction
+SP requirement is 300, but balance notes says has no SP requirement anymore. Recheck and confirm later before applying.
 
+Shape Shift
+I dont know if their's a cleaner way to add in the item requirements. Works ok as is tho.
 
+Emergency Cool
+This skill will need most of the code redone, as well as part of Mainframe to add a official working heat guage system.
+Zone mine shows it checks for 3 different cooling system items, starting with the special one. If not detected it checks
+for the advance one. If not detected it checks for the normal one. Which one is found determands how much the heat counter
+is decreased.
 
+Infrared Scan
+Says unhides targets. Does this mean it unhides any kind of hiding or cloaked like status?
 
+Magnetic Field
+Says the status on players is canceled if they take earth damage or are affected by Quagmire.
+ill need to check how our current code works before adding this later.
+No info in patch notes about variable cast time being removed, but document shows no cast time ether. ill follow whats in the patch notes here.
 
+Neutral Barrier
+Cooldown in document confirmed to be false. Patch notes says its 90 seconds. This cooldown will be used on this skill, Magnetic Field, and Stealth Field.
+Note: Check top of status.c for adding whatever.
+Need to add the DEF/MDEF increase part of the code.
+Looking around in the code it appears ill have to do some serious recoding on most parts and also remove some code.
+ill do that on the next revision to avoid accidently reverting other things.
+iRO Wiki says being in the AoE protects you from Earthquake which is a splash skill, but not Evil Land. Does it block splash AoE's and not ground AoE's
+or it just blocks Earthquake because its magic? Need to test and confirm.
 
+Stealth Field
+Must confirm if cooldown is 90 seconds just like Neutral Barrier. April 2011 says it was changed, but Auguest 2011 doesent say.
+Supposed to take a % of SP while active. How do I do that in the code?
+Says in the patch notes "Ranged damage reduction is changed from 30% to 20%". This skill reduces ranged damage? Must confirm.
 
+Repair
+Code tested and appears to be properly working on players with OPTION_MADO active. (Reading the code in skill.c im not sure how, but it works)
+Unable to make a actural formula to follow by. Will have to revisit later and set a healing amount for each level seprate. But how to do that without the messyness?
 
+Axe Tornado
+Upon checking the coding on how to treat this skill in the skill.c file, questions started appearing in my head on how all these splash
+skills should really be treated. Theirs a number of different ways to treat them and appears different not only for type like weapon, magic, or misc,
+but also on how the skills is used or targeted, and how the animation works. 
+
+FAW's Silver Sniper and Magic Decoy
+Says on May 18, 2011 patch notes cast time cant be interupted anymore. Yet it says nothing about it in the Auguest 31, 2011 patch notes.
+Should I apply this change? May want to get a confirm on the change first.
+Must also figure out how to add the HP formula's for both FAW skills as each one is different.
+
+FAW Removal
+Says in May 18, 2011 patch notes the cast range was increased, but says nothing about it in the Auguest 31, 2011 patch notes.
+But upon checking the skillinfo.lub file it shows the range is still increased. Should the change be applied? Want to confirm first as a range for this sounds not right.

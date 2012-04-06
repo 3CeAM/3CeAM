@@ -466,6 +466,7 @@ void initChangeTables(void)
 	add_sc( RA_FIRINGTRAP        , SC_BURNING         );
 	set_sc( RA_ICEBOUNDTRAP      , SC_FREEZING        , SI_FROSTMISTY      , SCB_NONE );
 
+	//Add Flame Thrower, Cold Slower, whatever else is needed
 	set_sc( NC_ACCELERATION      , SC_ACCELERATION    , SI_ACCELERATION    , SCB_SPEED );
 	set_sc( NC_HOVERING          , SC_HOVERING        , SI_HOVERING        , SCB_SPEED );
 	set_sc( NC_SHAPESHIFT        , SC_SHAPESHIFT      , SI_SHAPESHIFT      , SCB_DEF_ELE );
@@ -2698,8 +2699,10 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 			status->rhw.range += skill;
 		}
 	}
-	if( (sd->status.weapon == W_1HAXE || sd->status.weapon == W_2HAXE || sd->status.weapon == W_MACE || sd->status.weapon == W_2HMACE) && (skill = pc_checkskill(sd,NC_TRAININGAXE)) > 0 )
+	if( (sd->status.weapon == W_1HAXE || sd->status.weapon == W_2HAXE) && (skill = pc_checkskill(sd,NC_TRAININGAXE)) > 0 )
 		status->hit += skill * 3;
+	if( (sd->status.weapon == W_MACE || sd->status.weapon == W_2HMACE) && (skill = pc_checkskill(sd,NC_TRAININGAXE)) > 0 )
+		status->hit += skill * 2;
 
 // ----- FLEE CALCULATION -----
 
@@ -2721,7 +2724,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	}
 
 	if( pc_isriding(sd,OPTION_MADO) && (skill = pc_checkskill(sd,NC_MAINFRAME)) > 0 )
-		status->def += skill < 3 ? 1 + 3 * skill : 4 * skill - 1;
+		status->def += 2 + 2 * skill;
 
 	if( !battle_config.weapon_defense_type && status->def > battle_config.max_def )
 	{
@@ -2849,8 +2852,8 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	}
 	if( (skill = pc_checkskill(sd,NC_RESEARCHFE)) > 0 )
 	{
-		sd->subele[ELE_FIRE] += skill * 10;
 		sd->subele[ELE_EARTH] += skill * 10;
+		sd->subele[ELE_FIRE] += skill * 10;
 	}
 
 	if( sc->count )
@@ -4654,7 +4657,7 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				if( sc->data[SC__GROOMY] )
 					val = max( val, sc->data[SC__GROOMY]->val2);
 				if( sc->data[SC_STEALTHFIELD_MASTER] )
-					val = max( val, 30 );
+					val = max( val, 20 );//Description says decreases casters movement speed by 20%. [Rytech]
 				if( sc->data[SC_BANDING_DEFENCE] )
 					val = max( val, sc->data[SC_BANDING_DEFENCE]->val1 );//+90% walking speed.
 				if( sc->data[SC_ROCK_CRUSHER_ATK] )
@@ -9558,7 +9561,7 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 				break; // Time out
 			if( sce->val2 == bl->id )
 			{
-				if( !status_charge(bl,0,14 + (3 * sce->val1)) )
+				if( !status_charge(bl,0,50) )
 					break; // No more SP status should end, and in the next second will end for the other affected players
 			}
 			else

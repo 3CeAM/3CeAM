@@ -1101,24 +1101,31 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl, (skillid == RA_FIRINGTRAP) ? SC_BURNING:SC_FREEZING, 50 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
 		break;
 	case NC_PILEBUNKER:
-		if( rand()%100 < 5 + 15*skilllv )
-		{ //Deactivatable Statuses: Kyrie Eleison, Auto Guard, Steel Body, Assumptio, and Millennium Shield
+		if( rand()%100 < 25 + 15*skilllv )
+		{ //Status's Deactivated By Pile Bunker
 			status_change_end(bl, SC_KYRIE, -1);
 			status_change_end(bl, SC_AUTOGUARD, -1);
+			status_change_end(bl, SC_REFLECTSHIELD, -1);
+			status_change_end(bl, SC_DEFENDER, -1);
 			status_change_end(bl, SC_STEELBODY, -1);
 			status_change_end(bl, SC_ASSUMPTIO, -1);
 			status_change_end(bl, SC_MILLENNIUMSHIELD, -1);
+			status_change_end(bl, SC_REFLECTDAMAGE, -1);
+			status_change_end(bl, SC_PRESTIGE, -1);
+			status_change_end(bl, SC_BANDING, -1);
+			status_change_end(bl, SC_GT_CHANGE, -1);
+			status_change_end(bl, SC_GT_REVITALIZE, -1);
 		}
 		break;
 	case NC_FLAMELAUNCHER:
-		sc_start4(bl, SC_BURNING, 50 + 10 * skilllv, skilllv, 1000, src->id, 0, skill_get_time2(skillid, skilllv));
+		sc_start4(bl, SC_BURNING, 20 + 10 * skilllv, skilllv, 1000, src->id, 0, skill_get_time2(skillid, skilllv));
 		break;
 	case NC_COLDSLOWER:
 		sc_start(bl, SC_FREEZE, 10 * skilllv, skilllv, skill_get_time(skillid, skilllv));
 		sc_start(bl, SC_FREEZING, 20 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
 		break;
 	case NC_POWERSWING:
-		sc_start(bl, SC_STUN, 5*skilllv, skilllv, skill_get_time(skillid, skilllv));
+		sc_start(bl, SC_STUN, 10, skilllv, skill_get_time(skillid, skilllv));
 		if( rand()%100 < 5*skilllv )
 			skill_castend_damage_id(src, bl, NC_AXEBOOMERANG, pc_checkskill(sd, NC_AXEBOOMERANG), tick, 1);
 		break;
@@ -3335,9 +3342,9 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 
 	case NC_BOOSTKNUCKLE:
 	case NC_PILEBUNKER:
-	case NC_VULCANARM:
+	//case NC_VULCANARM:
 	case NC_COLDSLOWER:
-	case NC_ARMSCANNON:
+	//case NC_ARMSCANNON:
 		// Heat of the mado
 		if (sd) pc_overheat(sd,1);
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
@@ -3547,6 +3554,8 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case WL_COMET:
 	case RA_ARROWSTORM:
 	case RA_WUGDASH:
+	case NC_VULCANARM:
+	case NC_ARMSCANNON:
 	case NC_SELFDESTRUCTION:
 	case NC_AXETORNADO:
 	case LG_MOONSLASHER:
@@ -3595,6 +3604,9 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 				skill_area_temp[4] = bl->x;
 				skill_area_temp[5] = bl->y;
 			}
+
+			if( skillid == NC_VULCANARM || skillid == NC_ARMSCANNON )
+				if (sd) pc_overheat(sd,1);
 
 			// if skill damage should be split among targets, count them
 			//SD_LEVEL -> Forced splash damage for Auto Blitz-Beat -> count targets
@@ -4173,8 +4185,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case NC_INFRAREDSCAN:
 		if( flag&1 )
 		{ //TODO: Need a confirmation if the other type of hidden status is included to be scanned. [Jobbie]
-			if( rand()%100 < 50 )
-				sc_start(bl, SC_INFRAREDSCAN, 10000, skilllv, skill_get_time(skillid, skilllv));
+			sc_start(bl, SC_INFRAREDSCAN, 10000, skilllv, skill_get_time(skillid, skilllv));
 			status_change_end(bl, SC_HIDING, -1);
 			status_change_end(bl, SC_CLOAKING, -1);
 			status_change_end(bl, SC_CLOAKINGEXCEED, -1); // Need confirm it.
@@ -9576,7 +9587,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		break;
 
 	case NC_COLDSLOWER:
-	case NC_ARMSCANNON:
+	//case NC_ARMSCANNON:
 	case RK_DRAGONBREATH:
 	case WM_LULLABY_DEEPSLEEP:
 		i = skill_get_splash(skillid,skilllv);
@@ -15709,7 +15720,7 @@ int skill_magicdecoy(struct map_session_data *sd, int nameid)
 	y = sd->menuskill_itemused&0xffff;
 	sd->menuskill_itemused = sd->menuskill_val = 0;
 
-	class_ = (nameid == 990 || nameid == 991) ? 2043 + nameid - 990 : (nameid == 992) ? 2046 : 2045;
+	class_ = (nameid == 6360 || nameid == 6361) ? 2043 + nameid - 6360 : (nameid == 6362) ? 2046 : 2045;
 
 
 	md =  mob_once_spawn_sub(&sd->bl, sd->bl.m, x, y, sd->status.name, class_, "");
