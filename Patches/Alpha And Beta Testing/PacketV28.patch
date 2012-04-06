@@ -1,7 +1,7 @@
-Index: trunk/rewrite/db/packet_db.txt
+Index: rewrite/db/packet_db.txt
 ===================================================================
---- trunk/rewrite/db/packet_db.txt	(revision 654)
-+++ trunk/rewrite/db/packet_db.txt	(working copy)
+--- rewrite/db/packet_db.txt	(revision 656)
++++ rewrite/db/packet_db.txt	(working copy)
 @@ -56,7 +56,7 @@
  0x008c,-1,globalmessage,2:4
  0x008d,-1
@@ -136,7 +136,7 @@ Index: trunk/rewrite/db/packet_db.txt
  //0x07ec,6
  //0x07ed,8
  //0x07ee,6
-@@ -1586,5 +1586,82 @@
+@@ -1586,5 +1586,99 @@
  0x0842,6,recall2,2
  0x0843,6,remove2,2
  
@@ -211,6 +211,7 @@ Index: trunk/rewrite/db/packet_db.txt
 +//2011-11-22
 +0x0835,19,wanttoconnection,2:6:10:14:18
 +0x0898,6,getcharnamerequest,2
++//0x0368,6,solvecharname,2 <-- How do I trigger the client to send a packet for this? Need to know so I can capture.
 +0x0899,6,ticksend,2
 +0x0896,5,changedir,2:4
 +0x0892,5,walktoxy,2
@@ -220,10 +221,26 @@ Index: trunk/rewrite/db/packet_db.txt
 +0x0363,90,useskilltoposinfo,2:4:6:8:10
 +0x0436,6,dropitem,2:4
 +0x0893,6,takeitem,2
-Index: trunk/rewrite/src/char/char.c
++0x0891,26,friendslistadd,2
++0x089e,5,hommenu,4
++0x0895,26,partyinvite2,2
++//0x0281,36,storagepassword,0 <-- Lacking Password Support To Check
++0x0202,18,bookingregreq,2:4:6
++0x0369,-1,itemlistwindowselected,2:4:8
++0x0887,-1,reqopenbuyingstore,2:4:8:9:89
++0x08a9,2,reqclosebuyingstore,0
++0x088c,6,reqclickbuyingstore,2
++0x089d,-1,reqtradebuyingstore,2:4:8:12
++//0x0439,8,useitem,2:4 <-- Isnt needed since packet didnt change.
++//0x08ab,-1,searchstoreinfo,2:4:5:9:13:14:15 <-- Unable to get to work, along with the 2 below packets. Function not working?
++//0x088b,2,searchstoreinfonextpage,0
++//0x08a2,12,searchstoreinfolistitemclick,2:6:10
++0x08a4,8,movetokafra,2:4
++0x0362,8,movefromkafra,2:4
+Index: rewrite/src/char/char.c
 ===================================================================
---- trunk/rewrite/src/char/char.c	(revision 655)
-+++ trunk/rewrite/src/char/char.c	(working copy)
+--- rewrite/src/char/char.c	(revision 656)
++++ rewrite/src/char/char.c	(working copy)
 @@ -1830,7 +1830,7 @@
  // Writes char data to the buffer in the format used by the client.
  // Used in packets 0x6b (chars info) and 0x6d (new char info)
@@ -268,10 +285,10 @@ Index: trunk/rewrite/src/char/char.c
  				}
  			}
  			RFIFOSKIP(fd,62);
-Index: trunk/rewrite/src/char_sql/char.c
+Index: rewrite/src/char_sql/char.c
 ===================================================================
---- trunk/rewrite/src/char_sql/char.c	(revision 655)
-+++ trunk/rewrite/src/char_sql/char.c	(working copy)
+--- rewrite/src/char_sql/char.c	(revision 656)
++++ rewrite/src/char_sql/char.c	(working copy)
 @@ -1553,7 +1553,7 @@
  // Writes char data to the buffer in the format used by the client.
  // Used in packets 0x6b (chars info) and 0x6d (new char info)
@@ -316,15 +333,11 @@ Index: trunk/rewrite/src/char_sql/char.c
  				}
  			}
  			RFIFOSKIP(fd,62);
-Index: trunk/rewrite/src/common/mmo.h
+Index: rewrite/src/common/mmo.h
 ===================================================================
---- trunk/rewrite/src/common/mmo.h	(revision 655)
-+++ trunk/rewrite/src/common/mmo.h	(working copy)
-@@ -44,10 +44,11 @@
- // 20100721 - 2010-07-21aRagexeRE+ - 0x6b, 0x6d
- // 20100727 - 2010-07-27aRagexeRE+ - 0x6b, 0x6d
- // 20100803 - 2010-08-03aRagexeRE+ - 0x6b, 0x6d, 0x827, 0x828, 0x829, 0x82a, 0x82b, 0x82c, 0x842, 0x843
-+// 20110111 - 2011-01-11aRagexeRE+ - 0x6b, 0x6d
+--- rewrite/src/common/mmo.h	(revision 657)
++++ rewrite/src/common/mmo.h	(working copy)
+@@ -47,7 +47,7 @@
  
  #ifndef PACKETVER
  	//#define PACKETVER	20081126
@@ -333,10 +346,10 @@ Index: trunk/rewrite/src/common/mmo.h
  #endif
  // backward compatible PACKETVER 8 and 9
  #if PACKETVER == 8
-Index: trunk/rewrite/src/map/clif.c
+Index: rewrite/src/map/clif.c
 ===================================================================
---- trunk/rewrite/src/map/clif.c	(revision 654)
-+++ trunk/rewrite/src/map/clif.c	(working copy)
+--- rewrite/src/map/clif.c	(revision 656)
++++ rewrite/src/map/clif.c	(working copy)
 @@ -821,13 +821,19 @@
  		WBUFW(buf,0) = spawn?0x22b:0x22a;
  #elif PACKETVER < 20091103
@@ -521,10 +534,10 @@ Index: trunk/rewrite/src/map/clif.c
  	};
  	struct {
  		void (*func)(int, struct map_session_data *);
-Index: trunk/rewrite/src/map/clif.h
+Index: rewrite/src/map/clif.h
 ===================================================================
---- trunk/rewrite/src/map/clif.h	(revision 654)
-+++ trunk/rewrite/src/map/clif.h	(working copy)
+--- rewrite/src/map/clif.h	(revision 656)
++++ rewrite/src/map/clif.h	(working copy)
 @@ -29,7 +29,7 @@
  #include <stdarg.h>
  // packet DB
