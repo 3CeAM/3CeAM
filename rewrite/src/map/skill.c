@@ -3344,7 +3344,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case NC_PILEBUNKER:
 	//case NC_VULCANARM:
 	case NC_COLDSLOWER:
-	//case NC_ARMSCANNON:
+	case NC_ARMSCANNON:
 		// Heat of the mado
 		if (sd) pc_overheat(sd,1);
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
@@ -3555,7 +3555,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case RA_ARROWSTORM:
 	case RA_WUGDASH:
 	case NC_VULCANARM:
-	case NC_ARMSCANNON:
+	//case NC_ARMSCANNON:
 	case NC_SELFDESTRUCTION:
 	case NC_AXETORNADO:
 	case LG_MOONSLASHER:
@@ -3605,7 +3605,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 				skill_area_temp[5] = bl->y;
 			}
 
-			if( skillid == NC_VULCANARM || skillid == NC_ARMSCANNON )
+			if( skillid == NC_VULCANARM )
 				if (sd) pc_overheat(sd,1);
 
 			// if skill damage should be split among targets, count them
@@ -9587,7 +9587,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		break;
 
 	case NC_COLDSLOWER:
-	//case NC_ARMSCANNON:
+	case NC_ARMSCANNON:
 	case RK_DRAGONBREATH:
 	case WM_LULLABY_DEEPSLEEP:
 		i = skill_get_splash(skillid,skilllv);
