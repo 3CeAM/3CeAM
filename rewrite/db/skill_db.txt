@@ -908,23 +908,23 @@
 2020,5:6:7:8:9,6,1,-1,0,0,5,1,yes,0,0,0,weapon,0,	RK_PHANTOMTHRUST,Phantom Thrust
 
 // Guillotine Cross
-2021,5,6,1,0,0x1,0,5,1,no,0,0,0,none,0,		GC_VENOMIMPRESS,Venom Impress
+2021,10,6,1,0,0x1,0,5,1,no,0,0,0,none,0,		GC_VENOMIMPRESS,Venom Impress
 2022,3,8,1,-1,0,0,5,-7,no,0,0,0,weapon,0,	GC_CROSSIMPACT,Cross Impact
-2023,3:4:5:6:7,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,GC_DARKILLUSION,Dark Illusion
+2023,5:6:7:8:9,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,GC_DARKILLUSION,Dark Illusion
 2024,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		GC_RESEARCHNEWPOISON,Research New Poison
 2025,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		GC_CREATENEWPOISON,Create New Poison
 2026,5,6,16,0,0x1,0,1,1,no,0,0,0,none,0,	GC_ANTIDOTE,Antidote
 2027,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		GC_POISONINGWEAPON,Poisoning Weapon
 2028,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		GC_WEAPONBLOCKING,Weapon Blocking
-2029,-2,6,4,-1,0x2,1,5,1,no,0,0,0,weapon,3,	GC_COUNTERSLASH,Counter Slash
-2030,-2,6,4,-1,0x1,0,5,1,no,0,0x200,0,weapon,0,	GC_WEAPONCRUSH,Weapon Crush //CHECK SHould this and the above skill have INF2 0x200?
+2029,0,6,4,-1,0x22,1,5,1,no,0,0,0,weapon,3,	GC_COUNTERSLASH,Counter Slash// How do I make this skill deal crit damage?
+2030,-2,6,4,-1,0x1,0,5,1,no,0,0x200,0,weapon,0,	GC_WEAPONCRUSH,Weapon Crush
 2031,1,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	GC_VENOMPRESSURE,Venom Pressure
 2032,5,6,2,0,0x1,0,5,1,yes,0,0,1,none,0,	GC_POISONSMOKE,Poison Smoke
 2033,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		GC_CLOAKINGEXCEED,Cloaking Exceed
 2034,0,6,4,-1,0x2,3,1,1,no,0,0,0,weapon,0,	GC_PHANTOMMENACE,Phantom Menace
 2035,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		GC_HALLUCINATIONWALK,Hallucination Walk
-2036,0,6,4,-1,0x2,1,5,1,no,0,0,0,weapon,0,	GC_ROLLINGCUTTER,Rolling Cutter
-2037,7,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	GC_CROSSRIPPERSLASHER,Cross Ripper Slasher
+2036,0,6,4,-1,0x2,1:1:1:1:2,5,1,no,0,0,0,weapon,0,	GC_ROLLINGCUTTER,Rolling Cutter
+2037,9:10:11:12:13,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	GC_CROSSRIPPERSLASHER,Cross Ripper Slasher
 
 // Arch Bishop //CHECK Some attack types for buffs are none. Should I set those to none here?
 2038,11,8,1,6,0x2,3,5,-3,yes,0,0,0,magic,0,	AB_JUDEX,Judex
@@ -1019,8 +1019,8 @@
 2264,0,6,4,0,0x1,0,1,1,no,0,0,0,none,7,		NC_F_SIDESLIDE,Front-Side Slide
 2265,0,6,4,0,0x1,0,1,1,no,0,0,0,none,7,		NC_B_SIDESLIDE,Back-Side Slide
 2266,0,0,0,0,0,0,4,0,no,0,0,0,none,0,		NC_MAINFRAME,Mainframe Restructure // Check me. Part of the code notes translated to "The amount of fuel have".
-2267,0,6,4,-1,0x42,2:3:4,3,1,no,0,0,0,misc,5,	NC_SELFDESTRUCTION,Self Destruction
-2268,0,6,4,0,0x1,0,4,1,yes,0,0,0,none,0,	NC_SHAPESHIFT,Shape Shift
+2267,0,6,4,-1,0x42,2:3:4,3,1,no,0,0,0,misc,5,	NC_SELFDESTRUCTION,Self Destruction	// 2011 Info says this skill doesent ignore enemy's DEF and VIT DEF. How do I make a
+2268,0,6,4,0,0x1,0,4,1,yes,0,0,0,none,0,	NC_SHAPESHIFT,Shape Shift		// "misc" fixed skill do that? [Rytech]
 2269,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		NC_EMERGENCYCOOL,Emergency Cool
 2270,0,6,4,0,0x3,7,1,1,yes,0,0,0,none,0,	NC_INFRAREDSCAN,Infrared Scan
 2271,9,6,1,0,0x1,0,3,1,yes,0,0,0,none,0,	NC_ANALYZE,Analyze
@@ -1063,7 +1063,7 @@
 // Royal Guard
 2307,11,8,1,-1,0,2,5,1,no,0,0,10,weapon,0,	LG_CANNONSPEAR,Cannon Spear
 2308,7,6,1,-1,0,0,10,1,no,0,0,0,weapon,0,	LG_BANISHINGPOINT,Banishing Point
-2309,0,6,4,0,0x3,2,5,1,no,0,0,0,none,0,		LG_TRAMPLE,Trample
+2309,0,6,4,0,0x3,2,3,1,no,0,0,0,none,0,		LG_TRAMPLE,Trample
 2310,1,6,1,0,0,0,5,1,no,0,0,0,weapon,0,		LG_SHIELDPRESS,Shield Press
 2311,0,6,4,0,0x3,3,5,1,no,0,0,0,none,0,	LG_REFLECTDAMAGE,Reflect Damage
 2312,5,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	LG_PINPOINTATTACK,Pinpoint Attack

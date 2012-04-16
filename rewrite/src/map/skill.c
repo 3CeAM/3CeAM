@@ -488,13 +488,6 @@ int skillnotok(int skillid, struct map_session_data *sd)
 				return 1;
 			}
 			break;
-		case GC_DARKILLUSION:
-			if( map_flag_gvg(m) )
-			{
-				clif_skill_fail(sd,skillid,0,0,0);
-				return 1;
-			}
-			break;
 		case WM_LULLABY_DEEPSLEEP:
 		case WM_SIRCLEOFNATURE:
 			if( !map_flag_vs(m) )
@@ -9604,7 +9597,6 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		}
 		clif_skill_damage(src,src,tick,status_get_amotion(src),0,-30000,1,skillid,skilllv,6);
 		skill_unitsetting(src, skillid, skilllv, x, y, flag);
-		status_change_end(src,SC_POISONINGWEAPON,-1);
 		break;
 
 	case AB_EPICLESIS:
@@ -10303,7 +10295,8 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 			return NULL;
 		val1 = sc->data[SC_POISONINGWEAPON]->val1; // Level of Poison, to determine poisoning time
 		val2 = sc->data[SC_POISONINGWEAPON]->val2; // Type of Poison
-		limit = 4000 + 2000 * skilllv;
+		//limit = 4000 + 2000 * skilllv;
+		limit = skill_get_time(skillid,skilllv);
 		break;
 
 	case LG_BANDING:
@@ -11144,7 +11137,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			break;
 
 		case UNT_POISONSMOKE:
-			if( battle_check_target(ss,bl,BCT_ENEMY) > 0 && !(tsc && tsc->data[sg->val2]) && rand()%100 < 20 )
+			if( battle_check_target(ss,bl,BCT_ENEMY) > 0 && !(tsc && tsc->data[sg->val2]) && rand()%100 < 50 )
 				sc_start(bl,sg->val2,100,sg->val1,skill_get_time2(GC_POISONINGWEAPON,sg->val1));
 			break;
 
@@ -15305,7 +15298,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 			case SA_CREATECON: // Elemental Converter Creation
 				make_per = 100000; // should be 100% success rate
 				break;
-			case RK_RUNEMASTERY:
+			case RK_RUNEMASTERY://Note: The success rate works on a 1.00 scale. A value of 10000 would equal 100% Remember this. [Rytech]
 				skill_lv = pc_checkskill(sd,skill_id);
 				make_per = 5 * (sd->menuskill_itemused + skill_lv) * 100;
 				if( battle_config.rune_produce_rate != 100 )
