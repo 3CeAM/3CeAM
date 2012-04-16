@@ -14,6 +14,16 @@ Maybe they forgot to add some stuff to the update notes.
 
 Note5: Keep track of patch notes for April 13, 2011, May 18, 2011, and Auguest 31, 2011 for Mechanic.
 
+Note6: Soon the code that adjusts damage for 3rd job skills based on your base level will need a recheck as im now finding flaws.
+
+Note7: Splash skills have become a major thing for 3rd jobs and how to handle each one, being weapon, magic, misc, or none, and how
+its used if its enemy targeted, ground targeted, self targeted, etc can all determand how to treat a skill in the code.
+Looking at different codes im starting to get the feeling a good bit of the skills may be handled wrong.
+Arm Cannon was a good example. Its ground targeted, but was incorrectly coded to try and attach a player, which it cant do unless
+targeted. Cant do that with ground targeted skills.
+
+Note8: A lot of Gullotine Cross skills in the iRO document didnt say their durations. Good thing I have another place to get that info from.
+
 Death Bound
 Document says skill cooldown is 3 seconds, yet iRO's skill desc says you must wait 5 seconds before re-casting again.
 Which is true?
@@ -255,3 +265,54 @@ Must also figure out how to add the HP formula's for both FAW skills as each one
 FAW Removal
 Says in May 18, 2011 patch notes the cast range was increased, but says nothing about it in the Auguest 31, 2011 patch notes.
 But upon checking the skillinfo.lub file it shows the range is still increased. Should the change be applied? Want to confirm first as a range for this sounds not right.
+I also see a hint. Venom Impress had its range increased too according to a test RE patch note, but nothing in the main server patch notes says anything about it.
+The lub file shows the increase, and even the iRO 2011 balance document says their's a increase. Even Frost from iRO Wiki Forums confirmed it exists.
+Another thing is the documents for Mechanics update didnt have any info on Side Slide skills (guessing as its not important) and nothing about FAW Removal (they probely also
+guessed it wasnt important to show ether). So it may have been increased, may not. But this should be testing first to be sure.
+
+Venom Impress
+Doesent say how long the duration for the reduced poison resistance lasts. Good thing I got official data.
+iRO's skill desc says "Weaken the enemy's resistance, against Venom type attacks in a 10x10 range."
+That kind of AoE is impossiable. Plus it makes no sence to put a AoE effect of some kind for this.
+
+Cross Impact
+In RO, skills that hit more then once take 200ms for each hit to hit. With this skill dealing 7 hits, the walk delay has been set to 1400.
+Anything higher for the walk delay would be not right feeling. Sonic Blow and Arrow Vulcan should be looked at in the future on rAthena
+to see if they should be set to only as long as the number of hits happens.
+
+Dark Illusion
+Looking at the code for the skill in skill.c, I have to wonder if their's room for improving the code to be smaller.
+
+Research New Poison
+A lot of checking and testing will need to be done to ensure this is working properly. Will do this stuff another time.
+Here's some facts Frost figured out while testing the Guillotine Cross poisons....
+1. Poisons are generally the same. You can only be inflicted by one at a time, and by so, you become immune to the other ones. (Meaning poisons dont stack or end other poisons.)
+2. You cannot consume a bottle of poison to be inflicted by it. (Was a problem with Shadow Chasers in the past with the Deadly Infect skill.)
+3. Poison duration cannot be reset or extended. The old one must expire before inflicting a new one even if it's the same poison. (Dont know if 3CeAM handles it like this right now.)
+4. Boss flagged monsters are unaffected by GX poison. (Huuuh Duhhhh)
+5. Damage dealt from poison is 'self-inflicting reflect type damage' which can cause the target to autocast spells on himself.
+When used on RGs with +9 up Glorious Spears, damage from poisons forced him to cast Gloria Domini on himself.
+The only exception is the Magic Mushroom poison, which causes hp loss and not damage. (........what?)
+
+More interesting is learning the skill makes you immune to these poisons. Full formula appears to be like
+(Poisoning Weapon or Venom Pressure success chance - 5 * SkillLV)
+
+Even more interesting is this skill increases Enchant Deadly Poisons (Known as EDP) duration by 3 * SkillLV.
+
+Poisoning Weapon
+I found the success in the code set as (chance = 2 + 2 * sd->menuskill_itemused; // 2 + 2 * skill_lv) in the skill.c
+ill have to test if this success is working correctly due to that sd->menuskill_itemused part of the code.
+
+Weapon Blocking
+Frost said you have a 2 second window to use Counter Slash or Weapon Crush. But I cant tell if that duration is working correctly in 3CeAM.
+I see something in the code that says tick = 3000, but it doesent feel like its 3 seconds.
+
+Counter Slash
+iRO document doesent say anything about a aftercast delay, but my other source says it has a 2 second aftercast. Need to confirm.
+Also, is the knockback 3 or 5 cells? Skill ignores DEF and deals crit damage. How do I make it crit?
+
+Poison Smoke
+Need to find out how often the poisoning chance is applied. Its currently set to 1 second.
+
+Hallucination Walk
+Says in the balance notes for Auguest 31, 2011 that the HP cost for the skill changed. What was it changed to?
