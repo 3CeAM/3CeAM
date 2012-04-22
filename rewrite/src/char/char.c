@@ -1500,8 +1500,8 @@ char * job_name(int class_)
 	case JOB_BABY_GUARD2: return "Baby Royal Guard Gryphon";
 	case JOB_BABY_RANGER2: return "Baby Ranger Warg";
 	case JOB_BABY_MECHANIC2: return "Baby Mechanic Mado Gear";
-	case JOB_SUPER_NOVICE_E:   return "Extended Super Novice";
-	case JOB_SUPER_BABY_E:   return "Extended Super Baby";
+	case JOB_SUPER_NOVICE_E:   return "Expanded Super Novice";
+	case JOB_SUPER_BABY_E:   return "Expanded Super Baby";
 	case JOB_KAGEROU:   return "Kagerou";
 	case JOB_OBORO:   return "Oboro";
 	}

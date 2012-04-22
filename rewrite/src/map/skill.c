@@ -10295,7 +10295,6 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 			return NULL;
 		val1 = sc->data[SC_POISONINGWEAPON]->val1; // Level of Poison, to determine poisoning time
 		val2 = sc->data[SC_POISONINGWEAPON]->val2; // Type of Poison
-		//limit = 4000 + 2000 * skilllv;
 		limit = skill_get_time(skillid,skilllv);
 		break;
 
