@@ -316,3 +316,5 @@ Need to find out how often the poisoning chance is applied. Its currently set to
 
 Hallucination Walk
 Says in the balance notes for Auguest 31, 2011 that the HP cost for the skill changed. What was it changed to?
+
+Duuuurp....Chuuuurp.
