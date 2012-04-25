@@ -5264,7 +5264,6 @@ static const struct _battle_data {
 	{ "max_cloth_color",                    &battle_config.max_cloth_color,                 4,      0,      INT_MAX,        },
 	{ "pet_hair_style",                     &battle_config.pet_hair_style,                  100,    0,      INT_MAX,        },
 	{ "castrate_dex_scale",                 &battle_config.castrate_dex_scale,              150,    1,      INT_MAX,        },
-	{ "castrate_dex_scale2",                &battle_config.castrate_dex_scale2,             150,    1,      INT_MAX,        },
 	{ "area_size",                          &battle_config.area_size,                       14,     0,      INT_MAX,        },
 	{ "zeny_from_mobs",                     &battle_config.zeny_from_mobs,                  0,      0,      1,              },
 	{ "mobs_level_up",                      &battle_config.mobs_level_up,                   0,      0,      1,              },
@@ -5380,7 +5379,8 @@ static const struct _battle_data {
 	{ "bg_misc_attack_damage_rate",         &battle_config.bg_misc_damage_rate,             60,     0,      INT_MAX,        },
 	{ "bg_flee_penalty",                    &battle_config.bg_flee_penalty,                 20,     0,      INT_MAX,        },
 // Casting Time Renewal Settings
-	{ "renewal_cast_enable",                &battle_config.renewal_cast_enable,              1,     0,            1,        },
+	{ "renewal_cast_3rd_skills",            &battle_config.renewal_cast_3rd_skills,          1,     0,            1,        },
+	{ "castrate_dex_scale_3rd",             &battle_config.castrate_dex_scale_3rd,         150,     1,      INT_MAX,        },
 	{ "warg_can_falcon",                    &battle_config.warg_can_falcon,                  0,     0,            1,        },
 	{ "renewal_edp",                        &battle_config.renewal_edp,                      0,     0,            3,        },
 	{ "use_renewal_statpoints",             &battle_config.use_renewal_statpoints,           0,     0,            1,        },

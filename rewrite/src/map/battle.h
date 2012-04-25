@@ -370,7 +370,6 @@ extern struct Battle_Config
 	int pet_hair_style; // added by [Skotlex]
 
 	int castrate_dex_scale; // added by [MouseJstr]
-	int castrate_dex_scale2;
 	int area_size; // added by [MouseJstr]
 
 	int max_def, over_def_bonus; //added by [Skotlex]
@@ -507,7 +506,8 @@ extern struct Battle_Config
 	int use_renewal_statpoints;
 
 	// Casting Time Renewal Settings
-	int renewal_cast_enable;
+	int renewal_cast_3rd_skills;
+	int castrate_dex_scale_3rd;
 	int max_highlvl_nerf; // [Pinky]
 	int max_joblvl_nerf; // [Pinky]
 	int max_joblvl_nerf_misc; // [Pinky]

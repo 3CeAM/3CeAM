@@ -775,8 +775,11 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		break;
 
 	case MG_FROSTDIVER:
-	case WZ_FROSTNOVA:
 		sc_start(bl,SC_FREEZE,skilllv*3+35,skilllv,skill_get_time2(skillid,skilllv));
+		break;
+
+	case WZ_FROSTNOVA:
+		sc_start(bl,SC_FREEZE,skilllv*5+35,skilllv,skill_get_time2(skillid,skilllv));
 		break;
 
 	case WZ_STORMGUST:
@@ -13010,140 +13013,117 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 	return req;
 }
 
-/*================================================
- * Renewal Cast Time Settings (variable and fixed) [Jobbie] [Inkfish] [Rytech]
- *----------------------------------------------*/
-int skill_castfix(struct block_list *bl, int skill_id, int skill_lv)
+/*==========================================
+ * Does cast-time reductions based on dex, int (for renewal), status's, item bonuses, and config setting
+ *------------------------------------------*/
+int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 {
-	int base_time, variable_time, fixed_time = 0, max_fixedReduction = 0, scale = 0, final_time;
+	int time = skill_get_cast(skill_id, skill_lv);//Used for regular and renewal variable cast time.
+	int fixed_time = skill_get_fixed_cast(skill_id, skill_lv);//Used for renewal fix time.
+	int final_time = 0;//Used for finalizing time calculations for pre-re and combining time and fixed_time for renewal.
+	int rate = 0;//Used to support the duel dex rates check through castrate_dex_scale and castrate_dex_scale_3rd.
+	int scale = 0;//Used to scale the regular and variable cast times.
 	struct map_session_data *sd;
 	struct status_change *sc;
 
-	nullpo_ret(bl);
+	nullpo_retr(0, bl);
 	sd = BL_CAST(BL_PC, bl);
 	sc = status_get_sc(bl);
 
-	base_time = skill_get_cast(skill_id, skill_lv);
-
-	if( !battle_config.renewal_cast_enable
-		|| ( bl->type == BL_PC && pc_mapid2jobid(((TBL_PC*)bl)->class_, ((TBL_PC*)bl)->status.sex) < JOB_RUNE_KNIGHT )
-		|| skill_id < RK_ENCHANTBLADE)
-	{ // config to disable renewal cast settings.
-		variable_time = base_time;
-
-		// calculate base cast time (reduced by dex)
-		if( !(skill_get_castnodex(skill_id, skill_lv)&1) )
+	// Calculates regular and variable cast time.
+	if( !(skill_get_castnodex(skill_id, skill_lv)&1) )
+	{	//If renewal casting is enabled, all renewal skills will follow the renewal cast formula.
+		if (battle_config.renewal_cast_3rd_skills == 1 && skill_id >= RK_ENCHANTBLADE && skill_id <= ECLAGE_RECALL)
 		{
-			int rate = battle_config.castrate_dex_scale;
-			if( bl->type == BL_PC && pc_mapid2jobid(((TBL_PC*)bl)->class_, ((TBL_PC*)bl)->status.sex) >= JOB_RUNE_KNIGHT )
-				rate = battle_config.castrate_dex_scale2;
-			scale = rate - status_get_dex(bl);
-			if( scale > 0 )	// not instant cast
-				variable_time = variable_time * (int)scale / rate;
-			else return 0;	// instant cast
-		}
-	}
-	else
-	{
-		fixed_time = skill_get_fixed_cast(skill_id, skill_lv);
-		if( fixed_time == 0 )
-		{
-			variable_time = base_time;
+			time -= time * (status_get_dex(bl) * 2 + status_get_int(bl)) / 530;
+			if ( time < 0 ) time = 0;// No return of 0 since were adding the fixed_time later.
 		}
 		else
-			fixed_time = skill_get_fixed_cast(skill_id, skill_lv);
-			variable_time = base_time - fixed_time;
-
-		// calculate variable cast time reduced by dex and int
-		if( !(skill_get_castnodex(skill_id, skill_lv)&1) )
-			scale = cap_value((status_get_dex(bl) * 2 + status_get_int(bl)) * 10000, 0, INT_MAX);
+		{
+			if (fixed_time < 0)//Prevents negeative values from affecting the variable below.
+				fixed_time = 0;
+			//Adds variable and fixed cast times together to make a full variable time for renewal skills
+			//if renewal_cast_enable is turned off. Non-renewal skills dont have fixed times, causing a
+			//fixed cast value of 0 to be added and not affect the actural cast time.
+			time = time + fixed_time;
+			if ( sd && (sd->class_&MAPID_UPPERMASK_THIRD) >= MAPID_SUPER_NOVICE_E || (sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO )
+			rate = battle_config.castrate_dex_scale_3rd;
+			else
+			rate = battle_config.castrate_dex_scale;
+			scale = rate - status_get_dex(bl);
+			if( scale > 0 )	// Not instant cast
+				time = time * scale / rate;
+			else return 0;// Instant cast
+		}
 	}
 
-	// variable cast time mod by status changes
-	if( !(skill_get_castnodex(skill_id, skill_lv)&2) && sc && sc->count )
-	{
-		if( sc->data[SC_SLOWCAST] )
-			variable_time += variable_time * sc->data[SC_SLOWCAST]->val2 / 100;
-		if( sc->data[SC_SUFFRAGIUM] )
-			variable_time -= variable_time * sc->data[SC_SUFFRAGIUM]->val2 / 100;
-		if( sc->data[SC_MEMORIZE] )
-			variable_time >>= 2;
-		if( sc->data[SC_POEMBRAGI] )
-			variable_time -= variable_time * sc->data[SC_POEMBRAGI]->val2 / 100;
-		if( sc->data[SC_FREEZING] )
-			variable_time += variable_time * 15 / 100;
-		if( sc->data[SC_DANCEWITHWUG] ) //FIXME: Doesn't it affect fixed cast time? [Inkfish]
-			variable_time -= variable_time * sc->data[SC_DANCEWITHWUG]->val3 / 100;
-	}
-
-	// variable cast time mod by equip/card bonuses/penalties
-	if( !(skill_get_castnodex(skill_id, skill_lv)&4) && sd )
+	// Calculate cast time reduced by item/card bonuses.
+	// Last condition checks if you have a cast or variable time after calculations to avoid additional processing.
+	if( !(skill_get_castnodex(skill_id, skill_lv)&4) && sd && time > 0)
 	{
 		int i;
 		if( sd->castrate != 100 )
-			variable_time = variable_time * sd->castrate / 100;
+			time = time * sd->castrate / 100;
 		for( i = 0; i < ARRAYLENGTH(sd->skillcast) && sd->skillcast[i].id; i++ )
 		{
 			if( sd->skillcast[i].id == skill_id )
 			{
-				variable_time += variable_time * sd->skillcast[i].val / 100;
+				time+= time * sd->skillcast[i].val / 100;
 				break;
 			}
 		}
 	}
 
-	/*iRO wiki said all affected by Howling of Mandragora will have increased fixed cast time for 2
-	seconds and those skills that are instant cast will have a cast time.
-	NOTE: Value of fixed time will be update soon if there is other info. [Jobbie]*/
-	if( sc && sc->data[SC_MANDRAGORA] && ( skill_id >= SM_BASH && skill_id <= RETURN_TO_ELDICASTES ) )
-		fixed_time += 2000; //FIXME: Where on earth should we apply this? Before all modifiers? [Inkfish]
+	//These status's only affect regular and variable cast times.
+	if (!(skill_get_castnodex(skill_id, skill_lv)&2) && sc && sc->count)
+	{
+		if (sc->data[SC_SUFFRAGIUM]) {
+			time -= time * sc->data[SC_SUFFRAGIUM]->val2 / 100;
+			status_change_end(bl, SC_SUFFRAGIUM, -1);}
+		if (sc->data[SC_POEMBRAGI])
+			time -= time * sc->data[SC_POEMBRAGI]->val2 / 100;
+		if (sc->data[SC_MEMORIZE]) {
+			time -= time * 50 / 100;
+			if ((sc->data[SC_MEMORIZE]->val2) <= 0)
+				status_change_end(bl, SC_MEMORIZE, -1);}
+		if (sc->data[SC_SLOWCAST])
+			time += time * sc->data[SC_SLOWCAST]->val2 / 100;
+	}
 
-	// fixed cast time mod by status changes
-	if( !(skill_get_castnodex(skill_id, skill_lv)&2) && sc && sc->count )
+	//These status's only affect fixed cast times.
+	if (sc && sc->count)
 	{
 		if( sc->data[SC__LAZINESS] )
 			fixed_time += fixed_time * sc->data[SC__LAZINESS]->val2 / 100;
-
-		if( sc->data[SC_SECRAMENT] && sc->data[SC_SECRAMENT]->val2 > max_fixedReduction )
-			max_fixedReduction = sc->data[SC_SECRAMENT]->val2;
+		if( sc->data[SC_DANCEWITHWUG] )
+			fixed_time -= fixed_time * sc->data[SC_DANCEWITHWUG]->val3 / 100;
+		if( sc->data[SC_MANDRAGORA] )
+			fixed_time += 500 * sc->data[SC__LAZINESS]->val1;
+		if( sc->data[SC_SECRAMENT] )
+			fixed_time -= fixed_time * sc->data[SC_SECRAMENT]->val2 / 100;
+		if( sc->data[SC_GUST_OPTION] || sc->data[SC_BLAST_OPTION] || sc->data[SC_WILD_STORM_OPTION] )
+			fixed_time -= 1000;
 	}
 
 	if( sd && pc_checkskill(sd, WL_RADIUS) && skill_id >= WL_WHITEIMPRISON && skill_id <= WL_FREEZE_SP )
-		max_fixedReduction = 5*pc_checkskill(sd, WL_RADIUS)+status_get_int(bl)/15+status_get_lv(bl)/15;
+		fixed_time -= fixed_time * (5 * pc_checkskill(sd, WL_RADIUS) + status_get_int(bl) / 15 + status_get_lv(bl) / 15) / 100;
 
-	// fixed cast time mod by equip/card bonuses/penalties
-	if( !(skill_get_castnodex(skill_id, skill_lv)&4) && sd )
-	{
-		int i;
-		if( sd->fixcastrate != 100 )
-			fixed_time = fixed_time * sd->fixcastrate / 100;
-		for( i = 0; i < ARRAYLENGTH(sd->fixskillcast) && sd->fixskillcast[i].id; i++ )
-		{
-			if( sd->fixskillcast[i].id == skill_id )
-			{
-				fixed_time += fixed_time * sd->fixskillcast[i].val / 100;
-				break;
-			}
-		}
-	}
+	//Check prevents fixed times from going below to a negeative value.
+	if (fixed_time < 0)
+	fixed_time = 0;
 
-	if( max_fixedReduction )
-		fixed_time -= fixed_time * max_fixedReduction / 100;
-
-	if( !battle_config.renewal_cast_enable )
-		final_time = variable_time;
+	//Only add variable and fixed times when renewal casting for renewal skills are on. Without this check,
+	//it will add the 2 together during the above phase and then readd the fixed time.
+	if (battle_config.renewal_cast_3rd_skills == 1 && skill_id >= RK_ENCHANTBLADE && skill_id <= ECLAGE_RECALL)
+	final_time = time + fixed_time;
 	else
-	{
-		final_time = (100 - (int)sqrt( scale / 530. )) * variable_time / 100;
-		if( final_time < 0 ) final_time = 0;
-		final_time += fixed_time;
-	}
+	final_time = time;
 
-	// config cast time multiplier
-	if( battle_config.cast_rate != 100 )
+	// Config cast time multiplier.
+	if (battle_config.cast_rate != 100)
 		final_time = final_time * battle_config.cast_rate / 100;
 
-	// return final cast time
+	// Return final cast time.
 	return (final_time > 0) ? final_time : 0;
 }
 
