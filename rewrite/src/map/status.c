@@ -1524,7 +1524,7 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 				default:
 					return 0;
 			}
-		if( sc->option&OPTION_MADO && ((TBL_PC*)src)->skillitem != skill_num )
+		if( battle_config.mado_skill_limit == 0 && sc->option&OPTION_MADO && ((TBL_PC*)src)->skillitem != skill_num )
 		{
 			switch( skill_num )
 			{ //Blacksmiths and Mastersmiths skills are unusable when Mado is equipped. [Jobbie]
