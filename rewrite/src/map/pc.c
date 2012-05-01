@@ -6326,7 +6326,7 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 	}
 
 	// Every time you die you lose your Magic Gear. [pakpil]
-	if( pc_isriding(sd, OPTION_MADO) )
+	if( battle_config.mado_loss_on_death == 1 && pc_isriding(sd, OPTION_MADO) )
 		pc_setriding(sd, 0);
 
 	if(sd->status.pet_id > 0 && sd->pd)

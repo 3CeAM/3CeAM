@@ -1194,6 +1194,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 	short s_ele, s_ele_, t_class;
 	int i, nk, s_level;
 	bool n_ele = false; // non-elemental
+	char re_baselv_bonus = battle_config.renewal_baselvl_skill_ratio;//BaseLv config for renewal skills.
 
 	struct map_session_data *sd, *tsd;
 	struct Damage wd;
@@ -2029,7 +2030,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case RK_SONICWAVE:
 					skillratio += 400 + 100 * skill_lv;
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case RK_HUNDREDSPEAR:
 					skillratio += 500 + 80 * skill_lv + 50 * pc_checkskill(sd,LK_SPIRALPIERCE);
@@ -2044,11 +2046,13 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 							skillratio += spearwbd;
 						}
 					}
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case RK_WINDCUTTER:
 					skillratio += 50 * skill_lv;
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
 					break;
 				case RK_IGNITIONBREAK:
 					i = distance_bl(src,target);
@@ -2058,7 +2062,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					else
 					skillratio = 200 * skill_lv;
 					if( sstatus->rhw.ele == ELE_FIRE )	skillratio +=  100 * skill_lv;	// Bonus by fire element endow.
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case RK_CRUSHSTRIKE:
 					if( sd )
@@ -2073,15 +2078,18 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case RK_PHANTOMTHRUST:
 					skillratio = 50 * skill_lv + 10 * pc_checkskill(sd,KN_SPEARMASTERY);
-					if( s_level > 100 ) skillratio += skillratio * s_level / 150;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * s_level / 150;
 					break;
 				case GC_CROSSIMPACT:
 					skillratio += 900 + 100 * skill_lv;
-					if( s_level > 100 ) skillratio += skillratio * s_level / 120;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * s_level / 120;
 					break;
 				case GC_COUNTERSLASH:
 					skillratio += 200 + 100 * skill_lv;
-					if( s_level > 100 ) skillratio += skillratio * s_level / 120;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * s_level / 120;
 					skillratio += sstatus->agi * 2 + sd->status.job_level * 4;
 					break;
 				case GC_PHANTOMMENACE:
@@ -2089,7 +2097,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case GC_ROLLINGCUTTER:
 					skillratio = 50 + 50 * skill_lv;
-					if( s_level > 100 ) skillratio += skillratio * s_level / 100;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * s_level / 100;
 					break;
 				case GC_CROSSRIPPERSLASHER:
 					skillratio += 300 + 80 * skill_lv;
@@ -2101,11 +2110,13 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case RA_ARROWSTORM:
 					skillratio += 900 + 80 * skill_lv;
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
 					break;
 				case RA_AIMEDBOLT:
 					skillratio += 400 + 50 * skill_lv;
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
 					if( tsc && (tsc->data[SC_BITE] || tsc->data[SC_ANKLE] || tsc->data[SC_ELECTRICSHOCKER]) )
 						wd.div_ = tstatus->size + 2 + rand()%2;
 					break;
@@ -2127,20 +2138,24 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case NC_BOOSTKNUCKLE:
 					skillratio += 100 + 100 * skill_lv + sstatus->dex;
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case NC_PILEBUNKER:
 					skillratio += 200 + 100 * skill_lv + sstatus->str;
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case NC_VULCANARM:
 					skillratio = 70 * skill_lv + sstatus->dex;
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case NC_FLAMELAUNCHER:
 				case NC_COLDSLOWER:
 					skillratio += 200 + 300 * skill_lv;
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case NC_ARMSCANNON:
 					switch( tstatus->size )
@@ -2149,7 +2164,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						case 1: skillratio += 200 + 350 * skill_lv; break;// Medium
 						case 2: skillratio += 200 + 300 * skill_lv; break;// Large
 					}
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					//NOTE: Their's some other factors that affects damage, but not sure how exactly. Will recheck one day. [Rytech]
 					break;
 				case NC_AXEBOOMERANG:
@@ -2160,16 +2176,21 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_WEAPON )
 						skillratio += sd->inventory_data[index]->weight / 10;// Weight is divided by 10 since 10 weight in coding make 1 whole actural weight. [Rytech]
 					}
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case NC_POWERSWING:
 					skillratio += 200 + 100 * skill_lv;
-					if( s_level > 100 ) skillratio += (sstatus->str + sstatus->dex) * (s_level - 100) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += (sstatus->str + sstatus->dex) * (s_level - 100) / 200;	// Base level bonus.
+					else
+						skillratio += sstatus->str + sstatus->dex;
 					break;
 				case NC_AXETORNADO:
 					skillratio += 100 + 100 * skill_lv + sstatus->vit;
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
-					if( sstatus->rhw.ele == ELE_WIND )	skillratio +=  skillratio * 25 / 100;	// 1.25x Damage if the weapon is wind element. [Rytech]
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( sstatus->rhw.ele == ELE_WIND ) skillratio +=  skillratio * 25 / 100;	// 1.25x Damage if the weapon is wind element. [Rytech]
 					i = distance_bl(src,target);
 					if( i > 2 ) skillratio = skillratio * 75 / 100;
 					break;
@@ -2184,28 +2205,33 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case LG_CANNONSPEAR:// Stimated formula. Still need confirm it.
 					skillratio += -100 + (50  + sstatus->str) * skill_lv;
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case LG_BANISHINGPOINT:
 					skillratio += -100 + ((50 * skill_lv) + (30 * ((sd)?pc_checkskill(sd,SM_BASH):1)));
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case LG_SHIELDPRESS:
 					skillratio += 60 + 43 * skill_lv;
 					if( sc && sc->data[SC_GLOOMYDAY_SK] )
 						skillratio += 80 + (5 * sc->data[SC_GLOOMYDAY_SK]->val1);
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case LG_PINPOINTATTACK:
 					skillratio = ((100 * skill_lv) + (10 * status_get_agi(src)) );
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case LG_RAGEBURST:
 					if( sd && sd->rageball_old )
 						skillratio += -100 + (sd->rageball_old * 200);
 					else
 						skillratio += -100 + 15 * 200;
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case LG_SHIELDSPELL:
 					if( wflag&1 )
@@ -2225,27 +2251,33 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case LG_MOONSLASHER:
 					skillratio += -100 + (120 * skill_lv + ((sd) ? pc_checkskill(sd,LG_OVERBRAND) : 5) * 80);
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case LG_OVERBRAND:
 					skillratio = 400 * skill_lv + (pc_checkskill(sd,CR_SPEARQUICKEN) * 30);
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case LG_OVERBRAND_BRANDISH:
 					skillratio = 300 * skill_lv + (2 * (sstatus->str + sstatus->dex) / 3);
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case LG_OVERBRAND_PLUSATK:
 					skillratio = 150 * skill_lv;
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case LG_RAYOFGENESIS:
 					skillratio = skillratio + 200 + 300 * skill_lv;
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case LG_EARTHDRIVE:
 					skillratio = (skillratio + 100) * skill_lv;
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					break;
 				case LG_HESPERUSLIT:
 					skillratio += 120 * skill_lv - 100;
@@ -2319,7 +2351,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case GN_CART_TORNADO:
 					skillratio += 50 * skill_lv + pc_checkskill(sd, GN_REMODELING_CART) * 100 - 100;
-					if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 					if( sc && sc->data[SC_GN_CARTBOOST] )
 						skillratio += 10 * sc->data[SC_GN_CARTBOOST]->val1;
 					break;
@@ -3105,6 +3138,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 	int i, nk, s_level, s_job_level = 50;
 	short s_ele = skill_get_ele(skill_num, skill_lv);
 	unsigned int skillratio = 100;	//Skill dmg modifiers.
+	char re_baselv_bonus = battle_config.renewal_baselvl_skill_ratio;//BaseLv config for renewal skills.
 
 	struct map_session_data *sd, *tsd;
 	struct Damage ad;
@@ -3414,22 +3448,26 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					case AB_JUDEX:
 						skillratio += 180 + 20 * skill_lv;
 						if (skill_lv > 4) skillratio += 20;
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						break;
 					case AB_ADORAMUS:
 						skillratio += 400 + 100 * skill_lv;
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						break;
 					case AB_DUPLELIGHT_MAGIC:
 						skillratio += 100 + 20 * skill_lv;
 						break;
 					case WL_SOULEXPANSION:
 						skillratio += 300 + 100 * skill_lv + sstatus->int_;
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
 						break;
 					case WL_FROSTMISTY:
 						skillratio += 100 + 100 * skill_lv;
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
 						break;
 					case WL_JACKFROST:
 						{
@@ -3437,27 +3475,32 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							if( tsc && tsc->data[SC_FREEZING] )
 							{
 								skillratio += 900 + 300 * skill_lv;
-								if( s_level > 100 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
+								if( re_baselv_bonus == 1 && s_level >= 100 )
+									skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
 							}
 							else
 								skillratio += 400 + 100 * skill_lv;
-								if( s_level > 100 ) skillratio += skillratio * s_level / 150;	// Base level bonus.
+								if( re_baselv_bonus == 1 && s_level >= 100 )
+									skillratio += skillratio * s_level / 150;	// Base level bonus.
 						}
 						break;
 					case WL_DRAINLIFE:
 						skillratio = 200 * skill_lv + sstatus->int_;
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
 						break;
 					case WL_CRIMSONROCK:
 						skillratio += 1200 + 300 * skill_lv;//2011 document says the 1300+ is applied after the base level bonus. Must confirm. [Rytech]
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
 						break;
 					case WL_HELLINFERNO:
 						if( s_ele == ELE_FIRE )
 							skillratio = 60 * skill_lv;
 						else
 							skillratio = 240 * skill_lv;
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
 						break;
 					case WL_COMET:
 						i = distance_xy(target->x, target->y, sc->comet_x, sc->comet_y);
@@ -3471,11 +3514,13 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						break;
 					case WL_CHAINLIGHTNING_ATK:
 						skillratio += 400 + 100 * skill_lv + 500;//Will replace the 500 with the bounce part to the formula soon. [Rytech]
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio += skillratio * (s_level - 50) / 200;	// Base level bonus.
 						break;
 					case WL_EARTHSTRAIN:
 						skillratio += 1900 + 100 * skill_lv;
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						break;
 					case WL_TETRAVORTEX_FIRE:
 					case WL_TETRAVORTEX_WATER:
@@ -3488,11 +3533,13 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					case WL_SUMMON_ATK_WIND:
 					case WL_SUMMON_ATK_GROUND:
 						skillratio = skill_lv * (s_level + s_job_level);// This is close to official, but lacking a little info to finalize. [Rytech]
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						break;
 					case LG_RAYOFGENESIS:
 						skillratio = (skillratio + 200) * skill_lv;
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						break;
 					case WM_METALICSOUND:
 						skillratio += 120 * skill_lv + 60 * pc_checkskill(sd, WM_LESSON) - 100;
@@ -3505,25 +3552,29 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						break;
 					case SO_FIREWALK:
 						skillratio = 300;
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						if( sc && sc->data[SC_HEATER_OPTION] )
 							skillratio += skillratio * sc->data[SC_HEATER_OPTION]->val3 / 100;
 						break;
 					case SO_ELECTRICWALK:
 						skillratio = 300;
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						if( sc && sc->data[SC_BLAST_OPTION] )
 							skillratio += skillratio * sc->data[SC_BLAST_OPTION]->val2 / 100;
 						break;
 					case SO_EARTHGRAVE:
 						skillratio = ( 200 * pc_checkskill(sd, SA_SEISMICWEAPON) + sstatus->int_ * skill_lv );
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						if( sc && sc->data[SC_CURSED_SOIL_OPTION] )
 							skillratio += skillratio * sc->data[SC_CURSED_SOIL_OPTION]->val2 / 100;
 						break;
 					case SO_DIAMONDDUST:
 						skillratio = ( 200 * pc_checkskill(sd, SA_FROSTWEAPON) + sstatus->int_ * skill_lv );
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						if( sc && sc->data[SC_COOLER_OPTION] )
 							skillratio += skillratio * sc->data[SC_COOLER_OPTION]->val3 / 100;
 						break;
@@ -3534,7 +3585,8 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						break;
 					case SO_PSYCHIC_WAVE:
 						skillratio += -100 + skill_lv * 70 + (sstatus->int_ * 3);
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						if( sc )
 						{
 							if( sc->data[SC_HEATER_OPTION] )
@@ -3549,13 +3601,15 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						break;
 					case SO_VARETYR_SPEAR: //Assumed Formula.
 						skillratio += -100 + ( 100 * pc_checkskill(sd, SA_LIGHTNINGLOADER) + sstatus->int_ * skill_lv );
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						if( sc && sc->data[SC_BLAST_OPTION] )
 							skillratio += skillratio * sc->data[SC_BLAST_OPTION]->val2 / 100;
 						break;
 					case SO_CLOUD_KILL:
 						skillratio += -100 + skill_lv * 40;
-						if( s_level > 100 ) skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						if( sc && sc->data[SC_CURSED_SOIL_OPTION] )
 							skillratio += skillratio * sc->data[SC_CURSED_SOIL_OPTION]->val2 / 100;
 						break;
@@ -3769,6 +3823,7 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 	int skill, s_level;
 	short i, nk;
 	short s_ele;
+	char re_baselv_bonus = battle_config.renewal_baselvl_skill_ratio;//BaseLv config for renewal skills.
 
 	struct map_session_data *sd, *tsd;
 	struct Damage md; //DO NOT CONFUSE with md of mob_data!
@@ -3907,21 +3962,26 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 			md.damage = ((battle_config.skillsbonus_maxhp_RK / 50) + (status_get_max_sp(src) / 4)) * skill_lv;
  		else
 			md.damage = ((status_get_hp(src) / 50) + (status_get_max_sp(src) / 4)) * skill_lv;
-		if (status_get_lv(src) > 100) md.damage = md.damage * s_level / 150;// Base level bonus.
+		if ( re_baselv_bonus == 1 && s_level >= 100 )
+			md.damage = md.damage * s_level / 150;// Base level bonus.
 		if (sd) md.damage = md.damage * (100 + 5 * (pc_checkskill(sd,RK_DRAGONTRAINING) - 1)) / 100;
 		break;
 	case RA_CLUSTERBOMB:
 	case RA_FIRINGTRAP:
  	case RA_ICEBOUNDTRAP:
 		md.damage = skill_lv * sstatus->dex + 5 * sstatus->int_;
-		if (status_get_lv(src) > 100) md.damage = md.damage * 150 / 100 + md.damage * s_level / 100;// Base level bonus.
+		if ( re_baselv_bonus == 1 && s_level >= 100 )
+			md.damage = md.damage * 150 / 100 + md.damage * s_level / 100;// Base level bonus.
+		else
+			md.damage = md.damage * 250 / 100;
 		md.damage = md.damage * (20 * pc_checkskill(sd,RA_RESEARCHTRAP)) / 50;
 		break;
 	case NC_SELFDESTRUCTION:
 		md.damage = (1 + skill_lv) * (8 + pc_checkskill(sd,NC_MAINFRAME)) * (status_get_sp(src) + sstatus->vit);
-		if (status_get_lv(src) > 100) md.damage = md.damage * s_level / 150;// Base level bonus.
-		if (sd) md.damage = md.damage + status_get_hp(src);
-		status_set_sp(src, 0, 0);
+		if ( re_baselv_bonus == 1 && s_level >= 100 )
+			md.damage = md.damage * s_level / 150;// Base level bonus.
+		md.damage = md.damage + status_get_hp(src);
+		if (sd) status_set_sp(src, 0, 0);
 		break;
 	case GN_THORNS_TRAP:
 		md.damage = 100 + 200 * skill_lv + sstatus->int_;
@@ -5380,7 +5440,7 @@ static const struct _battle_data {
 	{ "bg_flee_penalty",                    &battle_config.bg_flee_penalty,                 20,     0,      INT_MAX,        },
 // Casting Time Renewal Settings
 	{ "renewal_cast_3rd_skills",            &battle_config.renewal_cast_3rd_skills,          1,     0,            1,        },
-	{ "castrate_dex_scale_3rd",             &battle_config.castrate_dex_scale_3rd,         150,     1,      INT_MAX,        },
+	{ "castrate_dex_scale_3rd",             &battle_config.castrate_dex_scale_3rd,           150,   1,      INT_MAX,        },
 	{ "warg_can_falcon",                    &battle_config.warg_can_falcon,                  0,     0,            1,        },
 	{ "renewal_edp",                        &battle_config.renewal_edp,                      0,     0,            3,        },
 	{ "use_renewal_statpoints",             &battle_config.use_renewal_statpoints,           0,     0,            1,        },
@@ -5390,6 +5450,9 @@ static const struct _battle_data {
 	{ "skillsbonus_maxhp_RK",               &battle_config.skillsbonus_maxhp_RK,             0,     0,      INT_MAX,        },
 	{ "skillsbonus_maxhp_SR",               &battle_config.skillsbonus_maxhp_SR,             0,     0,      INT_MAX,        },
 	{ "metallicsound_spburn_rate",          &battle_config.metallicsound_spburn_rate,        100,   0,      INT_MAX,        },
+	{ "renewal_baselvl_skill_ratio",        &battle_config.renewal_baselvl_skill_ratio,      1,     0,            1,        },
+	{ "mado_skill_limit",                   &battle_config.mado_skill_limit,                 1,     0,            1,        },
+	{ "mado_loss_on_death",                 &battle_config.mado_loss_on_death,               1,     0,            1,        },
 };
 
 
