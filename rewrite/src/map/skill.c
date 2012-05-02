@@ -13046,7 +13046,7 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 			//if renewal_cast_enable is turned off. Non-renewal skills dont have fixed times, causing a
 			//fixed cast value of 0 to be added and not affect the actural cast time.
 			time = time + fixed_time;
-			if ( sd && (sd->class_&MAPID_UPPERMASK_THIRD) >= MAPID_SUPER_NOVICE_E || (sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO )
+			if ( sd && ((sd->class_&MAPID_UPPERMASK_THIRD) >= MAPID_SUPER_NOVICE_E || (sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO ))
 			rate = battle_config.castrate_dex_scale_3rd;
 			else
 			rate = battle_config.castrate_dex_scale;
