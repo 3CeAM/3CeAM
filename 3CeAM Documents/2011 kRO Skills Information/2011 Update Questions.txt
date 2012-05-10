@@ -1,6 +1,7 @@
 Questions Needing Answers For 2011 Updates....
 
 Note: Just to toss in here and remember, Frost Nova's freeze chance is incorrectly set.
+Update: Think I fixed this.
 
 Note2: Must recheck burning status.
 
@@ -15,6 +16,7 @@ Maybe they forgot to add some stuff to the update notes.
 Note5: Keep track of patch notes for April 13, 2011, May 18, 2011, and Auguest 31, 2011 for Mechanic.
 
 Note6: Soon the code that adjusts damage for 3rd job skills based on your base level will need a recheck as im now finding flaws.
+Update: 3-1 jobs base level ratio code fully updated. 3-2 will be done 1 by 1 as formulas are updated.
 
 Note7: Splash skills have become a major thing for 3rd jobs and how to handle each one, being weapon, magic, misc, or none, and how
 its used if its enemy targeted, ground targeted, self targeted, etc can all determand how to treat a skill in the code.
@@ -23,6 +25,10 @@ Arm Cannon was a good example. Its ground targeted, but was incorrectly coded to
 targeted. Cant do that with ground targeted skills.
 
 Note8: A lot of Gullotine Cross skills in the iRO document didnt say their durations. Good thing I have another place to get that info from.
+
+Note9: A few Royal Guard skills are said to increase weapon ATK. Is this true or does it increase base ATK?
+
+Note10: Their's a spot in status.c that says MISC CALCULATION and theirs some setup for equip bonuses. Maybe I can added the fixed ATK thing there.
 
 Death Bound
 Document says skill cooldown is 3 seconds, yet iRO's skill desc says you must wait 5 seconds before re-casting again.
@@ -318,3 +324,71 @@ Hallucination Walk
 Says in the balance notes for Auguest 31, 2011 that the HP cost for the skill changed. What was it changed to?
 
 Duuuurp....Chuuuurp.
+
+
+
+
+
+
+
+
+
+
+3-2 Jobs
+
+Trample
+Need to know where to setup the random % chance of it being successful. Before or after animation. Must test on official soon.
+Also how would I code in the formula for dodgeing exploding traps.
+
+Shield Press
+How do I make stun duration not be reduced by stats (VIT)?
+
+Reflect Damage
+Im not even goina bother trying to recode this entire skill by myself. Someone else will have to do it.
+iRO document strangely says the max number of reflects is 25 + 5 * SkillLv, but patch notes says max reflects possiable is 30.
+Must be a typo here. It might really be 5 + 5 * SkillLv.
+
+Force of Vanguard
+Patch notes say nothing about MaxHP and DEF increase being removed, yet in the iRO document it says DEF/HP increase omitted. Need proof of this change.
+Also says in iRO's skill desc that using Rage Burst will end the Force of Vanguard status. Does it do this on kRO? Need proof before I change this as well.
+
+Rage Burst
+Says in iRO skill desc that it ends Force of Vanguard status when used, yet Frost's info says it doesent, but he tested in kRO's test server.
+Need a confirm on what it does.
+
+Shield Spell
+Ooooooh dear god this skill is complex. ill save this for safely working on in another update.
+
+Exceed Break
+How do I make the status cancel when switching weapons?
+Currently it appears to be taking the mastery from spear mastery and boosting it. Its not supposed to do that, right?
+
+Overbrand
+Skill main ID deals the straight forward 7x3 AoE, then the 2nd ID deals the 4x11 AoE. Only 2nd AoE on official appears to be doing the knockback.
+AoE's are switched to the wrong ID's. They need to be corrected.
+How do I add Random number between (10 ~ 100) % to the knockback damage ratio formula?
+
+Prestige
+Its said a animation happens when a magic attack misses you while in this status. Will test soon to figure out which one.
+
+Banding
+This skill SHOULD be working properly and checking for other Royal Guards as it should, but ill find out soon.
+
+Ray of Genesis
+Check battle.c for ATK_RATE.
+Everything is working properly except the check for the number of Royal Guards to boost the damage. Need to get a proper one made.
+Does this skill cost HP to cast?
+
+Hesperus Lit
+Damage Ratio formula for Inspiration status is coded in, but still need to code in a Royal Guard Banding check.
+Also need that Royal Guard Banding check for setting the number of hits.
+Finally, a 3rd check like this is needed for applying the different additional effects for the skill.
+Anyone knows if the effects stack?
+Is this really a spear exclusive skill?
+
+Inspiration
+Was able to update everything except the HIT increase formula since I dont have enough val's to use.
+Val1 is for skill level (Needed for MaxHP increase), val2 is used for WATK Increase, val3 for stats increase,
+and val4 is used for some timer thingy. I can only make a proper formula with a job level check by putting it
+into a value. Maybe the skill needs to be partly recoded to handle the timer thingy better.
+Also be sure to add a config check for the base and job levels in here.
