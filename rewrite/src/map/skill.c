@@ -13106,7 +13106,7 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 		if( sc->data[SC_DANCEWITHWUG] )
 			fixed_time -= fixed_time * sc->data[SC_DANCEWITHWUG]->val3 / 100;
 		if( sc->data[SC_MANDRAGORA] )
-			fixed_time += 500 * sc->data[SC__LAZINESS]->val1;
+			fixed_time += 500 * sc->data[SC_MANDRAGORA]->val1;
 		if( sc->data[SC_SECRAMENT] )
 			fixed_time -= fixed_time * sc->data[SC_SECRAMENT]->val2 / 100;
 		if( sc->data[SC_GUST_OPTION] || sc->data[SC_BLAST_OPTION] || sc->data[SC_WILD_STORM_OPTION] )
