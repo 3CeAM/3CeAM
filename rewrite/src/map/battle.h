@@ -515,6 +515,7 @@ extern struct Battle_Config
 	int skillsbonus_maxhp_SR; // [Pinky]
 	int metallicsound_spburn_rate;
 	int renewal_baselvl_skill_ratio;
+	int renewal_baselvl_skill_effect;
 	int mado_skill_limit;
 	int mado_loss_on_death;
 
