@@ -7346,7 +7346,10 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val2 = 500 + 100 * val1;
 			break;
 		case SC_STONEHARDSKIN:// Final DEF/MDEF increase divided by 10 since were using classic (pre-renewal) mechanics. [Rytech]
+			if( battle_config.renewal_baselvl_skill_effect == 1 )
 			val1 = sd->status.job_level * pc_checkskill(sd, RK_RUNEMASTERY) / 4 / 10; //DEF/MDEF Increase
+			else
+			val1 = 50 * pc_checkskill(sd, RK_RUNEMASTERY) / 4 / 10;
 			break;
 		case SC_FIGHTINGSPIRIT:
 			val_flag |= 1|2;
@@ -7648,12 +7651,14 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			
 		case SC_PRESTIGE:
 			val2 = (status->int_ + status->luk) * val1 / 20;// Chance to evade magic damage.
-			if( battle_config.renewal_baselvl_skill_ratio == 1 && status_get_lv(bl) >= 100 )
+			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(bl) >= 100 )
 				val2 = val2 * status_get_lv(bl) / 200;
+				else
+				val2 = val2 * 150 / 200;
 			val2 += val1;
 			val1 = 15 * val1 + 10 * pc_checkskill(sd,CR_DEFENDER);// Defence added
-			if( battle_config.renewal_baselvl_skill_ratio == 1 && status_get_lv(bl) >= 100 )
-				val1 = val1 * status_get_lv(bl) / 100;
+			//if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(bl) >= 100 )//No way of making this work out. Hard to explain on balance terms.
+			//	val1 = val1 * status_get_lv(bl) / 100;
 			val1 = val1 / 10;//DEF divided to make skill balanced for pre-renewal mechanics.
 			val_flag |= 1|2;
 			break;
@@ -7673,8 +7678,12 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_INSPIRATION:
 			if( sd )
 			{
-				val2 = 40 * val1 + 3 * sd->status.job_level; // ATK bonus
-				val3 = sd->status.base_level / 10 + sd->status.job_level / 5; // All stat bonus
+				if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(bl) >= 100 )
+				{val2 = 40 * val1 + 3 * sd->status.job_level;// ATK bonus
+				val3 = sd->status.base_level / 10 + sd->status.job_level / 5;}// All stat bonus
+				else
+				{val2 = 40 * val1 + 3 * 50;
+				val3 = sd->status.base_level / 10 + 50 / 5;}
 			}
 			val4 = tick / 1000;
 			tick = 1000;

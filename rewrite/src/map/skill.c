@@ -1056,7 +1056,11 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		break;
 	case AB_ADORAMUS:
 		if( tsc && !tsc->data[SC_DECREASEAGI] ) //Prevent duplicate agi-down effect.
-			sc_start(bl, SC_ADORAMUS, 4*skilllv+sd->status.job_level/2, skilllv, skill_get_time(skillid, skilllv));
+			{if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
+			rate = 4*skilllv+sd->status.job_level/2;
+			else
+			rate = 4*skilllv+25;
+			sc_start(bl, SC_ADORAMUS, rate, skilllv, skill_get_time(skillid, skilllv));}
 		break;
 	case WL_CRIMSONROCK:
 		sc_start(bl, SC_STUN, 40, skilllv, skill_get_time(skillid, skilllv));
@@ -1126,10 +1130,17 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 			skill_castend_damage_id(src, bl, NC_AXEBOOMERANG, pc_checkskill(sd, NC_AXEBOOMERANG), tick, 1);
 		break;
 	case LG_SHIELDPRESS:
-		sc_start(bl, SC_STUN, 30 + 8 * skilllv + sstatus->dex / 10 + sd->status.job_level / 4, skilllv, skill_get_time(skillid,skilllv));
+		if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
+		rate = 30 + 8 * skilllv + sstatus->dex / 10 + sd->status.job_level / 4;
+		else
+		rate = 30 + 8 * skilllv + sstatus->dex / 10 + 12;
+		sc_start(bl, SC_STUN, rate, skilllv, skill_get_time(skillid,skilllv));
 		break;	
 	case LG_PINPOINTATTACK:
-		rate = 30 + 5 * (sd ? pc_checkskill(sd,LG_PINPOINTATTACK) : 1) + (sstatus->agi + status_get_lv(bl)) / 10;
+		if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
+		rate = 30 + 5 * (sd ? pc_checkskill(sd,LG_PINPOINTATTACK) : 1) + (sstatus->agi + status_get_lv(src)) / 10;
+		else
+		rate = 30 + 5 * (sd ? pc_checkskill(sd,LG_PINPOINTATTACK) : 1) + (sstatus->agi + 150) / 10;
 		switch( skilllv )
 		{
 			case 1: sc_start(bl,SC_BLEEDING,rate,skilllv,skill_get_time(skillid,skilllv)); break;
@@ -7203,10 +7214,12 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 	case RK_ENCHANTBLADE:
-		if( battle_config.renewal_baselvl_skill_ratio == 1 && status_get_lv(bl) >= 100 )
-		clif_skill_nodamage(src,bl,skillid,skilllv,sc_start2(bl,type,100,skilllv,(100+20*skilllv)*status_get_lv(bl)/150+sstatus->int_,skill_get_time(skillid,skilllv)));
+		{int rate = 0;
+		if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
+		rate = (100+20*skilllv)*status_get_lv(src)/150+sstatus->int_;
 		else
-		clif_skill_nodamage(src,bl,skillid,skilllv,sc_start2(bl,type,100,skilllv,(100+20*skilllv)+sstatus->int_,skill_get_time(skillid,skilllv)));
+		rate = (100+20*skilllv)+sstatus->int_;
+		clif_skill_nodamage(src,bl,skillid,skilllv,sc_start2(bl,type,100,skilllv,rate,skill_get_time(skillid,skilllv)));}
 		break;
 	case RK_DRAGONHOWLING:
 		if( flag&1)
@@ -7394,6 +7407,11 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		{
 			int bless_lv = pc_checkskill(sd,AL_BLESSING)+sd->status.job_level/10;
 			int agi_lv = pc_checkskill(sd,AL_INCAGI)+sd->status.job_level/10;
+			if( battle_config.renewal_baselvl_skill_effect == 0 )
+			{
+				bless_lv = pc_checkskill(sd,AL_BLESSING)+5;
+				agi_lv = pc_checkskill(sd,AL_INCAGI)+5;
+			}
 			if( sd == NULL || sd->status.party_id == 0 || flag&1 )
 				clif_skill_nodamage(bl, bl, skillid, skilllv, sc_start(bl,type,100,
 					(skillid == AB_CLEMENTIA)? bless_lv : (skillid == AB_CANTO)? agi_lv : skilllv, skill_get_time(skillid,skilllv)));
@@ -11297,11 +11315,13 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			break;
 
 		case UNT_BANDING:
+			{int rate = 0;
 			if( battle_check_target(ss,bl,BCT_ENEMY) > 0 && !(status_get_mode(bl)&MD_BOSS) && !(tsc && tsc->data[SC_BANDING_DEFENCE]) )
-				if( battle_config.renewal_baselvl_skill_ratio == 1 && status_get_lv(bl) >= 100 )
-				sc_start(bl,SC_BANDING_DEFENCE,sd->status.base_level / 5 + 5 * sg->skill_lv - tstatus->agi / 10,90,skill_get_time2(sg->skill_id,sg->skill_lv));
+				{if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(bl) >= 100 )
+				rate = status_get_lv(bl) / 5 + 5 * sg->skill_lv - tstatus->agi / 10;
 				else
-				sc_start(bl,SC_BANDING_DEFENCE,30 + 5 * sg->skill_lv - tstatus->agi / 10,90,skill_get_time2(sg->skill_id,sg->skill_lv));
+				rate = 30 + 5 * sg->skill_lv - tstatus->agi / 10;
+			sc_start(bl,SC_BANDING_DEFENCE,rate,90,skill_get_time2(sg->skill_id,sg->skill_lv));}}
 			break;
 
 		case UNT_FIRE_MANTLE:
@@ -13114,7 +13134,7 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 	}
 
 	if( sd && pc_checkskill(sd, WL_RADIUS) && skill_id >= WL_WHITEIMPRISON && skill_id <= WL_FREEZE_SP )
-		if( battle_config.renewal_baselvl_skill_ratio == 1 && status_get_lv(bl) >= 100 )
+		if( battle_config.renewal_baselvl_skill_effect == 1 )
 		fixed_time -= fixed_time * (5 * pc_checkskill(sd, WL_RADIUS) + status_get_int(bl) / 15 + status_get_lv(bl) / 15) / 100;
 		else
 		fixed_time -= fixed_time * (5 * pc_checkskill(sd, WL_RADIUS) + status_get_int(bl) / 15 + 10) / 100;

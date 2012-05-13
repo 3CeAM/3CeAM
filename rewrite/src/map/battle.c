@@ -2086,7 +2086,10 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio += 200 + 100 * skill_lv;
 					if( re_baselv_bonus == 1 && s_level >= 100 )
 						skillratio = skillratio * s_level / 120;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
 					skillratio += sstatus->agi * 2 + sd->status.job_level * 4;
+					else
+					skillratio += sstatus->agi * 2 + 200;
 					break;
 				case GC_PHANTOMMENACE:
 					skillratio += 200;
@@ -3551,7 +3554,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						if( re_baselv_bonus == 1 && s_level >= 100 )
 						skillratio = skill_lv * (s_level + s_job_level);// This is close to official, but lacking a little info to finalize. [Rytech]
 						else
-						skillratio = skill_lv * (150 + s_job_level);
+						skillratio = skill_lv * 200;
 						if( re_baselv_bonus == 1 && s_level >= 100 )
 							skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						break;
@@ -5472,6 +5475,7 @@ static const struct _battle_data {
 	{ "skillsbonus_maxhp_SR",               &battle_config.skillsbonus_maxhp_SR,             0,     0,      INT_MAX,        },
 	{ "metallicsound_spburn_rate",          &battle_config.metallicsound_spburn_rate,        100,   0,      INT_MAX,        },
 	{ "renewal_baselvl_skill_ratio",        &battle_config.renewal_baselvl_skill_ratio,      1,     0,            1,        },
+	{ "renewal_baselvl_skill_effect",       &battle_config.renewal_baselvl_skill_effect,     1,     0,            1,        },
 	{ "mado_skill_limit",                   &battle_config.mado_skill_limit,                 1,     0,            1,        },
 	{ "mado_loss_on_death",                 &battle_config.mado_loss_on_death,               1,     0,            1,        },
 };
