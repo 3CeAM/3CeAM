@@ -1218,7 +1218,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		}
 		break;
 	case SO_EARTHGRAVE:
-		sc_start(bl, SC_BLEEDING, 5 * skilllv, skilllv, skill_get_time2(skillid, skilllv));	// Need official rate. [LimitLine]
+		sc_start(bl, SC_BLEEDING, 5 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
 		break;
 	case SO_DIAMONDDUST:
 		rate = 5 + 5 * skilllv;
@@ -5081,9 +5081,14 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 	case SO_STRIKING:
 		{
-			int bonus;
-			bonus = 25 + 10 * skilllv;
-			bonus += (pc_checkskill(sd, SA_FLAMELAUNCHER)+pc_checkskill(sd, SA_FROSTWEAPON)+pc_checkskill(sd, SA_LIGHTNINGLOADER)+pc_checkskill(sd, SA_SEISMICWEAPON))*5;
+			int bonus = 0;
+			if( sd )
+			{
+				short index = dstsd->equip_index[EQI_HAND_R];
+				if( index >= 0 && dstsd->inventory_data[index] && dstsd->inventory_data[index]->type == IT_WEAPON )
+				bonus = (8 + 2 * skilllv) * dstsd->inventory_data[index]->wlv;
+			}
+			bonus += 5 * (pc_checkskill(sd, SA_FLAMELAUNCHER) + pc_checkskill(sd, SA_FROSTWEAPON) + pc_checkskill(sd, SA_LIGHTNINGLOADER) + pc_checkskill(sd, SA_SEISMICWEAPON));
 			clif_skill_nodamage( src, bl, skillid, skilllv, sc_start2(bl, type, 100, skilllv, bonus, skill_get_time(skillid,skilllv)) );
 		}
 		break;
@@ -11300,9 +11305,11 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 		case UNT_WARMER:
 			if( bl->type == BL_PC && !battle_check_undead(tstatus->race, tstatus->def_ele) && tstatus->race != RC_DEMON )
 			{
-				int hp = 125 * sg->skill_lv; // Officially is 125 * skill_lv.
+				int hp = 0;
 				if( ssc && ssc->data[SC_HEATER_OPTION] )
-					hp += hp * ssc->data[SC_HEATER_OPTION]->val3 / 100;
+					hp = tstatus->max_hp * 3 * sg->skill_lv / 100;
+				else
+					hp = tstatus->max_hp * sg->skill_lv / 100;
 				status_heal(bl, hp, 0, 0);
 				if( tstatus->hp != tstatus->max_hp )
 					clif_skill_nodamage(&src->bl, bl, AL_HEAL, hp, 0);
@@ -12409,13 +12416,13 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			return 0;
 		}
 		break;
-	case RETURN_TO_ELDICASTES:
-		if( pc_isriding(sd,OPTION_MADO) )
-		{ //Cannot be used if Mado is equipped.
-			clif_skill_fail(sd,skill,0,0,0);
-			return 0;
-		}
-		break;
+	//case RETURN_TO_ELDICASTES://Mado's prevent use of Merchant and Smith skills, but never herd anything about other skills. [Rytech]
+	//	if( pc_isriding(sd,OPTION_MADO) )
+	//	{ //Cannot be used if Mado is equipped.
+	//		clif_skill_fail(sd,skill,0,0,0);
+	//		return 0;
+	//	}
+	//	break;
 	}
 
 	switch(require.state) {

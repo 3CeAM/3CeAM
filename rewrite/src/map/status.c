@@ -4260,7 +4260,7 @@ static signed short status_calc_critical(struct block_list *bl, struct status_ch
 	if(sc->data[SC_CLOAKING])
 		critical += critical;
 	if(sc->data[SC_STRIKING])
-		critical += sc->data[SC_STRIKING]->val1;
+		critical += critical * sc->data[SC_STRIKING]->val1 / 100;
 	if(sc->data[SC__INVISIBILITY])
 		critical += critical * sc->data[SC__INVISIBILITY]->val3 / 100;
 	if(sc->data[SC_CAMOUFLAGE])
@@ -9448,7 +9448,7 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 	case SC_STRIKING:
 		if( --(sce->val4) >= 0 )
 		{
-			if( !status_charge(bl,0, sce->val1 ) )
+			if( !status_charge(bl,0, 6 - sce->val1 ) )
 				break;
 			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
 			return 0;

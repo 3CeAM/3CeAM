@@ -30,6 +30,9 @@ Note9: A few Royal Guard skills are said to increase weapon ATK. Is this true or
 
 Note10: Their's a spot in status.c that says MISC CALCULATION and theirs some setup for equip bonuses. Maybe I can added the fixed ATK thing there.
 
+Note11: Their's something strange about the Archer and Hunter skills cast range. They might be set low and then increased by the Owl or Vulture (forgot which).
+If true, then Ranger bow skills needs to be set the same way as well. Test first.
+
 Death Bound
 Document says skill cooldown is 3 seconds, yet iRO's skill desc says you must wait 5 seconds before re-casting again.
 Which is true?
@@ -65,6 +68,9 @@ Chance to get 3 shields =  80% <-- If random chance fails, it will try for 2 shi
 Chance to get 2 shields = 100%
 Also says it stuns the player when 1 shield breaks. The stun lasts for 3 seconds and reduced by VIT right? Does this even work in 3CeAM?
 May reduce stun duration to 1 second if found that 3 seconds is too high. Imagine a shield breaking back to back every second. COuld be annoying.
+
+Giant Growth
+Recheck the check for the 3x damage in battle.c as a small cleanup might be possiable.
 
 Crush Strike
 How do I code it as a self cast? I know how to make it self cast, but not how to apply damage through a status.
@@ -392,3 +398,44 @@ Val1 is for skill level (Needed for MaxHP increase), val2 is used for WATK Incre
 and val4 is used for some timer thingy. I can only make a proper formula with a job level check by putting it
 into a value. Maybe the skill needs to be partly recoded to handle the timer thingy better.
 Also be sure to add a config check for the base and job levels in here.
+
+Fire Walk / Electric Walk
+iRO document says when skill is casted, the duration lasts for 30 seconds or until you walked all of your steps.
+The duration of the cells is seprate and lasts for 12 seconds. A code update will be needed to make these seprate.
+Also, video shows a cell vanishes after something walks into it after it deals its damage. Need more info on this.
+
+Diamond Dust
+Target can reduce duration with VIT. Must code that in later.
+Need to check the entire crystalizeing code to see if its doing all as it should.
+
+Poison Buster
+iRO document shows the total cast time for level 4 and 5 is 6 seconds. The document does say level 5 is 6 seconds.
+Nothing wrong there, but I was just noting this.
+Document is giving the wrong AoE. Appears to be giving the wrong AoE for every splash skill for Sorcerer.
+
+Phychic Wave
+When a elemental buffs the skill with a element and increases its attack, it should increase cast time and SP cost by 50%.
+How much does the damage increase? Will do these updates when I work on updating the elemental spirit system.
+
+Warmer
+iRO Document shows duration is 35 + 5 * SkillLV, but cooldown is said to be 30 + 5 * SkillLV which is 5 seconds before the duration ends.
+This is correct right?
+
+Vacuum Extreme
+Need to add resistance formula.
+
+Varetyr Spear
+iRO document shows the stun chance is 5 * SkillLV, but official source shows its 5 + 5 * SkillLV. Im choosing to stick with official.
+
+Elemental Action
+Cooldown is said to be 3 * Summoned Elemental Level. If this is true, then how do I do this?
+
+Elemental and Insignia Skills
+This stuff is under a seprate system and will be dealt with on a 2nd pass after im done with other jobs.
+
+
+
+
+
+
+

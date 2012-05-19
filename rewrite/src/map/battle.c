@@ -2364,6 +2364,13 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case WM_SOUND_OF_DESTRUCTION:
 					skillratio += 400;
 					break;
+				case SO_VARETYR_SPEAR:
+					skillratio = 50 * skill_lv + 50 * pc_checkskill(sd, SO_STRIKING);
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio = skillratio * s_level / 100;	// Base level bonus.
+					if( sc && sc->data[SC_BLAST_OPTION] )
+						skillratio += skillratio * sc->data[SC_BLAST_OPTION]->val2 / 100;
+					break;
 				case GN_CART_TORNADO:
 					skillratio += 50 * skill_lv + pc_checkskill(sd, GN_REMODELING_CART) * 100 - 100;
 					if( re_baselv_bonus == 1 && s_level >= 100 )
@@ -2403,11 +2410,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					}
 					else
 						skillratio += 300;	// Bombs
-					break;
-				case SO_VARETYR_SPEAR: //Assumed Formula.
-					skillratio += -100 + 200 * ( sd ? pc_checkskill(sd, SA_LIGHTNINGLOADER) : 1 );
-					if( sc && sc->data[SC_BLAST_OPTION] )
-						skillratio += skillratio * sc->data[SC_BLAST_OPTION]->val2 / 100;
 					break;
 				case KO_JYUMONJIKIRI:
 					skillratio = 150 * skill_lv;
@@ -3340,11 +3342,11 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							skillratio += 5*skill_lv;
 						break;
 					case MG_COLDBOLT:
-						if ( sc ) 
+						if ( sc )
 						{
-							if ( sc->data[SC_SPELLFIST] && (!sd || !sd->state.autocast)) 
+							if ( sc->data[SC_SPELLFIST] && (!sd || !sd->state.autocast))
 							{
-								skillratio += (sc->data[SC_SPELLFIST]->val4 * 100) + (sc->data[SC_SPELLFIST]->val2 * 100) - 100;// val4 = used bolt level, val2 = used spellfist level. [Rytech]
+								skillratio = sc->data[SC_SPELLFIST]->val2 * 50 + sc->data[SC_SPELLFIST]->val4 * 100;//val2 = used spellfist level and val4 = used bolt level. [Rytech]
 								ad.div_ = 1;// ad mods, to make it work similar to regular hits [Xazax]
 								ad.flag = BF_WEAPON|BF_SHORT;
 								ad.type = 0;
@@ -3354,7 +3356,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						}
 						break;
 					case MG_FIREWALL:
-						skillratio -= 50;						
+						skillratio -= 50;
 						if( sc && sc->data[SC_PYROTECHNIC_OPTION] )
 							skillratio += skillratio * sc->data[SC_PYROTECHNIC_OPTION]->val3 / 100;
 						break;
@@ -3363,7 +3365,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						{
 							if ( sc->data[SC_SPELLFIST] && (!sd || !sd->state.autocast))
 							{
-								skillratio += (sc->data[SC_SPELLFIST]->val4 * 100) + (sc->data[SC_SPELLFIST]->val2 * 100) - 100;
+								skillratio = sc->data[SC_SPELLFIST]->val2 * 50 + sc->data[SC_SPELLFIST]->val4 * 100;
 								ad.div_ = 1;
 								ad.flag = BF_WEAPON|BF_SHORT;
 								ad.type = 0;
@@ -3377,7 +3379,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						{
 							if ( sc->data[SC_SPELLFIST] && (!sd || !sd->state.autocast))
 							{
-								skillratio += (sc->data[SC_SPELLFIST]->val4 * 100) + (sc->data[SC_SPELLFIST]->val2 * 100) - 100;
+								skillratio = sc->data[SC_SPELLFIST]->val2 * 50 + sc->data[SC_SPELLFIST]->val4 * 100;
 								ad.div_ = 1;
 								ad.flag = BF_WEAPON|BF_SHORT;
 								ad.type = 0;
@@ -3575,42 +3577,44 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						skillratio += 100 * (sd ? pc_checkskill(sd, WM_REVERBERATION) : 1);
 						break;
 					case SO_FIREWALK:
-						skillratio = 300;
+						skillratio = 60 * skill_lv;
 						if( re_baselv_bonus == 1 && s_level >= 100 )
-							skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+							skillratio = skillratio * s_level / 100;	// Base level bonus.
 						if( sc && sc->data[SC_HEATER_OPTION] )
 							skillratio += skillratio * sc->data[SC_HEATER_OPTION]->val3 / 100;
 						break;
 					case SO_ELECTRICWALK:
-						skillratio = 300;
+						skillratio = 60 * skill_lv;
 						if( re_baselv_bonus == 1 && s_level >= 100 )
-							skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+							skillratio = skillratio * s_level / 100;	// Base level bonus.
 						if( sc && sc->data[SC_BLAST_OPTION] )
 							skillratio += skillratio * sc->data[SC_BLAST_OPTION]->val2 / 100;
 						break;
 					case SO_EARTHGRAVE:
-						skillratio = ( 200 * pc_checkskill(sd, SA_SEISMICWEAPON) + sstatus->int_ * skill_lv );
+						skillratio = sstatus->int_ * skill_lv + 200 * pc_checkskill(sd, SA_SEISMICWEAPON);
 						if( re_baselv_bonus == 1 && s_level >= 100 )
-							skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+							skillratio = skillratio * s_level/ 100;	// Base level bonus.
 						if( sc && sc->data[SC_CURSED_SOIL_OPTION] )
 							skillratio += skillratio * sc->data[SC_CURSED_SOIL_OPTION]->val2 / 100;
 						break;
 					case SO_DIAMONDDUST:
-						skillratio = ( 200 * pc_checkskill(sd, SA_FROSTWEAPON) + sstatus->int_ * skill_lv );
+						skillratio = sstatus->int_ * skill_lv + 200 * pc_checkskill(sd, SA_FROSTWEAPON);
 						if( re_baselv_bonus == 1 && s_level >= 100 )
-							skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+							skillratio = skillratio * s_level / 100;	// Base level bonus.
 						if( sc && sc->data[SC_COOLER_OPTION] )
 							skillratio += skillratio * sc->data[SC_COOLER_OPTION]->val3 / 100;
 						break;
 					case SO_POISON_BUSTER:
-						skillratio += 1100 + 300 * skill_lv;
+						skillratio += 900 + 300 * skill_lv;
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio = skillratio * s_level / 120;	// Base level bonus.
 						if( sc && sc->data[SC_CURSED_SOIL_OPTION] )
 							skillratio += skillratio * sc->data[SC_CURSED_SOIL_OPTION]->val2 / 100;
 						break;
 					case SO_PSYCHIC_WAVE:
-						skillratio += -100 + skill_lv * 70 + (sstatus->int_ * 3);
+						skillratio = 70 * skill_lv + 3 * sstatus->int_;
 						if( re_baselv_bonus == 1 && s_level >= 100 )
-							skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+							skillratio = skillratio * s_level / 100;	// Base level bonus.
 						if( sc )
 						{
 							if( sc->data[SC_HEATER_OPTION] )
@@ -3623,19 +3627,19 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 								skillratio += skillratio * sc->data[SC_CURSED_SOIL_OPTION]->val3 / 100;
 						}
 						break;
-					case SO_VARETYR_SPEAR: //Assumed Formula.
-						skillratio += -100 + ( 100 * pc_checkskill(sd, SA_LIGHTNINGLOADER) + sstatus->int_ * skill_lv );
-						if( re_baselv_bonus == 1 && s_level >= 100 )
-							skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
-						if( sc && sc->data[SC_BLAST_OPTION] )
-							skillratio += skillratio * sc->data[SC_BLAST_OPTION]->val2 / 100;
-						break;
 					case SO_CLOUD_KILL:
-						skillratio += -100 + skill_lv * 40;
+						skillratio = 40 * skill_lv;
 						if( re_baselv_bonus == 1 && s_level >= 100 )
-							skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
+							skillratio = skillratio * s_level / 100;	// Base level bonus.
 						if( sc && sc->data[SC_CURSED_SOIL_OPTION] )
 							skillratio += skillratio * sc->data[SC_CURSED_SOIL_OPTION]->val2 / 100;
+						break;
+					case SO_VARETYR_SPEAR:
+						skillratio = sstatus->int_ * skill_lv + 50 * pc_checkskill(sd, SA_LIGHTNINGLOADER);
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio = skillratio * s_level / 100;	// Base level bonus.
+						if( sc && sc->data[SC_BLAST_OPTION] )
+							skillratio += skillratio * sc->data[SC_BLAST_OPTION]->val2 / 100;
 						break;
 					case GN_DEMONIC_FIRE:
 						if( skill_lv > 20)
