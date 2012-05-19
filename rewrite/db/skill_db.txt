@@ -1160,7 +1160,7 @@
 2458,0,6,4,1,0x1,0,3,1,yes,0,0,0,none,0,	SO_SUMMON_AQUA,Summon Water Spirit Aqua
 2459,0,6,4,4,0x1,0,3,1,yes,0,0,0,none,0,	SO_SUMMON_VENTUS,Summon Wind Spirit Ventus
 2460,0,6,4,2,0x1,0,3,1,yes,0,0,0,none,0,	SO_SUMMON_TERA,Summon Earth Spirit Tera
-2461,5,6,1,0,0x1,0,1,1,no,0,0,0,none,0,	SO_EL_ACTION,Elemental Action
+2461,5,6,1,0,0x1,0,1,1,no,0,0,0,none,0,		SO_EL_ACTION,Elemental Action
 2462,0,6,4,0,0x1,0,2,1,yes,0,0,0,none,0,	SO_EL_ANALYSIS,Four Spirit Analysis
 2463,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		SO_EL_SYMPATHY,Spirit Sympathy
 2464,0,6,4,0,0x1,0,1,1,yes,0,0,0,none,0,	SO_EL_CURE,Spirit Recovery
