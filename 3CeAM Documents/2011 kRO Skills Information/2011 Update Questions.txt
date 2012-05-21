@@ -350,9 +350,8 @@ Shield Press
 How do I make stun duration not be reduced by stats (VIT)?
 
 Reflect Damage
-Im not even goina bother trying to recode this entire skill by myself. Someone else will have to do it.
-iRO document strangely says the max number of reflects is 25 + 5 * SkillLv, but patch notes says max reflects possiable is 30.
-Must be a typo here. It might really be 5 + 5 * SkillLv.
+UPDATE: kRO skill desc says the max reflect at level 5 is 50 reflects. So ill use the formula said in the iRO document.
+I was acturally able to recode parts of the code to update to the new behavior. Only thing left to do is figure out how to make it ignore trap damage.
 
 Force of Vanguard
 Patch notes say nothing about MaxHP and DEF increase being removed, yet in the iRO document it says DEF/HP increase omitted. Need proof of this change.
@@ -363,7 +362,10 @@ Says in iRO skill desc that it ends Force of Vanguard status when used, yet Fros
 Need a confirm on what it does.
 
 Shield Spell
-Ooooooh dear god this skill is complex. ill save this for safely working on in another update.
+Most of the skill was fixed up and is now working properly. Only 3 known issues remain.
+First, their's a issue with the shieldmdef check. Will need to fix this.
+Second, Lv 3 / Effect 1 is still in need of coding. For now itl just end other shield spell status's.
+Third, I need to test and get accurate durations for Lv2 / Effect 2 and 3. Document doesent sound accurate or is lacking info.
 
 Exceed Break
 How do I make the status cancel when switching weapons?

@@ -2241,20 +2241,17 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						skillratio = skillratio * s_level / 100;	// Base level bonus.
 					break;
 				case LG_SHIELDSPELL:
-					if( wflag&1 )
-					{
-						skillratio += 200;
-						if( sd )
+					if ( sd && skill_lv == 1 )
 						{
-							struct item_data *shield_data = sd->inventory_data[sd->equip_index[EQI_HAND_L]];
-							if( shield_data )
-								skillratio *= shield_data->def;
+						struct item_data *shield_data = sd->inventory_data[sd->equip_index[EQI_HAND_L]];
+						if( shield_data )
+							if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
+								skillratio = 4 * s_level + 100 * shield_data->def + 2 * sstatus->vit;
+							else
+								skillratio = 600 + 100 * shield_data->def + 2 * sstatus->vit;
 						}
-						else
-							skillratio *= 9;
-					}
 					else
-						skillratio += (sd) ? sd->shieldmdef * 20 : 1000;
+						skillratio = 0;//Prevents ATK damage from being done on LV 2 usage since LV 2 us MATK. [Rytech]
 					break;
 				case LG_OVERBRAND:
 					skillratio = 200 * skill_lv + 50 * pc_checkskill(sd,CR_SPEARQUICKEN);
@@ -3560,6 +3557,16 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						if( re_baselv_bonus == 1 && s_level >= 100 )
 							skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						break;
+					case LG_SHIELDSPELL:
+					if ( sd && skill_lv == 2 )
+						if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
+							skillratio = 4 * s_level + 100 * sd->shieldmdef + 2 * sstatus->int_;
+						else
+							skillratio = 600 + 100 * sd->shieldmdef + 2 * sstatus->int_;
+							//skillratio = 100 * sd->shieldmdef;//Leaving here for testing on the next update.
+					else
+						skillratio = 0;//Prevents MATK damage from being done on LV 1 usage since LV 1 us ATK. [Rytech]
+					break;
 					case LG_RAYOFGENESIS:
 						skillratio = 300 * skill_lv;
 						// 200 * Number of Royal Guards in banding status check needed here.
@@ -4190,15 +4197,8 @@ int battle_calc_return_damage(struct block_list *src, struct block_list *bl, int
 
 	sd = BL_CAST(BL_PC, bl);
 
-	// Reflect Damage skill should reflect all damage types.
-	if( sc && sc->data[SC_REFLECTDAMAGE] )
-	{
-		max_damage = max_damage * status_get_lv(bl) / 100;
-		rdamage = (*damage) * sc->data[SC_REFLECTDAMAGE]->val2 / 100;
-		if( rdamage > max_damage ) rdamage = max_damage;
-	}
 	//Bounces back part of the damage.
-	else if( (flag&(BF_SHORT|BF_MAGIC)) == BF_SHORT )
+	if( (flag&(BF_SHORT|BF_MAGIC)) == BF_SHORT )
 	{
 		if( sd && sd->short_weapon_damage_return )
 		{
@@ -4222,7 +4222,18 @@ int battle_calc_return_damage(struct block_list *src, struct block_list *bl, int
 		if( sc && sc->data[SC_REFLECTSHIELD] )
 		{
 			rdamage += (*damage) * sc->data[SC_REFLECTSHIELD]->val2 / 100;
-			rdamage = cap_value(rdamage,1,max_damage);
+			if (rdamage < 1) rdamage = 1;
+		}//Now only reflects short range damage only. Does not reflect magic anymore.
+		if( sc && sc->data[SC_REFLECTDAMAGE] && rand()%100 < 30 + 10 * sc->data[SC_REFLECTDAMAGE]->val1)
+		{
+			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
+				max_damage = max_damage * status_get_lv(bl) / 100;
+			else
+				max_damage = max_damage * 150 / 100;
+			rdamage = (*damage) * sc->data[SC_REFLECTDAMAGE]->val2 / 100;
+			if( rdamage > max_damage ) rdamage = max_damage;
+			if ((--sc->data[SC_REFLECTDAMAGE]->val3) <= 0)
+				status_change_end(bl,SC_REFLECTDAMAGE,-1);
 		}
 		if( sc && sc->data[SC_SHIELDSPELL_DEF] && sc->data[SC_SHIELDSPELL_DEF]->val1 == 2 )
 		{
