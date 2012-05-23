@@ -108,7 +108,7 @@ struct map_session_data {
 		unsigned active : 1; //Marks active player (not active is logging in/out, or changing map servers)
 		unsigned menu_or_input : 1;// if a script is waiting for feedback from the player
 		unsigned dead_sit : 2;
-		unsigned lr_flag : 2;
+		unsigned lr_flag : 3;
 		unsigned connect_new : 1;
 		unsigned arrow_atk : 1;
 		unsigned combo : 2; // 1:Asura, 2:Kick [Inkfish]
@@ -166,7 +166,6 @@ struct map_session_data {
 		unsigned perfect_hiding : 1; // [Valaris]
 		unsigned no_knockback : 1;
 		unsigned bonus_coma : 1;
-		unsigned checkshieldmdef : 1;
 	} special_state;
 	int login_id1, login_id2;
 	unsigned short class_;	//This is the internal job ID used by the map server to simplify comparisons/queries/etc. [Skotlex]
@@ -311,6 +310,7 @@ struct map_session_data {
 	int classchange; // [Valaris]
 	int speed_rate, speed_add_rate, aspd_add;
 	int itemhealrate2; // [Epoque] Increase heal rate of all healing items.
+	int shieldmdef;
 	unsigned int setitem_hash, setitem_hash2; //Split in 2 because shift operations only work on int ranges. [Skotlex]
 	
 	short splash_range, splash_add_range;
@@ -447,7 +447,6 @@ struct map_session_data {
 	int debug_line;
 	const char* debug_func;
 	int shadowform_id;
-	short shieldmdef;
 };
 
 //Update this max as necessary. Raised from 80 to 84 as the Extended Super Novice needs it. [Rytech]

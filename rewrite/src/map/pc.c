@@ -2133,22 +2133,15 @@ int pc_bonus(struct map_session_data *sd,int type,int val)
 		}
 		break;
 	case SP_MDEF1:
-		if( sd->special_state.checkshieldmdef )
-		{
-			sd->shieldmdef += val;
-			sd->special_state.checkshieldmdef = 0;
-		}
 		if(sd->state.lr_flag != 2) {
 			bonus = status->mdef + val;
 			status->mdef = cap_value(bonus, CHAR_MIN, CHAR_MAX);
+
+		if( sd->state.lr_flag == 3 )
+			sd->shieldmdef += bonus;
 		}
 		break;
 	case SP_MDEF2:
-		if( sd->special_state.checkshieldmdef )
-		{
-			sd->shieldmdef += val;
-			sd->special_state.checkshieldmdef = 0;
-		}
 		if(sd->state.lr_flag != 2) {
 			bonus = status->mdef2 + val;
 			status->mdef2 = cap_value(bonus, SHRT_MIN, SHRT_MAX);
@@ -7994,11 +7987,10 @@ int pc_equipitem(struct map_session_data *sd,int n,int req_pos)
 			if(id->type == IT_ARMOR) {
 				sd->status.shield = id->look;
 				sd->weapontype2 = 0;
-				sd->special_state.checkshieldmdef = 1;
 			}
 		}
 		else
-			sd->status.shield = sd->weapontype2 = sd->special_state.checkshieldmdef = 0;
+			sd->status.shield = sd->weapontype2 = 0;
 		pc_calcweapontype(sd);
 		clif_changelook(&sd->bl,LOOK_SHIELD,sd->status.shield);
 	}
@@ -8107,7 +8099,7 @@ int pc_unequipitem(struct map_session_data *sd,int n,int flag)
 
 	if( sd->status.inventory[n].equip & EQP_HAND_L )
 	{
-		sd->status.shield = sd->weapontype2 = sd->special_state.checkshieldmdef = 0;
+		sd->status.shield = sd->weapontype2 = 0;
 		pc_calcweapontype(sd);
 		clif_changelook(&sd->bl,LOOK_SHIELD,sd->status.shield);
 	}

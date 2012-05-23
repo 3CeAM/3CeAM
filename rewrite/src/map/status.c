@@ -2262,6 +2262,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		+ sizeof(sd->setitem_hash)
 		+ sizeof(sd->setitem_hash2)
 		+ sizeof(sd->itemhealrate2)
+		+ sizeof(sd->shieldmdef)
 		// shorts
 		+ sizeof(sd->splash_range)
 		+ sizeof(sd->splash_add_range)
@@ -2362,9 +2363,11 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 			refinedef += sd->status.inventory[index].refine * refinebonus[0][0];
 			if( sd->inventory_data[index]->script )
 			{
-				if( sd->status.inventory[index].equip == EQP_SHIELD )
-					sd->special_state.checkshieldmdef = 1;
+				if( i == EQI_HAND_L ) //Shield
+					sd->state.lr_flag = 3;
 				run_script(sd->inventory_data[index]->script,0,sd->bl.id,0);
+				if( i == EQI_HAND_L ) //Shield
+					sd->state.lr_flag = 0;
 				if( !calculating ) //Abort, run_script retriggered this. [Skotlex]
 					return 1;
 			}
