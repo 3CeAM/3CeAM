@@ -3563,7 +3563,6 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							skillratio = 4 * s_level + 100 * sd->shieldmdef + 2 * sstatus->int_;
 						else
 							skillratio = 600 + 100 * sd->shieldmdef + 2 * sstatus->int_;
-							//skillratio = 100 * sd->shieldmdef;//Leaving here for testing on the next update.
 					else
 						skillratio = 0;//Prevents MATK damage from being done on LV 1 usage since LV 1 us ATK. [Rytech]
 					break;
