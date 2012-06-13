@@ -1016,6 +1016,42 @@ int party_sub_count(struct block_list *bl, va_list ap)
 	return 1;
 }
 
+// Speial check for Royal Guard's Banding skill and other skills that work together with it.
+// NOTE: This system is currently not in use and will be disabled until all required skills
+// are updated to support its function. [Rytech]
+/*int party_sub_count_banding(struct block_list *bl, va_list ap)
+{
+	struct map_session_data *sd = (TBL_PC *)bl;
+
+	if (sd->state.autotrade)
+		return 0;
+	
+	if (battle_config.idle_no_share && pc_isidle(sd))
+		return 0;
+
+	if ( (sd->class_&MAPID_UPPERMASK_THIRD) != MAPID_ROYAL_GUARD )
+		return 0;
+
+	return 1;
+}*/
+
+// Speial check for Minstrel's and Wanderer's chorus skills.
+int party_sub_count_chorus(struct block_list *bl, va_list ap)
+{
+	struct map_session_data *sd = (TBL_PC *)bl;
+
+	if (sd->state.autotrade)
+		return 0;
+	
+	if (battle_config.idle_no_share && pc_isidle(sd))
+		return 0;
+
+	if ( (sd->class_&MAPID_UPPERMASK_THIRD) != MAPID_MINSTRELWANDERER )
+		return 0;
+
+	return 1;
+}
+
 /// Executes 'func' for each party member on the same map and in range (0:whole map)
 int party_foreachsamemap(int (*func)(struct block_list*,va_list),struct map_session_data *sd,int range,...)
 {
