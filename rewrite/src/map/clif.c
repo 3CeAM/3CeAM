@@ -821,13 +821,19 @@ static int clif_set_unit_idle(struct block_list* bl, unsigned char* buffer, bool
 		WBUFW(buf,0) = spawn?0x22b:0x22a;
 #elif PACKETVER < 20091103
 		WBUFW(buf,0) = spawn?0x2ed:0x2ee;
-#else
+#elif PACKETVER < 20101124
 		WBUFW(buf,0) = spawn?0x7f8:0x7f9;
+#else
+		WBUFW(buf,0) = spawn?0x858:0x857;
 #endif
 
 #if PACKETVER >= 20091103
 	name = status_get_name(bl);
+#if PACKETVER < 20110111
 	WBUFW(buf,2) = (spawn?62:63)+strlen(name);
+#else
+	WBUFW(buf,2) = (spawn?64:65)+strlen(name);
+#endif
 	WBUFB(buf,4) = clif_bl_type(bl);
 	offset+=3;
 	buf = WBUFP(buffer,offset);
@@ -901,6 +907,11 @@ static int clif_set_unit_idle(struct block_list* bl, unsigned char* buffer, bool
 		return packet_len(0x7c);
 	}
 #endif
+#if PACKETVER >= 20110111
+	WBUFW(buf,34) = 0;
+	offset+= 2;
+	buf = WBUFP(buffer,offset);
+#endif
 	WBUFL(buf,34) = status_get_guild_id(bl);
 	WBUFW(buf,38) = status_get_emblem_id(bl);
 	WBUFW(buf,40) = (sd)? sd->status.manner : 0;
@@ -970,13 +981,19 @@ static int clif_set_unit_walking(struct block_list* bl, struct unit_data* ud, un
 	WBUFW(buf, 0) = 0x22c;
 #elif PACKETVER < 20091103
 	WBUFW(buf, 0) = 0x2ec;
-#else
+#elif PACKETVER < 20101124
 	WBUFW(buf, 0) = 0x7f7;
+#else
+	WBUFW(buf, 0) = 0x856;
 #endif
 
 #if PACKETVER >= 20091103
 	name = status_get_name(bl);
+#if PACKETVER < 20110111
 	WBUFW(buf, 2) = 69+strlen(name);
+#else
+	WBUFW(buf, 2) = 71+strlen(name);
+#endif
 	offset+=2;
 	buf = WBUFP(buffer,offset);
 #endif
@@ -1013,6 +1030,11 @@ static int clif_set_unit_walking(struct block_list* bl, struct unit_data* ud, un
 	WBUFW(buf,32) = vd->hair_color;
 	WBUFW(buf,34) = vd->cloth_color;
 	WBUFW(buf,36) = (sd)? sd->head_dir : 0;
+ #if PACKETVER >= 20110111
+ 	WBUFW(buf,38) = 0;
+ 	offset+= 2;
+ 	buf = WBUFP(buffer,offset);
+ #endif
 	WBUFL(buf,38) = status_get_guild_id(bl);
 	WBUFW(buf,42) = status_get_emblem_id(bl);
 	WBUFW(buf,44) = (sd)? sd->status.manner : 0;
@@ -5369,11 +5391,7 @@ int clif_broadcast2(struct block_list* bl, const char* mes, int len, unsigned lo
 {
 	unsigned char *buf = (unsigned char*)aMallocA((16 + len)*sizeof(unsigned char));
 
-#if PACKETVER < 20080820
 	WBUFW(buf,0)  = 0x1c3;
-#else
-	WBUFW(buf,0)  = 0x40c;
-#endif
 	WBUFW(buf, 2) = len + 16;
 	WBUFL(buf, 4) = fontColor;
 	WBUFW(buf, 8) = fontType;
@@ -8439,15 +8457,15 @@ void clif_equipcheckbox(struct map_session_data* sd)
 	WFIFOSET(fd, packet_len(0x2da));
 }
 
-/*==========================================
- * Sends info about a player's equipped items
- * R 002d7 <length>.W <name>.24B <class>.w <hairstyle>.w <up-viewid>.w <mid-viewid>.w <low-viewid>.w <haircolor>.w <cloth-dye>.w <gender>.1B {equip item}.26B*
- * for PACKETVER >= 20100629
- * R 002d7 <length>.W <name>.24B <class>.w <hairstyle>.w <bottom-viewid>.w <mid-viewid>.w <up-viewid>.w <haircolor>.w <cloth-dye>.w <gender>.1B {equip item}.28B*
- *------------------------------------------*/
+/// Sends info about a player's equipped items (ZC_EQUIPWIN_MICROSCOPE)
+/// 02d7 <packet len>.W <name>.24B <class>.W <hairstyle>.W <up-viewid>.W <mid-viewid>.W <low-viewid>.W <haircolor>.W <cloth-dye>.W <gender>.B {equip item}.26B*
+/// 02d7 <packet len>.W <name>.24B <class>.W <hairstyle>.W <bottom-viewid>.W <mid-viewid>.W <up-viewid>.W <haircolor>.W <cloth-dye>.W <gender>.B {equip item}.28B* (PACKETVER >= 20100629)
+/// 0859 <packet len>.W <name>.24B <class>.W <hairstyle>.W <bottom-viewid>.W <mid-viewid>.W <up-viewid>.W <haircolor>.W <cloth-dye>.W <gender>.B {equip item}.28B* (PACKETVER >= 20101124)
+/// 0859 <packet len>.W <name>.24B <class>.W <hairstyle>.W <bottom-viewid>.W <mid-viewid>.W <up-viewid>.W <robe>.W <haircolor>.W <cloth-dye>.W <gender>.B {equip item}.28B* (PACKETVER >= 20110111)
 void clif_viewequip_ack(struct map_session_data* sd, struct map_session_data* tsd)
 {
-	int i, n, fd;
+	uint8* buf;
+	int i, n, fd, offset = 0;
 #if PACKETVER < 20100629
 	const int s = 26;
 #else
@@ -8458,17 +8476,27 @@ void clif_viewequip_ack(struct map_session_data* sd, struct map_session_data* ts
 	fd = sd->fd;
 	
 	WFIFOHEAD(fd, MAX_INVENTORY * s + 43);
+	buf = WFIFOP(fd,0);
 
-	WFIFOW(fd, 0) = 0x2d7;
-	safestrncpy((char*)WFIFOP(fd, 4), tsd->status.name, NAME_LENGTH);
-	WFIFOW(fd,28) = tsd->status.class_;
-	WFIFOW(fd,30) = tsd->vd.hair_style;	
-	WFIFOW(fd,32) = tsd->vd.head_bottom;
-	WFIFOW(fd,34) = tsd->vd.head_mid;
-	WFIFOW(fd,36) = tsd->vd.head_top;
-	WFIFOW(fd,38) = tsd->vd.hair_color;
-	WFIFOW(fd,40) = tsd->vd.cloth_color;
-	WFIFOB(fd,42) = tsd->vd.sex;
+#if PACKETVER < 20101124
+	WBUFW(buf, 0) = 0x2d7;
+#else
+	WBUFW(buf, 0) = 0x859;
+#endif
+	safestrncpy((char*)WBUFP(buf, 4), tsd->status.name, NAME_LENGTH);
+	WBUFW(buf,28) = tsd->status.class_;
+	WBUFW(buf,30) = tsd->vd.hair_style;	
+	WBUFW(buf,32) = tsd->vd.head_bottom;
+	WBUFW(buf,34) = tsd->vd.head_mid;
+	WBUFW(buf,36) = tsd->vd.head_top;
+#if PACKETVER >= 20110111
+	WBUFW(buf,38) = 0;
+	offset+= 2;
+	buf = WBUFP(buf,2);
+#endif
+	WBUFW(buf,38) = tsd->vd.hair_color;
+	WBUFW(buf,40) = tsd->vd.cloth_color;
+	WBUFB(buf,42) = tsd->vd.sex;
 	
 	for(i=0,n=0; i < MAX_INVENTORY; i++)
 	{
@@ -8478,24 +8506,24 @@ void clif_viewequip_ack(struct map_session_data* sd, struct map_session_data* ts
 			continue;
 	
 		// Inventory position
-		WFIFOW(fd, n*s+43) = i + 2;
+		WBUFW(buf, n*s+43) = i + 2;
 		// Add refine, identify flag, element, etc.
-		clif_item_sub(WFIFOP(fd,0), n*s+45, &tsd->status.inventory[i], tsd->inventory_data[i], pc_equippoint(tsd, i));
+		clif_item_sub(WBUFP(buf,0), n*s+45, &tsd->status.inventory[i], tsd->inventory_data[i], pc_equippoint(tsd, i));
 		// Add cards
-		clif_addcards(WFIFOP(fd, n*s+55), &tsd->status.inventory[i]);	
+		clif_addcards(WBUFP(buf, n*s+55), &tsd->status.inventory[i]);	
 		// Expiration date stuff, if all of those are set to 0 then the client doesn't show anything related (6 bytes)
-		WFIFOL(fd, n*s+63) = tsd->status.inventory[i].expire_time;
-		WFIFOW(fd, n*s+67) = 0;
+		WBUFL(buf, n*s+63) = tsd->status.inventory[i].expire_time;
+		WBUFW(buf, n*s+67) = 0;
 #if PACKETVER >= 20100629
 		if (tsd->inventory_data[i]->equip&EQP_HELM)
-			WFIFOW(fd, n*s+69) = tsd->inventory_data[i]->look;
+			WBUFW(buf, n*s+69) = tsd->inventory_data[i]->look;
 		else
-			WFIFOW(fd, n*s+69) = 0;
+			WBUFW(buf, n*s+69) = 0;
 #endif
 		n++;
 	}
 
-	WFIFOW(fd, 2) = 43 + n*s;	// Set length
+	WFIFOW(fd, 2) = 43+offset+n*s;	// Set length
 	WFIFOSET(fd, WFIFOW(fd, 2));
 }
 
@@ -15610,6 +15638,11 @@ static int packetdb_readdb(void)
 	    3, -1,  8, -1,  86, 2,  6,  6, -1, -1,  4, 10, 10, 22,  8,  0,
 	    0,  0,  0,  0,  6,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0, -1, -1,  3,  2, 66,  5,  2, 12,  6,  0,  0,
+ 	//#0x0840
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0,  0, -1, -1, -1,  0,  0,  0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	};
 	struct {
 		void (*func)(int, struct map_session_data *);

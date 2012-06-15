@@ -1553,7 +1553,7 @@ int count_users(void)
 // Writes char data to the buffer in the format used by the client.
 // Used in packets 0x6b (chars info) and 0x6d (new char info)
 // Returns the size
-#define MAX_CHAR_BUF 132 //Max size (for WFIFOHEAD calls)
+#define MAX_CHAR_BUF 144 //Max size (for WFIFOHEAD calls)
 int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p)
 {
 	unsigned short offset = 0;
@@ -1615,6 +1615,18 @@ int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p)
 #endif
 #if PACKETVER >= 20100803
 	WBUFL(buf,124) = TOL(p->delete_date);
+	offset += 4;
+#endif
+#if PACKETVER >= 20110111
+	WBUFL(buf,128) = 0;  // robe sprite id
+	offset += 4;
+#endif
+#if PACKETVER >= 20111019
+	WBUFL(buf,132) = 0;
+	offset += 4;
+#endif
+#if PACKETVER >= 20111021
+	WBUFL(buf,136) = 0;
 	offset += 4;
 #endif
 	return 106+offset;
@@ -1888,6 +1900,15 @@ int parse_fromlogin(int fd)
 				{
 					// send characters to player
 					mmo_char_send006b(i, sd);
+					#if PACKETVER >= 20110309
+					WFIFOHEAD(i, 12);
+					WFIFOW(i, 0) = 0x08B9;
+					WFIFOW(i, 2) = 0;
+					WFIFOW(i, 4) = 0;
+					WFIFOL(i, 6) = sd->account_id;
+					WFIFOW(i, 10) = 0;
+					WFIFOSET(i, 12);
+					#endif
 				}
 			}
 			RFIFOSKIP(fd,62);

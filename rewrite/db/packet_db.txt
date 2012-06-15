@@ -56,7 +56,7 @@ packet_ver: 5
 0x008c,-1,globalmessage,2:4
 0x008d,-1
 0x008e,-1
-//0x008f,-1
+//0x008f,0
 0x0090,7,npcclicked,2
 0x0091,22
 0x0092,28
@@ -86,7 +86,7 @@ packet_ver: 5
 0x00aa,7
 0x00ab,4,unequipitem,2
 0x00ac,7
-//0x00ad,-1
+//0x00ad,0
 0x00ae,-1
 0x00af,6
 0x00b0,8
@@ -303,7 +303,7 @@ packet_ver: 5
 0x0183,10,guilddelalliance,2:6
 0x0184,10
 0x0185,34
-//0x0186,-1
+//0x0186,0
 0x0187,6
 0x0188,8
 0x0189,4
@@ -371,7 +371,7 @@ packet_ver: 5
 0x01c7,2
 0x01c8,13
 0x01c9,97
-//0x01ca,-1
+//0x01ca,0
 0x01cb,9
 0x01cc,9
 0x01cd,30
@@ -436,8 +436,8 @@ packet_ver: 5
 0x0208,11,friendslistreply,2:6:10
 0x0209,36
 0x020a,10
-//0x020b,-1
-//0x020c,-1
+//0x020b,0
+//0x020c,0
 0x020d,-1
 
 //2004-07-05aSakexe
@@ -733,7 +733,7 @@ packet_ver: 17
 0x0113,33,useskilltopos,12:15:18:31
 0x0116,12,dropitem,3:10
 0x0190,24,actionrequest,11:23
-0x0216,-1
+0x0216,0
 0x023d,-1
 0x023e,4
 
@@ -767,7 +767,7 @@ packet_ver: 18
 0x0248,68
 0x0249,3
 0x024a,70
-0x024b,4,auctioncancelreg,0
+0x024b,4,auctioncancelreg,2
 0x024c,8,auctionsetitem,0
 0x024d,14
 0x024e,6,auctioncancel,0
@@ -799,7 +799,7 @@ packet_ver: 19
 0x0251,4
 
 //2005-08-08aSakexe
-0x024d,12,auctionregister,0
+0x024d,12,auctionregister,2:6:10
 0x024e,4
 
 //2005-08-17aSakexe
@@ -810,7 +810,7 @@ packet_ver: 19
 0x0240,-1
 0x0248,-1,mailsend,2:4:28:68
 0x0255,5
-0x0256,-1
+0x0256,0
 0x0257,8
 
 //2005-09-12bSakexe
@@ -830,7 +830,7 @@ packet_ver: 19
 
 //2005-10-17aSakexe
 0x007a,58
-0x025d,6,auctionclose,0
+0x025d,6,auctionclose,2
 0x025e,4
 
 //2005-10-24aSakexe
@@ -933,8 +933,8 @@ packet_ver: 20
 0x029d,-1
 0x029e,11
 0x029f,3,mermenu,0
-0x02a0,-1
-0x02a1,-1
+0x02a0,0
+0x02a1,0
 0x02a2,8
 
 //2007-01-08aSakexe
@@ -961,8 +961,8 @@ packet_ver: 21
 
 //2007-01-29aSakexe
 0x029b,72
-0x02a3,-1
-0x02a4,-1
+0x02a3,0
+0x02a4,0
 0x02a5,8
 
 // 2007-02-05aSakexe
@@ -1082,8 +1082,8 @@ packet_ver: 22
 0x02ef,8
 
 //2008-03-18aSakexe
-0x02bf,-1
-0x02c0,-1
+0x02bf,0
+0x02c0,0
 0x02f0,10
 0x02f1,2,progressbar,0
 0x02f2,2
@@ -1408,7 +1408,7 @@ packet_ver: 25
 
 //2009-09-29aRagexeRE
 //0x07ea,2
-//0x07eb,-1
+//0x07eb,0
 //0x07ec,6
 //0x07ed,8
 //0x07ee,6
@@ -1586,5 +1586,142 @@ packet_ver: 25
 0x0842,6,recall2,2
 0x0843,6,remove2,2
 
+//2010-11-24aRagexeRE
+packet_ver: 26
+0x0436,19,wanttoconnection,2:6:10:14:18
+0x035f,5,walktoxy,2
+0x0360,6,ticksend,2
+0x0361,5,changedir,2:4
+0x0362,6,takeitem,2
+0x0363,6,dropitem,2:4
+0x0364,8,movetokafra,2:4
+0x0365,8,movefromkafra,2:4
+0x0366,10,useskilltopos,2:4:6:8
+0x0367,90,useskilltoposinfo,2:4:6:8:10
+0x0368,6,getcharnamerequest,2
+0x0369,6,solvecharname,2
+0x0856,-1
+0x0857,-1
+0x0858,-1
+0x0859,-1
+
 //Add new packets here
-//packet_ver: 26
+packet_ver: 27
+0x022d,19,wanttoconnection,2:6:10:14:18
+0x0437,5,walktoxy,2
+0x035f,6,ticksend,2
+0x0893,5,changedir,2:4
+0x07e4,6,takeitem,2
+0x0362,6,dropitem,2:4
+0x07ec,8,movetokafra,2:4
+0x0364,8,movefromkafra,2:4
+0x0202,10,useskilltopos,2:4:6:8
+0x0366,90,useskilltoposinfo,2:4:6:8:10
+0x08ad,6,getcharnamerequest,2
+0x0368,6,solvecharname,2
+0x0369,7,actionrequest,2:6
+0x083c,10,useskilltoid,2:4:6
+
+// Unknown
+//0x08C7,-1
+//0x08C8,34
+//0x08C9,2
+//0x08CA,-1
+//0x08CB,-1
+//0x08CC,109
+//0x08CD,2
+//0x08CE,10
+//0x08CF,9
+//0x08D0,7
+//0x08D1,10
+//0x08D2,10
+//0x08D3,14
+//0x08D4,-1
+
+packet_ver: 28
+
+//2011-11-02
+//0x083c,19,wanttoconnection,2:6:10:14:18
+//0x088a,6,getcharnamerequest,2
+//0x0817,6,ticksend,2
+//0x0366,5,changedir,2:4
+//0x0364,5,walktoxy,2
+//0x08aa,7,actionrequest,2:6
+//0x02c4,10,useskilltoid,2:4:6
+//0x0369,10,useskilltopos,2:4:6:8
+//0x08ad,90,useskilltoposinfo,2:4:6:8:10
+//0x0885,6,dropitem,2:4
+//0x0815,6,takeitem,2
+
+//2011-11-22
+//0x0835,19,wanttoconnection,2:6:10:14:18
+//0x0898,6,getcharnamerequest,2
+//0x0368,6,solvecharname,2 <-- How do I trigger the client to send a packet for this? Need to know so I can capture.
+//0x0899,6,ticksend,2
+//0x0896,5,changedir,2:4
+//0x0892,5,walktoxy,2
+//0x022d,7,actionrequest,2:6
+//0x08a1,10,useskilltoid,2:4:6
+//0x08ad,10,useskilltopos,2:4:6:8
+//0x0363,90,useskilltoposinfo,2:4:6:8:10
+//0x0436,6,dropitem,2:4
+//0x0893,6,takeitem,2
+//0x0891,26,friendslistadd,2
+//0x089e,5,hommenu,4
+//0x0895,26,partyinvite2,2
+//0x0281,36,storagepassword,0 <-- Lacking Password Support To Check
+//0x0202,18,bookingregreq,2:4:6
+//0x0369,-1,itemlistwindowselected,2:4:8
+//0x0887,-1,reqopenbuyingstore,2:4:8:9:89
+//0x08a9,2,reqclosebuyingstore,0
+//0x088c,6,reqclickbuyingstore,2
+//0x089d,-1,reqtradebuyingstore,2:4:8:12
+//0x0439,8,useitem,2:4 <-- Isnt needed since packet didnt change.
+//0x08ab,-1,searchstoreinfo,2:4:5:9:13:14:15 <-- Unable to get to work, along with the 2 below packets. Function not working?
+//0x088b,2,searchstoreinfonextpage,0
+//0x08a2,12,searchstoreinfolistitemclick,2:6:10
+//0x08a4,8,movetokafra,2:4
+//0x0362,8,movefromkafra,2:4
+
+//2011-11-22aRagexeRE
+0x0835,19,wanttoconnection,2:6:10:14:18
+0x0898,6,getcharnamerequest,2
+0x035f,6,solvecharname,2
+0x0899,6,ticksend,2
+0x0896,5,changedir,2:4
+0x0892,5,walktoxy,2
+0x022d,7,actionrequest,2:6
+0x08a1,10,useskilltoid,2:4:6
+0x08ad,10,useskilltopos,2:4:6:8
+0x0363,90,useskilltoposinfo,2:4:6:8:10
+0x0436,6,dropitem,2:4
+0x0893,6,takeitem,2
+0x0891,26,friendslistadd,2
+0x089e,5,hommenu,2:4
+0x0288,-1,cashshopbuy,4:8
+0x0895,26,partyinvite2,2
+0x0364,36,storagepassword,0
+0x0202,18,bookingregreq,2:4:6
+0x0804,14,bookingsearchreq,2:4:6:8:12
+0x0808,14,bookingupdatereq,2
+0x0806,2,bookingdelreq,0
+0x0369,-1,itemlistwindowselected,2:4:8
+0x0887,-1,reqopenbuyingstore,2:4:8:9:89
+0x08a9,2,reqclosebuyingstore,0
+0x088c,6,reqclickbuyingstore,2
+0x089d,-1,reqtradebuyingstore,2:4:8:12
+0x0439,8,useitem,2:4
+0x01fd,15,repairitem,2
+0x07ec,-1,searchstoreinfo,2:4:5:9:13:14:15
+0x0815,2,searchstoreinfonextpage,0
+0x0366,12,searchstoreinfolistitemclick,2:6:10
+0x0907,5,moveitem,2:4
+0x08a4,8,movetokafra,2:4
+0x0362,8,movefromkafra,2:4
+0x0803,4
+0x0805,-1
+0x0807,4
+0x0809,50
+0x080a,18
+0x080b,6
+0x0908,5
