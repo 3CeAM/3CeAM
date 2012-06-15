@@ -3172,9 +3172,9 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 
 	// Minstrel/Wanderer number check for chorus skills.
 	// Bonus remains 0 unless 3 or more Minstrel's/Wanderer's are in the party.
-	if( sd->status.party_id && party_foreachsamemap(party_sub_count_chorus, sd, 0) > 7)
+	if( sd && sd->status.party_id && party_foreachsamemap(party_sub_count_chorus, sd, 0) > 7)
 		chorusbonus = 5;//Maximum effect possiable from 7 or more Minstrel's/Wanderer's
-	else if( sd->status.party_id && party_foreachsamemap(party_sub_count_chorus, sd, 0) > 2)
+	else if( sd && sd->status.party_id && party_foreachsamemap(party_sub_count_chorus, sd, 0) > 2)
 		chorusbonus = party_foreachsamemap(party_sub_count_chorus, sd, 0) - 2;//Effect bonus from additional Minstrel's/Wanderer's if not above the max possiable.
 
 	if( status_isdead(bl) )
@@ -4533,9 +4533,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 	// Minstrel/Wanderer number check for chorus skills.
 	// Bonus remains 0 unless 3 or more Minstrel's/Wanderer's are in the party.
-	if( sd->status.party_id && party_foreachsamemap(party_sub_count_chorus, sd, 0) > 7)
+	if( sd && sd->status.party_id && party_foreachsamemap(party_sub_count_chorus, sd, 0) > 7)
 		chorusbonus = 5;//Maximum effect possiable from 7 or more Minstrel's/Wanderer's
-	else if( sd->status.party_id && party_foreachsamemap(party_sub_count_chorus, sd, 0) > 2)
+	else if( sd && sd->status.party_id && party_foreachsamemap(party_sub_count_chorus, sd, 0) > 2)
 		chorusbonus = party_foreachsamemap(party_sub_count_chorus, sd, 0) - 2;//Effect bonus from additional Minstrel's/Wanderer's if not above the max possiable.
 
 	// Max Job Level bonus that skills should receive. Acording to battle_config.max_joblvl_nerf [Pinky]
@@ -5096,7 +5096,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SO_STRIKING:
 		{
 			int bonus = 0;
-			if( sd )
+			if( dstsd )
 			{
 				short index = dstsd->equip_index[EQI_HAND_R];
 				if( index >= 0 && dstsd->inventory_data[index] && dstsd->inventory_data[index]->type == IT_WEAPON )
