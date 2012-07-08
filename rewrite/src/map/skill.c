@@ -5088,7 +5088,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SR_GENTLETOUCH_ENERGYGAIN:
 	case SR_GENTLETOUCH_CHANGE:
 	case SR_GENTLETOUCH_REVITALIZE:
-	case MI_HARMONIZE:
 	case GN_CARTBOOST:
 		clif_skill_nodamage(src,bl,skillid,skilllv,
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
@@ -8204,13 +8203,18 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case WA_MOONLIT_SERENADE:
 	case MI_RUSH_WINDMILL:
 	case MI_ECHOSONG:
-		if( sd == NULL || sd->status.party_id == 0 || (flag & 1) )//May need to recheck all of this code later on. [Rytech]
-			sc_start2(bl,type,100,skilllv,pc_checkskill(sd,WM_LESSON),skill_get_time(skillid,skilllv));
-		else if( sd )
-		{	// Only shows animation on caster.
-			clif_skill_nodamage(src,bl,skillid,skilllv,1);
-			party_foreachsamemap(skill_area_sub, sd, skill_get_splash(skillid, skilllv), src, skillid, skilllv, tick, flag|BCT_PARTY|1, skill_castend_nodamage_id);
-		}
+			if( flag&1 )
+				sc_start2(bl,type,100,skilllv,pc_checkskill(sd,WM_LESSON),skill_get_time(skillid,skilllv));
+			else if( sd )
+			{
+				party_foreachsamemap(skill_area_sub,sd,skill_get_splash(skillid,skilllv),src,skillid,skilllv,tick,flag|BCT_PARTY|1,skill_castend_nodamage_id);
+				sc_start2(bl,type,100,skilllv,pc_checkskill(sd,WM_LESSON),skill_get_time(skillid,skilllv));
+				clif_skill_nodamage(src,bl,skillid,skilllv,1);
+			}
+			break;
+
+	case MI_HARMONIZE:
+		clif_skill_nodamage(src,bl,skillid,skilllv,sc_start2(bl,type,100,skilllv,pc_checkskill(sd,WM_LESSON),skill_get_time(skillid,skilllv)));
 		break;
 
 	case WM_DEADHILLHERE:
@@ -8235,36 +8239,46 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 	case WM_LULLABY_DEEPSLEEP:
 		if ( flag&1 )
+			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
+		else if ( sd )
 		{
 			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
 				rate = 4 * skilllv + 2 * (sd ? pc_checkskill(sd,WM_LESSON) : 1) + status_get_lv(src) / 15 + sd->status.job_level / 5;
 			else
 				rate = 4 * skilllv + 2 * (sd ? pc_checkskill(sd,WM_LESSON) : 1) + 20;
-			sc_start(bl,type,rate,skilllv,skill_get_time(skillid,skilllv));
-		}
-		else
-		{
-			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+			if ( rand()%100 < rate )
+			{
 			map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid, skilllv),BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+			}
 		}
 		break;
 
-	case WM_SIRCLEOFNATURE:
-		flag |= BCT_PARTY|BCT_SELF;
+	case WM_SIRCLEOFNATURE:// I need to confirm if this skill affects friendly's or enemy's. [Rytech]
+		if( flag&1 )
+			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
+		else if ( sd )
+		{
+			map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid,skilllv),BL_PC, src, skillid, skilllv, tick, flag|BCT_NOENEMY|1, skill_castend_nodamage_id);
+			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		}
+		break;
+
 	case WM_VOICEOFSIREN:
 		if( flag&1 )
+			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
+		else if ( sd )
 		{
-			int rate = 0;//This rate calculates Voice of Siren's success chance. [Rytech]
 			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
 				rate = 6 * skilllv + (sd ? pc_checkskill(sd,WM_LESSON) : 1) + sd->status.job_level / 2;
 			else
 				rate = 6 * skilllv + (sd ? pc_checkskill(sd,WM_LESSON) : 1) + 25;
-			sc_start(bl,type,(skillid==WM_VOICEOFSIREN)?rate:100,skilllv,skill_get_time(skillid,skilllv));
-		}
-		else
-		{
-			map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid,skilllv),(skillid==WM_VOICEOFSIREN)?BL_CHAR:BL_PC, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
+			if ( rand()%100 < rate )
+			{
+			map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid,skilllv),BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+			}
 		}
 		break;
 
@@ -8328,11 +8342,14 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case WM_MELODYOFSINK:
 	case WM_BEYOND_OF_WARCRY:
 		if( flag&1 )
-			sc_start2(bl,type,15 + 5 * skilllv + 5 * chorusbonus,skilllv,chorusbonus,skill_get_time(skillid,skilllv));
+			sc_start2(bl,type,100,skilllv,chorusbonus,skill_get_time(skillid,skilllv));
 		else if( sd )
 		{
-			map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid,skilllv),BL_PC, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
-			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+			if ( rand()%100 < 15 + 5 * skilllv + 5 * chorusbonus )
+			{
+				map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid,skilllv),BL_PC, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
+				clif_skill_nodamage(src,bl,skillid,skilllv,1);
+			}
 		}
 		break;
 
