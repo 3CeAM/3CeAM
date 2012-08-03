@@ -1788,7 +1788,6 @@ int map_quit(struct map_session_data *sd)
 			status_change_end(&sd->bl, SC_ENDURE, INVALID_TIMER); //No need to save infinite endure.
 		status_change_end(&sd->bl, SC_WEIGHT50, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_WEIGHT90, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_SATURDAYNIGHTFEVER, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_READING_SB, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_OVERHEAT_LIMITPOINT, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_RAISINGDRAGON, INVALID_TIMER);

@@ -504,13 +504,14 @@ void initChangeTables(void)
 
 	add_sc( SR_DRAGONCOMBO           , SC_STUN            );
 	add_sc( SR_EARTHSHAKER           , SC_STUN            );
+	set_sc( SR_FALLENEMPIRE          , SC_STOP               , SI_FALLENEMPIRE          , SCB_NONE );
 	set_sc( SR_CRESCENTELBOW         , SC_CRESCENTELBOW      , SI_CRESCENTELBOW         , SCB_NONE );
 	set_sc( SR_CURSEDCIRCLE          , SC_CURSEDCIRCLE_TARGET, SI_CURSEDCIRCLE_TARGET   , SCB_NONE );
 	set_sc( SR_LIGHTNINGWALK         , SC_LIGHTNINGWALK      , SI_LIGHTNINGWALK         , SCB_NONE );
-	set_sc( SR_RAISINGDRAGON         , SC_RAISINGDRAGON      , SI_RAISINGDRAGON         , SCB_REGEN|SCB_MAXHP|SCB_MAXSP/*|SCB_ASPD*/ );
+	set_sc( SR_RAISINGDRAGON         , SC_RAISINGDRAGON      , SI_RAISINGDRAGON         , SCB_REGEN|SCB_MAXHP|SCB_MAXSP );
 	set_sc( SR_GENTLETOUCH_ENERGYGAIN, SC_GT_ENERGYGAIN      , SI_GENTLETOUCH_ENERGYGAIN, SCB_NONE );
-	set_sc( SR_GENTLETOUCH_CHANGE    , SC_GT_CHANGE          , SI_GENTLETOUCH_CHANGE    , SCB_BATK|SCB_ASPD|SCB_DEF|SCB_MDEF );
-	set_sc( SR_GENTLETOUCH_REVITALIZE, SC_GT_REVITALIZE      , SI_GENTLETOUCH_REVITALIZE, SCB_MAXHP|SCB_DEF2|SCB_REGEN|SCB_ASPD|SCB_SPEED );
+	set_sc( SR_GENTLETOUCH_CHANGE    , SC_GT_CHANGE          , SI_GENTLETOUCH_CHANGE    , SCB_WATK|SCB_MDEF|SCB_ASPD|SCB_MAXHP );
+	set_sc( SR_GENTLETOUCH_REVITALIZE, SC_GT_REVITALIZE      , SI_GENTLETOUCH_REVITALIZE, SCB_DEF2|SCB_MAXHP|SCB_REGEN );
 
 	set_sc( WA_SWING_DANCE            , SC_SWINGDANCE           , SI_SWINGDANCE           , SCB_SPEED|SCB_ASPD );
 	set_sc( WA_SYMPHONY_OF_LOVER      , SC_SYMPHONYOFLOVER      , SI_SYMPHONYOFLOVERS     , SCB_MDEF );
@@ -4168,8 +4169,6 @@ static unsigned short status_calc_batk(struct block_list *bl, struct status_chan
 		batk -= batk * sc->data[SC__ENERVATION]->val2 / 100;
 	if(sc->data[SC__BLOODYLUST])
 		batk += batk * 32 / 100;
-	if(sc->data[SC_GT_CHANGE])
-		batk += batk * sc->data[SC_GT_CHANGE]->val3 / 100;
 	if(sc->data[SC_FULL_SWING_K])
 		batk += sc->data[SC_FULL_SWING_K]->val1;
 
@@ -4231,6 +4230,8 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += (10 + 10 * sc->data[SC_BANDING]->val1) * sc->data[SC_BANDING]->val2;
 	if(sc->data[SC_INSPIRATION])
 		watk += sc->data[SC_INSPIRATION]->val2;
+	if(sc->data[SC_GT_CHANGE])
+		watk += sc->data[SC_GT_CHANGE]->val2;
 	if(sc->data[SC_RUSHWINDMILL])
 		watk += sc->data[SC_RUSHWINDMILL]->val3;
 	if(sc->data[SC_SATURDAYNIGHTFEVER])
@@ -4487,8 +4488,6 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 		def -= def * (10 + 10 * sc->data[SC_SATURDAYNIGHTFEVER]->val1) / 100;
 	if(sc->data[SC_EARTHDRIVE])
 		def -= def * 25 / 100;
-	if( sc->data[SC_GT_CHANGE] )
-		def -= def * sc->data[SC_GT_CHANGE]->val3 / 100;
 	if( sc->data[SC_ROCK_CRUSHER] )
 		def -= def * sc->data[SC_ROCK_CRUSHER]->val2 / 100;
 	if( sc->data[SC_POWER_OF_GAIA] )
@@ -4530,7 +4529,7 @@ static signed short status_calc_def2(struct block_list *bl, struct status_change
 	if(sc->data[SC_ANALYZE])
 		def2 -= def2 * ( 14 * sc->data[SC_ANALYZE]->val1 ) / 100;
 	if( sc->data[SC_GT_REVITALIZE] )
-		def2 += def2 * ( 50 + 10 * sc->data[SC_GT_REVITALIZE]->val1 ) / 100;
+		def2 += sc->data[SC_GT_REVITALIZE]->val2;
 
 	return (short)cap_value(def2,1,SHRT_MAX);
 }
@@ -4567,7 +4566,9 @@ static signed char status_calc_mdef(struct block_list *bl, struct status_change 
 	if(sc->data[SC_SYMPHONYOFLOVER])
 		mdef += mdef * sc->data[SC_SYMPHONYOFLOVER]->val3 / 100;
 	if(sc->data[SC_GT_CHANGE])
-		mdef -= mdef * sc->data[SC_GT_CHANGE]->val3 / 100;
+		{mdef -= sc->data[SC_GT_CHANGE]->val4;
+			if ( mdef < 0 )
+				mdef = 0;}
 	if(sc->data[SC_WATER_BARRIER])
 		mdef += sc->data[SC_WATER_BARRIER]->val2;
 
@@ -4740,8 +4741,6 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				val = max( val, sc->data[SC_GN_CARTBOOST]->val2 );
 			if( sc->data[SC_SWINGDANCE] )
 				val = max( val, sc->data[SC_SWINGDANCE]->val3 );
-			if( sc->data[SC_GT_REVITALIZE] )
-				val = max( val, sc->data[SC_GT_REVITALIZE]->val2 );
 			if( sc->data[SC_WIND_STEP_OPTION] )
 				val = max( val, sc->data[SC_WIND_STEP_OPTION]->val2 );
 
@@ -4888,13 +4887,8 @@ static short status_calc_aspd_rate(struct block_list *bl, struct status_change *
 		aspd_rate -= aspd_rate * sc->data[SC_DANCEWITHWUG]->val3 / 100;	
 	if( sc->data[SC_EARTHDRIVE] )
 		aspd_rate += aspd_rate * 25 / 100;
-	/*As far I tested the skill there is no ASPD addition is applied. [Jobbie] */
-	//if( sc->data[SC_RAISINGDRAGON] )
-	//	aspd_rate -= 100; //FIXME: Need official ASPD bonus of this status. [Jobbie]
 	if( sc->data[SC_GT_CHANGE] )
-		aspd_rate -= aspd_rate * (sc->data[SC_GT_CHANGE]->val2/200) / 100;
-	if( sc->data[SC_GT_REVITALIZE] )
-		aspd_rate -= aspd_rate * sc->data[SC_GT_REVITALIZE]->val2 / 100;
+		aspd_rate -= aspd_rate * sc->data[SC_GT_CHANGE]->val3 / 100;
 	if( sc->data[SC_MELON_BOMB] )
 		aspd_rate += aspd_rate * sc->data[SC_MELON_BOMB]->val1 / 100;
 	if( sc->data[SC_BOOST500] )
@@ -4952,9 +4946,9 @@ static unsigned int status_calc_maxhp(struct block_list *bl, struct status_chang
 	if(sc->data[SC_RAISINGDRAGON])
 		maxhp += maxhp * (2 + sc->data[SC_RAISINGDRAGON]->val1) / 100;
 	if(sc->data[SC_GT_CHANGE])
-		maxhp -= maxhp * (2 * sc->data[SC_GT_CHANGE]->val1) / 100;
+		maxhp -= maxhp * (4 * sc->data[SC_GT_CHANGE]->val1) / 100;
 	if(sc->data[SC_GT_REVITALIZE])
-		maxhp += maxhp * (3 * sc->data[SC_GT_REVITALIZE]->val1) / 100;
+		maxhp += maxhp * (2 * sc->data[SC_GT_REVITALIZE]->val1) / 100;
 	if(sc->data[SC_LERADSDEW])
 		maxhp += sc->data[SC_LERADSDEW]->val3;
 	if(sc->data[SC_BEYONDOFWARCRY])
@@ -6408,9 +6402,9 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	case SC_GT_REVITALIZE:
 		if( sc->data[type] ) // Don't remove same sc.
 			break;
-		status_change_end(bl, SC_GT_REVITALIZE, INVALID_TIMER);
 		status_change_end(bl, SC_GT_ENERGYGAIN, INVALID_TIMER);
 		status_change_end(bl, SC_GT_CHANGE, INVALID_TIMER);
+		status_change_end(bl, SC_GT_REVITALIZE, INVALID_TIMER);
 		break;
 	}
 
@@ -7758,24 +7752,34 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val_flag |= 1|2|4;
 			break;
 		case SC_CRESCENTELBOW:
-			val2 = 94 + val1;
+			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(bl) >= 100 )
+			val2 = 50 + 5 * val1 + sd->status.job_level / 2;
+			else
+			val2 = 50 + 5 * val1 + 25;
 			val_flag |= 1|2;
 			break;
 		case SC_LIGHTNINGWALK:
-			val1 = 88 + 2 * val1;
+			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(bl) >= 100 )
+			val2 = 40 + 5 * val1 + sd->status.job_level / 2;
+			else
+			val2 = 40 + 5 * val1 + 25;
 			val_flag |= 1;
 			break;
 		case SC_RAISINGDRAGON:
 			val3 = tick / 5000;
 			tick = 5000;
 			break;
+		case SC_GT_ENERGYGAIN:
+			val2 = 10 + 5 * val1;//Sphere gain chance.
+			break;
 		case SC_GT_CHANGE:
-			if( sd ) val2 = (13 * val1 / 2) * sd->status.agi; //Aspd - old formula.
-			val3 = 20 + 1 * val1; //Base Atk, Reduction to DEF & MDEF
+			val2 = (status->str / 2 + status->dex / 4) * val1 / 5;//Fixed amount of weapon attack increase.
+			val3 = status_get_agi(bl) * val1 / 60;//ASPD increase.
+			val4 = 200 / status->int_ * val1;//MDEF decrease.
 			break;
 		case SC_GT_REVITALIZE:
-			val2 = 5 * val1; //Custom value VIT, ASPD, SPEED bonus.
-			val3 = 60 + 40 * val1; //HP recovery
+			val2 = status->vit / 4 * val1;//VIT defense increase.
+			val3 = 50 + 30 * val1;//Natural HP recovery rate increase.
 			break;
 		case SC_PYROTECHNIC_OPTION:
 			val2 = 60;	// Watk TODO: Renewal (Atk2)
@@ -10118,7 +10122,7 @@ static int status_natural_heal(struct block_list* bl, va_list args)
 				val += regen->hp;
 				// Placed here waiting for renewal. [pakpil]
 				if( sc && sc->data[SC_GT_REVITALIZE] )
-					val = val * sc->data[SC_GT_REVITALIZE]->val3 / 100;
+					val += val * sc->data[SC_GT_REVITALIZE]->val3 / 100;
 				regen->tick.hp -= battle_config.natural_healhp_interval;
 			} while(regen->tick.hp >= (unsigned int)battle_config.natural_healhp_interval);
 			if( status_heal(bl, val, 0, 1) < val )
