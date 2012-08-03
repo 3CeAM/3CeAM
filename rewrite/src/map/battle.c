@@ -664,10 +664,10 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 				status_change_end(bl, SC_KYRIE, INVALID_TIMER);
 		}
 
-		if( (sce = sc->data[SC_LIGHTNINGWALK]) && flag&BF_LONG && damage > 0 && rand()%100 < sce->val1 )
+		if( (sce = sc->data[SC_LIGHTNINGWALK]) && flag&BF_LONG && damage > 0 && rand()%100 < sce->val2 )
 		{
 			skill_blown(src,bl,distance_bl(src,bl)-1,unit_getdir(src),0);
-			d->div_ = ATK_DEF;
+			d->div_ = ATK_DEF;//The heck is this for? [Rytech]
 			status_change_end(bl, SC_LIGHTNINGWALK, -1);
 			return 0;
 		}
@@ -683,10 +683,14 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 		if( sd && (sce = sc->data[SC_FORCEOFVANGUARD]) && flag&BF_WEAPON && rand()%100 < sce->val2 )
 			pc_addrageball(sd,skill_get_time(LG_FORCEOFVANGUARD,sce->val1),sce->val3);
 
-		if( (sce = sc->data[SC_GT_ENERGYGAIN]) && flag&BF_WEAPON && rand()%100 < 10 + 5 * sce->val1 )
+		if( sd && (sce = sc->data[SC_GT_ENERGYGAIN]) && flag&BF_WEAPON && rand()%100 < sce->val2 )
 		{
-			int duration = skill_get_time2(MO_CALLSPIRITS, sce->val1);
-			if( sd ) pc_addspiritball(sd, duration, sce->val1);
+			int spheremax = 0;
+			if ( sd && sc->data[SC_RAISINGDRAGON] )
+			spheremax = 5 + sc->data[SC_RAISINGDRAGON]->val1;
+			else
+			spheremax = 5;
+			if( sd ) pc_addspiritball(sd, skill_get_time2(SR_GENTLETOUCH_ENERGYGAIN,sce->val1), spheremax);
 		}
 		
 		if( sc->data[SC__DEADLYINFECT] && damage > 0 && rand()%100 < 65 + 5 * sc->data[SC__DEADLYINFECT]->val1 )
@@ -2213,7 +2217,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio += 100 + 100 * skill_lv + sstatus->vit;
 					if( re_baselv_bonus == 1 && s_level >= 100 )
 						skillratio = skillratio * s_level / 100;	// Base level bonus.
-					if( sstatus->rhw.ele == ELE_WIND ) skillratio +=  skillratio * 25 / 100;	// 1.25x Damage if the weapon is wind element. [Rytech]
+					if( sstatus->rhw.ele == ELE_WIND ) skillratio +=  skillratio * 25 / 100;// 1.25x Damage if the weapon is wind element. [Rytech]
 					i = distance_bl(src,target);
 					if( i > 2 ) skillratio = skillratio * 75 / 100;
 					break;
@@ -2318,53 +2322,119 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case SR_DRAGONCOMBO:
 					skillratio += 40 * skill_lv;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio = skillratio * s_level / 100;	// Base level bonus.
 					break;
 				case SR_SKYNETBLOW:
-					skillratio += 80 * skill_lv - 100 + ( sstatus->agi * 4 );
+					if( sc && sc->data[SC_COMBO] )//This part of the code wont entirely work until I update the combo system. [Rytech]
+					skillratio = 100 * skill_lv + sstatus->agi + 150;
+					else
+					skillratio = 80 * skill_lv + sstatus->agi;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio = skillratio * s_level / 100;	// Base level bonus.
 					break;
 				case SR_EARTHSHAKER:
-					skillratio += 50 * skill_lv - 50;// Need to code a check to make the ratio 3x when hitting a hidden player. [Rytech]
+					{
+						struct status_change *tsc = status_get_sc(target);//Should check for Shadow Chaser's Invisiable skill right? [Rytech]
+						if( tsc && (tsc->data[SC_HIDING] || tsc->data[SC_CLOAKING] || tsc->data[SC_CHASEWALK] || 
+							tsc->data[SC_CLOAKINGEXCEED] || tsc->data[SC_CAMOUFLAGE] || tsc->data[SC_INVISIBILITY]) )
+						{
+						skillratio = 150 * skill_lv;
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio = skillratio * s_level / 100;	// Base level bonus.
+						skillratio = skillratio + 3 * sstatus->int_;
+						}
+						else
+						{
+						skillratio = 50 * skill_lv;
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio = skillratio * s_level / 100;	// Base level bonus.
+						skillratio = skillratio + 2 * sstatus->int_;
+						}
+					}
 					break;
 				case SR_FALLENEMPIRE:
-					skillratio += 150 * skill_lv; // Need official on how much enemy players weight affects damage. [Rytech]
-					//if( tsd && tsd->weight )
-					//	skillratio = (100 + 150 * skill_lv) * tsd->weight / 10000;
-					//else
-					//	skillratio = (100 + 150 * skill_lv) * 600 / 100;
+					skillratio += 150 * skill_lv;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio = skillratio * s_level / 150;	// Base level bonus.
 					break;
 				case SR_TIGERCANNON:
-					if( battle_config.skillsbonus_maxhp_SR && sstatus->hp > battle_config.skillsbonus_maxhp_SR )
-						skillratio = 2000 + ( battle_config.skillsbonus_maxhp_SR * ( 10 + 2 * skill_lv ) / 100 );
+					if( sc && sc->data[SC_COMBO] )//This part of the code wont entirely work until I update the combo system. [Rytech]
+					skillratio = (sstatus->max_hp * ( 10 + 2 * skill_lv ) / 100 + sstatus->max_sp * ( 5 + 1 * skill_lv ) / 100) / 2;
 					else
-					//	skillratio = 2000 + ( sstatus->hp * ( 10 + 2 * skill_lv ) / 100 );
-						skillratio = 2000; // Its appears the sacrificed HP is added as fixed damage (reduceable) Will have to do later. [Rytech]
+					skillratio = (sstatus->max_hp * ( 10 + 2 * skill_lv ) / 100 + sstatus->max_sp * ( 5 + 1 * skill_lv ) / 100) / 4;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio = skillratio * s_level / 100;	// Base level bonus.
 					break;
 				case SR_RAMPAGEBLASTER:
 					if( sc && sc->data[SC_EXPLOSIONSPIRITS] )
-						skillratio += 40 * skill_lv * (sd?sd->spiritball_old:5) - 100;
+						skillratio = 20 * (skill_lv + pc_checkskill(sd,MO_EXPLOSIONSPIRITS)) * sd->spiritball_old;
 					else
-						skillratio += 20 * skill_lv * (sd?sd->spiritball_old:5) - 100;
+						skillratio = 20 * skill_lv * sd->spiritball_old;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio = skillratio * s_level / 150;	// Base level bonus.
+					break;
+				case SR_CRESCENTELBOW_AUTOSPELL://Will not work until I can recode this skill in another update. [Rytech]
+					skillratio = tstatus->hp / 100 * skill_lv;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio = skillratio * s_level / 125;	// Base level bonus.
+					if ( skillratio > 5000 )
+						skillratio = 5000;//Ratio is officially capped at 5000%.
 					break;
 				case SR_KNUCKLEARROW:
-					if( wflag&4 )
-						skillratio = 150 * skill_lv; //+Knockback Damage (Must check and test. [Rytech])
+					if( wflag&4 )//Bonus damage if knocked back into a wall.
+					{
+					if ( tsd )//Players have weight. Monster's dont.
+					{if( re_baselv_bonus == 1 && s_level >= 100 )
+					skillratio = 150 * skill_lv + 1000 * (tsd->weight / 10) / tsd->max_weight + 5 * status_get_lv(target);
 					else
-						skillratio += 400 + (100 * skill_lv);
+					skillratio = 150 * skill_lv + 1000 * (tsd->weight / 10) / tsd->max_weight + 750;}
+					else//Knockback damage on mosnters. Need official formula for mobs since they have no weight.
+					skillratio = 150 * skill_lv + 1000 + 5 * status_get_lv(target);
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio = skillratio * s_level / 150;	// Base level bonus.
+					}
+					else
+					{//Main damage from skill use.
+					skillratio += 400 + (100 * skill_lv);
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio = skillratio * s_level / 100;	// Base level bonus.
+					}
 					break;
 				case SR_WINDMILL:
-					skillratio += 150;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+					skillratio = s_level + sstatus->dex;
+					else
+					skillratio = 150 + sstatus->dex;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio = skillratio * s_level / 100;	// Base level bonus.
 					break;
 				case SR_GATEOFHELL:
-					skillratio += 500 * skill_lv -100;
+					if( sc && sc->data[SC_COMBO] )//Wont work until the combo system is fixed for this skill.
+					skillratio = 800 * skill_lv;
+					else
+					skillratio = 500 * skill_lv;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio = skillratio * s_level / 100;	// Base level bonus.
 					break;
 				case SR_GENTLETOUCH_QUIET:
-					skillratio += 100 * skill_lv - 100 + sstatus->dex;
+					skillratio = 100 * skill_lv + sstatus->dex;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio = skillratio * s_level / 100;	// Base level bonus.
 					break;
 				case SR_HOWLINGOFLION:
-					skillratio += 300 * skill_lv - 100;
+					skillratio = 300 * skill_lv;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio = skillratio * s_level / 150;	// Base level bonus.
 					break;
 				case SR_RIDEINLIGHTNING:
-					skillratio += 200 * skill_lv -100;
+					{
+					int windbonus = 0;
+					if( sstatus->rhw.ele == ELE_WIND ) windbonus = 50 * skill_lv;
+					skillratio = 200 * skill_lv + windbonus;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio = skillratio * s_level / 100;	// Base level bonus.
+					}
 					break;
 				case WM_REVERBERATION_MELEE:
 					skillratio += 200 + 100 * skill_lv;
@@ -2544,13 +2614,13 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					if(sd)
 						ATK_ADD(sd->weight / 8);//Dont need to divide weight here since official formula takes current weight * 10. [Rytech]
 					if( sc && sc->data[SC_DANCEWITHWUG] )
-						skillratio += 2 * sc->data[SC_DANCEWITHWUG]->val1 * (2 + chorusbonus);
+						ATK_ADD(2 * sc->data[SC_DANCEWITHWUG]->val1 * (2 + chorusbonus));
 				case RA_WUGSTRIKE:
 				case RA_WUGBITE:
 					if(sd)
 						ATK_ADD(30*pc_checkskill(sd, RA_TOOTHOFWUG));
 					if( sc && sc->data[SC_DANCEWITHWUG] )
-						skillratio += 2 * sc->data[SC_DANCEWITHWUG]->val1 * (2 + chorusbonus);
+						ATK_ADD(2 * sc->data[SC_DANCEWITHWUG]->val1 * (2 + chorusbonus));
 					break;
 				case LG_SHIELDPRESS:
 					if( sd )
@@ -2571,8 +2641,23 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				//		ATK_ADDRATE( 190 * ((sd) ? skill_check_pc_partner(sd,(short)skill_num,&lv,skill_get_splash(skill_num,skill_lv),0) : 1));
 				//	}
 				//	break;
+				case SR_FALLENEMPIRE:
+					if ( tsd )
+					{ATK_ADD(((tstatus->size + 1) * 2 + (skill_lv - 1)) * sstatus->str + tsd->weight / 10 * sstatus->dex / 120);}//For Player's
+					else
+					{ATK_ADD(((tstatus->size + 1) * 2 + (skill_lv - 1)) * sstatus->str + status_get_lv(target) * 50);}//For Monster's
+					break;
+				case SR_TIGERCANNON:
+					if( sc && sc->data[SC_COMBO] )
+					{ATK_ADD(500 * skill_lv + 40 * status_get_lv(target));}
+					else
+					{ATK_ADD(250 * skill_lv + 40 * status_get_lv(target));}
+					break;
 				case SR_GATEOFHELL:
-					ATK_ADD (sstatus->max_hp - sstatus->hp);//Will have to add the consumed SP part to the formula in the future. [Rytech]
+					if( sc && sc->data[SC_COMBO] )
+					{ATK_ADD((sstatus->max_hp - sstatus->hp) + sstatus->max_sp * ( 5 + skill_lv ) / 5 + 40 * s_level);}
+					else
+					{ATK_ADD((sstatus->max_hp - sstatus->hp) + sstatus->sp * ( 5 + skill_lv ) / 5 + 10 * s_level);}
 					break;
 			}
 		}
@@ -2625,14 +2710,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				if(sc && sc->data[SC_SPIRIT] &&
 					sc->data[SC_SPIRIT]->val2 == SL_CRUSADER)
 					ATK_ADDRATE(100);
-				break;
-			case SR_EARTHSHAKER:
-				if( tsc && (tsc->data[SC_HIDING] || tsc->data[SC_CLOAKING] || tsc->data[SC_CHASEWALK] || tsc->data[SC_CLOAKINGEXCEED]) )
-					ATK_ADDRATE(150+150*skill_lv);
-				break;
-			case SR_RIDEINLIGHTNING:
-				if( (sstatus->rhw.ele) == ELE_WIND || (sstatus->lhw.ele) == ELE_WIND )
-					ATK_ADDRATE(skill_lv*5);
 				break;
 		}
 		
@@ -3534,14 +3611,16 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							struct status_change *tsc = status_get_sc(target);
 							if( tsc && tsc->data[SC_FREEZING] )
 							{
-								skillratio += 900 + 300 * skill_lv;
-								if( re_baselv_bonus == 1 && s_level >= 100 )
-									skillratio = skillratio * s_level / 100;	// Base level bonus.
+							skillratio += 900 + 300 * skill_lv;
+							if( re_baselv_bonus == 1 && s_level >= 100 )
+								skillratio = skillratio * s_level / 100;	// Base level bonus.
 							}
 							else
-								skillratio += 400 + 100 * skill_lv;
-								if( re_baselv_bonus == 1 && s_level >= 100 )
-									skillratio = skillratio * s_level / 150;	// Base level bonus.
+							{
+							skillratio += 400 + 100 * skill_lv;
+							if( re_baselv_bonus == 1 && s_level >= 100 )
+								skillratio = skillratio * s_level / 150;	// Base level bonus.
+							}
 						}
 						break;
 					case WL_DRAINLIFE:
@@ -4303,8 +4382,9 @@ int battle_calc_return_damage(struct block_list *src, struct block_list *bl, int
 			rdamage = cap_value(rdamage,1,max_damage);
 		}
 		if( sc && sc->data[SC_CRESCENTELBOW] && !(flag&BF_SKILL) && !is_boss(src) && rand()%100 < sc->data[SC_CRESCENTELBOW]->val2 )
-		{	// Stimated formula from test
-			rdamage += (int)((*damage) + (*damage) * status_get_hp(src) * 2.15 / 100000);	// 
+		{
+			//rdamage += (int)((*damage) + (*damage) * status_get_hp(src) * 2.15 / 100000);//No longer used since its not official, but keeping for reference.
+			rdamage += (*damage) * (5 + sc->data[SC_CRESCENTELBOW]->val1) / 5;//Part of the official formula. Will code the rest later. [Rytech]
 			if( rdamage < 1 ) rdamage = 1;
 		}
 	}
@@ -4535,9 +4615,13 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			return (damage_lv)skill_attack(BF_MAGIC,src,src,target,NPC_MAGICALATTACK,sc->data[SC_MAGICALATTACK]->val1,tick,0);
 		if( sc->data[SC_GT_ENERGYGAIN] )
 		{
-			int duration = skill_get_time(MO_CALLSPIRITS, sc->data[SC_GT_ENERGYGAIN]->val1); 
-			if( sd && rand()%100 < 10 + 5 * sc->data[SC_GT_ENERGYGAIN]->val1)
-				pc_addspiritball(sd, duration, sc->data[SC_GT_ENERGYGAIN]->val1);
+			int spheremax = 0;
+			if ( sd && sc->data[SC_RAISINGDRAGON] )
+			spheremax = 5 + sc->data[SC_RAISINGDRAGON]->val1;
+			else
+			spheremax = 5;
+			if( sd && rand()%100 < sc->data[SC_GT_ENERGYGAIN]->val2)
+			pc_addspiritball(sd, skill_get_time2(SR_GENTLETOUCH_ENERGYGAIN,sc->data[SC_GT_ENERGYGAIN]->val1), spheremax);
 		}
 	}
 
