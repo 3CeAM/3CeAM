@@ -452,6 +452,8 @@ int skillnotok(int skillid, struct map_session_data *sd)
 	{
 		case AL_WARP:
 		case RETURN_TO_ELDICASTES:
+		//case ALL_GUARDIAN_RECALL:
+		//case ECLAGE_RECALL:
 			if( map[m].flag.nowarp )
 			{
 				clif_skill_teleportmessage(sd,0);
@@ -2924,7 +2926,7 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 						}
 
 						if( nbl )
-							skill_addtimerskill(src,tick+status_get_adelay(src),nbl->id,skl->x,0,WL_CHAINLIGHTNING_ATK,skl->skill_lv,skl->type-1,skl->flag);
+							skill_addtimerskill(src,tick+650,nbl->id,skl->x,0,WL_CHAINLIGHTNING_ATK,skl->skill_lv,skl->type-1,skl->flag);
 					}
 					break;
 				case WL_TETRAVORTEX_FIRE:
@@ -4007,7 +4009,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 					case WLS_STONE: subskill = WL_TETRAVORTEX_GROUND; k |= 8; break;
 				}
 
-				skill_addtimerskill(src,tick+status_get_adelay(src)*i,bl->id,k,0,subskill,skilllv,i,flag);
+				skill_addtimerskill(src,tick+250*i,bl->id,k,0,subskill,skilllv,i,flag);
 				status_change_end(src, spheres[i], INVALID_TIMER);
 			}
 		}
@@ -5091,6 +5093,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case AB_EXPIATIO:
 	case AB_DUPLELIGHT:
 	case AB_SECRAMENT:
+	case RA_FEARBREEZE:
 	case NC_ACCELERATION:
 	case NC_HOVERING:
 	case NC_SHAPESHIFT:
@@ -7302,9 +7305,17 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case RK_MILLENNIUMSHIELD:
 		if( sd && pc_checkskill(sd,RK_RUNEMASTERY) >= 9 )
 		{
-			short shields = (rand()%100<50) ? 4 : ((rand()%100<80) ? 3 : 2);
-			sc_start4(bl,type,100,skilllv,shields,1000,0,skill_get_time(skillid,skilllv));
-			clif_millenniumshield(sd,shields);
+			short generate = 0;
+			short shieldnumber = 0;
+			generate = rand()%100 + 1;//Generates a random number between 1 - 100 which is then used to determine how many shields will generate.
+			if ( generate >= 1 && generate <= 20 )//20% chance for 4 shields.
+				shieldnumber = 4;
+			else if ( generate >= 21 && generate <= 50 )//30% chance for 3 shields.
+				shieldnumber = 3;
+			else if ( generate >= 51 && generate <= 100 )//50% chance for 2 shields.
+				shieldnumber = 2;
+			sc_start4(bl,type,100,skilllv,shieldnumber,1000,0,skill_get_time(skillid,skilllv));
+			clif_millenniumshield(sd,shieldnumber);
 			clif_skill_nodamage(src,bl,skillid,1,1);
 		}
 		break;
@@ -7748,11 +7759,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 
-	case RA_FEARBREEZE:
-		clif_skill_damage(src, src, tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
-		clif_skill_nodamage(src, bl, skillid, skilllv, sc_start(bl, type, 100, skilllv, skill_get_time(skillid, skilllv)));
-		break;
-
 	case RA_WUGMASTERY:
 		if( sd )
 		{
@@ -7971,32 +7977,25 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		else if( sd )
 	//	if (sd)
 		{
-			int opt = skilllv;
-			int val;
+			int opt = 0;
+			int val = 0;
+			struct item_data *shield_data = sd->inventory_data[sd->equip_index[EQI_HAND_L]];
+			if( !shield_data || shield_data->type != IT_ARMOR )
+			{//Skill will first check if a shield is equipped. If none is found on the caster the skill will fail.
+				clif_skill_fail(sd, skillid, 0, 0, 0);
+				break;}
+			opt = rand()%3 + 1;//Generates a number between 1 - 3. The number generated will determine which effect will be triggered.
 			switch( skilllv )
 			{
 				case 1:
 					{
 						int splashrange = 0;
-						struct item_data *shield_data = sd->inventory_data[sd->equip_index[EQI_HAND_L]];
-						if( !shield_data || shield_data->type != IT_ARMOR )
-						{	// No shield?
-							clif_skill_fail(sd, skillid, 0, 0, 0);
-							break;
-						}
 						if ( shield_data->def >= 0 && shield_data->def <= 4 )
 							splashrange = 1;
 						else if ( shield_data->def >= 5 && shield_data->def <= 9 )
 							splashrange = 2;
 						else
 							splashrange = 3;
-						if( rand()%100 <= 33 )
-							opt = 1;
-						else if( rand()%100 <= 33 )
-							opt = 2;
-						else
-							opt = 3;
-
 						switch( opt )
 						{
 							case 1:
@@ -8006,11 +8005,11 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 								status_change_end(bl,SC_SHIELDSPELL_DEF,-1);
 								break;
 							case 2:
-								val = shield_data->def; //Damage Reflecting Increase.
+								val = shield_data->def;//Damage Reflecting Increase.
 								sc_start2(bl,SC_SHIELDSPELL_DEF,100,opt,val,shield_data->def * 10 * 1000);
 								break;
 							case 3:
-								val = 10 * shield_data->def; //Weapon Attack Increase.
+								val = 10 * shield_data->def;//Weapon Attack Increase.
 								sc_start2(bl,SC_SHIELDSPELL_DEF,100,opt,val,shield_data->def * 10 * 3000);
 								break;
 						}
@@ -8026,12 +8025,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 							splashrange = 2;
 						else
 							splashrange = 3;
-						if( rand()%100 <= 33 )
-							opt = 1;
-						else if( rand()%100 <= 33 )
-							opt = 2;
-						else
-							opt = 3;
 						switch( opt )
 						{
 							case 1:
@@ -8056,18 +8049,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 				case 3:
 					{
-						struct item *it = &sd->status.inventory[sd->equip_index[EQI_HAND_L]];
-						if( !it )
-						{	// No shield?
-							clif_skill_fail(sd,skillid,0,0,0);
-							break;
-						}
-						if( rand()%100 <= 33 )
-							opt = 1;
-						else if( rand()%100 <= 33 )
-							opt = 2;
-						else
-							opt = 3;
+						struct item *shield = &sd->status.inventory[sd->equip_index[EQI_HAND_L]];
 						switch( opt )
 						{
 							case 1:
@@ -8076,16 +8058,16 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 								status_change_end(bl,SC_SHIELDSPELL_REF,-1);
 								break;
 							case 2:
-								val = it->refine;//DEF Increase / Using Converted DEF Increase Formula Here.
-								sc_start2(bl,SC_SHIELDSPELL_REF,100,opt,val,it->refine * 20000);
+								val = shield->refine;//DEF Increase / Using Converted DEF Increase Formula Here.
+								sc_start2(bl,SC_SHIELDSPELL_REF,100,opt,val,shield->refine * 20000);
 								break;
 							case 3:
 								sc_start(bl,SC_SHIELDSPELL_REF,100,opt,-1);//HP Recovery
 								if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-									val = sstatus->max_hp * (status_get_lv(src) / 10 + it->refine) / 100;
+									val = sstatus->max_hp * (status_get_lv(src) / 10 + shield->refine) / 100;
 								else
-									val = sstatus->max_hp * (15 + it->refine) / 100;
-								status_heal(bl, val, 0, 3);
+									val = sstatus->max_hp * (15 + shield->refine) / 100;
+								status_heal(bl, val, 0, 2);
 								status_change_end(bl,SC_SHIELDSPELL_REF,-1);
 							break;
 						}
@@ -8193,7 +8175,11 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 	case SR_GENTLETOUCH_CURE:
 		status_heal(bl, tstatus->max_hp * skilllv / 100 + 120 * skilllv, 0, 0);//It heals the target, but shows no heal animation or numbers.
-		if(rand()%100 < 5 * skilllv + (sstatus->dex + status_get_lv(src)) / 4 - rand()%10)
+		if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
+		rate = (5 * skilllv + (sstatus->dex + status_get_lv(src)) / 4) - rand()%10;
+		else
+		rate = (5 * skilllv + (sstatus->dex + 150) / 4) - rand()%10;
+		if(rand()%100 < rate)
 		{
 			status_change_end(bl, SC_STONE, -1 );
 			status_change_end(bl, SC_FREEZE, -1 );
@@ -8607,22 +8593,41 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 
-	case RETURN_TO_ELDICASTES:
+	/*case RETURN_TO_ELDICASTES:
+	//case ALL_GUARDIAN_RECALL:
+	//case ECLAGE_RECALL:
 		if( sd )
 		{
-			short x = 198, y = 187; // Destiny position.
+			short x, y;// Destiny position.
 			unsigned short mapindex;
 
-			mapindex  = mapindex_name2id(MAP_ERISCASTLE);
-
+			if( skillid == RETURN_TO_ELDICASTES)
+			{
+				x = 198;
+				y = 187;
+				mapindex  = mapindex_name2id(MAP_DICASTES);
+			}
+			//else if ( skillid == ALL_GUARDIAN_RECALL )
+			//{
+			//	x = 44;
+			//	y = 151;
+			//	mapindex  = mapindex_name2id(MAP_MORA);
+			//}
+			//else if ( skillid == ECLAGE_RECALL )
+			//{
+			//	x = ???;
+			//	y = ???;
+			//	mapindex  = mapindex_name2id(MAP_ECLAGE);
+			//}
 			if(!mapindex)
-			{ //Given map not found?
-				clif_skill_fail(sd,skillid,0,0,0);
+			{// If the map is not found, fail the skill to prevent warping the player to a non existing map.
+				clif_skill_fail(sd,skillid,USESKILL_FAIL_LEVEL,0);
+				map_freeblock_unlock();
 				return 0;
 			}
-			pc_setpos(sd, mapindex, x, y, 3);
+			pc_setpos(sd, mapindex, x, y, CLR_TELEPORT);
 		}
-		break;
+		break;*/
 
 		case EL_CIRCLE_OF_FIRE:
 		case EL_PYROTECHNIC:
@@ -12435,13 +12440,6 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			return 0;
 		}
 		break;
-	//case RETURN_TO_ELDICASTES://Mado's prevent use of Merchant and Smith skills, but never herd anything about other skills. [Rytech]
-	//	if( pc_isriding(sd,OPTION_MADO) )
-	//	{ //Cannot be used if Mado is equipped.
-	//		clif_skill_fail(sd,skill,0,0,0);
-	//		return 0;
-	//	}
-	//	break;
 	}
 
 	switch(require.state) {

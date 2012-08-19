@@ -1408,16 +1408,22 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 			wd.div_ = skill_get_num(GS_CHAINACTION,skill_lv);
 			wd.type = 0x08;
 		}
-		else if( sc && sc->data[SC_FEARBREEZE] && sd->weapontype1 == W_BOW && (i = sd->equip_index[EQI_AMMO]) >= 0 && sd->inventory_data[i] && sd->status.inventory[i].amount > 1 )
+		else if( sc && sc->data[SC_FEARBREEZE] && sd->weapontype1 == W_BOW && (i = sd->equip_index[EQI_AMMO]) >= 0 )
 		{
-			short rate[] = { 12, 12, 21, 27, 30 };
-			if( sc->data[SC_FEARBREEZE]->val1 > 0 && sc->data[SC_FEARBREEZE]->val1 < 6 && rand()%100 < rate[sc->data[SC_FEARBREEZE]->val1 - 1] )
-			{
-				wd.type = 0x08;
-				wd.div_ = 2 + (sc->data[SC_FEARBREEZE]->val1 > 2 ? rand()%(sc->data[SC_FEARBREEZE]->val1 - 2) : 0);
-				wd.div_ = min(wd.div_,sd->status.inventory[i].amount); // Reduce number of hits if you don't have enough arrows
-				sd->state.fearbreeze = wd.div_ - 1;
-			}
+			short generate = 0;
+			short shotnumber = 0;
+			generate = rand()%100 + 1;//Generates a random number between 1 - 100 which is then used to determine how many hits will be applied.
+			if ( sc->data[SC_FEARBREEZE]->val1 >= 5 && generate >= 1 && generate <= 3 )//3% chance to deal 5 hits.
+				shotnumber = 5;
+			else if ( sc->data[SC_FEARBREEZE]->val1 >= 4 && generate >= 4 && generate <= 9 )//6% chance to deal 4 hits.
+				shotnumber = 4;
+			else if ( sc->data[SC_FEARBREEZE]->val1 >= 3 && generate >= 10 && generate <= 18 )//9% chance to deal 3 hits.
+				shotnumber = 3;
+			else if ( sc->data[SC_FEARBREEZE]->val1 >= 1 && generate >= 19 && generate <= 30 )//12% chance to deal 2 hits.
+				shotnumber = 2;
+			if ( generate >= 1 && generate <= 30 )//Needed to allow critical attacks to hit when not hitting more then once.
+				{wd.div_ = shotnumber;
+				wd.type = 0x08;}
 		}
 	}
 
@@ -2645,7 +2651,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					if ( tsd )
 					{ATK_ADD(((tstatus->size + 1) * 2 + (skill_lv - 1)) * sstatus->str + tsd->weight / 10 * sstatus->dex / 120);}//For Player's
 					else
-					{ATK_ADD(((tstatus->size + 1) * 2 + (skill_lv - 1)) * sstatus->str + status_get_lv(target) * 50);}//For Monster's
+					{ATK_ADD(((tstatus->size + 1) * 2 + (skill_lv - 1)) * sstatus->str + 50 * status_get_lv(target));}//For Monster's
 					break;
 				case SR_TIGERCANNON:
 					if( sc && sc->data[SC_COMBO] )
@@ -3672,9 +3678,9 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					case WL_SUMMON_ATK_WIND:
 					case WL_SUMMON_ATK_GROUND:
 						if( re_baselv_bonus == 1 && s_level >= 100 )
-						skillratio = skill_lv * (s_level + s_job_level);// This is close to official, but lacking a little info to finalize. [Rytech]
+						skillratio = (1 + skill_lv) / 2 * (s_level + s_job_level);
 						else
-						skillratio = skill_lv * 200;
+						skillratio = (1 + skill_lv) / 2 * 200;
 						if( re_baselv_bonus == 1 && s_level >= 100 )
 							skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
 						break;
@@ -4384,7 +4390,7 @@ int battle_calc_return_damage(struct block_list *src, struct block_list *bl, int
 		if( sc && sc->data[SC_CRESCENTELBOW] && !(flag&BF_SKILL) && !is_boss(src) && rand()%100 < sc->data[SC_CRESCENTELBOW]->val2 )
 		{
 			//rdamage += (int)((*damage) + (*damage) * status_get_hp(src) * 2.15 / 100000);//No longer used since its not official, but keeping for reference.
-			rdamage += (*damage) * (5 + sc->data[SC_CRESCENTELBOW]->val1) / 5;//Part of the official formula. Will code the rest later. [Rytech]
+			rdamage += (*damage) * (100 + 20 * sc->data[SC_CRESCENTELBOW]->val1) / 100;//Part of the official formula. Will code the rest later. [Rytech]
 			if( rdamage < 1 ) rdamage = 1;
 		}
 	}
