@@ -53,14 +53,19 @@ Note18: SC's for the stat's bonuses (Not stats, but everything that affects your
 Note19: Check stun durations. Most of them should be 5 seconds unless otherwise said in the documents.
 
 Note20: Update randomizer codes for Millenium Shield, Fear Breezem and Shield Spell.
+Done.
 
 Note21: Update delay timers for Chain Lightning and Tetra Vortex. Chain = 650ms and Tetra = 250ms.
+Done.
 
 Note22: Fix Comet to fail on Land Protector. Its supposed to use units now.
 
 Note23: Fix and test delays for Warlock's spellbook system.
+Appears to be working as it should in 3CeAM. However I must know if the aftercast delay or cooldown of the released spell affects the use of all
+skills, or just only starts a cooldown on the release skill.
 
 Note24: Update Warlock's element sphere's damage formula to official.
+Done.
 
 Death Bound
 Document says skill cooldown is 3 seconds, yet iRO's skill desc says you must wait 5 seconds before re-casting again.
