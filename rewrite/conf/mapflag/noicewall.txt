@@ -1,13 +1,17 @@
-//===== eAthena Script =======================================
-//= Map flags that disable icewall skill
+//===== rAthena Script =======================================
+//= Mapflag: Disable Ice Wall.
 //===== By: ==================================================
-//= eAthena Dev Team
-//=============================================================
-//= noicewall: Disables Icewall skill.
-//= To disable Icewall on a specific map add the mapname here.
-//= 1.6a Re-enabled icewalls for cities [Lupus]
-//= 1.7 Officially icewall is allowed on interoirs. [L0ne_w0lf]
-//= 1.8 fixed aru castles mapnames
+//= rAthena Dev Team
+//===== Current Version: =====================================
+//= 1.8
+//===== Compatible With: =====================================
+//= rAthena SVN
+//===== Description: ========================================= 
+//= Blocks usage of WZ_ICEWALL.
+//===== Additional Comments: ================================= 
+//= 1.6a - Re-enabled icewalls for cities [Lupus]
+//= 1.7 - Officially icewall is allowed on interiors. [L0ne_w0lf]
+//= 1.8 - Fixed arug_cas map names.
 //============================================================
 
 //ayo_in01	mapflag	noicewall
@@ -141,6 +145,39 @@ nguild_prt	mapflag	noicewall
 4@tower	mapflag	noicewall
 5@tower	mapflag	noicewall
 6@tower	mapflag	noicewall
+
+// Orc's Memory ===================
+1@orcs	mapflag	noicewall
+2@orcs	mapflag	noicewall
+
+// Nidhoggr's Instance ===========
+1@nyd	mapflag	noicewall
+2@nyd	mapflag	noicewall
+
+// Misty Forest Labyrinth ===========
+1@mist	mapflag	noicewall
+
+// Octopus Cave ===========
+1@cash	mapflag	noicewall
+
+// Drain ===========
+1@pump	mapflag	noicewall
+2@pump	mapflag	noicewall
+
+// Somatology Laboratory ===========
+1@lhz	mapflag	noicewall
+
+// Bangungot Hospital F2 ===========
+1@ma_h	mapflag	noicewall
+
+// Buwaya Cave ===========
+1@ma_c	mapflag	noicewall
+
+// Bakonawa Hideout ===========
+1@ma_b	mapflag	noicewall
+
+// Inside Eclage ===========
+1@ecl	mapflag	noicewall
 
 // Poring War ====================
 poring_w01	mapflag	noicewall

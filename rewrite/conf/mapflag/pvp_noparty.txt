@@ -1,9 +1,16 @@
-//===== eAthena Script =======================================
-//= Map flags that disable parties in pvp maps 
+//===== rAthena Script =======================================
+//= Mapflag: Ignore parties.
 //===== By: ==================================================
-//= eAthena Dev Team
-//= v 1.2
+//= rAthena Dev Team
 //===== Current Version: =====================================
+//= 1.2
+//===== Compatible With: =====================================
+//= rAthena SVN
+//===== Description: ========================================= 
+//= Ignores party alliances on PvP-enabled maps.
+//===== Additional Comments: ================================= 
+//= 1.0 - Initial script.
+//============================================================
 
 // GvG Arenas =================
 guild_vs1	mapflag	pvp_noparty
