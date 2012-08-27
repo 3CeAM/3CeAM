@@ -546,8 +546,8 @@ void initChangeTables(void)
 	set_sc( GN_THORNS_TRAP                , SC_THORNSTRAP  , SI_THORNTRAP                  , SCB_NONE );
 	set_sc( GN_BLOOD_SUCKER               , SC_BLOODSUCKER , SI_BLOODSUCKER                , SCB_NONE );
 	set_sc( GN_WALLOFTHORN                , SC_STOP        , SI_BLANK                      , SCB_NONE );
-	set_sc( GN_FIRE_EXPANSION_SMOKE_POWDER, SC_SMOKEPOWDER , SI_FIRE_EXPANSION_SMOKE_POWDER, SCB_NONE );
-	set_sc( GN_FIRE_EXPANSION_TEAR_GAS    , SC_TEARGAS     , SI_FIRE_EXPANSION_TEAR_GAS    , SCB_NONE );
+	set_sc( GN_FIRE_EXPANSION_SMOKE_POWDER, SC_SMOKEPOWDER , SI_FIRE_EXPANSION_SMOKE_POWDER, SCB_FLEE );
+	set_sc( GN_FIRE_EXPANSION_TEAR_GAS    , SC_TEARGAS     , SI_FIRE_EXPANSION_TEAR_GAS    , SCB_HIT|SCB_FLEE );
 	set_sc( GN_MANDRAGORA                 , SC_MANDRAGORA  , SI_MANDRAGORA                 , SCB_INT );
 
 	set_sc( KO_YAMIKUMO          , SC_HIDING          , SI_HIDING          , SCB_NONE );
@@ -1704,8 +1704,6 @@ int status_base_amotion_pc(struct map_session_data* sd, struct status_data* stat
 	// raw delay adjustment from bAspd bonus
 	amotion+= sd->aspd_add;
 
-	amotion += amotion * pc_checkskill(sd, GN_TRAINING_SWORD) / 100;		// Note: Does GN_TRAINING_SWORD affect aspd? [Xazax]
-	
  	return amotion;
 }
 
@@ -4021,7 +4019,7 @@ static unsigned short status_calc_int(struct block_list *bl, struct status_chang
 	if(sc->data[SC_SPIRIT] && sc->data[SC_SPIRIT]->val2 == SL_HIGH && int_ < 50)
 		int_ = 50;
 	if(sc->data[SC_MANDRAGORA])
-		int_ -= 5 + 5 * sc->data[SC_MANDRAGORA]->val1;
+		int_ -= 4 * sc->data[SC_MANDRAGORA]->val1;
 	if(sc->data[SC__STRIPACCESSORY])
 		int_ -= int_ * sc->data[SC__STRIPACCESSORY]->val2 / 100;
 	if(sc->data[SC_HARMONIZE])
@@ -4340,6 +4338,8 @@ static signed short status_calc_hit(struct block_list *bl, struct status_change 
 		hit -= hit * 20 / 100;
 	if(sc->data[SC_INSPIRATION])//Unable to add job level check at this time with current coding. Will add later. [Rytech]
 		hit += 5 * sc->data[SC_INSPIRATION]->val1 + 25;
+	if ( sc->data[SC_TEARGAS] )
+		hit -= hit * 50 / 100;
 	return (short)cap_value(hit,1,SHRT_MAX);
 }
 
@@ -4400,6 +4400,10 @@ static signed short status_calc_flee(struct block_list *bl, struct status_change
 		flee -= sc->data[SC_GLOOMYDAY]->val2;
 	if( sc->data[SC_SATURDAYNIGHTFEVER] )
 		flee -= flee * (40 + 10 * sc->data[SC_SATURDAYNIGHTFEVER]->val1) / 100;
+	if ( sc->data[SC_SMOKEPOWDER] )
+		flee += flee * 20 / 100;
+	if ( sc->data[SC_TEARGAS] )
+		flee -= flee * 50 / 100;
 	if( sc->data[SC_WATER_BARRIER] )
 		flee -= sc->data[SC_WATER_BARRIER]->val3;
 	if( sc->data[SC_WIND_STEP_OPTION] )
@@ -9535,7 +9539,7 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 			damage = skill_attack(skill_get_type(GN_BLOOD_SUCKER), src, src, bl, GN_BLOOD_SUCKER, sce->val1, tick, 0);
 			flag = !sc->data[type];
 			map_freeblock_unlock();
-			status_heal(src, damage, 0, 0);
+			status_heal(src, damage * (5 + 5 * sce->val1) / 100, 0, 0);
 			clif_skill_nodamage(src, bl, GN_BLOOD_SUCKER, 0, 1);
 			if (!flag) sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
 			return 0;
