@@ -53,7 +53,7 @@ Note18: SC's for the stat's bonuses (Not stats, but everything that affects your
 Note19: Check stun durations. Most of them should be 5 seconds unless otherwise said in the documents.
 
 Note20: Update randomizer codes for Millenium Shield, Fear Breezem and Shield Spell.
-Done.
+Done. However their might be a small issue with Fear Breeze's crit protection check.
 
 Note21: Update delay timers for Chain Lightning and Tetra Vortex. Chain = 650ms and Tetra = 250ms.
 Done.
@@ -86,6 +86,9 @@ Is the bonus damage from having a fire element weapon equipt applied and affect 
 
 Dragon Training
 Document says size modifiers for spears is 100% for all sizes. Is it really 100% for small size or just medium and large sizes?
+
+Dragon Breath
+Need to recheck the entire skill. Player reports say its not reduceable like it should.
 
 Dragon Howling
 Is the fear status's immobilization 2 seconds reguardless of how I set fear's duration?
@@ -532,6 +535,7 @@ Sound of Destruction
 Im prety sure I did it correctly and made the success chance increase by 10% per performer and also have total damage boosted by 10% per performer.
 This isnt including the first 2 performers.
 Is the message thats displayed when using outside a PVP area official? Probely not.
+Success chance for be the success of casting the skill right? If so then I need to change the random chance per target to random casting success.
 
 Saturday Night Fever
 Their's no info about any duration changes, but the document says the duration is lower then what I found in my official sources.
@@ -658,4 +662,69 @@ GT Change and GT Revitalize
 iRO document shows same fixed, variable, cooldown, etc for these 2, but sounds right as they both now require a SkillLV number of spheres and is targetable
 on you and other players. These skills acturally if used correctly can be used as a 2 sided skill, meaning buff or debuff as both skills buff some areas,
 but take or lower other area's of a players build.
+
+
+Cart Tornado
+Say it stuns enemys hit by the splash AoE, but whats the stun chance? iRO document and skill desc says nothing about stunning.
+Even a tester who posted info on the iRO wiki forums said it didnt stun at all.
+Their's currently no way to check a caster's base STR. For now well have to check for STR.
+
+Cart Cannon
+Sp requirement appears to be typoed. It appears as 40, 42, 46, 48, 50 which is weird since it skips the 44. Its probely supposed to be 42, 44, 46, 48, 50.
+
+Cart Boost
+Says it increases ATK by 10 * Skill Level, but thats it. Looking at info from iRO Wiki forums and in another source it shows add weapon mastery damage
+to only 3 skills I think. Cart Revolution, Cart Tornado, and Cart Cannon. At first I thought it met it boosts your weapon attack by a fixed amount.
+I want to confirm this, but for now ill just make it add a fixed damage to those 3 skills until I do. Mastery damage is unreduceable by defense, right?
+
+Thorn Trap
+Whats the official duration for the amount of time the enemy stays caught in the trap?
+The trap is destroyed when hit with fire damage right? Does it have HP too?
+
+Blood Sucker
+Video proof shows the caster isnt supposed to do a attack animation every time damage is done to a target. Currently it does on here.
+How do I make it not do that?
+
+Wall of Thorns
+Does the skill turn into the the casted skill level of fire wall? Like Lv 1 turns to Lv 1 Fire Wall and Lv 5 can change into Lv 5 Fire Wall.
+iRO document makes it sounds like it does. ill do this in another update. Too last to search for the code to do this.
+
+Crazy Weed
+This skill will require a good bit of recoding to fix it up. Im saving this for a later update due to its complex coding.
+
+Fire Expansion
+A number of things needs to be dealt with on this skill. Ive done what I could easly do so far and will save the remaining tasks for later.
+First, we know effect 2 adds damage onto the current demonic fire. Effect 3 says it takes demonic fire's damage and adds onto it for 1 attack.
+But the question here is can I add effect 2's damage and then add effect 3 which will take the damage of demonic fire + effect 2 + effect 3
+and deal 1 strong attack before deleting the unit? Probely not, but the way it sounds makes it sound like its possiable.
+
+Another issue is getting the smoke screen and tear gas effects to work. The smoke screen status is fully coded and the tear gas only has its
+hit and flee reductions coded. However, even tho you place effect 3 or 4 on top of the demonic fire and it changes the unit and animation, it
+still wont apply the status to anyone walking in the AoE. I dont know why, ive tried a number of things to make it work, but I just cant do it.
+Im too worried about trying anything major that might break the skill entirely. So for now ill leave this alone and retry on a later update.
+
+Finally, effect 5 is working properly. However, it might need to be recoded one day to use the GN_FIRE_EXPANSION_ACID ID. This is only if
+a animation unique to this ID is added in the future.
+
+Hell Plant
+Need to redo part of the status duration code to both read the same 20 seconds.
+iRO Wiki Forums says 3x3 AoE that deals the status's happens around the target. Does this mean the status's are inflected on other targets?
+Does damage also happen in this AoE? It probely does but I want to test and confirm first before I bother adding this.
+The official damage formula feels kinda overpowered. At max skill level, 150 base level, 50 job level, 120 INT, and max level of Cannibalize,
+this skill can deal 20100 fixed damage that ignores defense and reductions. Well the ignoring reductions is what the iRO Wiki forums say.
+I want to one day test and confirm some things about this skill.
+
+Howling of Mandragora
+I need to code in the reduction and the min success chance parts. Saving this for a later update.
+
+Sling Item
+Their's sooooo much to do that im only fixing up part of the code for this. So far bomb and lump damage formula's were updated to official.
+However, ill have to redo part of the damage formula area later to hopefully be smaller and also add the base level ratio increase.
+Their's a number of problems that needs to be fixed in the future. First I need to get the apple bomb to work since its not working for some reason.
+Second, all of the bombs that gives a status needs to be updated to official. ill have to dive into the zone to get that info. So far I got some.
+Banana bomb now has a official success chance and duration. Wow it look overpowered before I updated it. Hopefully this will fix a complaint.
+The potions will also need a recheck. Anyone knows what the mysterious powder does? All of the regular and throwable items should be rechecked.
+
+
+
 

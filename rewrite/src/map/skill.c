@@ -1201,8 +1201,8 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl, SC_STUN, 5 + 5 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
 		break;
 	case GN_HELLS_PLANT_ATK:
-		sc_start(bl, SC_STUN, 5 + 5 * skilllv, skilllv, skill_get_time(skillid, skilllv));
-		sc_start(bl, SC_BLEEDING, 20 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
+		sc_start(bl, SC_STUN, 20 + 10 * skilllv, skilllv, skill_get_time(skillid, skilllv));
+		sc_start(bl, SC_BLEEDING, 5 + 5 * skilllv, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case GN_SLINGITEM_RANGEMELEEATK:
 		if( sd )
@@ -1210,15 +1210,15 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 			switch( sd->itemid )
 			{	// Starting SCs here instead of do it in skill_additional_effect to simplify the code.
 				case 13261:
-					sc_start(bl, SC_STUN, 100, skilllv, skill_get_time2(GN_SLINGITEM, skilllv));
-					sc_start(bl, SC_BLEEDING, 100, skilllv, skill_get_time2(GN_SLINGITEM, skilllv));
+					sc_start(bl, SC_STUN, 100, skilllv, 5000);// 5 seconds until I get official
+					sc_start(bl, SC_BLEEDING, 100, skilllv, 10000);
 					break;
 				case 13262:					
-					sc_start(bl, SC_MELON_BOMB, 100, skilllv, skill_get_time(GN_SLINGITEM, skilllv));	// Reduces ASPD and moviment speed
+					sc_start(bl, SC_MELON_BOMB, 100, skilllv, 60000);	// Reduces ASPD and moviment speed
 					break;
 				case 13264:
-					sc_start(bl, SC_BANANA_BOMB, 100, skilllv, skill_get_time(GN_SLINGITEM, skilllv));	// Reduces LUK ¿?Needed confirm it, may be it's bugged in kRORE?
-					sc_start(bl, SC_BANANA_BOMB_SITDOWN, 75, skilllv, skill_get_time(GN_SLINGITEM_RANGEMELEEATK,skilllv)); // Sitdown for 3 seconds.
+					sc_start(bl, SC_BANANA_BOMB, 100, skilllv, 60000);	// Reduces LUK? Needed confirm it, may be it's bugged in kRORE?
+					sc_start(bl, SC_BANANA_BOMB_SITDOWN, sd->status.job_level + sstatus->dex / 6 + tstatus->agi / 4 - tstatus->luk / 5 - status_get_lv(bl) + status_get_lv(src), skilllv, 1000); // Sitdown for 3 seconds.
 					break;
 			}
 			sd->itemid = -1;
@@ -2595,6 +2595,8 @@ static int skill_check_unit_range_sub (struct block_list *bl, va_list ap)
 		case RA_FIRINGTRAP:
 		case RA_ICEBOUNDTRAP:
 		case SC_DIMENSIONDOOR:
+		case GN_THORNS_TRAP:
+		case GN_HELLS_PLANT:
 			//Non stackable on themselves and traps (including venom dust which does not has the trap inf2 set)
 			if (skillid != g_skillid && !(skill_get_inf2(g_skillid)&INF2_TRAP) && g_skillid != AS_VENOMDUST)
 				return 0;
@@ -4334,22 +4336,29 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		break;
 
 	case SO_POISON_BUSTER:
-		if( tsc && tsc->data[SC_POISON] )
+		if ( flag&1 )
 		{
-			skill_attack(skill_get_type(skillid), src, src, bl, skillid, skilllv, tick, flag);
-			status_change_end(bl, SC_POISON, -1);
+			skill_attack(BF_MAGIC, src, src, bl, skillid, skilllv, tick, flag);
 		}
 		else if( sd )
+		{
+			if( tsc && tsc->data[SC_POISON] )
+			{
+			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), splash_target(src), src, skillid, skilllv, tick, flag|BCT_ENEMY|SD_SPLASH|1, skill_castend_damage_id);
+			status_change_end(bl, SC_POISON, -1);
+			}
+			else
 			clif_skill_fail(sd, skillid, 0, 0, 0);
+		}
 		break;
 
 	case GN_SPORE_EXPLOSION:
 		if( flag&1 )
-			skill_attack(skill_get_type(skillid), src, src, bl, skillid, skilllv, tick, flag);
+			skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv, tick, flag);
 		else
 		{
 			clif_skill_nodamage(src, bl, skillid, 0, 1);
-			skill_addtimerskill(src, gettick() + skill_get_time(skillid, skilllv) - 1000, bl->id, 0, 0, skillid, skilllv, 0, 0);
+			skill_addtimerskill(src, gettick() + skill_get_time(skillid, skilllv), bl->id, 0, 0, skillid, skilllv, 0, 0);
 		}
 		break;
 
@@ -8521,8 +8530,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		if( flag&1 )
 		{
 			if ( clif_skill_nodamage(bl, src, skillid, skilllv,
-				sc_start(bl, type, 35 + 10 * skilllv, skilllv, skill_get_time(skillid, skilllv))) )
-				status_zap(bl, 0, status_get_max_sp(bl) / 100 * 25 + 5 * skilllv);
+				sc_start(bl, type, 25 + 10 * skilllv, skilllv, skill_get_time(skillid, skilllv))) )
+				status_zap(bl, 0, status_get_max_sp(bl) * (25 + 5 * skilllv) / 100);
 		}
 		else
 			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), BL_CHAR,
@@ -9384,6 +9393,8 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case GN_WALLOFTHORN:
 	case GN_THORNS_TRAP:
 	case GN_DEMONIC_FIRE:
+	case GN_FIRE_EXPANSION_SMOKE_POWDER:
+	case GN_FIRE_EXPANSION_TEAR_GAS:
 	case GN_HELLS_PLANT:
 	case SO_EARTHGRAVE:
 	case SO_DIAMONDDUST:
@@ -9811,6 +9822,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case GN_FIRE_EXPANSION:
 		{
 			int i;
+			int aciddemocast = 5;//If player doesent know Acid Demonstration or knows level 5 or lower, effect 5 will cast level 5 Acid Demo.
 			struct unit_data *ud = unit_bl2ud(src);
 
 			if( !ud ) break;
@@ -9818,7 +9830,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 			for( i = 0; i < MAX_SKILLUNITGROUP && ud->skillunit[i]; i ++ )
 			{
 				if( ud->skillunit[i]->skill_id == GN_DEMONIC_FIRE &&
-					distance_xy(x, y, ud->skillunit[i]->unit->bl.x, ud->skillunit[i]->unit->bl.y) < 4 )
+					distance_xy(x, y, ud->skillunit[i]->unit->bl.x, ud->skillunit[i]->unit->bl.y) < 3 )
 				{
 					switch( skilllv )
 					{							
@@ -9830,11 +9842,13 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 							ud->skillunit[i]->unit_id = UNT_FIRE_EXPANSION_TEAR_GAS;
 							clif_changetraplook(&ud->skillunit[i]->unit->bl, UNT_FIRE_EXPANSION_TEAR_GAS);
 							break;
-						case 5:
+						case 5:// If player knows a level of Acid Demonstration greater then 5, that level will be casted.
+							if ( pc_checkskill(sd, CR_ACIDDEMONSTRATION) > 5 )
+								aciddemocast = pc_checkskill(sd, CR_ACIDDEMONSTRATION);
 							map_foreachinarea(skill_area_sub, src->m,
-								ud->skillunit[i]->unit->bl.x - 3, ud->skillunit[i]->unit->bl.y - 3,
-								ud->skillunit[i]->unit->bl.x + 3, ud->skillunit[i]->unit->bl.y + 3, BL_CHAR,
-								src, CR_ACIDDEMONSTRATION, sd ? pc_checkskill(sd, CR_ACIDDEMONSTRATION) : skilllv, tick, flag|BCT_ENEMY|1|SD_LEVEL, skill_castend_damage_id);
+								ud->skillunit[i]->unit->bl.x - 2, ud->skillunit[i]->unit->bl.y - 2,
+								ud->skillunit[i]->unit->bl.x + 2, ud->skillunit[i]->unit->bl.y + 2, BL_CHAR,
+								src, CR_ACIDDEMONSTRATION, aciddemocast, tick, flag|BCT_ENEMY|1|SD_LEVEL, skill_castend_damage_id);
 							skill_delunit(ud->skillunit[i]->unit);
 							break;
 						default:
@@ -10209,6 +10223,8 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 	case RA_VERDURETRAP:
 	case RA_FIRINGTRAP:
 	case RA_ICEBOUNDTRAP:
+	case GN_THORNS_TRAP:
+	case GN_HELLS_PLANT:
 		if( map_flag_gvg(src->m) || map[src->m].flag.battleground )
 			limit *= 4; // longer trap times in WOE [celest]
 		if( battle_config.vs_traps_bctall && map_flag_vs(src->m) && (src->type&battle_config.vs_traps_bctall) )
@@ -10491,7 +10507,7 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 			val1 = 1;
 			break;
 		case GN_WALLOFTHORN:
-			val1 = 1000 * skilllv;	// Need official value. [LimitLine]
+			val1 = 2000 + 2000 * skilllv;//Thorn Walls HP
 			val2 = src->id;
 			break;
 		default:
@@ -11306,10 +11322,8 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 					case 1:
 					case 2:
 					default:
-						sc_start(bl, SC_BURNING, 4 + 4 * sg->skill_lv, sg->skill_lv,
-							skill_get_time2(sg->skill_id, sg->skill_lv));
-						skill_attack(skill_get_type(sg->skill_id), ss, &src->bl, bl,
-							sg->skill_id, sg->skill_lv + 10 * sg->val2, tick, 0);
+						sc_start(bl, SC_BURNING, 4 + 4 * sg->skill_lv, sg->skill_lv,skill_get_time2(sg->skill_id, sg->skill_lv));
+						skill_attack(skill_get_type(sg->skill_id), ss, &src->bl, bl,sg->skill_id, sg->skill_lv + 10 * sg->val2, tick, 0);
 						break;
 					case 3:
 						skill_attack(skill_get_type(CR_ACIDDEMONSTRATION), ss, &src->bl, bl,
@@ -11321,11 +11335,11 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			break;
 
 		case UNT_FIRE_EXPANSION_SMOKE_POWDER:
-			sc_start(bl, status_skill2sc(GN_FIRE_EXPANSION_SMOKE_POWDER), 100, sg->skill_lv, 1000);
+			sc_start(bl, SC_SMOKEPOWDER, 100, sg->skill_lv, 1000);
 			break;
 
 		case UNT_FIRE_EXPANSION_TEAR_GAS:
-			sc_start(bl, status_skill2sc(GN_FIRE_EXPANSION_TEAR_GAS), 100, sg->skill_lv, 1000);
+			sc_start(bl, SC_TEARGAS, 100, sg->skill_lv, 1000);
 			break;
 
 		case UNT_HELLS_PLANT:
@@ -12885,7 +12899,7 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 	if( sc )
 	{
 		if( sc->data[SC_RECOGNIZEDSPELL] )
-			req.sp += req.sp / 4;
+			req.sp += req.sp * 25 / 100;
 		if( sc->data[SC__LAZINESS] )
 			req.sp += req.sp + sc->data[SC__LAZINESS]->val1 * 10;
 		if( sc->data[SC_UNLIMITEDHUMMINGVOICE] )

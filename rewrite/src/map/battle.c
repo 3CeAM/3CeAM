@@ -581,6 +581,14 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 				damage >>= 2; //75% reduction
 		}
 
+		if( sc->data[SC_SMOKEPOWDER] )
+		{
+			if( (flag&(BF_SHORT|BF_WEAPON)) == (BF_SHORT|BF_WEAPON) )
+				damage -= 15 * damage / 100;//15% reduction to physical melee attacks
+			else if( (flag&(BF_LONG|BF_WEAPON)) == (BF_LONG|BF_WEAPON) )
+				damage -= 50 * damage / 100;//50% reduction to physical ranged attacks
+		}
+
 		// Compressed code, fixed by map.h [Epoque]
 		if( src->type == BL_MOB )
 		{
@@ -1421,7 +1429,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				shotnumber = 3;
 			else if ( sc->data[SC_FEARBREEZE]->val1 >= 1 && generate >= 19 && generate <= 30 )//12% chance to deal 2 hits.
 				shotnumber = 2;
-			if ( generate >= 1 && generate <= 30 )//Needed to allow critical attacks to hit when not hitting more then once.
+			if ( shotnumber > 1 )//Needed to allow critical attacks to hit when not hitting more then once.
 				{wd.div_ = shotnumber;
 				wd.type = 0x08;}
 		}
@@ -1569,8 +1577,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case MC_CARTREVOLUTION:
 				case GN_CART_TORNADO:
 				case GN_CARTCANNON:
-					if( sd && pc_checkskill(sd, GN_REMODELING_CART) )
-						hitrate += pc_checkskill(sd, GN_REMODELING_CART) * 4;
+					if( sd && pc_checkskill(sd, GN_REMODELING_CART) > 0 )
+						hitrate += 4 * pc_checkskill(sd, GN_REMODELING_CART);
 					break;
 				case GC_VENOMPRESSURE:
 					hitrate += 10 + 4 * skill_lv;
@@ -1587,8 +1595,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 			if (sd && (skill = pc_checkskill(sd,BS_WEAPONRESEARCH)) > 0)
 				hitrate += hitrate * ( 2 * skill ) / 100;
 
-			if( sd && (sd->status.weapon == W_1HSWORD || sd->status.weapon == W_DAGGER) && 
-				(skill = pc_checkskill(sd, GN_TRAINING_SWORD))>0 )
+			if( sd && (sd->status.weapon == W_DAGGER || sd->status.weapon == W_1HSWORD) && 
+				(skill = pc_checkskill(sd, GN_TRAINING_SWORD)) > 0 )
 				hitrate += 3 * skill;
 		}
 
@@ -2475,20 +2483,27 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						skillratio += skillratio * sc->data[SC_BLAST_OPTION]->val2 / 100;
 					break;
 				case GN_CART_TORNADO:
-					skillratio += 50 * skill_lv + pc_checkskill(sd, GN_REMODELING_CART) * 100 - 100;
-					if( re_baselv_bonus == 1 && s_level >= 100 )
-						skillratio += skillratio * (s_level - 100) / 200;	// Base level bonus.
-					if( sc && sc->data[SC_GN_CARTBOOST] )
-						skillratio += 10 * sc->data[SC_GN_CARTBOOST]->val1;
+					{
+					int strbonus = 0;
+					strbonus = sstatus->str;//Supposed to take only base STR, but current code wont allow that. So well just take STR for now. [Rytech]
+					if ( strbonus > 120 )//Max base stat limit on official is 120. So well allow no higher then 120 STR here. This limit prevents
+						strbonus = 120;//the division from going any lower then 30 so the server wont divide by 0 if someone has 150 STR.
+					skillratio = 50 * skill_lv + sd->cart_weight / 10 / (150 - strbonus) + 50 * pc_checkskill(sd, GN_REMODELING_CART);
+					}
 					break;
 				case GN_CARTCANNON:
-					skillratio += 250 + 50 * skill_lv + pc_checkskill(sd, GN_REMODELING_CART) * (sstatus->int_ / 2);
-					if( sc && sc->data[SC_GN_CARTBOOST] )
-						skillratio += 10 * sc->data[SC_GN_CARTBOOST]->val1;
+					skillratio = 60 * skill_lv + 50 * pc_checkskill(sd, GN_REMODELING_CART) * sstatus->int_ / 40;
 					break;
 				case GN_SPORE_EXPLOSION:
-						skillratio += 200 + 100 * skill_lv;
+						skillratio = 100 * skill_lv;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio += ( 200 + sstatus->int_ ) * s_level / 100;	// Base level bonus.
+					else
+						skillratio += 200 + sstatus->int_;
 						break;
+				case GN_WALLOFTHORN:
+					skillratio += 10 * skill_lv;
+					break;
 				case GN_CRAZYWEED_ATK:
 					skillratio += 400 + 100 * skill_lv;
 					break;
@@ -2498,21 +2513,27 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						switch( sd->itemid )
 						{
 							case 13260: // Apple Bomob
-							case 13261: // Coconut Bomb
+								skillratio = sstatus->str + sstatus->dex + 300;
+								break;
 							case 13262: // Melon Bomb
+								skillratio = sstatus->str + sstatus->dex + 500;
+								break;
+							case 13261: // Coconut Bomb
 							case 13263: // Pinapple Bomb
-								skillratio += 400;	// Unconfirded
+							case 13264: // Banana Bomb
+								skillratio = sstatus->str + sstatus->dex + 800;
 								break;
-							case 13264: // Banana Bomb 2000%
-								skillratio += 1900;
+							case 13265: 
+								skillratio = (sstatus->str + sstatus->agi + sstatus->dex) / 3; // Black Lump
 								break;
-							case 13265: skillratio -= 75; break; // Black Lump 25%
-							case 13266: skillratio -= 25; break; // Hard Black Lump 75%
-							case 13267: skillratio += 100; break; // Extremely Hard Black Lump 200%
+							case 13266: 
+								skillratio = (sstatus->str + sstatus->agi + sstatus->dex) / 2; // Hard Black Lump
+								break;
+							case 13267: 
+								skillratio = sstatus->str + sstatus->agi + sstatus->dex; // Extremely Hard Black Lump
+								break;
 						}
 					}
-					else
-						skillratio += 300;	// Bombs
 					break;
 				case KO_JYUMONJIKIRI:
 					skillratio = 150 * skill_lv;
@@ -2621,6 +2642,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						ATK_ADD(sd->weight / 8);//Dont need to divide weight here since official formula takes current weight * 10. [Rytech]
 					if( sc && sc->data[SC_DANCEWITHWUG] )
 						ATK_ADD(2 * sc->data[SC_DANCEWITHWUG]->val1 * (2 + chorusbonus));
+					break;
 				case RA_WUGSTRIKE:
 				case RA_WUGBITE:
 					if(sd)
@@ -2664,6 +2686,12 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					{ATK_ADD((sstatus->max_hp - sstatus->hp) + sstatus->max_sp * ( 5 + skill_lv ) / 5 + 40 * s_level);}
 					else
 					{ATK_ADD((sstatus->max_hp - sstatus->hp) + sstatus->sp * ( 5 + skill_lv ) / 5 + 10 * s_level);}
+					break;
+				case MC_CARTREVOLUTION:
+				case GN_CART_TORNADO:
+				case GN_CARTCANNON:
+					if( sc && sc->data[SC_GN_CARTBOOST] )
+					ATK_ADD( 10 * sc->data[SC_GN_CARTBOOST]->val1 );
 					break;
 			}
 		}
@@ -3776,16 +3804,15 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							skillratio += skillratio * sc->data[SC_BLAST_OPTION]->val2 / 100;
 						break;
 					case GN_DEMONIC_FIRE:
-						if( skill_lv > 20)
-						{	// Fire expansion Lv.2
-							skillratio += 110 + 20 * (skill_lv - 20) + status_get_int(src) * 3;	// Need official INT bonus. [LimitLine]
-						}
-						else if( skill_lv > 10 )
-						{	// Fire expansion Lv.1
-							skillratio += 110 + 20 * (skill_lv - 10) / 2;
-						}
-						else
-							skillratio += 110 + 20 * skill_lv;
+						if ( skill_lv > 20 )// Fire Expansion Level 2
+							skillratio += 10 + 20 * (skill_lv - 20) + 10 * sstatus->int_;
+						else if ( skill_lv > 10 )// Fire Expansion Level 1
+							if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio += 10 + 20 * (skill_lv - 10) + sstatus->int_ + s_job_level;
+							else
+							skillratio += 10 + 20 * (skill_lv - 10) + sstatus->int_ + 50;
+						else// Normal Demonic Fire Damage
+							skillratio += 10 + 20 * skill_lv;
 						break;
 					// Magical Elemental Spirits Attack Skills
 					case EL_FIRE_MANTLE:
@@ -4167,7 +4194,10 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		md.damage = 200 + 100 * skill_lv + sstatus->int_;
 		break;
 	case GN_HELLS_PLANT_ATK:
-		md.damage = sstatus->int_ * 4 * skill_lv * (10 / (10 - pc_checkskill(sd,AM_CANNIBALIZE)));//Need accurate official formula. [Rytech]
+		if ( re_baselv_bonus == 1 && s_level >= 100 )
+		md.damage = (( skill_lv * s_level * 10 ) + sstatus->int_ * 7 / 2 * ( 18 + sd->status.job_level / 4 )) * 5 / ( 10 - pc_checkskill(sd,AM_CANNIBALIZE) );
+		else
+		md.damage = (( skill_lv * 150 * 10 ) + sstatus->int_ * 7 / 2 * ( 18 + 50 / 4 )) * 5 / ( 10 - pc_checkskill(sd,AM_CANNIBALIZE) );
 		break;
 	case KO_MUCHANAGE:
 		md.damage = skill_get_zeny(skill_num ,skill_lv) / 2;

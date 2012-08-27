@@ -137,18 +137,18 @@
 2466,0xf2,    ,  0, 1,1000,all,   0x010	//SO_WATER_INSIGNIA
 2467,0xf3,    ,  0, 1,1000,all,   0x010	//SO_WIND_INSIGNIA
 2468,0xf4,    ,  0, 1,1000,all,   0x010	//SO_EARTH_INSIGNIA
-2479,0xe5,    ,  0, 1,1000,enemy, 0x000	//GN_THORNS_TRAP
+2479,0xe5,    ,  0, 1,1000,enemy, 0x006	//GN_THORNS_TRAP
 2482,0xe6,0x7f, -1, 1,  -1,all,   0x000	//GN_WALLOFTHORN
-2485,0xe7,    ,  0, 3,1000,enemy, 0x098	//GN_DEMONIC_FIRE
-2487,0xe8,    ,  0, 3,1000,enemy, 0x000	//GN_FIRE_EXPANSION_SMOKE_POWDER
-2488,0xe9,    ,  0, 3,1000,enemy, 0x000	//GN_FIRE_EXPANSION_TEAR_GAS
-2490,0xea,    ,  0, 1,1000,all, 0x000	//GN_HELLS_PLANT
+2485,0xe7,    ,  0, 2,1000,enemy, 0x098	//GN_DEMONIC_FIRE
+2487,0xe8,    ,  0, 2, 500,all,   0x000	//GN_FIRE_EXPANSION_SMOKE_POWDER
+2488,0xe9,    ,  0, 2, 500,all,   0x000	//GN_FIRE_EXPANSION_TEAR_GAS
+2490,0xea,    ,  0, 1,1000,all,   0x006	//GN_HELLS_PLANT
 3009,0x86,    ,  0, 3,1000,enemy, 0x018	//KO_HUUMARANKA
-8020,0xf5,    ,  0, 3,2300:2100:1900:1700:1500,enemy,   0x018	//MH_POISON_MIST
+8020,0xf5,    ,  0, 3,2300:2100:1900:1700:1500,enemy, 0x018	//MH_POISON_MIST
 8033,0x7e,    ,  0, 0,  -1,all,   0x003	//MH_STEINWAND - CHECK Is the use of safety wall's unit ID correct for this skills? [Rytech]
 8025,0x86,    ,  0, 2:2:3:3:4,1000,enemy, 0x018	//MH_XENO_SLASHER
-8041,0xf6,    ,  1:1:2:2:3, 0,1000,enemy,   0x018	//MH_LAVA_SLIDE CHECK - How often does this skill hit? [Rytech]
-8043,0xf7,    ,  0, 1,1000,enemy,   0x018	//MH_VOLCANIC_ASH
+8041,0xf6,    ,  1:1:2:2:3, 0,1000,enemy, 0x018	//MH_LAVA_SLIDE CHECK - How often does this skill hit? [Rytech]
+8043,0xf7,    ,  0, 1,1000,enemy, 0x018	//MH_VOLCANIC_ASH
 8208,0x86,    ,  0, 2,1000,enemy, 0x080	//MA_SHOWER
 8209,0x90,    ,  0, 1,1000,enemy, 0x006	//MA_SKIDTRAP
 8210,0x93,    ,  0, 0,1000,enemy, 0x006	//MA_LANDMINE
