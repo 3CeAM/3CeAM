@@ -1697,7 +1697,7 @@ packet_ver: 28
 0x0436,6,dropitem,2:4
 0x0893,6,takeitem,2
 0x0891,26,friendslistadd,2
-0x089e,5,hommenu,2:4
+0x089e,5,hommenu,4
 0x0288,-1,cashshopbuy,4:8
 0x0895,26,partyinvite2,2
 0x0364,36,storagepassword,0
