@@ -425,9 +425,9 @@ int map_moveblock(struct block_list *bl, int x1, int y1, unsigned int tick)
 		if( sd )
 		{ // Shadow Form distances
 			struct block_list *d_bl;
-			if( sc && sc->data[SC__SHADOWFORM] && ((d_bl = map_id2bl(sc->data[SC__SHADOWFORM]->val2)) == NULL || bl->m != d_bl->m || !check_distance_bl(bl,d_bl,skill_get_range(SC_SHADOWFORM,1))) )
+			if( sc && sc->data[SC__SHADOWFORM] && ((d_bl = map_id2bl(sc->data[SC__SHADOWFORM]->val2)) == NULL || bl->m != d_bl->m || !check_distance_bl(bl,d_bl,10)) )
 				status_change_end(bl,SC__SHADOWFORM,-1);
-			if( sd->shadowform_id && ((d_bl = map_id2bl(sd->shadowform_id)) == NULL || bl->m != d_bl->m || !check_distance_bl(bl,d_bl,skill_get_range(SC_SHADOWFORM,1))) )
+			if( sd->shadowform_id && ((d_bl = map_id2bl(sd->shadowform_id)) == NULL || bl->m != d_bl->m || !check_distance_bl(bl,d_bl,10)) )
 			{
 				if( d_bl ) status_change_end(d_bl,SC__SHADOWFORM,-1);
 				sd->shadowform_id = 0;

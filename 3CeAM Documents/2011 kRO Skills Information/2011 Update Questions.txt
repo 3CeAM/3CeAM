@@ -142,6 +142,12 @@ Different success chance on yourself, targeted player, and targeted monster? Dif
 Different duration reduction stats between targeted player and targeted monster? Know what....screw it. This is kinda complex and ill work
 onthis skill another time when I feel like it or if anyone else wants to do it.
 
+Frost Misty
+Recheck all coding to see if damage and status is being applied properly.
+
+Jack Frost
+Same as Frost Misty. Recheck all coding.
+
 Marsh of Abyss
 The skill is coded kinda funky and may need to be recoded. Settings in skill_cast_db was updated but not bothering to do anything else til later.
 
@@ -175,6 +181,7 @@ Tetra Vortex
 This system needs to be reworked and cleaned up. Tetra Vortex's 4 elemental attack ID's are now being used again since a different colored animation
 is now triggered from them. The main ID is again used only for casting. You still only need 4 spheres and which ones you summon still determands the
 element of each strike.
+Also need to set the durations of each status to their default times.
 
 Summon Sphere's
 The damage formula isnt given in the documents but whats in 3CeAM is very close to official. Might recheck it again later if needed.
@@ -725,6 +732,69 @@ Second, all of the bombs that gives a status needs to be updated to official. il
 Banana bomb now has a official success chance and duration. Wow it look overpowered before I updated it. Hopefully this will fix a complaint.
 The potions will also need a recheck. Anyone knows what the mysterious powder does? All of the regular and throwable items should be rechecked.
 
+Fatal Menace
+The skill fails to warp the target to where the player warps to sometimes. Not sure how to fix this.
 
+Reproduce
+I need to know exactly what skills can be copied. It says skills that targets you. Then test info on iRO Wiki Forums says only trans cant be copied.
+A little more detail on skill types would be nice. Since im not fimilar with the Kagerou/Oboro skills ill wait til later to add those skills to the
+list of skills that can be reproduced. Also need to test how it copys when getting hit with Tetra Vortex, Sphere's released through Release, Sling
+Item, other suspected skills. Will update the file for the list of copyable skills in the future.
+If the Rogue skill can copy skills that requires a katar for example, then Reproduce should also copy skills that require a weapon Shadow Chasers
+cant equip. Skill status is only lasting for 60 seconds. Does it officially last for a infinite amount of time on official?
+Skills copied through Reproduce are supposed to cast double the SP requirement. How do I do that?
+Their's a setting for the Rogue version to beable to copy trans skills when your a Stalker that can be enabled. May need to update it.
 
+Auto Shadow Spell
+Does the after cast delay that appears upon auto casting prevent the caster from auto casting more until the aftercast delay ends?
+Will probely add additional coding in the future for GM's to beable to use this skill to autocast any copied skill.
 
+Shadow Form
+Cast range is 5 cells and info on the iRO Wiki Forums says link range is up to 10 cells. Does this mean 10 cells or up to 11 like Devotion?
+
+Body Paint
+Whats the duration for the blind status?
+Does it bring players out of camo status?
+
+Invisibility
+I dont know if a fixed duration exists. Is the duration depends on how much SP is remaining?
+It probely does since info says your usually stuck in the status until your SP is drained.
+Phantom Menace and Sensitive Keen can hit players that are in this status right? It just cant revil them.
+
+Deadly Infect
+This skill will require a lot of time to code properly. And I mean A LOT!!!! Reason is because theirs TONS of status in existances
+and only the bad ones known as debuffs are supposed to be spreadable. But whats worse is good and bad debuffs arnt grouped together.
+So ill have to pick out each and every debuff from the list of status's to add it to this long list in the source.
+Another thing is knowing which of the debuffs are spreadable. Working on this will take hours and hours to get working properly.
+Im saveing this one for....well I dont know. ill do it one day when I have nothing better to do or someone decides to do it.
+I did update the chance of infecting and to only work on melee attacks.
+
+Upon testing the spreading of status's I learned that status's like poison and bleeding arnt passing their durations properly.
+The duration for bleeding is for some reason always a lot lower then the infector and poison lasts only a second. Other status's
+ive tested like stun, blind, silence, and curse passed their durations from the infector to the target properly and ended at the
+same time on both players. Whats causing the issue with poison and bleeding and are their any other status's that arnt being passed
+properly through deadly infect?
+
+Masquerade - Groomy
+It doesent strip Mercenarys right?
+
+Masquerade - Unlucky
+In the iRO document and iRO Wiki Forums the info shows Critical and Perfect Dodge reduction is by a fixed amount, yet in a more stronger
+source it shows the reduction is in a percentage. For now ill keep this skill reduceing those 2 stats by a percent since the other skills
+reduce stuff by a percent. Also do the random status's given last as long as the duration for Unlucky?
+
+Manhole
+Info in the zone mine shows this line.... if ( targetJob == 1288 || targetJob > 1904 && targetJob <= 1908 )
+1288 is the Emperium, 1904 and 1905 are barricades, and 1907 and 1908 are guardian stones.
+Looking at the coding for how the skill entirely is handled itl probely need a recode to make it cleaner.
+Info says only usable in siege and pvp maps now. Gotta find the code that limits this.
+
+Chaos Panic, Maelstrom, and Bloody Lust
+These skills have proven to be difficult to make work properly. The way these skills AoE's work will likely
+require them to have their own function or system to work. Other issues like the new berserk effect for Bloody Lust
+was giving issues since the status would always last for 15 seconds reguardless of what I set the duration.
+Messing with them too much would likely break them and create possiable unstable issues with the server.
+Saving these skills for a 2nd pass.
+
+Feint Bomb
+After back slideing, the caster will go into hiding status. Im guessing the level of hiding learned affects things.
