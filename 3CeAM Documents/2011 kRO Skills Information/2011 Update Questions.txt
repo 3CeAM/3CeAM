@@ -149,7 +149,7 @@ Jack Frost
 Same as Frost Misty. Recheck all coding.
 
 Marsh of Abyss
-The skill is coded kinda funky and may need to be recoded. Settings in skill_cast_db was updated but not bothering to do anything else til later.
+Skill was completely recoded, but only missing a monster check for the alternate AGI/DEX reduction formula.
 
 Sienna Execrate
 Also coded in a funky way and will need to be recoded on some parts. Im guessing its coding from the time we were still learning how to code things?
@@ -160,7 +160,7 @@ I dont understand why the document says it has a cast time, aftercast, and durat
 notes saying anything about changes from passive to self cast. Might be a error in their document.
 
 Stasis
-Some parts of the code appear to need a cleanup or a recode. Coming back to this later.
+Skill was redone and appears to be fully working properly with duration reduction. But keeping this note here for something.
 
 Hell Inferno
 Is using sc_start4 to activate the burning status. Do it have to be done with that or it could be changed to sc_start safely?
@@ -396,7 +396,7 @@ Need to know where to setup the random % chance of it being successful. Before o
 Also how would I code in the formula for dodgeing exploding traps.
 
 Shield Press
-How do I make stun duration not be reduced by stats (VIT)?
+Frost on the iRO wiki forums says the stun duration cant be reduced by stats. Is this true?
 
 Reflect Damage
 UPDATE: kRO skill desc says the max reflect at level 5 is 50 reflects. So ill use the formula said in the iRO document.
@@ -412,7 +412,7 @@ Need a confirm on what it does.
 
 Shield Spell
 Most of the skill was fixed up and is now working properly. Only 3 known issues remain.
-First, their's a issue with the shieldmdef check. Will need to fix this.
+First, their's a issue with the shieldmdef check. Will need to fix this.// Fixed.
 Second, Lv 3 / Effect 1 is still in need of coding. For now itl just end other shield spell status's.
 Third, I need to test and get accurate durations for Lv2 / Effect 2 and 3. Document doesent sound accurate or is lacking info.
 
@@ -421,9 +421,11 @@ How do I make the status cancel when switching weapons?
 Currently it appears to be taking the mastery from spear mastery and boosting it. Its not supposed to do that, right?
 
 Overbrand
-Skill main ID deals the straight forward 7x3 AoE, then the 2nd ID deals the 4x11 AoE. Only 2nd AoE on official appears to be doing the knockback.
-AoE's are switched to the wrong ID's. They need to be corrected.
-How do I add Random number between (10 ~ 100) % to the knockback damage ratio formula?
+On official, the character walks onto the cell you clicked on and then creates the AoE.
+Currently in 3CeAM, the character walks up to the cell you clicked on, but doesent stand on it and creates the AoE.
+Trying to cast the skill with a cast range of 0 made it not cast at all when having to walk to the clicked cell, but casts
+if clicking a cell thats next to you. The current setup is acceptable and very very minor which makes needing to change it
+pointless. All the issue is is your character not standing on that cell. As long as the AoE is placed on that cell, its all good.
 
 Prestige
 Its said a animation happens when a magic attack misses you while in this status. Will test soon to figure out which one.
@@ -722,7 +724,7 @@ this skill can deal 20100 fixed damage that ignores defense and reductions. Well
 I want to one day test and confirm some things about this skill.
 
 Howling of Mandragora
-I need to code in the reduction and the min success chance parts. Saving this for a later update.
+iRO Wiki Forums says the skill drains from targets MaxSP and not current SP. Is it still like this?
 
 Sling Item
 Their's sooooo much to do that im only fixing up part of the code for this. So far bomb and lump damage formula's were updated to official.

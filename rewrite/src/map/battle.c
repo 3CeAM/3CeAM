@@ -2314,7 +2314,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						skillratio = skillratio * s_level / 100;	// Base level bonus.
 					break;
 				case LG_OVERBRAND_PLUSATK:
-					skillratio = 100 * skill_lv;
+					skillratio = 100 * skill_lv + rnd_value( 1, 100);
 					break;
 				case LG_MOONSLASHER:
 					skillratio = 120 * skill_lv + 80 * pc_checkskill(sd,LG_OVERBRAND);
