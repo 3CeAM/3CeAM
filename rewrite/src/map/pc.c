@@ -2138,7 +2138,7 @@ int pc_bonus(struct map_session_data *sd,int type,int val)
 			status->mdef = cap_value(bonus, CHAR_MIN, CHAR_MAX);
 
 		if( sd->state.lr_flag == 3 )
-			sd->shieldmdef += bonus;
+			sd->shieldmdef = val;
 		}
 		break;
 	case SP_MDEF2:

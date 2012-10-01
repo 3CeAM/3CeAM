@@ -25,12 +25,14 @@ struct status_change_entry;
 #define MAX_SKILL_LEVEL 100
 
 //Constants to identify the skill's inf value:
-#define INF_ATTACK_SKILL 1
-#define INF_GROUND_SKILL 2
+							//PASSIVE = 0
+#define INF_ATTACK_SKILL 1	//TOCHARACTER = 1
+#define INF_GROUND_SKILL 2	//TOGROUND = 2
 // Skills casted on self where target is automatically chosen:
-#define INF_SELF_SKILL 4
-#define INF_SUPPORT_SKILL 16
-#define INF_TARGET_TRAP 32
+#define INF_SELF_SKILL 4	//TOME = 4
+							//TOITEM = 8
+#define INF_SUPPORT_SKILL 16//TOALL = 16
+#define INF_TARGET_TRAP 32	//TOSKILL = 32
 
 //Constants to identify a skill's nk value (damage properties)
 //The NK value applies only to non INF_GROUND_SKILL skills
