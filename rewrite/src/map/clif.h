@@ -161,6 +161,13 @@ typedef enum emotion_type
 	E_ENE,
 	E_PANIC,
 	E_WHISP,        // --- 80
+	E_YUT1,
+	E_YUT2,
+	E_YUT3,
+	E_YUT4,
+	E_YUT5,
+	E_YUT6,
+	E_YUT7,
 	//
 	E_MAX
 } emotion_type;
@@ -207,6 +214,9 @@ enum map_type
 	MAPTYPE_AGIT_SIEGEV15        = 18,
 	MAPTYPE_BATTLEFIELD          = 19,
 	MAPTYPE_PVP_TOURNAMENT       = 20,
+	//Map types 21 - 24 not used.
+	MAPTYPE_SIEGE_LOWLEVEL       = 25,
+	//Map types 26 - 28 remains opens for future types.
 	MAPTYPE_UNUSED               = 29,
 };
 
@@ -637,7 +647,9 @@ void clif_search_store_info_click_ack(struct map_session_data* sd, short x, shor
 
 void clif_equip_damaged(struct map_session_data *sd, int equip_index);
 void clif_millenniumshield(struct map_session_data *sd, short shields );
-void clif_display_banding(struct block_list *dst, struct block_list *bl, int val1);
+
+// Displays 3rd job and other newer status's.
+void clif_status_change_single(struct block_list *dst, struct block_list *bl, int type, int flag, unsigned int tick, int val1, int val2, int val3);
 
 // Elementals
 void clif_elemental_info(struct map_session_data *sd);

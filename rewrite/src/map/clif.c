@@ -1194,6 +1194,8 @@ int clif_spawn(struct block_list *bl)
 				clif_sendbgemblem_area(sd);
 			if( sd->sc.count && sd->sc.data[SC_BANDING] )
 				clif_status_change(&sd->bl,SI_BANDING,1,9999,sd->sc.data[SC_BANDING]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_ALL_RIDING] )
+				clif_status_change(&sd->bl,SI_ALL_RIDING,1,9999,sd->sc.data[SC_ALL_RIDING]->val1,sd->sc.data[SC_ALL_RIDING]->val2,0);
 		}
 		break;
 	case BL_MOB:
@@ -3933,7 +3935,9 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 			if( tsd->state.bg_id && map[tsd->bl.m].flag.battleground )
 				clif_sendbgemblem_single(sd->fd,tsd);
 			if( tsd->sc.count && tsd->sc.data[SC_BANDING] )
-				clif_display_banding(&sd->bl,&tsd->bl,tsd->sc.data[SC_BANDING]->val1);
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_BANDING,1,9999,tsd->sc.data[SC_BANDING]->val1,tsd->sc.data[SC_BANDING]->val2,tsd->sc.data[SC_BANDING]->val3);
+			if( tsd->sc.count && tsd->sc.data[SC_ALL_RIDING] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_ALL_RIDING,1,9999,tsd->sc.data[SC_ALL_RIDING]->val1,tsd->sc.data[SC_ALL_RIDING]->val2,0);
 		}
 		break;
 	case BL_MER: // Devotion Effects
@@ -5254,29 +5258,30 @@ int clif_status_change(struct block_list *bl, int type, int flag, unsigned int t
 
 
 /*==========================================
- * Display Banding when someone under this
- * status change walk into your view range.
+ * Display a status change when someone
+ * under this status change walk into your
+ * view range.
  *------------------------------------------*/
-void clif_display_banding(struct block_list *dst, struct block_list *bl, int val1)
+void clif_status_change_single(struct block_list *dst, struct block_list *bl, int type, int flag, unsigned int tick, int val1, int val2, int val3)
 {
 	unsigned char buf[32];
 
 	nullpo_retv(bl);
 	nullpo_retv(dst);
 
-	if( battle_config.display_status_timers )
+	if( flag && battle_config.display_status_timers )
 		WBUFW(buf, 0) = 0x043f;
 	else
 		WBUFW(buf, 0)= 0x0196;
-	WBUFW(buf, 2) = SI_BANDING;
+	WBUFW(buf, 2) = type;
 	WBUFL(buf, 4) = bl->id;
-	WBUFB(buf, 8) = 1;
-	if( battle_config.display_status_timers )
+	WBUFB(buf, 8) = flag;
+	if( flag && battle_config.display_status_timers )
 	{
-		WBUFL(buf, 9) = 0;
+		WBUFL(buf, 9) = tick;
 		WBUFL(buf,13) = val1;
-		WBUFL(buf,17) = 0;
-		WBUFL(buf,21) = 0;
+		WBUFL(buf,17) = val2;
+		WBUFL(buf,21) = val3;
 	}
 	clif_send(buf,packet_len(WBUFW(buf,0)),dst,SELF);
 }

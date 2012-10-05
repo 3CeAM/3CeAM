@@ -575,7 +575,12 @@ typedef enum sc_type {
 	SC_ROCK_CRUSHER,
 	SC_ROCK_CRUSHER_ATK,
 
+	//Kagerou/Oboro
 	SC_JYUMONJIKIRI = 780,
+
+	//Leaving space open for future job status's.
+	//Other New Status's
+	SC_ALL_RIDING = 951,
 
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
@@ -1196,7 +1201,7 @@ enum si_type {
 //	SI_SPIRITS_SAVEINFO2 = 610,
 //	SI_MAGIC_CANDY = 611,
 //	SI_SEARCH_STORE_INFO = 612,
-//	SI_ALL_RIDING = 613,
+	SI_ALL_RIDING = 613,
 //	SI_ALL_RIDING_REUSE_LIMIT = 614,
 //	SI_MACRO = 615,
 //	SI_MACRO_POSTDELAY = 616,

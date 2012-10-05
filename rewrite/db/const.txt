@@ -1226,6 +1226,13 @@ SC_TIDAL_WEAPON_OPTION		764
 SC_ROCK_CRUSHER			765
 SC_ROCK_CRUSHER_ATK		766
 
+//Kagerou/Oboro
+SC_JYUMONJIKIRI			780
+
+//Leaving space open for future job status's
+//Other New Status's
+SC_ALL_RIDING			951
+
 e_gasp	0
 e_what	1
 e_ho	2
