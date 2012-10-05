@@ -559,6 +559,8 @@ void pc_inventory_rentals(struct map_session_data *sd)
 		if( sd->status.inventory[i].expire_time <= time(NULL) )
 		{
 			clif_rental_expired(sd->fd, sd->status.inventory[i].nameid);
+			if( sd->status.inventory[i].nameid == ITEMID_REINS )
+				status_change_end(&sd->bl, SC_ALL_RIDING, -1);
 			pc_delitem(sd, i, sd->status.inventory[i].amount, 0, 0);
 		}
 		else
@@ -4083,8 +4085,8 @@ int pc_useitem(struct map_session_data *sd,int n)
 		clif_useitemack(sd,n,amount,1);
 	else
 	{
-		if( sd->status.inventory[n].expire_time == 0 )
-		{
+		if( sd->status.inventory[n].expire_time == 0 && nameid != ITEMID_REINS )
+		{	// Don't remove Reins.
 			clif_useitemack(sd,n,amount-1,1);
 
 			//Logs (C)onsumable items [Lupus]
@@ -7361,9 +7363,6 @@ int pc_setriding(TBL_PC* sd, int flag)
 {
 	int option = 0, skillnum = 0;
 
-	if( sd->sc.data[SC__GROOMY] )
-		return 0;
-	
 	if( (sd->class_&MAPID_UPPERMASK) == MAPID_KNIGHT || (sd->class_&MAPID_UPPERMASK) == MAPID_CRUSADER )
 	{
 		if( (sd->class_&MAPID_UPPERMASK_THIRD) == MAPID_RUNE_KNIGHT )
@@ -7395,9 +7394,13 @@ int pc_setriding(TBL_PC* sd, int flag)
 	if( !option )
 		return -1;
 
+		//Players with the Groomy status or riding a rental mount can not mount on regular mounts.
+	if( sd->sc.data[SC__GROOMY] || sd->sc.data[SC_ALL_RIDING])
+		return -1;
+
 	if( flag )
 	{		
-		if( option&OPTION_MADO || (pc_checkskill(sd,skillnum) > 0) ) // Check if you have the necessary skill to mount. Mechanics do not require any skill to ride a metch.
+		if( option&OPTION_MADO || (pc_checkskill(sd,skillnum) > 0) ) // Check if you have the necessary skill to mount. Mechanics do not require any skill to ride a meado.
 			pc_setoption(sd, sd->sc.option|option);
 	}
 	else if( pc_isriding(sd,OPTION_RIDING|(OPTION_RIDING_DRAGON)|OPTION_RIDING_WUG|OPTION_MADO) )

@@ -28,6 +28,7 @@
 #define ITEMID_MAKEUPBRUSH 6121
 #define ITEMID_PAINTBRUSH 6122
 #define ITEMID_SURFACEPAINTS 6123
+#define ITEMID_REINS 12622
 
 //The only item group required by the code to be known. See const.txt for the full list.
 #define IG_FINDINGORE 6

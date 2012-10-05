@@ -408,6 +408,9 @@
 //6377,Buy_Stall_Permit,Buy Stall Permit,3,200,,10,,,,,,,,,,,,,{},{},{}
 //12548,Buy_Shabby_Stall_Permit,Buy Shabby Stall Permit,11,500,,10,,,,,0xFFFFFFFF,8,2,,,,,,{ itemskill "ALL_BUYING_STORE",1; },{},{}
 
+// Reins
+12622,Reins_Of_Mounts,Mount Reins,2,500,,0,,,,,0xFFFFFFFF,7,2,,,,,,{ sc_start SC_ALL_RIDING,-1,1; },{},{}
+
 // Kagerou/Oboro Exclusive Equips
 13075,Kurenai,Kurenai,4,5000,,700,130,,1,0,0x20000000,7,2,2,3,99,1,1,{ bonus bInt,3; },{},{}
 13076,Nachal_Sword,Nachal Sword,4,40000,,600,120,,1,1,0x20000000,7,2,2,3,110,1,1,{ bonus bInt,3; },{},{}

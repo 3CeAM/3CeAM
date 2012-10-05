@@ -30,7 +30,6 @@
 //======= Patch Index =========================================================================
 //= 1. Balance Fixes
 //=
-//= - 3rd Job Skill Base/Job Ratio Effect Removal
 //= - SC_MANDRAGORA Status Resist
 //=
 //= 2. Bug Fixes
@@ -52,31 +51,8 @@
 //= 5. Alpha/Beta Testing
 //=
 //= - Fix for Maelstrom/Bloodylust/Chaospanic
-//= - Packet Version 26
-//= - Rental Mounts
 //============================================================================================
 //===== Balance Fixes ========================================================================
-//= 3rd Job Skill Base/Job Ratio Effect Removal
-//=
-//= Patch File Name - 3rdSkillBJR = for r517
-//= 		      3rdSkillBJR588 = for r588
-//=		      3rdSkillBJR627 = for r627
-//=
-//= Patch Type - Balanceing
-//=
-//= Official ? - Unofficial
-//=
-//= Patch Revision Creation - r627 Trunk
-//=
-//= Last Known Good Rev - r627 Trunk
-//=
-//= Description - This patch modifies all the 3rd jobs skills so a players Base/Job level will
-//= no longer affect the skill's damage ratios.
-//=
-//= Notes - This patch is highly recommended for server's using classic game mechanics.
-//=
-//=-------------------------------------------------------------------------------------------
-//=
 //= SC_MANDRAGORA Status Resist
 //=
 //= Patch File Name - MandrRes
@@ -260,24 +236,6 @@
 //= Description - Better behavior of these skills, closer to official behavior and more effective.
 //=
 //= Notes - Could be a solution for certain skills with a behavior similar to Pneuma.
-//--------------------------------------------------------------------------------------------
-//=
-//= Packet Version 26
-//=
-//= Patch File Name - packetv26.patch
-//=
-//= Patch Type - Alpha/Beta
-//=
-//= Official ? - Yes
-//=
-//= Patch Revision Creation - r612
-//=
-//= Last Known Good Rev - r612
-//=
-//= Description - Adds support for packet version 26 for newer clients. Clients March of 2011
-//= are not supported at this time since the PIN number system isnt coded yet.
-//=
-//= Notes - None I can think of.
 //--------------------------------------------------------------------------------------------
 //=
 //= Rental Mounts

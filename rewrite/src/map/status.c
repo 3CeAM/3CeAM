@@ -767,6 +767,8 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_CURSED_SOIL] = SI_CURSED_SOIL;
 	StatusIconChangeTable[SC_UPHEAVAL] = SI_UPHEAVAL;
 
+	StatusIconChangeTable[SC_ALL_RIDING] = SI_ALL_RIDING;
+
 	//Other SC which are not necessarily associated to skills.
 	StatusChangeFlagTable[SC_ASPDPOTION0] = SCB_ASPD;
 	StatusChangeFlagTable[SC_ASPDPOTION1] = SCB_ASPD;
@@ -860,6 +862,8 @@ void initChangeTables(void)
 	StatusChangeFlagTable[SC_EXTRACT_WHITE_POTION_Z] |= SCB_REGEN;
 	StatusChangeFlagTable[SC_VITATA_500] |= SCB_REGEN;
 	StatusChangeFlagTable[SC_EXTRACT_SALAMINE_JUICE] |= SCB_ASPD;
+
+	StatusChangeFlagTable[SC_ALL_RIDING] |= SCB_SPEED;
 
 	if( !battle_config.display_hallucination ) //Disable Hallucination.
 		StatusIconChangeTable[SC_HALLUCINATION] = SI_BLANK;
@@ -4634,6 +4638,9 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				if( sc->data[SC_ACCELERATION] )
 					val += 25;
 			}
+			else
+			if( sc->data[SC_ALL_RIDING] )
+				val = 25;
 
 			speed_rate -= val;
 		}
@@ -6143,6 +6150,15 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		if(sc->data[SC_POWER_OF_GAIA])
 			return 0;
 	break;
+	case SC_ALL_RIDING:
+		if( !sd || pc_isriding(sd,OPTION_RIDING|OPTION_RIDING_DRAGON|OPTION_RIDING_WUG|OPTION_MADO) )
+			return 0;
+		if( sc->data[type] )
+		{	// Already mounted, just dismount.
+			status_change_end(bl, SC_ALL_RIDING, -1);
+			return 0;
+		}
+		break;
 	}
 
 	//Check for BOSS resistances

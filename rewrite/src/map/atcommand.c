@@ -4747,6 +4747,9 @@ ACMD_FUNC(mount)
 		clif_displaymessage(fd, msg_txt(msg[3])); // Cannot mount while in disguise.
 		return -1;
 	}
+	//Players with the Groomy status or riding a rental mount can not mount on regular mounts.
+	if( sd->sc.data[SC__GROOMY] || sd->sc.data[SC_ALL_RIDING])
+		return -1;
 	if( riding_flag )
 	{ //Dismount
 		pc_setoption(sd, sd->sc.option & ~option);
