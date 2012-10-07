@@ -518,6 +518,7 @@ extern struct Battle_Config
 	int renewal_baselvl_skill_effect;
 	int mado_skill_limit;
 	int mado_loss_on_death;
+	int rental_mount_speed_boost;
 
 } battle_config;
 
