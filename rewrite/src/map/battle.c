@@ -5677,6 +5677,7 @@ static const struct _battle_data {
 	{ "renewal_baselvl_skill_effect",       &battle_config.renewal_baselvl_skill_effect,     1,     0,            1,        },
 	{ "mado_skill_limit",                   &battle_config.mado_skill_limit,                 1,     0,            1,        },
 	{ "mado_loss_on_death",                 &battle_config.mado_loss_on_death,               1,     0,            1,        },
+	{ "rental_mount_speed_boost",           &battle_config.rental_mount_speed_boost,        25,     0,          100,        },
 };
 
 

@@ -908,7 +908,7 @@ int unit_can_move(struct block_list *bl)
 			|| sc->data[SC_CLOSECONFINE2]
 			|| (sc->data[SC_CLOAKING] && //Need wall at level 1-2
 				sc->data[SC_CLOAKING]->val1 < 3 && !(sc->data[SC_CLOAKING]->val4&1))
-			|| (sc->data[SC_CAMOUFLAGE] &&
+			|| (sc->data[SC_CAMOUFLAGE] && //Must be against a wall on level 1. Cant move on level 1 and 2.
 				sc->data[SC_CAMOUFLAGE]->val1 < 3 && !(sc->data[SC_CAMOUFLAGE]->val3&1))
 			|| sc->data[SC_MADNESSCANCEL]
 			|| (sc->data[SC_GRAVITATION] && sc->data[SC_GRAVITATION]->val3 == BCT_SELF)

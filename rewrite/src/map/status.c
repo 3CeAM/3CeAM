@@ -458,7 +458,7 @@ void initChangeTables(void)
 	set_sc( RA_FEARBREEZE        , SC_FEARBREEZE      , SI_FEARBREEZE      , SCB_NONE );
 	set_sc( RA_ELECTRICSHOCKER   , SC_ELECTRICSHOCKER , SI_ELECTRICSHOCKER , SCB_NONE );
 	set_sc( RA_WUGDASH           , SC_WUGDASH         , SI_WUGDASH         , SCB_SPEED );
-	set_sc( RA_CAMOUFLAGE        , SC_CAMOUFLAGE      , SI_CAMOUFLAGE      , SCB_CRI|SCB_SPEED );
+	set_sc( RA_CAMOUFLAGE        , SC_CAMOUFLAGE      , SI_CAMOUFLAGE      , SCB_WATK|SCB_CRI|SCB_DEF|SCB_SPEED );
 	add_sc( RA_MAGENTATRAP       , SC_ELEMENTALCHANGE );
 	add_sc( RA_COBALTTRAP        , SC_ELEMENTALCHANGE );
 	add_sc( RA_MAIZETRAP         , SC_ELEMENTALCHANGE );
@@ -4225,6 +4225,8 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += sc->data[SC_MERC_ATKUP]->val2;
 	if(sc->data[SC_FIGHTINGSPIRIT])
 		watk += sc->data[SC_FIGHTINGSPIRIT]->val1;
+	if(sc->data[SC_CAMOUFLAGE])
+		watk += 150/*30 * sc->data[SC_CAMOUFLAGE]->val2*/;
 	if(sc->data[SC__ENERVATION])
 		watk -= watk * sc->data[SC__ENERVATION]->val2 / 100;
 	if(sc->data[SC__BLOODYLUST])
@@ -4302,7 +4304,7 @@ static signed short status_calc_critical(struct block_list *bl, struct status_ch
 	if(sc->data[SC_CLOAKING])
 		critical += critical;
 	if(sc->data[SC_CAMOUFLAGE])
-		critical += critical;
+		critical += critical * 50 / 100/*critical * ( 10 * sc->data[SC_CAMOUFLAGE]->val2 ) / 100*/;
 	if(sc->data[SC__INVISIBILITY])
 		critical += critical * sc->data[SC__INVISIBILITY]->val2 / 100;
 	if(sc->data[SC__UNLUCKY])
@@ -4481,6 +4483,8 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 		def += sc->data[SC_STONEHARDSKIN]->val1;
 	if( sc->data[SC_FREEZING] )
 		def -= def * 10 / 100;
+	if(sc->data[SC_CAMOUFLAGE])
+		def -= def * 25 / 100/*def * ( 5 * sc->data[SC_CAMOUFLAGE]->val2 ) / 100*/;
 	if( sc->data[SC_ANALYZE] )
 		def -= def * ( 14 * sc->data[SC_ANALYZE]->val1 ) / 100;
 	if( sc->data[SC__BLOODYLUST] )
@@ -4640,7 +4644,7 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 			}
 			else
 			if( sc->data[SC_ALL_RIDING] )
-				val = 25;
+				val = battle_config.rental_mount_speed_boost;
 
 			speed_rate -= val;
 		}
@@ -4697,8 +4701,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 					val = max( val, 50 );*/
 				if( sc->data[SC_MARSHOFABYSS] )
 					val = max( val, sc->data[SC_MARSHOFABYSS]->val3 );
-				if( sc->data[SC_CAMOUFLAGE] && (sc->data[SC_CAMOUFLAGE]->val3&1) == 0 )
-					val = max( val, sc->data[SC_CAMOUFLAGE]->val1 < 3 ? 300 : 25 * (6 - sc->data[SC_CAMOUFLAGE]->val1) );
+				if( sc->data[SC_CAMOUFLAGE] && sc->data[SC_CAMOUFLAGE]->val1 > 2 )
+					val = max( val, 25 * (5 - sc->data[SC_CAMOUFLAGE]->val1));
 				if( sc->data[SC_STEALTHFIELD_MASTER] )
 					val = max( val, 20 );//Description says decreases casters movement speed by 20%. [Rytech]
 				if( sc->data[SC__LAZINESS] )
@@ -6117,7 +6121,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			return 0;
 	break;
 	case SC_CAMOUFLAGE:
-		if( sd && pc_checkskill(sd, RA_CAMOUFLAGE) < 3 && !skill_check_camouflage(bl,NULL) )
+		if( sd && pc_checkskill(sd, RA_CAMOUFLAGE) < 2 && !skill_check_camouflage(bl,NULL) )
 			return 0;
 	break;
 	case SC__STRIPACCESSORY:
@@ -6197,6 +6201,10 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC_BITE:
 			case SC_ELECTRICSHOCKER:
 			case SC_MAGNETICFIELD:
+
+			// Other Effects
+			case SC_VACUUM_EXTREME:
+			case SC_CRYSTALIZE:
 				return 0;
 		}
 	}
@@ -7510,7 +7518,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			tick = 1000;
 			break;
 		case SC_CAMOUFLAGE:
-			val3 |= battle_config.pc_camouflage_check_type&7;
+			val4 = tick / 1000;
 			tick = 1000;
 			break;
 		case SC__REPRODUCE:
@@ -7961,6 +7969,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_SPIDERWEB:
 		case SC_ELECTRICSHOCKER:
 		case SC_BITE:
+		case SC_CAMOUFLAGE:
 		case SC_THORNSTRAP:
 		case SC__MANHOLE:
 		case SC_CHAOS:
@@ -7975,7 +7984,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_CLOAKING:
 		case SC_CHASEWALK:
 		case SC_WEIGHT90:
-		case SC_CAMOUFLAGE:
 		case SC_VOICEOFSIREN:
 		case SC_CLOAKINGEXCEED:
 			unit_stop_attack(bl);
@@ -8006,6 +8014,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_ANGELUS:  case SC_BENEDICTIO:    sc->opt2 |= OPT2_ANGELUS;      break;// Piety use this, i need confirm if Benedictio do it too. [pakpil]
 		case SC_BLEEDING:     sc->opt2 |= OPT2_BLEEDING;     break;
 		case SC_DPOISON:      sc->opt2 |= OPT2_DPOISON;      break;
+		case SC_FEAR:         sc->opt2 |= OPT2_FEAR;         break;
 		//OPT3
 		case SC_TWOHANDQUICKEN:
 		case SC_ONEHAND:
@@ -9499,10 +9508,14 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		break;
 
 	case SC_CAMOUFLAGE:
-		if( !status_charge(bl,0,7 - sce->val1) )
-			break;
-		sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
-		return 0;
+		if( --(sce->val4) >= 0 )
+		{
+			if( !status_charge(bl, 0, 7 - sce->val1) )
+				break;
+			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
 
 	case SC__REPRODUCE:
 		if( --(sce->val4) >= 0 )

@@ -1192,10 +1192,53 @@ int clif_spawn(struct block_list *bl)
 				clif_specialeffect(bl,421,AREA);
 			if( sd->state.bg_id && map[sd->bl.m].flag.battleground )
 				clif_sendbgemblem_area(sd);
+			// Below SI's must be resent to the client to show animations on players walking onto other player's view range.
+			//if( sd->sc.count && sd->sc.data[SC_] )
+			//	clif_status_change(&sd->bl,SI_,1,9999,sd->sc.data[SC_]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_CAMOUFLAGE] )
+				clif_status_change(&sd->bl,SI_CAMOUFLAGE,1,9999,sd->sc.data[SC_CAMOUFLAGE]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_ORATIO] )
+				clif_status_change(&sd->bl,SI_ORATIO,1,9999,sd->sc.data[SC_ORATIO]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_DUPLELIGHT] )
+				clif_status_change(&sd->bl,SI_DUPLELIGHT,1,9999,sd->sc.data[SC_DUPLELIGHT]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_SPHERE_1] )
+				clif_status_change(&sd->bl,SI_SPHERE_1,1,9999,sd->sc.data[SC_SPHERE_1]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_SPHERE_2] )
+				clif_status_change(&sd->bl,SI_SPHERE_2,1,9999,sd->sc.data[SC_SPHERE_2]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_SPHERE_3] )
+				clif_status_change(&sd->bl,SI_SPHERE_3,1,9999,sd->sc.data[SC_SPHERE_3]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_SPHERE_4] )
+				clif_status_change(&sd->bl,SI_SPHERE_4,1,9999,sd->sc.data[SC_SPHERE_4]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_SPHERE_5] )
+				clif_status_change(&sd->bl,SI_SPHERE_5,1,9999,sd->sc.data[SC_SPHERE_5]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_FREEZING] )
+				clif_status_change(&sd->bl,SI_FROSTMISTY,1,9999,sd->sc.data[SC_FREEZING]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_VENOMIMPRESS] )
+				clif_status_change(&sd->bl,SI_VENOMIMPRESS,1,9999,sd->sc.data[SC_VENOMIMPRESS]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_HALLUCINATIONWALK] )
+				clif_status_change(&sd->bl,SI_HALLUCINATIONWALK,1,9999,sd->sc.data[SC_HALLUCINATIONWALK]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_ROLLINGCUTTER] )
+				clif_status_change(&sd->bl,SI_ROLLINGCUTTER,1,9999,sd->sc.data[SC_ROLLINGCUTTER]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_BANDING] )
 				clif_status_change(&sd->bl,SI_BANDING,1,9999,sd->sc.data[SC_BANDING]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_CRYSTALIZE] )
+				clif_status_change(&sd->bl,SI_COLD,1,9999,sd->sc.data[SC_CRYSTALIZE]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_DEEPSLEEP] )
+				clif_status_change(&sd->bl,SI_DEEPSLEEP,1,9999,sd->sc.data[SC_DEEPSLEEP]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_CURSEDCIRCLE_ATKER] )
+				clif_status_change(&sd->bl,SI_CURSEDCIRCLE_ATKER,1,9999,sd->sc.data[SC_CURSEDCIRCLE_ATKER]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_CURSEDCIRCLE_TARGET] )
+				clif_status_change(&sd->bl,SI_CURSEDCIRCLE_TARGET,1,9999,sd->sc.data[SC_CURSEDCIRCLE_TARGET]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_BLOODSUCKER] )
+				clif_status_change(&sd->bl,SI_BLOODSUCKER,1,9999,sd->sc.data[SC_BLOODSUCKER]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC__SHADOWFORM] )
+				clif_status_change(&sd->bl,SI_SHADOWFORM,1,9999,sd->sc.data[SC__SHADOWFORM]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC__MANHOLE] )
+				clif_status_change(&sd->bl,SI_MANHOLE,1,9999,sd->sc.data[SC__MANHOLE]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_ALL_RIDING] )
-				clif_status_change(&sd->bl,SI_ALL_RIDING,1,9999,sd->sc.data[SC_ALL_RIDING]->val1,sd->sc.data[SC_ALL_RIDING]->val2,0);
+				clif_status_change(&sd->bl,SI_ALL_RIDING,1,9999,sd->sc.data[SC_ALL_RIDING]->val1,0,0);
+			//if( sd->sc.count && sd->sc.data[SC_ON_PUSH_CART] )
+			//	clif_status_change(&sd->bl,SI_ON_PUSH_CART,1,9999,sd->sc.data[SC_ON_PUSH_CART]->val1,0,0);
 		}
 		break;
 	case BL_MOB:
@@ -3934,10 +3977,53 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 				clif_specialeffect_single(bl,421,sd->fd);
 			if( tsd->state.bg_id && map[tsd->bl.m].flag.battleground )
 				clif_sendbgemblem_single(sd->fd,tsd);
+			// Below SI's must be resent to the client to show animations on players walking onto other player's view range.
+			//if( tsd->sc.count && tsd->sc.data[SC_] )
+			//	clif_status_change_single(&sd->bl,&tsd->bl,SI_,1,9999,tsd->sc.data[SC_]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_CAMOUFLAGE] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_CAMOUFLAGE,1,9999,tsd->sc.data[SC_CAMOUFLAGE]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_ORATIO] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_ORATIO,1,9999,tsd->sc.data[SC_ORATIO]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_DUPLELIGHT] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_DUPLELIGHT,1,9999,tsd->sc.data[SC_DUPLELIGHT]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_SPHERE_1] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_SPHERE_1,1,9999,tsd->sc.data[SC_SPHERE_1]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_SPHERE_2] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_SPHERE_2,1,9999,tsd->sc.data[SC_SPHERE_2]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_SPHERE_3] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_SPHERE_3,1,9999,tsd->sc.data[SC_SPHERE_3]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_SPHERE_4] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_SPHERE_4,1,9999,tsd->sc.data[SC_SPHERE_4]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_SPHERE_5] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_SPHERE_5,1,9999,tsd->sc.data[SC_SPHERE_5]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_FREEZING] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_FROSTMISTY,1,9999,tsd->sc.data[SC_FREEZING]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_VENOMIMPRESS] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_VENOMIMPRESS,1,9999,tsd->sc.data[SC_VENOMIMPRESS]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_HALLUCINATIONWALK] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_HALLUCINATIONWALK,1,9999,tsd->sc.data[SC_HALLUCINATIONWALK]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_ROLLINGCUTTER] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_ROLLINGCUTTER,1,9999,tsd->sc.data[SC_ROLLINGCUTTER]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_BANDING] )
-				clif_status_change_single(&sd->bl,&tsd->bl,SI_BANDING,1,9999,tsd->sc.data[SC_BANDING]->val1,tsd->sc.data[SC_BANDING]->val2,tsd->sc.data[SC_BANDING]->val3);
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_BANDING,1,9999,tsd->sc.data[SC_BANDING]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_CRYSTALIZE] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_COLD,1,9999,tsd->sc.data[SC_CRYSTALIZE]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_DEEPSLEEP] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_DEEPSLEEP,1,9999,tsd->sc.data[SC_DEEPSLEEP]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_CURSEDCIRCLE_ATKER] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_CURSEDCIRCLE_ATKER,1,9999,tsd->sc.data[SC_CURSEDCIRCLE_ATKER]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_CURSEDCIRCLE_TARGET] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_CURSEDCIRCLE_TARGET,1,9999,tsd->sc.data[SC_CURSEDCIRCLE_TARGET]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_BLOODSUCKER] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_BLOODSUCKER,1,9999,tsd->sc.data[SC_BLOODSUCKER]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC__SHADOWFORM] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_SHADOWFORM,1,9999,tsd->sc.data[SC__SHADOWFORM]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC__MANHOLE] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_MANHOLE,1,9999,tsd->sc.data[SC__MANHOLE]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_ALL_RIDING] )
-				clif_status_change_single(&sd->bl,&tsd->bl,SI_ALL_RIDING,1,9999,tsd->sc.data[SC_ALL_RIDING]->val1,tsd->sc.data[SC_ALL_RIDING]->val2,0);
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_ALL_RIDING,1,9999,tsd->sc.data[SC_ALL_RIDING]->val1,0,0);
+			//if( tsd->sc.count && tsd->sc.data[SC_ON_PUSH_CART] )
+			//	clif_status_change_single(&sd->bl,&tsd->bl,SI_ON_PUSH_CART,1,9999,tsd->sc.data[SC_ON_PUSH_CART]->val1,0,0);
 		}
 		break;
 	case BL_MER: // Devotion Effects
