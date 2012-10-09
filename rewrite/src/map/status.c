@@ -768,6 +768,7 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_UPHEAVAL] = SI_UPHEAVAL;
 
 	StatusIconChangeTable[SC_ALL_RIDING] = SI_ALL_RIDING;
+	StatusIconChangeTable[SC_ON_PUSH_CART] = SI_ON_PUSH_CART;
 
 	//Other SC which are not necessarily associated to skills.
 	StatusChangeFlagTable[SC_ASPDPOTION0] = SCB_ASPD;
@@ -1495,7 +1496,7 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 				sc->data[SC_BERSERK] ||
 				sc->data[SC_OBLIVIONCURSE] ||
 				sc->data[SC_WHITEIMPRISON] ||
-				sc->data[SC_STASIS] ||
+				sc->data[SC_STASIS] && skill_stasis_check(src, skill_num)||
 				sc->data[SC__INVISIBILITY] ||
 				sc->data[SC_CRYSTALIZE] ||
 				sc->data[SC__IGNORANCE] || 
@@ -6867,6 +6868,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_READYCOUNTER:
 		case SC_READYTURN:
 		case SC_DODGE:
+		case SC_ON_PUSH_CART:
 			tick = -1;
 			break;
 
@@ -8283,6 +8285,7 @@ int status_change_clear(struct block_list* bl, int type)
 		case SC_FOOD_DEX_CASH:
 		case SC_FOOD_INT_CASH:
 		case SC_FOOD_LUK_CASH:
+		case SC_ON_PUSH_CART:
 			continue;
 		}
 
@@ -9788,12 +9791,12 @@ int status_change_timer_sub(struct block_list* bl, va_list ap)
 	switch( type )
 	{
 	case SC_SIGHT:	/* サイト */
-		if ( sce->val4 == 2000 && tsc && tsc->data[SC__SHADOWFORM] && rand()%100 < 100 - 10 * tsc->data[SC__SHADOWFORM]->val1)
+		if ( sce && sce->val4 == 2000 && tsc && tsc->data[SC__SHADOWFORM] && rand()%100 < 100 - 10 * tsc->data[SC__SHADOWFORM]->val1)
 		{//Attempt to remove Shadow Form status by chance every 2 seconds. [Rytech]
 			status_change_end(bl, SC__SHADOWFORM, -1);
 			sce->val4 = 0;
 		}
-		else if ( sce->val4 >= 2000 )//Reset check to 0 seconds only if above condition fails.
+		else if ( sce && sce->val4 >= 2000 )//Reset check to 0 seconds only if above condition fails.
 			sce->val4 = 0;//No break after this since other invisiable character status's are removed as well.
 	case SC_CONCENTRATE:
 		status_change_end(bl, SC_HIDING, INVALID_TIMER);
@@ -9802,14 +9805,14 @@ int status_change_timer_sub(struct block_list* bl, va_list ap)
 		status_change_end(bl, SC_CAMOUFLAGE, -1);
 		break;
 	case SC_RUWACH:	/* ルアフ */
-		if ( sce->val4 == 2000 && tsc && tsc->data[SC__SHADOWFORM] && rand()%100 < 100 - 10 * tsc->data[SC__SHADOWFORM]->val1)
+		if ( sce && sce->val4 == 2000 && tsc && tsc->data[SC__SHADOWFORM] && rand()%100 < 100 - 10 * tsc->data[SC__SHADOWFORM]->val1)
 		{//Attempt to remove Shadow Form status by chance every 2 seconds. [Rytech]
 			status_change_end(bl, SC__SHADOWFORM, -1);
 			if(battle_check_target( src, bl, BCT_ENEMY ) > 0)
 				skill_attack(BF_MAGIC,src,src,bl,AL_RUWACH,1,tick,0);
 			sce->val4 = 0;
 		}
-		else if ( sce->val4 >= 2000 )//Reset check to 0 seconds only if above condition fails.
+		else if ( sce && sce->val4 >= 2000 )//Reset check to 0 seconds only if above condition fails.
 			sce->val4 = 0;//No break after this since other invisiable character status's are removed as well.
 		if (tsc && (tsc->data[SC_HIDING] || tsc->data[SC_CLOAKING] || tsc->data[SC_CLOAKINGEXCEED] || 
 			tsc->data[SC_CAMOUFLAGE])) {

@@ -377,7 +377,7 @@ int skill_select_menu( struct map_session_data *sd, int flag, int skill_id); // 
 int skill_elementalanalysis(struct map_session_data *sd, int n, int type, unsigned short *item_list); // Sorcerer Four Elemental Analisys.
 int skill_changematerial(struct map_session_data *sd, int n, unsigned short *item_list);	// Genetic Change Material.
 
-int skill_stasis_check(struct block_list *bl, int src_id, int skillid);	// Stasis skill usage check. [LimitLine]
+int skill_stasis_check(struct block_list *bl, int skillid);// Stasis skill usage check. [LimitLine]
 int skill_get_elemental_type(int skill_id, int skill_lv);
 
 // mobƒXƒLƒ‹‚Ì‚½‚ß

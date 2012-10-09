@@ -581,6 +581,7 @@ typedef enum sc_type {
 	//Leaving space open for future job status's.
 	//Other New Status's
 	SC_ALL_RIDING = 951,
+	SC_ON_PUSH_CART,
 
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
@@ -1261,7 +1262,7 @@ enum si_type {
 //	SI_M_LIFEPOTION = 670,
 //	SI_ENTRY_QUEUE_NOTIFY_ADMISSION_TIME_OUT = 671,
 //	SI_UNKNOWN_NAME = 672,
-//	SI_ON_PUSH_CART = 673,
+	SI_ON_PUSH_CART = 673,
 //	SI_HAT_EFFECT = 674,
 //	SI_FLOWER_LEAF = 675,
 //	SI_RAY_OF_PROTECTION = 676,
