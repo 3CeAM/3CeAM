@@ -6286,7 +6286,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_STEALTHFIELD:			case SC_GIANTGROWTH:			case SC_MILLENNIUMSHIELD:
 				case SC_REFRESH:			case SC_STONEHARDSKIN:			case SC_VITALITYACTIVATION:
 				case SC_FIGHTINGSPIRIT:			case SC_ABUNDANCE:			case SC__SHADOWFORM:
-				case SC_RECOGNIZEDSPELL:
+				case SC_RECOGNIZEDSPELL:		case SC_ON_PUSH_CART:
 					continue;
 				case SC_ASSUMPTIO:
 					if( bl->type == BL_MOB )
@@ -7625,6 +7625,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_DROCERA_HERB_STEAMED: case SC_PUTTI_TAILS_NOODLES:
 				case SC_NEUTRALBARRIER_MASTER: case SC_NEUTRALBARRIER:
 				case SC_STEALTHFIELD_MASTER: case SC_STEALTHFIELD:
+				case SC_ON_PUSH_CART:
 					continue;
 				case SC_ASSUMPTIO:
 					if( bl->type == BL_MOB )
@@ -9969,7 +9970,7 @@ int skill_castend_map (struct map_session_data *sd, short skill_num, const char 
 		sd->sc.data[SC_BASILICA] ||
 		sd->sc.data[SC_MARIONETTE] ||
 		sd->sc.data[SC_WHITEIMPRISON] ||
-		sd->sc.data[SC_STASIS] ||
+		//sd->sc.data[SC_STASIS] ||//Not sure if this is needed. Does as it should without it, but leaving here for now. [Rytech]
 		sd->sc.data[SC_CRYSTALIZE] ||
 		sd->sc.data[SC__MANHOLE]
 	 )) {
@@ -16771,7 +16772,7 @@ void skill_init_nounit_layout (void)
 }
 
 // Stasis skill usage check. [LimitLine]
-int skill_stasis_check(struct block_list *bl, int src_id, int skillid)
+int skill_stasis_check(struct block_list *bl, int skillid)
 {
 	if( !bl )
 		return 0;// Can do it
