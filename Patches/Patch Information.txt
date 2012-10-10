@@ -51,6 +51,7 @@
 //= 5. Alpha/Beta Testing
 //=
 //= - Fix for Maelstrom/Bloodylust/Chaospanic
+//= - Packet Version 29 For 2012-04-10aRagexeRE Client
 //============================================================================================
 //===== Balance Fixes ========================================================================
 //= SC_MANDRAGORA Status Resist
@@ -257,4 +258,35 @@
 //= using the actural Reins item.
 //=
 //= Clinet 2010-11-24 or higher required.
+//--------------------------------------------------------------------------------------------
+//=
+//= Packet Version 29 For 2012-04-10aRagexeRE Client
+//=
+//= Patch File Name - PacketV29
+//=
+//= Patch Type - Alpha/Beta Testing
+//=
+//= Official ? - Yes
+//=
+//= Patch Revision Creation - r691
+//=
+//= Last Known Good Rev - r691
+//=
+//= Description - This patch adds packet version 29 to 3CeAM which adds suppost for the 2012-04-10aRagexeRE
+//= client. The patch also adds a number of features and updates that strengthens the overall client suppot.
+//= For new features, this adds support for the new monster HP bars, homunculus hunger bar, and the new carts.
+//= For updates, the support for gm_all_skill is now fully working and stable without causing client crashes.
+//= Almost all of the data used to make these updates comes from rAthena. Credits belong to all who did the
+//= original coding for this stuff. Support for the Kagerou/Oboro Talismans is not included with this release
+//= and will be added in a future update to the patch file.
+//=
+//= Warning: Please back up your server before applying this update. This is a experimental update and may not be
+//= entirely stable. By applying this patch to your server, you understand that your server may start having
+//= issues. The most likely issues that may appear is communication issues between the server and the client
+//= which can cause certain features to break and not work. You also understand that unexpected behaviors may
+//= also happen that could cause unforeseen issues. If you understand the risks then have fun. Be sure to report
+//= any issues that you find so that I can fix them ASAP.
+//=
+//= Notes - Use this patch ONLY if you will be using a 2012-04-10aRagexeRE client. It was designed to be used
+//= with that client date. It is unknown if itl create issues with older clients which it likely shouldn't.
 //============================================================================================
