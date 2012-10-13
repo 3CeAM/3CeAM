@@ -24,11 +24,23 @@
 // you can even mix modes
 //519,41 (32+8+1) you can't use Milk on PVP, and maps marked as 'restricted zone 2' and 'restricted zone 4'
 
+//PVP
+14529,1 //Greed Scroll
+
+//GVG
+12218,2 //LV5 Assumptio Scroll
+14529,2 //Greed Scroll
+14590,2 //Party Assumptio 5 Scroll
+
+//BATTLEGROUND
+//12218,???? //LV5 Assumptio Scroll
+//14590,???? //Party Assumptio 5 Scroll
 
 //Zone 1 - Aldebaran Turbo Track
-601,4 //Fly Wing
 506,4 //Green Potion
 525,4 //Panacea
+601,4 //Fly Wing
+605,4 //Anodyne
 
 //Zone 2 - Jail
 601,8 //Fly Wing - not really needed here but ...
@@ -41,3 +53,6 @@
 
 //Zone 3 - Izlude Battle Arena
 601,16 //Fly Wing
+
+//Zone 7 - Towns
+14529,256 //Greed Scroll

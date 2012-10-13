@@ -1,3 +1,19 @@
+// Script Constant Database
+//
+// Structure of Database:
+// Identifier	Value[	Type]
+//
+// Alternatively:
+// Identifier,Value[,Type]
+//
+// 01. Identifier   Unique name for the constant, must not have same name as script commands, functions or variables.
+// 02. Value        Value assigned to the constant. This value cannot be changed during the runtime of the server.
+// 03. Type         Specifies whether the identifier is a constant (0) or a parameter (1) (optional, defaults to 0).
+//
+// NOTE:            Parameters are special in that they retrieve certain runtime values depending on the specified ID
+//                  in field Value. Depending on the implementation values assigned by scripts to parameters will affect
+//                  runtime values, such as Zeny, as well (see pc_readparam/pc_setparam).
+
 Job_Novice	0
 Job_Swordman	1
 Job_Mage	2
@@ -337,7 +353,7 @@ mf_nodrop	38
 mf_jexp	39
 mf_bexp	40
 mf_novending	41
-mf_loadevent 42
+mf_loadevent	42
 mf_nochat	43
 mf_noexppenalty	44
 mf_guildlock	45
@@ -361,7 +377,7 @@ cell_nochat	7
 cell_chkwall	1
 cell_chkwater	2
 cell_chkcliff	3
-cell_chkpass    4
+cell_chkpass	4
 cell_chkreach	5
 cell_chknopass	6
 cell_chknoreach	7
@@ -559,6 +575,7 @@ bAddSkillBlow	2041
 bSPVanishRate	2042
 bMagicSPGainValue	2043
 bMagicHPGainValue	2044
+bAddClassDropItem	2045
 
 EQI_HEAD_TOP	1
 EQI_ARMOR	2
@@ -582,7 +599,7 @@ Eff_Confusion	7
 Eff_Blind	8
 Eff_Bleeding	9
 Eff_DPoison	10
-Eff_Fear
+Eff_Fear	11
 
 Ele_Neutral	0
 Ele_Water	1
@@ -3163,6 +3180,4 @@ IT_PETEGG	7
 IT_PETARMOR	8
 IT_AMMO	10
 IT_DELAYCONSUME	11
-IT_THROWWEAPON	17
 IT_CASH	18
-IT_CANNONBALL	19

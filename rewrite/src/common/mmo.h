@@ -179,7 +179,7 @@
 //Mercenary System
 #define MC_SKILLBASE 8201
 #define MAX_MERCSKILL 40
-#define MAX_MERCENARY_CLASS 40
+#define MAX_MERCENARY_CLASS 44
 
 //Elemental System
 #define EL_SKILLBASE 8401
