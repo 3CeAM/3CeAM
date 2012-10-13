@@ -14,8 +14,8 @@
 //= 1.2 Made some updates due to Izlude Battle Arena release. [SinSloth]
 //============================================================
 
-izlude,128,226,0	warp	welcome_arena	1,1,arena_room,100,30
-arena_room,99,24,0	warp	bye_arena	2,2,izlude,128,220
+izlude,128,257,0	warp	welcome_arena	1,1,arena_room,100,30
+arena_room,99,24,0	warp	bye_arena	2,2,izlude,128,251
 arena_room,84,103,0	warp	arn_room_11_1	1,1,arena_room,63,130
 arena_room,63,126,0	warp	arn_room_11_2	1,1,arena_room,87,100
 arena_room,76,87,0	warp	arn_room_9_1	1,1,arena_room,46,87
@@ -40,24 +40,24 @@ DLGTEMP:
 	}
 	else if (@input_arena == 1357)
 	{
-		mes "Opening Control Panel";	
-		mes "' A - R - E - N - A '";	
+		mes "Opening Control Panel";
+		mes "' A - R - E - N - A '";
 		next;
-		mes "Please select a";	
-		mes "state for the arena.";	
+		mes "Please select a";
+		mes "state for the arena.";
 		next;
 		switch( select( "Open.","Closed.") )
 		{
 			case 1:
-				mes "Currently";	
-				mes "opening arena.";	
+				mes "Currently";
+				mes "opening arena.";
 				misceffect EF_ENHANCE;	//CHECK
 				enablenpc "welcome_arena";
 				next;
 				break;
 			case 2:
-				mes "Currently";	
-				mes "closing arena.";	
+				mes "Currently";
+				mes "closing arena.";
 				misceffect EF_EXIT;	//CHECK
 				disablenpc "welcome_arena";
 				next;
@@ -66,7 +66,7 @@ DLGTEMP:
 	}
 	else
 	{
-		mes "Closing control panel.";	
+		mes "Closing control panel.";
 		close;
 	}
 }
