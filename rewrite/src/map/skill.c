@@ -2185,7 +2185,8 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 	case WL_TETRAVORTEX_WATER:
 	case WL_TETRAVORTEX_WIND:
 	case WL_TETRAVORTEX_GROUND:
-		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,1,WL_TETRAVORTEX_FIRE,-2,type);
+		clif_skill_nodamage(src, bl, skillid, -2, 1);
+		clif_skill_damage(src,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, 5);
 		break;
 	case SC_FEINTBOMB:
 		dmg.dmotion = clif_skill_damage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -1, 5);
@@ -2981,7 +2982,7 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 								i = applyeffects[rand()%j];
 								status_change_start(target, i, 10000, skl->skill_lv,
 									(i == SC_BURNING ? 1000 : 0),
-									(i == SC_BURNING ? src->id : 0),
+									(i == SC_BURNING ? src->id : 0),//How long do these status durations last for in TV? [Rytech]
 									0, skill_get_time(WL_TETRAVORTEX,skl->skill_lv), 0);
 							}
 						}
@@ -3750,6 +3751,10 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case AB_HIGHNESSHEAL:
 	case AB_DUPLELIGHT_MAGIC:
 	case WL_HELLINFERNO:
+	case WL_TETRAVORTEX_FIRE:
+	case WL_TETRAVORTEX_WATER:
+	case WL_TETRAVORTEX_WIND:
+	case WL_TETRAVORTEX_GROUND:
 	case WM_METALICSOUND:
 		skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag);
 		break;
@@ -15418,6 +15423,9 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 					case 1010: qty *= 8; break;
 					case 1061: qty *= 2; break;
 					// Throwable potions
+					case 13269: case 13270: case 13271: case 13272: case 13273: case 13284:
+						qty *= 5;
+						break;
 					case 13275: case 13276: case 13277: case 13278: case 13279: case 13280: case 13281: case 13282: case 13283:
 						qty *= 10;
 						break;

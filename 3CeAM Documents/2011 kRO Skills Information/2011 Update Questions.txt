@@ -182,6 +182,7 @@ This system needs to be reworked and cleaned up. Tetra Vortex's 4 elemental atta
 is now triggered from them. The main ID is again used only for casting. You still only need 4 spheres and which ones you summon still determands the
 element of each strike.
 Also need to set the durations of each status to their default times.
+Update: Animations are fixed and each ID is being used as they should. However the status durations still need work.
 
 Summon Sphere's
 The damage formula isnt given in the documents but whats in 3CeAM is very close to official. Might recheck it again later if needed.
