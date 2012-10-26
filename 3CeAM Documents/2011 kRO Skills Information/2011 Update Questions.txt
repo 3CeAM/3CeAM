@@ -130,9 +130,8 @@ Note: I do remember it said somewhere in the document for another skill saying t
 Maybe I should keep my eyes open for that as that tells if something was removed or set to 0.
 
 Fighting Spirit
-The ASPD increase part was set to boost it by 2% * RK_RUNEMASTERY-LV-LEARNED as 10% will give a +4 increase to the base.
-But I think the ASPD boost is only working if your in a party, which is incorrect as it should always work.
-The code looks complex and im not bothering to fix it. Someone else can do that.
+The ASPD increase part was set to boost it by 1% * RK_RUNEMASTERY-LV-LEARNED as 10% will give a +4 increase to the base.
+Its ASPD boost feels quite low on a fully leveled 150/50 Rune Knight. But this should be good....maybe.
 
 Phantom Thrust
 Should work against other players in PVP and duel?
@@ -378,6 +377,16 @@ Need to find out how often the poisoning chance is applied. Its currently set to
 
 Hallucination Walk
 Says in the balance notes for Auguest 31, 2011 that the HP cost for the skill changed. What was it changed to?
+
+Enchant Deadly Poison On Certain Guillotine Skills.
+EDP's mechanics has completely changed in renewal. In classic it would increase your final damage by a percentage.
+In renewal it was changed to increase BATK and WATK (Mainly your ATK) by that same percentage.
+This difference has greatly affected how much the damage with skills increases. Since 3CeAM uses the classic mechanics, EDP must remain the same by
+boosting the final damage. Skills like Counter Slash, Rolling Cutter, and Cross Ripper Slasher in renewal dont have their final damage amped up by EDP at all
+and instead they deal more damage due to the increased ATK.
+
+To keep things balanced for now, EDP will not affected Guillotine skills at all until I can code in a secondary code for EDP for these skills.
+The code will have to add that additional ATK for a brief moment long enough for those casted skills to get the proper boost.
 
 Duuuurp....Chuuuurp.
 
