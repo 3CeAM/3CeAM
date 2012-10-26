@@ -145,7 +145,7 @@ Index: trunk/rewrite/db/packet_db.txt
 +packet_ver: 29
 +0x01FD,15,repairitem,2
 +0x089C,26,friendslistadd,2
-+0x0885,5,hommenu,2:4
++0x0885,5,hommenu,4
 +0x0961,36,storagepassword,0
 +0x0288,-1,cashshopbuy,4:8
 +0x091C,26,partyinvite2,2

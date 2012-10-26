@@ -7400,7 +7400,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val2 = 500 + 100 * val1;
 			break;
 		case SC_STONEHARDSKIN:// Final DEF/MDEF increase divided by 10 since were using classic (pre-renewal) mechanics. [Rytech]
-			if( battle_config.renewal_baselvl_skill_effect == 1 )
+			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(bl) >= 100 )
 			val1 = sd->status.job_level * pc_checkskill(sd, RK_RUNEMASTERY) / 4 / 10; //DEF/MDEF Increase
 			else
 			val1 = 50 * pc_checkskill(sd, RK_RUNEMASTERY) / 4 / 10;
@@ -7799,9 +7799,14 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val2 = 10 + 5 * val1;//Sphere gain chance.
 			break;
 		case SC_GT_CHANGE:
+			{
+			int casterint = status->int_;
+			if ( casterint <= 0 )
+				casterint = 1;//Prevents dividing by 0 since its possiable to reduce players stats to 0; [Rytech]
 			val2 = (status->str / 2 + status->dex / 4) * val1 / 5;//Fixed amount of weapon attack increase.
 			val3 = status_get_agi(bl) * val1 / 60;//ASPD increase.
-			val4 = 200 / status->int_ * val1;//MDEF decrease.
+			val4 = 200 / casterint * val1;//MDEF decrease.
+			}
 			break;
 		case SC_GT_REVITALIZE:
 			val2 = status->vit / 4 * val1;//VIT defense increase.

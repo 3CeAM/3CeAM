@@ -2721,6 +2721,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					case AS_SPLASHER:
 					case AS_VENOMKNIFE:
 					case ASC_BREAKER:
+					case GC_COUNTERSLASH:
+					case GC_ROLLINGCUTTER:
+					case GC_CROSSRIPPERSLASHER:
 						break;
 					case AS_GRIMTOOTH: // Grimtooth skill no longer takes the effect of Enchant Deadly Poison.
 					// Skill effects nerfed, don't add EDP effects.
@@ -2729,7 +2732,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 							ATK_ADDRATE(sc->data[SC_EDP]->val3);
 						break;
 					case GC_CROSSIMPACT:
-					case GC_COUNTERSLASH:
+					//case GC_COUNTERSLASH:
 						if( !(battle_config.renewal_edp&2) )
 							ATK_ADDRATE(sc->data[SC_EDP]->val3);
 						break;
