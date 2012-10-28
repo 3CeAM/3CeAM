@@ -72,11 +72,6 @@ Document says skill cooldown is 3 seconds, yet iRO's skill desc says you must wa
 Which is true?
 Also says you cant move for the 2 second duration of the skill. How do I code that in?
 
-Hundred Spear
-Past info said that the player must master the Spear Boomerang for the autocast chance to work.
-Yet iRO's skill desc says has a chance of activating the highest learned level of [Spear Boomerang] if the caster has learned that skill.
-Which is true?
-
 Wind Cutter
 Whats the fear status duration?
 Is the AoE size really 5x3 or is it 5x5?
@@ -94,17 +89,12 @@ Dragon Howling
 Is the fear status's immobilization 2 seconds reguardless of how I set fear's duration?
 
 Rune Mastery
-Success formula setup will need to be reworked or maybe entirely recoded since theirs much more to the success then just the skill level.
-Will do this one day when I have time.
+Crafting formula entirely recoded, however the iRO document shows the starting base success is 51 percent.
+This looks a bit off and might be a typo. So ive put the base ratio at 50 percent instead.
 
 Millennium Shield
-Says number of shields summoned: 2 shields at 50% chance, 3 shields at 30% chance, 4 shields at 20% chance.
-I dont know if the way we have it coded makes the chances close to this. Right now its coded to work like this....
-Chance to get 4 shields =  50% <-- If random chance fails, it will try for 3 shields next.
-Chance to get 3 shields =  80% <-- If random chance fails, it will try for 2 shields next.
-Chance to get 2 shields = 100%
-Also says it stuns the player when 1 shield breaks. The stun lasts for 3 seconds and reduced by VIT right? Does this even work in 3CeAM?
-May reduce stun duration to 1 second if found that 3 seconds is too high. Imagine a shield breaking back to back every second. COuld be annoying.
+Says it stuns the player when 1 shield breaks. The stun lasts for 3 seconds and reduced by VIT right? Does this even work in 3CeAM?
+May reduce stun duration to 1 second if found that 3 seconds is too high. Imagine a shield breaking back to back every second. Could be annoying.
 
 Giant Growth
 Recheck the check for the 3x damage in battle.c as a small cleanup might be possiable.
@@ -345,6 +335,8 @@ Dark Illusion
 Looking at the code for the skill in skill.c, I have to wonder if their's room for improving the code to be smaller.
 
 Research New Poison
+Crafting success formula and number of poisons made per crafting completed, however theirs some other things that needs to be worked on.
+
 A lot of checking and testing will need to be done to ensure this is working properly. Will do this stuff another time.
 Here's some facts Frost figured out while testing the Guillotine Cross poisons....
 1. Poisons are generally the same. You can only be inflicted by one at a time, and by so, you become immune to the other ones. (Meaning poisons dont stack or end other poisons.)

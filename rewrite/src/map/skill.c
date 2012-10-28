@@ -1042,11 +1042,9 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl,SC_CRITICALWOUND,100,skilllv,skill_get_time2(skillid,skilllv));
 		break;
 	case RK_HUNDREDSPEAR:
-		if( !sd || pc_checkskill(sd,KN_SPEARBOOMERANG) == 0 )
-			break; // Spear Boomerang auto cast chance only works if you have mastered Spear Boomerang.
-		rate = 10 + 3 * skilllv;
-		if( rand()%100 < rate )
-			skill_castend_damage_id(src,bl,KN_SPEARBOOMERANG,1,tick,0);
+		if ( pc_checkskill(sd,KN_SPEARBOOMERANG) > 0 )
+			if( rand()%100 < 10 + 3 * skilllv )
+				skill_castend_damage_id(src,bl,KN_SPEARBOOMERANG,pc_checkskill(sd,KN_SPEARBOOMERANG),tick,0);
 		break;
 	case RK_WINDCUTTER:
 		sc_start(bl,SC_FEAR,3+2*skilllv,skilllv,skill_get_time(skillid,skilllv));
@@ -15271,7 +15269,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 	{
 		skill_lv = pc_checkskill(sd,skill_id);
 		if( skill_lv == 10 ) temp_qty = 1 + rand()%3;
-		else if( skill_lv > 5 ) temp_qty = 1 + rand()%2;
+		else if( skill_lv >= 5 ) temp_qty = 1 + rand()%2;
 		else temp_qty = 1;
 		for( i = 0; i < MAX_INVENTORY; i++ )
 		{
@@ -15397,17 +15395,36 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 			case SA_CREATECON: // Elemental Converter Creation
 				make_per = 100000; // should be 100% success rate
 				break;
-			case RK_RUNEMASTERY://Note: The success rate works on a 1.00 scale. A value of 10000 would equal 100% Remember this. [Rytech]
-				skill_lv = pc_checkskill(sd,skill_id);
-				make_per = 5 * (sd->menuskill_itemused + skill_lv) * 100;
-				if( battle_config.rune_produce_rate != 100 )
-					make_per = make_per * battle_config.rune_produce_rate / 100;
+			case RK_RUNEMASTERY://Note: The success rate works on a 100.00 scale. A value of 10000 would equal 100% Remember this. [Rytech]
+				make_per = (50 + 2 * pc_checkskill(sd,skill_id)) * 100 // Base success rate and success rate increase from learned Rune Mastery level.
+				+ status->dex / 3 * 10 + status->luk * 10 + s_job_level * 10 // Success increase from DEX, LUK, and job level.
+				+ sd->menuskill_itemused * 100;// Quality of the rune ore used. Values are 2, 5, 8, 11, and 14.
+				switch ( nameid )// Success reduction from rune stone rank. Each rune has a different rank. Values are 5, 10, 15, and 20.
+				{
+					case 12727:// Verkana / RK_MILLENNIUMSHIELD
+						make_per -= 20 * 100;//S-Rank Reduction
+						break;
+					case 12725:// Nosiege / RK_REFRESH
+					case 12730:// Urj / RK_ABUNDANCE
+						make_per -= 15 * 100;//A-Rank Reduction
+						break;
+					case 12728:// Isia / RK_VITALITYACTIVATION
+					case 12732:// Pertz / RK_STORMBLAST
+						make_per -= 10 * 100;//B-Rank Reduction
+						break;
+					case 12726:// Rhydo / RK_CRUSHSTRIKE
+					case 12729:// Asir / RK_FIGHTINGSPIRIT
+					case 12731:// Turisus / RK_GIANTGROWTH
+					case 12733:// Hagalas / RK_STONEHARDSKIN
+						make_per -= 5 * 100;//C-Rank Reduction
+						break;
+				}
 				qty = temp_qty;
 				break;
 			case GC_CREATENEWPOISON:
-				skill_lv = pc_checkskill(sd,GC_RESEARCHNEWPOISON);
-				make_per = 3000 + 500 * skill_lv;
-				qty = rand()%(skill_lv+1);
+				make_per = 3000 + 500 * pc_checkskill(sd,GC_RESEARCHNEWPOISON) // Base success rate and success rate increase from learned Research New Poison level.
+				+ status->dex / 3 * 10 + status->luk * 10 + s_job_level * 10;// Success increase from DEX, LUK, and job level.
+				qty = rnd_value( (3 + pc_checkskill(sd,GC_RESEARCHNEWPOISON)) / 2, (8 + pc_checkskill(sd,GC_RESEARCHNEWPOISON)) / 2 );
 				break;
 			case GN_MIX_COOKING:
 				make_per = 3000; //As I can see this is not affectd by dex or int

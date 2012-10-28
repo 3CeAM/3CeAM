@@ -7825,7 +7825,7 @@ BUILDIN_FUNC(makerune)
 	if( sd == NULL )
 		return 0;
 
-	rune_ore=script_getnum(st,2);
+	rune_ore = script_getnum(st,2);
 	sd->menuskill_itemused = rune_ore;
 	clif_skill_produce_mix_list(sd,RK_RUNEMASTERY,24);
 	return 0;
