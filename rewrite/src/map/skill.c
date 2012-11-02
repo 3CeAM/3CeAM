@@ -5146,6 +5146,18 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		clif_skill_nodamage(src,bl,skillid,skilllv,
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
 		break;
+
+	case KG_KAGEMUSYA:
+		if ( bl->type != BL_PC ) 
+		{
+			clif_skill_fail(sd,skillid,0,0,0);
+			break;
+		}
+		clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, 0, 1, skillid, -2, 6);
+		sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
+		break;
+
 	case SO_STRIKING:
 		{
 			int bonus = 0;
@@ -8671,9 +8683,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			}
 			else if ( skillid == ECLAGE_RECALL )
 			{
-				x = 110;
-				y = 39;
-				mapindex  = mapindex_name2id(MAP_ECLAGE);
+				x = 47;
+				y = 31;
+				mapindex  = mapindex_name2id("ecl_in01");
 			}
 			if(!mapindex)
 			{// If the map is not found, fail the skill to prevent warping the player to a non existing map.

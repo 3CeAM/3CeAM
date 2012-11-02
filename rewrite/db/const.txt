@@ -1245,6 +1245,7 @@ SC_ROCK_CRUSHER_ATK		766
 
 //Kagerou/Oboro
 SC_JYUMONJIKIRI			780
+SC_KAGEMUSYA			781
 
 //Leaving space open for future job status's
 //Other New Status's
