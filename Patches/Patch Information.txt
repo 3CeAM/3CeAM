@@ -52,6 +52,7 @@
 //=
 //= - Fix for Maelstrom/Bloodylust/Chaospanic
 //= - Packet Version 29 For 2012-04-10aRagexeRE Client
+//= - Revision Display Update
 //============================================================================================
 //===== Balance Fixes ========================================================================
 //= SC_MANDRAGORA Status Resist
@@ -268,9 +269,9 @@
 //=
 //= Official ? - Yes
 //=
-//= Patch Revision Creation - r691
+//= Patch Revision Creation - r699
 //=
-//= Last Known Good Rev - r692
+//= Last Known Good Rev - r699
 //=
 //= Description - This patch adds packet version 29 to 3CeAM which adds suppost for the 2012-04-10aRagexeRE
 //= client. The patch also adds a number of features and updates that strengthens the overall client suppot.
@@ -291,4 +292,24 @@
 //=
 //= Notes - Use this patch ONLY if you will be using a 2012-04-10aRagexeRE client. It was designed to be used
 //= with that client date. It is unknown if itl create issues with older clients which it likely shouldn't.
+//--------------------------------------------------------------------------------------------
+//=
+//= Revision Display Update
+//=
+//= Patch File Name - RevDisplay
+//=
+//= Patch Type - Alpha/Beta Testing
+//=
+//= Official ? - No
+//=
+//= Patch Revision Creation - r699
+//=
+//= Last Known Good Rev - r699
+//=
+//= Description - This patch updates the revision detection code thats used to display the revision on the
+//= server consoles. This is due to how TortoiseSVN 1.7 handles things.
+//=
+//= Notes - I added the code and compiled, yet when starting the server it still shows "Unknown"
+//= on the consoles for a revision number. I dont know if I missed something, but im sure I added everything
+//= needed. The code is from eAthena r15190 update. If anyone can confirm or fix it, please let me know.
 //============================================================================================

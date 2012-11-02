@@ -1,6 +1,6 @@
 Index: trunk/rewrite/conf/battle/client.conf
 ===================================================================
---- trunk/rewrite/conf/battle/client.conf	(revision 691)
+--- trunk/rewrite/conf/battle/client.conf	(revision 699)
 +++ trunk/rewrite/conf/battle/client.conf	(working copy)
 @@ -22,25 +22,29 @@
  // Set here which client version do you accept. Add all values of clients:
@@ -53,7 +53,7 @@ Index: trunk/rewrite/conf/battle/client.conf
  // Messages that break this threshold are silently omitted. 
 Index: trunk/rewrite/conf/battle/gm.conf
 ===================================================================
---- trunk/rewrite/conf/battle/gm.conf	(revision 691)
+--- trunk/rewrite/conf/battle/gm.conf	(revision 699)
 +++ trunk/rewrite/conf/battle/gm.conf	(working copy)
 @@ -36,8 +36,10 @@
  lowest_gm_level: 1
@@ -70,7 +70,7 @@ Index: trunk/rewrite/conf/battle/gm.conf
  // [GM] Can equip anything? (No or minimum GM level, can cause client errors.)
 Index: trunk/rewrite/conf/packet_athena.conf
 ===================================================================
---- trunk/rewrite/conf/packet_athena.conf	(revision 691)
+--- trunk/rewrite/conf/packet_athena.conf	(revision 699)
 +++ trunk/rewrite/conf/packet_athena.conf	(working copy)
 @@ -13,7 +13,7 @@
  //       have been customized, such as MAX_STORAGE, MAX_GUILD_STORAGE or MAX_CART.
@@ -83,9 +83,9 @@ Index: trunk/rewrite/conf/packet_athena.conf
  
 Index: trunk/rewrite/db/packet_db.txt
 ===================================================================
---- trunk/rewrite/db/packet_db.txt	(revision 691)
+--- trunk/rewrite/db/packet_db.txt	(revision 699)
 +++ trunk/rewrite/db/packet_db.txt	(working copy)
-@@ -1639,50 +1639,6 @@
+@@ -1664,50 +1664,6 @@
  //0x08D4,-1
  
  packet_ver: 28
@@ -136,7 +136,7 @@ Index: trunk/rewrite/db/packet_db.txt
  //2011-11-22aRagexeRE
  0x0835,19,wanttoconnection,2:6:10:14:18
  0x0898,6,getcharnamerequest,2
-@@ -1725,3 +1681,66 @@
+@@ -1750,3 +1706,66 @@
  0x080a,18
  0x080b,6
  0x0908,5
@@ -205,7 +205,7 @@ Index: trunk/rewrite/db/packet_db.txt
 +//packet_ver: 30
 Index: trunk/rewrite/src/char/char.c
 ===================================================================
---- trunk/rewrite/src/char/char.c	(revision 691)
+--- trunk/rewrite/src/char/char.c	(revision 699)
 +++ trunk/rewrite/src/char/char.c	(working copy)
 @@ -1265,8 +1265,12 @@
  //-----------------------------------
@@ -292,7 +292,7 @@ Index: trunk/rewrite/src/char/char.c
  		// delete char
 Index: trunk/rewrite/src/char_sql/char.c
 ===================================================================
---- trunk/rewrite/src/char_sql/char.c	(revision 691)
+--- trunk/rewrite/src/char_sql/char.c	(revision 699)
 +++ trunk/rewrite/src/char_sql/char.c	(working copy)
 @@ -1289,8 +1289,12 @@
  //-----------------------------------
@@ -387,7 +387,7 @@ Index: trunk/rewrite/src/char_sql/char.c
  		// delete char
 Index: trunk/rewrite/src/common/mmo.h
 ===================================================================
---- trunk/rewrite/src/common/mmo.h	(revision 691)
+--- trunk/rewrite/src/common/mmo.h	(revision 699)
 +++ trunk/rewrite/src/common/mmo.h	(working copy)
 @@ -44,10 +44,11 @@
  // 20100721 - 2010-07-21aRagexeRE+ - 0x6b, 0x6d
@@ -404,7 +404,7 @@ Index: trunk/rewrite/src/common/mmo.h
  #if PACKETVER == 8
 Index: trunk/rewrite/src/common/socket.c
 ===================================================================
---- trunk/rewrite/src/common/socket.c	(revision 691)
+--- trunk/rewrite/src/common/socket.c	(revision 699)
 +++ trunk/rewrite/src/common/socket.c	(working copy)
 @@ -201,7 +201,8 @@
  
@@ -418,10 +418,10 @@ Index: trunk/rewrite/src/common/socket.c
  // biggest known packet: S 0153 <len>.w <emblem data>.?B -> 24x24 256 color .bmp (0153 + len.w + 1618/1654/1756 bytes)
 Index: trunk/rewrite/src/map/clif.c
 ===================================================================
---- trunk/rewrite/src/map/clif.c	(revision 691)
+--- trunk/rewrite/src/map/clif.c	(revision 699)
 +++ trunk/rewrite/src/map/clif.c	(working copy)
-@@ -1237,8 +1237,8 @@
- 				clif_status_change(&sd->bl,SI_MANHOLE,1,9999,sd->sc.data[SC__MANHOLE]->val1,0,0);
+@@ -1241,8 +1241,8 @@
+ 				clif_status_change(&sd->bl,SI_KAGEMUSYA,1,9999,sd->sc.data[SC_KAGEMUSYA]->val1,0,0);
  			if( sd->sc.count && sd->sc.data[SC_ALL_RIDING] )
  				clif_status_change(&sd->bl,SI_ALL_RIDING,1,9999,sd->sc.data[SC_ALL_RIDING]->val1,0,0);
 -			//if( sd->sc.count && sd->sc.data[SC_ON_PUSH_CART] )
@@ -431,8 +431,8 @@ Index: trunk/rewrite/src/map/clif.c
  		}
  		break;
  	case BL_MOB:
-@@ -4022,8 +4022,8 @@
- 				clif_status_change_single(&sd->bl,&tsd->bl,SI_MANHOLE,1,9999,tsd->sc.data[SC__MANHOLE]->val1,0,0);
+@@ -4030,8 +4030,8 @@
+ 				clif_status_change_single(&sd->bl,&tsd->bl,SI_KAGEMUSYA,1,9999,tsd->sc.data[SC_KAGEMUSYA]->val1,0,0);
  			if( tsd->sc.count && tsd->sc.data[SC_ALL_RIDING] )
  				clif_status_change_single(&sd->bl,&tsd->bl,SI_ALL_RIDING,1,9999,tsd->sc.data[SC_ALL_RIDING]->val1,0,0);
 -			//if( tsd->sc.count && tsd->sc.data[SC_ON_PUSH_CART] )
@@ -442,7 +442,7 @@ Index: trunk/rewrite/src/map/clif.c
  		}
  		break;
  	case BL_MER: // Devotion Effects
-@@ -4048,6 +4048,14 @@
+@@ -4056,6 +4056,14 @@
  				clif_specialeffect_single(bl,423,sd->fd);
  			else if(md->special_state.size==1)
  				clif_specialeffect_single(bl,421,sd->fd);
@@ -457,7 +457,7 @@ Index: trunk/rewrite/src/map/clif.c
  		}
  		break;
  	case BL_PET:
-@@ -10334,8 +10342,14 @@
+@@ -10342,8 +10350,14 @@
   *------------------------------------------*/
  void clif_parse_RemoveOption(int fd,struct map_session_data *sd)
  {
@@ -473,7 +473,7 @@ Index: trunk/rewrite/src/map/clif.c
  }
  
  /*==========================================
-@@ -10350,11 +10364,23 @@
+@@ -10358,11 +10372,23 @@
  
  	type = (int)RFIFOW(fd,2);
  
@@ -497,7 +497,7 @@ Index: trunk/rewrite/src/map/clif.c
  		pc_setcart(sd,type);
  }
  
-@@ -15317,6 +15343,19 @@
+@@ -15325,6 +15351,19 @@
  	WFIFOSET(fd,packet_len(0x83d));
  }
  
@@ -517,7 +517,7 @@ Index: trunk/rewrite/src/map/clif.c
  
  /// Parse function for packet debugging
  void clif_parse_debug(int fd,struct map_session_data *sd)
-@@ -15602,22 +15641,26 @@
+@@ -15610,22 +15649,26 @@
  #else // 0x22c changed
  	   10, -1, -1,  8, 10,  2,282, 18, 18, 15, 58, 57, 65,  5, 71,  5,
  #endif
@@ -553,7 +553,7 @@ Index: trunk/rewrite/src/map/clif.c
  	//#0x0300
  	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
  	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-@@ -15656,8 +15699,8 @@
+@@ -15664,8 +15707,8 @@
  	//#0x04C0
  	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
  	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -563,7 +563,7 @@ Index: trunk/rewrite/src/map/clif.c
  	//#0x0500
  	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
  	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-@@ -15724,18 +15767,38 @@
+@@ -15732,18 +15775,38 @@
  	    0,  0,  0,  0,  0,  0, 14, -1, -1, -1,  8, 25,  0,  0, 26,  0,
  	//#0x0800
  #if PACKETVER < 20091229
@@ -609,7 +609,7 @@ Index: trunk/rewrite/src/map/clif.c
  	};
  	struct {
  		void (*func)(int, struct map_session_data *);
-@@ -15939,6 +16002,7 @@
+@@ -15947,6 +16010,7 @@
  		{clif_parse_SearchStoreInfoNextPage,"searchstoreinfonextpage"},
  		{clif_parse_CloseSearchStoreInfo,"closesearchstoreinfo"},
  		{clif_parse_SearchStoreInfoListItemClick,"searchstoreinfolistitemclick"},
@@ -617,7 +617,7 @@ Index: trunk/rewrite/src/map/clif.c
  		{NULL,NULL}
  	};
  
-@@ -16058,6 +16122,13 @@
+@@ -16066,6 +16130,13 @@
  			if(p2) *p2++=0;
  			k = atoi(str2[j]);
  			// if (packet_db[packet_ver][cmd].pos[j] != k && clif_config.prefer_packet_db)	// not used for now
@@ -633,7 +633,7 @@ Index: trunk/rewrite/src/map/clif.c
  	}
 Index: trunk/rewrite/src/map/clif.h
 ===================================================================
---- trunk/rewrite/src/map/clif.h	(revision 691)
+--- trunk/rewrite/src/map/clif.h	(revision 699)
 +++ trunk/rewrite/src/map/clif.h	(working copy)
 @@ -28,13 +28,14 @@
  struct party_booking_ad_info;
@@ -670,7 +670,7 @@ Index: trunk/rewrite/src/map/clif.h
  #endif /* _CLIF_H_ */
 Index: trunk/rewrite/src/map/mob.c
 ===================================================================
---- trunk/rewrite/src/map/mob.c	(revision 691)
+--- trunk/rewrite/src/map/mob.c	(revision 699)
 +++ trunk/rewrite/src/map/mob.c	(working copy)
 @@ -1964,6 +1964,17 @@
  	
@@ -692,7 +692,7 @@ Index: trunk/rewrite/src/map/mob.c
  	{	//LOne WOlf explained that ANYONE can trigger the marine countdown skill. [Skotlex]
 Index: trunk/rewrite/src/map/pc.c
 ===================================================================
---- trunk/rewrite/src/map/pc.c	(revision 691)
+--- trunk/rewrite/src/map/pc.c	(revision 699)
 +++ trunk/rewrite/src/map/pc.c	(working copy)
 @@ -662,7 +662,11 @@
  
@@ -706,7 +706,7 @@ Index: trunk/rewrite/src/map/pc.c
  		
  	if (sd->sc.data[SC_JAILED])
  	{	//When Jailed, do not move last point.
-@@ -6084,8 +6088,13 @@
+@@ -6087,8 +6091,13 @@
  		i = sd->sc.option;
  		if( i&OPTION_RIDING && pc_checkskill(sd, KN_RIDING) )
  			i &= ~OPTION_RIDING;
@@ -720,7 +720,7 @@ Index: trunk/rewrite/src/map/pc.c
  		if( i&OPTION_FALCON && pc_checkskill(sd, HT_FALCON) )
  			i &= ~OPTION_FALCON;
  		if( i&(OPTION_RIDING_DRAGON) && pc_checkskill(sd, RK_DRAGONTRAINING) )
-@@ -7042,8 +7051,13 @@
+@@ -7045,8 +7054,13 @@
  	i = sd->sc.option;
  	if(i&OPTION_RIDING && !pc_checkskill(sd, KN_RIDING))
  		i&=~OPTION_RIDING;
@@ -734,7 +734,7 @@ Index: trunk/rewrite/src/map/pc.c
  	if(i&OPTION_FALCON && !pc_checkskill(sd, HT_FALCON))
  		i&=~OPTION_FALCON;
  	if(i&(OPTION_RIDING_DRAGON) && !pc_checkskill(sd, RK_DRAGONTRAINING))
-@@ -7189,6 +7203,7 @@
+@@ -7192,6 +7206,7 @@
  		}
  	}
  
@@ -742,7 +742,7 @@ Index: trunk/rewrite/src/map/pc.c
  	if( type&OPTION_CART && !(p_type&OPTION_CART) )
    	{ // Cart On
  		clif_cartlist(sd);
-@@ -7202,6 +7217,7 @@
+@@ -7205,6 +7220,7 @@
  		if( pc_checkskill(sd, MC_PUSHCART) < 10 )
  			status_calc_pc(sd,0); //Remove speed penalty.
  	}
@@ -750,7 +750,7 @@ Index: trunk/rewrite/src/map/pc.c
  
  	if( type&OPTION_FALCON && !(p_type&OPTION_FALCON) )
  		clif_status_load(&sd->bl,SI_FALCON,1);  // Falcon ON
-@@ -7294,22 +7310,49 @@
+@@ -7297,22 +7313,49 @@
   *------------------------------------------*/
  int pc_setcart(struct map_session_data *sd,int type)
  {
@@ -803,7 +803,7 @@ Index: trunk/rewrite/src/map/pc.c
  }
 Index: trunk/rewrite/src/map/pc.h
 ===================================================================
---- trunk/rewrite/src/map/pc.h	(revision 691)
+--- trunk/rewrite/src/map/pc.h	(revision 699)
 +++ trunk/rewrite/src/map/pc.h	(working copy)
 @@ -566,7 +566,14 @@
  #define pc_ishiding(sd)       ( (sd)->sc.option&(OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK) )
@@ -822,7 +822,7 @@ Index: trunk/rewrite/src/map/pc.h
  #define pc_isinvisible(sd)    ( (sd)->sc.option&OPTION_INVISIBLE )
 Index: trunk/rewrite/src/map/script.c
 ===================================================================
---- trunk/rewrite/src/map/script.c	(revision 691)
+--- trunk/rewrite/src/map/script.c	(revision 699)
 +++ trunk/rewrite/src/map/script.c	(working copy)
 @@ -7412,7 +7412,11 @@
  		flag = script_getnum(st,3);
