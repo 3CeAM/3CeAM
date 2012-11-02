@@ -553,6 +553,8 @@ void initChangeTables(void)
 	set_sc( KO_YAMIKUMO          , SC_HIDING          , SI_HIDING          , SCB_NONE );
 	set_sc( KO_JYUMONJIKIRI      , SC_JYUMONJIKIRI    , SI_KO_JYUMONJIKIRI , SCB_NONE );
 
+	set_sc( KG_KAGEMUSYA         , SC_KAGEMUSYA       , SI_KAGEMUSYA       , SCB_NONE );
+
 	set_sc( HLIF_AVOID           , SC_AVOID           , SI_BLANK           , SCB_SPEED );
 	set_sc( HLIF_CHANGE          , SC_CHANGE          , SI_BLANK           , SCB_VIT|SCB_INT );
 	set_sc( HFLI_FLEET           , SC_FLEET           , SI_BLANK           , SCB_ASPD|SCB_BATK|SCB_WATK );
@@ -7812,6 +7814,11 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val2 = status->vit / 4 * val1;//VIT defense increase.
 			val3 = 50 + 30 * val1;//Natural HP recovery rate increase.
 			break;
+		case SC_KAGEMUSYA:
+			val2 = 10 * val1;//Double Attack Chance
+			val4 = tick / 1000;
+			tick = 1000;
+			break;
 		case SC_PYROTECHNIC_OPTION:
 			val2 = 60;	// Watk TODO: Renewal (Atk2)
 			val3 = 11;	// % Increase damage.
@@ -9731,6 +9738,16 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		{
 			if( !sc->data[type] ) return 0;
 			sc_timer_next(5000 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
+
+	case SC_KAGEMUSYA:
+		if( --(sce->val4) >= 0 )
+		{
+			if( !status_charge(bl, 0, 1) )
+				break;
+			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}
 		break;

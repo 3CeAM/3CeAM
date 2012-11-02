@@ -1235,6 +1235,10 @@ int clif_spawn(struct block_list *bl)
 				clif_status_change(&sd->bl,SI_SHADOWFORM,1,9999,sd->sc.data[SC__SHADOWFORM]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC__MANHOLE] )
 				clif_status_change(&sd->bl,SI_MANHOLE,1,9999,sd->sc.data[SC__MANHOLE]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_JYUMONJIKIRI] )
+				clif_status_change(&sd->bl,SI_KO_JYUMONJIKIRI,1,9999,sd->sc.data[SC_JYUMONJIKIRI]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_KAGEMUSYA] )
+				clif_status_change(&sd->bl,SI_KAGEMUSYA,1,9999,sd->sc.data[SC_KAGEMUSYA]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_ALL_RIDING] )
 				clif_status_change(&sd->bl,SI_ALL_RIDING,1,9999,sd->sc.data[SC_ALL_RIDING]->val1,0,0);
 			//if( sd->sc.count && sd->sc.data[SC_ON_PUSH_CART] )
@@ -4020,6 +4024,10 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_SHADOWFORM,1,9999,tsd->sc.data[SC__SHADOWFORM]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC__MANHOLE] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_MANHOLE,1,9999,tsd->sc.data[SC__MANHOLE]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_JYUMONJIKIRI] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_KO_JYUMONJIKIRI,1,9999,tsd->sc.data[SC_JYUMONJIKIRI]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_KAGEMUSYA] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_KAGEMUSYA,1,9999,tsd->sc.data[SC_KAGEMUSYA]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_ALL_RIDING] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_ALL_RIDING,1,9999,tsd->sc.data[SC_ALL_RIDING]->val1,0,0);
 			//if( tsd->sc.count && tsd->sc.data[SC_ON_PUSH_CART] )

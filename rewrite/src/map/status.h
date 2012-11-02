@@ -577,6 +577,7 @@ typedef enum sc_type {
 
 	//Kagerou/Oboro
 	SC_JYUMONJIKIRI = 780,
+	SC_KAGEMUSYA = 781,
 
 	//Leaving space open for future job status's.
 	//Other New Status's
@@ -1245,7 +1246,7 @@ enum si_type {
 //	SI_ZENKAI = 653,
 //	SI_KG_KAGEHUMI = 654,
 //	SI_KYOMU = 655,
-//	SI_KAGEMUSYA = 656,
+	SI_KAGEMUSYA = 656,
 //	SI_ZANGETSU = 657,
 //	SI_PHI_DEMON = 658,
 //	SI_GENSOU = 659,
