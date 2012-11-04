@@ -155,8 +155,10 @@ Hell Inferno
 Is using sc_start4 to activate the burning status. Do it have to be done with that or it could be changed to sc_start safely?
 
 Comet
-Splash AoE was changed to 19x19 and the AoE zone sizes and damagesa for each one was updated. Will need to replace the splash with AoE units usage
-one day when I get a chance.
+Skill now uses and deals damage through dummy units. This allows Land Protector to beable to block it. A splash AoE is still generated on the
+targeted spot since its needed for checking the distance a enemy is from the center of the AoE to tell what damage zone the enemy is in to deal the
+proper damage. Only thing left to code is a check for if 2 Warlocks are standing next to each other and are in the same party. If the condition is
+true, then the zone limits are bypassed and the full zone 1 damage is dealed to every enemy hit by the attack no matter where their standing.
 
 Chain Lightning
 Damage formula has changed to a interesting one. The formula is (Not including the base level part)....
@@ -167,21 +169,11 @@ Earth Strain
 Whats its duration for strip status?
 
 Tetra Vortex
-This system needs to be reworked and cleaned up. Tetra Vortex's 4 elemental attack ID's are now being used again since a different colored animation
-is now triggered from them. The main ID is again used only for casting. You still only need 4 spheres and which ones you summon still determands the
-element of each strike.
 Also need to set the durations of each status to their default times.
 Update: Animations are fixed and each ID is being used as they should. However the status durations still need work.
 
-Summon Sphere's
-The damage formula isnt given in the documents but whats in 3CeAM is very close to official. Might recheck it again later if needed.
-
 Reading Spellbook
 Says nothing about cooldown time in the document. Does this mean the cooldown was removed?
-
-Fear Breeze
-The current way this skill is doing its random number of hits effect is not official and will need to be recoded.
-Will do a temp update to the skill for now.
 
 Aimed Bolt
 Will need to recheck and redo the size check and percentage on number of hits code.
@@ -199,10 +191,10 @@ Read the info for Waug Bite. Must add that.
 
 Camouflage
 Here's a good one....
-While in Camouflage, CRIT chance and damage increases by 10% and damage increases by +30 (Fixed) per second respectively. However Ranger’s DEF will decrease by 5% per second.
-(CRIT is increased up to 100%, Damage is increased up to +300 (Fixed)
-How the hell do I code this to change every second? The duration is 10 seconds tops. So this means that by the end of the duration the DEF will be -50%?
-I cant even properly read the movement speed code. Skipping this one for now.
+While in Camouflage, CRIT increases by 10% and damage increases by +30 (Fixed) per second respectively. However Ranger’s DEF will decrease by 5% per second.
+(CRIT is increased up to 100%, Damage is increased up to +300 (Fixed, and DEF is reduced by up to 50% at the end.)
+I updated most of the code to official, but the only issue im having now is acturally making these 3 things change every second in real time.
+But status's values dont appear to be allowed to change once set. Gotta find a way to make them be constant variable.
 
 Magenta Trap, Cobalt Trap, Maize Trap, Verdure Trap
 Didnt bother to look at or these these. Will one day.
@@ -266,7 +258,9 @@ Does it still boost movement speed? Will leave it set to 10 until confirm.
 Their's a good number of skills that wont affect the Mechanic when in this status. Will have to do this later.
 
 Self Destruction
-SP requirement is 300, but balance notes says has no SP requirement anymore. Recheck and confirm later before applying.
+SP requirement is 200, but balance notes says has no SP requirement anymore. Recheck and confirm later before applying.
+Ive coded the skill as a weapon type even tho its a fixed damage skill. This was needed to allow enemy's DEF and VIT DEF to properly
+reduce the damage. The skill was also coded to ignore ATK and changed to be a forced neutral element due to its insane damage.
 
 Shape Shift
 I dont know if their's a cleaner way to add in the item requirements. Works ok as is tho.
@@ -287,12 +281,9 @@ No info in patch notes about variable cast time being removed, but document show
 
 Neutral Barrier
 Cooldown in document confirmed to be false. Patch notes says its 90 seconds. This cooldown will be used on this skill, Magnetic Field, and Stealth Field.
-Note: Check top of status.c for adding whatever.
-Need to add the DEF/MDEF increase part of the code.
-Looking around in the code it appears ill have to do some serious recoding on most parts and also remove some code.
-ill do that on the next revision to avoid accidently reverting other things.
 iRO Wiki says being in the AoE protects you from Earthquake which is a splash skill, but not Evil Land. Does it block splash AoE's and not ground AoE's
 or it just blocks Earthquake because its magic? Need to test and confirm.
+Note: DEF/MDEF increase and ranged attack blocking is now coded.
 
 Stealth Field
 Must confirm if cooldown is 90 seconds just like Neutral Barrier. April 2011 says it was changed, but Auguest 2011 doesent say.
