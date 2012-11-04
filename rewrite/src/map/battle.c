@@ -421,7 +421,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			status_change_end(bl, SC_SAFETYWALL, INVALID_TIMER);
 		}
 
-		if( (sc->data[SC_PNEUMA] && (flag&(BF_MAGIC|BF_LONG)) == BF_LONG) || sc->data[SC__MANHOLE] )
+		if( ( (sc->data[SC_PNEUMA] || sc->data[SC_NEUTRALBARRIER] ) && (flag&(BF_MAGIC|BF_LONG)) == BF_LONG) || sc->data[SC__MANHOLE] )
 		{
 			d->dmg_lv = ATK_BLOCK;
 			return 0;
@@ -1313,6 +1313,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 			case PA_SHIELDCHAIN:
 			case LG_SHIELDPRESS:
 			case LG_EARTHDRIVE:
+			case NC_SELFDESTRUCTION:
 				flag.weapon = 0;
 				break;
 
@@ -1512,94 +1513,91 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 
 	if (!flag.hit)
 	{	//Hit/Flee calculation
-		short flee = tstatus->flee, hitrate=80; //Default hitrate
+		short
+			flee = tstatus->flee,
+			hitrate=80; //Default hitrate
 
-		if( tsc && tsc->data[SC_NEUTRALBARRIER] && (wd.flag&(BF_SHORT|BF_MAGIC)) == BF_SHORT )
-			hitrate = 5; // Currently Neutral Barrier just do this
-		else
-		{
-			if(battle_config.agi_penalty_type &&
-				battle_config.agi_penalty_target&target->type)
-			{	
-				unsigned char attacker_count; //256 max targets should be a sane max
-				attacker_count = unit_counttargeted(target,battle_config.agi_penalty_count_lv);
-				if(attacker_count >= battle_config.agi_penalty_count)
-				{
-					if (battle_config.agi_penalty_type == 1)
-						flee = (flee * (100 - (attacker_count - (battle_config.agi_penalty_count - 1))*battle_config.agi_penalty_num))/100;
-					else //asume type 2: absolute reduction
-						flee -= (attacker_count - (battle_config.agi_penalty_count - 1))*battle_config.agi_penalty_num;
-					if(flee < 1) flee = 1;
-				}
+		if(battle_config.agi_penalty_type &&
+			battle_config.agi_penalty_target&target->type)
+		{	
+			unsigned char attacker_count; //256 max targets should be a sane max
+			attacker_count = unit_counttargeted(target,battle_config.agi_penalty_count_lv);
+			if(attacker_count >= battle_config.agi_penalty_count)
+			{
+				if (battle_config.agi_penalty_type == 1)
+					flee = (flee * (100 - (attacker_count - (battle_config.agi_penalty_count - 1))*battle_config.agi_penalty_num))/100;
+				else //asume type 2: absolute reduction
+					flee -= (attacker_count - (battle_config.agi_penalty_count - 1))*battle_config.agi_penalty_num;
+				if(flee < 1) flee = 1;
 			}
-
-			hitrate+= sstatus->hit - flee;
-
-			if(wd.flag&BF_LONG && !skill_num && //Fogwall's hit penalty is only for normal ranged attacks.
-				tsc && tsc->data[SC_FOGWALL])
-				hitrate -= 50;
-
-			if(sd && flag.arrow)
-				hitrate += sd->arrow_hit;
-			if(skill_num)
-				switch(skill_num)
-			{	//Hit skill modifiers
-				//It is proven that bonus is applied on final hitrate, not hit.
-				case SM_BASH:
-				case MS_BASH:
-					hitrate += hitrate * 5 * skill_lv / 100;
-					break;
-				case MS_MAGNUM:
-				case SM_MAGNUM:
-					hitrate += hitrate * 10 * skill_lv / 100;
-					break;
-				case KN_AUTOCOUNTER:
-				case PA_SHIELDCHAIN:
-				case NPC_WATERATTACK:
-				case NPC_GROUNDATTACK:
-				case NPC_FIREATTACK:
-				case NPC_WINDATTACK:
-				case NPC_POISONATTACK:
-				case NPC_HOLYATTACK:
-				case NPC_DARKNESSATTACK:
-				case NPC_UNDEADATTACK:
-				case NPC_TELEKINESISATTACK:
-				case NPC_BLEEDING:
-					hitrate += hitrate * 20 / 100;
-					break;
-				case KN_PIERCE:
-				case ML_PIERCE:
-					hitrate += hitrate * 5 * skill_lv / 100;
-					break;
-				case AS_SONICBLOW:
-					if( sd && pc_checkskill(sd,AS_SONICACCEL) > 0 )
-						hitrate += hitrate * 50 / 100;
-					break;
-				case MC_CARTREVOLUTION:
-				case GN_CART_TORNADO:
-				case GN_CARTCANNON:
-					if( sd && pc_checkskill(sd, GN_REMODELING_CART) > 0 )
-						hitrate += 4 * pc_checkskill(sd, GN_REMODELING_CART);
-					break;
-				case GC_VENOMPRESSURE:
-					hitrate += 10 + 4 * skill_lv;
-					break;
-				case SC_FATALMENACE:
-					hitrate -= 35 - 5 * skill_lv;
-					break;
-				case LG_BANISHINGPOINT:
-					hitrate += 3 * skill_lv;
-					break;
-			}
-
-			// Weaponry Research hidden bonus
-			if (sd && (skill = pc_checkskill(sd,BS_WEAPONRESEARCH)) > 0)
-				hitrate += hitrate * ( 2 * skill ) / 100;
-
-			if( sd && (sd->status.weapon == W_DAGGER || sd->status.weapon == W_1HSWORD) && 
-				(skill = pc_checkskill(sd, GN_TRAINING_SWORD)) > 0 )
-				hitrate += 3 * skill;
 		}
+
+		hitrate+= sstatus->hit - flee;
+
+		if(wd.flag&BF_LONG && !skill_num && //Fogwall's hit penalty is only for normal ranged attacks.
+			tsc && tsc->data[SC_FOGWALL])
+			hitrate -= 50;
+
+		if(sd && flag.arrow)
+			hitrate += sd->arrow_hit;
+		if(skill_num)
+			switch(skill_num)
+		{	//Hit skill modifiers
+			//It is proven that bonus is applied on final hitrate, not hit.
+			case SM_BASH:
+			case MS_BASH:
+				hitrate += hitrate * 5 * skill_lv / 100;
+				break;
+			case MS_MAGNUM:
+			case SM_MAGNUM:
+				hitrate += hitrate * 10 * skill_lv / 100;
+				break;
+			case KN_AUTOCOUNTER:
+			case PA_SHIELDCHAIN:
+			case NPC_WATERATTACK:
+			case NPC_GROUNDATTACK:
+			case NPC_FIREATTACK:
+			case NPC_WINDATTACK:
+			case NPC_POISONATTACK:
+			case NPC_HOLYATTACK:
+			case NPC_DARKNESSATTACK:
+			case NPC_UNDEADATTACK:
+			case NPC_TELEKINESISATTACK:
+			case NPC_BLEEDING:
+				hitrate += hitrate * 20 / 100;
+				break;
+			case KN_PIERCE:
+			case ML_PIERCE:
+				hitrate += hitrate * 5 * skill_lv / 100;
+				break;
+			case AS_SONICBLOW:
+				if(sd && pc_checkskill(sd,AS_SONICACCEL)>0)
+					hitrate += hitrate * 50 / 100;
+				break;
+			case MC_CARTREVOLUTION:
+			case GN_CART_TORNADO:
+			case GN_CARTCANNON:
+				if( sd && pc_checkskill(sd, GN_REMODELING_CART) > 0 )
+					hitrate += 4 * pc_checkskill(sd, GN_REMODELING_CART);
+				break;
+			case GC_VENOMPRESSURE:
+				hitrate += 10 + 4 * skill_lv;
+				break;
+			case SC_FATALMENACE:
+				hitrate -= 35 - 5 * skill_lv;
+				break;
+			case LG_BANISHINGPOINT:
+				hitrate += 3 * skill_lv;
+				break;
+		}
+
+		// Weaponry Research hidden bonus
+		if (sd && (skill = pc_checkskill(sd,BS_WEAPONRESEARCH)) > 0)
+			hitrate += hitrate * ( 2 * skill ) / 100;
+
+		if( sd && (sd->status.weapon == W_DAGGER || sd->status.weapon == W_1HSWORD) && 
+			(skill = pc_checkskill(sd, GN_TRAINING_SWORD)) > 0 )
+			hitrate += 3 * skill;
 
 		hitrate = cap_value(hitrate, battle_config.min_hitrate, battle_config.max_hitrate); 
 
@@ -1677,6 +1675,18 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				}
 				else
 					ATK_ADD(sstatus->rhw.atk2); //Else use Atk2
+				break;
+			case NC_SELFDESTRUCTION:
+				{
+					int damagevalue = 0;
+					wd.damage = 0;
+					damagevalue = (1 + skill_lv) * (8 + pc_checkskill(sd,NC_MAINFRAME)) * (status_get_sp(src) + sstatus->vit);
+					if ( re_baselv_bonus == 1 && s_level >= 100 )
+						damagevalue = damagevalue * s_level / 100;// Base level bonus.
+					damagevalue = damagevalue + sstatus->hp;
+					ATK_ADD(damagevalue);
+					if (sd) status_set_sp(src, 0, 0);
+				}
 				break;
 			case HFLI_SBR44:	//[orn]
 				if(src->type == BL_HOM) {
@@ -4186,13 +4196,6 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		else
 			md.damage = md.damage * 250 / 100;
 		md.damage = md.damage * (20 * pc_checkskill(sd,RA_RESEARCHTRAP)) / 50;
-		break;
-	case NC_SELFDESTRUCTION:
-		md.damage = (1 + skill_lv) * (8 + pc_checkskill(sd,NC_MAINFRAME)) * (status_get_sp(src) + sstatus->vit);
-		if ( re_baselv_bonus == 1 && s_level >= 100 )
-			md.damage = md.damage * s_level / 100;// Base level bonus.
-		md.damage = md.damage + sstatus->hp;
-		if (sd) status_set_sp(src, 0, 0);
 		break;
 	case WM_SOUND_OF_DESTRUCTION:
 		md.damage = 1000 * skill_lv + sstatus->int_ * pc_checkskill(sd,WM_LESSON);

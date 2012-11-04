@@ -1067,7 +1067,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl, SC_STUN, 40, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case WL_COMET:
-		sc_start4(bl,SC_BURNING,100,skilllv,1000,src->id,0,skill_get_time(skillid,skilllv));
+		sc_start4(bl,SC_BURNING,100,skilllv,1000,src->id,0,skill_get_time2(skillid,skilllv));
 		break;
 	case WL_EARTHSTRAIN:
 		{
@@ -3562,7 +3562,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case AB_JUDEX:
 	case WL_SOULEXPANSION:
 	case WL_CRIMSONROCK:
-	case WL_COMET:
+	//case WL_COMET:
 	case RA_ARROWSTORM:
 	case RA_WUGDASH:
 	case NC_VULCANARM:
@@ -9759,9 +9759,11 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		{
 			sc->comet_x = x;
 			sc->comet_y = y;
-		}
+		}//Splash is used to check the distance between the enemy and the center of the AoE to see what damage zone the target is in.
 		i = skill_get_splash(skillid,skilllv);
-		map_foreachinarea(skill_area_sub,src->m,x-i,y-i,x+i,y+i,BL_CHAR,src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
+		map_foreachinarea(skill_area_sub,src->m,x-i,y-i,x+i,y+i,BCT_ENEMY);
+		flag|=1;
+		skill_unitsetting(src,skillid,skilllv,x,y,0);
 		break;
 
 	case WL_EARTHSTRAIN:
