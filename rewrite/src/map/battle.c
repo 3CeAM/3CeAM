@@ -1405,7 +1405,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 	{	//Check for double attack.
 		if( ( ( skill_lv = pc_checkskill(sd,TF_DOUBLE) ) > 0 && sd->weapontype1 == W_DAGGER )
 			|| ( sd->double_rate > 0 && sd->weapontype1 != W_FIST ) //Will fail bare-handed
-			|| ( sc && sc->data[SC_KAGEMUSYA] && sd->weapontype1 == W_DAGGER ) )//Need a confirm if its limited to daggers only.
+			|| ( sc && sc->data[SC_KAGEMUSYA] && sd->weapontype1 != W_FIST ) )//A player tested on the official Russin RO server and said it works with all weapons. If found to not be true on kRO, then itl be changed. [Rytech]
 		{	//Success chance is not added, the higher one is used [Skotlex]
 			if( rand()%100 < ( sc && sc->data[SC_KAGEMUSYA] && sc->data[SC_KAGEMUSYA]->val2 >= 5*skill_lv ? sc->data[SC_KAGEMUSYA]->val2 : 5*skill_lv > sd->double_rate ? 5*skill_lv : sd->double_rate ) )
 			{

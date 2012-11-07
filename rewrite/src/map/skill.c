@@ -2199,6 +2199,9 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 	case GN_SLINGITEM_RANGEMELEEATK:
 		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,GN_SLINGITEM,-2,6);
 		break;
+	case KO_HUUMARANKA:
+		dmg.dmotion = clif_skill_damage(src,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, 8);
+		break;
 	case LG_OVERBRAND_BRANDISH:
 	case LG_OVERBRAND_PLUSATK:
 	case EL_FIRE_BOMB:
@@ -3348,6 +3351,8 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case GN_SLINGITEM_RANGEMELEEATK:
 	case KO_JYUMONJIKIRI:
 	case KO_SETSUDAN:
+	case KO_BAKURETSU:
+	case KO_HUUMARANKA:
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
@@ -3578,7 +3583,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case SO_VARETYR_SPEAR:
 	case GN_CART_TORNADO:
 	case GN_CARTCANNON:
-	case KO_BAKURETSU:
 	case KO_HAPPOKUNAI:
 		if( flag&1 )
 		{	//Recursive invocation
@@ -9462,7 +9466,6 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case SO_WATER_INSIGNIA:
 	case SO_WIND_INSIGNIA:
 	case SO_EARTH_INSIGNIA:
-	case KO_HUUMARANKA:
 		flag|=1;//Set flag to 1 to prevent deleting ammo (it will be deleted on group-delete).
 	case GS_GROUNDDRIFT: //Ammo should be deleted right away.
 		skill_unitsetting(src,skillid,skilllv,x,y,0);
@@ -9731,9 +9734,12 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case RK_DRAGONBREATH:
 	case WM_GREAT_ECHO:
 	case WM_SOUND_OF_DESTRUCTION:
+	case KO_BAKURETSU:
+	case KO_MUCHANAGE:
+	case KO_HUUMARANKA:
 		i = skill_get_splash(skillid,skilllv);
 		map_foreachinarea(skill_area_sub,src->m,x-i,y-i,x+i,y+i,BL_CHAR,src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
-		break;		
+		break;
 
 	case GC_POISONSMOKE:
 		if( !(sc && sc->data[SC_POISONINGWEAPON]) )
@@ -13156,6 +13162,7 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 {
 	int time = skill_get_cast(skill_id, skill_lv);//Used for regular and renewal variable cast time.
 	int fixed_time = skill_get_fixed_cast(skill_id, skill_lv);//Used for renewal fix time.
+	int fixed_cast_rate = 0;//Used for setting the percentage adjustment of fixed cast times.
 	int final_time = 0;//Used for finalizing time calculations for pre-re and combining time and fixed_time for renewal.
 	int rate = 0;//Used to support the duel dex rates check through castrate_dex_scale and castrate_dex_scale_3rd.
 	int scale = 0;//Used to scale the regular and variable cast times.
@@ -13204,14 +13211,14 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 		{
 			if( sd->skillcast[i].id == skill_id )
 			{
-				time+= time * sd->skillcast[i].val / 100;
+				time += time * sd->skillcast[i].val / 100;
 				break;
 			}
 		}
 	}
 
 	//These status's only affect regular and variable cast times.
-	if (!(skill_get_castnodex(skill_id, skill_lv)&2) && sc && sc->count)
+	if (!(skill_get_castnodex(skill_id, skill_lv)&2) && sc && sc->count && time > 0)
 	{
 		if (sc->data[SC_SUFFRAGIUM]) {
 			time -= time * sc->data[SC_SUFFRAGIUM]->val2 / 100;
@@ -13226,24 +13233,57 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 			time += time * sc->data[SC_SLOWCAST]->val2 / 100;
 	}
 
-	//These status's only affect fixed cast times.
+	//These status's adjust the fixed cast time by a fixed amount. Fixed adjustments stack and can increase or decrease the time.
 	if (sc && sc->count)
 	{
-		if( sc->data[SC_DANCEWITHWUG] )
-			fixed_time -= fixed_time * sc->data[SC_DANCEWITHWUG]->val4 / 100;
 		if( sc->data[SC_MANDRAGORA] )
 			fixed_time += 500 * sc->data[SC_MANDRAGORA]->val1;
-		if( sc->data[SC_SECRAMENT] )
-			fixed_time -= fixed_time * sc->data[SC_SECRAMENT]->val2 / 100;
 		if( sc->data[SC_GUST_OPTION] || sc->data[SC_BLAST_OPTION] || sc->data[SC_WILD_STORM_OPTION] )
 			fixed_time -= 1000;
 	}
 
-	if( sd && pc_checkskill(sd, WL_RADIUS) && skill_id >= WL_WHITEIMPRISON && skill_id <= WL_FREEZE_SP )
+	//Fixed cast time reductions in a percentage starts here where reductions from any worn equips and cards that give fixed cast
+	//reductions are calculated. Percentage reductions do not stack and the highest reduction value found on any worn equip,
+	//worn card, skill, or status will be used.
+	if (sd && fixed_time > 0)
+	{
+		int i;
+		if( sd->fixedcastrate != 100 )//Fixed cast reduction on all skills.
+			fixed_cast_rate = 100 - sd->fixedcastrate;
+		for( i = 0; i < ARRAYLENGTH(sd->fixedskillcast) && sd->fixedskillcast[i].id; i++ )
+		{
+			if( sd->fixedskillcast[i].id == skill_id )
+			{	//Fixed cast reduction for a set skill.
+				fixed_cast_rate -= sd->fixedskillcast[i].val;
+				break;
+			}
+		}
+	}
+
+	//Fixed cast time percentage reduction from radius if learned. 
+	if( sd && pc_checkskill(sd, WL_RADIUS) > 0 && skill_id >= WL_WHITEIMPRISON && skill_id <= WL_FREEZE_SP && fixed_time > 0 )
+	{
+		int radiusbonus = 0;
 		if( battle_config.renewal_baselvl_skill_effect == 1 )
-		fixed_time -= fixed_time * (5 * pc_checkskill(sd, WL_RADIUS) + status_get_int(bl) / 15 + status_get_lv(bl) / 15) / 100;
+		radiusbonus = 5 * pc_checkskill(sd, WL_RADIUS) + status_get_int(bl) / 15 + status_get_lv(bl) / 15;
 		else
-		fixed_time -= fixed_time * (5 * pc_checkskill(sd, WL_RADIUS) + status_get_int(bl) / 15 + 10) / 100;
+		radiusbonus = 5 * pc_checkskill(sd, WL_RADIUS) + status_get_int(bl) / 15 + 10;
+		if ( radiusbonus > fixed_cast_rate )
+			fixed_cast_rate = radiusbonus;
+	}
+
+	//Fixed cast time percentage reduction from status's.
+	if (sc && sc->count && fixed_time > 0)
+	{
+		if( sc->data[SC_DANCEWITHWUG] && sc->data[SC_DANCEWITHWUG]->val4 > fixed_cast_rate)
+			fixed_cast_rate = sc->data[SC_DANCEWITHWUG]->val4;
+		if( sc->data[SC_SECRAMENT] && sc->data[SC_SECRAMENT]->val2 > fixed_cast_rate)
+			fixed_cast_rate = sc->data[SC_SECRAMENT]->val2;
+	}
+
+	//Finally after checking through many different checks, we finalize how much of a percentage the fixed cast time will be reduced.
+	if ( fixed_time > 0 && fixed_cast_rate > 0 )
+		fixed_time -= fixed_time * fixed_cast_rate / 100;
 
 	//Check prevents fixed times from going below to a negeative value.
 	if (fixed_time < 0)
