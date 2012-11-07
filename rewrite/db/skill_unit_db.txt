@@ -100,7 +100,7 @@
 //631,0xc8,    ,  2, 0,1000,enemy, 0x018	//DA_RUNNER
 //632,0xc9,    ,  2, 0,1000,enemy, 0x018	//DA_TRANSFER
 670,0xc7,    ,  1, 4:7:10:13:16:19:22:25:28:31,1000,all,0x008	//NPC_EVILLAND
-//706,0xfd,    ,  0, 0,1000,all, 0x000	//NPC_VENOMFOG
+//706,0xfd,    ,  0, 0,1000,all, 0x000	//NPC_VENOMFOG//Need information.
 2032,0xe1,    ,  2, 0,1000,enemy, 0x018	//GC_POISONSMOKE
 2044,0xca,    ,  0, 2,3000,all,   0x018	//AB_EPICLESIS
 2213,0x86,    ,  0, 9,1000,enemy, 0x018	//WL_COMET
@@ -145,9 +145,8 @@
 2487,0xe8,    ,  0, 2, 500,all,   0x000	//GN_FIRE_EXPANSION_SMOKE_POWDER
 2488,0xe9,    ,  0, 2, 500,all,   0x000	//GN_FIRE_EXPANSION_TEAR_GAS
 2490,0xea,    ,  0, 1,1000,all,   0x006	//GN_HELLS_PLANT
-3009,0x86,    ,  0, 3,1000,enemy, 0x018	//KO_HUUMARANKA Note: This skill uses dummy units right? Or is it another splash AoE?
-//3010,0xfc,    ,  0, 0,1000,all, 0x000	//KO_MAKIBISHI
-//3020,0xf8,    ,  0, 0,1000,all, 0x000	//KO_ZENKAI
+//3010,0xfc,    ,  0, 0,1000,enemy, 0x018	//KO_MAKIBISHI
+//3020,0xf8,    ,  2, 0,500,enemy, 0x018	//KO_ZENKAI
 8020,0xf5,    ,  0, 3,2300:2100:1900:1700:1500,enemy, 0x018	//MH_POISON_MIST
 8033,0x7e,    ,  0, 0,  -1,all,   0x003	//MH_STEINWAND - CHECK Is the use of safety wall's unit ID correct for this skills? [Rytech]
 8025,0x86,    ,  0, 2:2:3:3:4,1000,enemy, 0x018	//MH_XENO_SLASHER

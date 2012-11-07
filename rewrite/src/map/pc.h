@@ -266,7 +266,7 @@ struct map_session_data {
 	struct { //skillatk raises bonus dmg% of skills, skillheal increases heal%, skillblown increases bonus blewcount for some skills.
 		unsigned short id;
 		short val;
-	} skillatk[MAX_PC_BONUS], skillheal[5], skillheal2[5], skillblown[MAX_PC_BONUS], skillcast[MAX_PC_BONUS], fixskillcast[MAX_PC_BONUS];
+	} skillatk[MAX_PC_BONUS], skillheal[5], skillheal2[5], skillblown[MAX_PC_BONUS], skillcast[MAX_PC_BONUS], fixedskillcast[MAX_PC_BONUS];
 	struct {
 		short value;
 		int rate;
@@ -329,7 +329,7 @@ struct map_session_data {
 	int hprecov_rate,sprecov_rate;
 	int matk_rate;
 	int critical_rate,hit_rate,flee_rate,flee2_rate,def_rate,def2_rate,mdef_rate,mdef2_rate;
-	int fixcastrate;	//fixed casting reduction. [Jobbie]
+	int fixedcastrate;	//Fixed casting reduction. [Jobbie]
 
 	int itemid;
 	short itemindex;	//Used item's index in sd->inventory [Skotlex]

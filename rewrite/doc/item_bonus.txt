@@ -437,3 +437,6 @@ bonus bUnstripable,n;	Armor cannot be taken off via strip skills (n is meaningle
 bonus2 bHPDrainValueRace,r,n;	Heals +n HP when attacking a monster of race r with normal attack.
 bonus bMagicSPGainValue,n;	Heals +n SP when killing an enemy with magic attack.
 bonus bMagicHPGainValue,n;	Heals +n HP when killing an enemy with magic attack.
+
+bonus bFixedCastrate,-n;	Skill fixed cast time reduction in percentage. n is the percentage value and must be set as a negeative value.
+bonus2 bFixedCastrate,x,-n;	Skill fixed cast time reduction for a certain skill. x is the skill ID. n is the percentage value and must be set as a negeative value.
