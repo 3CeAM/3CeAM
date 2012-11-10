@@ -2115,7 +2115,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					}
 					break;
 				case RK_STORMBLAST:
-					skillratio = 100 * (sstatus->int_ / 8 + (sd ? pc_checkskill(sd,RK_RUNEMASTERY) : 1));
+					skillratio = 100 * sstatus->int_ / 8 + 100 * (sd ? pc_checkskill(sd,RK_RUNEMASTERY) : 10);
 					break;
 				case RK_PHANTOMTHRUST:
 					skillratio = 50 * skill_lv + 10 * pc_checkskill(sd,KN_SPEARMASTERY);
@@ -2271,7 +2271,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						skillratio = skillratio * s_level / 100;	// Base level bonus.
 					break;
 				case LG_BANISHINGPOINT:
-					skillratio = (50 * skill_lv) + 30 * (sd ? pc_checkskill(sd,SM_BASH) : 1);
+					skillratio = (50 * skill_lv) + 30 * (sd ? pc_checkskill(sd,SM_BASH) : 10);
 					if( re_baselv_bonus == 1 && s_level >= 100 )
 						skillratio = skillratio * s_level / 100;	// Base level bonus.
 					break;
@@ -2505,8 +2505,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case GN_CART_TORNADO:
 					{
-					int strbonus = 0;
-					strbonus = sstatus->str;//Supposed to take only base STR, but current code wont allow that. So well just take STR for now. [Rytech]
+					int strbonus = sstatus->str;//Supposed to take only base STR, but current code wont allow that. So well just take STR for now. [Rytech]
 					if ( strbonus > 120 )//Max base stat limit on official is 120. So well allow no higher then 120 STR here. This limit prevents
 						strbonus = 120;//the division from going any lower then 30 so the server wont divide by 0 if someone has 150 STR.
 					skillratio = 50 * skill_lv + sd->cart_weight / 10 / (150 - strbonus) + 50 * pc_checkskill(sd, GN_REMODELING_CART);
@@ -2732,7 +2731,11 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					case AS_SPLASHER:
 					case AS_VENOMKNIFE:
 					case ASC_BREAKER:
-					case GC_COUNTERSLASH:
+					case GC_COUNTERSLASH://Non-EDPable.
+					case GC_DARKILLUSION:
+					case GC_WEAPONCRUSH:
+					case GC_VENOMPRESSURE:
+					case GC_PHANTOMMENACE:
 					case GC_ROLLINGCUTTER:
 					case GC_CROSSRIPPERSLASHER:
 						break;
@@ -2743,7 +2746,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 							ATK_ADDRATE(sc->data[SC_EDP]->val3);
 						break;
 					case GC_CROSSIMPACT:
-					//case GC_COUNTERSLASH:
 						if( !(battle_config.renewal_edp&2) )
 							ATK_ADDRATE(sc->data[SC_EDP]->val3);
 						break;
@@ -3641,8 +3643,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						skillratio += 100 + 100*skill_lv + 100*(skill_lv/2);
 						break;
 					case AB_JUDEX:
-						skillratio += 180 + 20 * skill_lv;
-						if (skill_lv > 4) skillratio += 20;
+						skillratio = 300 + 20 * skill_lv;
 						if( re_baselv_bonus == 1 && s_level >= 100 )
 							skillratio = skillratio * s_level / 100;	// Base level bonus.
 						break;
