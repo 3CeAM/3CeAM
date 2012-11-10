@@ -412,13 +412,42 @@
 12622,Reins_Of_Mounts,Mount Reins,2,500,,0,,,,,0xFFFFFFFF,7,2,,,,,,{ sc_start SC_ALL_RIDING,-1,1; },{},{}
 
 // Kagerou/Oboro Exclusive Equips
-13075,Kurenai,Kurenai,4,5000,,700,130,,1,0,0x20000000,7,2,2,3,99,1,1,{ bonus bInt,3; },{},{}
-13076,Nachal_Sword,Nachal Sword,4,40000,,600,120,,1,1,0x20000000,7,2,2,3,110,1,1,{ bonus bInt,3; },{},{}
-13078,Mikacheuki,Mikacheuki,4,40000,,600,50,,1,1,0x20000000,7,2,2,4,100,1,1,{},{},{}
+// Armguards
+2171,Fox_Armguard,Fox Armguard,5,80000,,200,,5,,1,0x20000000,7,2,32,,100,1,1,{ bonus bFlee,5; },{},{}
+2172,Wolf_Armguard,Wolf Armguard,5,80000,,250,,7,,1,0x20000000,7,2,32,,100,1,1,{ autobonus "{ bonus bBaseAtk,100; bonus bFlee,-50; }",10,5000,BF_WEAPON,"{ specialeffect2 EF_ENHANCE; }"; },{},{}
+2173,Crescent_Moon_Armguard,Crescent Moon Armguard,5,80000,,250,,5,,1,0x20000000,7,2,32,,100,1,1,{ bonus bDelayRate,-2; },{},{}
 
+// Makibishi
+6493,Makibishi,Makibishi,3,30,,1,,,,,,,,,,,,,{},{},{}
+
+// Talismans
+6512,Talisman_of_Fire,Fire Talisman,3,100,,1,,,,,,,,,,,,,{},{},{}
+6513,Talisman_of_Ice,Ice Talisman,3,100,,1,,,,,,,,,,,,,{},{},{}
+6514,Talisman_of_Wind,Wind Talisman,3,100,,1,,,,,,,,,,,,,{},{},{}
+6515,Talisman_of_Earth,Earth Talisman,3,100,,1,,,,,,,,,,,,,{},{},{}
+
+// Daggers
+13075,Kurenai,Kurenai,4,50000,,700,130,,1,0,0x20000000,7,2,2,3,99,1,1,{ bonus bInt,3; },{},{}
+13076,Kodachi,Kodachi,4,50000,,600,120,,1,1,0x20000000,7,2,2,3,110,1,1,{ bonus bInt,3; },{},{}
+13078,Mikazuki,Mikazuki,4,50000,,600,50,,1,1,0x02000000,7,2,2,4,100,1,1,{},{},{}
+
+// Shurikens / Kunais
+13291,Starfish_Shuriken,Starfish Shuriken,10,100,,5,110,,,,0x02000000,7,2,32768,,50,,6,{},{},{}
+13292,Kunai_Of_Dried_Squid,Dried Squid Kunai,10,100,,20,50,,,,0x02000000,7,2,32768,,50,,7,{ bonus bAtkEle,Ele_Neutral; },{},{}
+13293,Kunai_Of_Flying_Fish,Flying Fish Kunai,10,100,,20,50,,,,0x02000000,7,2,32768,,50,,7,{ bonus bAtkEle,Ele_Neutral; },{},{}
 13294,Explosive_Kunai,Explosive Kunai,10,100,,30,50,,,,0x20000000,7,2,32768,,100,,7,{ bonus bAtkEle,Ele_Neutral; },{},{}
+13295,Light_Shuriken,Light Shuriken,10,4,,5,5,,,,0x02000000,7,2,32768,,1,,6,{},{},{}
 
-13313,Flower_Huuma_Shuriken,Flower Huuma Shuriken,4,100000,,1500,150,,1,2,0x20000000,7,2,34,3,110,1,22,{ /* bonus bWeaponMatk,50; */ bonus bAtkEle,Ele_Fire; },{},{}
-13314,Wave_Huuma_Shuriken,Wave Huuma Shuriken,4,100000,,1500,200,,1,0,0x20000000,7,2,34,4,110,1,22,{ /* bonus bWeaponMatk,50; */ bonus bAtkEle,Ele_Water; },{},{}
-13315,Thunderstorm_Huuma_Shuriken,Thunderstorm Huuma Shuriken,4,100000,,1500,200,,1,0,0x20000000,7,2,34,4,110,1,22,{ /* bonus bWeaponMatk,50; */ bonus bAtkEle,Ele_Wind; },{},{}
-13316,Enhance_Huuma_Shuriken,Enhance Huuma Shuriken,4,20,,1500,55,,1,1,0x20000000,7,2,34,3,1,1,22,{ bonus bUnbreakableWeapon,0; bonus bBaseAtk,10*getrefine(); /* bonus bWeaponMatk,5*getrefine(); */ bonus bLongAtkRate,getrefine(); if(BaseLevel >= 70) { bonus bBaseAtk,5*((BaseLevel-60)/10); } },{},{}
+// Huuma Shurikens
+13311,Advanced_Huuma_Shuriken,Advanced Huuma Shuriken,4,120000,,1500,170,,1,0,0x20000000,7,2,34,3,99,1,22,{ bonus bStr,3; },{},{}
+
+13313,Flower_Huuma_Shuriken,Flower Petal Huuma Shuriken,4,150000,,1500,150,,1,2,0x20000000,7,2,34,3,110,1,22,{ /*bonus bEquipmentMatk,50;*/ },{},{}
+13314,Ice_Huuma_Shuriken,Ice Huuma Shuriken,4,150000,,1500,200,,1,0,0x20000000,7,2,34,4,110,1,22,{ /*bonus bEquipmentMatk,50;*/ bonus bAtkEle,Ele_Water; },{},{}
+13315,Storm_Huuma_Shuriken,Storm Huuma Shuriken,4,150000,,1500,200,,1,0,0x20000000,7,2,34,4,110,1,22,{ /*bonus bEquipmentMatk,50;*/ bonus bAtkEle,Ele_Wind; },{},{}
+13316,Enhance_Huuma_Shuriken,Enhance Huuma Shuriken,4,200000,,1500,55,,1,1,0x20000000,7,2,34,3,1,1,22,{ bonus bUnbreakableWeapon,0; bonus bBaseAtk,10*getrefine(); /*bonus bEquipmentMatk,5*getrefine();*/ bonus bLongAtkRate,getrefine(); if(BaseLevel>=70) { bonus bBaseAtk,5*((BaseLevel-60)/10); } },{},{}
+
+// Armors
+15053,Special_Ninja_Suit,Special Ninja Suit,5,100000,,1200,,10,,0,0x20000000,7,2,16,,100,1,0,{ bonus bAgi,1+(getrefine()/3); },{},{}
+15054,Ninja_Scale_Armor,Ninja Scale Armor,5,100000,,1800,,13,,1,0x20000000,7,2,16,,100,1,0,{ bonus bMaxHPRate,15; bonus bMaxSPRate,-30; },{},{}
+15055,Special_Alloy_Armor,Special Alloy Armor,5,100000,,1500,,8,,1,0x20000000,7,2,16,,100,1,0,{ bonus bAgi,1; },{},{}
+15056,Special_Ninja_Suit_,Special Ninja Suit,5,100000,,1200,,10,,1,0x20000000,7,2,16,,100,1,0,{ bonus bAgi,1+(getrefine()/3); },{},{}

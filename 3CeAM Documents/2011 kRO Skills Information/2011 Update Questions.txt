@@ -178,6 +178,7 @@ Says nothing about cooldown time in the document. Does this mean the cooldown wa
 Aimed Bolt
 Will need to recheck and redo the size check and percentage on number of hits code.
 The number of arrows needed for this skill depends on the number of hits that will be done.
+Also the chance of dealing whatever number of hits is different for each target size.
 
 Electric Shocker
 Must code in duration reduction formula.

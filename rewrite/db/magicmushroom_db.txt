@@ -1,5 +1,5 @@
-// Magic Mushroom DB.
-// Database for skills that are randomly used trough Magic Mushroom status change.
+// Magic Mushroom DB
+// Database for skills that are randomly casted trough Magic Mushroom status change.
 // Format: SkillID
 
 7	//SM_MAGNUM
@@ -18,9 +18,10 @@
 151	//TF_PICKSTONE
 157	//MG_ENERGYCOAT
 249	//CR_AUTOGUARD
-261	//MO_CALLSPIRITS
 256	//CR_PROVIDENCE
-318	//BA_FROSTJOKER
+261	//MO_CALLSPIRITS
+270	//MO_EXPLOSIONSPIRITS
+326	//DC_SCREAM
 500	//GS_GLITTERING
 527	//NJ_TATAMIGAESHI
 531	//NJ_UTSUSEMI
