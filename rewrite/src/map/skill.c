@@ -7350,7 +7350,34 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			clif_skill_nodamage(src,bl,skillid,skilllv,
 				sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
 			status_heal(bl,heal,0,1);
-			status_change_clear_buffs(bl,2);
+			status_change_end(bl, SC_STONE, -1);
+			status_change_end(bl, SC_FREEZE, -1);
+			status_change_end(bl, SC_STUN, -1);
+			status_change_end(bl, SC_SLEEP, -1);
+			status_change_end(bl, SC_POISON, -1);
+			status_change_end(bl, SC_CURSE, -1);
+			status_change_end(bl, SC_SILENCE, -1);
+			status_change_end(bl, SC_CONFUSION, -1);
+			status_change_end(bl, SC_BLIND, -1);
+			status_change_end(bl, SC_BLEEDING, -1);
+			status_change_end(bl, SC_DPOISON, -1);
+			status_change_end(bl, SC_QUAGMIRE, -1);
+			status_change_end(bl, SC_DECREASEAGI, -1);
+			status_change_end(bl, SC_BURNING, -1);
+			status_change_end(bl, SC_FREEZING, -1);
+			status_change_end(bl, SC_WHITEIMPRISON, -1);
+			status_change_end(bl, SC_MARSHOFABYSS, -1);
+			status_change_end(bl, SC_TOXIN, -1);
+			status_change_end(bl, SC_PARALYSE, -1);
+			status_change_end(bl, SC_VENOMBLEED, -1);
+			status_change_end(bl, SC_MAGICMUSHROOM, -1);
+			status_change_end(bl, SC_DEATHHURT, -1);
+			status_change_end(bl, SC_PYREXIA, -1);
+			status_change_end(bl, SC_OBLIVIONCURSE, -1);
+			status_change_end(bl, SC_LEECHESEND, -1);
+			status_change_end(bl, SC_CRYSTALIZE, -1);
+			status_change_end(bl, SC_DEEPSLEEP, -1);
+			status_change_end(bl, SC_MANDRAGORA, -1);
 		}
 		break;
 

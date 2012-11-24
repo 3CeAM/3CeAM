@@ -1726,6 +1726,23 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				//Add any bonuses that modify the base baseatk+watk (pre-skills)
 				if( sd )
 				{
+					// Guillotine Cross skills that have their damage boosted by EDP should be handled in a renewal way.
+					// Note: This is as close to a renewal handleing as I can do for these skills. However, since their
+					// was no such thing as EDP making certain assassin skills do half the damage in pre-renewal, the
+					// Guillotine Cross skills that would normally deal half damage under EDP in renewal will instead be
+					// set to not be affected by EDP at all. The 2 skills are Cross Impact and Counter Slash. [Rytech]
+					if (sc && sc->data[SC_EDP] && (skill_num == GC_DARKILLUSION || skill_num == GC_WEAPONCRUSH || 
+						skill_num == GC_VENOMPRESSURE || skill_num == GC_PHANTOMMENACE || skill_num == GC_ROLLINGCUTTER || 
+						skill_num == GC_CROSSRIPPERSLASHER))
+					{
+						int edpva = battle_config.gc_skill_edp_boost_formula_a;
+						int edpvb = battle_config.gc_skill_edp_boost_formula_b;
+						if ( battle_config.gc_skill_edp_boost_formula_c == 1 )
+						{ATK_ADDRATE(edpva + edpvb * sc->data[SC_EDP]->val1);}
+						else
+						{ATK_ADDRATE(edpva - edpvb * sc->data[SC_EDP]->val1);}
+					}
+
 					if( sd->atk_rate )
 						ATK_ADDRATE(sd->atk_rate);
 
@@ -2614,23 +2631,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio += 700;
 					break;
 			}
-			// Some skill under EDP status have been nerfed. http://www.eathena.ws/board/index.php?showtopic=234419&hl=enchant+deadly
-			if( battle_config.renewal_edp && sc && sc->data[SC_EDP] )
-			{
-				switch( skill_num )
-				{
-					case AS_SONICBLOW:
-					case ASC_BREAKER:
-						if( battle_config.renewal_edp&1 )
-							skillratio >>= 1;
-						break;
-					case GC_CROSSIMPACT:
-					case GC_COUNTERSLASH:
-						if( battle_config.renewal_edp&2 )
-							skillratio >>= 1;// Half skillratio.
-						break;
-				}
-			}
+
 			ATK_RATE(skillratio);
 
 			//Constant/misc additions from skills
@@ -2723,38 +2724,20 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 			if(sc->data[SC_TRUESIGHT])
 				ATK_ADDRATE(2*sc->data[SC_TRUESIGHT]->val1);
 
-			if(sc->data[SC_EDP] )
-			{
-				switch( skill_num )
-				{	
-					case ASC_METEORASSAULT:
-					case AS_SPLASHER:
-					case AS_VENOMKNIFE:
-					case ASC_BREAKER:
-					case GC_COUNTERSLASH://Non-EDPable.
-					case GC_DARKILLUSION:
-					case GC_WEAPONCRUSH:
-					case GC_VENOMPRESSURE:
-					case GC_PHANTOMMENACE:
-					case GC_ROLLINGCUTTER:
-					case GC_CROSSRIPPERSLASHER:
-						break;
-					case AS_GRIMTOOTH: // Grimtooth skill no longer takes the effect of Enchant Deadly Poison.
-					// Skill effects nerfed, don't add EDP effects.
-					case AS_SONICBLOW:
-						if( !(battle_config.renewal_edp&1) )
-							ATK_ADDRATE(sc->data[SC_EDP]->val3);
-						break;
-					case GC_CROSSIMPACT:
-						if( !(battle_config.renewal_edp&2) )
-							ATK_ADDRATE(sc->data[SC_EDP]->val3);
-						break;
-					default:
-						ATK_ADDRATE(sc->data[SC_EDP]->val3);
-						break;
-				}
-			}
-			
+			if(sc->data[SC_EDP] &&
+			  	skill_num != ASC_BREAKER &&
+				skill_num != ASC_METEORASSAULT &&
+				skill_num != AS_SPLASHER &&
+				skill_num != AS_VENOMKNIFE &&
+				skill_num != GC_CROSSIMPACT &&//EDP does not increase the final damage on Guillotine Cross skills. It instead
+				skill_num != GC_DARKILLUSION &&//increase the player's ATK (BATK and WATK) only during the brief moment certain
+				skill_num != GC_COUNTERSLASH &&//offensive Guillotine Cross skills are being used to give a renewal feeling. [Rytech]
+				skill_num != GC_WEAPONCRUSH &&
+				skill_num != GC_VENOMPRESSURE &&
+				skill_num != GC_PHANTOMMENACE &&
+				skill_num != GC_ROLLINGCUTTER &&
+				skill_num != GC_CROSSRIPPERSLASHER)
+				ATK_ADDRATE(sc->data[SC_EDP]->val3);
 		}
 
 		switch (skill_num) {
@@ -5669,11 +5652,10 @@ static const struct _battle_data {
 	{ "bg_magic_attack_damage_rate",        &battle_config.bg_magic_damage_rate,            60,     0,      INT_MAX,        },
 	{ "bg_misc_attack_damage_rate",         &battle_config.bg_misc_damage_rate,             60,     0,      INT_MAX,        },
 	{ "bg_flee_penalty",                    &battle_config.bg_flee_penalty,                 20,     0,      INT_MAX,        },
-// Casting Time Renewal Settings
+// 3CeAM Settings
 	{ "renewal_cast_3rd_skills",            &battle_config.renewal_cast_3rd_skills,          1,     0,            1,        },
 	{ "castrate_dex_scale_3rd",             &battle_config.castrate_dex_scale_3rd,           150,   1,      INT_MAX,        },
 	{ "warg_can_falcon",                    &battle_config.warg_can_falcon,                  0,     0,            1,        },
-	{ "renewal_edp",                        &battle_config.renewal_edp,                      0,     0,            3,        },
 	{ "use_renewal_statpoints",             &battle_config.use_renewal_statpoints,           0,     0,            1,        },
 	{ "max_highlvl_nerf",                   &battle_config.max_highlvl_nerf,                 100,   0,      INT_MAX,        },
 	{ "max_joblvl_nerf",                    &battle_config.max_joblvl_nerf,                  100,   0,      INT_MAX,        },
@@ -5686,6 +5668,9 @@ static const struct _battle_data {
 	{ "mado_skill_limit",                   &battle_config.mado_skill_limit,                 1,     0,            1,        },
 	{ "mado_loss_on_death",                 &battle_config.mado_loss_on_death,               1,     0,            1,        },
 	{ "rental_mount_speed_boost",           &battle_config.rental_mount_speed_boost,        25,     0,          100,        },
+	{ "gc_skill_edp_boost_formula_a",       &battle_config.gc_skill_edp_boost_formula_a,     0,     0,         1000,        },
+	{ "gc_skill_edp_boost_formula_b",       &battle_config.gc_skill_edp_boost_formula_b,    20,     0,         1000,        },
+	{ "gc_skill_edp_boost_formula_c",       &battle_config.gc_skill_edp_boost_formula_c,     1,     0,            1,        },
 };
 
 
