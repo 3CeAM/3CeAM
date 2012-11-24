@@ -502,12 +502,12 @@ extern struct Battle_Config
 	int bg_flee_penalty;
 
 	int warg_can_falcon;
-	int renewal_edp;
 	int use_renewal_statpoints;
 
 	// Casting Time Renewal Settings
 	int renewal_cast_3rd_skills;
 	int castrate_dex_scale_3rd;
+
 	int max_highlvl_nerf; // [Pinky]
 	int max_joblvl_nerf; // [Pinky]
 	int max_joblvl_nerf_misc; // [Pinky]
@@ -519,6 +519,11 @@ extern struct Battle_Config
 	int mado_skill_limit;
 	int mado_loss_on_death;
 	int rental_mount_speed_boost;
+
+	// Renewal EDP Formula Config For Guillotine Cross Skills
+	int gc_skill_edp_boost_formula_a;
+	int gc_skill_edp_boost_formula_b;
+	int gc_skill_edp_boost_formula_c;
 
 } battle_config;
 
