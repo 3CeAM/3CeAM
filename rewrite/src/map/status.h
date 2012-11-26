@@ -583,6 +583,7 @@ typedef enum sc_type {
 	//Other New Status's
 	SC_ALL_RIDING = 951,
 	SC_ON_PUSH_CART,
+	SC_ODINS_POWER,
 
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
@@ -1173,7 +1174,7 @@ enum si_type {
 //	SI_LIGHT_OF_REGENE = 580,
 //	SI_OVERED_BOOST = 581,
 //	SI_SILENT_BREEZE = 582,
-//	SI_ODINS_POWER = 583,
+	SI_ODINS_POWER = 583,
 //	SI_STYLE_CHANGE = 584,
 //	SI_SONIC_CLAW_POSTDELAY = 585,
 //	SI_ = 586,

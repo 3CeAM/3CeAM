@@ -463,6 +463,7 @@ int skillnotok(int skillid, struct map_session_data *sd)
 		case AL_TELEPORT:
 		case SC_FATALMENACE:
 		case SC_DIMENSIONDOOR:
+		case ALL_ODINS_RECALL:
 			if( map[m].flag.noteleport )
 			{
 				clif_skill_teleportmessage(sd,0);
@@ -5147,6 +5148,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SR_GENTLETOUCH_CHANGE:
 	case SR_GENTLETOUCH_REVITALIZE:
 	case GN_CARTBOOST:
+	case ALL_ODINS_POWER:
 		clif_skill_nodamage(src,bl,skillid,skilllv,
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
 		break;
@@ -5961,6 +5963,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case AL_TELEPORT:
+	case ALL_ODINS_RECALL:
 		if(sd)
 		{
 			if (map[bl->m].flag.noteleport && skilllv <= 2) {
@@ -5982,7 +5985,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			}
 
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
-			if( skilllv == 1 )
+			if( skilllv == 1 && skillid != ALL_ODINS_RECALL )
 				clif_skill_warppoint(sd,skillid,skilllv, (unsigned short)-1,0,0,0);
 			else
 				clif_skill_warppoint(sd,skillid,skilllv, (unsigned short)-1,sd->status.save_point.map,0,0);
@@ -8736,6 +8739,42 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 
+	case ECL_SNOWFLIP:
+	case ECL_PEONYMAMY:
+	case ECL_SADAGUI:
+	case ECL_SEQUOIADUST:
+		if ( skillid == ECL_SNOWFLIP )
+		{
+			status_change_end(bl, SC_SLEEP, -1);
+			status_change_end(bl, SC_BLEEDING, -1);
+			status_change_end(bl, SC_BURNING, -1);
+			status_change_end(bl, SC_DEEPSLEEP, -1);
+		}
+		else if ( skillid == ECL_PEONYMAMY )
+		{
+			status_change_end(bl, SC_FREEZE, -1);
+			status_change_end(bl, SC_FREEZING, -1);
+			status_change_end(bl, SC_CRYSTALIZE, -1);
+		}
+		else if ( skillid == ECL_SADAGUI )
+		{
+			status_change_end(bl, SC_STUN, -1);
+			status_change_end(bl, SC_CONFUSION, -1);
+			status_change_end(bl, SC_HALLUCINATION, -1);
+			status_change_end(bl, SC_FEAR, -1);
+		}
+		else if ( skillid == ECL_SEQUOIADUST )
+		{
+			status_change_end(bl, SC_STONE, -1);
+			status_change_end(bl, SC_POISON, -1);
+			status_change_end(bl, SC_CURSE, -1);
+			status_change_end(bl, SC_BLIND, -1);
+			status_change_end(bl, SC_ORCISH, -1);
+		}
+		clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, 0, 1, skillid, -2, 6);
+		break;
+
 		case EL_CIRCLE_OF_FIRE:
 		case EL_PYROTECHNIC:
 		case EL_HEATER:
@@ -10049,9 +10088,10 @@ int skill_castend_map (struct map_session_data *sd, short skill_num, const char 
 	switch(skill_num)
 	{
 	case AL_TELEPORT:
+	case ALL_ODINS_RECALL:
 		if(strcmp(map,"Random")==0)
 			pc_randomwarp(sd,CLR_TELEPORT);
-		else if (sd->menuskill_val > 1) //Need lv2 to be able to warp here.
+		else if (sd->menuskill_val > 1 || skill_num == ALL_ODINS_RECALL) //Need lv2 to be able to warp here.
 			pc_setpos(sd,sd->status.save_point.map,sd->status.save_point.x,sd->status.save_point.y,CLR_TELEPORT);
 		break;
 
@@ -10323,16 +10363,16 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 	case HT_FREEZINGTRAP:
 	case MA_FREEZINGTRAP:
 	case HT_BLASTMINE:
-	case RA_ELECTRICSHOCKER:
-	case RA_CLUSTERBOMB:
-	case RA_MAGENTATRAP:
-	case RA_COBALTTRAP:
-	case RA_MAIZETRAP:
-	case RA_VERDURETRAP:
-	case RA_FIRINGTRAP:
-	case RA_ICEBOUNDTRAP:
-	case GN_THORNS_TRAP:
-	case GN_HELLS_PLANT:
+	//case RA_ELECTRICSHOCKER:
+	//case RA_CLUSTERBOMB:
+	//case RA_MAGENTATRAP:
+	//case RA_COBALTTRAP:
+	//case RA_MAIZETRAP:
+	//case RA_VERDURETRAP:
+	//case RA_FIRINGTRAP:
+	//case RA_ICEBOUNDTRAP:
+	//case GN_THORNS_TRAP:
+	//case GN_HELLS_PLANT:
 		if( map_flag_gvg(src->m) || map[src->m].flag.battleground )
 			limit *= 4; // longer trap times in WOE [celest]
 		if( battle_config.vs_traps_bctall && map_flag_vs(src->m) && (src->type&battle_config.vs_traps_bctall) )
@@ -15490,21 +15530,21 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 				+ sd->menuskill_itemused * 100;// Quality of the rune ore used. Values are 2, 5, 8, 11, and 14.
 				switch ( nameid )// Success reduction from rune stone rank. Each rune has a different rank. Values are 5, 10, 15, and 20.
 				{
-					case 12727:// Verkana / RK_MILLENNIUMSHIELD
+					case 12727:// Berkana / RK_MILLENNIUMSHIELD
 						make_per -= 20 * 100;//S-Rank Reduction
 						break;
-					case 12725:// Nosiege / RK_REFRESH
-					case 12730:// Urj / RK_ABUNDANCE
+					case 12725:// Nauthiz / RK_REFRESH
+					case 12730:// Uruz / RK_ABUNDANCE
 						make_per -= 15 * 100;//A-Rank Reduction
 						break;
-					case 12728:// Isia / RK_VITALITYACTIVATION
-					case 12732:// Pertz / RK_STORMBLAST
+					case 12728:// Isa / RK_VITALITYACTIVATION
+					case 12732:// Perthro / RK_STORMBLAST
 						make_per -= 10 * 100;//B-Rank Reduction
 						break;
-					case 12726:// Rhydo / RK_CRUSHSTRIKE
-					case 12729:// Asir / RK_FIGHTINGSPIRIT
-					case 12731:// Turisus / RK_GIANTGROWTH
-					case 12733:// Hagalas / RK_STONEHARDSKIN
+					case 12726:// Raido / RK_CRUSHSTRIKE
+					case 12729:// Eihwaz / RK_FIGHTINGSPIRIT
+					case 12731:// Thurisaz / RK_GIANTGROWTH
+					case 12733:// Hagalaz / RK_STONEHARDSKIN
 						make_per -= 5 * 100;//C-Rank Reduction
 						break;
 				}

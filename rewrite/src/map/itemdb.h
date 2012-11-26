@@ -94,17 +94,24 @@ struct item_group {
 	int qty; //Counts amount of items in the group.
 };
 
-enum {
+enum rune_stones {
 	ITEMID_NAUTHIZ = 12725,
 	ITEMID_RAIDO,
 	ITEMID_BERKANA,
 	ITEMID_ISA,
-	ITEMID_OTHILA,
+	ITEMID_EIHWAZ,
 	ITEMID_URUZ,
 	ITEMID_THURISAZ,
-	ITEMID_WYRD,
+	ITEMID_PERTHRO,
 	ITEMID_HAGALAZ,
-} rune_list;
+};
+
+enum eclage_cures {
+	ITEMID_SNOWFLIP = 12812,
+	ITEMID_PEONYMAMY,
+	ITEMID_SADAGUI,
+	ITEMID_SEQUOIADUST,
+};
 
 struct item_data* itemdb_searchname(const char *name);
 int itemdb_searchname_array(struct item_data** data, int size, const char *str);
@@ -133,6 +140,7 @@ const char* itemdb_typename(int type);
 #define itemdb_is_spellbook(n) (n >= 6188 && n <= 6205)
 #define itemdb_is_element(n) (n >= 6360 && n <= 6363)
 #define itemdb_is_GNbomb(n) (n >= 13260 && n <= 13267)
+#define itemdb_is_eclage_cures(n) (n >= ITEMID_SNOWFLIP && n <= ITEMID_SEQUOIADUST)
 
 int itemdb_group_bonus(struct map_session_data* sd, int itemid);
 int itemdb_searchrandomid(int flags);

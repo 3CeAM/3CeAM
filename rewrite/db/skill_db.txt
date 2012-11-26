@@ -908,7 +908,7 @@
 2009,0,6,4,0,0x3,3:4:5:6:7,5,1,yes,0,0,0,none,0,	RK_DRAGONHOWLING,Dragon Howling
 2010,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		RK_RUNEMASTERY,Rune Mastery
 2011,0,6,4,0,0x1,0,1,1,yes,0,0,0,none,0,	RK_MILLENNIUMSHIELD,Millenium Shield
-2012,1,6,1,-1,0,0x8,1,1,yes,0,0,0,weapon,0,	RK_CRUSHSTRIKE,Crush Strike// Skill needs to be recoded to fit new behavior before changing INF.
+2012,1,6,1,-1,0,0,1,1,yes,0,0,0,weapon,0,	RK_CRUSHSTRIKE,Crush Strike// Skill needs to be recoded to fit new behavior before changing INF.
 2013,0,6,4,0,0x1,0,1,1,yes,0,0,0,none,0,	RK_REFRESH,Refresh
 2014,0,6,4,0,0x1,0,1,1,yes,0,0,0,none,0,	RK_GIANTGROWTH,Giant Growth
 2015,0,6,4,0,0x1,0,1,1,yes,0,0,0,none,0,	RK_STONEHARDSKIN,Stone Hard Skin
@@ -1216,17 +1216,17 @@
 2520,0,6,1,-1,0x40,0,5,1,no,0,0,0,weapon,0,	LG_OVERBRAND_PLUSATK,Overbrand Plus Attack
 
 // Misc Skills
-2533,0,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	ALL_ODINS_RECALL,Odin's Recall
+2533,0,6,4,0,0x1,0,1,1,yes,0,0,0,none,0,	ALL_ODINS_RECALL,Odin's Recall
 2534,0,6,4,0,0x1,0,1,1,yes,0,0,0,none,0,	RETURN_TO_ELDICASTES,Return To Eldicastes
 2535,0,0,4,0,0x1,0,2,0,no,0,0x1,0,none,0,	ALL_BUYING_STORE,Open Buying Store
 2536,0,6,4,0,0x1,0,1,1,yes,0,0,0,none,0,	ALL_GUARDIAN_RECALL,Guardian's Recall
-2537,9,6,16,0,0x1,0,2,1,yes,0,0,0,magic,0,	ALL_ODINS_POWER,Odin's Power
+2537,9,6,16,0,0x1,0,2,1,yes,0,0,0,none,0,	ALL_ODINS_POWER,Odin's Power
 //2538,0,0,0,0,0,0,??,0,no,0,0,0,none,0,	BEER_BOTTLE_CAP,Beer Bottle Cap
 //2539,0,0,0,0,0,0,??,0,no,0,0,0,none,0,	NPC_ASSASSINCROSS,Assassin Cross of Sunset 2
 //2540,0,0,0,0,0,0,??,0,no,0,0,0,none,0,	NPC_DISSONANCE,Dissonance 2
 //2541,0,0,0,0,0,0,??,0,no,0,0,0,none,0,	NPC_UGLYDANCE,Ugly Dance 2
 //2542,0,0,0,0,0,0,??,0,no,0,0,0,none,0,	ALL_TETANY,Tetany
-//2543,0,0,0,0,0,0,??,0,no,0,0,0,none,0,	ALL_RAY_OF_PROTECTION,Ray of Protection
+//2543,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		ALL_RAY_OF_PROTECTION,Ray of Protection
 //2544,0,0,0,0,0,0,??,0,no,0,0,0,none,0,	MC_CARTDECORATE,Decorate Cart
 
 // Kagerou / Oboro
@@ -1259,8 +1259,8 @@
 3025,1,6,16,0,0x1,0,5,1,no,0,0,0,none,0,	KG_KAGEMUSYA,Shadow Warrior//Range is 1 or 0?
 
 // Oboro
-3026,7,6,16,0,0x1,0,5,1,no,0,0,0,none,0,		OB_ZANGETSU,Dummy26
-3027,7,6,16,0,0x1,0,5,1,no,0,0,0,none,0,		OB_OBOROGENSOU,Dummy27
+3026,7,6,16,0,0x1,0,5,1,no,0,0,0,none,0,	OB_ZANGETSU,Dummy26
+3027,7,6,16,0,0x1,0,5,1,no,0,0,0,none,0,	OB_OBOROGENSOU,Dummy27
 3028,0,6,4,0,0x2,2,5,1,no,0,0,0,misc,0,		OB_OBOROGENSOU_TRANSITION_ATK,Dummy28//Deflected damage means reflected damage. Cant be reduced or reflected again.
 3029,7,6,1,0,0x1,0,5,1,no,0,0,0,none,0,		OB_AKAITSUKI,Dummy29
 
@@ -1359,6 +1359,7 @@
 8238,9,6,16,0,0x1,0,10,1,yes,0,0,0,magic,0,	MER_KYRIE,Kyrie Eleison
 8239,9,6,16,0,0x1,0,10,1,yes,0,0,0,magic,0,	MER_BLESSING,Blessing
 8240,9,6,16,0,0x1,0,10,1,yes,0,0,0,magic,0,	MER_INCAGI,Increase Agility
+//8241,2,6,2,0,0,0,1,1,no,0,0,0,none,0,		MER_INVINCIBLEOFF2,Mind Blaster//Skill name translated into this by google.
 
 // Elemental Spirits
 8401,0,6,4,3,0,0,1,1,no,0,0,0,weapon,2,		EL_CIRCLE_OF_FIRE,Circle of Fire
