@@ -4014,6 +4014,54 @@ int pc_useitem(struct map_session_data *sd,int n)
 				if( skill_blockpc_get(sd,RK_MILLENNIUMSHIELD) != -1 )
 					return 0;
 				break;
+			case ITEMID_ISA:
+				if( skill_blockpc_get(sd,RK_VITALITYACTIVATION) != -1 )
+					return 0;
+				break;
+			case ITEMID_EIHWAZ:
+				if( skill_blockpc_get(sd,RK_FIGHTINGSPIRIT) != -1 )
+					return 0;
+				break;
+			case ITEMID_URUZ:
+				if( skill_blockpc_get(sd,RK_ABUNDANCE) != -1 )
+					return 0;
+				break;
+			case ITEMID_THURISAZ:
+				if( skill_blockpc_get(sd,RK_GIANTGROWTH) != -1 )
+					return 0;
+				break;
+			case ITEMID_PERTHRO:
+				if( skill_blockpc_get(sd,RK_STORMBLAST) != -1 )
+					return 0;
+				break;
+			case ITEMID_HAGALAZ:
+				if( skill_blockpc_get(sd,RK_STONEHARDSKIN) != -1 )
+					return 0;
+				break;
+		}
+	}
+
+	// Eclage status cure items must each be tied to their own cooldowns.
+	if( itemdb_is_eclage_cures(sd->status.inventory[n].nameid) )
+	{
+		switch(sd->status.inventory[n].nameid)
+		{
+			case ITEMID_SNOWFLIP:
+				if( skill_blockpc_get(sd,ECL_SNOWFLIP) != -1 )
+					return 0;
+				break;
+			case ITEMID_PEONYMAMY:
+				if( skill_blockpc_get(sd,ECL_PEONYMAMY) != -1 )
+					return 0;
+				break;
+			case ITEMID_SADAGUI:
+				if( skill_blockpc_get(sd,ECL_SADAGUI) != -1 )
+					return 0;
+				break;
+			case ITEMID_SEQUOIADUST:
+				if( skill_blockpc_get(sd,ECL_SEQUOIADUST) != -1 )
+					return 0;
+				break;
 		}
 	}
 

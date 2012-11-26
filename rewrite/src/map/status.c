@@ -550,6 +550,8 @@ void initChangeTables(void)
 	set_sc( GN_FIRE_EXPANSION_TEAR_GAS    , SC_TEARGAS     , SI_FIRE_EXPANSION_TEAR_GAS    , SCB_HIT|SCB_FLEE );
 	set_sc( GN_MANDRAGORA                 , SC_MANDRAGORA  , SI_MANDRAGORA                 , SCB_INT );
 
+	set_sc( ALL_ODINS_POWER               , SC_ODINS_POWER , SI_ODINS_POWER                , SCB_WATK|SCB_MATK|SCB_DEF|SCB_MDEF );
+
 	set_sc( KO_YAMIKUMO          , SC_HIDING          , SI_HIDING          , SCB_NONE );
 	set_sc( KO_JYUMONJIKIRI      , SC_JYUMONJIKIRI    , SI_KO_JYUMONJIKIRI , SCB_NONE );
 
@@ -1419,7 +1421,7 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 		return 0;
 
 	//Should fail when used on top of Land Protector [Skotlex]
-	if( src && skill_num == AL_TELEPORT && map_getcell(src->m, src->x, src->y, CELL_CHKLANDPROTECTOR)
+	if( src && (skill_num == AL_TELEPORT || skill_num == ALL_ODINS_POWER) && map_getcell(src->m, src->x, src->y, CELL_CHKLANDPROTECTOR)
 		&& !(status->mode&MD_BOSS) && (src->type != BL_PC || ((TBL_PC*)src)->skillitem != skill_num) )
 		return 0;
 
@@ -1622,7 +1624,7 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 				return 0;
 			if( tsc->option&hide_flag && !(status->mode&MD_BOSS) && (sd->special_state.perfect_hiding || !(status->mode&MD_DETECTOR)))
 				return 0;
-			if( tsc->data[SC_CAMOUFLAGE] && !(status->mode&(MD_BOSS|MD_DETECTOR)) && !skill_num )
+			if( tsc->data[SC_CAMOUFLAGE] && !(status->mode&(MD_BOSS|MD_DETECTOR)) )
 				return 0;
 			if( tsc->data[SC_STEALTHFIELD] )
 				return 0;
@@ -4248,6 +4250,8 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += sc->data[SC_RUSHWINDMILL]->val3;
 	if(sc->data[SC_SATURDAYNIGHTFEVER])
 		watk += 100 * sc->data[SC_SATURDAYNIGHTFEVER]->val1;
+	if(sc->data[SC_ODINS_POWER])
+		watk += 40 + 30 * sc->data[SC_ODINS_POWER]->val1;
 	if( sc->data[SC_TROPIC_OPTION] )
 		watk += sc->data[SC_TROPIC_OPTION]->val2;
 	if( sc->data[SC_HEATER_OPTION] )
@@ -4281,6 +4285,8 @@ static unsigned short status_calc_matk(struct block_list *bl, struct status_chan
 		matk += sc->data[SC_MOONLITSERENADE]->val3;
 	if(sc->data[SC_MANA_PLUS])
 		matk += sc->data[SC_MANA_PLUS]->val1;
+	if(sc->data[SC_ODINS_POWER])
+		matk += 40 + 30 * sc->data[SC_ODINS_POWER]->val1;
 	if(sc->data[SC_AQUAPLAY_OPTION])
 		matk += sc->data[SC_AQUAPLAY_OPTION]->val2;
 	if(sc->data[SC_CHILLY_AIR_OPTION])
@@ -4506,6 +4512,8 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 		def -= def * (10 + 10 * sc->data[SC_SATURDAYNIGHTFEVER]->val1) / 100;
 	if(sc->data[SC_EARTHDRIVE])
 		def -= def * 25 / 100;
+	if(sc->data[SC_ODINS_POWER])
+		def -= 2 * sc->data[SC_ODINS_POWER]->val1;
 	if( sc->data[SC_ROCK_CRUSHER] )
 		def -= def * sc->data[SC_ROCK_CRUSHER]->val2 / 100;
 	if( sc->data[SC_POWER_OF_GAIA] )
@@ -4587,6 +4595,8 @@ static signed char status_calc_mdef(struct block_list *bl, struct status_change 
 		{mdef -= sc->data[SC_GT_CHANGE]->val4;
 			if ( mdef < 0 )
 				mdef = 0;}
+	if(sc->data[SC_ODINS_POWER])
+		mdef -= 2 * sc->data[SC_ODINS_POWER]->val1;
 	if(sc->data[SC_WATER_BARRIER])
 		mdef += sc->data[SC_WATER_BARRIER]->val2;
 
@@ -7819,7 +7829,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val3 = 50 + 30 * val1;//Natural HP recovery rate increase.
 			break;
 		case SC_KAGEMUSYA:
-			val2 = 10 * val1;//Double Attack Chance
 			val4 = tick / 1000;
 			tick = 1000;
 			break;

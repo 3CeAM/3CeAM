@@ -1402,39 +1402,45 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 	}
 
 	if( sd && !skill_num )
-	{	//Check for double attack.
-		if( ( ( skill_lv = pc_checkskill(sd,TF_DOUBLE) ) > 0 && sd->weapontype1 == W_DAGGER )
-			|| ( sd->double_rate > 0 && sd->weapontype1 != W_FIST ) //Will fail bare-handed
-			|| ( sc && sc->data[SC_KAGEMUSYA] && sd->weapontype1 != W_FIST ) )//A player tested on the official Russin RO server and said it works with all weapons. If found to not be true on kRO, then itl be changed. [Rytech]
-		{	//Success chance is not added, the higher one is used [Skotlex]
-			if( rand()%100 < ( sc && sc->data[SC_KAGEMUSYA] && sc->data[SC_KAGEMUSYA]->val2 >= 5*skill_lv ? sc->data[SC_KAGEMUSYA]->val2 : 5*skill_lv > sd->double_rate ? 5*skill_lv : sd->double_rate ) )
-			{
-				wd.div_ = skill_get_num(TF_DOUBLE,skill_lv?skill_lv:1);
-				wd.type = 0x08;
-			}
-		}
-		else if( sd->weapontype1 == W_REVOLVER && (skill_lv = pc_checkskill(sd,GS_CHAINACTION)) > 0 && rand()%100 < 5*skill_lv )
+	{
+		short dachance = 0;//Success chance of double attacking. If player is in fear breeze status and generated number is within fear breeze's range, this will be ignored.
+		short hitnumber = 0;//Used for setting how many hits will hit.
+		short gendetect[] = { 12, 12, 21, 27, 30 };//If generated number is outside this value while in fear breeze status, it will check if their's a chance for double attacking.
+		short generate = rand()%100 + 1;//Generates a random number between 1 - 100 which is then used to determine if fear breeze or double attacking will happen.
+
+		// First we go through a number of checks to see if their's any chance of double attacking a target. Only the highest success chance is taken.
+		if ( sd->double_rate > 0 && sd->weapontype1 != W_FIST )
+			dachance = sd->double_rate;
+
+		if ( sc && sc->data[SC_KAGEMUSYA] && 10 * sc->data[SC_KAGEMUSYA]->val1 > dachance && sd->weapontype1 != W_FIST )
+			dachance = 10 * sc->data[SC_KAGEMUSYA]->val1;
+
+		if ( 5 * pc_checkskill(sd,TF_DOUBLE) > dachance && sd->weapontype1 == W_DAGGER )
+			dachance = 5 * pc_checkskill(sd,TF_DOUBLE);
+
+		if ( 5 * pc_checkskill(sd,GS_CHAINACTION) > dachance && sd->weapontype1 == W_REVOLVER )
+			dachance = 5 * pc_checkskill(sd,GS_CHAINACTION);
+
+		// This checks if the generated value is within fear breeze's success chance range for the level used as set by gendetect.
+		if ( sc && sc->data[SC_FEARBREEZE] && generate <= gendetect[sc->data[SC_FEARBREEZE]->val1 - 1] && sd->weapontype1 == W_BOW )
 		{
-			wd.div_ = skill_get_num(GS_CHAINACTION,skill_lv);
-			wd.type = 0x08;
+				if ( generate >= 1 && generate <= 12 )//12% chance to deal 2 hits.
+					hitnumber = 2;
+				else if ( generate >= 13 && generate <= 21 )//9% chance to deal 3 hits.
+					hitnumber = 3;
+				else if ( generate >= 22 && generate <= 27 )//6% chance to deal 4 hits.
+					hitnumber = 4;
+				else if ( generate >= 28 && generate <= 30 )//3% chance to deal 5 hits.
+					hitnumber = 5;
 		}
-		else if( sc && sc->data[SC_FEARBREEZE] && sd->weapontype1 == W_BOW && (i = sd->equip_index[EQI_AMMO]) >= 0 )
-		{
-			short generate = 0;
-			short shotnumber = 0;
-			generate = rand()%100 + 1;//Generates a random number between 1 - 100 which is then used to determine how many hits will be applied.
-			if ( sc->data[SC_FEARBREEZE]->val1 >= 5 && generate >= 1 && generate <= 3 )//3% chance to deal 5 hits.
-				shotnumber = 5;
-			else if ( sc->data[SC_FEARBREEZE]->val1 >= 4 && generate >= 4 && generate <= 9 )//6% chance to deal 4 hits.
-				shotnumber = 4;
-			else if ( sc->data[SC_FEARBREEZE]->val1 >= 3 && generate >= 10 && generate <= 18 )//9% chance to deal 3 hits.
-				shotnumber = 3;
-			else if ( sc->data[SC_FEARBREEZE]->val1 >= 1 && generate >= 19 && generate <= 30 )//12% chance to deal 2 hits.
-				shotnumber = 2;
-			if ( shotnumber > 1 )//Needed to allow critical attacks to hit when not hitting more then once.
-				{wd.div_ = shotnumber;
-				wd.type = 0x08;}
-		}
+		// If the generated value is higher then Fear Breeze's success chance range, but not higher then the player's double attack success chance,
+		// then allow a double attack to happen.
+		else if ( generate < dachance )
+			hitnumber = 2;
+
+		if ( hitnumber > 1 )//Needed to allow critical attacks to hit when not hitting more then once.
+			{wd.div_ = hitnumber;
+			wd.type = 0x08;}
 	}
 
 	//Check for critical
