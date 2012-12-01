@@ -9964,6 +9964,7 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC_PUTTI_TAILS_NOODLES:
 			case SC_CURSEDCIRCLE_ATKER:
 			case SC_CURSEDCIRCLE_TARGET:
+			case SC_ON_PUSH_CART:
 				continue;
 
 			//Debuffs that can be removed.

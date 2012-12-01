@@ -1766,6 +1766,7 @@ packet_ver: 29
 0x08D7,28,battlegroundreg,2:4 //Added to prevent disconnections
 0x08CF,10 //Amulet spirits
 0x0977,14 //Monster HP Bar
+0x8d2,10 //Fast Movement
 
 //Add new packets here.
 //packet_ver: 30

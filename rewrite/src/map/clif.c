@@ -1110,6 +1110,31 @@ static void clif_spiritball_single(int fd, struct map_session_data *sd)
 }
 
 /*==========================================
+ * ZC_SPIRITS_ATTRIBUTE =  0x8cf
+ * this+0x0 / short PacketType
+ * this+0x2 / unsigned long AID
+ * this+0x6 / short SpritsType
+ * this+0x8 / short Num
+ *
+ * SpiritsType
+ * SPIRITS_TYPE_NONE =  0x0
+ * SPIRITS_TYPE_CHARM_WATER =  0x1
+ * SPIRITS_TYPE_CHARM_LAND =  0x2
+ * SPIRITS_TYPE_CHARM_FIRE =  0x3
+ * SPIRITS_TYPE_CHARM_WIND =  0x4
+ * SPIRTIS_TYPE_SPHERE =  0x5
+ *------------------------------------------*/
+static void clif_spiritball_attribute_single(int fd, struct map_session_data *sd)
+{
+    WFIFOHEAD(fd, packet_len(0x08cf));
+    WFIFOW(fd,0)=0x08cf;
+    WFIFOL(fd,2)=sd->bl.id;
+    WFIFOW(fd,6)=sd->spiritballtype;
+    WFIFOW(fd,8)=sd->spiritballnumber;
+    WFIFOSET(fd, packet_len(0x08cf));
+}
+
+/*==========================================
  *
  *------------------------------------------*/
 static void clif_weather_check(struct map_session_data *sd)
@@ -14684,6 +14709,17 @@ void clif_equip_damaged(struct map_session_data *sd, int equip_index)
 #endif
 }
 
+/*==========================================
+ * ZC_MILLENNIUMSHIELD =  0x440
+ * this+0x0 / short PacketType
+ * this+0x2 / unsigned long AID
+ * this+0x6 / short num
+ * this+0x8 / short state
+ *
+ * State - How the heck does the state work?
+ * MILLENNIUMSHIELD_STATE_STAND =  0x0
+ * MILLENNIUMSHIELD_STATE_MOVE =  0x1
+ *-----------------------------------------*/
 void clif_millenniumshield(struct map_session_data *sd, short shields )
 {
 #if PACKETVER >= 20081217
@@ -15363,6 +15399,25 @@ void clif_monster_hp_bar( struct mob_data* md, int fd )
 	
 	WFIFOSET(fd,packet_len(0x977));
 #endif
+}
+
+/*==========================================
+ * ZC_FASTMOVE =  0x8d2
+ * this+0x0 / short PacketType
+ * this+0x2 / unsigned long AID
+ * this+0x6 / short targetXpos
+ * this+0x8 / short targetYpos
+ *------------------------------------------*/
+void clif_fast_movement(struct block_list *bl, short x, short y)
+{
+    unsigned char buf[10];
+
+    WBUFW(buf,0) = 0x8d2;
+    WBUFL(buf,2) = bl->id;
+    WBUFW(buf,6) = x;
+    WBUFW(buf,8) = y;
+
+    clif_send(buf,packet_len(0x8d2),bl,AREA);
 }
 
 /// Parse function for packet debugging
