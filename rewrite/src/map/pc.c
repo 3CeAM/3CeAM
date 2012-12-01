@@ -7373,7 +7373,7 @@ int pc_setcart(struct map_session_data *sd,int type)
 	if( type < 0 || type > maxcarts )
 		return 1;// Never trust the values sent by the client! [Skotlex]
 
-	if( pc_checkskill(sd,MC_PUSHCART) <= 0 )
+	if( pc_checkskill(sd,MC_PUSHCART) <= 0 && type != 0 )
 		return 1;// Push cart is required
 
 #if ( PACKETVER >= 20120201 )
@@ -7392,6 +7392,8 @@ int pc_setcart(struct map_session_data *sd,int type)
 			//clif_status_load_notick(&sd->bl, SI_ON_PUSH_CART,   2 , type, 0, 0);
 			//clif_status_change_single(&sd->bl, SI_ON_PUSH_CART, 2, 9999, type, 0, 0);
 			clif_status_change(&sd->bl, SI_ON_PUSH_CART, 2, 9999, type, 0, 0);
+			if (sd->sc.data[SC_ON_PUSH_CART])// Forcefully update
+				sd->sc.data[SC_ON_PUSH_CART]->val1 = type;
 			break;
 	}
 	

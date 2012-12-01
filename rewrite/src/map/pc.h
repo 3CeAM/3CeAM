@@ -338,7 +338,10 @@ struct map_session_data {
 
 	short spiritball, spiritball_old;
 	int spirit_timer[MAX_SKILL_LEVEL];
-	
+
+	short spiritballtype;
+	short spiritballnumber;
+
 	short rageball, rageball_old;
 	int rage_timer[MAX_RAGE];
 
