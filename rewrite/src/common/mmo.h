@@ -44,10 +44,11 @@
 // 20100721 - 2010-07-21aRagexeRE+ - 0x6b, 0x6d
 // 20100727 - 2010-07-27aRagexeRE+ - 0x6b, 0x6d
 // 20100803 - 2010-08-03aRagexeRE+ - 0x6b, 0x6d, 0x827, 0x828, 0x829, 0x82a, 0x82b, 0x82c, 0x842, 0x843
+// 20120307 - 2012-03-07aRagexeRE+ - 0x970
 
 #ifndef PACKETVER
 	//#define PACKETVER	20081126
-	#define PACKETVER 20111122
+	#define PACKETVER 20120410
 #endif
 // backward compatible PACKETVER 8 and 9
 #if PACKETVER == 8

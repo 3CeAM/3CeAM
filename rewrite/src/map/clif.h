@@ -28,13 +28,14 @@ struct quest;
 struct party_booking_ad_info;
 #include <stdarg.h>
 // packet DB
-#define MAX_PACKET_DB		0x910
-#define MAX_PACKET_VER		28
+#define MAX_PACKET_DB		0x980
+#define MAX_PACKET_VER		29
+#define	MAX_PACKET_POS		20
 
 struct s_packet_db {
 	short len;
 	void (*func)(int, struct map_session_data *);
-	short pos[20];
+	short pos[MAX_PACKET_POS];
 };
 
 // packet_db[SERVER] is reserved for server use
@@ -178,6 +179,7 @@ typedef enum clr_type
 	CLR_DEAD,
 	CLR_RESPAWN,
 	CLR_TELEPORT,
+	CLR_TRICKDEAD,
 } clr_type;
 
 enum map_property
@@ -654,5 +656,7 @@ void clif_status_change_single(struct block_list *dst, struct block_list *bl, in
 // Elementals
 void clif_elemental_info(struct map_session_data *sd);
 void clif_elemental_updatestatus(struct map_session_data *sd, int type);
+
+void clif_monster_hp_bar( struct mob_data* md, int fd );
 
 #endif /* _CLIF_H_ */

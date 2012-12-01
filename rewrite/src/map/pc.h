@@ -566,7 +566,14 @@ extern int duel_count;
 #define pc_ishiding(sd)       ( (sd)->sc.option&(OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK) )
 #define pc_iscloaking(sd)     ( !((sd)->sc.option&OPTION_CHASEWALK) && ((sd)->sc.option&OPTION_CLOAK) )
 #define pc_ischasewalk(sd)    ( (sd)->sc.option&OPTION_CHASEWALK )
+
+// Newer clients use a status to make carts appear while older ones use a OPTION.
+#if ( PACKETVER >= 20120201 )
+#define pc_iscarton(sd)       ( (sd)->sc.data[SC_ON_PUSH_CART] )
+#else
 #define pc_iscarton(sd)       ( (sd)->sc.option&OPTION_CART )
+#endif
+
 #define pc_isfalcon(sd)       ( (sd)->sc.option&OPTION_FALCON )
 #define pc_iswarg(sd)         ( (sd)->sc.option&OPTION_WUG )
 #define pc_isinvisible(sd)    ( (sd)->sc.option&OPTION_INVISIBLE )

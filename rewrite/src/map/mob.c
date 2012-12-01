@@ -1964,6 +1964,17 @@ void mob_damage(struct mob_data *md, struct block_list *src, int damage)
 	
 	if (!src)
 		return;
+
+#if PACKETVER >= 20120404
+	if( !(md->status.mode&MD_BOSS) ){
+		int i;
+		for(i = 0; i < DAMAGELOG_SIZE; i++){ // must show hp bar to all char who already hit the mob.
+			struct map_session_data *sd = map_charid2sd(md->dmglog[i].id);
+			if( sd && check_distance_bl(&md->bl, &sd->bl, AREA_SIZE) ) // check if in range
+				clif_monster_hp_bar(md, sd->fd);
+		}
+	}
+#endif
 	
 	if(md->special_state.ai==2/* && md->master_id == src->id*/)
 	{	//LOne WOlf explained that ANYONE can trigger the marine countdown skill. [Skotlex]
