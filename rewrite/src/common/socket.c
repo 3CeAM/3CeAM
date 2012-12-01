@@ -201,7 +201,8 @@ int naddr_ = 0;   // # of ip addresses
 
 // Maximum packet size in bytes, which the client is able to handle.
 // Larger packets cause a buffer overflow and stack corruption.
-static size_t socket_max_client_packet = 20480;
+//static size_t socket_max_client_packet = 20480;
+static size_t socket_max_client_packet = 29493;
 
 // initial recv buffer size (this will also be the max. size)
 // biggest known packet: S 0153 <len>.w <emblem data>.?B -> 24x24 256 color .bmp (0153 + len.w + 1618/1654/1756 bytes)

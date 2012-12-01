@@ -1241,8 +1241,8 @@ int clif_spawn(struct block_list *bl)
 				clif_status_change(&sd->bl,SI_KAGEMUSYA,1,9999,sd->sc.data[SC_KAGEMUSYA]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_ALL_RIDING] )
 				clif_status_change(&sd->bl,SI_ALL_RIDING,1,9999,sd->sc.data[SC_ALL_RIDING]->val1,0,0);
-			//if( sd->sc.count && sd->sc.data[SC_ON_PUSH_CART] )
-			//	clif_status_change(&sd->bl,SI_ON_PUSH_CART,1,9999,sd->sc.data[SC_ON_PUSH_CART]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_ON_PUSH_CART] )
+				clif_status_change(&sd->bl,SI_ON_PUSH_CART,1,9999,sd->sc.data[SC_ON_PUSH_CART]->val1,0,0);
 		}
 		break;
 	case BL_MOB:
@@ -4030,8 +4030,8 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_KAGEMUSYA,1,9999,tsd->sc.data[SC_KAGEMUSYA]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_ALL_RIDING] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_ALL_RIDING,1,9999,tsd->sc.data[SC_ALL_RIDING]->val1,0,0);
-			//if( tsd->sc.count && tsd->sc.data[SC_ON_PUSH_CART] )
-			//	clif_status_change_single(&sd->bl,&tsd->bl,SI_ON_PUSH_CART,1,9999,tsd->sc.data[SC_ON_PUSH_CART]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_ON_PUSH_CART] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_ON_PUSH_CART,1,9999,tsd->sc.data[SC_ON_PUSH_CART]->val1,0,0);
 		}
 		break;
 	case BL_MER: // Devotion Effects
@@ -4056,6 +4056,14 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 				clif_specialeffect_single(bl,423,sd->fd);
 			else if(md->special_state.size==1)
 				clif_specialeffect_single(bl,421,sd->fd);
+#if PACKETVER >= 20120404
+			if( !(md->status.mode&MD_BOSS) ){
+				int i;
+				for(i = 0; i < DAMAGELOG_SIZE; i++)// must show hp bar to all char who already hit the mob.
+					if( md->dmglog[i].id == sd->status.char_id )
+						clif_monster_hp_bar(md, sd->fd);
+			}
+#endif
 		}
 		break;
 	case BL_PET:
@@ -10342,8 +10350,14 @@ void clif_parse_GetItemFromCart(int fd,struct map_session_data *sd)
  *------------------------------------------*/
 void clif_parse_RemoveOption(int fd,struct map_session_data *sd)
 {
+#if ( PACKETVER >= 20120201 )
+	pc_setoption(sd,sd->sc.option&~(OPTION_RIDING|OPTION_FALCON|OPTION_RIDING_DRAGON|OPTION_MADO));
+	if( sd->sc.data[SC_ON_PUSH_CART] )
+		pc_setcart(sd,0);
+#else
 	//Can only remove Cart/Riding Peco/Falcon/Riding Dragon/Mado.
-	pc_setoption(sd,sd->sc.option&~(OPTION_CART|OPTION_RIDING|OPTION_FALCON|(OPTION_RIDING_DRAGON)|OPTION_MADO));
+	pc_setoption(sd,sd->sc.option&~(OPTION_CART|OPTION_RIDING|OPTION_FALCON|OPTION_RIDING_DRAGON|OPTION_MADO));
+#endif
 }
 
 /*==========================================
@@ -10358,11 +10372,23 @@ void clif_parse_ChangeCart(int fd,struct map_session_data *sd)
 
 	type = (int)RFIFOW(fd,2);
 
+#if ( PACKETVER >= 20120201 )
+	if( (type == 9 && sd->status.base_level > 131) ||
+	(type == 8 && sd->status.base_level > 121) ||
+	(type == 7 && sd->status.base_level > 111) ||
+	(type == 6 && sd->status.base_level > 101) ||
+	(type == 5 && sd->status.base_level >  90) ||
+	(type == 4 && sd->status.base_level >  80) ||
+	(type == 3 && sd->status.base_level >  65) ||
+	(type == 2 && sd->status.base_level >  40) ||
+	(type == 1))
+#else
 	if( (type == 5 && sd->status.base_level > 90) ||
 	    (type == 4 && sd->status.base_level > 80) ||
 	    (type == 3 && sd->status.base_level > 65) ||
 	    (type == 2 && sd->status.base_level > 40) ||
 	    (type == 1))
+#endif
 		pc_setcart(sd,type);
 }
 
@@ -15325,6 +15351,19 @@ void clif_search_store_info_click_ack(struct map_session_data* sd, short x, shor
 	WFIFOSET(fd,packet_len(0x83d));
 }
 
+void clif_monster_hp_bar( struct mob_data* md, int fd )
+{
+#if PACKETVER >= 20120404	
+	WFIFOHEAD(fd,packet_len(0x977));
+	
+	WFIFOW(fd,0)  = 0x977;
+	WFIFOL(fd,2)  = md->bl.id;
+	WFIFOL(fd,6)  = md->status.hp;
+	WFIFOL(fd,10) = md->status.max_hp;
+	
+	WFIFOSET(fd,packet_len(0x977));
+#endif
+}
 
 /// Parse function for packet debugging
 void clif_parse_debug(int fd,struct map_session_data *sd)
@@ -15610,22 +15649,26 @@ static int packetdb_readdb(void)
 #else // 0x22c changed
 	   10, -1, -1,  8, 10,  2,282, 18, 18, 15, 58, 57, 65,  5, 71,  5,
 #endif
-	   12, 26,  9, 11, -1, -1, 10,  2,282, 11,  4, 36, -1, -1,  4,  2,
+	   12, 26,  9, 11, -1, -1, 10,  2,282, 11,  4, 36,  6, -1,  4,  2,
 	//#0x0240
 	   -1, -1, -1, -1, -1,  3,  4,  8, -1,  3, 70,  4,  8, 12,  4, 10,
-	    3, 32, -1,  3,  3,  5,  5,  8,  2,  3, -1,  6,  4, -1,  4,  0,
+	    3, 32, -1,  3,  3,  5,  5,  8,  2,  3, -1,  6,  4,  6,  4,  6,
 	    6,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  8,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	//#0x0280
-	    0,  0,  0,  6,  0,  0,  0,  0,  0, 12, 18,  0,  0,  0,  0,  0,
-	    0,  4,  0, 70,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+#if PACKETVER < 20070711
+	    0,  0,  0,  6, 14,  0,  0, -1,  6,  8, 18,  0,  0,  0,  0,  0,
+#else
+	    0,  0,  0,  6, 14,  0,  0, -1, 10, 12, 18,  0,  0,  0,  0,  0, // 0x288, 0x289 increase by 4 (kafra points)
+#endif
+	    0,  4,  0, 70, 10,  0,  0,  0,  8,  6, 27, 80,  0, -1,  0,  0,
+	    0,  0,  8,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	   85, -1, -1,107,  6, -1,  7,  7, 22,191,  0,  8,  0,  0,  0,  0,
 	//#0x02C0
-	    0,  0,  0,  0,  0, 30,  6,  0,  0,  3,  0, 65,  4, 71, 10,  0,
-	   -1, -1,  0,  0, 29,  0,  6, -1, 10, 10,  3,  0, -1, 32,  6,  0,
-	    0, 33,  0,  0,  0,  0,  0,  0, -1,  0, -1,  0, 67, 59, 60,  8,
-	   10,  2,  2,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  8,  0,  0,
+	    0, -1,  0,  0,  0, 30, 30,  0,  0,  3,  0, 65,  4, 71, 10,  0,
+	   -1, -1, -1,  0, 29,  0,  6, -1, 10, 10,  3,  0, -1, 32,  6, 36,
+	   34, 33,  0,  0,  0,  0,  0,  0, -1, -1, -1, 13, 67, 59, 60,  8,
+	   10,  2,  2,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	//#0x0300
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -15664,7 +15707,7 @@ static int packetdb_readdb(void)
 	//#0x04C0
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  8,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	//#0x0500
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -15732,18 +15775,38 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0,  0,  0, 14, -1, -1, -1,  8, 25,  0,  0, 26,  0,
 	//#0x0800
 #if PACKETVER < 20091229
- 	   -1, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 14, 20,
+	   -1, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 14, 20,
 #else // for Party booking ( PACKETVER >= 20091229 )
 	   -1, -1, 18,  4,  8,  6,  2,  4, 14, 50, 18,  6,  2,  3, 14, 20,
 #endif
-	    3, -1,  8, -1,  86, 2,  6,  6, -1, -1,  4, 10, 10, 22,  8,  0,
+	    3, -1,  8, -1,  86, 2,  6,  6, -1, -1,  4, 10, 10,  0,  0,  0,
 	    0,  0,  0,  0,  6,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0, -1, -1,  3,  2, 66,  5,  2, 12,  6,  0,  0,
- 	//#0x0840
-		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-		0,  0,  0,  0,  0,  0, -1, -1, -1,  0,  0,  0,  0,  0,  0,  0,
-		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	//#0x0840
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0, -1, -1, -1, -1,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	//#0x0880
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	//#0x08C0
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 10,
+	    0,  0, 10,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	//#0x0900
+	    0,  0,  0,  0,  0,  0,  0,  0,  5,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	//#0x0940
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0, 14,  0,  0,  0,  0,  0,  0,  0,  0,
 	};
 	struct {
 		void (*func)(int, struct map_session_data *);
@@ -15947,6 +16010,7 @@ static int packetdb_readdb(void)
 		{clif_parse_SearchStoreInfoNextPage,"searchstoreinfonextpage"},
 		{clif_parse_CloseSearchStoreInfo,"closesearchstoreinfo"},
 		{clif_parse_SearchStoreInfoListItemClick,"searchstoreinfolistitemclick"},
+		//{ clif_parse_MoveItem , "moveitem" },
 		{NULL,NULL}
 	};
 
@@ -16066,6 +16130,13 @@ static int packetdb_readdb(void)
 			if(p2) *p2++=0;
 			k = atoi(str2[j]);
 			// if (packet_db[packet_ver][cmd].pos[j] != k && clif_config.prefer_packet_db)	// not used for now
+
+			if( j >= MAX_PACKET_POS )
+			{
+				ShowError("Too many positions found for packet 0x%04x (max=%d).\n", cmd, MAX_PACKET_POS);
+				break;
+			}
+
 			packet_db[packet_ver][cmd].pos[j] = k;
 		}
 	}
