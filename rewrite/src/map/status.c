@@ -243,7 +243,7 @@ void initChangeTables(void)
 	add_sc( MO_BLADESTOP         , SC_BLADESTOP_WAIT  );
 	add_sc( MO_BLADESTOP         , SC_BLADESTOP       );
 	set_sc( MO_EXPLOSIONSPIRITS  , SC_EXPLOSIONSPIRITS, SI_EXPLOSIONSPIRITS, SCB_CRI|SCB_REGEN );
-	set_sc( MO_EXTREMITYFIST     , SC_EXTREMITYFIST   , SI_BLANK           , SCB_REGEN );
+	set_sc( MO_EXTREMITYFIST     , SC_EXTREMITYFIST   , SI_EXTREMITYFIST   , SCB_REGEN );
 	add_sc( SA_MAGICROD          , SC_MAGICROD        );
 	set_sc( SA_AUTOSPELL         , SC_AUTOSPELL       , SI_AUTOSPELL       , SCB_NONE );
 	set_sc( SA_FLAMELAUNCHER     , SC_FIREWEAPON      , SI_FIREWEAPON      , SCB_ATK_ELE );
@@ -554,8 +554,20 @@ void initChangeTables(void)
 
 	set_sc( KO_YAMIKUMO          , SC_HIDING          , SI_HIDING          , SCB_NONE );
 	set_sc( KO_JYUMONJIKIRI      , SC_JYUMONJIKIRI    , SI_KO_JYUMONJIKIRI , SCB_NONE );
-
+	set_sc( KO_MEIKYOUSISUI      , SC_MEIKYOUSISUI    , SI_MEIKYOUSISUI    , SCB_NONE );
+	set_sc( KO_KYOUGAKU          , SC_KYOUGAKU        , SI_KYOUGAKU        , SCB_NONE );
+	add_sc( KO_KAHU_ENTEN        , SC_KAHU_ENTEN );
+	add_sc( KO_HYOUHU_HUBUKI     , SC_HYOUHU_HUBUKI );
+	add_sc( KO_KAZEHU_SEIRAN     , SC_KAZEHU_SEIRAN );
+	add_sc( KO_DOHU_KOUKAI       , SC_DOHU_KOUKAI );
+	set_sc( KO_ZENKAI            , SC_ZENKAI          , SI_ZENKAI          , SCB_NONE );
+	set_sc( KO_IZAYOI            , SC_IZAYOI          , SI_IZAYOI          , SCB_MATK );
+	set_sc( KG_KAGEHUMI          , SC_KAGEHUMI        , SI_KG_KAGEHUMI     , SCB_NONE );
+	set_sc( KG_KYOMU             , SC_KYOMU           , SI_KYOMU           , SCB_NONE );
 	set_sc( KG_KAGEMUSYA         , SC_KAGEMUSYA       , SI_KAGEMUSYA       , SCB_NONE );
+	set_sc( OB_ZANGETSU          , SC_ZANGETSU        , SI_ZANGETSU        , SCB_NONE );
+	set_sc( OB_OBOROGENSOU       , SC_GENSOU          , SI_GENSOU          , SCB_NONE );
+	set_sc( OB_AKAITSUKI         , SC_AKAITSUKI       , SI_AKAITSUKI       , SCB_NONE );
 
 	set_sc( HLIF_AVOID           , SC_AVOID           , SI_BLANK           , SCB_SPEED );
 	set_sc( HLIF_CHANGE          , SC_CHANGE          , SI_BLANK           , SCB_VIT|SCB_INT );
@@ -1018,7 +1030,8 @@ int status_damage(struct block_list *src,struct block_list *target,int hp, int s
 			status_change_end(target, SC_HIDING, INVALID_TIMER);
 			status_change_end(target, SC_CLOAKING, INVALID_TIMER);
 			status_change_end(target, SC_CHASEWALK, INVALID_TIMER);
-			status_change_end(target,SC_CAMOUFLAGE,-1);
+			status_change_end(target, SC_CAMOUFLAGE,-1);
+			status_change_end(target, SC_MEIKYOUSISUI,-1);
 			//status_change_end(target,SC_DEEPSLEEP,-1);//May be needed in a future update. [Rytech]
 			if ((sce=sc->data[SC_ENDURE]) && !sce->val4) {
 				//Endure count is only reduced by non-players on non-gvg maps.
@@ -1506,7 +1519,8 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 				sc->data[SC__IGNORANCE] || 
 				sc->data[SC_DEEPSLEEP] ||
 				sc->data[SC_CURSEDCIRCLE_TARGET] || 
-				sc->data[SC__SHADOWFORM]
+				sc->data[SC__SHADOWFORM] || 
+				sc->data[SC_MEIKYOUSISUI]
 			))
 				return 0;
 
@@ -4287,6 +4301,8 @@ static unsigned short status_calc_matk(struct block_list *bl, struct status_chan
 		matk += sc->data[SC_MANA_PLUS]->val1;
 	if(sc->data[SC_ODINS_POWER])
 		matk += 40 + 30 * sc->data[SC_ODINS_POWER]->val1;
+	if(sc->data[SC_IZAYOI])
+		matk += sc->data[SC_IZAYOI]->val2;
 	if(sc->data[SC_AQUAPLAY_OPTION])
 		matk += sc->data[SC_AQUAPLAY_OPTION]->val2;
 	if(sc->data[SC_CHILLY_AIR_OPTION])
@@ -7828,6 +7844,13 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val2 = status->vit / 4 * val1;//VIT defense increase.
 			val3 = 50 + 30 * val1;//Natural HP recovery rate increase.
 			break;
+		case SC_MEIKYOUSISUI:
+			val4 = tick / 1000;
+			tick = 1000;
+			break;
+		case SC_IZAYOI:
+			val2 = 30 * val1;// MATK Increase. This value is temporarly until new official value is found. [Rytech]
+			break;
 		case SC_KAGEMUSYA:
 			val4 = tick / 1000;
 			tick = 1000;
@@ -9751,6 +9774,15 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		{
 			if( !sc->data[type] ) return 0;
 			sc_timer_next(5000 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
+
+	case SC_MEIKYOUSISUI:
+		if( --(sce->val4) >= 0 )
+		{
+			status_heal(bl, status->max_hp * (2 * sce->val1) / 100, status->max_sp * (1 * sce->val1) / 100, 2);
+			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}
 		break;
