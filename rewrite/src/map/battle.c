@@ -1694,6 +1694,17 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					if (sd) status_set_sp(src, 0, 0);
 				}
 				break;
+			case KO_HAPPOKUNAI:
+				if( sd )
+				{
+					short index = sd->equip_index[EQI_AMMO];
+					wd.damage = 0;
+					if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_AMMO )
+						ATK_ADD((50 + 10 * skill_lv) * sd->inventory_data[index]->atk);
+				}
+				else
+					ATK_ADD(5000);
+				break;
 			case HFLI_SBR44:	//[orn]
 				if(src->type == BL_HOM) {
 					wd.damage = ((TBL_HOM*)src)->homunculus.intimacy ;
@@ -2596,14 +2607,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case KO_BAKURETSU:
 					skillratio = 10 * skill_lv * pc_checkskill(sd, NJ_TOBIDOUGU);
-					break;
-				case KO_HAPPOKUNAI:
-					if( sd )
-					{
-						short index = sd->equip_index[EQI_AMMO];
-						if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_AMMO )
-							skillratio = (50 + 10 * skill_lv) * sd->inventory_data[index]->atk;
-					}
 					break;
 				case KO_HUUMARANKA:
 					skillratio = 150 * skill_lv + (sstatus->agi + sstatus->dex) * pc_checkskill(sd, NJ_HUUMA);

@@ -1262,8 +1262,20 @@ int clif_spawn(struct block_list *bl)
 				clif_status_change(&sd->bl,SI_MANHOLE,1,9999,sd->sc.data[SC__MANHOLE]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_JYUMONJIKIRI] )
 				clif_status_change(&sd->bl,SI_KO_JYUMONJIKIRI,1,9999,sd->sc.data[SC_JYUMONJIKIRI]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_MEIKYOUSISUI] )
+				clif_status_change(&sd->bl,SI_MEIKYOUSISUI,1,9999,sd->sc.data[SC_MEIKYOUSISUI]->val1,0,0);
+			//if( sd->sc.count && sd->sc.data[SC_KYOUGAKU] )
+			//	clif_status_change(&sd->bl,SI_KYOUGAKU,1,9999,sd->sc.data[SC_KYOUGAKU]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_KYOMU] )
+				clif_status_change(&sd->bl,SI_KYOMU,1,9999,sd->sc.data[SC_KYOMU]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_KAGEMUSYA] )
 				clif_status_change(&sd->bl,SI_KAGEMUSYA,1,9999,sd->sc.data[SC_KAGEMUSYA]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_ZANGETSU] )
+				clif_status_change(&sd->bl,SI_ZANGETSU,1,9999,sd->sc.data[SC_ZANGETSU]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_GENSOU] )
+				clif_status_change(&sd->bl,SI_GENSOU,1,9999,sd->sc.data[SC_GENSOU]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_AKAITSUKI] )
+				clif_status_change(&sd->bl,SI_AKAITSUKI,1,9999,sd->sc.data[SC_AKAITSUKI]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_ALL_RIDING] )
 				clif_status_change(&sd->bl,SI_ALL_RIDING,1,9999,sd->sc.data[SC_ALL_RIDING]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_ON_PUSH_CART] )
@@ -4051,8 +4063,20 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_MANHOLE,1,9999,tsd->sc.data[SC__MANHOLE]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_JYUMONJIKIRI] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_KO_JYUMONJIKIRI,1,9999,tsd->sc.data[SC_JYUMONJIKIRI]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_MEIKYOUSISUI] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_MEIKYOUSISUI,1,9999,tsd->sc.data[SC_MEIKYOUSISUI]->val1,0,0);
+			//if( tsd->sc.count && tsd->sc.data[SC_KYOUGAKU] )
+			//	clif_status_change_single(&sd->bl,&tsd->bl,SI_KYOUGAKU,1,9999,tsd->sc.data[SC_KYOUGAKU]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_KYOMU] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_KYOMU,1,9999,tsd->sc.data[SC_KYOMU]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_KAGEMUSYA] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_KAGEMUSYA,1,9999,tsd->sc.data[SC_KAGEMUSYA]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_ZANGETSU] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_ZANGETSU,1,9999,tsd->sc.data[SC_ZANGETSU]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_GENSOU] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_GENSOU,1,9999,tsd->sc.data[SC_GENSOU]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_AKAITSUKI] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_AKAITSUKI,1,9999,tsd->sc.data[SC_AKAITSUKI]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_ALL_RIDING] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_ALL_RIDING,1,9999,tsd->sc.data[SC_ALL_RIDING]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_ON_PUSH_CART] )

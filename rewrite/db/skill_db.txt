@@ -1240,29 +1240,29 @@
 3008,11,8,2,0,0x56,1:1:1:1:1:1:1:1:1:2,10,-10,no,0,0,0,misc,0,	KO_MUCHANAGE,Over Throw//Tester on official Russin RO server said damage is split between targets.
 3009,9:10:11:12:13,8,2,-1,0x6,3,5,-5,no,0,0,0,weapon,0,		KO_HUUMARANKA,Launch Huuma Shuriken//Does this skill divide damage between targets like the weaker version?
 3010,0,6,4,0,0x50,0,5,1,no,0,0,0,misc,0,		KO_MAKIBISHI,Makibishi//Im sure it ignores elemental adjustments and flee due to the purpose of the skill.
-3011,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		KO_MEIKYOUSISUI,Dummy11
-3012,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		KO_ZANZOU,Dummy12// Creates a clone of yourself....kinda. Uses monster ID 2308
-3013,5,6,1,0,0x1,0,5,1,no,0,0,0,none,0,		KO_KYOUGAKU,Dummy13
-3014,5,6,1,0,0x1,0,5,1,no,0,0,0,none,0,		KO_JYUSATSU,Dummy14
-3015,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		KO_KAHU_ENTEN,Dummy15
-3016,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		KO_HYOUHU_HUBUKI,Dummy16
-3017,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		KO_KAZEHU_SEIRAN,Dummy17
-3018,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		KO_DOHU_KOUKAI,Dummy18
-3019,11,6,1,0,0,0,1,1,no,0,0,0,magic,0,		KO_KAIHOU,Dummy19
-3020,7,6,2,0,0x1,0,1,1,no,0,0,0,none,0,		KO_ZENKAI,Dummy20
-3021,5:6:7:8:9,6,1,0,0x1,0,5,1,no,0,0,0,none,0,	KO_GENWAKU,Dummy21
-3022,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		KO_IZAYOI,Dummy22
+3011,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		KO_MEIKYOUSISUI,Clear Meditation
+3012,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		KO_ZANZOU,Illusion - After Image// Creates a clone of yourself....kinda. Uses monster ID 2308
+3013,5,6,1,0,0x1,0,5,1,no,0,0,0,none,0,		KO_KYOUGAKU,Illusion - Shock
+3014,5,6,1,0,0x1,0,5,1,no,0,0,0,none,0,		KO_JYUSATSU,Illusion - Killing Curse
+3015,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		KO_KAHU_ENTEN,Fire Seal - Scorching Fure
+3016,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		KO_HYOUHU_HUBUKI,Water Seal - Snow Storm
+3017,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		KO_KAZEHU_SEIRAN,Wind Seal - Turbulent Wind
+3018,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		KO_DOHU_KOUKAI,Earth Seal - Steel
+3019,11,6,1,0,0,0,1,1,no,0,0,0,magic,0,		KO_KAIHOU,Release Seals
+3020,7,6,2,0,0x1,0,1,1,no,0,0,0,none,0,		KO_ZENKAI,Spread Seals
+3021,5:6:7:8:9,6,1,0,0x1,0,5,1,no,0,0,0,none,0,	KO_GENWAKU,Illusion - Attraction
+3022,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		KO_IZAYOI,16th Night
 
 // Kagerou
-3023,0,6,4,0,0x3,2:3:4:5:6,5,1,no,0,0,0,none,0,	KG_KAGEHUMI,Dummy23
-3024,1,6,1,0,0x1,0,5,1,no,0,0,0,none,0,		KG_KYOMU,Dummy24
+3023,0,6,4,0,0x3,2:3:4:5:6,5,1,no,0,0,0,none,0,	KG_KAGEHUMI,Shadow Hold
+3024,1,6,1,0,0x1,0,5,1,no,0,0,0,none,0,		KG_KYOMU,Shadow Void
 3025,1,6,16,0,0x1,0,5,1,no,0,0,0,none,0,	KG_KAGEMUSYA,Shadow Warrior//Range is 1 or 0?
 
 // Oboro
-3026,7,6,16,0,0x1,0,5,1,no,0,0,0,none,0,	OB_ZANGETSU,Dummy26
-3027,7,6,16,0,0x1,0,5,1,no,0,0,0,none,0,	OB_OBOROGENSOU,Dummy27
-3028,0,6,4,0,0x2,2,5,1,no,0,0,0,misc,0,		OB_OBOROGENSOU_TRANSITION_ATK,Dummy28//Deflected damage means reflected damage. Cant be reduced or reflected again.
-3029,7,6,1,0,0x1,0,5,1,no,0,0,0,none,0,		OB_AKAITSUKI,Dummy29
+3026,7,6,16,0,0x1,0,5,1,no,0,0,0,none,0,	OB_ZANGETSU,Distorted Crescent Moon
+3027,7,6,16,0,0x1,0,5,1,no,0,0,0,none,0,	OB_OBOROGENSOU,Hazy Moonlight Illusion
+3028,0,6,4,0,0x2,2,5,1,no,0,0,0,misc,0,		OB_OBOROGENSOU_TRANSITION_ATK,Hazy Moonlight Illusion Transition Attack//Deflected damage means reflected damage. Cant be reduced or reflected again.
+3029,7,6,1,0,0x1,0,5,1,no,0,0,0,none,0,		OB_AKAITSUKI,Ominous Crimson Moonlight
 
 // Eclage Skills
 3031,7,6,16,0,0x1,0,1,1,no,0,0,0,none,0,	ECL_SNOWFLIP,Snow Flip

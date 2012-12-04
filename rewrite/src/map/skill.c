@@ -5149,12 +5149,18 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SR_GENTLETOUCH_REVITALIZE:
 	case GN_CARTBOOST:
 	case ALL_ODINS_POWER:
+	case KO_MEIKYOUSISUI:
 		clif_skill_nodamage(src,bl,skillid,skilllv,
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
 		break;
 
+	case KO_IZAYOI:
+	case KG_KYOMU:
 	case KG_KAGEMUSYA:
-		if ( bl->type != BL_PC ) 
+	case OB_ZANGETSU:
+	case OB_OBOROGENSOU:
+	case OB_AKAITSUKI:
+		if ( bl->type != BL_PC && skillid == KG_KAGEMUSYA )
 		{
 			clif_skill_fail(sd,skillid,0,0,0);
 			break;
@@ -5162,6 +5168,40 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, 0, 1, skillid, -2, 6);
 		sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
+		break;
+
+	/*case KO_KYOUGAKU:
+		if ( bl->type != BL_PC )
+		{
+			clif_skill_fail(sd,skillid,0,0,0);
+			break;
+		}
+		//Used skill level must be used in val2 since val1 sets the ID of the monster the target will turn into. [Rytech]
+		//For now the monster ID for Poring will be used until more info is gained about what mob's it changes you into.
+		sc_start2(bl,type,100,1002,skilllv,skill_get_time(skillid,skilllv));
+		break;*/
+
+	case KG_KAGEHUMI:
+		if( flag&1 )
+		{
+			if( tsc && (tsc->data[SC_HIDING] || tsc->data[SC_CLOAKING] || tsc->data[SC_CAMOUFLAGE] || 
+				tsc->data[SC_CLOAKINGEXCEED] || tsc->data[SC__SHADOWFORM]) )
+			{
+				status_change_end(bl, SC_HIDING, -1);
+				status_change_end(bl, SC_CLOAKING, -1);
+				status_change_end(bl, SC_CAMOUFLAGE, -1);
+				status_change_end(bl, SC_CLOAKINGEXCEED, -1);
+				status_change_end(bl, SC__SHADOWFORM, -1);
+				sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
+			}
+		}
+		else
+		{
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+			clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, 0, 1, skillid, -2, 6);
+			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), BL_CHAR,
+				src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
+		}
 		break;
 
 	case SO_STRIKING:
@@ -10072,7 +10112,8 @@ int skill_castend_map (struct map_session_data *sd, short skill_num, const char 
 		sd->sc.data[SC_WHITEIMPRISON] ||
 		//sd->sc.data[SC_STASIS] ||//Not sure if this is needed. Does as it should without it, but leaving here for now. [Rytech]
 		sd->sc.data[SC_CRYSTALIZE] ||
-		sd->sc.data[SC__MANHOLE]
+		sd->sc.data[SC__MANHOLE] ||
+		sd->sc.data[SC_MEIKYOUSISUI]
 	 )) {
 		skill_failed(sd);
 		return 0;
@@ -13310,6 +13351,8 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 				status_change_end(bl, SC_MEMORIZE, -1);}
 		if (sc->data[SC_SLOWCAST])
 			time += time * sc->data[SC_SLOWCAST]->val2 / 100;
+		if (sc->data[SC_IZAYOI] && skill_id >= NJ_TOBIDOUGU && skill_id <= NJ_ISSEN)
+			time -= time * 50 / 100;
 	}
 
 	//These status's adjust the fixed cast time by a fixed amount. Fixed adjustments stack and can increase or decrease the time.
