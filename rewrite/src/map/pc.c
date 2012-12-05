@@ -226,6 +226,106 @@ int pc_delspiritball(struct map_session_data *sd,int count,int type)
 	return 0;
 }
 
+static int pc_spiritball_attribute_timer(int tid, unsigned int tick, int id, intptr data)
+{
+	struct map_session_data *sd;
+	int i;
+
+	if( (sd=(struct map_session_data *)map_id2sd(id)) == NULL || sd->bl.type!=BL_PC )
+		return 1;
+
+	if( sd->spiritballnumber <= 0 )
+	{
+		ShowError("pc_spiritball_attribute_timer: %d spiritball's available. (aid=%d cid=%d tid=%d)\n", sd->spiritballnumber, sd->status.account_id, sd->status.char_id, tid);
+		sd->spiritballnumber = 0;
+		return 0;
+	}
+
+	ARR_FIND(0, sd->spiritballnumber, i, sd->spirit_attribute_timer[i] == tid);
+	if( i == sd->spiritballnumber )
+	{
+		ShowError("pc_spiritball_attribute_timer: timer not found (aid=%d cid=%d tid=%d)\n", sd->status.account_id, sd->status.char_id, tid);
+		return 0;
+	}
+
+	sd->spiritballnumber--;
+	if( i != sd->spiritballnumber )
+		memmove(sd->spirit_attribute_timer+i, sd->spirit_attribute_timer+i+1, (sd->spiritballnumber-i)*sizeof(int));
+	sd->spirit_attribute_timer[sd->spiritballnumber] = INVALID_TIMER;
+
+	clif_spiritball_attribute(sd);
+
+	return 0;
+}
+
+int pc_addspiritball_attribute(struct map_session_data *sd,int interval,int max)
+{
+	int tid, i;
+
+	nullpo_ret(sd);
+
+	if(max > MAX_SKILL_LEVEL)
+		max = MAX_SKILL_LEVEL;
+	if(sd->spiritballnumber < 0)
+		sd->spiritballnumber = 0;
+
+	if( sd->spiritballnumber && sd->spiritballnumber >= max )
+	{
+		if(sd->spirit_attribute_timer[0] != INVALID_TIMER)
+			delete_timer(sd->spirit_attribute_timer[0],pc_spiritball_attribute_timer);
+		sd->spiritballnumber--;
+		if( sd->spiritballnumber != 0 )
+			memmove(sd->spirit_attribute_timer+0, sd->spirit_attribute_timer+1, (sd->spiritballnumber)*sizeof(int));
+		sd->spirit_attribute_timer[sd->spiritballnumber] = INVALID_TIMER;
+	}
+
+	tid = add_timer(gettick()+interval, pc_spiritball_attribute_timer, sd->bl.id, 0);
+	ARR_FIND(0, sd->spiritballnumber, i, sd->spirit_attribute_timer[i] == INVALID_TIMER || DIFF_TICK(get_timer(tid)->tick, get_timer(sd->spirit_attribute_timer[i])->tick) < 0);
+	if( i != sd->spiritballnumber )
+		memmove(sd->spirit_attribute_timer+i+1, sd->spirit_attribute_timer+i, (sd->spiritballnumber-i)*sizeof(int));
+	sd->spirit_attribute_timer[i] = tid;
+	sd->spiritballnumber++;
+	clif_spiritball_attribute(sd);
+
+	return 0;
+}
+
+int pc_delspiritball_attribute(struct map_session_data *sd,int count,int type)
+{
+	int i;
+
+	nullpo_ret(sd);
+
+	if(sd->spiritballnumber <= 0) {
+		sd->spiritballnumber = 0;
+		return 0;
+	}
+
+	if(count <= 0)
+		return 0;
+	if(count > sd->spiritballnumber)
+		count = sd->spiritballnumber;
+	sd->spiritballnumber -= count;
+	if(count > MAX_SKILL_LEVEL)
+		count = MAX_SKILL_LEVEL;
+
+	for(i=0;i<count;i++) {
+		if(sd->spirit_attribute_timer[i] != INVALID_TIMER) {
+			delete_timer(sd->spirit_attribute_timer[i],pc_spiritball_attribute_timer);
+			sd->spirit_attribute_timer[i] = INVALID_TIMER;
+		}
+	}
+	for(i=count;i<MAX_SKILL_LEVEL;i++) {
+		sd->spirit_attribute_timer[i-count] = sd->spirit_attribute_timer[i];
+		sd->spirit_attribute_timer[i] = INVALID_TIMER;
+	}
+
+	if(!type)
+		clif_spiritball_attribute(sd);
+
+	return 0;
+}
+
 int pc_overheat(struct map_session_data *sd, int val)
 {
 	int heat = val, skill,
@@ -1115,6 +1215,8 @@ bool pc_authok(struct map_session_data *sd, int login_id2, time_t expiration_tim
 
 	for(i = 0; i < MAX_SKILL_LEVEL; i++)
 		sd->spirit_timer[i] = INVALID_TIMER;
+	for(i = 0; i < MAX_SKILL_LEVEL; i++)
+		sd->spirit_attribute_timer[i] = INVALID_TIMER;
 	for(i = 0; i < ARRAYLENGTH(sd->autobonus); i++)
 		sd->autobonus[i].active = INVALID_TIMER;
 	for(i = 0; i < ARRAYLENGTH(sd->autobonus2); i++)
@@ -6437,6 +6539,9 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 	if ( sd && sd->spiritball )
 		pc_delspiritball(sd,sd->spiritball,0);
 
+	if ( sd && sd->spiritballnumber )
+		pc_delspiritball_attribute(sd,sd->spiritballnumber,0);
+
 	if (src)
 	switch (src->type) {
 	case BL_MOB:
@@ -9219,6 +9324,7 @@ int do_init_pc(void)
 	add_timer_func_list(pc_calc_pvprank_timer, "pc_calc_pvprank_timer");
 	add_timer_func_list(pc_autosave, "pc_autosave");
 	add_timer_func_list(pc_spiritball_timer, "pc_spiritball_timer");
+	add_timer_func_list(pc_spiritball_attribute_timer, "pc_spiritball_attribute_timer");
 	add_timer_func_list(pc_follow_timer, "pc_follow_timer");
 	add_timer_func_list(pc_endautobonus, "pc_endautobonus");
 	add_timer_func_list(pc_rageball_timer, "pc_rageball_timer");

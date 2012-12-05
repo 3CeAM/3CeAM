@@ -6452,6 +6452,17 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		status_change_end(bl, SC_GT_CHANGE, INVALID_TIMER);
 		status_change_end(bl, SC_GT_REVITALIZE, INVALID_TIMER);
 		break;
+	case SC_KAHU_ENTEN:
+	case SC_HYOUHU_HUBUKI:
+	case SC_KAZEHU_SEIRAN:
+	case SC_DOHU_KOUKAI:
+		if( sc->data[type] ) // Don't remove same sc.
+			break;
+		status_change_end(bl, SC_KAHU_ENTEN, INVALID_TIMER);
+		status_change_end(bl, SC_HYOUHU_HUBUKI, INVALID_TIMER);
+		status_change_end(bl, SC_KAZEHU_SEIRAN, INVALID_TIMER);
+		status_change_end(bl, SC_DOHU_KOUKAI, INVALID_TIMER);
+		break;
 	}
 
 	//Check for overlapping fails
@@ -8028,6 +8039,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_VACUUM_EXTREME:
 		case SC_CURSEDCIRCLE_ATKER:
 		case SC_CURSEDCIRCLE_TARGET:
+		case SC_MEIKYOUSISUI:
 			unit_stop_walking(bl,1);
 		break;
 		case SC_HIDING:
@@ -9997,6 +10009,10 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC_CURSEDCIRCLE_ATKER:
 			case SC_CURSEDCIRCLE_TARGET:
 			case SC_ON_PUSH_CART:
+			case SC_KAHU_ENTEN:
+			case SC_HYOUHU_HUBUKI:
+			case SC_KAZEHU_SEIRAN:
+			case SC_DOHU_KOUKAI:
 				continue;
 
 			//Debuffs that can be removed.

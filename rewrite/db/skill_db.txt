@@ -1244,7 +1244,7 @@
 3012,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		KO_ZANZOU,Illusion - After Image// Creates a clone of yourself....kinda. Uses monster ID 2308
 3013,5,6,1,0,0x1,0,5,1,no,0,0,0,none,0,		KO_KYOUGAKU,Illusion - Shock
 3014,5,6,1,0,0x1,0,5,1,no,0,0,0,none,0,		KO_JYUSATSU,Illusion - Killing Curse
-3015,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		KO_KAHU_ENTEN,Fire Seal - Scorching Fure
+3015,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		KO_KAHU_ENTEN,Fire Seal - Scorching Fire
 3016,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		KO_HYOUHU_HUBUKI,Water Seal - Snow Storm
 3017,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		KO_KAZEHU_SEIRAN,Wind Seal - Turbulent Wind
 3018,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		KO_DOHU_KOUKAI,Earth Seal - Steel

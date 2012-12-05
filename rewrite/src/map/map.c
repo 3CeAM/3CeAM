@@ -1792,6 +1792,10 @@ int map_quit(struct map_session_data *sd)
 		status_change_end(&sd->bl, SC_OVERHEAT_LIMITPOINT, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_RAISINGDRAGON, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_OVERHEAT, INVALID_TIMER);
+		status_change_end(&sd->bl, SC_KAHU_ENTEN, INVALID_TIMER);
+		status_change_end(&sd->bl, SC_HYOUHU_HUBUKI, INVALID_TIMER);
+		status_change_end(&sd->bl, SC_KAZEHU_SEIRAN, INVALID_TIMER);
+		status_change_end(&sd->bl, SC_DOHU_KOUKAI, INVALID_TIMER);
 
 		if( battle_config.debuff_on_logout&1 )
 		{
