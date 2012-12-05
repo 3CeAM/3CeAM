@@ -339,8 +339,8 @@ struct map_session_data {
 	short spiritball, spiritball_old;
 	int spirit_timer[MAX_SKILL_LEVEL];
 
-	short spiritballtype;
-	short spiritballnumber;
+	short spiritballnumber, spiritballnumber_old;//Sets the sphere number for sphere's with attributes.
+	int spirit_attribute_timer[MAX_SKILL_LEVEL];//Thought about using spirit_timer for attribute type sphere's too, but decided to use a dedicated system insteaed. [Rytech]
 
 	short rageball, rageball_old;
 	int rage_timer[MAX_RAGE];
@@ -801,6 +801,8 @@ void pc_delinvincibletimer(struct map_session_data* sd);
 int pc_overheat(struct map_session_data *sd, int val);
 int pc_addspiritball(struct map_session_data *sd,int,int);
 int pc_delspiritball(struct map_session_data *sd,int,int);
+int pc_addspiritball_attribute(struct map_session_data *sd,int,int);
+int pc_delspiritball_attribute(struct map_session_data *sd,int,int);
 int pc_addrageball(struct map_session_data *sd,int interval, int max);
 int pc_delrageball(struct map_session_data *sd,int);
 void pc_addfame(struct map_session_data *sd,int count);

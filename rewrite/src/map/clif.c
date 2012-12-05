@@ -1126,12 +1126,24 @@ static void clif_spiritball_single(int fd, struct map_session_data *sd)
  *------------------------------------------*/
 static void clif_spiritball_attribute_single(int fd, struct map_session_data *sd)
 {
-    WFIFOHEAD(fd, packet_len(0x08cf));
-    WFIFOW(fd,0)=0x08cf;
-    WFIFOL(fd,2)=sd->bl.id;
-    WFIFOW(fd,6)=sd->spiritballtype;
-    WFIFOW(fd,8)=sd->spiritballnumber;
-    WFIFOSET(fd, packet_len(0x08cf));
+	int spirittype = 0;
+	if ( sd->sc.count && (sd->sc.data[SC_KAHU_ENTEN] || sd->sc.data[SC_HYOUHU_HUBUKI] || 
+		sd->sc.data[SC_KAZEHU_SEIRAN] || sd->sc.data[SC_DOHU_KOUKAI]) )
+		if ( sd->sc.data[SC_KAHU_ENTEN] )
+			spirittype = 3;
+		else if ( sd->sc.data[SC_HYOUHU_HUBUKI] )
+			spirittype = 1;
+		else if ( sd->sc.data[SC_KAZEHU_SEIRAN] )
+			spirittype = 4;
+		else if ( sd->sc.data[SC_DOHU_KOUKAI] )
+			spirittype = 2;
+
+	WFIFOHEAD(fd, packet_len(0x08cf));
+	WFIFOW(fd,0)=0x08cf;
+	WFIFOL(fd,2)=sd->bl.id;
+	WFIFOW(fd,6)=spirittype;
+	WFIFOW(fd,8)=sd->spiritballnumber;
+	WFIFOSET(fd, packet_len(0x08cf));
 }
 
 /*==========================================
@@ -1211,6 +1223,8 @@ int clif_spawn(struct block_list *bl)
 			TBL_PC *sd = ((TBL_PC*)bl);
 			if (sd->spiritball > 0)
 				clif_spiritball(sd);
+			if (sd->spiritballnumber > 0)
+				clif_spiritball_attribute(sd);
 			if(sd->state.size==2) // tiny/big players [Valaris]
 				clif_specialeffect(bl,423,AREA);
 			else if(sd->state.size==1)
@@ -3971,6 +3985,9 @@ static void clif_getareachar_pc(struct map_session_data* sd,struct map_session_d
 
 	if(dstsd->spiritball > 0)
 		clif_spiritball_single(sd->fd, dstsd);
+
+	if(dstsd->spiritballnumber > 0)
+		clif_spiritball_attribute_single(sd->fd, dstsd);
 
 	if( (sd->status.party_id && dstsd->status.party_id == sd->status.party_id) || //Party-mate, or hpdisp setting.
 		(sd->state.bg_id && sd->state.bg_id == dstsd->state.bg_id) || //BattleGround
@@ -6992,6 +7009,47 @@ int clif_spiritball(struct map_session_data *sd)
 }
 
 /*==========================================
+ * ZC_SPIRITS_ATTRIBUTE =  0x8cf
+ * this+0x0 / short PacketType
+ * this+0x2 / unsigned long AID
+ * this+0x6 / short SpritsType
+ * this+0x8 / short Num
+ *
+ * SpiritsType
+ * SPIRITS_TYPE_NONE =  0x0
+ * SPIRITS_TYPE_CHARM_WATER =  0x1
+ * SPIRITS_TYPE_CHARM_LAND =  0x2
+ * SPIRITS_TYPE_CHARM_FIRE =  0x3
+ * SPIRITS_TYPE_CHARM_WIND =  0x4
+ * SPIRTIS_TYPE_SPHERE =  0x5
+ *------------------------------------------*/
+int clif_spiritball_attribute(struct map_session_data *sd)
+{
+	unsigned char buf[16];
+	int spirittype = 0;
+
+	nullpo_ret(sd);
+
+	if ( sd->sc.count && (sd->sc.data[SC_KAHU_ENTEN] || sd->sc.data[SC_HYOUHU_HUBUKI] || 
+		sd->sc.data[SC_KAZEHU_SEIRAN] || sd->sc.data[SC_DOHU_KOUKAI]) )
+		if ( sd->sc.data[SC_KAHU_ENTEN] )
+			spirittype = 3;
+		else if ( sd->sc.data[SC_HYOUHU_HUBUKI] )
+			spirittype = 1;
+		else if ( sd->sc.data[SC_KAZEHU_SEIRAN] )
+			spirittype = 4;
+		else if ( sd->sc.data[SC_DOHU_KOUKAI] )
+			spirittype = 2;
+
+	WBUFW(buf,0)=0x08cf;
+	WBUFL(buf,2)=sd->bl.id;
+	WBUFW(buf,6)=spirittype;
+	WBUFW(buf,8)=sd->spiritballnumber;
+	clif_send(buf,packet_len(0x08cf),&sd->bl,AREA);
+	return 0;
+}
+
+/*==========================================
  *
  *------------------------------------------*/
 int clif_combo_delay(struct block_list *bl,int wait)
@@ -8163,6 +8221,8 @@ int clif_refresh(struct map_session_data *sd)
 	clif_updatestatus(sd,SP_LUK);
 	if (sd->spiritball)
 		clif_spiritball_single(sd->fd, sd);
+	if (sd->spiritballnumber)
+		clif_spiritball_attribute_single(sd->fd, sd);
 	if (sd->vd.cloth_color)
 		clif_refreshlook(&sd->bl,sd->bl.id,LOOK_CLOTHES_COLOR,sd->vd.cloth_color,SELF);
 	if(merc_is_hom_active(sd->hd))

@@ -6348,7 +6348,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_STEALTHFIELD:			case SC_GIANTGROWTH:			case SC_MILLENNIUMSHIELD:
 				case SC_REFRESH:			case SC_STONEHARDSKIN:			case SC_VITALITYACTIVATION:
 				case SC_FIGHTINGSPIRIT:			case SC_ABUNDANCE:			case SC__SHADOWFORM:
-				case SC_RECOGNIZEDSPELL:		case SC_ON_PUSH_CART:
+				case SC_RECOGNIZEDSPELL:		case SC_ON_PUSH_CART:		case SC_KAHU_ENTEN:
+				case SC_HYOUHU_HUBUKI:			case SC_KAZEHU_SEIRAN:			case SC_DOHU_KOUKAI:
 					continue;
 				case SC_ASSUMPTIO:
 					if( bl->type == BL_MOB )
@@ -7713,7 +7714,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_DROCERA_HERB_STEAMED: case SC_PUTTI_TAILS_NOODLES:
 				case SC_NEUTRALBARRIER_MASTER: case SC_NEUTRALBARRIER:
 				case SC_STEALTHFIELD_MASTER: case SC_STEALTHFIELD:
-				case SC_ON_PUSH_CART:
+				case SC_ON_PUSH_CART:		case SC_KAHU_ENTEN:
+				case SC_HYOUHU_HUBUKI:			case SC_KAZEHU_SEIRAN:
+				case SC_DOHU_KOUKAI:
 					continue;
 				case SC_ASSUMPTIO:
 					if( bl->type == BL_MOB )
@@ -8741,6 +8744,20 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			sd->skilllv_old = skilllv;
 			clif_cooking_list(sd,29,skillid,1,6);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		}
+		break;
+
+
+	case KO_KAHU_ENTEN:
+	case KO_HYOUHU_HUBUKI:
+	case KO_KAZEHU_SEIRAN:
+	case KO_DOHU_KOUKAI:
+		if(sd)
+		{
+			if( tsc && !tsc->data[type] )
+				pc_delspiritball_attribute(sd,sd->spiritballnumber,1);
+			sc_start(bl, type, 100, skilllv, skill_get_time2(skillid,skilllv));
+			pc_addspiritball_attribute(sd,skill_get_time(skillid,skilllv),10);
 		}
 		break;
 
@@ -12645,6 +12662,16 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		if( !sd->status.ele_id || !sd->ed )
 		{
 			clif_skill_fail(sd,skill,0x00,0,0);
+			return 0;
+		}
+		break;
+	case KO_KAHU_ENTEN:
+	case KO_HYOUHU_HUBUKI:
+	case KO_KAZEHU_SEIRAN:
+	case KO_DOHU_KOUKAI:
+		if(sd->spiritballnumber >= 10)
+		{
+			clif_skill_fail(sd,skill,0,0,0);
 			return 0;
 		}
 		break;
