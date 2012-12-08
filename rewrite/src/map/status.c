@@ -556,10 +556,10 @@ void initChangeTables(void)
 	set_sc( KO_JYUMONJIKIRI      , SC_JYUMONJIKIRI    , SI_KO_JYUMONJIKIRI , SCB_NONE );
 	set_sc( KO_MEIKYOUSISUI      , SC_MEIKYOUSISUI    , SI_MEIKYOUSISUI    , SCB_NONE );
 	set_sc( KO_KYOUGAKU          , SC_KYOUGAKU        , SI_KYOUGAKU        , SCB_NONE );
-	add_sc( KO_KAHU_ENTEN        , SC_KAHU_ENTEN );
-	add_sc( KO_HYOUHU_HUBUKI     , SC_HYOUHU_HUBUKI );
-	add_sc( KO_KAZEHU_SEIRAN     , SC_KAZEHU_SEIRAN );
-	add_sc( KO_DOHU_KOUKAI       , SC_DOHU_KOUKAI );
+	set_sc( KO_KAHU_ENTEN        , SC_KAHU_ENTEN      , SI_BLANK           , SCB_ATK_ELE );
+	set_sc( KO_HYOUHU_HUBUKI     , SC_HYOUHU_HUBUKI   , SI_BLANK           , SCB_ATK_ELE );
+	set_sc( KO_KAZEHU_SEIRAN     , SC_KAZEHU_SEIRAN   , SI_BLANK           , SCB_ATK_ELE );
+	set_sc( KO_DOHU_KOUKAI       , SC_DOHU_KOUKAI     , SI_BLANK           , SCB_WATK|SCB_DEF|SCB_ATK_ELE );
 	set_sc( KO_ZENKAI            , SC_ZENKAI          , SI_ZENKAI          , SCB_NONE );
 	set_sc( KO_IZAYOI            , SC_IZAYOI          , SI_IZAYOI          , SCB_MATK );
 	set_sc( KG_KAGEHUMI          , SC_KAGEHUMI        , SI_KG_KAGEHUMI     , SCB_NONE );
@@ -1638,7 +1638,9 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 				return 0;
 			if( tsc->option&hide_flag && !(status->mode&MD_BOSS) && (sd->special_state.perfect_hiding || !(status->mode&MD_DETECTOR)))
 				return 0;
-			if( tsc->data[SC_CAMOUFLAGE] && !(status->mode&(MD_BOSS|MD_DETECTOR)) )
+			if( tsc->data[SC_CAMOUFLAGE] && !(status->mode&(MD_BOSS|MD_DETECTOR)) && !skill_num )
+			//Enable the line below once all the missing information for this skill is added. Leaving it enabled will caused overpowering issues. [Rytech]
+			//if( tsc->data[SC_CAMOUFLAGE] && !(status->mode&(MD_BOSS|MD_DETECTOR)) )
 				return 0;
 			if( tsc->data[SC_STEALTHFIELD] )
 				return 0;
@@ -4266,6 +4268,8 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += 100 * sc->data[SC_SATURDAYNIGHTFEVER]->val1;
 	if(sc->data[SC_ODINS_POWER])
 		watk += 40 + 30 * sc->data[SC_ODINS_POWER]->val1;
+	if(sc->data[SC_DOHU_KOUKAI])
+		watk += watk * (10 * sc->data[SC_DOHU_KOUKAI]->val2) / 100;
 	if( sc->data[SC_TROPIC_OPTION] )
 		watk += sc->data[SC_TROPIC_OPTION]->val2;
 	if( sc->data[SC_HEATER_OPTION] )
@@ -4530,6 +4534,8 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 		def -= def * 25 / 100;
 	if(sc->data[SC_ODINS_POWER])
 		def -= 2 * sc->data[SC_ODINS_POWER]->val1;
+	if(sc->data[SC_DOHU_KOUKAI])
+		def += def * (10 * sc->data[SC_DOHU_KOUKAI]->val2) / 100;
 	if( sc->data[SC_ROCK_CRUSHER] )
 		def -= def * sc->data[SC_ROCK_CRUSHER]->val2 / 100;
 	if( sc->data[SC_POWER_OF_GAIA] )
@@ -5079,13 +5085,13 @@ unsigned char status_calc_attack_element(struct block_list *bl, struct status_ch
 		return element;
 	if(sc->data[SC_ENCHANTARMS])
 		return sc->data[SC_ENCHANTARMS]->val2;
-	if(sc->data[SC_WATERWEAPON])
+	if(sc->data[SC_WATERWEAPON] || (sc->data[SC_HYOUHU_HUBUKI] && sc->data[SC_HYOUHU_HUBUKI]->val2 == 10) )
 		return ELE_WATER;
-	if(sc->data[SC_EARTHWEAPON])
+	if(sc->data[SC_EARTHWEAPON] || (sc->data[SC_DOHU_KOUKAI] && sc->data[SC_DOHU_KOUKAI]->val2 == 10) )
 		return ELE_EARTH;
-	if(sc->data[SC_FIREWEAPON])
+	if(sc->data[SC_FIREWEAPON] || (sc->data[SC_KAHU_ENTEN] && sc->data[SC_KAHU_ENTEN]->val2 == 10) )
 		return ELE_FIRE;
-	if(sc->data[SC_WINDWEAPON])
+	if(sc->data[SC_WINDWEAPON] || (sc->data[SC_KAZEHU_SEIRAN] && sc->data[SC_KAZEHU_SEIRAN]->val2 == 10) )
 		return ELE_WIND;
 	if(sc->data[SC_ENCPOISON])
 		return ELE_POISON;
