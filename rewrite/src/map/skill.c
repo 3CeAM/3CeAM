@@ -4431,6 +4431,15 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		}
 		break;
 
+	case KO_KAIHOU:
+		skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag);
+		pc_delspiritball_attribute(sd,sd->spiritballnumber,0);
+		status_change_end(src, SC_KAHU_ENTEN, INVALID_TIMER);
+		status_change_end(src, SC_HYOUHU_HUBUKI, INVALID_TIMER);
+		status_change_end(src, SC_KAZEHU_SEIRAN, INVALID_TIMER);
+		status_change_end(src, SC_DOHU_KOUKAI, INVALID_TIMER);
+		break;
+
 	case EL_FIRE_BOMB:
 	case EL_FIRE_WAVE:
 	case EL_WATER_SCREW:
@@ -8752,12 +8761,15 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case KO_HYOUHU_HUBUKI:
 	case KO_KAZEHU_SEIRAN:
 	case KO_DOHU_KOUKAI:
-		if(sd)
+		if( sd )
 		{
 			if( tsc && !tsc->data[type] )
+			{
 				pc_delspiritball_attribute(sd,sd->spiritballnumber,1);
-			sc_start(bl, type, 100, skilllv, skill_get_time2(skillid,skilllv));
+				sc_start2(bl, type, 100, skilllv, 0, skill_get_time2(skillid,skilllv));
+			}
 			pc_addspiritball_attribute(sd,skill_get_time(skillid,skilllv),10);
+			sc_start2(bl, type, 100, skilllv, sd->spiritballnumber, skill_get_time2(skillid,skilllv));
 		}
 		break;
 
@@ -9597,6 +9609,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case SO_WATER_INSIGNIA:
 	case SO_WIND_INSIGNIA:
 	case SO_EARTH_INSIGNIA:
+	case KO_ZENKAI:
 		flag|=1;//Set flag to 1 to prevent deleting ammo (it will be deleted on group-delete).
 	case GS_GROUNDDRIFT: //Ammo should be deleted right away.
 		skill_unitsetting(src,skillid,skilllv,x,y,0);
@@ -11602,6 +11615,10 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 				skill_attack(BF_MAGIC,ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
 			break;
 
+		//case UNT_ZENKAI_WATER:
+		//	sc_start(bl, SC_FREEZE, 20, sg->skill_lv, 1000);
+		//	break;
+
 	}
 
 	if (sg->state.magic_power && sc && !sc->data[SC_MAGICPOWER])
@@ -12670,6 +12687,13 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 	case KO_KAZEHU_SEIRAN:
 	case KO_DOHU_KOUKAI:
 		if(sd->spiritballnumber >= 10)
+		{
+			clif_skill_fail(sd,skill,0,0,0);
+			return 0;
+		}
+		break;
+	case KO_KAIHOU:
+		if(!sd->spiritballnumber > 0)
 		{
 			clif_skill_fail(sd,skill,0,0,0);
 			return 0;
@@ -14385,7 +14409,7 @@ static int skill_trap_splash (struct block_list *bl, va_list ap)
 int skill_enchant_elemental_end (struct block_list *bl, int type)
 {
 	struct status_change *sc;
-	const enum sc_type scs[] = { SC_ENCPOISON, SC_ASPERSIO, SC_FIREWEAPON, SC_WATERWEAPON, SC_WINDWEAPON, SC_EARTHWEAPON, SC_SHADOWWEAPON, SC_GHOSTWEAPON, SC_ENCHANTARMS, SC__INVISIBILITY };
+	const enum sc_type scs[] = { SC_ENCPOISON, SC_ASPERSIO, SC_FIREWEAPON, SC_WATERWEAPON, SC_WINDWEAPON, SC_EARTHWEAPON, SC_SHADOWWEAPON, SC_GHOSTWEAPON, SC_ENCHANTARMS, SC__INVISIBILITY, SC_KAHU_ENTEN, SC_HYOUHU_HUBUKI, SC_KAZEHU_SEIRAN, SC_DOHU_KOUKAI };
 	int i;
 	nullpo_ret(bl);
 	nullpo_ret(sc= status_get_sc(bl));

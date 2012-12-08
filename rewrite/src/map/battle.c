@@ -3383,13 +3383,30 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 			skill_lv = -skill_lv;
 		}
 	}
-	else if( skill_num == SO_PSYCHIC_WAVE && sc && (sc->data[SC_HEATER_OPTION] || sc->data[SC_COOLER_OPTION] ||
-		sc->data[SC_BLAST_OPTION] || sc->data[SC_CURSED_SOIL_OPTION]) )
+	else if( sc && (sc->data[SC_HEATER_OPTION] || sc->data[SC_COOLER_OPTION] ||
+		sc->data[SC_BLAST_OPTION] || sc->data[SC_CURSED_SOIL_OPTION]) && skill_num == SO_PSYCHIC_WAVE )
 	{	// Status change from Elemental Spirits that change Psychic Wave damage element.
-		if( sc->data[SC_HEATER_OPTION] ) s_ele = sc->data[SC_HEATER_OPTION]->val4;
-		else if( sc->data[SC_COOLER_OPTION] ) s_ele = sc->data[SC_COOLER_OPTION]->val4;
-		else if( sc->data[SC_BLAST_OPTION] ) s_ele = sc->data[SC_BLAST_OPTION]->val3;
-		else if( sc->data[SC_CURSED_SOIL_OPTION] ) s_ele = sc->data[SC_CURSED_SOIL_OPTION]->val4;
+		if( sc->data[SC_HEATER_OPTION] )
+			s_ele = sc->data[SC_HEATER_OPTION]->val4;
+		else if( sc->data[SC_COOLER_OPTION] )
+			s_ele = sc->data[SC_COOLER_OPTION]->val4;
+		else if( sc->data[SC_BLAST_OPTION] )
+			s_ele = sc->data[SC_BLAST_OPTION]->val3;
+		else if( sc->data[SC_CURSED_SOIL_OPTION] )
+			s_ele = sc->data[SC_CURSED_SOIL_OPTION]->val4;
+	}
+	else if ( skill_num == KO_KAIHOU )
+	{
+		if ( sc->data[SC_KAHU_ENTEN] )
+			s_ele = ELE_FIRE;
+		else if ( sc->data[SC_HYOUHU_HUBUKI] )
+			s_ele = ELE_WATER;
+		else if ( sc->data[SC_KAZEHU_SEIRAN] )
+			s_ele = ELE_WIND;
+		else if ( sc->data[SC_DOHU_KOUKAI] )
+			s_ele = ELE_EARTH;
+		else//If a GM character trys to use the skill with no sphere's, one of the four status will likely not be active.
+			s_ele = ELE_NEUTRAL;//If so, then use neutral element. [Rytech]
 	}
 	else
 	{
@@ -3614,20 +3631,42 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						break;
 					case NJ_KOUENKA:
 						skillratio -= 10;
+						if( sc && sc->data[SC_KAHU_ENTEN] )
+							skillratio += skillratio * ( 10 * sc->data[SC_KAHU_ENTEN]->val2 ) / 100;
 						break;
 					case NJ_KAENSIN:
 						skillratio -= 50;
+						if( sc && sc->data[SC_KAHU_ENTEN] )
+							skillratio += skillratio * ( 10 * sc->data[SC_KAHU_ENTEN]->val2 ) / 100;
 						break;
 					case NJ_BAKUENRYU:
 						skillratio += 50*(skill_lv-1);
+						if( sc && sc->data[SC_KAHU_ENTEN] )
+							skillratio += skillratio * ( 10 * sc->data[SC_KAHU_ENTEN]->val2 ) / 100;
+						break;
+					case NJ_HYOUSENSOU:
+						if( sc && sc->data[SC_HYOUHU_HUBUKI] )
+							skillratio += skillratio * ( 10 * sc->data[SC_HYOUHU_HUBUKI]->val2 ) / 100;
 						break;
 					case NJ_HYOUSYOURAKU:
 						skillratio += 50*skill_lv;
+						if( sc && sc->data[SC_HYOUHU_HUBUKI] )
+							skillratio += skillratio * ( 10 * sc->data[SC_HYOUHU_HUBUKI]->val2 ) / 100;
+						break;
+					case NJ_HUUJIN:
+						if( sc && sc->data[SC_KAZEHU_SEIRAN] )
+							skillratio += skillratio * ( 10 * sc->data[SC_KAZEHU_SEIRAN]->val2 ) / 100;
 						break;
 					case NJ_RAIGEKISAI:
 						skillratio += 60 + 40*skill_lv;
+						if( sc && sc->data[SC_KAZEHU_SEIRAN] )
+							skillratio += skillratio * ( 10 * sc->data[SC_KAZEHU_SEIRAN]->val2 ) / 100;
 						break;
 					case NJ_KAMAITACHI:
+						skillratio += 100*skill_lv;
+						if( sc && sc->data[SC_KAZEHU_SEIRAN] )
+							skillratio += skillratio * ( 10 * sc->data[SC_KAZEHU_SEIRAN]->val2 ) / 100;
+						break;
 					case NPC_ENERGYDRAIN:
 						skillratio += 100*skill_lv;
 						break;
@@ -3830,6 +3869,9 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							skillratio += 10 + 20 * (skill_lv - 10) + sstatus->int_ + 50;
 						else// Normal Demonic Fire Damage
 							skillratio += 10 + 20 * skill_lv;
+						break;
+					case KO_KAIHOU://Temporarly until official formula is found. [Rytech]
+						skillratio = 300 * sd->spiritballnumber;
 						break;
 					// Magical Elemental Spirits Attack Skills
 					case EL_FIRE_MANTLE:
