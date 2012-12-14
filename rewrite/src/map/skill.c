@@ -2492,11 +2492,14 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 	if( damage > 0 && skillid == GC_VENOMPRESSURE )
 	{
 		struct status_change *ssc = status_get_sc(src);
+		short rate = 100;
 		if( ssc && ssc->data[SC_POISONINGWEAPON] && rand()%100 < 70 + 5*skilllv )
 		{
-			sc_start(bl,ssc->data[SC_POISONINGWEAPON]->val2,100,ssc->data[SC_POISONINGWEAPON]->val1,skill_get_time2(GC_POISONINGWEAPON,ssc->data[SC_POISONINGWEAPON]->val1));
+			if ( ssc->data[SC_POISONINGWEAPON]->val1 == 9 )//Oblivion Curse gives a 2nd success chance after the 1st one passes which is reduceable. [Rytech]
+				rate = 100 - tstatus->int_ * 4 / 5 ;
+			sc_start(bl,ssc->data[SC_POISONINGWEAPON]->val2,rate,ssc->data[SC_POISONINGWEAPON]->val1,skill_get_time2(GC_POISONINGWEAPON,1) - (tstatus->vit + tstatus->luk) / 2 * 1000);
 			status_change_end(src,SC_POISONINGWEAPON,-1);
-			clif_skill_nodamage(src,bl,skillid,skilllv,1);				
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
 	}
 	
@@ -11432,8 +11435,15 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			break;
 
 		case UNT_POISONSMOKE:
-			if( battle_check_target(ss,bl,BCT_ENEMY) > 0 && !(tsc && tsc->data[sg->val2]) && rand()%100 < 50 )
-				sc_start(bl,sg->val2,100,sg->val1,skill_get_time2(GC_POISONINGWEAPON,sg->val1));
+			{
+				short rate = 100;
+				if( battle_check_target(ss,bl,BCT_ENEMY) > 0 && !(tsc && tsc->data[sg->val2]) && rand()%100 < 50 )
+				{
+					if ( sg->val1 == 9 )//Oblivion Curse gives a 2nd success chance after the 1st one passes which is reduceable. [Rytech]
+						rate = 100 - tstatus->int_ * 4 / 5 ;
+					sc_start(bl,sg->val2,rate,sg->val1,skill_get_time2(GC_POISONINGWEAPON,1) - (tstatus->vit + tstatus->luk) / 2 * 1000);
+				}
+			}
 			break;
 
 		case UNT_EPICLESIS:
@@ -14409,7 +14419,7 @@ static int skill_trap_splash (struct block_list *bl, va_list ap)
 int skill_enchant_elemental_end (struct block_list *bl, int type)
 {
 	struct status_change *sc;
-	const enum sc_type scs[] = { SC_ENCPOISON, SC_ASPERSIO, SC_FIREWEAPON, SC_WATERWEAPON, SC_WINDWEAPON, SC_EARTHWEAPON, SC_SHADOWWEAPON, SC_GHOSTWEAPON, SC_ENCHANTARMS, SC__INVISIBILITY, SC_KAHU_ENTEN, SC_HYOUHU_HUBUKI, SC_KAZEHU_SEIRAN, SC_DOHU_KOUKAI };
+	const enum sc_type scs[] = { SC_ENCPOISON, SC_ASPERSIO, SC_FIREWEAPON, SC_WATERWEAPON, SC_WINDWEAPON, SC_EARTHWEAPON, SC_SHADOWWEAPON, SC_GHOSTWEAPON, SC_ENCHANTARMS };
 	int i;
 	nullpo_ret(bl);
 	nullpo_ret(sc= status_get_sc(bl));
@@ -16033,6 +16043,7 @@ int skill_poisoningweapon( struct map_session_data *sd, int nameid)
 			return 0;
 	}
 
+	status_change_end(&sd->bl, SC_POISONINGWEAPON, -1);//Status must be forced to end so that a new poison will be applied if a player decides to change poisons. [Rytech]
 	chance = 2 + 2 * sd->menuskill_itemused; // 2 + 2 * skill_lv
 	sc_start4(&sd->bl,SC_POISONINGWEAPON,100,t_lv,type,chance,0,skill_get_time(GC_POISONINGWEAPON,sd->menuskill_itemused));
 	sd->menuskill_itemused = 0;

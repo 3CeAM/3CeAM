@@ -471,7 +471,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			clif_skill_nodamage(bl, bl, RK_MILLENNIUMSHIELD, 1, 1);
 			sce->val3 -= damage; // absorb damage
 			d->dmg_lv = ATK_BLOCK;
-			sc_start(bl,SC_STUN,15,0,skill_get_time2(RK_MILLENNIUMSHIELD,sce->val1)); // There is a chance to be stuned when one shield is broken.
+			sc_start(bl,SC_STUN,15,0,skill_get_time2(RK_MILLENNIUMSHIELD,sce->val1)); // There is a chance to be stuned when one shield is broken. Whats the official chance? [Rytech]
 			if( sce->val3 <= 0 ) // Shield Down
 			{
 				sce->val2--;
@@ -731,8 +731,20 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 						break;
 					}
 		}
-		if( tsc->data[SC_POISONINGWEAPON] && skill_num != GC_VENOMPRESSURE && (flag&BF_WEAPON) && damage > 0 && rand()%100 < tsc->data[SC_POISONINGWEAPON]->val3 )
-			sc_start(bl,tsc->data[SC_POISONINGWEAPON]->val2,100,tsc->data[SC_POISONINGWEAPON]->val1,skill_get_time2(GC_POISONINGWEAPON,tsc->data[SC_POISONINGWEAPON]->val1));
+
+		if( tsc->data[SC_POISONINGWEAPON] )
+		{
+			struct status_data *tstatus;
+			short rate = 100;
+			tstatus = status_get_status_data(bl);
+			if ( !(flag&BF_SKILL) && (flag&BF_WEAPON) && damage > 0 && rand()%100 < tsc->data[SC_POISONINGWEAPON]->val3 )
+			{
+				if ( tsc->data[SC_POISONINGWEAPON]->val1 == 9 )//Oblivion Curse gives a 2nd success chance after the 1st one passes which is reduceable. [Rytech]
+					rate = 100 - tstatus->int_ * 4 / 5 ;
+				sc_start(bl,tsc->data[SC_POISONINGWEAPON]->val2,rate,tsc->data[SC_POISONINGWEAPON]->val1,skill_get_time2(GC_POISONINGWEAPON,1) - (tstatus->vit + tstatus->luk) / 2 * 1000);
+			}
+		}
+
 		if( tsc->data[SC__DEADLYINFECT] && flag&BF_SHORT && damage > 0 && rand()%100 < 30 + 10 * tsc->data[SC__DEADLYINFECT]->val1 )
 			status_change_spread(src, bl);
 	}
@@ -2770,7 +2782,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 			if (skill_num && (i = pc_skillatk_bonus(sd, skill_num)))
 				ATK_ADDRATE(i);
 
-			if( skill_num != PA_SACRIFICE && skill_num != MO_INVESTIGATE && skill_num != CR_GRANDCROSS && skill_num != NPC_GRANDDARKNESS && skill_num != PA_SHIELDCHAIN && !flag.cri )
+			if( skill_num != PA_SACRIFICE && skill_num != MO_INVESTIGATE && skill_num != CR_GRANDCROSS && skill_num != NPC_GRANDDARKNESS && 
+				skill_num != PA_SHIELDCHAIN && skill_num != NC_SELFDESTRUCTION && skill_num != KO_HAPPOKUNAI && !flag.cri )
 			{ //Elemental/Racial adjustments
 				if( sd->right_weapon.def_ratio_atk_ele & (1<<tstatus->def_ele) ||
 					sd->right_weapon.def_ratio_atk_race & (1<<tstatus->race) ||
