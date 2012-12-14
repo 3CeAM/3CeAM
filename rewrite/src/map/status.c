@@ -847,11 +847,11 @@ void initChangeTables(void)
 
 	StatusChangeFlagTable[SC_HALLUCINATIONWALK_POSTDELAY] |= SCB_ASPD|SCB_SPEED;
 
-	StatusChangeFlagTable[SC_PARALYSE] |= SCB_ASPD|SCB_FLEE; // |SCB_SPEED; Speed Part is not working currently on Kro
+	StatusChangeFlagTable[SC_PARALYSE] |= SCB_FLEE|SCB_SPEED|SCB_ASPD;
 	StatusChangeFlagTable[SC_VENOMBLEED] |= SCB_MAXHP;
 	StatusChangeFlagTable[SC_MAGICMUSHROOM] |= SCB_REGEN;
 	StatusChangeFlagTable[SC_DEATHHURT] |= SCB_REGEN;
-	StatusChangeFlagTable[SC_PYREXIA] |= SCB_FLEE|SCB_HIT;
+	StatusChangeFlagTable[SC_PYREXIA] |= SCB_HIT|SCB_FLEE;
 	StatusChangeFlagTable[SC_OBLIVIONCURSE] |= SCB_REGEN;
 
 	StatusChangeFlagTable[SC_SHIELDSPELL_DEF] |= SCB_WATK;
@@ -5710,9 +5710,6 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 		tick -= 1000 * ((status->vit + status->dex) / 20);
 		tick = max(tick,6000); // Minimum Duration 6s due to 2011 balance updates. [Rytech]
 		break;
-	case SC_OBLIVIONCURSE:
-		sc_def = status->int_*4/5; //FIXME: info said this is the formula of status chance. Check again pls. [Jobbie]
-		break;
 	case SC_ELECTRICSHOCKER:
 	case SC_BITE:
 		{
@@ -6163,6 +6160,18 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		if( sd && pc_checkskill(sd, RA_CAMOUFLAGE) < 2 && !skill_check_camouflage(bl,NULL) )
 			return 0;
 	break;
+	case SC_TOXIN:
+	case SC_PARALYSE:
+	case SC_VENOMBLEED:
+	case SC_MAGICMUSHROOM:
+	case SC_DEATHHURT:
+	case SC_PYREXIA:
+	case SC_OBLIVIONCURSE://Guillotine Cross poisons do not stack.
+	case SC_LEECHESEND://Being inflected with one makes you immune to other poisons until the status wears off. [Rytech]
+		if ( sc->data[SC_TOXIN] || sc->data[SC_PARALYSE] || sc->data[SC_VENOMBLEED] || sc->data[SC_MAGICMUSHROOM] || 
+			sc->data[SC_DEATHHURT] || sc->data[SC_PYREXIA] || sc->data[SC_OBLIVIONCURSE] || sc->data[SC_LEECHESEND] )
+			return 0;
+	break;
 	case SC__STRIPACCESSORY:
 		if( sd )
 		{
@@ -6510,6 +6519,14 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC_CHANGE: //Otherwise your Hp/Sp would get refilled while still within effect of the last invocation.
 			case SC_ABUNDANCE:
 			case SC_FEAR:
+			case SC_TOXIN:
+			case SC_PARALYSE:
+			case SC_VENOMBLEED:
+			case SC_MAGICMUSHROOM:
+			case SC_DEATHHURT:
+			case SC_PYREXIA:
+			case SC_OBLIVIONCURSE:
+			case SC_LEECHESEND:
 			//case SC__INVISIBILITY:
 			case SC__ENERVATION:
 			case SC__GROOMY:
