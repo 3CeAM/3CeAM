@@ -8583,6 +8583,22 @@ ACMD_FUNC(itemlist)
 				strcat(equipstr, "lower/mid head, ");
 			if( (it->equip & EQP_HELM) == EQP_HELM )
 				strcat(equipstr, "lower/mid/top head, ");
+			if( (it->equip & EQP_COSTUME_HELM) == EQP_COSTUME_HEAD_LOW )
+				strcat(equipstr, "lower costume head, ");
+			if( (it->equip & EQP_COSTUME_HELM) == EQP_COSTUME_HEAD_TOP )
+				strcat(equipstr, "top costume head, ");
+			if( (it->equip & EQP_COSTUME_HELM) == (EQP_COSTUME_HEAD_LOW|EQP_COSTUME_HEAD_TOP) )
+				strcat(equipstr, "lower/top costume head, ");
+			if( (it->equip & EQP_COSTUME_HELM) == EQP_COSTUME_HEAD_MID )
+				strcat(equipstr, "mid costume head, ");
+			if( (it->equip & EQP_COSTUME_HELM) == (EQP_COSTUME_HEAD_LOW|EQP_COSTUME_HEAD_MID) )
+				strcat(equipstr, "lower/mid costume head, ");
+			if( (it->equip & EQP_COSTUME_HELM) == EQP_COSTUME_HELM )
+				strcat(equipstr, "lower/mid/top costume head, ");
+			if( it->equip & EQP_COSTUME_GARMENT )
+				strcat(equipstr, "costume garment, ");
+			if( it->equip & EQP_COSTUME_FLOOR )
+				strcat(equipstr, "costume floor, ");
 			// remove final ', '
 			equipstr[strlen(equipstr) - 2] = '\0';
 			StringBuf_AppendStr(&buf, equipstr);

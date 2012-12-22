@@ -176,7 +176,7 @@ struct map_session_data {
 	struct registry save_reg;
 	
 	struct item_data* inventory_data[MAX_INVENTORY]; // direct pointers to itemdb entries (faster than doing item_id lookups)
-	short equip_index[11];
+	short equip_index[16];
 	unsigned int weight,max_weight;
 	int cart_weight,cart_num;
 	int fd;
@@ -517,11 +517,11 @@ enum equip_pos {
 	EQP_ACC_L    = 0x0008,
 	EQP_ACC_R    = 0x0080, //128
 	EQP_AMMO     = 0x8000, //32768
-	//EQP_COSTUME_HEAD_LOW	= 0x1000,
-	//EQP_COSTUME_HEAD_MID	= 0x0400,
-	//EQP_COSTUME_HEAD_TOP	= 0x0800,
-	//EQP_COSTUME_GARMENT	= 0x2000,
-	//EQP_COSTUME_FLOOR	= 0x4000,
+	EQP_COSTUME_HEAD_LOW	= 0x1000,
+	EQP_COSTUME_HEAD_MID	= 0x0800,
+	EQP_COSTUME_HEAD_TOP	= 0x0400,
+	EQP_COSTUME_GARMENT	= 0x2000,
+	EQP_COSTUME_FLOOR	= 0x4000,
 };
 
 #define EQP_WEAPON EQP_HAND_R
@@ -529,6 +529,8 @@ enum equip_pos {
 #define EQP_ARMS (EQP_HAND_R|EQP_HAND_L)
 #define EQP_HELM (EQP_HEAD_LOW|EQP_HEAD_MID|EQP_HEAD_TOP)
 #define EQP_ACC (EQP_ACC_L|EQP_ACC_R)
+#define EQP_COSTUME_HELM (EQP_COSTUME_HEAD_LOW|EQP_COSTUME_HEAD_MID|EQP_COSTUME_HEAD_TOP)
+#define EQP_COSTUME_EQUIPS (EQP_COSTUME_HEAD_LOW|EQP_COSTUME_HEAD_MID|EQP_COSTUME_HEAD_TOP|EQP_COSTUME_GARMENT|EQP_COSTUME_FLOOR)
 
 //Equip indexes constants. (eg: sd->equip_index[EQI_AMMO] returns the index
 //where the arrows are equipped)
@@ -544,6 +546,11 @@ enum equip_index {
 	EQI_HAND_L,
 	EQI_HAND_R,
 	EQI_AMMO,
+	EQI_COSTUME_HEAD_LOW,
+	EQI_COSTUME_HEAD_MID,
+	EQI_COSTUME_HEAD_TOP,
+	EQI_COSTUME_GARMENT,
+	EQI_COSTUME_FLOOR,
 	EQI_MAX
 };
 
