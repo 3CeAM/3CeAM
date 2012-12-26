@@ -5508,6 +5508,7 @@ void status_set_viewdata(struct block_list *bl, int class_)
 				sd->vd.hair_color = sd->status.hair_color;
 				sd->vd.cloth_color = sd->status.clothes_color;
 				sd->vd.sex = sd->status.sex;
+				sd->vd.robe = sd->status.robe;
 			} else if (vd)
 				memcpy(&sd->vd, vd, sizeof(struct view_data));
 			else

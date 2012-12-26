@@ -406,8 +406,8 @@ enum _look {
 	LOOK_CLOTHES_COLOR,
 	LOOK_SHIELD,
 	LOOK_SHOES,
-	LOOK_BODY,
-	LOOK_RESET_COSTUMES,
+	LOOK_BODY,			//Purpose Unknown. Doesen't appear to do anything.
+	LOOK_RESET_COSTUMES,//Makes all headgear sprites on player vanish when activated.
 	LOOK_ROBE
 };
 

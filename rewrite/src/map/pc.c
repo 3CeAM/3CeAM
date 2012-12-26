@@ -7268,7 +7268,9 @@ int pc_equiplookall(struct map_session_data *sd)
 	clif_changelook(&sd->bl,LOOK_HEAD_BOTTOM,sd->status.head_bottom);
 	clif_changelook(&sd->bl,LOOK_HEAD_TOP,sd->status.head_top);
 	clif_changelook(&sd->bl,LOOK_HEAD_MID,sd->status.head_mid);
-
+#if PACKETVER >= 20111122
+	clif_changelook(&sd->bl,LOOK_ROBE,sd->status.robe);
+#endif
 	return 0;
 }
 
@@ -7323,6 +7325,9 @@ int pc_changelook(struct map_session_data *sd,int type,int val)
 		sd->status.shield=val;
 		break;
 	case LOOK_SHOES:
+		break;
+	case LOOK_ROBE:
+		sd->status.robe=val;
 		break;
 	}
 	clif_changelook(&sd->bl,type,val);
@@ -8245,14 +8250,14 @@ int pc_equipitem(struct map_session_data *sd,int n,int req_pos)
 			sd->status.head_mid = 0;
 		clif_changelook(&sd->bl,LOOK_HEAD_MID,sd->status.head_mid);
 	}
-	/*if(pos & EQP_COSTUME_GARMENT) {
+	if(pos & EQP_COSTUME_GARMENT) {
 		if(id)
-			sd->status.garment = id->look;
+			sd->status.robe = id->look;
 		else
-			sd->status.garment = 0;
-		clif_changelook(&sd->bl,LOOK_ROBE,sd->status.garment);
+			sd->status.robe = 0;
+		clif_changelook(&sd->bl,LOOK_ROBE,sd->status.robe);
 	}
-	if(pos & EQP_COSTUME_FLOOR) {
+	/*if(pos & EQP_COSTUME_FLOOR) {
 		if(id)
 			sd->status.floor = id->look;
 		else
@@ -8384,13 +8389,13 @@ int pc_unequipitem(struct map_session_data *sd,int n,int flag)
 		clif_changelook(&sd->bl,LOOK_HEAD_MID,sd->status.head_mid);
 	}
 
-	/*if( sd->status.inventory[n].equip & EQP_COSTUME_GARMENT)
+	if( sd->status.inventory[n].equip & EQP_COSTUME_GARMENT)
 	{
-		sd->status.garment = 0;
-		clif_changelook(&sd->bl,LOOK_ROBE,sd->status.garment);
+		sd->status.robe = 0;
+		clif_changelook(&sd->bl,LOOK_ROBE,sd->status.robe);
 	}
 
-	if( sd->status.inventory[n].equip & EQP_COSTUME_FLOOR)
+	/*if( sd->status.inventory[n].equip & EQP_COSTUME_FLOOR)
 	{
 		sd->status.floor = 0;
 		clif_changelook(&sd->bl,LOOK_FLOOR,sd->status.floor);

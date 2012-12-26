@@ -908,7 +908,7 @@ static int clif_set_unit_idle(struct block_list* bl, unsigned char* buffer, bool
 	}
 #endif
 #if PACKETVER >= 20110111
-	WBUFW(buf,34) = 0;
+	WBUFW(buf,34) = vd->robe;
 	offset+= 2;
 	buf = WBUFP(buffer,offset);
 #endif
@@ -1030,11 +1030,11 @@ static int clif_set_unit_walking(struct block_list* bl, struct unit_data* ud, un
 	WBUFW(buf,32) = vd->hair_color;
 	WBUFW(buf,34) = vd->cloth_color;
 	WBUFW(buf,36) = (sd)? sd->head_dir : 0;
- #if PACKETVER >= 20110111
- 	WBUFW(buf,38) = 0;
- 	offset+= 2;
- 	buf = WBUFP(buffer,offset);
- #endif
+#if PACKETVER >= 20110111
+	WBUFW(buf,38) = vd->robe;
+	offset+= 2;
+	buf = WBUFP(buf,offset);
+#endif
 	WBUFL(buf,38) = status_get_guild_id(bl);
 	WBUFW(buf,42) = status_get_emblem_id(bl);
 	WBUFW(buf,44) = (sd)? sd->status.manner : 0;
@@ -2204,7 +2204,7 @@ void clif_inventorylist(struct map_session_data *sd)
 			WBUFW(bufe,ne*se+28)=0; //Unknown
 #endif
 #if PACKETVER >= 20100629
-			if (sd->inventory_data[i]->equip&EQP_HELM)
+			if (sd->inventory_data[i]->equip&EQP_VISIBLE)
 				WBUFW(bufe,ne*se+30)= sd->inventory_data[i]->look;
 			else
 				WBUFW(bufe,ne*se+30)=0;
@@ -2287,7 +2287,7 @@ void clif_equiplist(struct map_session_data *sd)
 		WBUFW(buf,n*cmd+28)=0; //Unknown
 #endif
 #if PACKETVER >= 20100629
-		if (sd->inventory_data[i]->equip&EQP_HELM)
+		if (sd->inventory_data[i]->equip&EQP_VISIBLE)
 			WBUFW(buf,n*cmd+30)= sd->inventory_data[i]->look;
 		else
 			WBUFW(buf,n*cmd+30)=0;
@@ -2852,6 +2852,9 @@ void clif_changelook(struct block_list *bl,int type,int val)
 #endif
 			//Shoes? No packet uses this....
 		break;
+		case LOOK_ROBE:
+			vd->robe = val;
+		break;
 	}
 
 	// prevent leaking the presence of GM-hidden objects
@@ -3284,7 +3287,7 @@ int clif_equipitemack(struct map_session_data *sd,int n,int pos,int ok)
 #if PACKETVER < 20100629
 	WFIFOB(fd,6)=ok;
 #else
-	if (ok && sd->inventory_data[n]->equip&EQP_HELM)
+	if (ok && sd->inventory_data[n]->equip&EQP_VISIBLE)
 		WFIFOW(fd,6)=sd->inventory_data[n]->look;
 	else
 		WFIFOW(fd,6)=0;
@@ -8708,7 +8711,7 @@ void clif_viewequip_ack(struct map_session_data* sd, struct map_session_data* ts
 	WBUFW(buf,34) = tsd->vd.head_mid;
 	WBUFW(buf,36) = tsd->vd.head_top;
 #if PACKETVER >= 20110111
-	WBUFW(buf,38) = 0;
+	WBUFW(buf,38) = tsd->vd.robe;
 	offset+= 2;
 	buf = WBUFP(buf,2);
 #endif
@@ -8733,7 +8736,7 @@ void clif_viewequip_ack(struct map_session_data* sd, struct map_session_data* ts
 		WBUFL(buf, n*s+63) = tsd->status.inventory[i].expire_time;
 		WBUFW(buf, n*s+67) = 0;
 #if PACKETVER >= 20100629
-		if (tsd->inventory_data[i]->equip&EQP_HELM)
+		if (tsd->inventory_data[i]->equip&EQP_VISIBLE)
 			WBUFW(buf, n*s+69) = tsd->inventory_data[i]->look;
 		else
 			WBUFW(buf, n*s+69) = 0;

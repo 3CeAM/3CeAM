@@ -93,12 +93,14 @@ Loc: Equipment's placement. Values are:
 	2^6  064 = Footgear
 	2^3  008 = Accessory 1
 	2^7  128 = Accessory 2
+	2^15 32768 = Ammo
 
 	Costume Tab
-	2^10 1024 = Costume - Upper Headgear
-	2^11 2048 = Costume - Middle Headgear
-	2^12 4096 = Costume - Lower Headgear
-	2^13 8192 = Costume - Armor
+	2^10  1024 = Costume - Upper Headgear
+	2^11  2048 = Costume - Middle Headgear
+	2^12  4096 = Costume - Lower Headgear
+	2^13  8192 = Costume - Garment
+	2^14 16384 = Costume - Floor
 
 wLV: Weapon level.
 
