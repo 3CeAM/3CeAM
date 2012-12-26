@@ -89,6 +89,7 @@ CREATE TABLE IF NOT EXISTS `char` (
   `head_top` smallint(6) unsigned NOT NULL default '0',
   `head_mid` smallint(6) unsigned NOT NULL default '0',
   `head_bottom` smallint(6) unsigned NOT NULL default '0',
+  `robe` smallint(6) unsigned NOT NULL default '0',
   `last_map` varchar(11) NOT NULL default '',
   `last_x` smallint(4) unsigned NOT NULL default '53',
   `last_y` smallint(4) unsigned NOT NULL default '111',

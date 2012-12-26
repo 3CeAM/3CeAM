@@ -380,8 +380,7 @@ struct mmo_charstatus {
 	short weapon; // enum weapon_type
 	short shield; // view-id
 	short head_top,head_mid,head_bottom;
-	//short garment;
-	//short floor;
+	short robe;
 
 	char name[NAME_LENGTH];
 	unsigned int base_level,job_level;

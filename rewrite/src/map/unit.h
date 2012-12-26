@@ -47,7 +47,7 @@ struct unit_data {
 
 struct view_data {
 	unsigned short
-	  	class_,
+		class_,
 		weapon,
 		shield, //Or left-hand weapon.
 		head_top,
@@ -55,7 +55,8 @@ struct view_data {
 		head_bottom,
 		hair_style,
 		hair_color,
-		cloth_color;
+		cloth_color,
+		robe;
 	char sex;
 	unsigned dead_sit : 2;
 };
