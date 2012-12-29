@@ -13468,7 +13468,9 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 	if ( fixed_time > 0 && fixed_cast_rate > 0 )
 		fixed_time -= fixed_time * fixed_cast_rate / 100;
 
-	//Check prevents fixed times from going below to a negeative value.
+	//Check prevents variable and fixed times from going below to a negeative value.
+	if (time < 0)
+	time = 0;
 	if (fixed_time < 0)
 	fixed_time = 0;
 
