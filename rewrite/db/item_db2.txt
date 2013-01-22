@@ -388,15 +388,11 @@
 2858,Pendant_Of_Guardian,Guardian's Pendant,5,10,,0,,0,,0,0xFFFFFFFF,7,2,136,,70,0,0,{ skill "ALL_GUARDIAN_RECALL",1; },{},{}
 
 // Eclage Items That Give / Use Skills
-2916,Elven_Wing,Elven Wing,5,10,,0,,0,,0,0xFFFFFFFF,7,2,136,,90,0,0,{ skill "ECLAGE_RECALL",1; },{},{}
+2916,Fairy_Wing,Elven Wing,5,10,,0,,0,,0,0xFFFFFFFF,7,2,136,,90,0,0,{ skill "ECLAGE_RECALL",1; },{},{}
 12812,Snow_Flip,Snow Flip,11,100,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ itemskill "ECL_SNOWFLIP",1; },{},{}
-12813,Peony_Mamy,Peony Mamy,11,100,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ itemskill "ECL_PEONYMAMY",1; },{},{}
-12814,Sadagui,Sadagui,11,100,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ itemskill "ECL_SADAGUI",1; },{},{}
-12815,Sequoia_Dust,Sequoia Dust,11,100,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ itemskill "ECL_SEQUOIADUST",1; },{},{}
-
-//Extra Items With Skill Enabled Bonuses
-//1599,Angra_Manyu,Angra Manyu,4,1,,10,200,,2,0,0xFFFFFFFF,7,2,2,1,1,1,8,{ bonus bAllStats,50; bonus bBaseAtk,3800; bonus bMatkRate,200; bonus2 bHPDrainRate,1000,100; bonus2 bSPDrainRate,1000,20; bonus bHealPower,200; bonus2 bAddRace,RC_NonBoss,100; bonus2 bAddRace,RC_Boss,100; skill "WZ_STORMGUST",10; Skill "WZ_METEOR",10; Skill "WZ_VERMILION",10; skill "GM_SANDMAN",1; },{},{}
-2199,Ahura_Mazda,Ahura Mazdah,5,1,,10,,100,,0,0xFFFFFFFF,7,2,32,,1,1,0,{ bonus bAllStats,50; bonus bMdef,99; bonus bShortWeaponDamageReturn,100; bonus2 bSubRace,RC_DemiHuman,95; skill "CR_FULLPROTECTION",5; Skill "WZ_ESTIMATION",1; Skill "ST_FULLSTRIP",5; Skill "HW_MAGICPOWER",10; skill "ECL_SNOWFLIP",1; skill "ECL_PEONYMAMY",1; skill "ECL_SADAGUI",1; skill "ECL_SEQUOIADUST",1; bonus bMaxHPRate,200; bonus bNoGemStone,0;  bonus bSpeedRate,25; },{ sc_start4 SC_ENDURE,60000,10,0,0,1; },{ sc_end SC_ENDURE; }
+12813,Peony_Mommy,Peony Mamy,11,100,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ itemskill "ECL_PEONYMAMY",1; },{},{}
+12814,Slapping_Herb,Sadagui,11,100,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ itemskill "ECL_SADAGUI",1; },{},{}
+12815,Yggdrasil_Dust,Sequoia Dust,11,100,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ itemskill "ECL_SEQUOIADUST",1; },{},{}
 
 2438,Paw_Of_Cat,Paw Of Cat,5,20,,300,,0,,0,0xFFFFFFFF,7,2,64,,1,1,0,{ bonus bFlee,5; bonus bAgi,1; skill "ALL_CATCRY",1; },{},{}
 2750,Summer_Night_Dream,Summer Night Dream,5,20,,0,,0,,0,0xFFFFFFFF,7,2,136,,1,0,0,{ skill "ALL_DREAM_SUMMERNIGHT",1; },{},{}
@@ -414,45 +410,65 @@
 //12548,Buy_Shabby_Stall_Permit,Buy Shabby Stall Permit,11,500,,10,,,,,0xFFFFFFFF,8,2,,,,,,{ itemskill "ALL_BUYING_STORE",1; },{},{}
 
 // Reins
-12622,Reins_Of_Mounts,Mount Reins,2,500,,0,,,,,0xFFFFFFFF,7,2,,,,,,{ sc_start SC_ALL_RIDING,-1,1; },{},{}
+12622,Boarding_Halter,Mount Reins,2,500,,0,,,,,0xFFFFFFFF,7,2,,,,,,{ sc_start SC_ALL_RIDING,-1,1; },{},{}
 
 // Kagerou/Oboro Exclusive Equips
 // Armguards
 2171,Fox_Armguard,Fox Armguard,5,80000,,200,,5,,1,0x20000000,7,2,32,,100,1,1,{ bonus bFlee,5; },{},{}
 2172,Wolf_Armguard,Wolf Armguard,5,80000,,250,,7,,1,0x20000000,7,2,32,,100,1,1,{ autobonus "{ bonus bBaseAtk,100; bonus bFlee,-50; }",10,5000,BF_WEAPON,"{ specialeffect2 EF_ENHANCE; }"; },{},{}
-2173,Crescent_Moon_Armguard,Crescent Moon Armguard,5,80000,,250,,5,,1,0x20000000,7,2,32,,100,1,1,{ bonus bDelayRate,-2; },{},{}
+2173,Crescent_Armguard,Crescent Moon Armguard,5,80000,,250,,5,,1,0x20000000,7,2,32,,100,1,1,{ bonus bDelayRate,-2; },{},{}
 
 // Makibishi
 6493,Makibishi,Makibishi,3,30,,1,,,,,,,,,,,,,{},{},{}
 
 // Talismans
-6512,Talisman_of_Fire,Fire Talisman,3,100,,1,,,,,,,,,,,,,{},{},{}
-6513,Talisman_of_Ice,Ice Talisman,3,100,,1,,,,,,,,,,,,,{},{},{}
-6514,Talisman_of_Wind,Wind Talisman,3,100,,1,,,,,,,,,,,,,{},{},{}
-6515,Talisman_of_Earth,Earth Talisman,3,100,,1,,,,,,,,,,,,,{},{},{}
+6512,Charm_Fire,Fire Talisman,3,100,,1,,,,,,,,,,,,,{},{},{}
+6513,Charm_Ice,Ice Talisman,3,100,,1,,,,,,,,,,,,,{},{},{}
+6514,Charm_Wind,Wind Talisman,3,100,,1,,,,,,,,,,,,,{},{},{}
+6515,Charm_Earth,Earth Talisman,3,100,,1,,,,,,,,,,,,,{},{},{}
 
 // Daggers
 13075,Kurenai,Kurenai,4,50000,,700,130,,1,0,0x20000000,7,2,2,3,99,1,1,{ bonus bInt,3; },{},{}
-13076,Kodachi,Kodachi,4,50000,,600,120,,1,1,0x20000000,7,2,2,3,110,1,1,{ bonus bInt,3; },{},{}
-13078,Mikazuki,Mikazuki,4,50000,,600,50,,1,1,0x02000000,7,2,2,4,100,1,1,{},{},{}
+13076,Raksasa_Dagger,Kodachi,4,50000,,600,120,,1,1,0x20000000,7,2,2,3,110,1,1,{ bonus bInt,3; },{},{}
+//13077,Kagekiri
+13078,Mikatsuki,Mikazuki,4,50000,,600,50,,1,1,0x02000000,7,2,2,4,100,1,1,{},{},{}
 
 // Shurikens / Kunais
-13291,Starfish_Shuriken,Starfish Shuriken,10,100,,5,110,,,,0x02000000,7,2,32768,,50,,6,{},{},{}
-13292,Kunai_Of_Dried_Squid,Dried Squid Kunai,10,100,,20,50,,,,0x02000000,7,2,32768,,50,,7,{ bonus bAtkEle,Ele_Neutral; },{},{}
-13293,Kunai_Of_Flying_Fish,Flying Fish Kunai,10,100,,20,50,,,,0x02000000,7,2,32768,,50,,7,{ bonus bAtkEle,Ele_Neutral; },{},{}
+13291,Starfish,Starfish Shuriken,10,100,,5,110,,,,0x02000000,7,2,32768,,50,,6,{},{},{}
+13292,Dried_Squid,Dried Squid Kunai,10,100,,20,50,,,,0x02000000,7,2,32768,,50,,7,{ bonus bAtkEle,Ele_Neutral; },{},{}
+13293,Flying_Fish,Flying Fish Kunai,10,100,,20,50,,,,0x02000000,7,2,32768,,50,,7,{ bonus bAtkEle,Ele_Neutral; },{},{}
 13294,Explosive_Kunai,Explosive Kunai,10,100,,30,50,,,,0x20000000,7,2,32768,,100,,7,{ bonus bAtkEle,Ele_Neutral; },{},{}
-13295,Light_Shuriken,Light Shuriken,10,4,,5,5,,,,0x02000000,7,2,32768,,1,,6,{},{},{}
+//13295,Light_Shuriken,Light Shuriken,10,4,,5,5,,,,0x02000000,7,2,32768,,1,,6,{},{},{}
 
 // Huuma Shurikens
-13311,Advanced_Huuma_Shuriken,Advanced Huuma Shuriken,4,120000,,1500,170,,1,0,0x20000000,7,2,34,3,99,1,22,{ bonus bStr,3; },{},{}
-
-13313,Flower_Huuma_Shuriken,Flower Petal Huuma Shuriken,4,150000,,1500,150,,1,2,0x20000000,7,2,34,3,110,1,22,{ /*bonus bEquipmentMatk,50;*/ },{},{}
-13314,Ice_Huuma_Shuriken,Ice Huuma Shuriken,4,150000,,1500,200,,1,0,0x20000000,7,2,34,4,110,1,22,{ /*bonus bEquipmentMatk,50;*/ bonus bAtkEle,Ele_Water; },{},{}
-13315,Storm_Huuma_Shuriken,Storm Huuma Shuriken,4,150000,,1500,200,,1,0,0x20000000,7,2,34,4,110,1,22,{ /*bonus bEquipmentMatk,50;*/ bonus bAtkEle,Ele_Wind; },{},{}
-13316,Enhance_Huuma_Shuriken,Enhance Huuma Shuriken,4,200000,,1500,55,,1,1,0x20000000,7,2,34,3,1,1,22,{ bonus bUnbreakableWeapon,0; bonus bBaseAtk,10*getrefine(); /*bonus bEquipmentMatk,5*getrefine();*/ bonus bLongAtkRate,getrefine(); if(BaseLevel>=70) { bonus bBaseAtk,5*((BaseLevel-60)/10); } },{},{}
+13311,Huuma_Shadow,Advanced Huuma Shuriken,4,120000,,1500,170,,1,0,0x20000000,7,2,34,3,99,1,22,{ bonus bStr,3; },{},{}
+//13312,Huuma_Job_Test
+13313,Huuma_Swirling_Petal,Flower Petal Huuma Shuriken,4,150000,,1500,150,,1,2,0x20000000,7,2,34,3,110,1,22,{ /*bonus bEquipmentMatk,50;*/ },{},{}
+13314,Huuma_Fluttering_Snow,Ice Huuma Shuriken,4,150000,,1500,200,,1,0,0x20000000,7,2,34,4,110,1,22,{ /*bonus bEquipmentMatk,50;*/ bonus bAtkEle,Ele_Water; },{},{}
+13315,Huuma_Thunderstorm,Storm Huuma Shuriken,4,150000,,1500,200,,1,0,0x20000000,7,2,34,4,110,1,22,{ /*bonus bEquipmentMatk,50;*/ bonus bAtkEle,Ele_Wind; },{},{}
+13316,Upg_Huuma_Shuriken,Enhance Huuma Shuriken,4,200000,,1500,55,,1,1,0x20000000,7,2,34,3,1,1,22,{ bonus bUnbreakableWeapon,0; bonus bBaseAtk,10*getrefine(); /*bonus bEquipmentMatk,5*getrefine();*/ bonus bLongAtkRate,getrefine(); if(BaseLevel>=70) { bonus bBaseAtk,5*((BaseLevel-60)/10); } },{},{}
 
 // Armors
 15053,Special_Ninja_Suit,Special Ninja Suit,5,100000,,1200,,10,,0,0x20000000,7,2,16,,100,1,0,{ bonus bAgi,1+(getrefine()/3); },{},{}
 15054,Ninja_Scale_Armor,Ninja Scale Armor,5,100000,,1800,,13,,1,0x20000000,7,2,16,,100,1,0,{ bonus bMaxHPRate,15; bonus bMaxSPRate,-30; },{},{}
-15055,Special_Alloy_Armor,Special Alloy Armor,5,100000,,1500,,8,,1,0x20000000,7,2,16,,100,1,0,{ bonus bAgi,1; },{},{}
+15055,Tenebris_Latitantes,Special Alloy Armor,5,100000,,1500,,8,,1,0x20000000,7,2,16,,100,1,0,{ bonus bAgi,1; },{},{}
 15056,Special_Ninja_Suit_,Special Ninja Suit,5,100000,,1200,,10,,1,0x20000000,7,2,16,,100,1,0,{ bonus bAgi,1+(getrefine()/3); },{},{}
+
+
+// Structure of Database:
+
+// ID,Name,Name,Type,Price,Sell,Weight,ATK,DEF,Range,Slot,Job,Upper,Gender,Loc,wLV,eLV,Refineable,View,{ Script },{ OnEquip_Script },{ OnUnequip_Script }
+
+
+// Costume Robes
+2573,Archangel_Wing,Archangel Wings,5,20,,100,,0,,0,0xFFFFFFFF,7,2,8192,,1,0,1,{},{},{}
+2576,Bravery_Bag,Bravery Bag,5,20,,100,,0,,0,0xFFFFFFFF,7,2,8192,,1,0,2,{},{},{}
+2589,Fallen_Angel_Wing,Fallen Angel Wing,5,20,,100,,0,,0,0xFFFFFFFF,7,2,8192,,1,0,3,{},{},{}
+
+
+// GM Equips
+1599,Angra_Manyu,Angra Manyu,4,1,,10,200,,2,0,0xFFFFFFFF,7,2,2,1,1,1,8,{ bonus bAllStats,50; bonus bBaseAtk,3800; bonus bMatkRate,200; bonus2 bHPDrainRate,1000,100; bonus2 bSPDrainRate,1000,20; bonus bHealPower,200; bonus2 bAddRace,RC_NonBoss,100; bonus2 bAddRace,RC_Boss,100; skill "WZ_STORMGUST",10; Skill "WZ_METEOR",10; Skill "WZ_VERMILION",10; /*skill "GM_SANDMAN",1;*/ },{},{}
+2199,Ahura_Mazda,Ahura Mazdah,5,1,,10,,100,,0,0xFFFFFFFF,7,2,32,,1,1,0,{ bonus bAllStats,50; bonus bMdef,99; bonus bShortWeaponDamageReturn,100; bonus2 bSubRace,RC_DemiHuman,95; skill "CR_FULLPROTECTION",5; Skill "WZ_ESTIMATION",1; Skill "ST_FULLSTRIP",5; Skill "HW_MAGICPOWER", 10; bonus bMaxHPRate,200; bonus bNoGemStone,0;  bonus bSpeedRate,25; },{ sc_start4 SC_ENDURE,60000,10,0,0,1; },{ sc_end SC_ENDURE; }
+
+// New GM Equip? It gives access to a hand full of skills.
+2904,Naqsh,Naqsh,5,20,,0,,0,,0,0xFFFFFFFF,7,2,136,,1,0,0,{},{},{}
