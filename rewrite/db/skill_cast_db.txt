@@ -6,9 +6,9 @@
 //== Structure Details:
 // Skill ID : The ID of the skill used.
 // Cast Time : The amount of time required to cast the skill. Acts as a full cast time for pre-renewal skills and variable cast time for renewal skills.
-// Cool Down : The amount of time the player has to wait before the used skill can be used again.
 // After Cast Delay : The amount of time the player has to wait before any skill can be used again.
 // After Cast Walk Dleay : The amount of time the player will be unable to move for after using the skill.
+// Cool Down : The amount of time the player has to wait before the used skill can be used again.
 // Duration 1 / Duration 2 : The amount of time set for different effects. Used to set amount of time status and AoE durations last for.
 // Fixed Cast Time: The amount of time thats added to the cast time as a unreduceable time. Fixed cast time can't be reduced with normal methods.
 //
@@ -1644,8 +1644,8 @@
 //==========================================
 
 //===== Kagerou / Oboro ====================
-//-- KO_YAMIKUMO - Duration time is temporarly until we get the official. It might be infinite.
-3001,0,0,0,0,60000,0,0
+//-- KO_YAMIKUMO
+3001,0,0,0,0,200000,0,0
 
 //-- KO_JYUMONJIKIRI
 3004,0,500,5000,0,0,3000,0
@@ -1660,7 +1660,7 @@
 //-- KO_HUUMARANKA
 3009,1000:1200:1400:1600:1800,1000,3000,0,0,0,0
 //-- KO_MAKIBISHI
-3010,0,0,10000,0,12000:14000:16000:18000:20000,5000,0
+3010,0,0,10000,0,12000:14000:16000:18000:20000,2500:3000:3500:4000:4500,0
 //-- KO_MEIKYOUSISUI
 3011,3000,0,10000,0,10000,0,0
 //-- KO_ZANZOU

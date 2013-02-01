@@ -1031,7 +1031,7 @@ int status_damage(struct block_list *src,struct block_list *target,int hp, int s
 			status_change_end(target, SC_CLOAKING, INVALID_TIMER);
 			status_change_end(target, SC_CHASEWALK, INVALID_TIMER);
 			status_change_end(target, SC_CAMOUFLAGE,-1);
-			status_change_end(target, SC_MEIKYOUSISUI,-1);
+			status_change_end(target, SC_MEIKYOUSISUI,-1);//I need the success chance of this status being ended by a attack. [Rytech]
 			//status_change_end(target,SC_DEEPSLEEP,-1);//May be needed in a future update. [Rytech]
 			if ((sce=sc->data[SC_ENDURE]) && !sce->val4) {
 				//Endure count is only reduced by non-players on non-gvg maps.
@@ -1519,8 +1519,7 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 				sc->data[SC__IGNORANCE] || 
 				sc->data[SC_DEEPSLEEP] ||
 				sc->data[SC_CURSEDCIRCLE_TARGET] || 
-				sc->data[SC__SHADOWFORM] || 
-				sc->data[SC_MEIKYOUSISUI]
+				sc->data[SC__SHADOWFORM]
 			))
 				return 0;
 
@@ -4269,7 +4268,7 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 	if(sc->data[SC_ODINS_POWER])
 		watk += 40 + 30 * sc->data[SC_ODINS_POWER]->val1;
 	if(sc->data[SC_DOHU_KOUKAI])
-		watk += watk * (10 * sc->data[SC_DOHU_KOUKAI]->val2) / 100;
+		watk += watk * (15 * sc->data[SC_DOHU_KOUKAI]->val2) / 100;
 	if( sc->data[SC_TROPIC_OPTION] )
 		watk += sc->data[SC_TROPIC_OPTION]->val2;
 	if( sc->data[SC_HEATER_OPTION] )
@@ -4534,8 +4533,8 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 		def -= def * 25 / 100;
 	if(sc->data[SC_ODINS_POWER])
 		def -= 2 * sc->data[SC_ODINS_POWER]->val1;
-	if(sc->data[SC_DOHU_KOUKAI])
-		def += def * (10 * sc->data[SC_DOHU_KOUKAI]->val2) / 100;
+	if(sc->data[SC_DOHU_KOUKAI])//Does this also increase DEF gained from refinement bonuses? Also need offical DEF increase value. [Rytech]
+		def += def * (5 * sc->data[SC_DOHU_KOUKAI]->val2) / 100;
 	if( sc->data[SC_ROCK_CRUSHER] )
 		def -= def * sc->data[SC_ROCK_CRUSHER]->val2 / 100;
 	if( sc->data[SC_POWER_OF_GAIA] )
@@ -7884,7 +7883,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			tick = 1000;
 			break;
 		case SC_IZAYOI:
-			val2 = 30 * val1;// MATK Increase. This value is temporarly until new official value is found. [Rytech]
+			val2 = 25 * val1;// MATK Increase.
 			break;
 		case SC_KAGEMUSYA:
 			val4 = tick / 1000;

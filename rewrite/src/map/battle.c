@@ -1712,7 +1712,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					short index = sd->equip_index[EQI_AMMO];
 					wd.damage = 0;
 					if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_AMMO )
-						ATK_ADD((50 + 10 * skill_lv) * sd->inventory_data[index]->atk);
+						ATK_ADD((3 * (sstatus->batk + sstatus->rhw.atk + sd->inventory_data[index]->atk)) * (skill_lv + 5) / 5);
 				}
 				else
 					ATK_ADD(5000);
@@ -2603,25 +2603,37 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case KO_JYUMONJIKIRI:
 					skillratio = 150 * skill_lv;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio = skillratio * s_level / 120;	// Base level bonus.
 					{
 						struct status_change *tsc = status_get_sc(target);
-						if( tsc && tsc->data[SC_JYUMONJIKIRI] )// Bonus damage added when attacking target with Cross Slasher status. [Rytech]
-							skillratio = skillratio * 2;// RuRO translation says its double damage. I still need a confirm.
+						if( tsc && tsc->data[SC_JYUMONJIKIRI] )// Bonus damage added when attacking target with Cross Wound status. [Rytech]
+							if( re_baselv_bonus == 1 && s_level >= 100 )
+								skillratio += skill_lv * s_level;	// Base level bonus.
+							else
+								skillratio += 150 * skill_lv;
 					}
 					break;
 				case KO_SETSUDAN:
 					skillratio = 100 * skill_lv;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio = skillratio * s_level / 100;	// Base level bonus.
 					{
 						struct status_change *tsc = status_get_sc(target);
 						if( tsc && tsc->data[SC_SPIRIT] )// Bonus damage added when target is soul linked. [Rytech]
-							skillratio = skillratio * (1 + tsc->data[SC_SPIRIT]->val1);// Deals higher damage depending on level of soul link. Need official bonus damage formula.
+							skillratio += 200 * tsc->data[SC_SPIRIT]->val1;// Deals higher damage depending on level of soul link.
 					}
 					break;
 				case KO_BAKURETSU:
-					skillratio = 10 * skill_lv * pc_checkskill(sd, NJ_TOBIDOUGU);
+					skillratio = (50 + sstatus->dex / 4) * skill_lv * pc_checkskill(sd, NJ_TOBIDOUGU) * 4 / 10;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+					{skillratio = skillratio * s_level / 120;	// Base level bonus.
+					skillratio += 10 * sd->status.job_level;}
+					else
+					skillratio += 500;
 					break;
 				case KO_HUUMARANKA:
-					skillratio = 150 * skill_lv + (sstatus->agi + sstatus->dex) * pc_checkskill(sd, NJ_HUUMA);
+					skillratio = 150 * skill_lv + sstatus->agi + sstatus->dex + 100 * pc_checkskill(sd, NJ_HUUMA);
 					break;
 				// Physical Elemantal Spirits Attack Skills
 				case EL_CIRCLE_OF_FIRE:
@@ -3645,40 +3657,40 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					case NJ_KOUENKA:
 						skillratio -= 10;
 						if( sc && sc->data[SC_KAHU_ENTEN] )
-							skillratio += skillratio * ( 10 * sc->data[SC_KAHU_ENTEN]->val2 ) / 100;
+							skillratio += 20 * sc->data[SC_KAHU_ENTEN]->val2;
 						break;
 					case NJ_KAENSIN:
 						skillratio -= 50;
 						if( sc && sc->data[SC_KAHU_ENTEN] )
-							skillratio += skillratio * ( 10 * sc->data[SC_KAHU_ENTEN]->val2 ) / 100;
+							skillratio += 5 * sc->data[SC_KAHU_ENTEN]->val2;
 						break;
 					case NJ_BAKUENRYU:
 						skillratio += 50*(skill_lv-1);
 						if( sc && sc->data[SC_KAHU_ENTEN] )
-							skillratio += skillratio * ( 10 * sc->data[SC_KAHU_ENTEN]->val2 ) / 100;
+							skillratio += 15 * sc->data[SC_KAHU_ENTEN]->val2;
 						break;
 					case NJ_HYOUSENSOU:
 						if( sc && sc->data[SC_HYOUHU_HUBUKI] )
-							skillratio += skillratio * ( 10 * sc->data[SC_HYOUHU_HUBUKI]->val2 ) / 100;
+							skillratio += 5 * sc->data[SC_HYOUHU_HUBUKI]->val2;
 						break;
 					case NJ_HYOUSYOURAKU:
 						skillratio += 50*skill_lv;
 						if( sc && sc->data[SC_HYOUHU_HUBUKI] )
-							skillratio += skillratio * ( 10 * sc->data[SC_HYOUHU_HUBUKI]->val2 ) / 100;
+							skillratio += 25 * sc->data[SC_HYOUHU_HUBUKI]->val2;
 						break;
 					case NJ_HUUJIN:
 						if( sc && sc->data[SC_KAZEHU_SEIRAN] )
-							skillratio += skillratio * ( 10 * sc->data[SC_KAZEHU_SEIRAN]->val2 ) / 100;
+							skillratio += 20 * sc->data[SC_KAZEHU_SEIRAN]->val2;
 						break;
 					case NJ_RAIGEKISAI:
 						skillratio += 60 + 40*skill_lv;
 						if( sc && sc->data[SC_KAZEHU_SEIRAN] )
-							skillratio += skillratio * ( 10 * sc->data[SC_KAZEHU_SEIRAN]->val2 ) / 100;
+							skillratio += 15 * sc->data[SC_KAZEHU_SEIRAN]->val2;
 						break;
 					case NJ_KAMAITACHI:
 						skillratio += 100*skill_lv;
 						if( sc && sc->data[SC_KAZEHU_SEIRAN] )
-							skillratio += skillratio * ( 10 * sc->data[SC_KAZEHU_SEIRAN]->val2 ) / 100;
+							skillratio += 10 * sc->data[SC_KAZEHU_SEIRAN]->val2;
 						break;
 					case NPC_ENERGYDRAIN:
 						skillratio += 100*skill_lv;
@@ -3883,8 +3895,10 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						else// Normal Demonic Fire Damage
 							skillratio += 10 + 20 * skill_lv;
 						break;
-					case KO_KAIHOU://Temporarly until official formula is found. [Rytech]
-						skillratio = 300 * sd->spiritballnumber;
+					case KO_KAIHOU:
+						skillratio = 200 * sd->spiritballnumber;
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio = skillratio * s_level / 100;
 						break;
 					// Magical Elemental Spirits Attack Skills
 					case EL_FIRE_MANTLE:
@@ -4265,9 +4279,9 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		md.damage = (( skill_lv * 150 * 10 ) + sstatus->int_ * 7 / 2 * ( 18 + 50 / 4 )) * 5 / ( 10 - pc_checkskill(sd,AM_CANNIBALIZE) );
 		break;
 	case KO_MUCHANAGE:
-		md.damage = skill_get_zeny(skill_num ,skill_lv) / 2;
+		md.damage = skill_get_zeny(skill_num ,skill_lv);
 		if (!md.damage) md.damage = 10;
-		md.damage =  md.damage + rand()%md.damage;
+		md.damage =  md.damage * rnd_value( 50, 100) / 100;
 		if (is_boss(target) || (tsd))
 			md.damage = md.damage / 2;
 		break;
