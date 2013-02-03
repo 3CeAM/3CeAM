@@ -794,3 +794,34 @@ Saving these skills for a 2nd pass.
 
 Feint Bomb
 After back slideing, the caster will go into hiding status. Im guessing the level of hiding learned affects things.
+
+
+
+
+
+
+
+
+
+
+Expanded Jobs
+
+Shadow Cloud
+Data shows it takes SP every 2 seconds. How much?
+
+Cross Slash
+Need to make the caster do a body relocate like move up to the target when used.
+
+Makibishi
+Need to figure out how to code it to place a certain number of makibishi depending on the
+skill level and how to place it on random spots within a 3x3 AoE, but not in the center.
+
+illusion - After Image
+The backslide effect works, but I also need to code it to summon a clone on the spot caster
+and also make the attacker auto switch his attacks to the summoned clone.
+
+illusion - Shock
+Need to add the duration reduction formula.
+Currently set to not save its status since trying to log back in while the status is active
+will crash the client. Itl be allowed to save once the issue is fixed.
+

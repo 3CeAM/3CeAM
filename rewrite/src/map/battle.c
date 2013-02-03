@@ -2635,6 +2635,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case KO_HUUMARANKA:
 					skillratio = 150 * skill_lv + sstatus->agi + sstatus->dex + 100 * pc_checkskill(sd, NJ_HUUMA);
 					break;
+				case KO_MAKIBISHI:
+					skillratio = 20 * skill_lv;
+					break;
 				// Physical Elemantal Spirits Attack Skills
 				case EL_CIRCLE_OF_FIRE:
 				case EL_FIRE_BOMB_ATK:
