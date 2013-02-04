@@ -1098,7 +1098,7 @@
 //-- RK_MILLENNIUMSHIELD - Duration 2 used for stun when shield breaks. How long does it officially last?
 2011,0,1000,60000,0,180000,3000,0
 //-- RK_CRUSHSTRIKE - Duration 1 will soon be used for when Crush Strike is turned into a self casted buff.
-2012,0,0,30000,0,30000,0,1000
+2012,0,0,30000,0,-1,0,1000
 //-- RK_REFRESH //CHECK duration 1
 2013,0,0,120000,0,60000,0,1000
 //-- RK_GIANTGROWTH
