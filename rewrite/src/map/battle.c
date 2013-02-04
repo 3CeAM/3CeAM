@@ -4514,6 +4514,8 @@ int battle_calc_return_damage(struct block_list *src, struct block_list *bl, int
 			if( rdamage < 1 ) rdamage = 1;
 		}
 	}
+	if ( sc && sc->data[SC_KYOMU] )//If under shadow void status, damage will not be reflected.
+		rdamage = 0;
 	return rdamage;
 }
 
@@ -4731,6 +4733,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		if (sc->data[SC_MAGICALATTACK])
 			//FIXME: invalid return type!
 			return (damage_lv)skill_attack(BF_MAGIC,src,src,target,NPC_MAGICALATTACK,sc->data[SC_MAGICALATTACK]->val1,tick,0);
+
 		if( sc->data[SC_GT_ENERGYGAIN] )
 		{
 			int spheremax = 0;
@@ -4740,6 +4743,13 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			spheremax = 5;
 			if( sd && rand()%100 < sc->data[SC_GT_ENERGYGAIN]->val2)
 			pc_addspiritball(sd, skill_get_time2(SR_GENTLETOUCH_ENERGYGAIN,sc->data[SC_GT_ENERGYGAIN]->val1), spheremax);
+		}
+
+		if ( sc->data[SC_CRUSHSTRIKE] )
+		{
+			skill_attack(BF_WEAPON,src,src,target,RK_CRUSHSTRIKE,sc->data[SC_CRUSHSTRIKE]->val1,tick,flag);
+			status_change_end(src, SC_CRUSHSTRIKE, -1);
+			return ATK_MISS;
 		}
 	}
 

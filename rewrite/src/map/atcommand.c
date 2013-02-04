@@ -1446,8 +1446,8 @@ ACMD_FUNC(jobchange)
 		}
 	}
 
-	if (job == 13 || job == 21 || job == 22 || job == 26 || job == 27 || job == 4014 || job == 4022 || job == 4036 || job == 4044 || job == 4048
-		 || (job >= JOB_RUNE_KNIGHT2 && job <= JOB_MECHANIC_T2) || (job >= JOB_BABY_RUNE2 && job <= JOB_BABY_MECHANIC2)
+	if (job == 13 || job == 21 || job == 22 || job == 26 || job == 27 || job == 28 || job == 4014 || job == 4022 || job == 4036 || job == 4044 || 
+		job == 4048 || (job >= JOB_RUNE_KNIGHT2 && job <= JOB_MECHANIC_T2) || (job >= JOB_BABY_RUNE2 && job <= JOB_BABY_MECHANIC2)
 	) // Deny direct transformation into dummy jobs
 		{clif_displaymessage(fd, "You can not change to this job by command.");
 		return 0;}

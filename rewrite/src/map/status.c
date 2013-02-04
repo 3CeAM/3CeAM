@@ -417,6 +417,7 @@ void initChangeTables(void)
 	add_sc( RK_DRAGONBREATH      , SC_BURNING           );
 	set_sc( RK_DRAGONHOWLING     , SC_FEAR              , SI_BLANK             , SCB_FLEE|SCB_HIT );
 	set_sc( RK_MILLENNIUMSHIELD  , SC_MILLENNIUMSHIELD  , SI_MILLENNIUMSHIELD  , SCB_NONE );
+	set_sc( RK_CRUSHSTRIKE       , SC_CRUSHSTRIKE       , SI_CRUSHSTRIKE       , SCB_NONE );
 	set_sc( RK_REFRESH           , SC_REFRESH           , SI_REFRESH           , SCB_NONE );
 	set_sc( RK_GIANTGROWTH       , SC_GIANTGROWTH       , SI_GIANTGROWTH       , SCB_STR );
 	set_sc( RK_STONEHARDSKIN     , SC_STONEHARDSKIN     , SI_STONEHARDSKIN     , SCB_DEF|SCB_MDEF);
@@ -1519,7 +1520,8 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 				sc->data[SC__IGNORANCE] || 
 				sc->data[SC_DEEPSLEEP] ||
 				sc->data[SC_CURSEDCIRCLE_TARGET] || 
-				sc->data[SC__SHADOWFORM]
+				sc->data[SC__SHADOWFORM] || 
+				(sc->data[SC_KYOMU] && rand()%100 < 5 * sc->data[SC_KYOMU]->val1)
 			))
 				return 0;
 
@@ -1893,15 +1895,17 @@ int status_calc_mob_(struct mob_data* md, bool first)
 		{	// different levels of HP according to skill level
 			if( ud->skillid == AM_SPHEREMINE )
 				status->max_hp = 2000 + 400*ud->skilllv;
-			else
-			{ //AM_CANNIBALIZE
+			else if( ud->skillid == AM_CANNIBALIZE )
+			{
 				status->max_hp = 1500 + 200*ud->skilllv + 10*status_get_lv(mbl);
 				status->mode|= MD_CANATTACK|MD_AGGRESSIVE;
 			}
-
+			else if( ud->skillid == NC_SILVERSNIPER )
+				status->rhw.atk = status->rhw.atk2 = 200 * ud->skilllv;
+			else if ( ud->skillid == KO_ZANZOU )//How can I add the caster's MaxSP to the calculation? [Rytech]
+				//status->max_hp = 3000 + 3000 * ud->skilllv + ud->;
+				status->max_hp = md->status.max_hp;
 			status->hp = status->max_hp;
-			if( ud->skillid == NC_SILVERSNIPER )
-				status->rhw.atk = status->rhw.atk2 = 200 + 100 * ud->skilllv;
 		}
 	}
 

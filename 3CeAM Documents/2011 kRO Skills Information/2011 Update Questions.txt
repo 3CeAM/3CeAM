@@ -99,12 +99,6 @@ May reduce stun duration to 1 second if found that 3 seconds is too high. Imagin
 Giant Growth
 Recheck the check for the 3x damage in battle.c as a small cleanup might be possiable.
 
-Crush Strike
-How do I code it as a self cast? I know how to make it self cast, but not how to apply damage through a status.
-Guess ill do it like Exeed Break? I only updated the damage formula to official for now.
-UPDATE 5-23-2012: I just found in skill.c on line 2492 a piece of code that breaks your weapon after use.
-I probely didnt touch this skill at all when I did the first pass.
-
 Refresh
 The document doesent say it, but a tester found that it removes and immunes against Decrease AGI and Quagmire. It also worked on
 White Imprison but not sure if it still does on it. Its been left in for now.
@@ -817,11 +811,17 @@ Need to figure out how to code it to place a certain number of makibishi dependi
 skill level and how to place it on random spots within a 3x3 AoE, but not in the center.
 
 illusion - After Image
-The backslide effect works, but I also need to code it to summon a clone on the spot caster
-and also make the attacker auto switch his attacks to the summoned clone.
+Needs to make the attacker auto switch his attacks to the summoned clone.
+If its a clone of you, does it take your stats, DEF, etc. How much of a clone is it really?
 
 illusion - Shock
 Need to add the duration reduction formula.
 Currently set to not save its status since trying to log back in while the status is active
 will crash the client. Itl be allowed to save once the issue is fixed.
 
+illusion - Killing Curse
+Need to add the part that reduces current Hp by 25% of your MaxHP.
+
+Spread Seals
+Need to confirm if the skill attempt to inflect 1 or all status's for each 500ms.
+Also need to know the durations.

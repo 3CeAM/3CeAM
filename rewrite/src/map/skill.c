@@ -2490,7 +2490,7 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 	}
 	
 	if( damage > 0 && skillid == RK_CRUSHSTRIKE ) // Your weapon will not be broken if you miss.
-			skill_break_equip(src,EQP_WEAPON,10000,BCT_SELF);
+			skill_break_equip(src,EQP_WEAPON,2000,BCT_SELF);
 	
 	if( damage > 0 && skillid == GC_VENOMPRESSURE )
 	{
@@ -3927,15 +3927,9 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		break;
 		
 	case RK_STORMBLAST:
-	case RK_CRUSHSTRIKE:
 		if( sd )
-		{
-			int lv = 3; //RK_STORMBLAST
-			if( skillid == RK_CRUSHSTRIKE )
-				lv = 7;
-			if( pc_checkskill(sd,RK_RUNEMASTERY) >= lv )
+			if( pc_checkskill(sd,RK_RUNEMASTERY) >= 3 )
 				skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
-		}
 		break;
 
 	case GC_DARKILLUSION:
@@ -5165,101 +5159,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case KO_MEIKYOUSISUI:
 		clif_skill_nodamage(src,bl,skillid,skilllv,
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
-		break;
-
-	case KO_IZAYOI:
-	case KG_KYOMU:
-	case KG_KAGEMUSYA:
-	case OB_ZANGETSU:
-	case OB_OBOROGENSOU:
-	case OB_AKAITSUKI:
-		if ( bl->type != BL_PC && skillid == KG_KAGEMUSYA )
-		{
-			clif_skill_fail(sd,skillid,0,0,0);
-			break;
-		}
-		clif_skill_nodamage(src,bl,skillid,skilllv,1);
-		clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, 0, 1, skillid, -2, 6);
-		sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
-		break;
-
-	case KO_ZANZOU:
-		clif_skill_nodamage(src,bl,skillid,skilllv,1);
-		skill_blown(src,bl,skill_get_blewcount(skillid,skilllv),unit_getdir(bl),0);
-		break;
-
-	case KO_KYOUGAKU:
-		if ( bl->type != BL_PC )
-		{
-			clif_skill_fail(sd,skillid,0,0,0);
-			break;
-		}
-		//Used skill level must be used in val2 since val1 sets the ID of the monster the target will turn into. [Rytech]
-		//For now the monster ID for Poring will be used until more info is gained about what mob's it changes you into.
-		sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
-		break;
-
-	case KO_JYUSATSU:
-		rate = 45 + 10 * skilllv - tstatus->int_ / 2;
-		if ( rate < 5 )
-			rate = 5;
-		sc_start(bl,SC_CURSE,rate,skilllv,skill_get_time(skillid,skilllv));
-		if ( status_get_lv(src) >= status_get_lv(bl) && bl->type == BL_PC)
-			status_change_start(bl,SC_COMA,10 * skilllv,skilllv,0,0,0,0,0);
-		break;
-
-	case KO_GENWAKU:
-		rate = 45 + 5 * skilllv - tstatus->int_ / 10;
-		if ( rate < 5 )
-			rate = 5;
-		if ( rand()%100 < rate )
-		{
-			int caster_x = src->x;
-			int caster_y = src->y;
-			int target_x = bl->x;
-			int target_y = bl->y;
-			if ( !is_boss(bl) )
-			{
-				clif_skill_nodamage(bl,bl,skillid,skilllv,1);// Caster
-				unit_movepos(src,target_x,target_y,0,0);
-				clif_slide(src,target_x,target_y) ;
-				clif_skill_nodamage(src,src,skillid,skilllv,1);// Target
-				unit_movepos(bl,caster_x,caster_y,0,0);
-				clif_slide(bl,caster_x,caster_y) ;
-				sc_start(src,SC_CONFUSION,25,skilllv,skill_get_time(skillid,skilllv));
-				sc_start(bl,SC_CONFUSION,75,skilllv,skill_get_time(skillid,skilllv));
-			}
-			else
-			{// Caster will warp up to the target if monster is boss type, but the targeted monster will not change position. [Rytech]
-				clif_skill_nodamage(bl,bl,skillid,skilllv,1);
-				unit_movepos(src,target_x,target_y,0,0);
-				clif_slide(src,target_x,target_y) ;
-				sc_start(src,SC_CONFUSION,25,skilllv,skill_get_time(skillid,skilllv));
-			}
-		}
-		break;
-
-	case KG_KAGEHUMI:
-		if( flag&1 )
-		{
-			if( tsc && (tsc->data[SC_HIDING] || tsc->data[SC_CLOAKING] || tsc->data[SC_CAMOUFLAGE] || 
-				tsc->data[SC_CLOAKINGEXCEED] || tsc->data[SC__SHADOWFORM]) )
-			{
-				status_change_end(bl, SC_HIDING, -1);
-				status_change_end(bl, SC_CLOAKING, -1);
-				status_change_end(bl, SC_CAMOUFLAGE, -1);
-				status_change_end(bl, SC_CLOAKINGEXCEED, -1);
-				status_change_end(bl, SC__SHADOWFORM, -1);
-				sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
-			}
-		}
-		else
-		{
-			clif_skill_nodamage(src,bl,skillid,skilllv,1);
-			clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, 0, 1, skillid, -2, 6);
-			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), BL_CHAR,
-				src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
-		}
 		break;
 
 	case SO_STRIKING:
@@ -7501,6 +7400,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 
+	case RK_CRUSHSTRIKE:
 	case RK_GIANTGROWTH:
 	case RK_VITALITYACTIVATION:
 	case RK_ABUNDANCE:
@@ -7511,6 +7411,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				lv = 2;
 			else if( skillid == RK_ABUNDANCE )
 				lv = 6;
+			else if ( skillid == RK_CRUSHSTRIKE )
+				lv = 7;
 			if( pc_checkskill(sd,RK_RUNEMASTERY) >= lv )
 				clif_skill_nodamage(src,bl,skillid,skilllv,sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
 		}
@@ -8805,6 +8707,42 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 
+	case KO_ZANZOU:
+		{
+			struct mob_data *md;
+			md = mob_once_spawn_sub(src, src->m, src->x, src->y, status_get_name(src), 2308, "");
+			if( md )
+			{
+				md->master_id = src->id;
+				md->special_state.ai = 6;
+				md->status.max_hp = 3000 + 3000 * skilllv + sstatus->max_sp;
+				if( md->deletetimer != INVALID_TIMER )
+					delete_timer(md->deletetimer, mob_timer_delete);
+				md->deletetimer = add_timer (gettick() + skill_get_time(skillid, skilllv), mob_timer_delete, md->bl.id, 0);
+				mob_spawn( md );
+			}
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+			skill_blown(src,bl,skill_get_blewcount(skillid,skilllv),unit_getdir(bl),0);
+		}
+		break;
+
+	case KO_KYOUGAKU:
+		if ( bl->type != BL_PC )
+		{
+			clif_skill_fail(sd,skillid,0,0,0);
+			break;
+		}
+		sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
+		break;
+
+	case KO_JYUSATSU:
+		rate = 45 + 10 * skilllv - tstatus->int_ / 2;
+		if ( rate < 5 )
+			rate = 5;
+		sc_start(bl,SC_CURSE,rate,skilllv,skill_get_time(skillid,skilllv));
+		if ( status_get_lv(src) >= status_get_lv(bl) && bl->type == BL_PC)
+			status_change_start(bl,SC_COMA,10 * skilllv,skilllv,0,0,0,0,0);
+		break;
 
 	case KO_KAHU_ENTEN:
 	case KO_HYOUHU_HUBUKI:
@@ -8817,8 +8755,82 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				pc_delspiritball_attribute(sd,sd->spiritballnumber,1);
 				sc_start2(bl, type, 100, skilllv, 0, skill_get_time2(skillid,skilllv));
 			}
-			pc_addspiritball_attribute(sd,skill_get_time(skillid,skilllv),10);
+			//Lets allow GM's to have some fun with charms. =P [Rytech]
+			//if( battle_config.gm_skilluncond && pc_isGM(sd) >= battle_config.gm_skilluncond )
+			//	pc_addspiritball_attribute(sd,skill_get_time(skillid,skilllv),20);
+			//else
+				pc_addspiritball_attribute(sd,skill_get_time(skillid,skilllv),10);
 			sc_start2(bl, type, 100, skilllv, sd->spiritballnumber, skill_get_time2(skillid,skilllv));
+		}
+		break;
+
+	case KO_GENWAKU:
+		rate = 45 + 5 * skilllv - tstatus->int_ / 10;
+		if ( rate < 5 )
+			rate = 5;
+		if ( rand()%100 < rate )
+		{
+			int caster_x = src->x;
+			int caster_y = src->y;
+			int target_x = bl->x;
+			int target_y = bl->y;
+			if ( !is_boss(bl) )
+			{
+				clif_skill_nodamage(bl,bl,skillid,skilllv,1);// Caster
+				unit_movepos(src,target_x,target_y,0,0);
+				clif_slide(src,target_x,target_y) ;
+				clif_skill_nodamage(src,src,skillid,skilllv,1);// Target
+				unit_movepos(bl,caster_x,caster_y,0,0);
+				clif_slide(bl,caster_x,caster_y) ;
+				sc_start(src,SC_CONFUSION,25,skilllv,skill_get_time(skillid,skilllv));
+				sc_start(bl,SC_CONFUSION,75,skilllv,skill_get_time(skillid,skilllv));
+			}
+			else
+			{// Caster will warp up to the target if monster is boss type, but the targeted monster will not change position. [Rytech]
+				clif_skill_nodamage(bl,bl,skillid,skilllv,1);
+				unit_movepos(src,target_x,target_y,0,0);
+				clif_slide(src,target_x,target_y) ;
+				sc_start(src,SC_CONFUSION,25,skilllv,skill_get_time(skillid,skilllv));
+			}
+		}
+		break;
+
+	case KO_IZAYOI:
+	case KG_KYOMU:
+	case KG_KAGEMUSYA:
+	case OB_ZANGETSU:
+	case OB_OBOROGENSOU:
+	case OB_AKAITSUKI:
+		if ( bl->type != BL_PC && skillid == KG_KAGEMUSYA )
+		{
+			clif_skill_fail(sd,skillid,0,0,0);
+			break;
+		}
+		clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, 0, 1, skillid, -2, 6);
+		sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
+		break;
+
+	case KG_KAGEHUMI:
+		if( flag&1 )
+		{
+			if( tsc && (tsc->data[SC_HIDING] || tsc->data[SC_CLOAKING] || tsc->data[SC_CAMOUFLAGE] || 
+				tsc->data[SC_CLOAKINGEXCEED] || tsc->data[SC__SHADOWFORM]) )
+			{
+				status_change_end(bl, SC_HIDING, -1);
+				status_change_end(bl, SC_CLOAKING, -1);
+				status_change_end(bl, SC_CAMOUFLAGE, -1);
+				status_change_end(bl, SC_CLOAKINGEXCEED, -1);
+				status_change_end(bl, SC__SHADOWFORM, -1);
+				sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
+			}
+		}
+		else
+		{
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+			clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, 0, 1, skillid, -2, 6);
+			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), BL_CHAR,
+				src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
 		}
 		break;
 
@@ -9659,7 +9671,6 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case SO_WIND_INSIGNIA:
 	case SO_EARTH_INSIGNIA:
 	case KO_MAKIBISHI:
-	case KO_ZENKAI:
 		flag|=1;//Set flag to 1 to prevent deleting ammo (it will be deleted on group-delete).
 	case GS_GROUNDDRIFT: //Ammo should be deleted right away.
 		skill_unitsetting(src,skillid,skilllv,x,y,0);
@@ -10147,6 +10158,15 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 			map_foreachinarea(skill_area_sub,src->m,x-i,y-i,x+i,y+i,BL_CHAR,src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);}
 		break;
 
+	case KO_ZENKAI:
+		skill_unitsetting(src,skillid,skilllv,x,y,0);
+		pc_delspiritball_attribute(sd,sd->spiritballnumber,0);
+		status_change_end(src, SC_KAHU_ENTEN, INVALID_TIMER);
+		status_change_end(src, SC_HYOUHU_HUBUKI, INVALID_TIMER);
+		status_change_end(src, SC_KAZEHU_SEIRAN, INVALID_TIMER);
+		status_change_end(src, SC_DOHU_KOUKAI, INVALID_TIMER);
+		break;
+
 	default:
 		ShowWarning("skill_castend_pos2: Unknown skill used:%d\n",skillid);
 		return 1;
@@ -10199,8 +10219,7 @@ int skill_castend_map (struct map_session_data *sd, short skill_num, const char 
 		sd->sc.data[SC_WHITEIMPRISON] ||
 		//sd->sc.data[SC_STASIS] ||//Not sure if this is needed. Does as it should without it, but leaving here for now. [Rytech]
 		sd->sc.data[SC_CRYSTALIZE] ||
-		sd->sc.data[SC__MANHOLE] ||
-		sd->sc.data[SC_MEIKYOUSISUI]
+		sd->sc.data[SC__MANHOLE]
 	 )) {
 		skill_failed(sd);
 		return 0;
@@ -10687,6 +10706,46 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 			limit = 3000;
 		val3 = (x<<16)|y;
 		break;
+
+	case KO_ZENKAI:
+		{
+			if ( sc )
+			{
+				if ( sc->data[SC_KAHU_ENTEN] )
+					val1 = ELE_FIRE;
+				else if ( sc->data[SC_HYOUHU_HUBUKI] )
+					val1 = ELE_WATER;
+				else if ( sc->data[SC_KAZEHU_SEIRAN] )
+					val1 = ELE_WIND;
+				else if ( sc->data[SC_DOHU_KOUKAI] )
+					val1 = ELE_EARTH;
+			}
+
+			if (!val1)
+				val1 = rand()%4+1;
+
+			//AoE's duration is 6 seconds * Number of Summoned Charms. [Rytech]
+			if ( sd->spiritballnumber > 0 )
+				limit = 6000 * sd->spiritballnumber;
+			else
+				limit = 60000;
+
+			switch (val1)
+			{
+				case ELE_WIND:
+					subunt++;
+				case ELE_FIRE:
+					subunt++;
+				case ELE_EARTH:
+					subunt++;
+				case ELE_WATER:
+					break;
+				default:
+					subunt=rand()%4+1;
+				break;
+			}
+			break;
+		}
 	}
 
 	nullpo_retr(NULL, group=skill_initunitgroup(src,layout->count,skillid,skilllv,skill_get_unit_id(skillid,flag&1)+subunt, limit, interval));
@@ -11682,10 +11741,36 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 		case UNT_MAKIBISHI:
 			skill_attack(BF_WEAPON,ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
 			break;
-		//case UNT_ZENKAI_WATER:
-		//	sc_start(bl, SC_FREEZE, 20, sg->skill_lv, 1000);
-		//	break;
 
+		case UNT_ZENKAI_WATER:
+		case UNT_ZENKAI_LAND:
+		case UNT_ZENKAI_FIRE:
+		case UNT_ZENKAI_WIND:
+			if ( battle_check_target(&src->bl,bl,BCT_ENEMY) > 0 )
+			{
+				switch ( sg->unit_id )
+				{//Need to confirm if 1 random or all status attempt to inflect for each 500ms.
+					case UNT_ZENKAI_WATER://Success chances and durations needed. [Rytech]
+						sc_start(bl, SC_FREEZE, 25, sg->skill_lv, 10000);
+						sc_start(bl, SC_FREEZING, 25, sg->skill_lv, 10000);
+						sc_start(bl, SC_CRYSTALIZE, 25, sg->skill_lv, 10000);
+						break;
+					case UNT_ZENKAI_LAND:
+						sc_start(bl, SC_STONE, 25, sg->skill_lv, 10000);
+						sc_start(bl, SC_POISON, 25, sg->skill_lv, 10000);
+						break;
+					case UNT_ZENKAI_FIRE:
+						sc_start(bl, SC_BURNING, 25, sg->skill_lv, 10000);
+						break;
+					case UNT_ZENKAI_WIND:
+						sc_start(bl, SC_SLEEP, 25, sg->skill_lv, 10000);
+						sc_start(bl, SC_SILENCE, 25, sg->skill_lv, 10000);
+						sc_start(bl, SC_DEEPSLEEP, 25, sg->skill_lv, 10000);
+						break;
+				}
+			}
+			else
+				sc_start(bl, type, 100, sg->skill_lv, 1000);
 	}
 
 	if (sg->state.magic_power && sc && !sc->data[SC_MAGICPOWER])
@@ -12760,6 +12845,7 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		}
 		break;
 	case KO_KAIHOU:
+	case KO_ZENKAI:
 		if(!sd->spiritballnumber > 0)
 		{
 			clif_skill_fail(sd,skill,0,0,0);
@@ -13469,7 +13555,7 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 				status_change_end(bl, SC_MEMORIZE, -1);}
 		if (sc->data[SC_SLOWCAST])
 			time += time * sc->data[SC_SLOWCAST]->val2 / 100;
-		if (sc->data[SC_IZAYOI] && skill_id >= NJ_TOBIDOUGU && skill_id <= NJ_ISSEN)
+		if (sc->data[SC_IZAYOI])
 			time -= time * 50 / 100;
 	}
 
@@ -13519,6 +13605,8 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 			fixed_cast_rate = sc->data[SC_DANCEWITHWUG]->val4;
 		if( sc->data[SC_SECRAMENT] && sc->data[SC_SECRAMENT]->val2 > fixed_cast_rate)
 			fixed_cast_rate = sc->data[SC_SECRAMENT]->val2;
+		if (sc->data[SC_IZAYOI])
+			fixed_cast_rate = 100;
 	}
 
 	//Finally after checking through many different checks, we finalize how much of a percentage the fixed cast time will be reduced.

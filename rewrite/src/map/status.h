@@ -1224,7 +1224,7 @@ enum si_type {
 //	SI_BEER_BOTTLE_CAP = 617,
 //	SI_OVERLAPEXPUP = 618,
 //	SI_PC_IZ_DUN05 = 619,
-//	SI_CRUSHSTRIKE = 620,
+	SI_CRUSHSTRIKE = 620,
 //	SI_MONSTER_TRANSFORM = 621,
 //	SI_SIT = 622,
 //	SI_ONAIR = 623,
@@ -1435,6 +1435,7 @@ enum {
 	OPTION_WHITE_DRAGON = 0x01000000,
 	OPTION_BLUE_DRAGON  = 0x02000000,
 	OPTION_RED_DRAGON   = 0x04000000,
+	OPTION_HANBOK       = 0x08000000,//This is likely official since body sprite changes for costume jobs requires a option mask. Needs confirm. [Rytech]
 };
 
 #define OPTION_CART (OPTION_CART1|OPTION_CART2|OPTION_CART3|OPTION_CART4|OPTION_CART5)
