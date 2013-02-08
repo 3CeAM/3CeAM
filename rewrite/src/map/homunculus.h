@@ -15,6 +15,7 @@ struct h_stats {
 struct s_homunculus_db {
 	int base_class, evo_class;
 	char name[NAME_LENGTH];
+	int maxlevel;
 	struct h_stats base, gmin, gmax, emin, emax;
 	int foodID ;
 	int baseASPD ;
@@ -22,7 +23,7 @@ struct s_homunculus_db {
 	unsigned char element, race, base_size, evo_size;
 };
 
-extern struct s_homunculus_db homuncumlus_db[MAX_HOMUNCULUS_CLASS];
+extern struct s_homunculus_db homuncumlus_db[MAX_HOMUNCULUS_CLASS+MAX_MUTATE_HOMUNCULUS_CLASS+31];
 enum { HOMUNCULUS_CLASS, HOMUNCULUS_FOOD };
 enum {
 	SP_ACK 	= 0x00,
@@ -46,8 +47,8 @@ struct homun_data {
 	char blockskill[MAX_SKILL];	// [orn]
 };
 
-
-#define homdb_checkid(id) (id >=  HM_CLASS_BASE && id <= HM_CLASS_MAX)
+// HM stands for HoMunculus and MH stands for Mutated Homunculus
+#define homdb_checkid(id) (id >=  HM_CLASS_BASE && id <= HM_CLASS_MAX || id >=  MH_CLASS_BASE && id <= MH_CLASS_MAX)
 
 // merc_is_hom_alive(struct homun_data *)
 #define merc_is_hom_active(x) (x && x->homunculus.vaporize != 1 && x->battle_status.hp > 0)
