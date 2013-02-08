@@ -7401,7 +7401,7 @@ ACMD_FUNC(makehomun)
 	}
 
 	homunid = atoi(message);
-	if( homunid < HM_CLASS_BASE || homunid > HM_CLASS_BASE + MAX_HOMUNCULUS_CLASS - 1 )
+	if(!(homunid >=  HM_CLASS_BASE && homunid <= HM_CLASS_MAX || homunid >=  MH_CLASS_BASE && homunid <= MH_CLASS_MAX))
 	{
 		clif_displaymessage(fd, "Invalid Homunculus id.");
 		return -1;

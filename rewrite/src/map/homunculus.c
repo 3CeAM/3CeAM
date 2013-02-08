@@ -42,15 +42,15 @@
 //Better equiprobability than rand()% [orn]
 #define rand(a, b) (a+(int) ((float)(b-a+1)*rand()/(RAND_MAX+1.0)))
 
-struct s_homunculus_db homunculus_db[MAX_HOMUNCULUS_CLASS];	//[orn]
-struct skill_tree_entry hskill_tree[MAX_HOMUNCULUS_CLASS][MAX_SKILL_TREE];
+struct s_homunculus_db homunculus_db[MAX_HOMUNCULUS_CLASS+MAX_MUTATE_HOMUNCULUS_CLASS+31];	//[orn]
+struct skill_tree_entry hskill_tree[MAX_HOMUNCULUS_CLASS+MAX_MUTATE_HOMUNCULUS_CLASS+31][MAX_SKILL_TREE];
 
 static int merc_hom_hungry(int tid, unsigned int tick, int id, intptr data);
 
 static unsigned int hexptbl[MAX_LEVEL];
 
 //For holding the view data of npc classes. [Skotlex]
-static struct view_data hom_viewdb[MAX_HOMUNCULUS_CLASS];
+static struct view_data hom_viewdb[MAX_HOMUNCULUS_CLASS+MAX_MUTATE_HOMUNCULUS_CLASS+31];
 
 struct view_data* merc_get_hom_viewdata(int class_)
 {	//Returns the viewdata for homunculus
@@ -146,6 +146,7 @@ int merc_hom_calc_skilltree(struct homun_data *hd)
 	{
 		if(hd->homunculus.hskill[id-HM_SKILLBASE].id)
 			continue; //Skill already known.
+		f = 1;
 		if(!battle_config.skillfree)
 		{
 			for(j=0;j<MAX_PC_SKILL_REQUIRE;j++)
@@ -157,6 +158,10 @@ int merc_hom_calc_skilltree(struct homun_data *hd)
 					break;
 				}
 			}
+			//If a base level requirement is set, the skill will only be unlocked when
+			//the homunculus reaches the required base level for the skill. [Rytech]
+			if( hd->homunculus.level < hskill_tree[c][i].joblv )
+				f = 0;
 		}
 		if (f)
 			hd->homunculus.hskill[id-HM_SKILLBASE].id = id ;
@@ -219,13 +224,22 @@ int merc_hom_levelup(struct homun_data *hd)
 	int growth_max_hp, growth_max_sp ;
 	char output[256] ;
 
-	if (hd->homunculus.level == MAX_LEVEL || !hd->exp_next || hd->homunculus.exp < hd->exp_next)
+	if (hd->homunculus.level == hd->homunculusDB->maxlevel || !hd->exp_next || hd->homunculus.exp < hd->exp_next)
 		return 0 ;
 	
 	hom = &hd->homunculus;
 	hom->level++ ;
-	if (!(hom->level % 3)) 
-		hom->skillpts++ ;	//1 skillpoint each 3 base level
+
+	if ( hom->level > 99 )
+	{
+		if (!(hom->level % 2))
+			hom->skillpts++ ;	//1 skill point for each 2 levels for mutated homunculus.
+	}
+	else
+	{
+		if (!(hom->level % 3))
+			hom->skillpts++ ;	//1 skill point each 3 levels when below 100.
+	}
 
 	hom->exp -= hd->exp_next ;
 	hd->exp_next = hexptbl[hom->level - 1] ;
@@ -570,7 +584,7 @@ int search_homunculusDB_index(int key,int type)
 {
 	int i;
 
-	for(i=0;i<MAX_HOMUNCULUS_CLASS;i++) {
+	for(i=0;i<MAX_HOMUNCULUS_CLASS+MAX_MUTATE_HOMUNCULUS_CLASS+31;i++) {
 		if(homunculus_db[i].base_class <= 0)
 			continue;
 		switch(type) {
@@ -735,9 +749,6 @@ int merc_create_homunculus_request(struct map_session_data *sd, int class_)
 
 	nullpo_retr(1, sd);
 
-	if( sd->sc.data[SC__GROOMY] )
-		return 0;
-
 	i = search_homunculusDB_index(class_,HOMUNCULUS_CLASS);
 	if(i < 0) return 0;
 	
@@ -890,7 +901,7 @@ static bool read_homunculusdb_sub(char* str[], int columns, int current)
 
 	//Base Class,Evo Class
 	classid = atoi(str[0]);
-	if (classid < HM_CLASS_BASE || classid > HM_CLASS_MAX)
+	if (!(classid >=  HM_CLASS_BASE && classid <= HM_CLASS_MAX || classid >=  MH_CLASS_BASE && classid <= MH_CLASS_MAX))
 	{
 		ShowError("read_homunculusdb : Invalid class %d\n", classid);
 		return false;
@@ -898,7 +909,7 @@ static bool read_homunculusdb_sub(char* str[], int columns, int current)
 	db = &homunculus_db[current];
 	db->base_class = classid;
 	classid = atoi(str[1]);
-	if (classid < HM_CLASS_BASE || classid > HM_CLASS_MAX)
+	if (!(classid >=  HM_CLASS_BASE && classid <= HM_CLASS_MAX || classid >=  MH_CLASS_BASE && classid <= MH_CLASS_MAX))
 	{
 		db->base_class = 0;
 		ShowError("read_homunculusdb : Invalid class %d\n", classid);
@@ -906,57 +917,59 @@ static bool read_homunculusdb_sub(char* str[], int columns, int current)
 	}
 	db->evo_class = classid;
 	//Name, Food, Hungry Delay, Base Size, Evo Size, Race, Element, ASPD
+		//Name, Max Level, Food, Hungry Delay, Base Size, Evo Size, Race, Element, ASPD
 	strncpy(db->name,str[2],NAME_LENGTH-1);
-	db->foodID = atoi(str[3]);
-	db->hungryDelay = atoi(str[4]);
-	db->base_size = atoi(str[5]);
-	db->evo_size = atoi(str[6]);
-	db->race = atoi(str[7]);
-	db->element = atoi(str[8]);
-	db->baseASPD = atoi(str[9]);
+	db->maxlevel = atoi(str[3]);
+	db->foodID = atoi(str[4]);
+	db->hungryDelay = atoi(str[5]);
+	db->base_size = atoi(str[6]);
+	db->evo_size = atoi(str[7]);
+	db->race = atoi(str[8]);
+	db->element = atoi(str[9]);
+	db->baseASPD = atoi(str[10]);
 	//base HP, SP, str, agi, vit, int, dex, luk
-	db->base.HP = atoi(str[10]);
-	db->base.SP = atoi(str[11]);
-	db->base.str = atoi(str[12]);
-	db->base.agi = atoi(str[13]);
-	db->base.vit = atoi(str[14]);
-	db->base.int_= atoi(str[15]);
-	db->base.dex = atoi(str[16]);
-	db->base.luk = atoi(str[17]);
+	db->base.HP = atoi(str[11]);
+	db->base.SP = atoi(str[12]);
+	db->base.str = atoi(str[13]);
+	db->base.agi = atoi(str[14]);
+	db->base.vit = atoi(str[15]);
+	db->base.int_= atoi(str[16]);
+	db->base.dex = atoi(str[17]);
+	db->base.luk = atoi(str[18]);
 	//Growth Min/Max HP, SP, str, agi, vit, int, dex, luk
-	db->gmin.HP = atoi(str[18]);
-	db->gmax.HP = atoi(str[19]);
-	db->gmin.SP = atoi(str[20]);
-	db->gmax.SP = atoi(str[21]);
-	db->gmin.str = atoi(str[22]);
-	db->gmax.str = atoi(str[23]);
-	db->gmin.agi = atoi(str[24]);
-	db->gmax.agi = atoi(str[25]);
-	db->gmin.vit = atoi(str[26]);
-	db->gmax.vit = atoi(str[27]);
-	db->gmin.int_= atoi(str[28]);
-	db->gmax.int_= atoi(str[29]);
-	db->gmin.dex = atoi(str[30]);
-	db->gmax.dex = atoi(str[31]);
-	db->gmin.luk = atoi(str[32]);
-	db->gmax.luk = atoi(str[33]);
+	db->gmin.HP = atoi(str[19]);
+	db->gmax.HP = atoi(str[20]);
+	db->gmin.SP = atoi(str[21]);
+	db->gmax.SP = atoi(str[22]);
+	db->gmin.str = atoi(str[23]);
+	db->gmax.str = atoi(str[24]);
+	db->gmin.agi = atoi(str[25]);
+	db->gmax.agi = atoi(str[26]);
+	db->gmin.vit = atoi(str[27]);
+	db->gmax.vit = atoi(str[28]);
+	db->gmin.int_= atoi(str[29]);
+	db->gmax.int_= atoi(str[20]);
+	db->gmin.dex = atoi(str[31]);
+	db->gmax.dex = atoi(str[32]);
+	db->gmin.luk = atoi(str[33]);
+	db->gmax.luk = atoi(str[34]);
 	//Evolution Min/Max HP, SP, str, agi, vit, int, dex, luk
-	db->emin.HP = atoi(str[34]);
-	db->emax.HP = atoi(str[35]);
-	db->emin.SP = atoi(str[36]);
-	db->emax.SP = atoi(str[37]);
-	db->emin.str = atoi(str[38]);
-	db->emax.str = atoi(str[39]);
-	db->emin.agi = atoi(str[40]);
-	db->emax.agi = atoi(str[41]);
-	db->emin.vit = atoi(str[42]);
-	db->emax.vit = atoi(str[43]);
-	db->emin.int_= atoi(str[44]);
-	db->emax.int_= atoi(str[45]);
-	db->emin.dex = atoi(str[46]);
-	db->emax.dex = atoi(str[47]);
-	db->emin.luk = atoi(str[48]);
-	db->emax.luk = atoi(str[49]);
+	db->emin.HP = atoi(str[35]);
+	db->emax.HP = atoi(str[36]);
+	db->emin.SP = atoi(str[37]);
+	db->emax.SP = atoi(str[38]);
+	db->emin.str = atoi(str[39]);
+	db->emax.str = atoi(str[40]);
+	db->emin.agi = atoi(str[41]);
+	db->emax.agi = atoi(str[42]);
+	db->emin.vit = atoi(str[43]);
+	db->emax.vit = atoi(str[44]);
+	db->emin.int_= atoi(str[45]);
+	db->emax.int_= atoi(str[46]);
+	db->emin.dex = atoi(str[47]);
+	db->emax.dex = atoi(str[48]);
+	db->emin.luk = atoi(str[49]);
+	db->emax.luk = atoi(str[50]);
 
 	//Check that the min/max values really are below the other one.
 	if(db->gmin.HP > db->gmax.HP)
@@ -1016,7 +1029,7 @@ int read_homunculusdb(void)
 			}
 		}
 
-		sv_readdb(db_path, filename[i], ',', 50, 50, MAX_HOMUNCULUS_CLASS, &read_homunculusdb_sub);
+		sv_readdb(db_path, filename[i], ',', 51, 51, MAX_HOMUNCULUS_CLASS+MAX_MUTATE_HOMUNCULUS_CLASS+31, &read_homunculusdb_sub);
 	}
 
 	return 0;
@@ -1033,7 +1046,7 @@ static bool read_homunculus_skilldb_sub(char* split[], int columns, int current)
 
 	// check for bounds [celest]
 	classid = atoi(split[0]) - HM_CLASS_BASE;
-	if ( classid >= MAX_HOMUNCULUS_CLASS )
+	if ( classid >= MAX_HOMUNCULUS_CLASS+MAX_MUTATE_HOMUNCULUS_CLASS+31 )
 	{
 		ShowWarning("read_homunculus_skilldb: Invalud homunculus class %d.\n", atoi(split[0]));
 		return false;
