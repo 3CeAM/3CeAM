@@ -636,6 +636,8 @@ Why would they not have a cooldown for a skill this powerful. Something isnt rig
 The 1st line wont have the cooldown and will be disabled. The 2nd line will have the cooldown and will be left enabled for balance reasons.
 I need to know if their really not giving that cooldown. They have to. This skill is 5000% plus base level increase PLUS additional damage.
 Lets not forget the damage when used in a combo. Can range between 8000% to 12000% alone before adding additional damage. So their has to be a cooldown.
+Finally theirs a tag that sets the skill to not be interruptable. Why this for such a powerful skill? Im not making it uninterruptable unless its for
+a damn good reason. Its like they wanted this skill to be OP in ways.
 
 Gentle Touch Skills
 The info in the iRO document and patch ntoes dont match up in some skills. But upon carefully looking at whats in the iRO document, its kinda becomes
