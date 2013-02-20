@@ -3367,7 +3367,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case NC_PILEBUNKER:
 	//case NC_VULCANARM:
 	case NC_COLDSLOWER:
-	case NC_ARMSCANNON:
 		// Heat of the mado
 		if (sd) pc_overheat(sd,1);
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
@@ -3577,6 +3576,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case RA_ARROWSTORM:
 	case RA_WUGDASH:
 	case NC_VULCANARM:
+	case NC_ARMSCANNON:
 	case NC_SELFDESTRUCTION:
 	case NC_AXETORNADO:
 	case LG_MOONSLASHER:
@@ -8497,22 +8497,14 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case SO_ARRULLO:
-		if( flag&1 )
-		{	
 			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
 			{rate = 15 + 5 * skilllv + sstatus->int_ / 5 + sd->status.job_level / 5 - tstatus->int_ / 6 - tstatus->luk / 10;
 			tick = status_get_lv(bl) / 20 + tstatus->int_ / 40;}
 			else
 			{rate = 15 + 5 * skilllv + sstatus->int_ / 5 + 10 - tstatus->int_ / 6 - tstatus->luk / 10;
 			tick = 7 + tstatus->int_ / 40;}
-			sc_start(bl, type, rate, skilllv, skill_get_time(skillid, skilllv) - 1000 * tick);
-		}
-		else
-		{
 			clif_skill_nodamage(src, bl, skillid, 0, 1);
-			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), BL_CHAR,
-				src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
-		}
+			sc_start(bl, type, rate, skilllv, skill_get_time(skillid, skilllv) - 1000 * tick);
 		break;
 
 	case SO_SUMMON_AGNI:
@@ -9534,6 +9526,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		break;
 
 	case BS_HAMMERFALL:
+	case SO_ARRULLO:
 		i = skill_get_splash(skillid, skilllv);
 		map_foreachinarea (skill_area_sub,
 			src->m, x-i, y-i, x+i, y+i, BL_CHAR,
@@ -9701,6 +9694,12 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case RG_CLEANER: // [Valaris]
 		i = skill_get_splash(skillid, skilllv);
 		map_foreachinarea(skill_graffitiremover,src->m,x-i,y-i,x+i,y+i,BL_SKILL);
+		break;
+
+	case SO_CLOUD_KILL:
+	case SO_WARMER:
+		flag|=(skillid == SO_WARMER)?8:4;
+		skill_unitsetting(src,skillid,skilllv,x,y,0);
 		break;
 
 	case WZ_METEOR:
@@ -9934,7 +9933,6 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		break;
 
 	case NC_COLDSLOWER:
-	case NC_ARMSCANNON:
 	case RK_DRAGONBREATH:
 	case WM_GREAT_ECHO:
 	case WM_SOUND_OF_DESTRUCTION:
