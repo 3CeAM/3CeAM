@@ -1082,10 +1082,14 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		}
 		break;
 	case WL_JACKFROST:
+		//Note: Official data shows its applied as 200%. Dont know if sc_start can handle that much. Should I apply this? Recheck soon.
 		sc_start(bl,SC_FREEZE,100,skilllv,skill_get_time(skillid,skilllv));
 		break;
 	case RA_WUGBITE:
-		sc_start(bl, SC_BITE, 70, skilllv, skill_get_time(skillid, skilllv) + (sd ? pc_checkskill(sd,RA_TOOTHOFWUG) * 1000 : 0)); // Need official chance.
+		rate = 50 + 10 * skilllv + 2 * pc_checkskill(sd,RA_TOOTHOFWUG) - tstatus->agi / 4;
+		if ( rate < 50 )
+			rate = 50;
+		sc_start(bl, SC_BITE, rate, skilllv, skill_get_time(skillid, skilllv) + (sd ? pc_checkskill(sd,RA_TOOTHOFWUG) * 500 : 0));
 		break;
 	case RA_SENSITIVEKEEN:
 		if( rand()%100 < 8 * skilllv )
@@ -1123,8 +1127,12 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start4(bl, SC_BURNING, 20 + 10 * skilllv, skilllv, 1000, src->id, 0, skill_get_time2(skillid, skilllv));
 		break;
 	case NC_COLDSLOWER:
+		//Statu's chances are applied officially through a check.
+		//The skill first trys to give the frozen status to targets that are hit.
 		sc_start(bl, SC_FREEZE, 10 * skilllv, skilllv, skill_get_time(skillid, skilllv));
-		sc_start(bl, SC_FREEZING, 20 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
+		//If it fails to give the frozen status, it will attempt to give the freezing status.
+		if ( tsc && !tsc->data[SC_FREEZE] )
+			sc_start(bl, SC_FREEZING, 20 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
 		break;
 	case NC_POWERSWING:
 		sc_start(bl, SC_STUN, 10, skilllv, skill_get_time(skillid, skilllv));
@@ -1194,10 +1202,10 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		rate = 5 + 5 * skilllv;
 		if( sc && sc->data[SC_COOLER_OPTION] )
 			rate += rate * sc->data[SC_COOLER_OPTION]->val2 / 100;
-		sc_start(bl, SC_CRYSTALIZE, rate, skilllv, skill_get_time2(skillid, skilllv));
+		sc_start(bl, SC_CRYSTALIZE, rate, skilllv, skill_get_time2(skillid, skilllv) - 1000 * tstatus->vit / 10);
 		break;
 	case SO_VARETYR_SPEAR:
-		sc_start(bl, SC_STUN, 5 + 5 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
+		sc_start(bl, SC_STUN, 5 + 5 * skilllv, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case GN_HELLS_PLANT_ATK:
 		sc_start(bl, SC_STUN, 20 + 10 * skilllv, skilllv, skill_get_time(skillid, skilllv));
@@ -7504,7 +7512,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 	case GC_HALLUCINATIONWALK:
 		{
-			int heal = status_get_max_hp(bl) / 10;
+			int heal = status_get_max_hp(bl) * ( 18 - 2 * skilllv ) / 100;
 			if( status_get_hp(bl) < heal )
 			{ // if you haven't enough HP skill fails.
 				if( sd ) clif_skill_fail(sd,skillid,0x02,0,0);
@@ -7705,8 +7713,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			int rate = 50 + 3 * skilllv + s_job_level / 4;
 			i = sc_start2(bl,type,rate,skilllv,src->id,(src == bl)?skill_get_time2(skillid,skilllv):skill_get_time(skillid, skilllv));
 			clif_skill_nodamage(src,bl,skillid,skilllv,i);
-			if( sd && i )
-				skill_blockpc_start(sd,skillid,4000); // Reuse Delay only activated on success
 		}
 		else if( sd )
 			clif_skill_fail(sd,skillid,0,0,0);
@@ -9991,7 +9997,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 				case 6: sx = src->x + i; break;
 				}
 				skill_addtimerskill(src,gettick() + (200 * i),0,sx,sy,skillid,skilllv,dir,flag&2); // Temp code until animation is replaced. [Rytech]
-				//skill_addtimerskill(src,gettick() + (150 * i),0,sx,sy,skillid,skilllv,dir,flag&2); // Official steping timer, but disabled due to too much noise.
+				//skill_addtimerskill(src,gettick() + (140 * i),0,sx,sy,skillid,skilllv,dir,flag&2); // Official steping timer, but disabled due to too much noise.
 			}
 		}
 		break;
@@ -13587,11 +13593,7 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 	//Fixed cast time percentage reduction from radius if learned. 
 	if( sd && pc_checkskill(sd, WL_RADIUS) > 0 && skill_id >= WL_WHITEIMPRISON && skill_id <= WL_FREEZE_SP && fixed_time > 0 )
 	{
-		int radiusbonus = 0;
-		if( battle_config.renewal_baselvl_skill_effect == 1 )
-		radiusbonus = 5 * pc_checkskill(sd, WL_RADIUS) + status_get_int(bl) / 15 + status_get_lv(bl) / 15;
-		else
-		radiusbonus = 5 * pc_checkskill(sd, WL_RADIUS) + status_get_int(bl) / 15 + 10;
+		int radiusbonus = 5 + 5 * pc_checkskill(sd, WL_RADIUS);
 		if ( radiusbonus > fixed_cast_rate )
 			fixed_cast_rate = radiusbonus;
 	}

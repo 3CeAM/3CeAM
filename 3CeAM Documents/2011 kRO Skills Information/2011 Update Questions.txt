@@ -130,6 +130,8 @@ Recheck all coding to see if damage and status is being applied properly.
 
 Jack Frost
 Same as Frost Misty. Recheck all coding.
+Success chance of giving the frozen status is 100%, but only applies if the target is in frost misty status.
+This and the above skill will need to be recoded and not apply its effects through walls.
 
 Marsh of Abyss
 Skill was completely recoded, but only missing a monster check for the alternate AGI/DEX reduction formula.
@@ -141,12 +143,19 @@ Best come back to this one later.
 Radius
 I dont understand why the document says it has a cast time, aftercast, and duration when I see no SP requirement in the skillinfolist or any patch
 notes saying anything about changes from passive to self cast. Might be a error in their document.
+Note: Tests on the official iRO test server and data found in my more reliable official sources has proved that their is no complex fixed
+cast time reduction formula. Its still the old 5 + 5 * skilllv. A good number of things in those documents is bullshit.
 
 Stasis
 Skill was redone and appears to be fully working properly with duration reduction. But keeping this note here for something.
+Note: THE DOCUMENT IS A LIE!!!! I tested this up and down in the official iRO test server and the cooldown and duration does not match.
+BUT the test results does match the more reliable data I have. This proves I can't relay on the document too much anymore.
 
 Hell Inferno
 Is using sc_start4 to activate the burning status. Do it have to be done with that or it could be changed to sc_start safely?
+Note: Once again the iRO document gave inaccurate info. Says base duration for burning is 15 seconds, yet reliable official sources
+says different saying 10 + 10 * skilllv seconds. WTF!???!!?! Too much inaccurate info here. Im goina have to recheck every skill AGIAN!!!
+*sigh* Like I dont already have enough work to do.
 
 Comet
 Skill now uses and deals damage through dummy units. This allows Land Protector to beable to block it. A splash AoE is still generated on the
@@ -168,6 +177,7 @@ Update: Animations are fixed and each ID is being used as they should. However t
 
 Reading Spellbook
 Says nothing about cooldown time in the document. Does this mean the cooldown was removed?
+SP drain was updated to its official 10 seconds timer, but the SP amount is not official. Its setup is a bit complex and needs updating soon.
 
 Aimed Bolt
 Will need to recheck and redo the size check and percentage on number of hits code.
@@ -345,6 +355,8 @@ ill have to test if this success is working correctly due to that sd->menuskill_
 Weapon Blocking
 Frost said you have a 2 second window to use Counter Slash or Weapon Crush. But I cant tell if that duration is working correctly in 3CeAM.
 I see something in the code that says tick = 3000, but it doesent feel like its 3 seconds.
+Note: Its correctly set to 2000 in the battle.c file when attacked, but noticed its using SC_COMBO instead of its own delay status ID.
+Need to change to code to use the weapon blocking post delay soon.
 
 Counter Slash
 iRO document doesent say anything about a aftercast delay, but my other source says it has a 2 second aftercast. Need to confirm.
@@ -446,8 +458,10 @@ The duration of the cells is seprate and lasts for 12 seconds. A code update wil
 Also, video shows a cell vanishes after something walks into it after it deals its damage. Need more info on this.
 
 Diamond Dust
-Target can reduce duration with VIT. Must code that in later.
 Need to check the entire crystalizeing code to see if its doing all as it should.
+Status prevents you from moving, regular attacking, using skills, and using items.
+In a nutshell you cant do anything when iin the crystalize status.
+Does getting hit end the status?
 
 Poison Buster
 iRO document shows the total cast time for level 4 and 5 is 6 seconds. The document does say level 5 is 6 seconds.
@@ -463,7 +477,11 @@ iRO Document shows duration is 35 + 5 * SkillLV, but cooldown is said to be 30 +
 This is correct right?
 
 Vacuum Extreme
-Need to add resistance formula.
+Need to add resistance formula. I found where to add it, but their's a thing or 2 I need to know.
+I do know the effect is applied every half a second, but how can someone reduce the duration when
+walking through the AoE stops you from moving? That means itl be reapplied every half a second.
+Even if I set it to not refresh the status it can start again right away if the AoE is still there
+when the status wears off. How do I code this in properly?
 
 Varetyr Spear
 iRO document shows the stun chance is 5 * SkillLV, but official source shows its 5 + 5 * SkillLV. Im choosing to stick with official.
@@ -473,6 +491,7 @@ Cooldown is said to be 3 * Summoned Elemental Level. If this is true, then how d
 
 Elemental and Insignia Skills
 This stuff is under a seprate system and will be dealt with on a 2nd pass after im done with other jobs.
+Gotta find the SP drain part for maintaining summons.
 
 Swing Dance
 iRO document shows a formula for the ASPD increase, but doesent say anything for movement spell, but it does increase movement speed.
@@ -524,6 +543,9 @@ Must check to make sure water ball is being forced to level 5 on all levels and 
 
 Gloomy Day
 The skill has a SkillLv precent change of halfing a enemy's movement speed, as well as dismounting them. How do I do this?
+
+Chorus Type Skills
+Most of them require a instrument or wip to cast. Need to check, confirm, and add in to which skills require them.
 
 Dance With A Waug
 Says it adds equipment ATK when using warg related skills. I added it as additional ATK until I can figure out exactly what it means.
@@ -628,7 +650,7 @@ know how. Finally, knockback damage now checks for weight. But since monster's d
 Raising Dragon
 Coding will need some cleaning up in the future.
 Tested and the skill starts up the learned level of crit explosion. If crit explosion is not learned, it will not start the crit explosion status.
-Skill has been updated to do this.
+Skill has been updated to do this. Need to clean up the HP drain code. Also need to do official test on this.
 
 Gate of Hell
 iRO document shows no skill cooldown and the other official source shows the line for skill cooldown disabled.
@@ -804,6 +826,7 @@ Expanded Jobs
 
 Shadow Cloud
 Data shows it takes SP every 2 seconds. How much?
+Will code this part in after I find out how much SP it drains.
 
 Cross Slash
 Need to make the caster do a body relocate like move up to the target when used.
