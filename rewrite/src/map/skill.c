@@ -1240,6 +1240,9 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 	case KO_MAKIBISHI:
 		sc_start(bl,SC_STUN,10 * skilllv,skilllv,skill_get_time2(skillid,skilllv));
 		break;
+	case MH_POISON_MIST:
+		sc_start(bl, SC_BLIND, 10 + 10 * skilllv, skilllv, skill_get_time2(skillid,skilllv));
+		break;
 	case EL_WIND_SLASH:	// Non confirmed rate.
 		sc_start(bl, SC_BLEEDING, 25, skilllv, skill_get_time(skillid,skilllv));
 		break;
@@ -9670,6 +9673,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case SO_WIND_INSIGNIA:
 	case SO_EARTH_INSIGNIA:
 	case KO_MAKIBISHI:
+	case MH_POISON_MIST:
 		flag|=1;//Set flag to 1 to prevent deleting ammo (it will be deleted on group-delete).
 	case GS_GROUNDDRIFT: //Ammo should be deleted right away.
 		skill_unitsetting(src,skillid,skilllv,x,y,0);
@@ -10750,6 +10754,10 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 			}
 			break;
 		}
+
+	case MH_POISON_MIST:
+		interval = 2500 - 200 * skilllv;
+		break;
 	}
 
 	nullpo_retr(NULL, group=skill_initunitgroup(src,layout->count,skillid,skilllv,skill_get_unit_id(skillid,flag&1)+subunt, limit, interval));
@@ -11775,6 +11783,11 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			}
 			else
 				sc_start(bl, type, 100, sg->skill_lv, 1000);
+			break;
+
+		case UNT_POISON_MIST:
+			skill_attack(skill_get_type(sg->skill_id),ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
+			break;
 	}
 
 	if (sg->state.magic_power && sc && !sc->data[SC_MAGICPOWER])
