@@ -147,7 +147,7 @@
 2490,0xea,    ,  0, 1,1000,all,   0x006	//GN_HELLS_PLANT
 3010,0xfc,    , -1, 0,5000,enemy, 0x018	//KO_MAKIBISHI
 3020,0xf8,    ,  0, 2, 500,all,   0x018	//KO_ZENKAI
-8020,0xf5,    ,  0, 3,2300:2100:1900:1700:1500,enemy, 0x018	//MH_POISON_MIST
+8020,0xf5,    ,  3, 0,   0,enemy, 0x018	//MH_POISON_MIST // Inverval is set in source since its variable with this skill.
 8033,0x7e,    ,  0, 0,  -1,all,   0x003	//MH_STEINWAND - CHECK Is the use of safety wall's unit ID correct for this skills? [Rytech]
 8025,0x86,    ,  0, 2:2:3:3:4,1000,enemy, 0x018	//MH_XENO_SLASHER
 8041,0xf6,    ,  1:1:2:2:3, 0,1000,enemy, 0x018	//MH_LAVA_SLIDE CHECK - How often does this skill hit? [Rytech]
