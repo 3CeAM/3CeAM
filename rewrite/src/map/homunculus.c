@@ -948,7 +948,7 @@ static bool read_homunculusdb_sub(char* str[], int columns, int current)
 	db->gmin.vit = atoi(str[27]);
 	db->gmax.vit = atoi(str[28]);
 	db->gmin.int_= atoi(str[29]);
-	db->gmax.int_= atoi(str[20]);
+	db->gmax.int_= atoi(str[30]);
 	db->gmin.dex = atoi(str[31]);
 	db->gmax.dex = atoi(str[32]);
 	db->gmin.luk = atoi(str[33]);
