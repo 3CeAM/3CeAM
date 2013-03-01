@@ -5198,6 +5198,25 @@ the homunculus must have above 91000 intimacy with it's owner.
 
 ---------------------------------------
 
+*hommutation;
+Use: hommutation ID#;
+Example: hommutation 6048;// Mutates homunculus into Eira.
+
+Mutation ID's....
+6048 Eira
+6049 Bayeri
+6050 Sera
+6051 Dieter
+6052 Eleanor
+
+This command will attempt to mutate the current player's homunculus.
+If it fails, the /swt emotion will appear.
+
+To mutate a homunculus, the player must have a homunculus, it
+must be level 99, and it must be in its evolved form.
+
+---------------------------------------
+
 *unitwalk <GID>,<x>,<y>;
 *unitwalk <GID>,<mapid>;
 

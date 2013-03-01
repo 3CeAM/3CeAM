@@ -63,6 +63,7 @@ int merc_hom_checkskill(struct homun_data *hd,int skill_id) ;
 int merc_hom_gainexp(struct homun_data *hd,int exp) ;
 int merc_hom_levelup(struct homun_data *hd) ;
 int merc_hom_evolution(struct homun_data *hd) ;
+int merc_hom_mutation(struct homun_data *hd, int class_);
 void merc_hom_heal(struct homun_data *hd,int hp,int sp);
 int merc_hom_vaporize(struct map_session_data *sd, int flag);
 int merc_resurrect_homunculus(struct map_session_data *sd, unsigned char per, short x, short y);
