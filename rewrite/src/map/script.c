@@ -9139,6 +9139,21 @@ BUILDIN_FUNC(homunculus_evolution)
 	return 0;
 }
 
+// [Rytech]
+BUILDIN_FUNC(homunculus_mutation)
+{
+	TBL_PC *sd;
+
+	sd=script_rid2sd(st);
+	if( sd == NULL )
+		return 0;
+
+	if(merc_is_hom_active(sd->hd))
+		merc_hom_mutation(sd->hd, script_getnum(st,2));
+
+	return 0;
+}
+
 // [Zephyrus]
 BUILDIN_FUNC(homunculus_shuffle)
 {
@@ -15253,6 +15268,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(getvariableofnpc,"rs"),
 	BUILDIN_DEF(warpportal,"iisii"),
 	BUILDIN_DEF2(homunculus_evolution,"homevolution",""),	//[orn]
+	BUILDIN_DEF2(homunculus_mutation,"hommutation","i"),//[Rytech]
 	BUILDIN_DEF2(homunculus_shuffle,"homshuffle",""),	//[Zephyrus]
 	BUILDIN_DEF(eaclass,"?"),	//[Skotlex]
 	BUILDIN_DEF(roclass,"i?"),	//[Skotlex]

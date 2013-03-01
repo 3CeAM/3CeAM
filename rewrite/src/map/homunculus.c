@@ -350,6 +350,58 @@ int merc_hom_evolution(struct homun_data *hd)
 	return 1 ;
 }
 
+int merc_hom_mutation(struct homun_data *hd, int class_)
+{
+	struct s_homunculus *hom;
+	struct map_session_data *sd;
+	nullpo_ret(hd);
+	
+	//Only allows mutating level 99 evolved homunculus and also prevents mutating already mutated homunculus.
+	if( hd->homunculus.level < 99 || !(hd->homunculus.class_ >= 6009 && hd->homunculus.class_ <= 6016) || 
+		hd->homunculus.class_ >= MH_CLASS_BASE && hd->homunculus.class_ <= MH_CLASS_MAX)
+	{
+		clif_emotion(&hd->bl, E_SWT);
+		return 0 ;
+	}
+	sd = hd->master;
+	if (!sd)
+		return 0;
+
+	if (!merc_hom_change_class(hd, class_)) {
+		ShowError("merc_hom_mutation: Can't mutate homunc from %d to %d", hd->homunculus.class_, class_);
+		return 0;
+	}
+
+	//Apply mutation bonuses.
+	//Bonuses are the same for all mutations.
+	hom = &hd->homunculus;
+	hom->max_hp += rand(1000, 2000);
+	hom->max_sp += rand(10, 200);
+	hom->str += 10*rand(1, 10);
+	hom->agi += 10*rand(1, 10);
+	hom->vit += 10*rand(1, 10);
+	hom->int_+= 10*rand(1, 10);
+	hom->dex += 10*rand(1, 10);
+	hom->luk += 10*rand(1, 10);
+
+	unit_remove_map(&hd->bl, CLR_OUTSIGHT);
+	map_addblock(&hd->bl);
+
+	clif_spawn(&hd->bl);
+	clif_emotion(&sd->bl, E_NO1);
+	clif_specialeffect(&hd->bl,568,AREA);
+
+	//status_Calc flag&1 will make current HP/SP be reloaded from hom structure
+	hom->hp = hd->battle_status.hp;
+	hom->sp = hd->battle_status.sp;
+	status_calc_homunculus(hd,1);
+
+	if (!(battle_config.hom_setting&0x2))
+		skill_unit_move(&sd->hd->bl,gettick(),1); // apply land skills immediately
+
+	return 1 ;
+}
+
 int merc_hom_gainexp(struct homun_data *hd,int exp)
 {
 	if(hd->homunculus.vaporize)
@@ -916,8 +968,7 @@ static bool read_homunculusdb_sub(char* str[], int columns, int current)
 		return false;
 	}
 	db->evo_class = classid;
-	//Name, Food, Hungry Delay, Base Size, Evo Size, Race, Element, ASPD
-		//Name, Max Level, Food, Hungry Delay, Base Size, Evo Size, Race, Element, ASPD
+	//Name, Max Level, Food, Hungry Delay, Base Size, Evo Size, Race, Element, ASPD
 	strncpy(db->name,str[2],NAME_LENGTH-1);
 	db->maxlevel = atoi(str[3]);
 	db->foodID = atoi(str[4]);
