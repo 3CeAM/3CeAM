@@ -412,6 +412,9 @@ int merc_hom_gainexp(struct homun_data *hd,int exp)
 		return 0;
 	}
 
+	if (hd->homunculus.level == hd->homunculusDB->maxlevel)
+		return 0;
+
 	hd->homunculus.exp += exp;
 
 	if(hd->homunculus.exp < hd->exp_next) {
@@ -424,9 +427,9 @@ int merc_hom_gainexp(struct homun_data *hd,int exp)
 	{
 		merc_hom_levelup(hd) ;
 	}
-	while(hd->homunculus.exp > hd->exp_next && hd->exp_next != 0 );
-		
-	if( hd->exp_next == 0 )
+	while( !hd->homunculus.level == hd->homunculusDB->maxlevel && hd->homunculus.exp > hd->exp_next && hd->exp_next != 0 );
+
+	if( hd->homunculus.level == hd->homunculusDB->maxlevel || hd->exp_next == 0 )
 		hd->homunculus.exp = 0 ;
 
 	clif_specialeffect(&hd->bl,568,AREA);
