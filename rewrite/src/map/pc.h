@@ -452,7 +452,7 @@ struct map_session_data {
 	int shadowform_id;
 };
 
-//Update this max as necessary. Raised from 80 to 84 as the Extended Super Novice needs it. [Rytech]
+//Update this max as necessary. Raised from 80 to 84 as the Expanded Super Novice needs it. [Rytech]
 #define MAX_SKILL_TREE 84
 //Total number of classes (for data storage)
 #define CLASS_COUNT (JOB_MAX - JOB_NOVICE_HIGH + JOB_MAX_BASIC)
@@ -522,6 +522,13 @@ enum equip_pos {
 	EQP_COSTUME_HEAD_TOP	= 0x0400,
 	EQP_COSTUME_GARMENT	= 0x2000,
 	EQP_COSTUME_FLOOR	= 0x4000,
+	//EQP_			= 0x8000,//This mask isnt used. Likely left open for a possiable future costume equip.
+	//EQP_SHADOW_ARMOR	= 0x10000,//Shadow equip slots will be left disabled until client's supporting them are usable. [Rytech]
+	//EQP_SHADOW_WEAPON	= 0x20000,
+	//EQP_SHADOW_SHIELD	= 0x40000,
+	//EQP_SHADOW_SHOES	= 0x80000,
+	//EQP_SHADOW_ACC_R	= 0x100000,
+	//EQP_SHADOW_ACC_L	= 0x200000,
 };
 
 #define EQP_WEAPON EQP_HAND_R
@@ -531,6 +538,7 @@ enum equip_pos {
 #define EQP_ACC (EQP_ACC_L|EQP_ACC_R)
 #define EQP_COSTUME_HELM (EQP_COSTUME_HEAD_LOW|EQP_COSTUME_HEAD_MID|EQP_COSTUME_HEAD_TOP)
 #define EQP_COSTUME (EQP_COSTUME_HEAD_LOW|EQP_COSTUME_HEAD_MID|EQP_COSTUME_HEAD_TOP|EQP_COSTUME_GARMENT|EQP_COSTUME_FLOOR)
+//#define EQP_SHADOW_GEAR (EQP_SHADOW_ARMOR|EQP_SHADOW_WEAPON|EQP_SHADOW_SHIELD|EQP_SHADOW_SHOES|EQP_SHADOW_ACC_R|EQP_SHADOW_ACC_L)
 
 // Equip positions that use a visible sprite
 #if PACKETVER < 20110111

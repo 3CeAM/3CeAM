@@ -101,6 +101,9 @@
 //632,0xc9,    ,  2, 0,1000,enemy, 0x018	//DA_TRANSFER
 670,0xc7,    ,  1, 4:7:10:13:16:19:22:25:28:31,1000,all,0x008	//NPC_EVILLAND
 //706,0xfd,    ,  0, 0,1000,all, 0x000	//NPC_VENOMFOG//Need information.
+//709,0xfe,    ,  0, 0,1000,all, 0x000	//NPC_ICEMINE/Need information.
+//711,0xff,    ,  0, 0,1000,all, 0x000	//NPC_FLAMECROSS/Need information.
+//719,0x100,   ,  0, 0,1000,all, 0x000	//NPC_HELLBURNING/Need information.
 2032,0xe1,    ,  2, 0,1000,enemy, 0x018	//GC_POISONSMOKE
 2044,0xca,    ,  0, 2,3000,all,   0x018	//AB_EPICLESIS
 2213,0x86,    ,  0, 9,1000,enemy, 0x018	//WL_COMET
@@ -147,6 +150,7 @@
 2490,0xea,    ,  0, 1,1000,all,   0x006	//GN_HELLS_PLANT
 3010,0xfc,    , -1, 0,5000,enemy, 0x018	//KO_MAKIBISHI
 3020,0xf8,    ,  0, 2, 500,all,   0x018	//KO_ZENKAI
+//5006,0x101,   ,  0, 0,1000,all, 0x000	//NC_MAGMA_ERUPTION//Need Information.
 8020,0xf5,    ,  3, 0,   0,enemy, 0x018	//MH_POISON_MIST // Inverval is set in source since its variable with this skill.
 8033,0x7e,    ,  0, 0,  -1,all,   0x003	//MH_STEINWAND - CHECK Is the use of safety wall's unit ID correct for this skills? [Rytech]
 8025,0x86,    ,  0, 2:2:3:3:4,1000,enemy, 0x018	//MH_XENO_SLASHER
