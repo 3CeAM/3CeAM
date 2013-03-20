@@ -522,7 +522,6 @@ enum equip_pos {
 	EQP_COSTUME_HEAD_TOP	= 0x0400,
 	EQP_COSTUME_GARMENT	= 0x2000,
 	EQP_COSTUME_FLOOR	= 0x4000,
-	//EQP_			= 0x8000,//This mask isnt used. Likely left open for a possiable future costume equip.
 	//EQP_SHADOW_ARMOR	= 0x10000,//Shadow equip slots will be left disabled until client's supporting them are usable. [Rytech]
 	//EQP_SHADOW_WEAPON	= 0x20000,
 	//EQP_SHADOW_SHIELD	= 0x40000,

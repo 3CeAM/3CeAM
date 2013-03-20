@@ -1202,7 +1202,8 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		rate = 5 + 5 * skilllv;
 		if( sc && sc->data[SC_COOLER_OPTION] )
 			rate += rate * sc->data[SC_COOLER_OPTION]->val2 / 100;
-		sc_start(bl, SC_CRYSTALIZE, rate, skilllv, skill_get_time2(skillid, skilllv) - 1000 * tstatus->vit / 10);
+		sc_start(bl, SC_CRYSTALIZE, rate, skilllv, skill_get_time2(skillid, skilllv));
+		//sc_start(bl, SC_CRYSTALIZE, rate, skilllv, skill_get_time2(skillid, skilllv) - 1000 * tstatus->vit / 10);
 		break;
 	case SO_VARETYR_SPEAR:
 		sc_start(bl, SC_STUN, 5 + 5 * skilllv, skilllv, skill_get_time(skillid, skilllv));
@@ -1240,8 +1241,17 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 	case KO_MAKIBISHI:
 		sc_start(bl,SC_STUN,10 * skilllv,skilllv,skill_get_time2(skillid,skilllv));
 		break;
+	case MH_NEEDLE_OF_PARALYZE:
+		sc_start(bl, SC_NEEDLE_OF_PARALYZE, 100, skilllv, skill_get_time(skillid,skilllv));
+		break;
 	case MH_POISON_MIST:
 		sc_start(bl, SC_BLIND, 10 + 10 * skilllv, skilllv, skill_get_time2(skillid,skilllv));
+		break;
+	case MH_XENO_SLASHER:
+		sc_start(bl, SC_BLEEDING, 1 * skilllv, skilllv, skill_get_time(skillid,skilllv));
+		break;
+	case MH_STAHL_HORN:
+		sc_start(bl, SC_STUN, 16 + 4 * skilllv, skilllv, skill_get_time(skillid,skilllv));
 		break;
 	case EL_WIND_SLASH:	// Non confirmed rate.
 		sc_start(bl, SC_BLEEDING, 25, skilllv, skill_get_time(skillid,skilllv));
@@ -2185,6 +2195,7 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 		break;
 	case WL_HELLINFERNO:
 	//case SR_EARTHSHAKER:
+	case MH_MAGMA_FLOW:
 		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,1,skillid,-2,6);
 		break;
 	case WL_SOULEXPANSION:
@@ -3371,6 +3382,12 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case KO_SETSUDAN:
 	case KO_BAKURETSU:
 	case KO_HUUMARANKA:
+	case MH_NEEDLE_OF_PARALYZE:
+	case MH_SONIC_CRAW:
+	//case MH_SILVERVEIN_RUSH:
+	//case MH_MIDNIGHT_FRENZY:
+	case MH_STAHL_HORN:
+	case MH_TINDER_BREAKER:
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
@@ -3601,6 +3618,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case GN_CARTCANNON:
 	case KO_HAPPOKUNAI:
 	case KO_MUCHANAGE:
+	case MH_HEILIGE_STANGE:
 		if( flag&1 )
 		{	//Recursive invocation
 			// skill_area_temp[0] holds number of targets in area
@@ -3775,6 +3793,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case WL_TETRAVORTEX_WIND:
 	case WL_TETRAVORTEX_GROUND:
 	case WM_METALICSOUND:
+	case MH_ERASER_CUTTER:
 		skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
@@ -4447,6 +4466,13 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		status_change_end(src, SC_HYOUHU_HUBUKI, INVALID_TIMER);
 		status_change_end(src, SC_KAZEHU_SEIRAN, INVALID_TIMER);
 		status_change_end(src, SC_DOHU_KOUKAI, INVALID_TIMER);
+		break;
+
+	case MH_MAGMA_FLOW:
+		if ( flag&1 )
+			skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv, tick, flag);
+		else if( sd )
+			map_foreachinrange(skill_area_sub, bl, 3/*skill_get_splash(skillid, skilllv)*/, BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY|SD_SPLASH|1, skill_castend_damage_id);
 		break;
 
 	case EL_FIRE_BOMB:
@@ -7253,6 +7279,21 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			skill_blockhomun_start(hd, skillid, skill_get_time2(skillid,skilllv));
 		break;
 
+	case MH_MAGMA_FLOW:
+		{
+			struct status_change* sc = status_get_sc(src);
+			if ( sc && sc->data[SC_MAGMA_FLOW] )
+				clif_skill_nodamage(src,bl,skillid,skilllv,flag);
+			else
+			{
+				clif_skill_nodamage(src,bl,skillid,skilllv,
+				sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
+				if (hd)
+					skill_blockhomun_start(hd, skillid, skill_get_time2(skillid,skilllv));
+			}
+		}
+		break;
+
 	case NPC_DRAGONFEAR:
 		if (flag&1) {
 			const enum sc_type sc[] = { SC_STUN, SC_SILENCE, SC_CONFUSION, SC_BLEEDING };
@@ -9674,6 +9715,8 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case SO_EARTH_INSIGNIA:
 	case KO_MAKIBISHI:
 	case MH_POISON_MIST:
+	case MH_XENO_SLASHER:
+	case MH_LAVA_SLIDE:
 		flag|=1;//Set flag to 1 to prevent deleting ammo (it will be deleted on group-delete).
 	case GS_GROUNDDRIFT: //Ammo should be deleted right away.
 		skill_unitsetting(src,skillid,skilllv,x,y,0);
@@ -11787,6 +11830,10 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 
 		case UNT_POISON_MIST:
 			skill_attack(skill_get_type(sg->skill_id),ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
+			break;
+		case UNT_LAVA_SLIDE:
+			skill_attack(skill_get_type(sg->skill_id),ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
+			sc_start(bl, SC_BURNING, 10 * sg->skill_lv, sg->skill_lv, 15000);
 			break;
 	}
 

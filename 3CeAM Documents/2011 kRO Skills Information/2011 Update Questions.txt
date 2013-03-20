@@ -850,3 +850,29 @@ Need to add the part that reduces current Hp by 25% of your MaxHP.
 Spread Seals
 Need to confirm if the skill attempt to inflect 1 or all status's for each 500ms.
 Also need to know the durations.
+
+
+
+
+
+
+
+
+
+
+Mutated Homunculus
+Im just putting stuff here to keep track of the progress of these skills.
+Note: Nearly all status's will not fully function for now until I start coding the effects for them.
+
+
+Needle of Paralyze
+Damage code added. Will added the status later.
+
+
+Magma Flow
+Omg I freaken hate this skill. Why? Because I cant get it to work correctly.
+I spent a lot of time on this one and kept running into issues. Just when I finally thought I finished, turns
+out that its not creating a splash. Its just attacking the attacker back. I give up on this one for now. It
+can stay broken until I care enough to attempt fixing it again. Too much time wasted.
+
+
