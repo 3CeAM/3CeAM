@@ -576,8 +576,31 @@ void initChangeTables(void)
 	set_sc( HFLI_SPEED           , SC_SPEED           , SI_BLANK           , SCB_FLEE );
 	set_sc( HAMI_DEFENCE         , SC_DEFENCE         , SI_BLANK           , SCB_DEF );
 	set_sc( HAMI_BLOODLUST       , SC_BLOODLUST       , SI_BLANK           , SCB_BATK|SCB_WATK );
-	
+
+	set_sc( MH_NEEDLE_OF_PARALYZE, SC_NEEDLE_OF_PARALYZE, SI_NEEDLE_OF_PARALYZE, SCB_NONE );
 	add_sc( MH_POISON_MIST       , SC_BLIND );
+	set_sc( MH_PAIN_KILLER       , SC_PAIN_KILLER       , SI_PAIN_KILLER       , SCB_NONE );
+	set_sc( MH_LIGHT_OF_REGENE   , SC_LIGHT_OF_REGENE   , SI_LIGHT_OF_REGENE   , SCB_NONE );
+	set_sc( MH_OVERED_BOOST      , SC_OVERED_BOOST      , SI_OVERED_BOOST      , SCB_NONE );
+
+	add_sc( MH_XENO_SLASHER      , SC_BLEEDING );
+	set_sc( MH_SILENT_BREEZE     , SC_SILENT_BREEZE     , SI_SILENT_BREEZE     , SCB_NONE );
+	set_sc( MH_STYLE_CHANGE      , SC_STYLE_CHANGE      , SI_STYLE_CHANGE      , SCB_NONE );
+
+	add_sc( MH_SILVERVEIN_RUSH   , SC_STUN );
+	add_sc( MH_MIDNIGHT_FRENZY   , SC_FEAR );
+	add_sc( MH_STAHL_HORN        , SC_STUN );
+	set_sc( MH_GOLDENE_FERSE     , SC_GOLDENE_FERSE     , SI_GOLDENE_FERSE     , SCB_NONE );
+
+	set_sc( MH_ANGRIFFS_MODUS    , SC_ANGRIFFS_MODUS    , SI_ANGRIFFS_MODUS    , SCB_NONE );
+	set_sc( MH_TINDER_BREAKER    , SC_TINDER_BREAKER    , SI_TINDER_BREAKER    , SCB_NONE );
+	set_sc( MH_CBC               , SC_CBC               , SI_CBC               , SCB_NONE );
+	set_sc( MH_EQC               , SC_EQC               , SI_EQC               , SCB_NONE );
+	set_sc( MH_MAGMA_FLOW        , SC_MAGMA_FLOW        , SI_MAGMA_FLOW        , SCB_NONE );
+	set_sc( MH_GRANITIC_ARMOR    , SC_GRANITIC_ARMOR    , SI_GRANITIC_ARMOR    , SCB_NONE );
+	add_sc( MH_LAVA_SLIDE        , SC_BURNING );
+	set_sc( MH_PYROCLASTIC       , SC_PYROCLASTIC       , SI_PYROCLASTIC       , SCB_NONE );
+	set_sc( MH_VOLCANIC_ASH      , SC_VOLCANIC_ASH      , SI_VOLCANIC_ASH      , SCB_NONE );
 
 	add_sc( MER_CRASH            , SC_STUN            );
 	set_sc( MER_PROVOKE          , SC_PROVOKE         , SI_PROVOKE         , SCB_DEF|SCB_DEF2|SCB_BATK|SCB_WATK );

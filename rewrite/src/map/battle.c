@@ -703,6 +703,10 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 		
 		if( sc->data[SC__DEADLYINFECT] && flag&BF_SHORT && damage > 0 && rand()%100 < 30 + 10 * sc->data[SC__DEADLYINFECT]->val1 )
 			status_change_spread(bl, src); // Deadly infect attacked side
+
+		if ( sc->data[SC_MAGMA_FLOW] && rand()%100 < 3 * sc->data[SC_MAGMA_FLOW]->val1)
+		{skill_castend_damage_id(bl,src,MH_MAGMA_FLOW,sc->data[SC_MAGMA_FLOW]->val1,0,flag);
+		skill_castend_nodamage_id(bl,src,MH_MAGMA_FLOW,sc->data[SC_MAGMA_FLOW]->val1,0,flag);}
 	}
 
 	if( tsc && tsc->count )
@@ -2638,6 +2642,43 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case KO_MAKIBISHI:
 					skillratio = 20 * skill_lv;
 					break;
+				case MH_NEEDLE_OF_PARALYZE:
+					skillratio = 700 + 100 * skill_lv;
+					break;
+				case MH_SONIC_CRAW:
+					skillratio = 40 * skill_lv;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio = skillratio * s_level / 100;	// Need confirm.
+					break;
+				case MH_TINDER_BREAKER:
+					skillratio = 100 * skill_lv + 3 * sstatus->str;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio = skillratio * s_level / 120;
+					break;
+				case MH_STAHL_HORN:
+					skillratio = 500 + 100 * skill_lv;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio = skillratio * s_level / 100;	// Need confirm.
+					break;
+				case MH_MAGMA_FLOW:
+					skillratio = 100 * skill_lv;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+					{
+						skillratio += 3 * s_level;
+						skillratio = skillratio * s_level / 120;
+					}
+					else
+						skillratio += 450;
+					break;
+				case MH_LAVA_SLIDE:
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+					{
+						skillratio = 20 * skill_lv + 2 * s_level;
+						skillratio = skillratio * s_level / 100;
+					}
+					else
+						skillratio = 20 * skill_lv + 300;
+					break;
 				// Physical Elemantal Spirits Attack Skills
 				case EL_CIRCLE_OF_FIRE:
 				case EL_FIRE_BOMB_ATK:
@@ -3902,6 +3943,30 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						skillratio = 200 * sd->spiritballnumber;
 						if( re_baselv_bonus == 1 && s_level >= 100 )
 							skillratio = skillratio * s_level / 100;
+						break;
+					case MH_POISON_MIST:
+						skillratio = 40 * skill_lv;
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio = skillratio * s_level / 100;
+						break;
+					//Lv 1 - 600, Lv 2 - 1000, Lv 3 - 800, Lv 4 1200, Lv 5 - 1000
+					case MH_ERASER_CUTTER:
+						if ( skill_lv % 2 == 0 )//Even levels 2, 4, 6, 8, etc.
+							skillratio = 800 + 100 * skill_lv;
+						else//Odd levels 1, 3, 5, 7, etc.
+							skillratio = 500 + 100 * skill_lv;
+						break;
+					//Lv 1 - 500, Lv 2 - 700, Lv 3 - 600, Lv 4 900, Lv 5 - 700
+					case MH_XENO_SLASHER:
+						if ( skill_lv % 2 == 0 )//Even levels 2, 4, 6, 8, etc.
+							skillratio = 500 + 100 * skill_lv;
+						else//Odd levels 1, 3, 5, 7, etc.
+							skillratio = 450 + 50 * skill_lv;
+						break;
+					case MH_HEILIGE_STANGE:
+						skillratio = 500 + 250 * skill_lv;
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio = skillratio * s_level / 150;
 						break;
 					// Magical Elemental Spirits Attack Skills
 					case EL_FIRE_MANTLE:

@@ -272,6 +272,9 @@ int merc_hom_levelup(struct homun_data *hd)
 	hom->dex += growth_dex;
 	hom->int_+= growth_int;
 	hom->luk += growth_luk;
+
+	// Needed to update skill list for mutated homunculus so unlocked skills will appear when the needed level is reached.
+	clif_homskillinfoblock(hd->master);
 	
 	if ( battle_config.homunculus_show_growth ) {
 		sprintf(output,
@@ -371,6 +374,10 @@ int merc_hom_mutation(struct homun_data *hd, int class_)
 		ShowError("merc_hom_mutation: Can't mutate homunc from %d to %d", hd->homunculus.class_, class_);
 		return 0;
 	}
+
+	// Its said the player can rename the homunculus again after mutation.
+	// This might be true since the homunculus's form completely changes.
+	hd->homunculus.rename_flag = 0;
 
 	//Apply mutation bonuses.
 	//Bonuses are the same for all mutations.
