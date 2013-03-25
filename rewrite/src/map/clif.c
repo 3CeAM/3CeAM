@@ -1033,7 +1033,7 @@ static int clif_set_unit_walking(struct block_list* bl, struct unit_data* ud, un
 #if PACKETVER >= 20110111
 	WBUFW(buf,38) = vd->robe;
 	offset+= 2;
-	buf = WBUFP(buf,offset);
+	buf = WBUFP(buffer,offset);
 #endif
 	WBUFL(buf,38) = status_get_guild_id(bl);
 	WBUFW(buf,42) = status_get_emblem_id(bl);
