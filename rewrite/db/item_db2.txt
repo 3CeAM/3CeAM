@@ -328,6 +328,9 @@
 18003,Soul_Cannon_Ball,Soul Cannon Ball,10,200,,10,120,,,,0x00040400,8,2,32768,,99,,8,{ bonus bAtkEle,Ele_Ghost; },{},{}
 18004,Iron_Cannon_Ball,Iron Cannon Ball,10,500,,10,250,,,,0x00040400,8,2,32768,,99,,8,{},{},{}
 
+// New Rune Knight Rune Stone
+//22540,Runstone_Luxanima,Lux Anima Rune,11,2,,100,,,,,0xFFFFFFFF,7,2,,,,,,{ itemskill "RK_LUXANIMA",1; },{},{}
+
 // New Weapons In Work And Testing
 1196,Chrome_Metal_Two-Hand_Sword,Chrome Metal Two-Hand Sword,4,20,10,400,280,,1,0,0x00044582,8,2,34,3,110,1,3,{ bonus bAgi,3; bonus bMaxHPrate,-10; bonus bUnbreakableWeapon,0; },{},{}
 1433,Imperial_Spear,Imperial Spear,4,20,10,1800,180,,3,1,0x00004000,8,2,2,3,102,1,4,{ /*bonus bMatk,40;*/ bonus2 bSkillAtk,"LG_CANNONSPEAR",20+getrefine()*3/2; bonus2 bSkillAtk,"LG_BANISHINGPOINT",20+getrefine()*3/2; if(isequipped(2153)) { bonus2 bSkillAtk,"CR_GRANDCROSS",10; bonus2 bSkillAtk,"LG_RAYOFGENESIS",10; } },{},{}
@@ -460,6 +463,9 @@
 15054,Ninja_Scale_Armor,Ninja Scale Armor,5,100000,,1800,,13,,1,0x20000000,7,2,16,,100,1,0,{ bonus bMaxHPRate,15; bonus bMaxSPRate,-30; },{},{}
 15055,Tenebris_Latitantes,Tenebris Latitantes,5,100000,,1500,,8,,1,0x20000000,7,2,16,,100,1,0,{ bonus bAgi,1; },{},{}
 15056,Special_Ninja_Suit_,Special Ninja Suit,5,100000,,1200,,10,,1,0x20000000,7,2,16,,100,1,0,{ bonus bAgi,1+(getrefine()/3); },{},{}
+
+// Serect Gunslinger Bullet???
+13208,Gong_Bug,Gong Bug,10,1,,5,50,,,,0x01000000,7,2,32768,,50,,3,{},{},{}
 
 // Mutated Homunculus Food
 6098,Small_Snow_Flower,Small Snow Flower,3,1000,,10,,,,,,,,,,,,,{},{},{}

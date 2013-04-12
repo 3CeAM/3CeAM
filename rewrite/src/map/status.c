@@ -570,6 +570,20 @@ void initChangeTables(void)
 	set_sc( OB_OBOROGENSOU       , SC_GENSOU          , SI_GENSOU          , SCB_NONE );
 	set_sc( OB_AKAITSUKI         , SC_AKAITSUKI       , SI_AKAITSUKI       , SCB_NONE );
 
+	//Adjust SCB flags as support for these skills are added. [Rytech]
+	set_sc( GC_DARKCROW           , SC_DARKCROW           , SI_DARKCROW           , SCB_NONE );
+	set_sc( RA_UNLIMIT            , SC_UNLIMIT            , SI_UNLIMIT            , SCB_NONE );
+	set_sc( GN_ILLUSIONDOPING     , SC_HALLUCINATION      , SI_HALLUCINATION      , SCB_NONE );
+	add_sc( RK_DRAGONBREATH_WATER , SC_FREEZING           );
+	add_sc( NC_MAGMA_ERUPTION     , SC_BURNING            );
+	set_sc( WM_FRIGG_SONG         , SC_FRIGG_SONG         , SI_FRIGG_SONG         , SCB_NONE );
+	set_sc( SR_FLASHCOMBO         , SC_FLASH_COMBO_ATK    , SI_BLANK              , SCB_NONE );
+	add_sc( SC_ESCAPE             , SC_ANKLE              );
+	set_sc( AB_OFFERTORIUM        , SC_OFFERTORIUM        , SI_OFFERTORIUM        , SCB_NONE );
+	set_sc( WL_TELEKINESIS_INTENSE, SC_TELEKINESIS_INTENSE, SI_TELEKINESIS_INTENSE, SCB_NONE );
+	set_sc( LG_KINGS_GRACE        , SC_KINGS_GRACE        , SI_KINGS_GRACE        , SCB_NONE );
+	set_sc( ALL_FULL_THROTTLE     , SC_FULL_THROTTLE      , SI_FULL_THROTTLE      , SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK );
+
 	set_sc( HLIF_AVOID           , SC_AVOID           , SI_BLANK           , SCB_SPEED );
 	set_sc( HLIF_CHANGE          , SC_CHANGE          , SI_BLANK           , SCB_VIT|SCB_INT );
 	set_sc( HFLI_FLEET           , SC_FLEET           , SI_BLANK           , SCB_ASPD|SCB_BATK|SCB_WATK );
@@ -675,7 +689,7 @@ void initChangeTables(void)
 	SkillStatusChangeTable[SL_SOULLINKER]  = (sc_type)MAPID_SOUL_LINKER,
 	SkillStatusChangeTable[SL_DEATHKNIGHT] = (sc_type)MAPID_DEATH_KNIGHT,
 	SkillStatusChangeTable[SL_COLLECTOR]   = (sc_type)MAPID_DARK_COLLECTOR,
-	SkillStatusChangeTable[SL_NINJA]       = (sc_type)MAPID_NINJA,
+	SkillStatusChangeTable[SL_NINJA]       = (sc_type)MAPID_NINJA,//Fix this to work with Kagerou/Oboro. [Rytech]
 	SkillStatusChangeTable[SL_GUNNER]      = (sc_type)MAPID_GUNSLINGER,
 
 	//Status that don't have a skill associated.
@@ -811,6 +825,7 @@ void initChangeTables(void)
 
 	StatusIconChangeTable[SC_ALL_RIDING] = SI_ALL_RIDING;
 	StatusIconChangeTable[SC_ON_PUSH_CART] = SI_ON_PUSH_CART;
+	StatusIconChangeTable[SC_REBOUND] = SI_REBOUND;
 
 	//Other SC which are not necessarily associated to skills.
 	StatusChangeFlagTable[SC_ASPDPOTION0] = SCB_ASPD;
@@ -907,6 +922,7 @@ void initChangeTables(void)
 	StatusChangeFlagTable[SC_EXTRACT_SALAMINE_JUICE] |= SCB_ASPD;
 
 	StatusChangeFlagTable[SC_ALL_RIDING] |= SCB_SPEED;
+	StatusChangeFlagTable[SC_REBOUND] |= SCB_SPEED;//Recheck later.
 
 	if( !battle_config.display_hallucination ) //Disable Hallucination.
 		StatusIconChangeTable[SC_HALLUCINATION] = SI_BLANK;
