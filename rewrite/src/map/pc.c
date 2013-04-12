@@ -5998,7 +5998,7 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 			i = (sd->change_level[0] > 0 ? sd->change_level[0] + 8 : 58) - skill_point;
 			clif_msgtable_num(sd->fd,MSG_UPGRADESKER_FIRSTJOB,i);
 			return 0;
-		}
+		}//May need to update in the future to include new 3rd job skills from the 5000 range. [Rytech]
 		if( sd->class_&JOBL_THIRD && (skill_num >= RK_ENCHANTBLADE && skill_num <= SR_RIDEINLIGHTNING) &&
 			skill_point < (sd->change_level[1] > 0 ? sd->change_level[0] + sd->change_level[1] + 7 : (sd->class_&JOBL_UPPER) ? 127 : 107) )
 		{	// 2nd job skill not usd.

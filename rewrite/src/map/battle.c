@@ -1329,7 +1329,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 			case PA_SHIELDCHAIN:
 			case LG_SHIELDPRESS:
 			case LG_EARTHDRIVE:
+			case RK_DRAGONBREATH:
 			case NC_SELFDESTRUCTION:
+			case RK_DRAGONBREATH_WATER:
 				flag.weapon = 0;
 				break;
 
@@ -1698,6 +1700,20 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				else
 					ATK_ADD(sstatus->rhw.atk2); //Else use Atk2
 				break;
+		case RK_DRAGONBREATH:
+		case RK_DRAGONBREATH_WATER:
+			{
+				int damagevalue = 0;
+ 				if( battle_config.skillsbonus_maxhp_RK && sstatus->hp > battle_config.skillsbonus_maxhp_RK ) // [Pinky]
+					damagevalue = ((battle_config.skillsbonus_maxhp_RK / 50) + (status_get_max_sp(src) / 4)) * skill_lv;
+ 				else
+					damagevalue = ((sstatus->hp / 50) + (status_get_max_sp(src) / 4)) * skill_lv;
+				if ( re_baselv_bonus == 1 && s_level >= 100 )
+					damagevalue = damagevalue * s_level / 150;// Base level bonus.
+				if (sd) damagevalue = damagevalue * (100 + 5 * (pc_checkskill(sd,RK_DRAGONTRAINING) - 1)) / 100;
+				ATK_ADD(damagevalue);
+			}
+			break;
 			case NC_SELFDESTRUCTION:
 				{
 					int damagevalue = 0;
@@ -4308,15 +4324,6 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 	case NPC_EVILLAND:
 		md.damage = skill_calc_heal(src,target,skill_num,skill_lv,false);
 		break;
-	case RK_DRAGONBREATH:
- 		if( battle_config.skillsbonus_maxhp_RK && sstatus->hp > battle_config.skillsbonus_maxhp_RK ) // [Pinky]
-			md.damage = ((battle_config.skillsbonus_maxhp_RK / 50) + (status_get_max_sp(src) / 4)) * skill_lv;
- 		else
-			md.damage = ((sstatus->hp / 50) + (status_get_max_sp(src) / 4)) * skill_lv;
-		if ( re_baselv_bonus == 1 && s_level >= 100 )
-			md.damage = md.damage * s_level / 150;// Base level bonus.
-		if (sd) md.damage = md.damage * (100 + 5 * (pc_checkskill(sd,RK_DRAGONTRAINING) - 1)) / 100;
-		break;
 	case RA_CLUSTERBOMB:
 	case RA_FIRINGTRAP:
  	case RA_ICEBOUNDTRAP:
@@ -5155,7 +5162,6 @@ int battle_check_target( struct block_list *src, struct block_list *target,int f
 					case MS_MAGNUM:
 					case RA_DETONATOR:
 					case RA_SENSITIVEKEEN:
-					case GN_CRAZYWEED:
 						state |= BCT_ENEMY;
 						strip_enemy = 0;
 						break;
