@@ -45,14 +45,24 @@
 
 // ranges reserved for mapping skill ids to skilldb offsets
 //WARNING all this shouldn't be higher than 999!!!
-#define HM_SKILLRANGEMIN 700
+/*#define HM_SKILLRANGEMIN 700
 #define HM_SKILLRANGEMAX HM_SKILLRANGEMIN + MAX_HOMUNSKILL
 #define MC_SKILLRANGEMIN HM_SKILLRANGEMAX + 1
 #define MC_SKILLRANGEMAX MC_SKILLRANGEMIN + MAX_MERCSKILL
 #define EL_SKILLRANGEMIN MC_SKILLRANGEMAX + 1
 #define EL_SKILLRANGEMAX EL_SKILLRANGEMIN + MAX_ELEMENTALSKILL
 #define GD_SKILLRANGEMIN EL_SKILLRANGEMAX + 1
-#define GD_SKILLRANGEMAX GD_SKILLRANGEMIN + MAX_GUILDSKILL
+#define GD_SKILLRANGEMAX GD_SKILLRANGEMIN + MAX_GUILDSKILL*/
+
+// ranges reserved for mapping skill ids to skilldb offsets
+#define HM_SKILLRANGEMIN 1101
+#define HM_SKILLRANGEMAX (HM_SKILLRANGEMIN+MAX_HOMUNSKILL)
+#define MC_SKILLRANGEMIN 1301
+#define MC_SKILLRANGEMAX (MC_SKILLRANGEMIN+MAX_MERCSKILL)
+#define EL_SKILLRANGEMIN 1501
+#define EL_SKILLRANGEMAX (EL_SKILLRANGEMIN+MAX_ELEMENTALSKILL)
+#define GD_SKILLRANGEMIN 1701
+#define GD_SKILLRANGEMAX (GD_SKILLRANGEMIN+MAX_GUILDSKILL)
 
 static struct eri *skill_unit_ers = NULL; //For handling skill_unit's [Skotlex]
 static struct eri *skill_timer_ers = NULL; //For handling skill_timerskills [Skotlex]
@@ -1081,6 +1091,9 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 				skill_strip_equip(bl,pos[i],rate,skilllv,skill_get_time2(skillid,skilllv));
 		}
 		break;
+	case WL_FROSTMISTY:
+		sc_start(bl,SC_FREEZING, 25 + 5 * skilllv,skilllv,skill_get_time(skillid,skilllv));
+		break;
 	case WL_JACKFROST:
 		//Note: Official data shows its applied as 200%. Dont know if sc_start can handle that much. Should I apply this? Recheck soon.
 		sc_start(bl,SC_FREEZE,100,skilllv,skill_get_time(skillid,skilllv));
@@ -1241,9 +1254,9 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 	case KO_MAKIBISHI:
 		sc_start(bl,SC_STUN,10 * skilllv,skilllv,skill_get_time2(skillid,skilllv));
 		break;
-	case RK_DRAGONBREATH_WATER:
-		sc_start4(bl,SC_FREEZING,15,skilllv,1000,src->id,0,skill_get_time(skillid,skilllv));
-		break;
+	//case RK_DRAGONBREATH_WATER:
+	//	sc_start4(bl,SC_FREEZING,15,skilllv,1000,src->id,0,skill_get_time(skillid,skilllv));
+	//	break;
 	case MH_NEEDLE_OF_PARALYZE:
 		sc_start(bl, SC_NEEDLE_OF_PARALYZE, 100, skilllv, skill_get_time(skillid,skilllv));
 		break;
@@ -3400,7 +3413,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case KO_SETSUDAN:
 	case KO_BAKURETSU:
 	case KO_HUUMARANKA:
-	case RK_DRAGONBREATH_WATER:
+	//case RK_DRAGONBREATH_WATER:
 	case MH_NEEDLE_OF_PARALYZE:
 	case MH_SONIC_CRAW:
 	//case MH_SILVERVEIN_RUSH:
@@ -3619,6 +3632,8 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case GC_COUNTERSLASH:
 	case AB_JUDEX:
 	case WL_SOULEXPANSION:
+	case WL_FROSTMISTY:
+	case WL_JACKFROST:
 	case WL_CRIMSONROCK:
 	case RA_ARROWSTORM:
 	case RA_WUGDASH:
@@ -4228,22 +4243,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 				skill_delunit(su);
 			}
 		}
-		break;
-
-	case WL_FROSTMISTY:
-		if( tsc && (tsc->option&(OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK)))
-			break; // Doesn't hit/cause Freezing to invisible enemy // Really? [Rytech]
-		// Causes Freezing status through walls.
-		sc_start(bl,status_skill2sc(skillid),25+5*skilllv,skilllv,skill_get_time(skillid,skilllv));
-		// Doesn't deal damage through non-shootable walls.
-		if( path_search(NULL,src->m,src->x,src->y,bl->x,bl->y,1,CELL_CHKWALL) )
-			skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag);
-		break;
-
-	case WL_JACKFROST:
-		if( tsc && (tsc->option&(OPTION_HIDE|OPTION_CLOAK|OPTION_CHASEWALK)))
-			break; // Do not hit invisible enemy
-		skill_attack(skill_get_type(skillid), src, src, bl, skillid, skilllv, tick, flag);
 		break;
 
 	case NC_INFRAREDSCAN:
@@ -5500,6 +5499,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case ASC_METEORASSAULT:
 	case GS_SPREADATTACK:
 	case RK_STORMBLAST:
+	case WL_FROSTMISTY:
+	case WL_JACKFROST:
 	case NC_AXETORNADO:
 	case SR_SKYNETBLOW:
 	case SR_RAMPAGEBLASTER:
@@ -7742,16 +7743,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			clif_skill_fail(sd,skillid,0,0,0);
 		break;
 
-	case WL_FROSTMISTY:
-		clif_skill_nodamage(src,bl,skillid,skilllv,1);
-		map_foreachinrange(skill_area_sub,bl,skill_get_splash(skillid,skilllv),BL_CHAR|BL_SKILL,src,skillid,skilllv,tick,flag|BCT_ENEMY,skill_castend_damage_id);
-		break;
-
-	case WL_JACKFROST:
-		clif_skill_nodamage(src,bl,skillid,skilllv,1);
-		map_foreachinshootrange(skill_area_sub,bl,skill_get_splash(skillid,skilllv),BL_CHAR|BL_SKILL,src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
-		break;		
-
 	case WL_MARSHOFABYSS:
 		{
 		int timereduct = skill_get_time(skillid, skilllv) - (tstatus->int_ + tstatus->dex) / 20 * 1000;
@@ -9971,7 +9962,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case WM_SOUND_OF_DESTRUCTION:
 	case KO_BAKURETSU:
 	case KO_HUUMARANKA:
-	case RK_DRAGONBREATH_WATER:
+	//case RK_DRAGONBREATH_WATER:
 		i = skill_get_splash(skillid,skilllv);
 		map_foreachinarea(skill_area_sub,src->m,x-i,y-i,x+i,y+i,BL_CHAR,src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
 		break;

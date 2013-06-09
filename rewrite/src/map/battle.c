@@ -1331,7 +1331,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 			case LG_EARTHDRIVE:
 			case RK_DRAGONBREATH:
 			case NC_SELFDESTRUCTION:
-			case RK_DRAGONBREATH_WATER:
+			//case RK_DRAGONBREATH_WATER:
 				flag.weapon = 0;
 				break;
 
@@ -1701,7 +1701,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					ATK_ADD(sstatus->rhw.atk2); //Else use Atk2
 				break;
 		case RK_DRAGONBREATH:
-		case RK_DRAGONBREATH_WATER:
+		//case RK_DRAGONBREATH_WATER:
 			{
 				int damagevalue = 0;
  				if( battle_config.skillsbonus_maxhp_RK && sstatus->hp > battle_config.skillsbonus_maxhp_RK ) // [Pinky]
