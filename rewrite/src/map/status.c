@@ -571,18 +571,18 @@ void initChangeTables(void)
 	set_sc( OB_AKAITSUKI         , SC_AKAITSUKI       , SI_AKAITSUKI       , SCB_NONE );
 
 	//Adjust SCB flags as support for these skills are added. [Rytech]
-	set_sc( GC_DARKCROW           , SC_DARKCROW           , SI_DARKCROW           , SCB_NONE );
-	set_sc( RA_UNLIMIT            , SC_UNLIMIT            , SI_UNLIMIT            , SCB_NONE );
-	set_sc( GN_ILLUSIONDOPING     , SC_HALLUCINATION      , SI_HALLUCINATION      , SCB_NONE );
-	add_sc( RK_DRAGONBREATH_WATER , SC_FREEZING           );
-	add_sc( NC_MAGMA_ERUPTION     , SC_BURNING            );
-	set_sc( WM_FRIGG_SONG         , SC_FRIGG_SONG         , SI_FRIGG_SONG         , SCB_NONE );
-	set_sc( SR_FLASHCOMBO         , SC_FLASH_COMBO_ATK    , SI_BLANK              , SCB_NONE );
-	add_sc( SC_ESCAPE             , SC_ANKLE              );
-	set_sc( AB_OFFERTORIUM        , SC_OFFERTORIUM        , SI_OFFERTORIUM        , SCB_NONE );
-	set_sc( WL_TELEKINESIS_INTENSE, SC_TELEKINESIS_INTENSE, SI_TELEKINESIS_INTENSE, SCB_NONE );
-	set_sc( LG_KINGS_GRACE        , SC_KINGS_GRACE        , SI_KINGS_GRACE        , SCB_NONE );
-	set_sc( ALL_FULL_THROTTLE     , SC_FULL_THROTTLE      , SI_FULL_THROTTLE      , SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK );
+	//set_sc( GC_DARKCROW           , SC_DARKCROW           , SI_DARKCROW           , SCB_NONE );
+	//set_sc( RA_UNLIMIT            , SC_UNLIMIT            , SI_UNLIMIT            , SCB_NONE );
+	//set_sc( GN_ILLUSIONDOPING     , SC_HALLUCINATION      , SI_HALLUCINATION      , SCB_NONE );
+	//add_sc( RK_DRAGONBREATH_WATER , SC_FREEZING           );
+	//add_sc( NC_MAGMA_ERUPTION     , SC_BURNING            );
+	//set_sc( WM_FRIGG_SONG         , SC_FRIGG_SONG         , SI_FRIGG_SONG         , SCB_NONE );
+	//set_sc( SR_FLASHCOMBO         , SC_FLASH_COMBO_ATK    , SI_BLANK              , SCB_NONE );
+	//add_sc( SC_ESCAPE             , SC_ANKLE              );
+	//set_sc( AB_OFFERTORIUM        , SC_OFFERTORIUM        , SI_OFFERTORIUM        , SCB_NONE );
+	//set_sc( WL_TELEKINESIS_INTENSE, SC_TELEKINESIS_INTENSE, SI_TELEKINESIS_INTENSE, SCB_NONE );
+	//set_sc( LG_KINGS_GRACE        , SC_KINGS_GRACE        , SI_KINGS_GRACE        , SCB_NONE );
+	//set_sc( ALL_FULL_THROTTLE     , SC_FULL_THROTTLE      , SI_FULL_THROTTLE      , SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK );
 
 	set_sc( HLIF_AVOID           , SC_AVOID           , SI_BLANK           , SCB_SPEED );
 	set_sc( HLIF_CHANGE          , SC_CHANGE          , SI_BLANK           , SCB_VIT|SCB_INT );
