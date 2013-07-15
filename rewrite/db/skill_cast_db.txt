@@ -1095,8 +1095,8 @@
 //-- RK_DRAGONHOWLING
 2009,0,0,10000,0,15000,0,0
 
-//-- RK_MILLENNIUMSHIELD - Duration 2 used for stun when shield breaks. How long does it officially last?
-2011,0,1000,60000,0,180000,3000,0
+//-- RK_MILLENNIUMSHIELD - Duration 2 used for stun when shield breaks.
+2011,0,1000,60000,0,180000,1000,0
 //-- RK_CRUSHSTRIKE
 2012,0,0,30000,0,30000,0,1000
 //-- RK_REFRESH

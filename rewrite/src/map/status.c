@@ -1562,7 +1562,8 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 				sc->data[SC_DEEPSLEEP] ||
 				sc->data[SC_CURSEDCIRCLE_TARGET] || 
 				sc->data[SC__SHADOWFORM] || 
-				(sc->data[SC_KYOMU] && rand()%100 < 5 * sc->data[SC_KYOMU]->val1)
+				(sc->data[SC_KYOMU] && rand()%100 < 5 * sc->data[SC_KYOMU]->val1) ||
+				sc->data[SC_ALL_RIDING]// Added to prevent any possiable skill exploit use on rental mounts. [Rytech]
 			))
 				return 0;
 
@@ -4303,7 +4304,7 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 	if(sc->data[SC_FIGHTINGSPIRIT])
 		watk += sc->data[SC_FIGHTINGSPIRIT]->val1;
 	if(sc->data[SC_CAMOUFLAGE])
-		watk += 150/*30 * sc->data[SC_CAMOUFLAGE]->val2*/;
+		watk += 30 * sc->data[SC_CAMOUFLAGE]->val2;
 	if(sc->data[SC__ENERVATION])
 		watk -= watk * sc->data[SC__ENERVATION]->val2 / 100;
 	if(sc->data[SC__BLOODYLUST])
@@ -4389,7 +4390,7 @@ static signed short status_calc_critical(struct block_list *bl, struct status_ch
 	if(sc->data[SC_CLOAKING])
 		critical += critical;
 	if(sc->data[SC_CAMOUFLAGE])
-		critical += critical * 50 / 100/*critical * ( 10 * sc->data[SC_CAMOUFLAGE]->val2 ) / 100*/;
+		critical += critical * ( 10 * sc->data[SC_CAMOUFLAGE]->val2 ) / 100;
 	if(sc->data[SC__INVISIBILITY])
 		critical += critical * sc->data[SC__INVISIBILITY]->val2 / 100;
 	if(sc->data[SC__UNLUCKY])
@@ -4569,7 +4570,7 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 	if( sc->data[SC_FREEZING] )
 		def -= def * 10 / 100;
 	if(sc->data[SC_CAMOUFLAGE])
-		def -= def * 25 / 100/*def * ( 5 * sc->data[SC_CAMOUFLAGE]->val2 ) / 100*/;
+		def -= def * ( 5 * sc->data[SC_CAMOUFLAGE]->val2 ) / 100;
 	if( sc->data[SC_ANALYZE] )
 		def -= def * ( 14 * sc->data[SC_ANALYZE]->val1 ) / 100;
 	if( sc->data[SC_NEUTRALBARRIER] )
@@ -6216,6 +6217,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	case SC_CAMOUFLAGE:
 		if( sd && pc_checkskill(sd, RA_CAMOUFLAGE) < 2 && !skill_check_camouflage(bl,NULL) )
 			return 0;
+		val2 = 1;
 	break;
 	case SC_TOXIN:
 	case SC_PARALYSE:
@@ -8143,6 +8145,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_WEIGHT90:
 		case SC_VOICEOFSIREN:
 		case SC_CLOAKINGEXCEED:
+		case SC_ALL_RIDING:
 			unit_stop_attack(bl);
 		break;
 		case SC_SILENCE:
@@ -9666,14 +9669,16 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		break;
 
 	case SC_CAMOUFLAGE:
-		if( --(sce->val4) >= 0 )
-		{
-			if( !status_charge(bl, 0, 7 - sce->val1) )
-				break;
-			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
-			return 0;
+		if( !status_charge(bl, 0, 7 - sce->val1) )
+			break;
+
+		if( sce->val2 < 10 ) {
+			sce->val2++;
+			status_calc_bl( bl, SCB_WATK | SCB_CRI | SCB_DEF );
 		}
-		break;
+
+		sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
+		return 0;
 
 	case SC__REPRODUCE:
 		if( --(sce->val4) >= 0 )

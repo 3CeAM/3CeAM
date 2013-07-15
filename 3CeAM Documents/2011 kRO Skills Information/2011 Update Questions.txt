@@ -92,10 +92,6 @@ Rune Mastery
 Crafting formula entirely recoded, however the iRO document shows the starting base success is 51 percent.
 This looks a bit off and might be a typo. So ive put the base ratio at 50 percent instead.
 
-Millennium Shield
-Says it stuns the player when 1 shield breaks. The stun lasts for 3 seconds and reduced by VIT right? Does this even work in 3CeAM?
-May reduce stun duration to 1 second if found that 3 seconds is too high. Imagine a shield breaking back to back every second. Could be annoying.
-
 Giant Growth
 Recheck the check for the 3x damage in battle.c as a small cleanup might be possiable.
 
@@ -124,9 +120,6 @@ White Imprison
 Different success chance on yourself, targeted player, and targeted monster? Different duration on yourself, targeted player, and targeted monster?
 Different duration reduction stats between targeted player and targeted monster? Know what....screw it. This is kinda complex and ill work
 onthis skill another time when I feel like it or if anyone else wants to do it.
-
-Frost Misty
-Recheck all coding to see if damage and status is being applied properly.
 
 Jack Frost
 Same as Frost Misty. Recheck all coding.
@@ -251,19 +244,11 @@ Balance notes say range is 3/4/5, but was changed back to 3 cells for all levels
 Cold Slower
 Says duration is 7 * SkillLV seconds. Is this true for both status?
 
-Arms Cannon
-SP requirement in skillinfolist.lub and whats said in the balance update is different. Which is correct?
-Also remembering what I found in the zone their may be some extra damage formula data.
-I couldnt figure out what it was exactly. Think something about the cannonball and its element or weight?
-Balance note from April of 2011 says changed from ground targeted to enemy targeted with splash AoE. Doesent say it in Auguest notes tho or in balance document.
-Must check for confirm for the above.
-
 Hovering
 Does it still boost movement speed? Will leave it set to 10 until confirm.
 Their's a good number of skills that wont affect the Mechanic when in this status. Will have to do this later.
 
 Self Destruction
-SP requirement is 200, but balance notes says has no SP requirement anymore. Recheck and confirm later before applying.
 Ive coded the skill as a weapon type even tho its a fixed damage skill. This was needed to allow enemy's DEF and VIT DEF to properly
 reduce the damage. The skill was also coded to ignore ATK and changed to be a forced neutral element due to its insane damage.
 
@@ -544,9 +529,6 @@ Must check to make sure water ball is being forced to level 5 on all levels and 
 Gloomy Day
 The skill has a SkillLv precent change of halfing a enemy's movement speed, as well as dismounting them. How do I do this?
 
-Chorus Type Skills
-Most of them require a instrument or wip to cast. Need to check, confirm, and add in to which skills require them.
-
 Dance With A Waug
 Says it adds equipment ATK when using warg related skills. I added it as additional ATK until I can figure out exactly what it means.
 
@@ -715,8 +697,8 @@ This skill will require a good bit of recoding to fix it up. Im saving this for 
 
 Fire Expansion
 A number of things needs to be dealt with on this skill. Ive done what I could easly do so far and will save the remaining tasks for later.
-First, we know effect 2 adds damage onto the current demonic fire. Effect 3 says it takes demonic fire's damage and adds onto it for 1 attack.
-But the question here is can I add effect 2's damage and then add effect 3 which will take the damage of demonic fire + effect 2 + effect 3
+First, we know effect 1 adds damage onto the current demonic fire. Effect 2 says it takes demonic fire's damage and adds onto it for 1 attack.
+But the question here is can I add effect 2's damage and then add effect 2 which will take the damage of demonic fire + effect 1 + effect 2
 and deal 1 strong attack before deleting the unit? Probely not, but the way it sounds makes it sound like its possiable.
 
 Another issue is getting the smoke screen and tear gas effects to work. The smoke screen status is fully coded and the tear gas only has its
