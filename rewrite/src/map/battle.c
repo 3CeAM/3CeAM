@@ -468,10 +468,8 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 
 		if( sd && (sce = sc->data[SC_MILLENNIUMSHIELD]) && sce->val2 > 0 && damage > 0 )
 		{
-			clif_skill_nodamage(bl, bl, RK_MILLENNIUMSHIELD, 1, 1);
 			sce->val3 -= damage; // absorb damage
 			d->dmg_lv = ATK_BLOCK;
-			sc_start(bl,SC_STUN,15,0,skill_get_time2(RK_MILLENNIUMSHIELD,sce->val1)); // There is a chance to be stuned when one shield is broken. Whats the official chance? [Rytech]
 			if( sce->val3 <= 0 ) // Shield Down
 			{
 				sce->val2--;
@@ -482,6 +480,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 				}
 				else
 					status_change_end(bl,SC_MILLENNIUMSHIELD,-1); // All shields down
+				status_change_start(bl, SC_STUN, 10000, 0, 0, 0, 0, 1000, 2);
 			}
 			return 0;
 		}
