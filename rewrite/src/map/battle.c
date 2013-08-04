@@ -1366,6 +1366,13 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				if (!sd) wd.flag=(wd.flag&~(BF_RANGEMASK|BF_WEAPONMASK))|BF_LONG|BF_MISC;
 				break;
 
+			//The number of hits is set to 3 by default for use in Inspiration status.
+			//When in banding, the number of hits is equal to the number of Royal Guards in banding.
+			case LG_HESPERUSLIT:
+				if( sc && sc->data[SC_BANDING] && sc->data[SC_BANDING]->val2 > 3 )
+					wd.div_ = sc->data[SC_BANDING]->val2;
+				break;
+
 			case EL_STONE_RAIN:
 				if( !(wflag&1) )
 					wd.div_ = 1;
@@ -2414,7 +2421,10 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case LG_HESPERUSLIT:
 					skillratio = 120 * skill_lv;
-					// Banding check needed here.
+					if( sc && sc->data[SC_BANDING] )
+						skillratio += 200 * sc->data[SC_BANDING]->val2;
+					if( sc && sc->data[SC_BANDING] && sc->data[SC_BANDING]->val2 > 5 )
+						skillratio = skillratio * 150 / 100;
 					if( sc && sc->data[SC_INSPIRATION] )
 						skillratio += 600;
 					if( re_baselv_bonus == 1 && s_level >= 100 )
@@ -3467,6 +3477,10 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 			skill_lv = -skill_lv;
 		}
 	}
+	else if ( skill_num == LG_HESPERUSLIT && sc && sc->data[SC_BANDING] && sc->data[SC_BANDING]->val2 > 4 )
+	{
+			s_ele = ELE_HOLY;
+	}
 	else if( sc && (sc->data[SC_HEATER_OPTION] || sc->data[SC_COOLER_OPTION] ||
 		sc->data[SC_BLAST_OPTION] || sc->data[SC_CURSED_SOIL_OPTION]) && skill_num == SO_PSYCHIC_WAVE )
 	{	// Status change from Elemental Spirits that change Psychic Wave damage element.
@@ -3863,8 +3877,8 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					break;
 					case LG_RAYOFGENESIS:
 						skillratio = 300 * skill_lv;
-						// 200 * Number of Royal Guards in banding status check needed here.
-						//if( sc && sc->data[SC_BANDING] )
+						if( sc && sc->data[SC_BANDING] && sc->data[SC_BANDING]->val2 > 1 )
+							skillratio += 200 * sc->data[SC_BANDING]->val2;
 						if( re_baselv_bonus == 1 && s_level >= 100 )
 							skillratio = skillratio * s_job_level / 25;	// Job level bonus.
 						break;

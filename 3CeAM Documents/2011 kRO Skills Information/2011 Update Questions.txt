@@ -416,19 +416,19 @@ Prestige
 Its said a animation happens when a magic attack misses you while in this status. Will test soon to figure out which one.
 
 Banding
-This skill SHOULD be working properly and checking for other Royal Guards as it should, but ill find out soon.
+The skill does include the caster in the banding count right? I keep seeing "Per Royal Guard In Banding" in info.
+I dont think the HP share is working properly.
 
 Ray of Genesis
 Check battle.c for ATK_RATE.
-Everything is working properly except the check for the number of Royal Guards to boost the damage. Need to get a proper one made.
 Does this skill cost HP to cast?
 
 Hesperus Lit
-Damage Ratio formula for Inspiration status is coded in, but still need to code in a Royal Guard Banding check.
-Also need that Royal Guard Banding check for setting the number of hits.
-Finally, a 3rd check like this is needed for applying the different additional effects for the skill.
-Anyone knows if the effects stack?
-Is this really a spear exclusive skill?
+This skill sounds extremely powerful on paper but I have a few questions.
+First, it sounds like the skill deals the damage in regular hits and not sub-hits. I need a confirm on this.
+Second, powerful as the skill sounds, does the aftercast and cooldown only apply to the one who uses it or it affects all the Royal Guards in banding?
+Third, when theirs 7 or more Royal Guards in banding, the skill generates the max number of spheres from Force of Vanguard on ALL of the Royal Guards
+in the banding party. But how do I do that? This skill may have some hidden mechanics or working that im not aware of yet. I need more info on this.
 
 Inspiration
 Was able to update everything except the HIT increase formula since I dont have enough val's to use.
@@ -445,7 +445,7 @@ Also, video shows a cell vanishes after something walks into it after it deals i
 Diamond Dust
 Need to check the entire crystalizeing code to see if its doing all as it should.
 Status prevents you from moving, regular attacking, using skills, and using items.
-In a nutshell you cant do anything when iin the crystalize status.
+In a nutshell you cant do anything when in the crystalize status.
 Does getting hit end the status?
 
 Poison Buster
