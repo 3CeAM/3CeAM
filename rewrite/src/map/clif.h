@@ -28,8 +28,8 @@ struct quest;
 struct party_booking_ad_info;
 #include <stdarg.h>
 // packet DB
-#define MAX_PACKET_DB		0x980
-#define MAX_PACKET_VER		29
+#define MAX_PACKET_DB		0xf00
+#define MAX_PACKET_VER		30
 #define	MAX_PACKET_POS		20
 
 struct s_packet_db {

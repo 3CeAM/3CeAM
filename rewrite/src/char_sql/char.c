@@ -1681,6 +1681,60 @@ int mmo_char_send006b(int fd, struct char_session_data* sd)
 	return 0;
 }
 
+//----------------------------------------
+// Updated function for sending characters data to a player.
+// For 2013 clients and higher. (HC_ACCEPT_ENTER2)
+// Note: I assume this is a official way of coding this,
+// but for some reason it won't display your characters
+// on the character selection screen. Its as if the client
+// is expecting additional info from another packet. [Rytech]
+//----------------------------------------
+/*int mmo_char_send082d(int fd, struct char_session_data* sd)
+{
+	int j = 0;
+
+	if (save_log)
+		ShowInfo("Loading Char Data ("CL_BOLD"%d"CL_RESET")\n",sd->account_id);
+
+	j = 29;
+	WFIFOHEAD(fd,j + MAX_CHARS*MAX_CHAR_BUF);
+	WFIFOW(fd,0) = 0x82d;
+	WFIFOB(fd,4) = MAX_CHARS;	//NormalSlotNum - Number of slots open for normal service.
+	WFIFOB(fd,5) = 0;			//PremiumSlotNum - Number of slots open for premium service.
+	WFIFOB(fd,6) = 0;			//BillingSlotNum - Number of slots open for billing service.
+	WFIFOB(fd,7) = MAX_CHARS;	//ProducibleSlotNum - Number of ValidSlotNum slots available.
+	WFIFOB(fd,8) = MAX_CHARS;	//ValidSlotNum - Total number of slots.
+	memset(WFIFOP(fd,9), 0, 20);//m_extension - Unused bytes.
+	j += mmo_chars_fromsql(sd, WFIFOP(fd,j));
+	WFIFOW(fd,2) = j;	//PacketLength
+	WFIFOSET(fd,j);
+
+	return 0;
+}*/
+
+//----------------------------------------
+// Updated function to send characters to a player.
+// For 2013 clients and higher. (HC_ACCEPT_ENTER2)
+// Note: This is a hacked that allows logging in without
+// any known issues by sending the 82d packet, and then
+// sending the 6b packet. This isnt official and will be
+// reworked to a more official setup in the future. [Rytech]
+//----------------------------------------
+void mmo_char_send082d(int fd, struct char_session_data* sd)
+{
+	WFIFOHEAD(fd,29);
+	WFIFOW(fd,0) = 0x82d;
+	WFIFOW(fd,2) = 29;	//PacketLength
+	WFIFOB(fd,4) = MAX_CHARS;	//NormalSlotNum - Number of slots open for normal service.
+	WFIFOB(fd,5) = 0;			//PremiumSlotNum - Number of slots open for premium service.
+	WFIFOB(fd,6) = 0;			//BillingSlotNum - Number of slots open for billing service.
+	WFIFOB(fd,7) = MAX_CHARS;	//ProducibleSlotNum - Number of ValidSlotNum slots available.
+	WFIFOB(fd,8) = MAX_CHARS;	//ValidSlotNum - Total number of slots.
+	memset(WFIFOP(fd,9), 0, 20);//m_extension - Unused bytes.
+	WFIFOSET(fd,29);
+	mmo_char_send006b(fd, sd);
+}
+
 int char_married(int pl1, int pl2)
 {
 	if( SQL_ERROR == Sql_Query(sql_handle, "SELECT `partner_id` FROM `%s` WHERE `char_id` = '%d'", char_db, pl1) )
@@ -1919,7 +1973,11 @@ int parse_fromlogin(int fd)
 				else
 				{
 					// send characters to player
+				#if PACKETVER >= 20120702
+					mmo_char_send082d(i, sd);
+				#else
 					mmo_char_send006b(i, sd);
+				#endif
 					#if PACKETVER >= 20110309
 					WFIFOHEAD(i, 12);
 					WFIFOW(i, 0) = 0x08B9;
