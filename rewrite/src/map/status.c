@@ -2400,11 +2400,15 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		current_equip_item_index = index = sd->equip_index[i]; //We pass INDEX to current_equip_item_index - for EQUIP_SCRIPT (new cards solution) [Lupus]
 		if( index < 0 )
 			continue;
-		if( i == EQI_HAND_R && sd->equip_index[EQI_HAND_L] == index )
+		if(i == EQI_HAND_R && sd->equip_index[EQI_HAND_L] == index)
 			continue;
-		if( i == EQI_HEAD_MID && sd->equip_index[EQI_HEAD_LOW] == index )
+		if(i == EQI_HEAD_MID && sd->equip_index[EQI_HEAD_LOW] == index)
 			continue;
-		if( i == EQI_HEAD_TOP && (sd->equip_index[EQI_HEAD_MID] == index || sd->equip_index[EQI_HEAD_LOW] == index) )
+		if(i == EQI_HEAD_TOP && (sd->equip_index[EQI_HEAD_MID] == index || sd->equip_index[EQI_HEAD_LOW] == index))
+			continue;
+		if(i == EQI_COSTUME_HEAD_MID && sd->equip_index[EQI_COSTUME_HEAD_LOW] == index)
+			continue;
+		if(i == EQI_COSTUME_HEAD_TOP && (sd->equip_index[EQI_COSTUME_HEAD_MID] == index || sd->equip_index[EQI_COSTUME_HEAD_LOW] == index))
 			continue;
 		if( !sd->inventory_data[index] )
 			continue;
@@ -2510,11 +2514,15 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		current_equip_item_index = index = sd->equip_index[i]; //We pass INDEX to current_equip_item_index - for EQUIP_SCRIPT (new cards solution) [Lupus]
 		if( index < 0 )
 			continue;
-		if( i == EQI_HAND_R && sd->equip_index[EQI_HAND_L] == index )
+		if(i == EQI_HAND_R && sd->equip_index[EQI_HAND_L] == index)
 			continue;
-		if( i == EQI_HEAD_MID && sd->equip_index[EQI_HEAD_LOW] == index )
+		if(i == EQI_HEAD_MID && sd->equip_index[EQI_HEAD_LOW] == index)
 			continue;
-		if( i == EQI_HEAD_TOP && (sd->equip_index[EQI_HEAD_MID] == index || sd->equip_index[EQI_HEAD_LOW] == index) )
+		if(i == EQI_HEAD_TOP && (sd->equip_index[EQI_HEAD_MID] == index || sd->equip_index[EQI_HEAD_LOW] == index))
+			continue;
+		if(i == EQI_COSTUME_HEAD_MID && sd->equip_index[EQI_COSTUME_HEAD_LOW] == index)
+			continue;
+		if(i == EQI_COSTUME_HEAD_TOP && (sd->equip_index[EQI_COSTUME_HEAD_MID] == index || sd->equip_index[EQI_COSTUME_HEAD_LOW] == index))
 			continue;
 
 		if( sd->inventory_data[index] )

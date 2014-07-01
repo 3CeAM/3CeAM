@@ -59,6 +59,9 @@ struct fame_list smith_fame_list[MAX_FAME_LIST];
 struct fame_list chemist_fame_list[MAX_FAME_LIST];
 struct fame_list taekwon_fame_list[MAX_FAME_LIST];
 
+//If your code editor program isnt showing code details properly (Example being the info bubbles that appear when
+//hovering your mouse over certain pieces of code or when typing certain things), commet the below line and make your edits.
+//Be sure to uncommet the below line when your done making your edits or else you will get errors/warnings when compiling.
 static unsigned short equip_pos[EQI_MAX]={EQP_ACC_L,EQP_ACC_R,EQP_SHOES,EQP_GARMENT,EQP_HEAD_LOW,EQP_HEAD_MID,EQP_HEAD_TOP,EQP_ARMOR,EQP_HAND_L,EQP_HAND_R,EQP_AMMO,EQP_COSTUME_HEAD_LOW,EQP_COSTUME_HEAD_MID,EQP_COSTUME_HEAD_TOP,EQP_COSTUME_GARMENT,EQP_COSTUME_FLOOR};
 
 #define MOTD_LINE_SIZE 128
@@ -970,6 +973,8 @@ bool pc_isequipped(struct map_session_data *sd, int nameid)
 		if( i == EQI_HAND_R && sd->equip_index[EQI_HAND_L] == index ) continue;
 		if( i == EQI_HEAD_MID && sd->equip_index[EQI_HEAD_LOW] == index ) continue;
 		if( i == EQI_HEAD_TOP && (sd->equip_index[EQI_HEAD_MID] == index || sd->equip_index[EQI_HEAD_LOW] == index) ) continue;
+		if( i == EQI_COSTUME_HEAD_MID && sd->equip_index[EQI_COSTUME_HEAD_LOW] == index ) continue;
+		if( i == EQI_COSTUME_HEAD_TOP && (sd->equip_index[EQI_COSTUME_HEAD_MID] == index || sd->equip_index[EQI_COSTUME_HEAD_LOW] == index) ) continue;
 	
 		if( !sd->inventory_data[index] ) continue;
 
@@ -8262,12 +8267,13 @@ int pc_equipitem(struct map_session_data *sd,int n,int req_pos)
 			sd->status.robe = 0;
 		clif_changelook(&sd->bl,LOOK_ROBE,sd->status.robe);
 	}
+	//Not yet used but leaving this code here for when its added. [Rytech]
 	/*if(pos & EQP_COSTUME_FLOOR) {
 		if(id)
 			sd->status.floor = id->look;
 		else
 			sd->status.floor = 0;
-		clif_changelook(&sd->bl,LOOK_FLOOR,sd->status.floor);
+		clif_changelook(&sd->bl,LOOK_BODY,sd->status.floor);
 	}*/
 
 	pc_checkallowskill(sd); //Check if status changes should be halted.
@@ -8403,7 +8409,7 @@ int pc_unequipitem(struct map_session_data *sd,int n,int flag)
 	/*if( sd->status.inventory[n].equip & EQP_COSTUME_FLOOR)
 	{
 		sd->status.floor = 0;
-		clif_changelook(&sd->bl,LOOK_FLOOR,sd->status.floor);
+		clif_changelook(&sd->bl,LOOK_BODY,sd->status.floor);
 	}*/
 
 	clif_unequipitemack(sd,n,sd->status.inventory[n].equip,1);
