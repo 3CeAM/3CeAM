@@ -243,6 +243,9 @@ static void party_check_state(struct party_data *p)
 		case JOB_MONK:
 		case JOB_BABY_MONK:
 		case JOB_CHAMPION:
+		case JOB_SURA:
+		case JOB_SURA_T:
+		case JOB_BABY_SURA:
 			p->state.monk = 1;
 		break;
 		case JOB_STAR_GLADIATOR:
@@ -250,6 +253,8 @@ static void party_check_state(struct party_data *p)
 		break;
 		case JOB_SUPER_NOVICE:
 		case JOB_SUPER_BABY:
+		case JOB_SUPER_NOVICE_E:
+		case JOB_SUPER_BABY_E:
 			p->state.snovice = 1;
 		break;
 		case JOB_TAEKWON:

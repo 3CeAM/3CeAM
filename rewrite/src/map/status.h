@@ -1421,7 +1421,7 @@ extern int percentrefinery[5][MAX_REFINE+1]; //The last slot always has a 0% suc
 //Status change option definitions (options are what makes status changes visible to chars
 //who were not on your field of sight when it happened)
 
-//opt1: Non stackable status changes.
+//OPT1: (BODYSTATE_) Non stackable status changes.
 enum {
 	OPT1_STONE = 1, //Petrified
 	OPT1_FREEZE,
@@ -1433,7 +1433,7 @@ enum {
 	OPT1_IMPRISON
 };
 
-//opt2: Stackable status changes.
+//OPT2: (HEALTHSTATE_) Stackable status changes.
 enum {
 	OPT2_POISON       = 0x0001,
 	OPT2_CURSE        = 0x0002,
@@ -1446,7 +1446,7 @@ enum {
 	OPT2_FEAR         = 0x0100,
 };
 
-//opt3: (SHOW_EFST_*)
+//OPT3: (SHOW_EFST_)
 enum {
 	OPT3_NORMAL           = 0x00000000,
 	OPT3_QUICKEN          = 0x00000001,

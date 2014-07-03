@@ -3270,9 +3270,19 @@ int clif_statusupack(struct map_session_data *sd,int type,int ok,int val)
 	return 0;
 }
 
-/*==========================================
- *
- *------------------------------------------*/
+/// Notifies the client about the result of a request to equip an item (ZC_REQ_WEAR_EQUIP_ACK).
+/// 00aa <index>.W <equip location>.W <result>.B
+/// 00aa <index>.W <equip location>.W <view id>.W <result>.B (PACKETVER >= 20100629)
+/// 0999 <index>.W <equip location>.L <view id>.W <result>.B (ZC_ACK_WEAR_EQUIP_V5)
+/// 0xaa Result Table:
+///     0 = failure
+///     1 = success
+///     2 = failure due to low level
+/// --------------------------------
+/// 0x999 Result Table:
+///     0 = SUCCESS
+///     1 = FAIL_FORBID
+///     2 = FAILURE
 int clif_equipitemack(struct map_session_data *sd,int n,int pos,int ok)
 {
 	int fd;
@@ -3280,6 +3290,21 @@ int clif_equipitemack(struct map_session_data *sd,int n,int pos,int ok)
 	nullpo_ret(sd);
 
 	fd=sd->fd;
+
+	//Enable this when adding support for the 0x999 packet.
+/*#else
+	// Converts the result value normally used by packet 0xaa to the correct one used by the 0x999 packet.
+	// Packet 0x999 appears to have the same results table, but the result numbers are different.
+	// Note: Currently no message displays when you cant equip a item. How do I fix this? Is this normal? [Rytech]
+	packet = 0x999;
+	if (ok == 0)
+		ok = 2;
+	else if (ok == 1)
+		ok = 0;
+	else if (ok == 2)
+		ok = 1;
+#endif*/
+
 	WFIFOHEAD(fd,packet_len(0xaa));
 	WFIFOW(fd,0)=0xaa;
 	WFIFOW(fd,2)=n+2;
@@ -4187,21 +4212,27 @@ static int clif_calc_walkdelay(struct block_list *bl,int delay, int type, int da
  * Sends a 'damage' packet (src performs action on dst)
  * R 008a <src ID>.l <dst ID>.l <server tick>.l <src speed>.l <dst speed>.l <damage>.w <div>.w <type>.B <damage2>.w
  * R 02e1 <src ID>.l <dst ID>.l <server tick>.l <src speed>.l <dst speed>.l <damage>.l <div>.w <type>.B <damage2>.l [pakpil]
+ * R 08c8 <src ID>.L <dst ID>.L <server tick>.L <src speed>.L <dst speed>.L <damage>.L <IsSPDamage>.B <div>.W <type>.B <damage2>.L (ZC_NOTIFY_ACT3) (Not Coded In - Rytech)
  * packet sended by src->type:
  * 	- BL_PC 	=	0x008a
  *	- BL_MOB	=	0x02e1
  *	- BL_PET	=	0x02e1ｿ?
  *	- BL_HOM	=	0x02e1ｿ?
  *	- BL_MER	=	0x02e1ｿ?
- * type=00 damage [param1: total damage, param2: div, param3: assassin dual-wield damage]
- * type=01 pick up item
- * type=02 sit down
- * type=03 stand up
- * type=04 reflected/absorbed damage?
- * type=08 double attack
- * type=09 don't display flinch animation (endure)
- * type=0a critical hit
- * type=0b lucky dodge
+///	Types:
+///     0 = ATTACK - damage [ damage: total damage, div: amount of hits, damage2: assassin dual-wield damage ]
+///     1 = ITEMPICKUP - pick up item
+///     2 = SIT - sit down
+///     3 = STAND - stand up
+///     4 = ATTACK_NOMOTION - damage (endure)
+///     5 = SPLASH - (splash?)
+///     6 = SKILL - (skill?)
+///     7 = ATTACK_REPEAT - (repeat damage?)
+///     8 = ATTACK_MULTIPLE - multi-hit damage
+///     9 = ATTACK_MULTIPLE_NOMOTION - multi-hit damage (endure)
+///    10 = ATTACK_CRITICAL - critical hit
+///    11 = ATTACK_LUCKY - lucky dodge
+///    12 = TOUCHSKILL - (touch skill?)
  *------------------------------------------*/
 int clif_damage(struct block_list* src, struct block_list* dst, unsigned int tick, int sdelay, int ddelay, int damage, int div, int type, int damage2)
 {
@@ -4403,12 +4434,18 @@ void clif_getareachar_item(struct map_session_data* sd,struct flooritem_data* fi
 	WFIFOSET(fd,packet_len(0x9d));
 }
 
-/*==========================================
- * 場所スキルエフェクトが視界に入る
- *------------------------------------------*/
+/// Notifies the client of a skill unit.
+/// 011f <id>.L <creator id>.L <x>.W <y>.W <unit id>.B <visible>.B (ZC_SKILL_ENTRY)
+/// 01c9 <id>.L <creator id>.L <x>.W <y>.W <unit id>.B <visible>.B <has msg>.B <msg>.80B (ZC_SKILL_ENTRY2)
+/// 08c7 <packet lengh>.W <id> L <creator id>.L <x>.W <y>.W <unit id>.B <radius range>.B <visible>.B (ZC_SKILL_ENTRY3)
+/// 099f <packet lengh>.W <id> L <creator id>.L <x>.W <y>.W <unit id>.L <radius range>.B <visible>.B (ZC_SKILL_ENTRY4)
+/// 09ca <packet lengh>.W <id> L <creator id>.L <x>.W <y>.W <unit id>.L <radius range>.B <visible>.B <skill level>.B(ZC_SKILL_ENTRY5)
 static void clif_getareachar_skillunit(struct map_session_data *sd, struct skill_unit *unit)
 {
 	int fd = sd->fd;
+#if PACKETVER > 20120702
+	short packet_type;
+#endif
 
 #if PACKETVER >= 3
 	if(unit->group->unit_id==UNT_GRAFFITI)	{ // Graffiti [Valaris]
@@ -4426,6 +4463,8 @@ static void clif_getareachar_skillunit(struct map_session_data *sd, struct skill
 		return;
 	}
 #endif
+
+#if PACKETVER <= 20120702
 	WFIFOHEAD(fd,packet_len(0x11f));
 	WFIFOW(fd, 0)=0x11f;
 	WFIFOL(fd, 2)=unit->bl.id;
@@ -4438,6 +4477,30 @@ static void clif_getareachar_skillunit(struct map_session_data *sd, struct skill
 		WFIFOB(fd,14)=unit->group->unit_id;
 	WFIFOB(fd,15)=1; // ignored by client (always gets set to 1)
 	WFIFOSET(fd,packet_len(0x11f));
+#else
+	#if PACKETVER < 20130731
+		packet_type = 0x99f;
+	#else
+		packet_type = 0x9ca;
+	#endif
+	WFIFOHEAD(fd,packet_len(packet_type));
+	WFIFOW(fd, 0)=packet_type;
+	WFIFOW(fd, 2)=packet_len(packet_type);
+	WFIFOL(fd, 4)=unit->bl.id;
+	WFIFOL(fd, 8)=unit->group->src_id;
+	WFIFOW(fd,12)=unit->bl.x;
+	WFIFOW(fd,14)=unit->bl.y;
+	if (battle_config.traps_setting&1 && skill_get_inf2(unit->group->skill_id)&INF2_TRAP)
+		WFIFOL(fd,16)=UNT_DUMMYSKILL;
+	else
+		WFIFOL(fd,16)=unit->group->unit_id;
+	WFIFOB(fd,20)=(unsigned char)unit->range;
+	WFIFOB(fd,21)=1;
+	#if PACKETVER >= 20130731
+		WFIFOB(fd,22)=(unsigned char)unit->group->skill_lv;
+	#endif
+	WFIFOSET(fd,packet_len(packet_type));
+#endif
 
 	if(unit->group->skill_id == WZ_ICEWALL)
 		clif_changemapcell(fd,unit->bl.m,unit->bl.x,unit->bl.y,5,SELF);
@@ -4883,10 +4946,13 @@ int clif_skill_fail(struct map_session_data *sd,int skill_id,int type,int btype,
 	return 1;
 }
 
-/*==========================================
- * skill cooldown display icon
- * R 043d <skill ID>.w <tick>.l
- *------------------------------------------*/
+/// Skill cooldown display icon (ZC_SKILL_POSTDELAY).
+/// 043d <skill ID>.W <tick>.L
+/// Note: This is now often used to start cooldown times for renewal skills.
+/// Because of this and its effect on the display of skill icons in the shortcut bar,
+/// the ZC_SKILL_POSTDELAY_LIST and ZC_SKILL_POSTDELAY_LIST2 will need to be supported
+/// soon to tell the client which skills are currently in cooldown when a player logs on
+/// and display them in the shortcut bar. [Rytech]
 int clif_skill_cooldown(struct map_session_data *sd, int skillid, unsigned int tick)
 {
 #if PACKETVER>=20081112
@@ -4895,11 +4961,11 @@ int clif_skill_cooldown(struct map_session_data *sd, int skillid, unsigned int t
 	nullpo_ret(sd);
 
 	fd=sd->fd;
-	WFIFOHEAD(fd,packet_len(0x043d));
-	WFIFOW(fd,0) = 0x043d;
+	WFIFOHEAD(fd,packet_len(0x43d));
+	WFIFOW(fd,0) = 0x43d;
 	WFIFOW(fd,2) = skillid;
 	WFIFOL(fd,4) = tick;
-	WFIFOSET(fd,packet_len(0x043d));
+	WFIFOSET(fd,packet_len(0x43d));
 #endif
 	return 0;
 }
@@ -5116,6 +5182,9 @@ int clif_skill_poseffect(struct block_list *src,int skill_id,int val,int x,int y
 void clif_skill_setunit(struct skill_unit *unit)
 {
 	unsigned char buf[128];
+#if PACKETVER > 20120702
+	short packet_type;
+#endif
 
 	nullpo_retv(unit);
 
@@ -5134,6 +5203,8 @@ void clif_skill_setunit(struct skill_unit *unit)
 		return;
 	}
 #endif
+
+#if PACKETVER <= 20120702
 	WBUFW(buf, 0)=0x11f;
 	WBUFL(buf, 2)=unit->bl.id;
 	WBUFL(buf, 6)=unit->group->src_id;
@@ -5145,6 +5216,29 @@ void clif_skill_setunit(struct skill_unit *unit)
 		WBUFB(buf,14)=unit->group->unit_id;
 	WBUFB(buf,15)=1; // ignored by client (always gets set to 1)
 	clif_send(buf,packet_len(0x11f),&unit->bl,AREA);
+#else
+	#if PACKETVER < 20130731
+		packet_type = 0x99f;
+	#else
+		packet_type = 0x9ca;
+	#endif
+	WBUFW(buf, 0)=packet_type;
+	WBUFW(buf, 2)=packet_len(packet_type);
+	WBUFL(buf, 4)=unit->bl.id;
+	WBUFL(buf, 8)=unit->group->src_id;
+	WBUFW(buf,12)=unit->bl.x;
+	WBUFW(buf,14)=unit->bl.y;
+	if (unit->group->state.song_dance&0x1 && unit->val2&UF_ENSEMBLE)
+		WBUFL(buf,16)=unit->val2&UF_SONG?UNT_DISSONANCE:UNT_UGLYDANCE;
+	else
+		WBUFL(buf,16)=unit->group->unit_id;
+	WBUFB(buf,20)=(unsigned char)unit->range;
+	WBUFB(buf,21)=1;
+	#if PACKETVER >= 20130731
+		WBUFB(buf,22)=(unsigned char)unit->group->skill_lv;
+	#endif
+	clif_send(buf,packet_len(packet_type),&unit->bl,AREA);
+#endif
 }
 
 /*==========================================
@@ -5385,9 +5479,13 @@ int clif_status_load(struct block_list *bl,int type, int flag)
 	WFIFOSET(fd, packet_len(0x196));
 	return 0;
 }
-/*==========================================
- * 状態異常アイコン/メッセージ表示
- *------------------------------------------*/
+
+/// Notifies clients of a status change.
+/// 0196 <index>.W <id>.L <state>.B (ZC_MSG_STATE_CHANGE)
+/// 043f <index>.W <id>.L <state>.B <remain msec>.L { <val>.L }*3 (ZC_MSG_STATE_CHANGE2)
+/// 08ff <id>.L <index>.W <remain msec>.L { <val>.L }*3  (ZC_EFST_SET_ENTER) (PACKETVER >= 20111108)
+/// 0983 <index>.W <id>.L <state>.B <total msec>.L <remain msec>.L { <val>.L }*3 (ZC_MSG_STATE_CHANGE3) (PACKETVER >= 20120618)
+/// 0984 <id>.L <index>.W <total msec>.L <remain msec>.L { <val>.L }*3 (ZC_EFST_SET_ENTER2) (PACKETVER >= 20120618)
 int clif_status_change(struct block_list *bl, int type, int flag, unsigned int tick, int val1, int val2, int val3)
 {
 	unsigned char buf[32];
@@ -5407,22 +5505,39 @@ int clif_status_change(struct block_list *bl, int type, int flag, unsigned int t
 		type == SI_BLOODYLUST || type == SI_FORCEOFVANGUARD || type == SI_NEUTRALBARRIER ||
 		type == SI_OVERHEAT || type == SI_BANDING)
 		tick=0;
-	
-	// if flag = 0 this should send 0x196.
-	if( flag && battle_config.display_status_timers && tick > 0 )
-		WBUFW(buf,0) = 0x043f;
+
+#if PACKETVER >= 20090121
+	if( battle_config.display_status_timers && tick > 0 )
+		#if PACKETVER >= 20130320
+			WBUFW(buf,0)=0x983;
+		#else
+			WBUFW(buf,0)=0x43f;
+		#endif
 	else
-		WBUFW(buf,0) = 0x0196;
-	WBUFW(buf,2) = type;
-	WBUFL(buf,4) = bl->id;
-	WBUFB(buf,8) = flag;
-	if( flag && battle_config.display_status_timers && tick > 0 )
+#endif
+		WBUFW(buf,0)=0x196;
+	WBUFW(buf,2)=type;
+	WBUFL(buf,4)=bl->id;
+	WBUFB(buf,8)=flag;
+#if PACKETVER >= 20090121
+	if( battle_config.display_status_timers && tick > 0 )
 	{
-		WBUFL(buf, 9) = tick;
-		WBUFL(buf,13) = val1;
-		WBUFL(buf,17) = val2;
-		WBUFL(buf,21) = val3;
+		#if PACKETVER >= 20130320
+		//eAthena coding currently has no way of retrieving the total duration
+		//needed for MaxMS. For now well send the current tick to it. [Rytech]
+			WBUFL(buf,9)=tick;//MaxMS
+			WBUFL(buf,13)=tick;//RemainMS
+			WBUFL(buf,17)=val1;
+			WBUFL(buf,21)=val2;
+			WBUFL(buf,25)=val3;
+		#else
+			WBUFL(buf,9)=tick;
+			WBUFL(buf,13)=val1;
+			WBUFL(buf,17)=val2;
+			WBUFL(buf,21)=val3;
+		#endif
 	}
+#endif
 	clif_send(buf,packet_len(WBUFW(buf,0)),bl,AREA);
 	return 0;
 }
@@ -5643,6 +5758,32 @@ void clif_map_type(struct map_session_data* sd, enum map_type type)
 	WFIFOW(fd,0)=0x1D6;
 	WFIFOW(fd,2)=type;
 	WFIFOSET(fd,packet_len(0x1D6));
+}
+
+/// Set map type permissions (ZC_MAPPROPERTY_R2).
+/// 099b <type>.W
+void clif_map_type2(struct block_list *bl,enum send_target target)
+{
+	unsigned char buf[8];
+
+	unsigned int NotifyProperty =
+		((map[bl->m].flag.pvp?1:0)<<0)|// PARTY - Show attack cursor on non-party members (PvP)
+		((map_flag_gvg(bl->m)?1:0)<<1)|// GUILD - Show attack cursor on non-guild members (GvG)
+		((map_flag_gvg(bl->m)?1:0)<<2)|// SIEGE - Show emblem over characters heads when in GvG (WoE castle)
+		(0<<3)|// USE_SIMPLE_EFFECT - Automatically enable /mineffect
+		(0<<4)|// DISABLE_LOCKON - Unknown (By the name it might disable cursor lock-on)
+		((map[bl->m].flag.pvp?1:0)<<5)|// COUNT_PK - Show the PvP counter
+		(0<<6)|// NO_PARTY_FORMATION - Prevents party creation/modification (Might be used for instance dungeons)
+		((map[bl->m].flag.battleground?1:0)<<7)|// BATTLEFIELD - Unknown (Does something for battlegrounds areas)
+		(0<<8)|// DISABLE_COSTUMEITEM - Unknown - (Prevents wearing of costume items?)
+		(1<<9)|// USECART - Allow opening cart inventory (Well force it to always allow it)
+		(0<<10);// SUNMOONSTAR_MIRACLE - Unknown - (Guessing it blocks Star Gladiator's Miracle from activating)
+		//(1<<11);// Unused bits. 1 - 10 is 0x1 length and 11 is 0x15 length. May be used for future settings.
+
+	WBUFW(buf,0)=0x99b;
+	WBUFW(buf,2)=0;//Type - What is it asking for? MAPPROPERTY? MAPTYPE? I don't know. Do we even need it? [Rytech]
+	WBUFL(buf,4)=NotifyProperty;
+	clif_send(buf,packet_len(0x99b),bl,target);
 }
 
 /*==========================================
@@ -6724,7 +6865,17 @@ int clif_movetoattack(struct map_session_data *sd,struct block_list *bl)
 	return 0;
 }
 /*==========================================
- * 製造エフェクト
+/// Notifies the client about the result of an item produce request (ZC_ACK_REQMAKINGITEM).
+/// 018f <result>.W <name id>.W
+/// result:
+///     0 = Success (Blacksmith)
+///     1 = Failure (Blacksmith)
+///     2 = Success (Alchemist)
+///     3 = Failure (Alchemist)
+///     4 = Success (Rune Knight)
+///     5 = Failure (Rune Knight)
+///     6 = Success (Genetic)
+///     7 = Failure (Genetic)
  *------------------------------------------*/
 int clif_produceeffect(struct map_session_data* sd,int flag,int nameid)
 {
@@ -8678,11 +8829,12 @@ void clif_equipcheckbox(struct map_session_data* sd)
 	WFIFOSET(fd, packet_len(0x2da));
 }
 
-/// Sends info about a player's equipped items (ZC_EQUIPWIN_MICROSCOPE)
-/// 02d7 <packet len>.W <name>.24B <class>.W <hairstyle>.W <up-viewid>.W <mid-viewid>.W <low-viewid>.W <haircolor>.W <cloth-dye>.W <gender>.B {equip item}.26B*
-/// 02d7 <packet len>.W <name>.24B <class>.W <hairstyle>.W <bottom-viewid>.W <mid-viewid>.W <up-viewid>.W <haircolor>.W <cloth-dye>.W <gender>.B {equip item}.28B* (PACKETVER >= 20100629)
-/// 0859 <packet len>.W <name>.24B <class>.W <hairstyle>.W <bottom-viewid>.W <mid-viewid>.W <up-viewid>.W <haircolor>.W <cloth-dye>.W <gender>.B {equip item}.28B* (PACKETVER >= 20101124)
-/// 0859 <packet len>.W <name>.24B <class>.W <hairstyle>.W <bottom-viewid>.W <mid-viewid>.W <up-viewid>.W <robe>.W <haircolor>.W <cloth-dye>.W <gender>.B {equip item}.28B* (PACKETVER >= 20110111)
+/// Sends info about a player's equipped items.
+/// 02d7 <packet len>.W <name>.24B <class>.W <hairstyle>.W <up-viewid>.W <mid-viewid>.W <low-viewid>.W <haircolor>.W <cloth-dye>.W <gender>.B {equip item}.26B* (ZC_EQUIPWIN_MICROSCOPE)
+/// 02d7 <packet len>.W <name>.24B <class>.W <hairstyle>.W <bottom-viewid>.W <mid-viewid>.W <up-viewid>.W <haircolor>.W <cloth-dye>.W <gender>.B {equip item}.28B* (ZC_EQUIPWIN_MICROSCOPE, PACKETVER >= 20100629)
+/// 0859 <packet len>.W <name>.24B <class>.W <hairstyle>.W <bottom-viewid>.W <mid-viewid>.W <up-viewid>.W <haircolor>.W <cloth-dye>.W <gender>.B {equip item}.28B* (ZC_EQUIPWIN_MICROSCOPE2, PACKETVER >= 20101124)
+/// 0859 <packet len>.W <name>.24B <class>.W <hairstyle>.W <bottom-viewid>.W <mid-viewid>.W <up-viewid>.W <robe>.W <haircolor>.W <cloth-dye>.W <gender>.B {equip item}.28B* (ZC_EQUIPWIN_MICROSCOPE2, PACKETVER >= 20110111)
+/// 0997 <packet len>.W <name>.24B <class>.W <hairstyle>.W <bottom-viewid>.W <mid-viewid>.W <up-viewid>.W <robe>.W <haircolor>.W <cloth-dye>.W <gender>.B {equip item}.28B* (ZC_EQUIPWIN_MICROSCOPE_V5)
 void clif_viewequip_ack(struct map_session_data* sd, struct map_session_data* tsd)
 {
 	uint8* buf;
@@ -9299,6 +9451,11 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 	
 #ifndef TXT_ONLY
 	mail_clear(sd);
+#endif
+
+	//Map Property R2
+#if PACKETVER >= 20130320
+	clif_map_type2(&sd->bl,SELF);
 #endif
 
 	if( map[sd->bl.m].flag.loadevent ) // Lance
@@ -10093,9 +10250,9 @@ void clif_parse_UseItem(int fd, struct map_session_data *sd)
 		clif_useitemack(sd,n,0,0); //Send an empty ack packet or the client gets stuck.
 }
 
-/*==========================================
- *
- *------------------------------------------*/
+/// Request to equip an item.
+/// 00a9 <index>.W <position>.W (CZ_REQ_WEAR_EQUIP)
+/// 0998 <index>.W <position>.L (CZ_REQ_WEAR_EQUIP_V5)
 void clif_parse_EquipItem(int fd,struct map_session_data *sd)
 {
 	int index;
@@ -10133,7 +10290,11 @@ void clif_parse_EquipItem(int fd,struct map_session_data *sd)
 	if(sd->inventory_data[index]->type == IT_AMMO)
 		pc_equipitem(sd,index,EQP_AMMO);
 	else
+#if PACKETVER <= 20120702 //For packet a9.
 		pc_equipitem(sd,index,RFIFOW(fd,4));
+#else	//For packet 998.
+		pc_equipitem(sd,index,RFIFOL(fd,4));
+#endif
 }
 
 /*==========================================
@@ -15764,7 +15925,7 @@ static int packetdb_readdb(void)
 #endif
 #if PACKETVER < 2
 	    3, 28, 19, 11,  3, -1,  9,  5, 52, 51, 56, 58, 41,  2,  6,  6,
-#elif PACKETVER < 20071106	// 78-7b 亀島以降 lv99エフェクト用
+#elif PACKETVER < 20071106	// 78-7b Lv99 effect for later Kameshima
 	    3, 28, 19, 11,  3, -1,  9,  5, 54, 53, 58, 60, 41,  2,  6,  6,
 #elif PACKETVER <= 20081217 // change in 0x78 and 0x7c
 	    3, 28, 19, 11,  3, -1,  9,  5, 55, 53, 58, 60, 42,  2,  6,  6,
@@ -15799,7 +15960,7 @@ static int packetdb_readdb(void)
 	    6,  3,106, 10, 10, 34,  0,  6,  8,  4,  4,  4, 29, -1, 10,  6,
 #if PACKETVER < 1
 	   90, 86, 24,  6, 30,102,  8,  4,  8,  4, 14, 10, -1,  6,  2,  6,
-#else	// 196 comodo以降 状態表示アイコン用
+#else	// 196 comodo icon status display for later
 	   90, 86, 24,  6, 30,102,  9,  4,  8,  4, 14, 10, -1,  6,  2,  6,
 #endif
 #if PACKETVER < 20081126
@@ -15955,7 +16116,11 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0,  6,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0, -1, -1,  3,  2, 66,  5,  2, 12,  6,  0,  0,
 	//#0x0840
+#if PACKETVER < 20130000
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+#else
+	    0,  0,  0,  0,  2,  0,  4,  0,  -1,  0,  2, 19,  0,  0,  0,  0,
+#endif
 	    0,  0,  0,  0,  0,  0, -1, -1, -1, -1,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -15965,13 +16130,13 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	//#0x08C0
-	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 10,
-	    0,  0, 10,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  2,  0,  0,  0,  0,  0, 10,
+	    9,  7, 10,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 24,
 	//#0x0900
-	    0,  0,  0,  0,  0,  0,  0,  0,  5,  0,  0,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  5,  0,  0,  0,  0,  0,  0, -1,
+	    0,  0,  0,  0, -1, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	//#0x0940

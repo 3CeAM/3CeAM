@@ -660,5 +660,6 @@ void clif_elemental_updatestatus(struct map_session_data *sd, int type);
 void clif_monster_hp_bar( struct mob_data* md, int fd );
 void clif_fast_movement(struct block_list *bl, short x, short y);
 int clif_spiritball_attribute(struct map_session_data *sd);
+void clif_map_type2(struct block_list *bl,enum send_target target);
 
 #endif /* _CLIF_H_ */
