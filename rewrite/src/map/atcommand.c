@@ -2998,6 +2998,9 @@ ACMD_FUNC(displaystatus)
 	}
 	if (i < 2) flag = 1;
 	if (i < 3) tick = 0;
+	if (i < 4) val1 = 0;
+	if (i < 5) val2 = 0;
+	if (i < 6) val3 = 0;
 
 	clif_status_change(&sd->bl, type, flag, tick, val1, val2, val3);
 
@@ -8895,6 +8898,22 @@ ACMD_FUNC(font)
 	return 0;
 }
 
+/*==========================================
+ * Produce Effect Animation Testing And Debugging [Rytech]
+ *------------------------------------------*/
+ACMD_FUNC(produceeffect)
+{
+	int itid = 0;
+
+	if( sscanf(message, "%d", &itid) < 1 )
+	{
+		clif_displaymessage(fd, "Usage: @produceeffect <it id>");
+		return -1;
+	}
+	clif_produceeffect(sd,itid,512);
+	return 0;
+}
+
 
 /*==========================================
  * atcommand_info[] structure definition
@@ -9201,6 +9220,7 @@ AtCommandInfo atcommand_info[] = {
 	//Mutated Homunculus Commands
 	{ "hommutate",         60,60,     atcommand_hommutation },
 	{ "hommutation",       60,60,     atcommand_hommutation },
+	{ "produceeffect",     99,99,     atcommand_produceeffect },
 };
 
 

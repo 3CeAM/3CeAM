@@ -6854,7 +6854,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			//val3 : Brings the skilllv (merged into val1 here)
 			//val4 : Partner
 			if (val1 == CG_MOONLIT)
-				clif_status_change(bl,SI_MOONLIT,1,0,0,0,tick);
+				clif_status_change(bl,SI_MOONLIT,1,tick, 0, 0, 0);
 			val1|= (val3<<16);
 			val3 = tick/1000; //Tick duration
 			tick = 1000;

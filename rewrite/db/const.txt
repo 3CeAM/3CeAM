@@ -529,7 +529,6 @@ bSkillHeal2	1088
 bAddEffOnSkill	1089
 bHealPower	1090
 bHealPower2	1091
-bFixedCastRate	1092
 
 bRestartFullRecover	2000
 bNoCastCancel	2001
@@ -578,6 +577,8 @@ bSPVanishRate	2042
 bMagicSPGainValue	2043
 bMagicHPGainValue	2044
 bAddClassDropItem	2045
+
+bFixedCastRate	2101
 
 EQI_HEAD_TOP	1
 EQI_ARMOR	2
