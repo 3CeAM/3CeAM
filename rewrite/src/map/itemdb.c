@@ -211,9 +211,10 @@ static void itemdb_jobid2mapid(unsigned int *bclass, unsigned int jobmask)
 	bclass[0]= bclass[1]= bclass[2]= 0;
 	//Base classes
 	if (jobmask & 1<<JOB_NOVICE)
-	{	//Both Novice/Super-Novice are counted with the same ID
+	{	//Novice, Super Novice, and Expanded Super Novice all share the same item permissions. [Rytech]
 		bclass[0] |= 1<<MAPID_NOVICE;
-		bclass[1] |= 1<<MAPID_NOVICE;
+		bclass[0] |= 1<<MAPID_SUPER_NOVICE;
+		bclass[1] |= 1<<MAPID_SUPER_NOVICE;
 	}
 	for (i = JOB_NOVICE+1; i <= JOB_THIEF; i++)
 	{
@@ -257,18 +258,25 @@ static void itemdb_jobid2mapid(unsigned int *bclass, unsigned int jobmask)
 	if (jobmask & 1<<23) //Soul Linker
 		bclass[2] |= 1<<MAPID_TAEKWON;
 	if (jobmask & 1<<JOB_GUNSLINGER)
+	{//Rebellion job can equip Gunslinger equips. [Rytech]
 		bclass[0] |= 1<<MAPID_GUNSLINGER;
+		bclass[1] |= 1<<MAPID_GUNSLINGER;
+	}
 	if (jobmask & 1<<JOB_NINJA)
-		{bclass[0] |= 1<<MAPID_NINJA;
-		bclass[1] |= 1<<MAPID_NINJA;}//Kagerou/Oboro jobs can equip Ninja equips. [Rytech]
+	{//Kagerou/Oboro jobs can equip Ninja equips. [Rytech]
+		bclass[0] |= 1<<MAPID_NINJA;
+		bclass[1] |= 1<<MAPID_NINJA;
+	}
 	if (jobmask & 1<<26) //Bongun/Munak
 		bclass[0] |= 1<<MAPID_GANGSI;
 	if (jobmask & 1<<27) //Death Knight
 		bclass[1] |= 1<<MAPID_GANGSI;
 	if (jobmask & 1<<28) //Dark Collector
 		bclass[2] |= 1<<MAPID_GANGSI;
-	if (jobmask & 1<<29) //Kagerou / Oboro
+	if (jobmask & 1<<29) //Kagerou/Oboro
 		bclass[1] |= 1<<MAPID_NINJA;
+	if (jobmask & 1<<30) //Rebellion
+		bclass[1] |= 1<<MAPID_GUNSLINGER;
 }
 
 static void create_dummy_data(void)
@@ -844,7 +852,7 @@ static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scr
  *------------------------------------------*/
 static int itemdb_readdb(void)
 {
-	const char* filename[] = { "item_db.txt", "item_db2.txt" };
+	const char* filename[] = { "item_db.txt", "item_db2.txt", "item_db_3ceam.txt" };
 	int fi;
 
 	for( fi = 0; fi < ARRAYLENGTH(filename); ++fi )
