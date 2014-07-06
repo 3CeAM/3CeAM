@@ -416,7 +416,7 @@ int can_copy(struct map_session_data *sd, int skillid, struct block_list* bl)
 	if( sd )
 	{
 		// Couldn't preserve 3rd Class skills except only when using Reproduce skill. [Jobbie]
-		if( !(sd->sc.data[SC__REPRODUCE]) && ((skillid >= RK_ENCHANTBLADE && skillid <= LG_OVERBRAND_PLUSATK) || (skillid >= KO_YAMIKUMO && skillid <= OB_AKAITSUKI) || (skillid >= GC_DARKCROW && skillid <= SR_FLASHCOMBO_ATK_STEP4)))
+		if( !(sd->sc.data[SC__REPRODUCE]) && ((skillid >= RK_ENCHANTBLADE && skillid <= LG_OVERBRAND_PLUSATK) || (skillid >= RL_GLITTERING_GREED && skillid <= OB_AKAITSUKI) || (skillid >= GC_DARKCROW && skillid <= NC_MAGMA_ERUPTION_DOTDAMAGE)))
 			return 0;
 		// Reproduce will only copy skills according on the list. [Jobbie]
 		if( sd->sc.data[SC__REPRODUCE] && !id )
@@ -4699,7 +4699,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			if( status_isimmune(bl) || (dstmd && (dstmd->class_ == MOBID_EMPERIUM || mob_is_battleground(dstmd))) )
 				heal=0;
 
-			if( sd && dstsd && sd->status.partner_id == dstsd->status.char_id && (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE && sd->status.sex == 0 )
+			if( sd && dstsd && sd->status.partner_id == dstsd->status.char_id && ((sd->class_&MAPID_BASEMASK) == MAPID_SUPER_NOVICE || (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE_E) && sd->status.sex == 0 )
 				heal = heal*2;
 
 			if( tsc && tsc->count )
@@ -5441,7 +5441,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
  		break;
 
 	case MO_KITRANSLATION:
-		if(dstsd && (dstsd->class_&MAPID_BASEMASK)!=MAPID_GUNSLINGER) {
+		if(dstsd && ((dstsd->class_&MAPID_BASEMASK)!=MAPID_GUNSLINGER || (dstsd->class_&MAPID_UPPERMASK)!=MAPID_REBELLION)) {
 			pc_addspiritball(dstsd,skill_get_time(skillid,skilllv),5);
 		}
 		break;
@@ -5456,7 +5456,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 	case MO_ABSORBSPIRITS:
 		i = 0;
-		if (dstsd && dstsd->spiritball && (sd == dstsd || map_flag_vs(src->m)) && (dstsd->class_&MAPID_BASEMASK)!=MAPID_GUNSLINGER)
+		if (dstsd && dstsd->spiritball && (sd == dstsd || map_flag_vs(src->m)) && ((dstsd->class_&MAPID_BASEMASK)!=MAPID_GUNSLINGER || (dstsd->class_&MAPID_UPPERMASK)!=MAPID_REBELLION))
 		{	// split the if for readability, and included gunslingers in the check so that their coins cannot be removed [Reddozen]
 			i = dstsd->spiritball * 7;
 			pc_delspiritball(dstsd,dstsd->spiritball,0);
@@ -7051,7 +7051,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SL_NINJA:
 	case SL_GUNNER:
 		//NOTE: here, 'type' has the value of the associated MAPID, not of the SC_SPIRIT constant.
-		if (sd && !(dstsd && (dstsd->class_&MAPID_UPPERMASK) == type)) {
+		if (sd && !(dstsd && ((dstsd->class_&MAPID_UPPERMASK) == type ||
+			(skillid == SL_SUPERNOVICE && (dstsd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE_E) ||
+			(skillid == SL_NINJA && (dstsd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO) ||
+			(skillid == SL_GUNNER && (dstsd->class_&MAPID_UPPERMASK) == MAPID_REBELLION)))) {
 			clif_skill_fail(sd,skillid,0,0,0);
 			break;
 		}
@@ -8281,7 +8284,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		if( flag&1 )
 		{
 			i = 0;
-			if( dstsd && dstsd->spiritball && (sd == dstsd || map_flag_vs(src->m)) && (dstsd->class_&MAPID_BASEMASK)!=MAPID_GUNSLINGER )
+			if( dstsd && dstsd->spiritball && (sd == dstsd || map_flag_vs(src->m)) && ((dstsd->class_&MAPID_BASEMASK)!=MAPID_GUNSLINGER || (dstsd->class_&MAPID_UPPERMASK)!=MAPID_REBELLION))
 			{
 				i = dstsd->spiritball; //1%sp per spiritball.
 				pc_delspiritball(dstsd, dstsd->spiritball, 0);
@@ -11703,7 +11706,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 				skill_attack(BF_WEAPON,ss,&src->bl,bl,WM_SEVERE_RAINSTORM_MELEE,sg->skill_lv,tick,0);
 			break;
 
-		case UNT_NETHERWORLD:
+		case UNT_POEMOFNETHERWORLD:
 			if( !(status_get_mode(bl)&MD_BOSS) )
 			{
 				if( !(tsc && tsc->data[type]) )
@@ -13595,7 +13598,7 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 	// Calculates regular and variable cast time.
 	if( !(skill_get_castnodex(skill_id, skill_lv)&1) )
 	{	//If renewal casting is enabled, all renewal skills will follow the renewal cast formula.
-		if (battle_config.renewal_cast_3rd_skills == 1 && (skill_id >= RK_ENCHANTBLADE && skill_id <= SR_FLASHCOMBO_ATK_STEP4 || skill_id >= MH_SUMMON_LEGION && skill_id <= MH_VOLCANIC_ASH))
+		if (battle_config.renewal_cast_3rd_skills == 1 && (skill_id >= RK_ENCHANTBLADE && skill_id <= NC_MAGMA_ERUPTION_DOTDAMAGE || skill_id >= MH_SUMMON_LEGION && skill_id <= MH_VOLCANIC_ASH))
 		{
 			time -= time * (status_get_dex(bl) * 2 + status_get_int(bl)) / 530;
 			if ( time < 0 ) time = 0;// No return of 0 since were adding the fixed_time later.
@@ -13608,7 +13611,7 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 			//if renewal_cast_enable is turned off. Non-renewal skills dont have fixed times, causing a
 			//fixed cast value of 0 to be added and not affect the actural cast time.
 			time = time + fixed_time;
-			if ( sd && ((sd->class_&MAPID_UPPERMASK_THIRD) >= MAPID_SUPER_NOVICE_E || (sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO ))
+			if ( sd && ((sd->class_&MAPID_THIRDMASK) >= MAPID_RUNE_KNIGHT || (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE_E || (sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION))
 			rate = battle_config.castrate_dex_scale_3rd;
 			else
 			rate = battle_config.castrate_dex_scale;
@@ -13712,7 +13715,7 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 
 	//Only add variable and fixed times when renewal casting for renewal skills are on. Without this check,
 	//it will add the 2 together during the above phase and then readd the fixed time.
-	if (battle_config.renewal_cast_3rd_skills == 1 && (skill_id >= RK_ENCHANTBLADE && skill_id <= SR_FLASHCOMBO_ATK_STEP4 || skill_id >= MH_SUMMON_LEGION && skill_id <= MH_VOLCANIC_ASH))
+	if (battle_config.renewal_cast_3rd_skills == 1 && (skill_id >= RK_ENCHANTBLADE && skill_id <= NC_MAGMA_ERUPTION_DOTDAMAGE || skill_id >= MH_SUMMON_LEGION && skill_id <= MH_VOLCANIC_ASH))
 	final_time = time + fixed_time;
 	else
 	final_time = time;

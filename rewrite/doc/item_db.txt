@@ -1,157 +1,352 @@
-(FIXME: Someone give this file better formatting)
 
-- Explanation of the item_db.txt file and structure.
+=ID
+The ID number for the item.
+All items are assigned to a ID number and no 2 items can use the same ID.
+Highest possiable ID number is 32767.
 
-ID: Item id
+=Aegis Name
+The name of the item as it is in Aegis's database.
+This name is used as a reference to the item in NPC scripts and look ups.
+Underscores are used since spaces are not allowed in the name.
 
-AegisName: Server name to reference the item in scripts and lookups,
-           should use no spaces.
+=Name
+The name of the item displayed in english.
+This name is used for a displayed output in @ commands and script commands.
+Spaces are allowed in this name.
 
-Name: Name in english for displaying as output for @ and script commands.
+=Type
+Sets what kind of item it is.
+Each type requires different fields to be used.
+The following below are the different usable types....
+--------------------------------
+0 = Healing Item
+2 = Usable Item
+3 = Etc Item
+4 = Weapon ('View' sets the weapon type.)
+5 = Armor ('Loc' sets the armor type and slot it will equip to.)
+6 = Card ('Loc' sets what equips the card can be inserted into.)
+7 = Pet Egg
+8 = Pet Equipment
+10 = Ammo ('View' set the ammo type.)
+11 = Usable Item With Delayed Consumption (The item is lost from the
+inventory after selecting a target. For use with skills and pet lures.)
+18 = Usable Item With Delayed Consumption On Confirm (Works just like
+type 11, except the user is required to confirm that he/she wants to
+use the item. Mainly used for special packages, boxes, and other cash
+shop items.)
+--------------------------------
 
-Type: 
-	0	Healing item.
-	2	Usable item.
-	3	Etc item
-	4	Weapon
-	5	Armor/Garment/Boots/Headgear
-	6	Card
-	7	Pet egg
-	8	Pet equipment
-	10	Ammo (Arrows/Bullets/etc)
-	11	Usable with delayed consumption (item is lost from inventory
-		after selecting a target, for use with skills and pet lures)
-	18	Another delayed consume that requires user confirmation before
-		using item.
+=Buy
+The default price of the item when a NPC is selling it to the player.
+If a 'Buy' price is not set and their's a 'Sell' price set, the NPC
+will sell the item at double the 'Sell' price.
+Normally a 'buy' price is set for every existing item in official.
 
-Buy: Default buying price. When not specified, becomes double the sell price.
+=Sell
+The default price of the item when a player is selling it to the NPC.
+If a 'Sell' price is not set and their's a 'Buy' price set, the player
+will sell the item at half the 'Buy' price.
+Normally a 'sell' prices is not set for every existing item in official
+since the 'buy' prices handles everything.
 
-Sell: Default selling price. When not specified, becomes half the buy price.
+=Weight
+The weight of the item.
+This is required for all item types.
+The weight is set in a 1.0 format.
+For example, a value of 1 will add 0.1 weight while a value of 10 will
+add 1 whole weight (1.0 Weight).
 
-Weight: Item's weight. Each 10 is 1 weight.
+=ATK
+The attack of the weapon.
+This is only required for weapon type items.
+This sets the attack (ATK) of the weapon that will add to the player's
+ATK when equipped.
 
-ATK: Weapon's attack
+=DEF
+The defense of the armor.
+This is only required for armor type items.
+This sets the defense (DEF) of the armor that will add to the player's
+hard DEF when equipped.
 
-DEF: Armor's defense
+=Range
+The attack distance of the weapon.
+This is only required for weapon type items.
+The range is measured as the cell distance between the player and the target.
+A range between 1 - 4 will make the weapon deal melee damage, while a range of
+5 or higher will make the weapon deal ranged damage.
 
-Range: Weapon's attack range
+=Slots
+The number of slots a equip has.
+This is required for weapon and armor type items.
+A number of between 0 - 4 slots can be set to any equippable item.
+The slots can be used for placing cards in, as well as enchantment
+stones (Correct me if im wrong on the enchantments).
+No more then 4 slots can be set.
 
-Slots: Amount of slots the item possesses.
+=Job
+Sets which jobs can use or equip the item.
+This is required for weapon, armor, and usable type items.
+The setting works by adding together the bitmasks for every job you want to have
+permission to use the item. The masks below are for regular 1st and 2nd jobs and
+their permissions are inherited to their trans/baby versions of the jobs, as
+well as all 3rd jobs. 2nd jobs do not inherit permissions from their 1st job unless
+noted in the table below. Below is a few examples on how this works....
+--------------------------------
+Example:
+Bitmasks are added together in hex values.
+A single hex digit can have a total of 16 different values.
+The hex values are 0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F.
+In decimal that means 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15.
+But lets stick to the hex numbers here.
 
-Job: Equippable jobs. Uses the following bitmask table:
+Assassin Only
+0x00001000 (Assassin) = 0x00001000
 
-	(S.) Novice    (2^00): 0x00000001
-	Swordman       (2^01): 0x00000002
-	Mage           (2^02): 0x00000004
-	Archer         (2^03): 0x00000008
-	Acolyte        (2^04): 0x00000010
-	Merchant       (2^05): 0x00000020
-	Thief          (2^06): 0x00000040
-	Knight         (2^07): 0x00000080
-	Priest         (2^08): 0x00000100
-	Wizard         (2^09): 0x00000200
-	Blacksmith     (2^10): 0x00000400
-	Hunter         (2^11): 0x00000800
-	Assassin       (2^12): 0x00001000
-	Unused         (2^13): 0x00002000
-	Crusader       (2^14): 0x00004000
-	Monk           (2^15): 0x00008000
-	Sage           (2^16): 0x00010000
-	Rogue          (2^17): 0x00020000
-	Alchemist      (2^18): 0x00040000
-	Bard/Dancer    (2^19): 0x00080000
-	Unused         (2^20): 0x00100000
-	Taekwon        (2^21): 0x00200000
-	Star Gladiator (2^22): 0x00400000
-	Soul Linker    (2^23): 0x00800000
-	Gunslinger     (2^24): 0x01000000
-	Ninja          (2^25): 0x02000000
-	Gangsi         (2^26): 0x04000000
-	Death Knight   (2^27): 0x08000000
-	Dark Collector (2^28): 0x10000000
-	Kagerou/Oboro  (2^29): 0x20000000
+Priest + Monk
+0x00000100 (Priest) + 0x00008000 (Monk) = 0x00008100
 
-Upper: Equippable upper-types. Uses the following bitmasks to set type of job the player
-is required to be to beable to use that item:
-	1: Only base/normal jobs can use it. (Supposed to allow all jobs to use it. Code needs fixing for this later.)
-	2: Trans and higher jobs/ Baby Thirds (All Trans, Thirds, and Third Babys)
-	4: Babys only (Only baby jobs can use it)
-	8: Thirds (Thirds and Third Babys)
+Blacksmith + Hunter
+0x00000400 (Blacksmith) + 0x00000800 (Hunter) = 0x00000C00
 
-Gender: Gender restriction. 0 is female, 1 is male, 2 for both.
+Wizard + Sage + Soul Linker
+0x00000200 (Wizard) + 0x00010000 (Sage) + 0x00800000 (Soul Linker) = 0x00810200
 
-Loc: Equipment's placement. Values are:
+Knight + Priest+ Wizard + Blacksmith + Hunter + Assassin
+0x00000080 (Knight) + 0x00000100 (Priest) + 0x00000200 (Wizard) + 0x00000400 (Blacksmith) +
+0x00000800 (Hunter) + 0x00001000 (Assassin) = 0x00001F80
+--------------------------------
+Regular Jobs Bitmask Table
+0x00000001 = Novice/Super Novice (Expanded Super Novice inherits this permission)
+0x00000002 = Swordman
+0x00000004 = Magician
+0x00000008 = Archer
+0x00000010 = Acolyte
+0x00000020 = Merchant
+0x00000040 = Thief
+0x00000080 = Knight
+0x00000100 = Priest
+0x00000200 = Wizard
+0x00000400 = Blacksmith
+0x00000800 = Hunter
+0x00001000 = Assassin
+0x00002000 = (Unused)
+0x00004000 = Crusader
+0x00008000 = Monk
+0x00010000 = Sage
+0x00020000 = Rogue
+0x00040000 = Alchemist
+0x00080000 = Bard/Dancer
+0x00100000 = (Unused)
+0x00200000 = Taekwon
+0x00400000 = Star Gladiator
+0x00800000 = Soul Linker
+0x01000000 = Gunslinger (Rebellion inherits this permission)
+0x02000000 = Ninja (Kagerou/Oboro inherits this permission)
+0x04000000 = Bongun/Munak
+0x08000000 = Death Knight
+0x10000000 = Dark Collector
+0x20000000 = Kagerou/Oboro
+0x40000000 = Rebellion
+--------------------------------
 
-	Equipment Tab
-	2^8  256 = Upper Headgear
-	2^9  512 = Middle Headgear
-	2^0  001 = Lower Headgear
-	2^4  016 = Armor
-	2^1  002 = Weapon
-	2^5  032 = Shield
-	2^2  004 = Garment
-	2^6  064 = Footgear
-	2^3  008 = Accessory 1
-	2^7  128 = Accessory 2
-	2^15 32768 = Ammo
+=Upper
+Sets what versions of a job can use or equip the item.
+This is required for weapon, armor, and usable type items.
+This setting is similar to how the 'Job' setting works, except this setting
+sets what version of a job the player must be playing to beable to use the item.
+The 'Job' and 'Upper' settings work together to set the requirements to use the
+item and limit them to being usable by certain jobs.
+--------------------------------
+Example of The Different Versions:
+The Knight is the regular 2-1 version of the Swordman and their's
+multiple versions of this job, most of which have access to a wider
+range of equips by inheriting permissions from the lower versions of its job.
+Regular - Normal 2nd Job 2-1 Swordman = Knight
+Trans - Reborn 2nd Job 2-1 Swordman = Lord Knight (Inherits Knight's permissions)
+Third - 3rd Job of The 2-1 Swordman = Rune Knight (Inherits Knight and Lord Knight permissions)
 
-	Costume Tab
-	2^10  1024 = Costume - Upper Headgear
-	2^11  2048 = Costume - Middle Headgear
-	2^12  4096 = Costume - Lower Headgear
-	2^13  8192 = Costume - Garment
-	2^14 16384 = Costume - Floor
+Same example for the regular 2-2 version of the Swordman.
+Regular - Normal 2nd Job 2-2 Swordman = Crusader
+Trans - Reborn 2nd Job 2-2 Swordman = Paladin (Inherits Crusader permissions)
+Third - 3rd Job of The 2-2 Swordman = Royal Guard (Inherits Crusader and Paladin permissions)
 
-wLV: Weapon level.
+Example On How To Use The Setting:
+This is how to set the required version of a certain job the player must be to use the item
+by combining the 'Job' and 'Upper' settings.
+Setting For Jobs In The Swordman Tree
+0x00000080,1 = Knight (Lord Knight and Rune Knight inherits the permission)
+0x00000080,2 = Lord Knight (Rune Knight inherits the permission)
+0x00000080,8 = Rune Knight
+0x00004000,1 = Crusader (Paladin and Royal Guard inherits the permission)
+0x00004000,2 = Paladin (Royal Guard inherits the permission)
+0x00004000,8 = Royal Guard
+--------------------------------
+Upper Jobs Table
+1 = Regular Jobs (Trans, Baby, and Third inherits this permission)
+2 = Trans Jobs (Third inherits this permission)
+4 = Baby Jobs
+8 = Third Jobs
+--------------------------------
 
-eLV: Base level required to be able to equip.
+=Gender
+Sets which gender is allowed to use or equip the item.
+This is required for weapon, armor, and usable type items.
+This setting is mainly used for restricting the use of instruments/whips to their
+proper jobs. Since Bard/Dancer type jobs are both the 2-2 job of the Archer and
+both of them use the same 'Job' bitmask, the gender setting is used to set which
+gender uses which weapon. Bards use instruments and Dancers use whips.
+This setting is used for a few other items like The Tuxedo, Wedding Dress, and
+the 2 different Mechanic exclusive headgears (Males get the red one and females
+get the yellow one)
+--------------------------------
+0 = Female
+1 = Male
+2 = Both
+--------------------------------
 
-Refineable: 1 if the item can be refined, 0 otherwise.
+=Loc
+Sets which equip slots weapon/armor will equip into.
+Also used to set what weapon/armor piece a card can be inserted into.
+This is required for weapon, armor, and card type items.
+This setting affects if a weapon will equip in 1 or both hands ('View' setting also
+required for setting weapon to 1 or 2 handed behavior) and also sets what kind of
+armor piece a item is which also sets what slot or slots it equips to.
+Most equip items will use a single slot setting. However, some equips like certain
+weapons, headgears, and all accessorys require a combination of 2 or more slot bits
+added together. This setting works a little different for cards. When setting for
+cards, the setting tells which kinds of equips it can be attached to.
+--------------------------------
+Normal Equips
+      1 = Lower Headgear
+      2 = Right Hand (Weapon)
+      4 = Robe
+      8 = Accessory (Left)
+     16 = Body (Armor)
+     32 = Left Hand (Shield)
+     64 = Shoes
+    128 = Accessory (Right)
+    256 = Upper Headgear
+    512 = Middle Headgear
 
-View: For normal items, defines a replacement view-sprite for the item (eg:
-      Making apples look like apple juice). The special case are weapons
-      and ammo where this value indicates the weapon-class of the item.
+Costume Equips
+   1024 = Costume Upper Headgear
+   2048 = Costume Middle Headgear
+   4096 = Costume Lower Headgear
+   8192 = Costume Robe
+  16384 = Costume Floor
 
-	For weapons, the types are:
-		0: bare fist
-		1: Daggers
-		2: One-handed swords
-		3: Two-handed swords
-		4: One-handed spears
-		5: Two-handed spears
-		6: One-handed axes
-		7: Two-handed axes
-		8: Maces
-		9: Unused
-		10: Staves
-		11: Bows
-		12: Knuckles
-		13: Musical Instruments
-		14: Whips
-		15: Books
-		16: Katars
-		17: Revolvers
-		18: Rifles
-		19: Gatling guns
-		20: Shotguns
-		21: Grenade launchers
-		22: Fuuma Shurikens
+Ammo
+  32768 = Ammo
 
-	For ammo, the types are:
-		1: Arrows
-		2: Throwable daggers
-		3: Bullets
-		4: Shells
-		5: Grenades
-		6: Shuriken
-		7: Kunai
-		8: Cannonball
-		9: Throwable Item
+Shadow Equips (Not Yet Supported, But Placed Here For Reference)
+  65536 = Shadow Armor
+ 131072 = Shadow Weapon
+ 262144 = Shadow Shield
+ 524288 = Shadow Shoes
+1048576 = Shadow Accessory (Right)
+2097152 = Shadow Accessory (Left)
 
-Script: Script to execute when the item is used/equipped.
+Combination Values
+Normal Equips
+     34 = 2-Handed Weapons
+    136 = Accessory (Left And Right) (Normally Used On All Accessory Items)
+    257 = Upper/Lower Headgear
+    513 = Middle/Lower Headgear
+    769 = Upper/Middle/Lower
+Costume Equips
+   5120 = Costume Upper/Lower Headgear
+   6144 = Costume Middle/Lower Headgear
+   7168 = Costume Upper/Middle/Lower Headgear
+Shadow Equips (Not Yet Supported, But Placed Here For Reference)
+3145728 = Shadow Accessory (Left And Right) (Normally Used On All Shadow Accessory Items)
+--------------------------------
 
-OnEquip_Script: Script to execute when the item is equipped.
-                Warning, not all item bonuses will work here as expected.
+=wLV
+Sets the level of the weapon.
+This is required for weapon type items.
+The level of the weapon generally affects how much bonus ATK a weapon will give when
+refined. The level can also have a affect on a number of different things, like certain
+cards and skills. The weapon level can be set to a value between 1 - 4.
 
-OnUnequip_Script: Script to execute when the item is unequipped.
-                  Warning, not all item bonuses will work here as expected.
+=eLV
+Sets the required base level to use the item or equip.
+This is required for weapon, armor, and usable type items.
+A number of 1 or higher can be set as the base level requirement.
+The number set is the minimal level a player must be or higher to beable to use the item.
+
+=Refineable
+Sets if the item can be refined.
+Required for weapon and armor type items.
+Refinements can increase the attack (ATK) a weapon gives or the defense (DEF) a piece
+of armor will give. Refinements can also affect special bonuses a weapon or armor gives
+and increase the strength of other bonuses or weaken them depending on the way the bonuses
+are scripted. Refinements can also affect the effectiveness of certain skills.
+--------------------------------
+0 = Not Refineable
+1 = Refineable
+--------------------------------
+
+=View
+Sets the view ID for a item.
+Required for weapon, armor, and ammo type items.
+This setting serves a number of different functions.
+For headgears, shields, costume headgears, and costume robes, the setting sets which sprite
+will appear when the item is equipped. Which range of sprites you can select from depends on
+the equip location thats set to the item. Example being items equipped on the head will display
+headgear sprites, shield equips will display shields, and costume robes will display special
+sprites on the back. The setting works different for weapons and ammo. For weapon equips,
+the view setting will set what type of weapon the equip is and also set the correct weapon
+sprite for the weapon. For ammo, the view setting sets the ammo type.
+--------------------------------
+Weapons
+ 0 = Bare Fist
+ 1 = Daggers
+ 2 = One-Handed Swords
+ 3 = Two-Handed Swords
+ 4 = One-Handed Spears
+ 5 = Two-Handed Spears
+ 6 = One-Handed Axes
+ 7 = Two-Handed Axes
+ 8 = Maces
+ 9 = Two-Handed Maces (Unused)
+10 = Staffs
+11 = Bows
+12 = Knuckles
+13 = Musical Instruments
+14 = Whips
+15 = Books
+16 = Katars
+17 = Revolvers
+18 = Rifles
+19 = Gatling guns
+20 = Shotguns
+21 = Grenade launchers
+22 = Huuma Shurikens
+23 = Two-Handed Staffs
+
+Ammo
+1 = Arrows
+2 = Throwing Daggers
+3 = Bullets
+4 = Shells
+5 = Grenades
+6 = Shurikens
+7 = Kunais
+8 = Cannonballs
+9 = Throwable Items
+--------------------------------
+
+=Script
+Used for usable items, weapons, and armor.
+Special item bonus scripts added here will be run when the item
+is used or while the equip is worn.
+
+=OnEquip Script
+Used for weapons and armor.
+Special item bonus scripts added here will be run when the player
+is putting on the item. Note: Not all bonuses work in this field.
+
+=OnUnequip Script
+Used for weapons and armor.
+Special item bonus scripts added here will be run when the player
+is taking off the item. Note: Not all bonuses work in this field.

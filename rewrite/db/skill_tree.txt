@@ -1,10 +1,12 @@
 //JobNo,Skill-ID,MaxLV{,JobLV},Prerequisite Skill-ID-1,Prerequisite Skill-ID-1-Lv,PrereqSkill-ID-2,PrereqSkill-ID-2-Lv,PrereqSkill-ID-3,PrereqSkill-ID-3-Lv,PrereqSkill-ID-4,PrereqSkill-ID-4-Lv,PrereqSkill-ID-5,PrereqSkill-ID-5-Lv//CLASS_SKILLNAME#Skill Name#
+
 //Novice
 0,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 0,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
 0,143,1,0,0,0,0,0,0,0,0,0,0 //NV_TRICKDEAD#Act Dead#
 0,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 0,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Swordman
 1,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 1,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -20,6 +22,7 @@
 1,146,1,0,0,0,0,0,0,0,0,0,0 //SM_AUTOBERSERK#Auto Berserk#
 1,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 1,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Magician
 2,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 2,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -39,6 +42,7 @@
 2,157,1,0,0,0,0,0,0,0,0,0,0 //MG_ENERGYCOAT#Energy Coat#
 2,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 2,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Archer
 3,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 3,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -51,6 +55,7 @@
 3,148,1,0,0,0,0,0,0,0,0,0,0 //AC_CHARGEARROW#Arrow Repel#
 3,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 3,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Acolyte
 4,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -71,6 +76,7 @@
 4,156,1,0,0,0,0,0,0,0,0,0,0 //AL_HOLYLIGHT#Holy Light#
 4,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Merchant
 5,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 5,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -87,6 +93,7 @@
 5,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 5,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
 5,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
+
 //Thief
 6,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 6,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -102,6 +109,7 @@
 6,152,1,0,0,0,0,0,0,0,0,0,0 //TF_THROWSTONE#Stone Fling#
 6,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 6,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Knight
 7,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 7,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -129,6 +137,7 @@
 7,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 7,495,1,60,10,0,0,0,0,0,0,0,0	//KN_ONEHAND#Onehand Quicken#
 7,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Priest
 8,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 8,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -168,6 +177,7 @@
 8,1014,1,0,0,0,0,0,0,0,0,0,0 //PR_REDEMPTIO#Redemptio#
 8,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 8,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Wizard
 9,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 9,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -202,6 +212,7 @@
 9,1006,1,0,0,0,0,0,0,0,0,0,0 //WZ_SIGHTBLASTER#Sight Blaster#
 9,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 9,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Blacksmith
 10,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 10,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -242,6 +253,7 @@
 10,459,1,111,5,0,0,0,0,0,0,0,0	//BS_ADRENALINE2#Full Adrenaline Rush#
 10,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
 10,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
+
 //Hunter
 11,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 11,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -273,6 +285,7 @@
 11,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 11,499,1,46,10,0,0,0,0,0,0,0,0	//HT_POWER#Beast Strafing#
 11,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Assassin
 12,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 12,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -300,7 +313,8 @@
 12,1004,1,0,0,0,0,0,0,0,0,0,0 //AS_VENOMKNIFE#Throw Venom Knife#
 12,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 12,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
-//Knight(Peco)
+
+//Knight (Peco)
 13,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 13,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
 13,2,10,0,0,0,0,0,0,0,0,0,0 //SM_SWORD#Sword Mastery#
@@ -327,6 +341,7 @@
 13,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 13,495,1,60,10,0,0,0,0,0,0,0,0	//KN_ONEHAND#Onehand Quicken#
 13,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Crusader
 14,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 14,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -361,6 +376,7 @@
 14,1002,1,0,0,0,0,0,0,0,0,0,0 //CR_SHRINK#Shrink#
 14,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 14,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Monk
 15,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 15,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -398,6 +414,7 @@
 15,1016,1,0,0,0,0,0,0,0,0,0,0 //MO_BALKYOUNG#Ki Explosion#
 15,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 15,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Sage
 16,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 16,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -442,6 +459,7 @@
 16,1019,1,0,0,0,0,0,0,0,0,0,0 //SA_ELEMENTWIND#Elemental Change Wind#
 16,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 16,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Rogue
 17,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 17,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -478,6 +496,7 @@
 17,1005,1,0,0,0,0,0,0,0,0,0,0 //RG_CLOSECONFINE#Close Confine#
 17,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 17,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Alchemist
 18,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 18,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -514,6 +533,7 @@
 18,498,1,228,10,0,0,0,0,0,0,0,0	//AM_TWILIGHT3#Twilight Alchemy 3#
 18,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
 18,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
+
 //Bard
 19,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 19,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -545,6 +565,7 @@
 19,1010,1,0,0,0,0,0,0,0,0,0,0 //BA_PANGVOICE#Pang Voice#
 19,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 19,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Dancer
 20,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 20,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -576,7 +597,8 @@
 20,1011,1,0,0,0,0,0,0,0,0,0,0 //DC_WINKCHARM#Wink of Charm#
 20,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 20,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
-//Crusader(Peco)
+
+//Crusader (Peco)
 21,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 21,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
 21,2,10,0,0,0,0,0,0,0,0,0,0 //SM_SWORD#Sword Mastery#
@@ -610,6 +632,7 @@
 21,1002,1,0,0,0,0,0,0,0,0,0,0 //CR_SHRINK#Shrink#
 21,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 21,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //WeddingClass
 22,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 22,334,1,0,0,0,0,0,0,0,0,0,0 //WE_MALE#I Will Protect You#
@@ -617,6 +640,7 @@
 22,336,5,0,0,0,0,0,0,0,0,0,0 //WE_CALLPARTNER#I miss You#
 22,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 22,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //SuperNovice
 23,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 23,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -672,6 +696,7 @@
 23,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 23,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
 23,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
+
 //Gunslinger
 24,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 24,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -699,6 +724,7 @@
 24,521,10,520,7,0,0,0,0,0,0,0,0 //GS_GROUNDDRIFT#Ground Drift#
 24,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 24,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Ninja
 25,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 25,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -727,13 +753,15 @@
 25,544,10,522,7,530,5,543,1,0,0,0,0 //NJ_ISSEN#NJ_ISSEN#
 25,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 25,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
-//NoviceHigh
+
+//Novice High
 4001,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4001,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
 4001,143,1,0,0,0,0,0,0,0,0,0,0 //NV_TRICKDEAD#Act Dead#
 4001,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4001,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
-//SwordmanHigh
+
+//Swordman High
 4002,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4002,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
 4002,2,10,0,0,0,0,0,0,0,0,0,0 //SM_SWORD#Sword Mastery#
@@ -748,7 +776,8 @@
 4002,146,1,0,0,0,0,0,0,0,0,0,0 //SM_AUTOBERSERK#Auto Berserk#
 4002,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4002,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
-//MageHigh
+
+//Magician High
 4003,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4003,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
 4003,9,10,0,0,0,0,0,0,0,0,0,0 //MG_SRECOVERY#Increase SP Recovery#
@@ -767,7 +796,8 @@
 4003,157,1,0,0,0,0,0,0,0,0,0,0 //MG_ENERGYCOAT#Energy Coat#
 4003,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4003,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
-//ArcherHigh
+
+//Archer High
 4004,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4004,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
 4004,43,10,0,0,0,0,0,0,0,0,0,0 //AC_OWL#Owl's Eye#
@@ -779,7 +809,8 @@
 4004,148,1,0,0,0,0,0,0,0,0,0,0 //AC_CHARGEARROW#Arrow Repel#
 4004,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4004,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
-//AcolyteHigh
+
+//Acolyte High
 4005,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4005,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
 4005,22,10,0,0,0,0,0,0,0,0,0,0 //AL_DP#Divine Protection#
@@ -799,7 +830,8 @@
 4005,156,1,0,0,0,0,0,0,0,0,0,0 //AL_HOLYLIGHT#Holy Light#
 4005,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4005,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
-//MerchantHigh
+
+//Merchant High
 4006,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4006,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
 4006,36,10,0,0,0,0,0,0,0,0,0,0 //MC_INCCARRY#Enlarge Weight Limit#
@@ -815,7 +847,8 @@
 4006,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4006,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
 4006,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
-//ThiefHigh
+
+//Thief High
 4007,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4007,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
 4007,48,10,0,0,0,0,0,0,0,0,0,0 //TF_DOUBLE#Double Attack#
@@ -830,7 +863,8 @@
 4007,152,1,0,0,0,0,0,0,0,0,0,0 //TF_THROWSTONE#Stone Fling#
 4007,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4007,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
-//LordKnight
+
+//Lord Knight
 4008,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4008,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
 4008,2,10,0,0,0,0,0,0,0,0,0,0 //SM_SWORD#Sword Mastery#
@@ -865,7 +899,8 @@
 4008,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4008,495,1,60,10,0,0,0,0,0,0,0,0	//KN_ONEHAND#Onehand Quicken#
 4008,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
-//HighPriest
+
+//High Priest
 4009,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4009,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
 4009,22,10,0,0,0,0,0,0,0,0,0,0 //AL_DP#Divine Protection#
@@ -908,7 +943,8 @@
 4009,481,5,65,10,23,10,0,0,0,0,0,0 //HP_MANARECHARGE#Mana Recharge#
 4009,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4009,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
-//HighWizard
+
+//High Wizard
 4010,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4010,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
 4010,9,10,0,0,0,0,0,0,0,0,0,0 //MG_SRECOVERY#Increase SP Recovery#
@@ -947,6 +983,7 @@
 4010,484,5,365,1,366,10,92,1,0,0,0,0 //HW_GRAVITATION#Gravitation#
 4010,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4010,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Whitesmith
 4011,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4011,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -995,6 +1032,7 @@
 4011,459,1,111,5,0,0,0,0,0,0,0,0	//BS_ADRENALINE2#Full Adrenaline Rush#
 4011,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
 4011,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
+
 //Sniper
 4012,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4012,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1030,7 +1068,8 @@
 4012,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4012,499,1,46,10,0,0,0,0,0,0,0,0	//HT_POWER#Beast Strafing#
 4012,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
-//AssassinCross
+
+//Assassin Cross
 4013,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4013,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
 4013,48,10,0,0,0,0,0,0,0,0,0,0 //TF_DOUBLE#Double Attack#
@@ -1062,7 +1101,8 @@
 4013,407,1,52,10,53,1,138,5,0,0,0,0 //ASC_CDP#Create Deadly Poison#
 4013,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4013,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
-//LordKnight(Peco)
+
+//Lord Knight (Peco)
 4014,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4014,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
 4014,2,10,0,0,0,0,0,0,0,0,0,0 //SM_SWORD#Sword Mastery#
@@ -1097,6 +1137,7 @@
 4014,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4014,495,1,60,10,0,0,0,0,0,0,0,0	//KN_ONEHAND#Onehand Quicken#
 4014,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Paladin
 4015,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4015,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1135,6 +1176,7 @@
 4015,480,5,251,5,0,0,0,0,0,0,0,0 //PA_SHIELDCHAIN#Shield Chain#
 4015,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4015,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Champion
 4016,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4016,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1176,6 +1218,7 @@
 4016,401,1,261,5,262,1,270,5,0,0,0,0 //CH_SOULCOLLECT#Hyper Spirit Sphere#
 4016,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4016,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Professor
 4017,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4017,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1228,6 +1271,7 @@
 4017,482,5,279,1,0,0,0,0,0,0,0,0 //PF_DOUBLECASTING#Double Casting#
 4017,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4017,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Stalker
 4018,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4018,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1268,6 +1312,7 @@
 4018,476,5,215,5,216,5,217,5,218,5,0,0 //ST_FULLSTRIP#Divest All#
 4018,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4018,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Creator
 4019,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4019,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1310,6 +1355,7 @@
 4019,498,1,228,10,0,0,0,0,0,0,0,0	//AM_TWILIGHT3#Twilight Alchemy 3#
 4019,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
 4019,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
+
 //Clown
 4020,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4020,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1347,6 +1393,7 @@
 4020,489,5,45,10,317,3,0,0,0,0,0,0 //CG_TAROTCARD#Tarot Card of Fate#
 4020,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4020,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Gypsy
 4021,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4021,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1384,7 +1431,8 @@
 4021,489,5,45,10,325,3,0,0,0,0,0,0 //CG_TAROTCARD#Tarot Card of Fate#
 4021,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4021,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
-//Paladin(Peco)
+
+//Paladin (Peco)
 4022,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4022,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
 4022,2,10,0,0,0,0,0,0,0,0,0,0 //SM_SWORD#Sword Mastery#
@@ -1422,13 +1470,15 @@
 4022,480,5,251,5,0,0,0,0,0,0,0,0 //PA_SHIELDCHAIN#Shield Chain#
 4022,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4022,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
-//Baby (Novice)
+
+//Baby Novice
 4023,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4023,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
 4023,143,1,0,0,0,0,0,0,0,0,0,0 //NV_TRICKDEAD#Act Dead#
 4023,408,1,0,0,0,0,0,0,0,0,0,0 //WE_BABY#Baby#
 4023,409,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLPARENT#Call Parent#
 4023,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Baby Swordman
 4024,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4024,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1445,6 +1495,7 @@
 4024,408,1,0,0,0,0,0,0,0,0,0,0 //WE_BABY#Baby#
 4024,409,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLPARENT#Call Parent#
 4024,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Baby Magician
 4025,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4025,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1465,6 +1516,7 @@
 4025,408,1,0,0,0,0,0,0,0,0,0,0 //WE_BABY#Baby#
 4025,409,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLPARENT#Call Parent#
 4025,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Baby Archer
 4026,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4026,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1478,6 +1530,7 @@
 4026,408,1,0,0,0,0,0,0,0,0,0,0 //WE_BABY#Baby#
 4026,409,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLPARENT#Call Parent#
 4026,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Baby Acolyte
 4027,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4027,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1499,6 +1552,7 @@
 4027,408,1,0,0,0,0,0,0,0,0,0,0 //WE_BABY#Baby#
 4027,409,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLPARENT#Call Parent#
 4027,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Baby Merchant
 4028,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4028,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1516,6 +1570,7 @@
 4028,409,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLPARENT#Call Parent#
 4028,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
 4028,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
+
 //Baby Thief
 4029,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4029,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1532,6 +1587,7 @@
 4029,408,1,0,0,0,0,0,0,0,0,0,0 //WE_BABY#Baby#
 4029,409,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLPARENT#Call Parent#
 4029,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Baby Knight
 4030,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4030,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1560,6 +1616,7 @@
 4030,1001,1,0,0,0,0,0,0,0,0,0,0 //KN_CHARGEATK#Charge Attack#
 4030,495,1,60,10,0,0,0,0,0,0,0,0	//KN_ONEHAND#Onehand Quicken#
 4030,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Baby Priest
 4031,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4031,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1600,6 +1657,7 @@
 4031,79,10,12,1,78,1,77,3,0,0,0,0 //PR_MAGNUS#Magnus Exorcismus#
 4031,1014,1,0,0,0,0,0,0,0,0,0,0 //PR_REDEMPTIO#Redemptio#
 4031,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Baby Wizard
 4032,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4032,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1634,6 +1692,7 @@
 4032,93,1,0,0,0,0,0,0,0,0,0,0 //WZ_ESTIMATION#Sense#
 4032,1006,1,0,0,0,0,0,0,0,0,0,0 //WZ_SIGHTBLASTER#Sight Blaster#
 4032,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Baby Blacksmith
 4033,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4033,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1675,6 +1734,7 @@
 4033,459,1,111,5,0,0,0,0,0,0,0,0	//BS_ADRENALINE2#Full Adrenaline Rush#
 4033,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
 4033,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
+
 //Baby Hunter
 4034,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4034,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1707,6 +1767,7 @@
 4034,1009,1,0,0,0,0,0,0,0,0,0,0 //HT_PHANTASMIC#Phantasmic Arrow#
 4034,499,1,46,10,0,0,0,0,0,0,0,0	//HT_POWER#Beast Strafing#
 4034,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Baby Assassin
 4035,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4035,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1735,7 +1796,8 @@
 4035,1003,1,0,0,0,0,0,0,0,0,0,0 //AS_SONICACCEL#Sonic Acceleration#
 4035,1004,1,0,0,0,0,0,0,0,0,0,0 //AS_VENOMKNIFE#Throw Venom Knife#
 4035,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
-//Baby Knight(Peco)
+
+//Baby Knight (Peco)
 4036,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4036,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
 4036,2,10,0,0,0,0,0,0,0,0,0,0 //SM_SWORD#Sword Mastery#
@@ -1763,6 +1825,7 @@
 4036,1001,1,0,0,0,0,0,0,0,0,0,0 //KN_CHARGEATK#Charge Attack#
 4036,495,1,60,10,0,0,0,0,0,0,0,0	//KN_ONEHAND#Onehand Quicken#
 4036,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Baby Crusader
 4037,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4037,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1798,6 +1861,7 @@
 4037,258,10,55,10,0,0,0,0,0,0,0,0 //CR_SPEARQUICKEN#Spear Quicken#
 4037,1002,1,0,0,0,0,0,0,0,0,0,0 //CR_SHRINK#Shrink#
 4037,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Baby Monk
 4038,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4038,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1836,6 +1900,7 @@
 4038,1015,1,0,0,0,0,0,0,0,0,0,0 //MO_KITRANSLATION#Ki Translation#
 4038,1016,1,0,0,0,0,0,0,0,0,0,0 //MO_BALKYOUNG#Ki Explosion#
 4038,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Baby Sage
 4039,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4039,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1881,6 +1946,7 @@
 4039,1018,1,0,0,0,0,0,0,0,0,0,0 //SA_ELEMENTFIRE#Elemental Change Fire#
 4039,1019,1,0,0,0,0,0,0,0,0,0,0 //SA_ELEMENTWIND#Elemental Change Wind#
 4039,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Baby Rogue
 4040,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4040,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1918,6 +1984,7 @@
 4040,225,10,219,5,0,0,0,0,0,0,0,0 //RG_PLAGIARISM#Intimidate#
 4040,1005,1,0,0,0,0,0,0,0,0,0,0 //RG_CLOSECONFINE#Close Confine#
 4040,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Baby Alchemist
 4041,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4041,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1955,6 +2022,7 @@
 4041,498,1,228,10,0,0,0,0,0,0,0,0	//AM_TWILIGHT3#Twilight Alchemy 3#
 4041,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
 4041,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
+
 //Baby Bard
 4042,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4042,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -1987,6 +2055,7 @@
 4042,313,5,321,10,0,0,0,0,0,0,0,0 //BD_SIEGFRIED#Acoustic Rhythm#
 4042,1010,1,0,0,0,0,0,0,0,0,0,0 //BA_PANGVOICE#Pang Voice#
 4042,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Baby Dancer
 4043,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4043,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -2019,7 +2088,8 @@
 4043,313,5,329,10,0,0,0,0,0,0,0,0 //BD_SIEGFRIED#Acoustic Rhythm#
 4043,1011,1,0,0,0,0,0,0,0,0,0,0 //DC_WINKCHARM#Wink of Charm#
 4043,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
-//Baby Crusader(Peco)
+
+//Baby Crusader (Peco)
 4044,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4044,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
 4044,2,10,0,0,0,0,0,0,0,0,0,0 //SM_SWORD#Sword Mastery#
@@ -2054,6 +2124,7 @@
 4044,258,10,55,10,0,0,0,0,0,0,0,0 //CR_SPEARQUICKEN#Spear Quicken#
 4044,1002,1,0,0,0,0,0,0,0,0,0,0 //CR_SHRINK#Shrink#
 4044,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Super Baby
 4045,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4045,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -2110,6 +2181,7 @@
 4045,409,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLPARENT#Call Parent#
 4045,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
 4045,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
+
 //Taekwon
 4046,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4046,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -2132,6 +2204,7 @@
 4046,493,1,424,5,0,0,0,0,0,0,0,0 //TK_MISSION#Taekwon Mission#
 4046,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4046,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Star Gladiator
 4047,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4047,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -2172,6 +2245,7 @@
 4047,444,1,443,9,0,0,0,0,0,0,0,0	//SG_FUSION#Union of the Sun, Moon and Stars#
 4047,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4047,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Star Gladiator (Union)
 4048,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4048,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -2212,6 +2286,7 @@
 4048,444,1,443,9,0,0,0,0,0,0,0,0	//SG_FUSION#Union of the Sun, Moon and Stars#
 4048,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4048,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Soul Linker
 4049,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4049,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -2261,175 +2336,179 @@
 4049,494,5,451,1,0,0,0,0,0,0,0,0	//SL_HIGH#Spirit of Rebirth#
 4049,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4049,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Gangsi (Bongun/Munak)
 4050,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4050,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
 //4050,545,5,0,0,0,0,0,0,0,0,0,0 //MB_FIGHTING##
-//4050,546,5,0,0,0,0,0,0,0,0,0,0 //MB_NEUTRAL##
-//4050,547,7,0,0,0,0,0,0,0,0,0,0 //MB_TAIMING_PUTI##
+//4050,546,5,545,1,0,0,0,0,0,0,0,0 //MB_NEUTRAL##
+//4050,547,7,551,1,0,0,0,0,0,0,0,0 //MB_TAIMING_PUTI##
 //4050,548,1,0,0,0,0,0,0,0,0,0,0 //MB_WHITEPOTION##
 //4050,549,1,0,0,0,0,0,0,0,0,0,0 //MB_MENTAL##
-//4050,550,10,0,0,0,0,0,0,0,0,0,0 //MB_CARDPITCHER##
-//4050,551,10,0,0,0,0,0,0,0,0,0,0 //MB_PETPITCHER##
-//4050,552,10,0,0,0,0,0,0,0,0,0,0 //MB_BODYSTUDY##
-//4050,553,1,0,0,0,0,0,0,0,0,0,0 //MB_BODYALTER##
-//4050,554,1,0,0,0,0,0,0,0,0,0,0 //MB_PETMEMORY##
-//4050,555,5,0,0,0,0,0,0,0,0,0,0 //MB_M_TELEPORT##
-//4050,556,7,0,0,0,0,0,0,0,0,0,0 //MB_B_GAIN##
-//4050,557,7,0,0,0,0,0,0,0,0,0,0 //MB_M_GAIN##
-//4050,558,1,0,0,0,0,0,0,0,0,0,0 //MB_MISSION##
+//4050,550,10,551,1,0,0,0,0,0,0,0,0 //MB_CARDPITCHER##
+//4050,551,10,545,1,0,0,0,0,0,0,0,0 //MB_PETPITCHER##
+//4050,552,10,551,1,0,0,0,0,0,0,0,0 //MB_BODYSTUDY##
+//4050,553,1,552,9,0,0,0,0,0,0,0,0 //MB_BODYALTER##
+//4050,554,1,551,1,0,0,0,0,0,0,0,0 //MB_PETMEMORY##
+//4050,555,5,545,1,0,0,0,0,0,0,0,0 //MB_M_TELEPORT##
+//4050,556,7,555,1,0,0,0,0,0,0,0,0 //MB_B_GAIN##
+//4050,557,7,555,1,0,0,0,0,0,0,0,0 //MB_M_GAIN##
+//4050,558,1,545,5,0,0,0,0,0,0,0,0 //MB_MISSION##
 //4050,559,1,0,0,0,0,0,0,0,0,0,0 //MB_MUNAKKNOWLEDGE##
-//4050,560,10,0,0,0,0,0,0,0,0,0,0 //MB_MUNAKBALL##
-//4050,561,10,0,0,0,0,0,0,0,0,0,0 //MB_SCROLL##
-//4050,562,7,0,0,0,0,0,0,0,0,0,0 //MB_B_GATHERING##
-//4050,563,7,0,0,0,0,0,0,0,0,0,0 //MB_M_GATHERING##
-//4050,564,5,0,0,0,0,0,0,0,0,0,0 //MB_B_EXCLUDE##
-//4050,565,5,0,0,0,0,0,0,0,0,0,0 //MB_B_DRIFT##
-//4050,566,7,0,0,0,0,0,0,0,0,0,0 //MB_B_WALLRUSH##
-//4050,567,7,0,0,0,0,0,0,0,0,0,0 //MB_M_WALLRUSH##
-//4050,568,5,0,0,0,0,0,0,0,0,0,0 //MB_B_WALLSHIFT##
-//4050,569,7,0,0,0,0,0,0,0,0,0,0 //MB_M_WALLCRASH##
-//4050,570,5,0,0,0,0,0,0,0,0,0,0 //MB_M_REINCARNATION##
-//4050,571,1,0,0,0,0,0,0,0,0,0,0 //MB_B_EQUIP##
+//4050,560,10,551,1,0,0,0,0,0,0,0,0 //MB_MUNAKBALL##
+//4050,561,10,40,560,10,0,0,0,0,0,0,0,0 //MB_SCROLL##//Requires Job Level 40 To Unlock
+//4050,562,7,565,1,0,0,0,0,0,0,0,0 //MB_B_GATHERING##
+//4050,563,7,562,5,0,0,0,0,0,0,0,0 //MB_M_GATHERING##
+//4050,564,5,565,1,0,0,0,0,0,0,0,0 //MB_B_EXCLUDE##
+//4050,565,5,545,1,0,0,0,0,0,0,0,0 //MB_B_DRIFT##
+//4050,566,7,565,1,0,0,0,0,0,0,0,0 //MB_B_WALLRUSH##
+//4050,567,7,565,1,0,0,0,0,0,0,0,0 //MB_M_WALLRUSH##
+//4050,568,5,566,7,0,0,0,0,0,0,0,0 //MB_B_WALLSHIFT##
+//4050,569,7,567,7,0,0,0,0,0,0,0,0 //MB_M_WALLCRASH##
+//4050,570,5,565,1,0,0,0,0,0,0,0,0 //MB_M_REINCARNATION##
+//4050,571,1,551,10,553,1,564,5,568,5,569,7 //MB_B_EQUIP## //Also requires MB_M_REINCARNATION 5 but not enough columns.
 4050,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4050,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Death Knight
 4051,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4051,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
 //4051,545,5,0,0,0,0,0,0,0,0,0,0 //MB_FIGHTING##
-//4051,546,5,0,0,0,0,0,0,0,0,0,0 //MB_NEUTRAL##
-//4051,547,7,0,0,0,0,0,0,0,0,0,0 //MB_TAIMING_PUTI##
+//4051,546,5,545,1,0,0,0,0,0,0,0,0 //MB_NEUTRAL##
+//4051,547,7,551,1,0,0,0,0,0,0,0,0 //MB_TAIMING_PUTI##
 //4051,548,1,0,0,0,0,0,0,0,0,0,0 //MB_WHITEPOTION##
 //4051,549,1,0,0,0,0,0,0,0,0,0,0 //MB_MENTAL##
-//4051,550,10,0,0,0,0,0,0,0,0,0,0 //MB_CARDPITCHER##
-//4051,551,10,0,0,0,0,0,0,0,0,0,0 //MB_PETPITCHER##
-//4051,552,10,0,0,0,0,0,0,0,0,0,0 //MB_BODYSTUDY##
-//4051,553,1,0,0,0,0,0,0,0,0,0,0 //MB_BODYALTER##
-//4051,554,1,0,0,0,0,0,0,0,0,0,0 //MB_PETMEMORY##
-//4051,555,5,0,0,0,0,0,0,0,0,0,0 //MB_M_TELEPORT##
-//4051,556,7,0,0,0,0,0,0,0,0,0,0 //MB_B_GAIN##
-//4051,557,7,0,0,0,0,0,0,0,0,0,0 //MB_M_GAIN##
-//4051,558,1,0,0,0,0,0,0,0,0,0,0 //MB_MISSION##
+//4051,550,10,551,1,0,0,0,0,0,0,0,0 //MB_CARDPITCHER##
+//4051,551,10,545,1,0,0,0,0,0,0,0,0 //MB_PETPITCHER##
+//4051,552,10,551,1,0,0,0,0,0,0,0,0 //MB_BODYSTUDY##
+//4051,553,1,552,9,0,0,0,0,0,0,0,0 //MB_BODYALTER##
+//4051,554,1,551,1,0,0,0,0,0,0,0,0 //MB_PETMEMORY##
+//4051,555,5,545,1,0,0,0,0,0,0,0,0 //MB_M_TELEPORT##
+//4051,556,7,555,1,0,0,0,0,0,0,0,0 //MB_B_GAIN##
+//4051,557,7,555,1,0,0,0,0,0,0,0,0 //MB_M_GAIN##
+//4051,558,1,545,5,0,0,0,0,0,0,0,0 //MB_MISSION##
 //4051,559,1,0,0,0,0,0,0,0,0,0,0 //MB_MUNAKKNOWLEDGE##
-//4051,560,10,0,0,0,0,0,0,0,0,0,0 //MB_MUNAKBALL##
-//4051,561,10,0,0,0,0,0,0,0,0,0,0 //MB_SCROLL##
-//4051,562,7,0,0,0,0,0,0,0,0,0,0 //MB_B_GATHERING##
-//4051,563,7,0,0,0,0,0,0,0,0,0,0 //MB_M_GATHERING##
-//4051,564,5,0,0,0,0,0,0,0,0,0,0 //MB_B_EXCLUDE##
-//4051,565,5,0,0,0,0,0,0,0,0,0,0 //MB_B_DRIFT##
-//4051,566,7,0,0,0,0,0,0,0,0,0,0 //MB_B_WALLRUSH##
-//4051,567,7,0,0,0,0,0,0,0,0,0,0 //MB_M_WALLRUSH##
-//4051,568,5,0,0,0,0,0,0,0,0,0,0 //MB_B_WALLSHIFT##
-//4051,569,7,0,0,0,0,0,0,0,0,0,0 //MB_M_WALLCRASH##
-//4051,570,5,0,0,0,0,0,0,0,0,0,0 //MB_M_REINCARNATION##
-//4051,571,1,0,0,0,0,0,0,0,0,0,0 //MB_B_EQUIP##
+//4051,560,10,551,1,0,0,0,0,0,0,0,0 //MB_MUNAKBALL##
+//4051,561,10,40,560,10,0,0,0,0,0,0,0,0 //MB_SCROLL##//Requires Job Level 40 To Unlock
+//4051,562,7,565,1,0,0,0,0,0,0,0,0 //MB_B_GATHERING##
+//4051,563,7,562,5,0,0,0,0,0,0,0,0 //MB_M_GATHERING##
+//4051,564,5,565,1,0,0,0,0,0,0,0,0 //MB_B_EXCLUDE##
+//4051,565,5,545,1,0,0,0,0,0,0,0,0 //MB_B_DRIFT##
+//4051,566,7,565,1,0,0,0,0,0,0,0,0 //MB_B_WALLRUSH##
+//4051,567,7,565,1,0,0,0,0,0,0,0,0 //MB_M_WALLRUSH##
+//4051,568,5,566,7,0,0,0,0,0,0,0,0 //MB_B_WALLSHIFT##
+//4051,569,7,567,7,0,0,0,0,0,0,0,0 //MB_M_WALLCRASH##
+//4051,570,5,565,1,0,0,0,0,0,0,0,0 //MB_M_REINCARNATION##
+//4051,571,1,551,10,553,1,564,5,568,5,569,7 //MB_B_EQUIP## //Also requires MB_M_REINCARNATION 5 but not enough columns.
 //4051,580,1,0,0,0,0,0,0,0,0,0,0 //DE_PASSIVE##
-//4051,581,10,0,0,0,0,0,0,0,0,0,0 //DE_PATTACK##
-//4051,582,10,0,0,0,0,0,0,0,0,0,0 //DE_PSPEED##
-//4051,583,10,0,0,0,0,0,0,0,0,0,0 //DE_PDEFENSE##
-//4051,584,10,0,0,0,0,0,0,0,0,0,0 //DE_PCRITICAL##
-//4051,585,10,0,0,0,0,0,0,0,0,0,0 //DE_PHP##
-//4051,586,10,0,0,0,0,0,0,0,0,0,0 //DE_PSP##
-//4051,587,1,0,0,0,0,0,0,0,0,0,0 //DE_RESET##
-//4051,588,1,0,0,0,0,0,0,0,0,0,0 //DE_RANKING##
-//4051,589,1,0,0,0,0,0,0,0,0,0,0 //DE_PTRIPLE##
+//4051,581,10,580,1,0,0,0,0,0,0,0,0 //DE_PATTACK##
+//4051,582,10,580,1,0,0,0,0,0,0,0,0 //DE_PSPEED##
+//4051,583,10,580,1,0,0,0,0,0,0,0,0 //DE_PDEFENSE##
+//4051,584,10,580,1,0,0,0,0,0,0,0,0 //DE_PCRITICAL##
+//4051,585,10,580,1,0,0,0,0,0,0,0,0 //DE_PHP##
+//4051,586,10,580,1,0,0,0,0,0,0,0,0 //DE_PSP##
+//4051,587,1,589,1,0,0,0,0,0,0,0,0 //DE_RESET##
+//4051,588,1,580,1,0,0,0,0,0,0,0,0 //DE_RANKING##
+//4051,589,1,581,1,582,1,583,1,584,1,585,1 //DE_PTRIPLE## //Also requires DE_PSP 1 but not enough columns.
 //4051,590,5,0,0,0,0,0,0,0,0,0,0 //DE_ENERGY##
-//4051,591,1,0,0,0,0,0,0,0,0,0,0 //DE_NIGHTMARE##
-//4051,592,5,0,0,0,0,0,0,0,0,0,0 //DE_SLASH##
-//4051,593,7,0,0,0,0,0,0,0,0,0,0 //DE_COIL##
-//4051,594,7,0,0,0,0,0,0,0,0,0,0 //DE_WAVE##
-//4051,595,3,0,0,0,0,0,0,0,0,0,0 //DE_REBIRTH##
-//4051,596,7,0,0,0,0,0,0,0,0,0,0 //DE_AURA##
-//4051,597,7,0,0,0,0,0,0,0,0,0,0 //DE_FREEZER##
-//4051,598,7,0,0,0,0,0,0,0,0,0,0 //DE_CHANGEATTACK##
+//4051,591,1,590,3,0,0,0,0,0,0,0,0 //DE_NIGHTMARE##
+//4051,592,5,590,5,0,0,0,0,0,0,0,0 //DE_SLASH##
+//4051,593,7,590,3,0,0,0,0,0,0,0,0 //DE_COIL##
+//4051,594,7,590,3,0,0,0,0,0,0,0,0 //DE_WAVE##
+//4051,595,3,590,5,0,0,0,0,0,0,0,0 //DE_REBIRTH##
+//4051,596,7,590,3,0,0,0,0,0,0,0,0 //DE_AURA##
+//4051,597,7,590,5,0,0,0,0,0,0,0,0 //DE_FREEZER##
+//4051,598,7,590,5,0,0,0,0,0,0,0,0 //DE_CHANGEATTACK##
 //4051,599,10,0,0,0,0,0,0,0,0,0,0 //DE_PUNISH##
-//4051,600,7,0,0,0,0,0,0,0,0,0,0 //DE_POISON##
-//4051,601,7,0,0,0,0,0,0,0,0,0,0 //DE_INSTANT##
-//4051,602,7,0,0,0,0,0,0,0,0,0,0 //DE_WARNING##
-//4051,603,7,0,0,0,0,0,0,0,0,0,0 //DE_RANKEDKNIFE##
-//4051,604,7,0,0,0,0,0,0,0,0,0,0 //DE_RANKEDGRADIUS##
+//4051,600,7,590,5,0,0,0,0,0,0,0,0 //DE_POISON##
+//4051,601,7,598,1,0,0,0,0,0,0,0,0 //DE_INSTANT##
+//4051,602,7,601,5,0,0,0,0,0,0,0,0 //DE_WARNING##
+//4051,603,7,590,5,0,0,0,0,0,0,0,0 //DE_RANKEDKNIFE##
+//4051,604,7,603,5,0,0,0,0,0,0,0,0 //DE_RANKEDGRADIUS##
 //4051,605,1,0,0,0,0,0,0,0,0,0,0 //DE_GAUGE##
-//4051,606,5,0,0,0,0,0,0,0,0,0,0 //DE_GTIME##
-//4051,607,5,0,0,0,0,0,0,0,0,0,0 //DE_GPAIN##
-//4051,608,10,0,0,0,0,0,0,0,0,0,0 //DE_GSKILL##
-//4051,609,5,0,0,0,0,0,0,0,0,0,0 //DE_GKILL##
-//4051,610,5,0,0,0,0,0,0,0,0,0,0 //DE_ACCEL##
-//4051,611,3,0,0,0,0,0,0,0,0,0,0 //DE_BLOCKDOUBLE##
-//4051,612,3,0,0,0,0,0,0,0,0,0,0 //DE_BLOCKMELEE##
-//4051,613,3,0,0,0,0,0,0,0,0,0,0 //DE_BLOCKFAR##
-//4051,614,10,0,0,0,0,0,0,0,0,0,0 //DE_FRONTATTACK##
-//4051,615,10,0,0,0,0,0,0,0,0,0,0 //DE_DANGERATTACK##
-//4051,616,10,0,0,0,0,0,0,0,0,0,0 //DE_TWINATTACK##
-//4051,617,10,0,0,0,0,0,0,0,0,0,0 //DE_WINDATTACK##
-//4051,618,10,0,0,0,0,0,0,0,0,0,0 //DE_WATERATTACK##
+//4051,606,5,605,1,0,0,0,0,0,0,0,0 //DE_GTIME##
+//4051,607,5,605,1,0,0,0,0,0,0,0,0 //DE_GPAIN##
+//4051,608,10,605,1,0,0,0,0,0,0,0,0 //DE_GSKILL##
+//4051,609,5,605,1,0,0,0,0,0,0,0,0 //DE_GKILL##
+//4051,610,5,605,1,0,0,0,0,0,0,0,0 //DE_ACCEL##
+//4051,611,3,610,5,0,0,0,0,0,0,0,0 //DE_BLOCKDOUBLE##
+//4051,612,3,611,1,0,0,0,0,0,0,0,0 //DE_BLOCKMELEE##
+//4051,613,3,611,1,0,0,0,0,0,0,0,0 //DE_BLOCKFAR##
+//4051,614,10,605,1,0,0,0,0,0,0,0,0 //DE_FRONTATTACK##
+//4051,615,10,605,1,0,0,0,0,0,0,0,0 //DE_DANGERATTACK##
+//4051,616,10,605,1,0,0,0,0,0,0,0,0 //DE_TWINATTACK##
+//4051,617,10,605,1,0,0,0,0,0,0,0,0 //DE_WINDATTACK##
+//4051,618,10,605,1,0,0,0,0,0,0,0,0 //DE_WATERATTACK##
 4051,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4051,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //Dark Collector
 4052,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4052,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
 //4052,545,5,0,0,0,0,0,0,0,0,0,0 //MB_FIGHTING##
-//4052,546,5,0,0,0,0,0,0,0,0,0,0 //MB_NEUTRAL##
-//4052,547,7,0,0,0,0,0,0,0,0,0,0 //MB_TAIMING_PUTI##
+//4052,546,5,545,1,0,0,0,0,0,0,0,0 //MB_NEUTRAL##
+//4052,547,7,551,1,0,0,0,0,0,0,0,0 //MB_TAIMING_PUTI##
 //4052,548,1,0,0,0,0,0,0,0,0,0,0 //MB_WHITEPOTION##
 //4052,549,1,0,0,0,0,0,0,0,0,0,0 //MB_MENTAL##
-//4052,550,10,0,0,0,0,0,0,0,0,0,0 //MB_CARDPITCHER##
-//4052,551,10,0,0,0,0,0,0,0,0,0,0 //MB_PETPITCHER##
-//4052,552,10,0,0,0,0,0,0,0,0,0,0 //MB_BODYSTUDY##
-//4052,553,1,0,0,0,0,0,0,0,0,0,0 //MB_BODYALTER##
-//4052,554,1,0,0,0,0,0,0,0,0,0,0 //MB_PETMEMORY##
-//4052,555,5,0,0,0,0,0,0,0,0,0,0 //MB_M_TELEPORT##
-//4052,556,7,0,0,0,0,0,0,0,0,0,0 //MB_B_GAIN##
-//4052,557,7,0,0,0,0,0,0,0,0,0,0 //MB_M_GAIN##
-//4052,558,1,0,0,0,0,0,0,0,0,0,0 //MB_MISSION##
+//4052,550,10,551,1,0,0,0,0,0,0,0,0 //MB_CARDPITCHER##
+//4052,551,10,545,1,0,0,0,0,0,0,0,0 //MB_PETPITCHER##
+//4052,552,10,551,1,0,0,0,0,0,0,0,0 //MB_BODYSTUDY##
+//4052,553,1,552,9,0,0,0,0,0,0,0,0 //MB_BODYALTER##
+//4052,554,1,551,1,0,0,0,0,0,0,0,0 //MB_PETMEMORY##
+//4052,555,5,545,1,0,0,0,0,0,0,0,0 //MB_M_TELEPORT##
+//4052,556,7,555,1,0,0,0,0,0,0,0,0 //MB_B_GAIN##
+//4052,557,7,555,1,0,0,0,0,0,0,0,0 //MB_M_GAIN##
+//4052,558,1,545,5,0,0,0,0,0,0,0,0 //MB_MISSION##
 //4052,559,1,0,0,0,0,0,0,0,0,0,0 //MB_MUNAKKNOWLEDGE##
-//4052,560,10,0,0,0,0,0,0,0,0,0,0 //MB_MUNAKBALL##
-//4052,561,10,0,0,0,0,0,0,0,0,0,0 //MB_SCROLL##
-//4052,562,7,0,0,0,0,0,0,0,0,0,0 //MB_B_GATHERING##
-//4052,563,7,0,0,0,0,0,0,0,0,0,0 //MB_M_GATHERING##
-//4052,564,5,0,0,0,0,0,0,0,0,0,0 //MB_B_EXCLUDE##
-//4052,565,5,0,0,0,0,0,0,0,0,0,0 //MB_B_DRIFT##
-//4052,566,7,0,0,0,0,0,0,0,0,0,0 //MB_B_WALLRUSH##
-//4052,567,7,0,0,0,0,0,0,0,0,0,0 //MB_M_WALLRUSH##
-//4052,568,5,0,0,0,0,0,0,0,0,0,0 //MB_B_WALLSHIFT##
-//4052,569,7,0,0,0,0,0,0,0,0,0,0 //MB_M_WALLCRASH##
-//4052,570,5,0,0,0,0,0,0,0,0,0,0 //MB_M_REINCARNATION##
-//4052,571,1,0,0,0,0,0,0,0,0,0,0 //MB_B_EQUIP##
+//4052,560,10,551,1,0,0,0,0,0,0,0,0 //MB_MUNAKBALL##
+//4052,561,10,40,560,10,0,0,0,0,0,0,0,0 //MB_SCROLL##//Requires Job Level 40 To Unlock
+//4052,562,7,565,1,0,0,0,0,0,0,0,0 //MB_B_GATHERING##
+//4052,563,7,562,5,0,0,0,0,0,0,0,0 //MB_M_GATHERING##
+//4052,564,5,565,1,0,0,0,0,0,0,0,0 //MB_B_EXCLUDE##
+//4052,565,5,545,1,0,0,0,0,0,0,0,0 //MB_B_DRIFT##
+//4052,566,7,565,1,0,0,0,0,0,0,0,0 //MB_B_WALLRUSH##
+//4052,567,7,565,1,0,0,0,0,0,0,0,0 //MB_M_WALLRUSH##
+//4052,568,5,566,7,0,0,0,0,0,0,0,0 //MB_B_WALLSHIFT##
+//4052,569,7,567,7,0,0,0,0,0,0,0,0 //MB_M_WALLCRASH##
+//4052,570,5,565,1,0,0,0,0,0,0,0,0 //MB_M_REINCARNATION##
+//4052,571,1,551,10,553,1,564,5,568,5,569,7 //MB_B_EQUIP## //Also requires MB_M_REINCARNATION 5 but not enough columns.
 //4052,619,5,0,0,0,0,0,0,0,0,0,0 //DA_ENERGY##
-//4052,620,10,0,0,0,0,0,0,0,0,0,0 //DA_CLOUD##
-//4052,621,5,0,0,0,0,0,0,0,0,0,0 //DA_FIRSTSLOT##
-//4052,622,4,0,0,0,0,0,0,0,0,0,0 //DA_HEADDEF##
-//4052,623,5,0,0,0,0,0,0,0,0,0,0 //DA_SPACE##
-//4052,624,5,0,0,0,0,0,0,0,0,0,0 //DA_TRANSFORM##
-//4052,625,5,0,0,0,0,0,0,0,0,0,0 //DA_EXPLOSION##
-//4052,626,1,0,0,0,0,0,0,0,0,0,0 //DA_REWARD##
-//4052,627,5,0,0,0,0,0,0,0,0,0,0 //DA_CRUSH##
-//4052,628,5,0,0,0,0,0,0,0,0,0,0 //DA_ITEMREBUILD##
-//4052,629,5,0,0,0,0,0,0,0,0,0,0 //DA_ILLUSION##
-//4052,630,5,0,0,0,0,0,0,0,0,0,0 //DA_NUETRALIZE##
-//4052,631,5,0,0,0,0,0,0,0,0,0,0 //DA_RUNNER##
-//4052,632,5,0,0,0,0,0,0,0,0,0,0 //DA_TRANSFER##
-//4052,633,5,0,0,0,0,0,0,0,0,0,0 //DA_WALL##
+//4052,620,10,619,5,0,0,0,0,0,0,0,0 //DA_CLOUD##
+//4052,621,5,619,5,0,0,0,0,0,0,0,0 //DA_FIRSTSLOT##
+//4052,622,4,619,5,0,0,0,0,0,0,0,0 //DA_HEADDEF##
+//4052,623,5,619,5,0,0,0,0,0,0,0,0 //DA_SPACE##
+//4052,624,5,619,5,0,0,0,0,0,0,0,0 //DA_TRANSFORM##
+//4052,625,5,624,1,0,0,0,0,0,0,0,0 //DA_EXPLOSION##
+//4052,626,1,624,1,0,0,0,0,0,0,0,0 //DA_REWARD##
+//4052,627,5,624,1,0,0,0,0,0,0,0,0 //DA_CRUSH##
+//4052,628,5,624,1,0,0,0,0,0,0,0,0 //DA_ITEMREBUILD##
+//4052,629,5,635,1,0,0,0,0,0,0,0,0 //DA_ILLUSION##
+//4052,630,5,635,1,0,0,0,0,0,0,0,0 //DA_NUETRALIZE##
+//4052,631,5,619,5,0,0,0,0,0,0,0,0 //DA_RUNNER##
+//4052,632,5,619,5,0,0,0,0,0,0,0,0 //DA_TRANSFER##
+//4052,633,5,635,1,0,0,0,0,0,0,0,0 //DA_WALL##
 //4052,634,1,0,0,0,0,0,0,0,0,0,0 //DA_ZENY##
-//4052,635,1,0,0,0,0,0,0,0,0,0,0 //DA_REVENGE##
-//4052,636,5,0,0,0,0,0,0,0,0,0,0 //DA_EARPLUG##
-//4052,637,1,0,0,0,0,0,0,0,0,0,0 //DA_CONTRACT##
-//4052,638,5,0,0,0,0,0,0,0,0,0,0 //DA_BLACK##
-//4052,639,5,0,0,0,0,0,0,0,0,0,0 //DA_DREAM##
+//4052,635,1,619,5,0,0,0,0,0,0,0,0 //DA_REVENGE##
+//4052,636,5,635,1,0,0,0,0,0,0,0,0 //DA_EARPLUG##
+//4052,637,1,640,5,0,0,0,0,0,0,0,0 //DA_CONTRACT##
+//4052,638,5,637,1,0,0,0,0,0,0,0,0 //DA_BLACK##
+//4052,639,5,637,1,0,0,0,0,0,0,0,0 //DA_DREAM##
 //4052,640,5,0,0,0,0,0,0,0,0,0,0 //DA_MAGICCART##
-//4052,641,1,0,0,0,0,0,0,0,0,0,0 //DA_COPY##
-//4052,642,1,0,0,0,0,0,0,0,0,0,0 //DA_CRYSTAL##
-//4052,643,1,0,0,0,0,0,0,0,0,0,0 //DA_EXP##
-//4052,644,10,0,0,0,0,0,0,0,0,0,0 //DA_CARTSWING##
-//4052,645,1,0,0,0,0,0,0,0,0,0,0 //DA_REBUILD##
+//4052,641,1,640,5,0,0,0,0,0,0,0,0 //DA_COPY##
+//4052,642,1,640,5,0,0,0,0,0,0,0,0 //DA_CRYSTAL##
+//4052,643,1,640,5,0,0,0,0,0,0,0,0 //DA_EXP##
+//4052,644,10,640,5,0,0,0,0,0,0,0,0 //DA_CARTSWING##
+//4052,645,1,640,5,0,0,0,0,0,0,0,0 //DA_REBUILD##
 //4052,646,10,0,0,0,0,0,0,0,0,0,0 //DA_JOBCHANGE##
-//4052,647,5,0,0,0,0,0,0,0,0,0,0 //DA_EDARKNESS##
-//4052,648,5,0,0,0,0,0,0,0,0,0,0 //DA_EGUARDIAN##
-//4052,649,3,0,0,0,0,0,0,0,0,0,0 //DA_TIMEOUT##
+//4052,647,5,640,5,0,0,0,0,0,0,0,0 //DA_EDARKNESS##
+//4052,648,5,640,5,0,0,0,0,0,0,0,0 //DA_EGUARDIAN##
+//4052,649,3,640,5,0,0,0,0,0,0,0,0 //DA_TIMEOUT##
 //4052,650,1,0,0,0,0,0,0,0,0,0,0 //ALL_TIMEIN##
-//4052,651,1,0,0,0,0,0,0,0,0,0,0 //DA_ZENYRANK##
+//4052,651,1,640,5,0,0,0,0,0,0,0,0 //DA_ZENYRANK##
 //4052,652,1,0,0,0,0,0,0,0,0,0,0 //DA_ACCESSORYMIX##
 4052,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 4052,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+
 //New Soul Linker And Soul Link Enabled Skills
 //4049,572,5,0,0,0,0,0,0,0,0,0,0 //SL_DEATHKNIGHT##
 //4049,573,5,0,0,0,0,0,0,0,0,0,0 //SL_COLLECTOR##
@@ -2438,6 +2517,7 @@
 //4052,577,1,0,0,0,0,0,0,0,0,0,0 //DA_RESET##
 //4051,578,1,0,0,0,0,0,0,0,0,0,0 //DE_BERSERKAIZER##
 //4052,579,1,0,0,0,0,0,0,0,0,0,0 //DA_DARKPOWER##
+
 //Twilight Alchemy 4 For All Alchemist Classes
 //18,576,1,228,10,0,0,0,0,0,0,0,0 //AM_TWILIGHT4##
 //4019,576,1,228,10,0,0,0,0,0,0,0,0 //AM_TWILIGHT4##
@@ -2445,6 +2525,7 @@
 //4071,576,1,228,10,0,0,0,0,0,0,0,0 //AM_TWILIGHT4##
 //4078,576,1,228,10,0,0,0,0,0,0,0,0 //AM_TWILIGHT4##
 //4107,576,1,228,10,0,0,0,0,0,0,0,0 //AM_TWILIGHT4##
+
 //Rune Knight (Regular)
 4054,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4054,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -2483,6 +2564,9 @@
 4054,2009,5,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONHOWLING#Dragon Howling#
 4054,2010,10,0,0,0,0,0,0,0,0,0,0 //RK_RUNEMASTERY#Rune Mastery#
 4054,2020,5,57,2,0,0,0,0,0,0,0,0 //RK_PHANTOMTHRUST#Phantom Thrust#
+4054,5004,10,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONBREATH_WATER#Dragon Breath - Water#
+4054,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Warlock (Regular)
 4055,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4055,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -2539,6 +2623,9 @@
 4055,2230,2,0,0,0,0,0,0,0,0,0,0 //WL_RELEASE#Release#
 4055,2231,1,0,0,0,0,0,0,0,0,0,0 //WL_READING_SB#Reading Spellbook#
 4055,2232,5,0,0,0,0,0,0,0,0,0,0 //WL_FREEZE_SP#Freeze Spell#
+4055,5012,5,2202,5,0,0,0,0,0,0,0,0 //WL_TELEKINESIS_INTENSE#Intense Telekinesis#
+4055,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Ranger (Regular)
 4056,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4056,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -2592,6 +2679,9 @@
 4056,2252,1,2248,1,0,0,0,0,0,0,0,0 //RA_VERDURETRAP#Verdure Trap#
 4056,2253,5,2237,1,0,0,0,0,0,0,0,0 //RA_FIRINGTRAP#Firing Trap#
 4056,2254,5,2237,1,0,0,0,0,0,0,0,0 //RA_ICEBOUNDTRAP#Icebound Trap#
+4056,5002,5,2234,5,0,0,0,0,0,0,0,0 //RA_UNLIMIT#Unlimited#
+4056,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Arch Bishop (Regular)
 4057,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4057,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -2650,6 +2740,9 @@
 4057,2054,10,68,1,0,0,0,0,0,0,0,0 //AB_DUPLELIGHT#Duple Light#
 4057,2057,5,2052,1,0,0,0,0,0,0,0,0 //AB_SILENTIUM#Silentium#
 4057,2515,5,2044,1,2053,1,0,0,0,0,0,0 //AB_SECRAMENT#Secrament#
+4057,5011,5,2051,2,0,0,0,0,0,0,0,0 //AB_OFFERTORIUM#Offertorium#
+4057,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Mechanic (Regular)
 4058,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4058,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -2719,6 +2812,9 @@
 4058,2282,5,2277,2,0,0,0,0,0,0,0,0 //NC_MAGICDECOY#FAW - Magic Decoy#
 4058,2283,1,2281,1,0,0,0,0,0,0,0,0 //NC_DISJOINT#FAW Removal#
 4058,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
+4058,5006,5,2277,1,0,0,0,0,0,0,0,0 //NC_MAGMA_ERUPTION#Magma Eruption#
+4058,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Guillotine Cross (Regular)
 4059,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4059,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -2763,6 +2859,9 @@
 4059,2035,5,2034,1,0,0,0,0,0,0,0,0 //GC_HALLUCINATIONWALK#Hallucination Walk#
 4059,2036,5,136,10,0,0,0,0,0,0,0,0 //GC_ROLLINGCUTTER#Rolling Cutter#
 4059,2037,5,2036,1,0,0,0,0,0,0,0,0 //GC_CROSSRIPPERSLASHER#Cross Ripper Slasher#
+4059,5001,5,2023,5,0,0,0,0,0,0,0,0 //GC_DARKCROW#Dark Claw#
+4059,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Rune Knight (Trans)
 4060,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4060,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -2809,6 +2908,9 @@
 4060,2009,5,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONHOWLING#Dragon Howling#
 4060,2010,10,0,0,0,0,0,0,0,0,0,0 //RK_RUNEMASTERY#Rune Mastery#
 4060,2020,5,57,2,0,0,0,0,0,0,0,0 //RK_PHANTOMTHRUST#Phantom Thrust#
+4060,5004,10,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONBREATH_WATER#Dragon Breath - Water#
+4060,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Warlock (Trans)
 4061,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4061,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -2871,6 +2973,9 @@
 4061,2230,2,0,0,0,0,0,0,0,0,0,0 //WL_RELEASE#Release#
 4061,2231,1,0,0,0,0,0,0,0,0,0,0 //WL_READING_SB#Reading Spellbook#
 4061,2232,5,0,0,0,0,0,0,0,0,0,0 //WL_FREEZE_SP#Freeze Spell#
+4061,5012,5,2202,5,0,0,0,0,0,0,0,0 //WL_TELEKINESIS_INTENSE#Intense Telekinesis#
+4061,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Ranger (Trans)
 4062,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4062,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -2928,6 +3033,9 @@
 4062,2252,1,2248,1,0,0,0,0,0,0,0,0 //RA_VERDURETRAP#Verdure Trap#
 4062,2253,5,2237,1,0,0,0,0,0,0,0,0 //RA_FIRINGTRAP#Firing Trap#
 4062,2254,5,2237,1,0,0,0,0,0,0,0,0 //RA_ICEBOUNDTRAP#Icebound Trap#
+4062,5002,5,2234,5,0,0,0,0,0,0,0,0 //RA_UNLIMIT#Unlimited#
+4062,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Arch Bishop (Trans)
 4063,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4063,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -2990,6 +3098,9 @@
 4063,2054,10,68,1,0,0,0,0,0,0,0,0 //AB_DUPLELIGHT#Duple Light#
 4063,2057,5,2052,1,0,0,0,0,0,0,0,0 //AB_SILENTIUM#Silentium#
 4063,2515,5,2044,1,2053,1,0,0,0,0,0,0 //AB_SECRAMENT#Secrament#
+4063,5011,5,2051,2,0,0,0,0,0,0,0,0 //AB_OFFERTORIUM#Offertorium#
+4063,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Mechanic (Trans)
 4064,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4064,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -3064,6 +3175,9 @@
 4064,2282,5,2277,2,0,0,0,0,0,0,0,0 //NC_MAGICDECOY#FAW - Magic Decoy#
 4064,2283,1,2281,1,0,0,0,0,0,0,0,0 //NC_DISJOINT#FAW Removal#
 4064,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
+4064,5006,5,2277,1,0,0,0,0,0,0,0,0 //NC_MAGMA_ERUPTION#Magma Eruption#
+4064,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Guillotine Cross (Trans)
 4065,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4065,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -3113,6 +3227,9 @@
 4065,2035,5,2034,1,0,0,0,0,0,0,0,0 //GC_HALLUCINATIONWALK#Hallucination Walk#
 4065,2036,5,136,10,0,0,0,0,0,0,0,0 //GC_ROLLINGCUTTER#Rolling Cutter#
 4065,2037,5,2036,1,0,0,0,0,0,0,0,0 //GC_CROSSRIPPERSLASHER#Cross Ripper Slasher#
+4065,5001,5,2023,5,0,0,0,0,0,0,0,0 //GC_DARKCROW#Dark Claw#
+4065,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Royal Guard (Regular)
 4066,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4066,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -3166,6 +3283,9 @@
 4066,2323,5,2311,3,0,0,0,0,0,0,0,0 //LG_EARTHDRIVE#Earth Drive#
 4066,2324,5,2318,3,2319,3,0,0,0,0,0,0 //LG_HESPERUSLIT#Hesperus Lit#
 4066,2325,5,2315,3,2321,4,2322,5,0,0,0,0 //LG_INSPIRATION#Inspiration#
+4066,5013,5,2311,5,0,0,0,0,0,0,0,0 //LG_KINGS_GRACE#King's Grace#
+4066,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Sorcerer (Regular)
 4067,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4067,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -3236,6 +3356,9 @@
 4067,2466,3,2458,3,0,0,0,0,0,0,0,0 //SO_WATER_INSIGNIA#Water Insignia#
 4067,2467,3,2459,3,0,0,0,0,0,0,0,0 //SO_WIND_INSIGNIA#Wind Insignia#
 4067,2468,3,2460,3,0,0,0,0,0,0,0,0 //SO_EARTH_INSIGNIA#Earth Insignia#
+4067,5008,5,2456,3,0,0,0,0,0,0,0,0 //SO_ELEMENTAL_SHIELD#Elemental Shield#
+4067,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Minstrel (Regular)
 4068,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4068,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -3291,6 +3414,9 @@
 4068,2432,5,2427,1,0,0,0,0,0,0,0,0 //WM_MELODYOFSINK#Melody Of Sink#
 4068,2433,5,2431,1,0,0,0,0,0,0,0,0 //WM_BEYOND_OF_WARCRY#Warcry Of Beyond#
 4068,2434,5,2429,1,2433,1,0,0,0,0,0,0 //WM_UNLIMITED_HUMMING_VOICE#Unlimited Humming Voice#
+4068,5007,5,2412,2,0,0,0,0,0,0,0,0 //WM_FRIGG_SONG#Frigg's Song#
+4068,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Wanderer (Regular)
 4069,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4069,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -3346,6 +3472,9 @@
 4069,2432,5,2427,1,0,0,0,0,0,0,0,0 //WM_MELODYOFSINK#Melody Of Sink#
 4069,2433,5,2431,1,0,0,0,0,0,0,0,0 //WM_BEYOND_OF_WARCRY#Warcry Of Beyond#
 4069,2434,5,2429,1,2433,1,0,0,0,0,0,0 //WM_UNLIMITED_HUMMING_VOICE#Unlimited Humming Voice#
+4069,5007,5,2412,2,0,0,0,0,0,0,0,0 //WM_FRIGG_SONG#Frigg's Song#
+4069,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Sura (Regular)
 4070,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4070,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -3405,6 +3534,9 @@
 4070,2348,5,2347,5,0,0,0,0,0,0,0,0 //SR_GENTLETOUCH_REVITALIZE#Gentle Touch - Revitalize#
 4070,2517,5,2340,1,2518,3,0,0,0,0,0,0 //SR_HOWLINGOFLION#Howling Of Lion#
 4070,2518,5,267,3,0,0,0,0,0,0,0,0 //SR_RIDEINLIGHTNING#Ride In Lightening#
+4070,5009,5,2326,3,2327,1,2329,3,2330,1,0,0 //SR_FLASHCOMBO#Flash Combo#
+4070,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Genetic (Regular)
 4071,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4071,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -3460,6 +3592,9 @@
 4071,2496,2,2495,1,0,0,0,0,0,0,0,0 //GN_MAKEBOMB#Create Bomb#
 4071,2497,10,0,0,0,0,0,0,0,0,0,0 //GN_S_PHARMACY#Special Pharmacy#
 4071,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
+4071,5003,5,2497,1,0,0,0,0,0,0,0,0 //GN_ILLUSIONDOPING#Illusion Doping#
+4071,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Shadow Chaser (Regular)
 4072,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4072,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -3517,6 +3652,9 @@
 4072,2302,3,2296,3,2301,3,0,0,0,0,0,0 //SC_MAELSTROM#Maelstrom#
 4072,2303,3,2300,3,0,0,0,0,0,0,0,0 //SC_BLOODYLUST#Bloody Lust#
 4072,2304,3,2300,3,0,0,0,0,0,0,0,0 //SC_FEINTBOMB#Feint Bomb#
+4072,5010,5,2288,2,0,0,0,0,0,0,0,0 //SC_ESCAPE#Emergency Escape#
+4072,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Royal Guard (Trans)
 4073,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4073,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -3574,6 +3712,9 @@
 4073,2323,5,2311,3,0,0,0,0,0,0,0,0 //LG_EARTHDRIVE#Earth Drive#
 4073,2324,5,2318,3,2319,3,0,0,0,0,0,0 //LG_HESPERUSLIT#Hesperus Lit#
 4073,2325,5,2315,3,2321,4,2322,5,0,0,0,0 //LG_INSPIRATION#Inspiration#
+4073,5013,5,2311,5,0,0,0,0,0,0,0,0 //LG_KINGS_GRACE#King's Grace#
+4073,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Sorcerer (Trans)
 4074,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4074,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -3652,6 +3793,9 @@
 4074,2466,3,2458,3,0,0,0,0,0,0,0,0 //SO_WATER_INSIGNIA#Water Insignia#
 4074,2467,3,2459,3,0,0,0,0,0,0,0,0 //SO_WIND_INSIGNIA#Wind Insignia#
 4074,2468,3,2460,3,0,0,0,0,0,0,0,0 //SO_EARTH_INSIGNIA#Earth Insignia#
+4074,5008,5,2456,3,0,0,0,0,0,0,0,0 //SO_ELEMENTAL_SHIELD#Elemental Shield#
+4074,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Minstrel (Trans)
 4075,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4075,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -3713,6 +3857,9 @@
 4075,2432,5,2427,1,0,0,0,0,0,0,0,0 //WM_MELODYOFSINK#Melody Of Sink#
 4075,2433,5,2431,1,0,0,0,0,0,0,0,0 //WM_BEYOND_OF_WARCRY#Warcry Of Beyond#
 4075,2434,5,2429,1,2433,1,0,0,0,0,0,0 //WM_UNLIMITED_HUMMING_VOICE#Unlimited Humming Voice#
+4075,5007,5,2412,2,0,0,0,0,0,0,0,0 //WM_FRIGG_SONG#Frigg's Song#
+4075,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Wanderer (Trans)
 4076,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4076,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -3774,6 +3921,9 @@
 4076,2432,5,2427,1,0,0,0,0,0,0,0,0 //WM_MELODYOFSINK#Melody Of Sink#
 4076,2433,5,2431,1,0,0,0,0,0,0,0,0 //WM_BEYOND_OF_WARCRY#Warcry Of Beyond#
 4076,2434,5,2429,1,2433,1,0,0,0,0,0,0 //WM_UNLIMITED_HUMMING_VOICE#Unlimited Humming Voice#
+4076,5007,5,2412,2,0,0,0,0,0,0,0,0 //WM_FRIGG_SONG#Frigg's Song#
+4076,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Sura (Trans)
 4077,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4077,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -3837,6 +3987,9 @@
 4077,2348,5,2347,5,0,0,0,0,0,0,0,0 //SR_GENTLETOUCH_REVITALIZE#Gentle Touch - Revitalize#
 4077,2517,5,2340,1,2518,3,0,0,0,0,0,0 //SR_HOWLINGOFLION#Howling Of Lion#
 4077,2518,5,267,3,0,0,0,0,0,0,0,0 //SR_RIDEINLIGHTNING#Ride In Lightening#
+4077,5009,5,2326,3,2327,1,2329,3,2330,1,0,0 //SR_FLASHCOMBO#Flash Combo#
+4077,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Genetic (Trans)
 4078,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4078,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -3896,6 +4049,9 @@
 4078,2496,2,2495,1,0,0,0,0,0,0,0,0 //GN_MAKEBOMB#Create Bomb#
 4078,2497,10,0,0,0,0,0,0,0,0,0,0 //GN_S_PHARMACY#Special Pharmacy#
 4078,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
+4078,5003,5,2497,1,0,0,0,0,0,0,0,0 //GN_ILLUSIONDOPING#Illusion Doping#
+4078,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Shadow Chaser (Trans)
 4079,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4079,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -3957,6 +4113,9 @@
 4079,2302,3,2296,3,2301,3,0,0,0,0,0,0 //SC_MAELSTROM#Maelstrom#
 4079,2303,3,2300,3,0,0,0,0,0,0,0,0 //SC_BLOODYLUST#Bloody Lust#
 4079,2304,3,2300,3,0,0,0,0,0,0,0,0 //SC_FEINTBOMB#Feint Bomb#
+4079,5010,5,2288,2,0,0,0,0,0,0,0,0 //SC_ESCAPE#Emergency Escape#
+4079,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Rune Knight (Dragon) (Regular)
 4080,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4080,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -3995,6 +4154,9 @@
 4080,2009,5,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONHOWLING#Dragon Howling#
 4080,2010,10,0,0,0,0,0,0,0,0,0,0 //RK_RUNEMASTERY#Rune Mastery#
 4080,2020,5,57,2,0,0,0,0,0,0,0,0 //RK_PHANTOMTHRUST#Phantom Thrust#
+4080,5004,10,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONBREATH_WATER#Dragon Breath - Water#
+4080,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Rune Knight (Dragon) (Trans)
 4081,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4081,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -4041,6 +4203,9 @@
 4081,2009,5,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONHOWLING#Dragon Howling#
 4081,2010,10,0,0,0,0,0,0,0,0,0,0 //RK_RUNEMASTERY#Rune Mastery#
 4081,2020,5,57,2,0,0,0,0,0,0,0,0 //RK_PHANTOMTHRUST#Phantom Thrust#
+4081,5004,10,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONBREATH_WATER#Dragon Breath - Water#
+4081,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Royal Guard (Gryphon) (Regular)
 4082,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4082,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -4094,6 +4259,9 @@
 4082,2323,5,2311,3,0,0,0,0,0,0,0,0 //LG_EARTHDRIVE#Earth Drive#
 4082,2324,5,2318,3,2319,3,0,0,0,0,0,0 //LG_HESPERUSLIT#Hesperus Lit#
 4082,2325,5,2315,3,2321,4,2322,5,0,0,0,0 //LG_INSPIRATION#Inspiration#
+4082,5013,5,2311,5,0,0,0,0,0,0,0,0 //LG_KINGS_GRACE#King's Grace#
+4082,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Royal Guard (Gryphon) (Trans)
 4083,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4083,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -4151,6 +4319,9 @@
 4083,2323,5,2311,3,0,0,0,0,0,0,0,0 //LG_EARTHDRIVE#Earth Drive#
 4083,2324,5,2318,3,2319,3,0,0,0,0,0,0 //LG_HESPERUSLIT#Hesperus Lit#
 4083,2325,5,2315,3,2321,4,2322,5,0,0,0,0 //LG_INSPIRATION#Inspiration#
+4083,5013,5,2311,5,0,0,0,0,0,0,0,0 //LG_KINGS_GRACE#King's Grace#
+4083,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Ranger (Waug) (Regular)
 4084,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4084,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -4204,6 +4375,9 @@
 4084,2252,1,2248,1,0,0,0,0,0,0,0,0 //RA_VERDURETRAP#Verdure Trap#
 4084,2253,5,2237,1,0,0,0,0,0,0,0,0 //RA_FIRINGTRAP#Firing Trap#
 4084,2254,5,2237,1,0,0,0,0,0,0,0,0 //RA_ICEBOUNDTRAP#Icebound Trap#
+4084,5002,5,2234,5,0,0,0,0,0,0,0,0 //RA_UNLIMIT#Unlimited#
+4084,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Ranger (Waug) (Trans)
 4085,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4085,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -4261,6 +4435,9 @@
 4085,2252,1,2248,1,0,0,0,0,0,0,0,0 //RA_VERDURETRAP#Verdure Trap#
 4085,2253,5,2237,1,0,0,0,0,0,0,0,0 //RA_FIRINGTRAP#Firing Trap#
 4085,2254,5,2237,1,0,0,0,0,0,0,0,0 //RA_ICEBOUNDTRAP#Icebound Trap#
+4085,5002,5,2234,5,0,0,0,0,0,0,0,0 //RA_UNLIMIT#Unlimited#
+4085,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Mechanic (Mado) (Regular)
 4086,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4086,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -4330,6 +4507,9 @@
 4086,2282,5,2277,2,0,0,0,0,0,0,0,0 //NC_MAGICDECOY#FAW - Magic Decoy#
 4086,2283,1,2281,1,0,0,0,0,0,0,0,0 //NC_DISJOINT#FAW Removal#
 4086,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
+4086,5006,5,2277,1,0,0,0,0,0,0,0,0 //NC_MAGMA_ERUPTION#Magma Eruption#
+4086,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Mechanic (Mado) (Trans)
 4087,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4087,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -4404,6 +4584,369 @@
 4087,2282,5,2277,2,0,0,0,0,0,0,0,0 //NC_MAGICDECOY#FAW - Magic Decoy#
 4087,2283,1,2281,1,0,0,0,0,0,0,0,0 //NC_DISJOINT#FAW Removal#
 4087,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
+4087,5006,5,2277,1,0,0,0,0,0,0,0,0 //NC_MAGMA_ERUPTION#Magma Eruption#
+4087,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
+//Rune Knight (Dragon 2) (Regular)
+4088,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
+4088,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
+4088,2,10,0,0,0,0,0,0,0,0,0,0 //SM_SWORD#Sword Mastery#
+4088,3,10,2,1,0,0,0,0,0,0,0,0 //SM_TWOHAND#Two-Handed Sword Mastery#
+4088,4,10,0,0,0,0,0,0,0,0,0,0 //SM_RECOVERY#Increase HP Recovery#
+4088,5,10,0,0,0,0,0,0,0,0,0,0 //SM_BASH#Bash#
+4088,6,10,0,0,0,0,0,0,0,0,0,0 //SM_PROVOKE#Provoke#
+4088,7,10,5,5,0,0,0,0,0,0,0,0 //SM_MAGNUM#Magnum Break#
+4088,8,10,6,5,0,0,0,0,0,0,0,0 //SM_ENDURE#Endure#
+4088,144,1,0,0,0,0,0,0,0,0,0,0 //SM_MOVINGRECOVERY#Moving HP-Recovery#
+4088,145,1,0,0,0,0,0,0,0,0,0,0 //SM_FATALBLOW#Attack Weak Point#
+4088,146,1,0,0,0,0,0,0,0,0,0,0 //SM_AUTOBERSERK#Auto Berserk#
+4088,55,10,0,0,0,0,0,0,0,0,0,0 //KN_SPEARMASTERY#Spear Mastery#
+4088,56,10,55,1,0,0,0,0,0,0,0,0 //KN_PIERCE#Pierce#
+4088,57,10,63,1,58,3,0,0,0,0,0,0 //KN_BRANDISHSPEAR#Brandish Spear#
+4088,58,10,56,5,0,0,0,0,0,0,0,0 //KN_SPEARSTAB#Spear Stab#
+4088,59,5,56,3,0,0,0,0,0,0,0,0 //KN_SPEARBOOMERANG#Spear Boomerang#
+4088,60,10,3,1,0,0,0,0,0,0,0,0 //KN_TWOHANDQUICKEN#Twohand Quicken#
+4088,61,5,3,1,0,0,0,0,0,0,0,0 //KN_AUTOCOUNTER#Counter Attack#
+4088,62,10,5,10,7,3,3,5,60,10,61,5//KN_BOWLINGBASH#Bowling Bash#
+4088,63,1,8,1,0,0,0,0,0,0,0,0 //KN_RIDING#Peco Peco Riding#
+4088,64,5,63,1,0,0,0,0,0,0,0,0 //KN_CAVALIERMASTERY#Cavalier Mastery#
+4088,1001,1,0,0,0,0,0,0,0,0,0,0 //KN_CHARGEATK#Charge Attack#
+4088,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
+4088,495,1,60,10,0,0,0,0,0,0,0,0	//KN_ONEHAND#Onehand Quicken#
+4088,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+4088,2001,5,2010,2,0,0,0,0,0,0,0,0 //RK_ENCHANTBLADE#Enchant Blade#
+4088,2002,5,2001,3,0,0,0,0,0,0,0,0 //RK_SONICWAVE#Sonic Wave#
+4088,2003,10,61,1,2001,2,0,0,0,0,0,0 //RK_DEATHBOUND#Death Bound#
+4088,2004,10,2020,3,0,0,0,0,0,0,0,0 //RK_HUNDREDSPEAR#Hundred Spear#
+4088,2005,5,2001,5,0,0,0,0,0,0,0,0 //RK_WINDCUTTER#Wind Cutter#
+4088,2006,5,2002,2,2003,5,2005,3,0,0,0,0 //RK_IGNITIONBREAK#Ignition Break#
+4088,2007,5,64,1,0,0,0,0,0,0,0,0 //RK_DRAGONTRAINING#Dragon Training#
+4088,2008,10,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONBREATH#Dragon Breath#
+4088,2009,5,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONHOWLING#Dragon Howling#
+4088,2010,10,0,0,0,0,0,0,0,0,0,0 //RK_RUNEMASTERY#Rune Mastery#
+4088,2020,5,57,2,0,0,0,0,0,0,0,0 //RK_PHANTOMTHRUST#Phantom Thrust#
+4088,5004,10,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONBREATH_WATER#Dragon Breath - Water#
+4088,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
+//Rune Knight (Dragon 2) (Trans)
+4089,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
+4089,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
+4089,2,10,0,0,0,0,0,0,0,0,0,0 //SM_SWORD#Sword Mastery#
+4089,3,10,2,1,0,0,0,0,0,0,0,0 //SM_TWOHAND#Two-Handed Sword Mastery#
+4089,4,10,0,0,0,0,0,0,0,0,0,0 //SM_RECOVERY#Increase HP Recovery#
+4089,5,10,0,0,0,0,0,0,0,0,0,0 //SM_BASH#Bash#
+4089,6,10,0,0,0,0,0,0,0,0,0,0 //SM_PROVOKE#Provoke#
+4089,7,10,5,5,0,0,0,0,0,0,0,0 //SM_MAGNUM#Magnum Break#
+4089,8,10,6,5,0,0,0,0,0,0,0,0 //SM_ENDURE#Endure#
+4089,144,1,0,0,0,0,0,0,0,0,0,0 //SM_MOVINGRECOVERY#Moving HP-Recovery#
+4089,145,1,0,0,0,0,0,0,0,0,0,0 //SM_FATALBLOW#Attack Weak Point#
+4089,146,1,0,0,0,0,0,0,0,0,0,0 //SM_AUTOBERSERK#Auto Berserk#
+4089,55,10,0,0,0,0,0,0,0,0,0,0 //KN_SPEARMASTERY#Spear Mastery#
+4089,56,10,55,1,0,0,0,0,0,0,0,0 //KN_PIERCE#Pierce#
+4089,57,10,63,1,58,3,0,0,0,0,0,0 //KN_BRANDISHSPEAR#Brandish Spear#
+4089,58,10,56,5,0,0,0,0,0,0,0,0 //KN_SPEARSTAB#Spear Stab#
+4089,59,5,56,3,0,0,0,0,0,0,0,0 //KN_SPEARBOOMERANG#Spear Boomerang#
+4089,60,10,3,1,0,0,0,0,0,0,0,0 //KN_TWOHANDQUICKEN#Twohand Quicken#
+4089,61,5,3,1,0,0,0,0,0,0,0,0 //KN_AUTOCOUNTER#Counter Attack#
+4089,62,10,5,10,7,3,3,5,60,10,61,5//KN_BOWLINGBASH#Bowling Bash#
+4089,63,1,8,1,0,0,0,0,0,0,0,0 //KN_RIDING#Peco Peco Riding#
+4089,64,5,63,1,0,0,0,0,0,0,0,0 //KN_CAVALIERMASTERY#Cavalier Mastery#
+4089,1001,1,0,0,0,0,0,0,0,0,0,0 //KN_CHARGEATK#Charge Attack#
+4089,355,5,5,5,7,5,3,5,0,0,0,0 //LK_AURABLADE#Aura Blade#
+4089,356,10,3,10,6,5,60,3,0,0,0,0 //LK_PARRYING#Parrying#
+4089,357,5,4,5,55,5,63,1,0,0,0,0 //LK_CONCENTRATION#Concentration#
+4089,358,1,4,10,6,5,8,3,0,0,0,0 //LK_TENSIONRELAX#Relax#
+4089,359,1,0,0,0,0,0,0,0,0,0,0 //LK_BERSERK#Frenzy# //Extra column removed. Rune Knights dont require job level 50 to use Berserk.
+4089,397,5,55,10,56,5,58,5,63,1,0,0 //LK_SPIRALPIERCE#Spiral Pierce#
+4089,398,5,55,9,63,1,0,0,0,0,0,0 //LK_HEADCRUSH#Traumatic Blow#
+4089,399,10,55,9,64,3,398,3,0,0,0,0 //LK_JOINTBEAT#Vital Strike#
+4089,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
+4089,495,1,60,10,0,0,0,0,0,0,0,0	//KN_ONEHAND#Onehand Quicken#
+4089,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+4089,2001,5,2010,2,0,0,0,0,0,0,0,0 //RK_ENCHANTBLADE#Enchant Blade#
+4089,2002,5,2001,3,0,0,0,0,0,0,0,0 //RK_SONICWAVE#Sonic Wave#
+4089,2003,10,61,1,2001,2,0,0,0,0,0,0 //RK_DEATHBOUND#Death Bound#
+4089,2004,10,2020,3,0,0,0,0,0,0,0,0 //RK_HUNDREDSPEAR#Hundred Spear#
+4089,2005,5,2001,5,0,0,0,0,0,0,0,0 //RK_WINDCUTTER#Wind Cutter#
+4089,2006,5,2002,2,2003,5,2005,3,0,0,0,0 //RK_IGNITIONBREAK#Ignition Break#
+4089,2007,5,64,1,0,0,0,0,0,0,0,0 //RK_DRAGONTRAINING#Dragon Training#
+4089,2008,10,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONBREATH#Dragon Breath#
+4089,2009,5,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONHOWLING#Dragon Howling#
+4089,2010,10,0,0,0,0,0,0,0,0,0,0 //RK_RUNEMASTERY#Rune Mastery#
+4089,2020,5,57,2,0,0,0,0,0,0,0,0 //RK_PHANTOMTHRUST#Phantom Thrust#
+4089,5004,10,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONBREATH_WATER#Dragon Breath - Water#
+4089,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
+//Rune Knight (Dragon 3) (Regular)
+4090,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
+4090,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
+4090,2,10,0,0,0,0,0,0,0,0,0,0 //SM_SWORD#Sword Mastery#
+4090,3,10,2,1,0,0,0,0,0,0,0,0 //SM_TWOHAND#Two-Handed Sword Mastery#
+4090,4,10,0,0,0,0,0,0,0,0,0,0 //SM_RECOVERY#Increase HP Recovery#
+4090,5,10,0,0,0,0,0,0,0,0,0,0 //SM_BASH#Bash#
+4090,6,10,0,0,0,0,0,0,0,0,0,0 //SM_PROVOKE#Provoke#
+4090,7,10,5,5,0,0,0,0,0,0,0,0 //SM_MAGNUM#Magnum Break#
+4090,8,10,6,5,0,0,0,0,0,0,0,0 //SM_ENDURE#Endure#
+4090,144,1,0,0,0,0,0,0,0,0,0,0 //SM_MOVINGRECOVERY#Moving HP-Recovery#
+4090,145,1,0,0,0,0,0,0,0,0,0,0 //SM_FATALBLOW#Attack Weak Point#
+4090,146,1,0,0,0,0,0,0,0,0,0,0 //SM_AUTOBERSERK#Auto Berserk#
+4090,55,10,0,0,0,0,0,0,0,0,0,0 //KN_SPEARMASTERY#Spear Mastery#
+4090,56,10,55,1,0,0,0,0,0,0,0,0 //KN_PIERCE#Pierce#
+4090,57,10,63,1,58,3,0,0,0,0,0,0 //KN_BRANDISHSPEAR#Brandish Spear#
+4090,58,10,56,5,0,0,0,0,0,0,0,0 //KN_SPEARSTAB#Spear Stab#
+4090,59,5,56,3,0,0,0,0,0,0,0,0 //KN_SPEARBOOMERANG#Spear Boomerang#
+4090,60,10,3,1,0,0,0,0,0,0,0,0 //KN_TWOHANDQUICKEN#Twohand Quicken#
+4090,61,5,3,1,0,0,0,0,0,0,0,0 //KN_AUTOCOUNTER#Counter Attack#
+4090,62,10,5,10,7,3,3,5,60,10,61,5//KN_BOWLINGBASH#Bowling Bash#
+4090,63,1,8,1,0,0,0,0,0,0,0,0 //KN_RIDING#Peco Peco Riding#
+4090,64,5,63,1,0,0,0,0,0,0,0,0 //KN_CAVALIERMASTERY#Cavalier Mastery#
+4090,1001,1,0,0,0,0,0,0,0,0,0,0 //KN_CHARGEATK#Charge Attack#
+4090,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
+4090,495,1,60,10,0,0,0,0,0,0,0,0	//KN_ONEHAND#Onehand Quicken#
+4090,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+4090,2001,5,2010,2,0,0,0,0,0,0,0,0 //RK_ENCHANTBLADE#Enchant Blade#
+4090,2002,5,2001,3,0,0,0,0,0,0,0,0 //RK_SONICWAVE#Sonic Wave#
+4090,2003,10,61,1,2001,2,0,0,0,0,0,0 //RK_DEATHBOUND#Death Bound#
+4090,2004,10,2020,3,0,0,0,0,0,0,0,0 //RK_HUNDREDSPEAR#Hundred Spear#
+4090,2005,5,2001,5,0,0,0,0,0,0,0,0 //RK_WINDCUTTER#Wind Cutter#
+4090,2006,5,2002,2,2003,5,2005,3,0,0,0,0 //RK_IGNITIONBREAK#Ignition Break#
+4090,2007,5,64,1,0,0,0,0,0,0,0,0 //RK_DRAGONTRAINING#Dragon Training#
+4090,2008,10,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONBREATH#Dragon Breath#
+4090,2009,5,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONHOWLING#Dragon Howling#
+4090,2010,10,0,0,0,0,0,0,0,0,0,0 //RK_RUNEMASTERY#Rune Mastery#
+4090,2020,5,57,2,0,0,0,0,0,0,0,0 //RK_PHANTOMTHRUST#Phantom Thrust#
+4090,5004,10,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONBREATH_WATER#Dragon Breath - Water#
+4090,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
+//Rune Knight (Dragon 3) (Trans)
+4091,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
+4091,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
+4091,2,10,0,0,0,0,0,0,0,0,0,0 //SM_SWORD#Sword Mastery#
+4091,3,10,2,1,0,0,0,0,0,0,0,0 //SM_TWOHAND#Two-Handed Sword Mastery#
+4091,4,10,0,0,0,0,0,0,0,0,0,0 //SM_RECOVERY#Increase HP Recovery#
+4091,5,10,0,0,0,0,0,0,0,0,0,0 //SM_BASH#Bash#
+4091,6,10,0,0,0,0,0,0,0,0,0,0 //SM_PROVOKE#Provoke#
+4091,7,10,5,5,0,0,0,0,0,0,0,0 //SM_MAGNUM#Magnum Break#
+4091,8,10,6,5,0,0,0,0,0,0,0,0 //SM_ENDURE#Endure#
+4091,144,1,0,0,0,0,0,0,0,0,0,0 //SM_MOVINGRECOVERY#Moving HP-Recovery#
+4091,145,1,0,0,0,0,0,0,0,0,0,0 //SM_FATALBLOW#Attack Weak Point#
+4091,146,1,0,0,0,0,0,0,0,0,0,0 //SM_AUTOBERSERK#Auto Berserk#
+4091,55,10,0,0,0,0,0,0,0,0,0,0 //KN_SPEARMASTERY#Spear Mastery#
+4091,56,10,55,1,0,0,0,0,0,0,0,0 //KN_PIERCE#Pierce#
+4091,57,10,63,1,58,3,0,0,0,0,0,0 //KN_BRANDISHSPEAR#Brandish Spear#
+4091,58,10,56,5,0,0,0,0,0,0,0,0 //KN_SPEARSTAB#Spear Stab#
+4091,59,5,56,3,0,0,0,0,0,0,0,0 //KN_SPEARBOOMERANG#Spear Boomerang#
+4091,60,10,3,1,0,0,0,0,0,0,0,0 //KN_TWOHANDQUICKEN#Twohand Quicken#
+4091,61,5,3,1,0,0,0,0,0,0,0,0 //KN_AUTOCOUNTER#Counter Attack#
+4091,62,10,5,10,7,3,3,5,60,10,61,5//KN_BOWLINGBASH#Bowling Bash#
+4091,63,1,8,1,0,0,0,0,0,0,0,0 //KN_RIDING#Peco Peco Riding#
+4091,64,5,63,1,0,0,0,0,0,0,0,0 //KN_CAVALIERMASTERY#Cavalier Mastery#
+4091,1001,1,0,0,0,0,0,0,0,0,0,0 //KN_CHARGEATK#Charge Attack#
+4091,355,5,5,5,7,5,3,5,0,0,0,0 //LK_AURABLADE#Aura Blade#
+4091,356,10,3,10,6,5,60,3,0,0,0,0 //LK_PARRYING#Parrying#
+4091,357,5,4,5,55,5,63,1,0,0,0,0 //LK_CONCENTRATION#Concentration#
+4091,358,1,4,10,6,5,8,3,0,0,0,0 //LK_TENSIONRELAX#Relax#
+4091,359,1,0,0,0,0,0,0,0,0,0,0 //LK_BERSERK#Frenzy# //Extra column removed. Rune Knights dont require job level 50 to use Berserk.
+4091,397,5,55,10,56,5,58,5,63,1,0,0 //LK_SPIRALPIERCE#Spiral Pierce#
+4091,398,5,55,9,63,1,0,0,0,0,0,0 //LK_HEADCRUSH#Traumatic Blow#
+4091,399,10,55,9,64,3,398,3,0,0,0,0 //LK_JOINTBEAT#Vital Strike#
+4091,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
+4091,495,1,60,10,0,0,0,0,0,0,0,0	//KN_ONEHAND#Onehand Quicken#
+4091,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+4091,2001,5,2010,2,0,0,0,0,0,0,0,0 //RK_ENCHANTBLADE#Enchant Blade#
+4091,2002,5,2001,3,0,0,0,0,0,0,0,0 //RK_SONICWAVE#Sonic Wave#
+4091,2003,10,61,1,2001,2,0,0,0,0,0,0 //RK_DEATHBOUND#Death Bound#
+4091,2004,10,2020,3,0,0,0,0,0,0,0,0 //RK_HUNDREDSPEAR#Hundred Spear#
+4091,2005,5,2001,5,0,0,0,0,0,0,0,0 //RK_WINDCUTTER#Wind Cutter#
+4091,2006,5,2002,2,2003,5,2005,3,0,0,0,0 //RK_IGNITIONBREAK#Ignition Break#
+4091,2007,5,64,1,0,0,0,0,0,0,0,0 //RK_DRAGONTRAINING#Dragon Training#
+4091,2008,10,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONBREATH#Dragon Breath#
+4091,2009,5,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONHOWLING#Dragon Howling#
+4091,2010,10,0,0,0,0,0,0,0,0,0,0 //RK_RUNEMASTERY#Rune Mastery#
+4091,2020,5,57,2,0,0,0,0,0,0,0,0 //RK_PHANTOMTHRUST#Phantom Thrust#
+4091,5004,10,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONBREATH_WATER#Dragon Breath - Water#
+4091,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
+//Rune Knight (Dragon 4) (Regular)
+4092,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
+4092,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
+4092,2,10,0,0,0,0,0,0,0,0,0,0 //SM_SWORD#Sword Mastery#
+4092,3,10,2,1,0,0,0,0,0,0,0,0 //SM_TWOHAND#Two-Handed Sword Mastery#
+4092,4,10,0,0,0,0,0,0,0,0,0,0 //SM_RECOVERY#Increase HP Recovery#
+4092,5,10,0,0,0,0,0,0,0,0,0,0 //SM_BASH#Bash#
+4092,6,10,0,0,0,0,0,0,0,0,0,0 //SM_PROVOKE#Provoke#
+4092,7,10,5,5,0,0,0,0,0,0,0,0 //SM_MAGNUM#Magnum Break#
+4092,8,10,6,5,0,0,0,0,0,0,0,0 //SM_ENDURE#Endure#
+4092,144,1,0,0,0,0,0,0,0,0,0,0 //SM_MOVINGRECOVERY#Moving HP-Recovery#
+4092,145,1,0,0,0,0,0,0,0,0,0,0 //SM_FATALBLOW#Attack Weak Point#
+4092,146,1,0,0,0,0,0,0,0,0,0,0 //SM_AUTOBERSERK#Auto Berserk#
+4092,55,10,0,0,0,0,0,0,0,0,0,0 //KN_SPEARMASTERY#Spear Mastery#
+4092,56,10,55,1,0,0,0,0,0,0,0,0 //KN_PIERCE#Pierce#
+4092,57,10,63,1,58,3,0,0,0,0,0,0 //KN_BRANDISHSPEAR#Brandish Spear#
+4092,58,10,56,5,0,0,0,0,0,0,0,0 //KN_SPEARSTAB#Spear Stab#
+4092,59,5,56,3,0,0,0,0,0,0,0,0 //KN_SPEARBOOMERANG#Spear Boomerang#
+4092,60,10,3,1,0,0,0,0,0,0,0,0 //KN_TWOHANDQUICKEN#Twohand Quicken#
+4092,61,5,3,1,0,0,0,0,0,0,0,0 //KN_AUTOCOUNTER#Counter Attack#
+4092,62,10,5,10,7,3,3,5,60,10,61,5//KN_BOWLINGBASH#Bowling Bash#
+4092,63,1,8,1,0,0,0,0,0,0,0,0 //KN_RIDING#Peco Peco Riding#
+4092,64,5,63,1,0,0,0,0,0,0,0,0 //KN_CAVALIERMASTERY#Cavalier Mastery#
+4092,1001,1,0,0,0,0,0,0,0,0,0,0 //KN_CHARGEATK#Charge Attack#
+4092,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
+4092,495,1,60,10,0,0,0,0,0,0,0,0	//KN_ONEHAND#Onehand Quicken#
+4092,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+4092,2001,5,2010,2,0,0,0,0,0,0,0,0 //RK_ENCHANTBLADE#Enchant Blade#
+4092,2002,5,2001,3,0,0,0,0,0,0,0,0 //RK_SONICWAVE#Sonic Wave#
+4092,2003,10,61,1,2001,2,0,0,0,0,0,0 //RK_DEATHBOUND#Death Bound#
+4092,2004,10,2020,3,0,0,0,0,0,0,0,0 //RK_HUNDREDSPEAR#Hundred Spear#
+4092,2005,5,2001,5,0,0,0,0,0,0,0,0 //RK_WINDCUTTER#Wind Cutter#
+4092,2006,5,2002,2,2003,5,2005,3,0,0,0,0 //RK_IGNITIONBREAK#Ignition Break#
+4092,2007,5,64,1,0,0,0,0,0,0,0,0 //RK_DRAGONTRAINING#Dragon Training#
+4092,2008,10,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONBREATH#Dragon Breath#
+4092,2009,5,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONHOWLING#Dragon Howling#
+4092,2010,10,0,0,0,0,0,0,0,0,0,0 //RK_RUNEMASTERY#Rune Mastery#
+4092,2020,5,57,2,0,0,0,0,0,0,0,0 //RK_PHANTOMTHRUST#Phantom Thrust#
+4092,5004,10,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONBREATH_WATER#Dragon Breath - Water#
+4092,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
+//Rune Knight (Dragon 4) (Trans)
+4093,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
+4093,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
+4093,2,10,0,0,0,0,0,0,0,0,0,0 //SM_SWORD#Sword Mastery#
+4093,3,10,2,1,0,0,0,0,0,0,0,0 //SM_TWOHAND#Two-Handed Sword Mastery#
+4093,4,10,0,0,0,0,0,0,0,0,0,0 //SM_RECOVERY#Increase HP Recovery#
+4093,5,10,0,0,0,0,0,0,0,0,0,0 //SM_BASH#Bash#
+4093,6,10,0,0,0,0,0,0,0,0,0,0 //SM_PROVOKE#Provoke#
+4093,7,10,5,5,0,0,0,0,0,0,0,0 //SM_MAGNUM#Magnum Break#
+4093,8,10,6,5,0,0,0,0,0,0,0,0 //SM_ENDURE#Endure#
+4093,144,1,0,0,0,0,0,0,0,0,0,0 //SM_MOVINGRECOVERY#Moving HP-Recovery#
+4093,145,1,0,0,0,0,0,0,0,0,0,0 //SM_FATALBLOW#Attack Weak Point#
+4093,146,1,0,0,0,0,0,0,0,0,0,0 //SM_AUTOBERSERK#Auto Berserk#
+4093,55,10,0,0,0,0,0,0,0,0,0,0 //KN_SPEARMASTERY#Spear Mastery#
+4093,56,10,55,1,0,0,0,0,0,0,0,0 //KN_PIERCE#Pierce#
+4093,57,10,63,1,58,3,0,0,0,0,0,0 //KN_BRANDISHSPEAR#Brandish Spear#
+4093,58,10,56,5,0,0,0,0,0,0,0,0 //KN_SPEARSTAB#Spear Stab#
+4093,59,5,56,3,0,0,0,0,0,0,0,0 //KN_SPEARBOOMERANG#Spear Boomerang#
+4093,60,10,3,1,0,0,0,0,0,0,0,0 //KN_TWOHANDQUICKEN#Twohand Quicken#
+4093,61,5,3,1,0,0,0,0,0,0,0,0 //KN_AUTOCOUNTER#Counter Attack#
+4093,62,10,5,10,7,3,3,5,60,10,61,5//KN_BOWLINGBASH#Bowling Bash#
+4093,63,1,8,1,0,0,0,0,0,0,0,0 //KN_RIDING#Peco Peco Riding#
+4093,64,5,63,1,0,0,0,0,0,0,0,0 //KN_CAVALIERMASTERY#Cavalier Mastery#
+4093,1001,1,0,0,0,0,0,0,0,0,0,0 //KN_CHARGEATK#Charge Attack#
+4093,355,5,5,5,7,5,3,5,0,0,0,0 //LK_AURABLADE#Aura Blade#
+4093,356,10,3,10,6,5,60,3,0,0,0,0 //LK_PARRYING#Parrying#
+4093,357,5,4,5,55,5,63,1,0,0,0,0 //LK_CONCENTRATION#Concentration#
+4093,358,1,4,10,6,5,8,3,0,0,0,0 //LK_TENSIONRELAX#Relax#
+4093,359,1,0,0,0,0,0,0,0,0,0,0 //LK_BERSERK#Frenzy# //Extra column removed. Rune Knights dont require job level 50 to use Berserk.
+4093,397,5,55,10,56,5,58,5,63,1,0,0 //LK_SPIRALPIERCE#Spiral Pierce#
+4093,398,5,55,9,63,1,0,0,0,0,0,0 //LK_HEADCRUSH#Traumatic Blow#
+4093,399,10,55,9,64,3,398,3,0,0,0,0 //LK_JOINTBEAT#Vital Strike#
+4093,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
+4093,495,1,60,10,0,0,0,0,0,0,0,0	//KN_ONEHAND#Onehand Quicken#
+4093,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+4093,2001,5,2010,2,0,0,0,0,0,0,0,0 //RK_ENCHANTBLADE#Enchant Blade#
+4093,2002,5,2001,3,0,0,0,0,0,0,0,0 //RK_SONICWAVE#Sonic Wave#
+4093,2003,10,61,1,2001,2,0,0,0,0,0,0 //RK_DEATHBOUND#Death Bound#
+4093,2004,10,2020,3,0,0,0,0,0,0,0,0 //RK_HUNDREDSPEAR#Hundred Spear#
+4093,2005,5,2001,5,0,0,0,0,0,0,0,0 //RK_WINDCUTTER#Wind Cutter#
+4093,2006,5,2002,2,2003,5,2005,3,0,0,0,0 //RK_IGNITIONBREAK#Ignition Break#
+4093,2007,5,64,1,0,0,0,0,0,0,0,0 //RK_DRAGONTRAINING#Dragon Training#
+4093,2008,10,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONBREATH#Dragon Breath#
+4093,2009,5,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONHOWLING#Dragon Howling#
+4093,2010,10,0,0,0,0,0,0,0,0,0,0 //RK_RUNEMASTERY#Rune Mastery#
+4093,2020,5,57,2,0,0,0,0,0,0,0,0 //RK_PHANTOMTHRUST#Phantom Thrust#
+4093,5004,10,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONBREATH_WATER#Dragon Breath - Water#
+4093,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
+//Rune Knight (Dragon 5) (Regular)
+4094,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
+4094,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
+4094,2,10,0,0,0,0,0,0,0,0,0,0 //SM_SWORD#Sword Mastery#
+4094,3,10,2,1,0,0,0,0,0,0,0,0 //SM_TWOHAND#Two-Handed Sword Mastery#
+4094,4,10,0,0,0,0,0,0,0,0,0,0 //SM_RECOVERY#Increase HP Recovery#
+4094,5,10,0,0,0,0,0,0,0,0,0,0 //SM_BASH#Bash#
+4094,6,10,0,0,0,0,0,0,0,0,0,0 //SM_PROVOKE#Provoke#
+4094,7,10,5,5,0,0,0,0,0,0,0,0 //SM_MAGNUM#Magnum Break#
+4094,8,10,6,5,0,0,0,0,0,0,0,0 //SM_ENDURE#Endure#
+4094,144,1,0,0,0,0,0,0,0,0,0,0 //SM_MOVINGRECOVERY#Moving HP-Recovery#
+4094,145,1,0,0,0,0,0,0,0,0,0,0 //SM_FATALBLOW#Attack Weak Point#
+4094,146,1,0,0,0,0,0,0,0,0,0,0 //SM_AUTOBERSERK#Auto Berserk#
+4094,55,10,0,0,0,0,0,0,0,0,0,0 //KN_SPEARMASTERY#Spear Mastery#
+4094,56,10,55,1,0,0,0,0,0,0,0,0 //KN_PIERCE#Pierce#
+4094,57,10,63,1,58,3,0,0,0,0,0,0 //KN_BRANDISHSPEAR#Brandish Spear#
+4094,58,10,56,5,0,0,0,0,0,0,0,0 //KN_SPEARSTAB#Spear Stab#
+4094,59,5,56,3,0,0,0,0,0,0,0,0 //KN_SPEARBOOMERANG#Spear Boomerang#
+4094,60,10,3,1,0,0,0,0,0,0,0,0 //KN_TWOHANDQUICKEN#Twohand Quicken#
+4094,61,5,3,1,0,0,0,0,0,0,0,0 //KN_AUTOCOUNTER#Counter Attack#
+4094,62,10,5,10,7,3,3,5,60,10,61,5//KN_BOWLINGBASH#Bowling Bash#
+4094,63,1,8,1,0,0,0,0,0,0,0,0 //KN_RIDING#Peco Peco Riding#
+4094,64,5,63,1,0,0,0,0,0,0,0,0 //KN_CAVALIERMASTERY#Cavalier Mastery#
+4094,1001,1,0,0,0,0,0,0,0,0,0,0 //KN_CHARGEATK#Charge Attack#
+4094,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
+4094,495,1,60,10,0,0,0,0,0,0,0,0	//KN_ONEHAND#Onehand Quicken#
+4094,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+4094,2001,5,2010,2,0,0,0,0,0,0,0,0 //RK_ENCHANTBLADE#Enchant Blade#
+4094,2002,5,2001,3,0,0,0,0,0,0,0,0 //RK_SONICWAVE#Sonic Wave#
+4094,2003,10,61,1,2001,2,0,0,0,0,0,0 //RK_DEATHBOUND#Death Bound#
+4094,2004,10,2020,3,0,0,0,0,0,0,0,0 //RK_HUNDREDSPEAR#Hundred Spear#
+4094,2005,5,2001,5,0,0,0,0,0,0,0,0 //RK_WINDCUTTER#Wind Cutter#
+4094,2006,5,2002,2,2003,5,2005,3,0,0,0,0 //RK_IGNITIONBREAK#Ignition Break#
+4094,2007,5,64,1,0,0,0,0,0,0,0,0 //RK_DRAGONTRAINING#Dragon Training#
+4094,2008,10,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONBREATH#Dragon Breath#
+4094,2009,5,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONHOWLING#Dragon Howling#
+4094,2010,10,0,0,0,0,0,0,0,0,0,0 //RK_RUNEMASTERY#Rune Mastery#
+4094,2020,5,57,2,0,0,0,0,0,0,0,0 //RK_PHANTOMTHRUST#Phantom Thrust#
+4094,5004,10,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONBREATH_WATER#Dragon Breath - Water#
+4094,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
+//Rune Knight (Dragon 5) (Trans)
+4095,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
+4095,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
+4095,2,10,0,0,0,0,0,0,0,0,0,0 //SM_SWORD#Sword Mastery#
+4095,3,10,2,1,0,0,0,0,0,0,0,0 //SM_TWOHAND#Two-Handed Sword Mastery#
+4095,4,10,0,0,0,0,0,0,0,0,0,0 //SM_RECOVERY#Increase HP Recovery#
+4095,5,10,0,0,0,0,0,0,0,0,0,0 //SM_BASH#Bash#
+4095,6,10,0,0,0,0,0,0,0,0,0,0 //SM_PROVOKE#Provoke#
+4095,7,10,5,5,0,0,0,0,0,0,0,0 //SM_MAGNUM#Magnum Break#
+4095,8,10,6,5,0,0,0,0,0,0,0,0 //SM_ENDURE#Endure#
+4095,144,1,0,0,0,0,0,0,0,0,0,0 //SM_MOVINGRECOVERY#Moving HP-Recovery#
+4095,145,1,0,0,0,0,0,0,0,0,0,0 //SM_FATALBLOW#Attack Weak Point#
+4095,146,1,0,0,0,0,0,0,0,0,0,0 //SM_AUTOBERSERK#Auto Berserk#
+4095,55,10,0,0,0,0,0,0,0,0,0,0 //KN_SPEARMASTERY#Spear Mastery#
+4095,56,10,55,1,0,0,0,0,0,0,0,0 //KN_PIERCE#Pierce#
+4095,57,10,63,1,58,3,0,0,0,0,0,0 //KN_BRANDISHSPEAR#Brandish Spear#
+4095,58,10,56,5,0,0,0,0,0,0,0,0 //KN_SPEARSTAB#Spear Stab#
+4095,59,5,56,3,0,0,0,0,0,0,0,0 //KN_SPEARBOOMERANG#Spear Boomerang#
+4095,60,10,3,1,0,0,0,0,0,0,0,0 //KN_TWOHANDQUICKEN#Twohand Quicken#
+4095,61,5,3,1,0,0,0,0,0,0,0,0 //KN_AUTOCOUNTER#Counter Attack#
+4095,62,10,5,10,7,3,3,5,60,10,61,5//KN_BOWLINGBASH#Bowling Bash#
+4095,63,1,8,1,0,0,0,0,0,0,0,0 //KN_RIDING#Peco Peco Riding#
+4095,64,5,63,1,0,0,0,0,0,0,0,0 //KN_CAVALIERMASTERY#Cavalier Mastery#
+4095,1001,1,0,0,0,0,0,0,0,0,0,0 //KN_CHARGEATK#Charge Attack#
+4095,355,5,5,5,7,5,3,5,0,0,0,0 //LK_AURABLADE#Aura Blade#
+4095,356,10,3,10,6,5,60,3,0,0,0,0 //LK_PARRYING#Parrying#
+4095,357,5,4,5,55,5,63,1,0,0,0,0 //LK_CONCENTRATION#Concentration#
+4095,358,1,4,10,6,5,8,3,0,0,0,0 //LK_TENSIONRELAX#Relax#
+4095,359,1,0,0,0,0,0,0,0,0,0,0 //LK_BERSERK#Frenzy# //Extra column removed. Rune Knights dont require job level 50 to use Berserk.
+4095,397,5,55,10,56,5,58,5,63,1,0,0 //LK_SPIRALPIERCE#Spiral Pierce#
+4095,398,5,55,9,63,1,0,0,0,0,0,0 //LK_HEADCRUSH#Traumatic Blow#
+4095,399,10,55,9,64,3,398,3,0,0,0,0 //LK_JOINTBEAT#Vital Strike#
+4095,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
+4095,495,1,60,10,0,0,0,0,0,0,0,0	//KN_ONEHAND#Onehand Quicken#
+4095,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+4095,2001,5,2010,2,0,0,0,0,0,0,0,0 //RK_ENCHANTBLADE#Enchant Blade#
+4095,2002,5,2001,3,0,0,0,0,0,0,0,0 //RK_SONICWAVE#Sonic Wave#
+4095,2003,10,61,1,2001,2,0,0,0,0,0,0 //RK_DEATHBOUND#Death Bound#
+4095,2004,10,2020,3,0,0,0,0,0,0,0,0 //RK_HUNDREDSPEAR#Hundred Spear#
+4095,2005,5,2001,5,0,0,0,0,0,0,0,0 //RK_WINDCUTTER#Wind Cutter#
+4095,2006,5,2002,2,2003,5,2005,3,0,0,0,0 //RK_IGNITIONBREAK#Ignition Break#
+4095,2007,5,64,1,0,0,0,0,0,0,0,0 //RK_DRAGONTRAINING#Dragon Training#
+4095,2008,10,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONBREATH#Dragon Breath#
+4095,2009,5,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONHOWLING#Dragon Howling#
+4095,2010,10,0,0,0,0,0,0,0,0,0,0 //RK_RUNEMASTERY#Rune Mastery#
+4095,2020,5,57,2,0,0,0,0,0,0,0,0 //RK_PHANTOMTHRUST#Phantom Thrust#
+4095,5004,10,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONBREATH_WATER#Dragon Breath - Water#
+4095,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Baby Rune Knight
 4096,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4096,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -4443,6 +4986,9 @@
 4096,2009,5,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONHOWLING#Dragon Howling#
 4096,2010,10,0,0,0,0,0,0,0,0,0,0 //RK_RUNEMASTERY#Rune Mastery#
 4096,2020,5,57,2,0,0,0,0,0,0,0,0 //RK_PHANTOMTHRUST#Phantom Thrust#
+4096,5004,10,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONBREATH_WATER#Dragon Breath - Water#
+4096,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Baby Warlock
 4097,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4097,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -4500,6 +5046,9 @@
 4097,2230,2,0,0,0,0,0,0,0,0,0,0 //WL_RELEASE#Release#
 4097,2231,1,0,0,0,0,0,0,0,0,0,0 //WL_READING_SB#Reading Spellbook#
 4097,2232,5,0,0,0,0,0,0,0,0,0,0 //WL_FREEZE_SP#Freeze Spell#
+4097,5012,5,2202,5,0,0,0,0,0,0,0,0 //WL_TELEKINESIS_INTENSE#Intense Telekinesis#
+4097,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Baby Ranger
 4098,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4098,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -4554,6 +5103,9 @@
 4098,2252,1,2248,1,0,0,0,0,0,0,0,0 //RA_VERDURETRAP#Verdure Trap#
 4098,2253,5,2237,1,0,0,0,0,0,0,0,0 //RA_FIRINGTRAP#Firing Trap#
 4098,2254,5,2237,1,0,0,0,0,0,0,0,0 //RA_ICEBOUNDTRAP#Icebound Trap#
+4098,5002,5,2234,5,0,0,0,0,0,0,0,0 //RA_UNLIMIT#Unlimited#
+4098,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Baby Arch Bishop
 4099,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4099,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -4613,6 +5165,9 @@
 4099,2054,10,68,1,0,0,0,0,0,0,0,0 //AB_DUPLELIGHT#Duple Light#
 4099,2057,5,2052,1,0,0,0,0,0,0,0,0 //AB_SILENTIUM#Silentium#
 4099,2515,5,2044,1,2053,1,0,0,0,0,0,0 //AB_SECRAMENT#Secrament#
+4099,5011,5,2051,2,0,0,0,0,0,0,0,0 //AB_OFFERTORIUM#Offertorium#
+4099,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Baby Mechanic
 4100,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4100,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -4683,6 +5238,9 @@
 4100,2282,5,2277,2,0,0,0,0,0,0,0,0 //NC_MAGICDECOY#FAW - Magic Decoy#
 4100,2283,1,2281,1,0,0,0,0,0,0,0,0 //NC_DISJOINT#FAW Removal#
 4100,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
+4100,5006,5,2277,1,0,0,0,0,0,0,0,0 //NC_MAGMA_ERUPTION#Magma Eruption#
+4100,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Baby Guillotine Cross
 4101,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4101,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -4728,6 +5286,9 @@
 4101,2035,5,2034,1,0,0,0,0,0,0,0,0 //GC_HALLUCINATIONWALK#Hallucination Walk#
 4101,2036,5,136,10,0,0,0,0,0,0,0,0 //GC_ROLLINGCUTTER#Rolling Cutter#
 4101,2037,5,2036,1,0,0,0,0,0,0,0,0 //GC_CROSSRIPPERSLASHER#Cross Ripper Slasher#
+4101,5001,5,2023,5,0,0,0,0,0,0,0,0 //GC_DARKCROW#Dark Claw#
+4101,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Baby Royal Guard
 4102,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4102,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -4782,6 +5343,9 @@
 4102,2323,5,2311,3,0,0,0,0,0,0,0,0 //LG_EARTHDRIVE#Earth Drive#
 4102,2324,5,2318,3,2319,3,0,0,0,0,0,0 //LG_HESPERUSLIT#Hesperus Lit#
 4102,2325,5,2315,3,2321,4,2322,5,0,0,0,0 //LG_INSPIRATION#Inspiration#
+4102,5013,5,2311,5,0,0,0,0,0,0,0,0 //LG_KINGS_GRACE#King's Grace#
+4102,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Baby Sorcerer
 4103,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4103,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -4853,6 +5417,9 @@
 4103,2466,3,2458,3,0,0,0,0,0,0,0,0 //SO_WATER_INSIGNIA#Water Insignia#
 4103,2467,3,2459,3,0,0,0,0,0,0,0,0 //SO_WIND_INSIGNIA#Wind Insignia#
 4103,2468,3,2460,3,0,0,0,0,0,0,0,0 //SO_EARTH_INSIGNIA#Earth Insignia#
+4103,5008,5,2456,3,0,0,0,0,0,0,0,0 //SO_ELEMENTAL_SHIELD#Elemental Shield#
+4103,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Baby Minstrel
 4104,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4104,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -4909,6 +5476,9 @@
 4104,2432,5,2427,1,0,0,0,0,0,0,0,0 //WM_MELODYOFSINK#Melody Of Sink#
 4104,2433,5,2431,1,0,0,0,0,0,0,0,0 //WM_BEYOND_OF_WARCRY#Warcry Of Beyond#
 4104,2434,5,2429,1,2433,1,0,0,0,0,0,0 //WM_UNLIMITED_HUMMING_VOICE#Unlimited Humming Voice#
+4104,5007,5,2412,2,0,0,0,0,0,0,0,0 //WM_FRIGG_SONG#Frigg's Song#
+4104,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Baby Wanderer
 4105,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4105,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -4965,6 +5535,9 @@
 4105,2432,5,2427,1,0,0,0,0,0,0,0,0 //WM_MELODYOFSINK#Melody Of Sink#
 4105,2433,5,2431,1,0,0,0,0,0,0,0,0 //WM_BEYOND_OF_WARCRY#Warcry Of Beyond#
 4105,2434,5,2429,1,2433,1,0,0,0,0,0,0 //WM_UNLIMITED_HUMMING_VOICE#Unlimited Humming Voice#
+4105,5007,5,2412,2,0,0,0,0,0,0,0,0 //WM_FRIGG_SONG#Frigg's Song#
+4105,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Baby Sura
 4106,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4106,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -5025,6 +5598,9 @@
 4106,2348,5,2347,5,0,0,0,0,0,0,0,0 //SR_GENTLETOUCH_REVITALIZE#Gentle Touch - Revitalize#
 4106,2517,5,2340,1,2518,3,0,0,0,0,0,0 //SR_HOWLINGOFLION#Howling Of Lion#
 4106,2518,5,267,3,0,0,0,0,0,0,0,0 //SR_RIDEINLIGHTNING#Ride In Lightening#
+4106,5009,5,2326,3,2327,1,2329,3,2330,1,0,0 //SR_FLASHCOMBO#Flash Combo#
+4106,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Baby Genetic
 4107,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4107,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -5081,6 +5657,9 @@
 4107,2496,2,2495,1,0,0,0,0,0,0,0,0 //GN_MAKEBOMB#Create Bomb#
 4107,2497,10,0,0,0,0,0,0,0,0,0,0 //GN_S_PHARMACY#Special Pharmacy#
 4107,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
+4107,5003,5,2497,1,0,0,0,0,0,0,0,0 //GN_ILLUSIONDOPING#Illusion Doping#
+4107,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Baby Shadow Chaser
 4108,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4108,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -5139,6 +5718,9 @@
 4108,2302,3,2296,3,2301,3,0,0,0,0,0,0 //SC_MAELSTROM#Maelstrom#
 4108,2303,3,2300,3,0,0,0,0,0,0,0,0 //SC_BLOODYLUST#Bloody Lust#
 4108,2304,3,2300,3,0,0,0,0,0,0,0,0 //SC_FEINTBOMB#Feint Bomb#
+4108,5010,5,2288,2,0,0,0,0,0,0,0,0 //SC_ESCAPE#Emergency Escape#
+4108,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Baby Rune Knight (Dragon)
 4109,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4109,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -5178,6 +5760,9 @@
 4109,2009,5,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONHOWLING#Dragon Howling#
 4109,2010,10,0,0,0,0,0,0,0,0,0,0 //RK_RUNEMASTERY#Rune Mastery#
 4109,2020,5,57,2,0,0,0,0,0,0,0,0 //RK_PHANTOMTHRUST#Phantom Thrust#
+4109,5004,10,2007,2,0,0,0,0,0,0,0,0 //RK_DRAGONBREATH_WATER#Dragon Breath - Water#
+4109,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Baby Royal Guard (Gryphon)
 4110,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4110,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -5232,6 +5817,9 @@
 4110,2323,5,2311,3,0,0,0,0,0,0,0,0 //LG_EARTHDRIVE#Earth Drive#
 4110,2324,5,2318,3,2319,3,0,0,0,0,0,0 //LG_HESPERUSLIT#Hesperus Lit#
 4110,2325,5,2315,3,2321,4,2322,5,0,0,0,0 //LG_INSPIRATION#Inspiration#
+4110,5013,5,2311,5,0,0,0,0,0,0,0,0 //LG_KINGS_GRACE#King's Grace#
+4110,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Baby Ranger (Waug)
 4111,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4111,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -5286,6 +5874,9 @@
 4111,2252,1,2248,1,0,0,0,0,0,0,0,0 //RA_VERDURETRAP#Verdure Trap#
 4111,2253,5,2237,1,0,0,0,0,0,0,0,0 //RA_FIRINGTRAP#Firing Trap#
 4111,2254,5,2237,1,0,0,0,0,0,0,0,0 //RA_ICEBOUNDTRAP#Icebound Trap#
+4111,5002,5,2234,5,0,0,0,0,0,0,0,0 //RA_UNLIMIT#Unlimited#
+4111,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Baby Mechanic (Mado)
 4112,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4112,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -5356,6 +5947,9 @@
 4112,2282,5,2277,2,0,0,0,0,0,0,0,0 //NC_MAGICDECOY#FAW - Magic Decoy#
 4112,2283,1,2281,1,0,0,0,0,0,0,0,0 //NC_DISJOINT#FAW Removal#
 4112,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
+4112,5006,5,2277,1,0,0,0,0,0,0,0,0 //NC_MAGMA_ERUPTION#Magma Eruption#
+4112,5014,5,0,0,0,0,0,0,0,0,0,0 //ALL_FULL_THROTTLE#Full Throttle#
+
 //Super Novice (Expanded)
 4190,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4190,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -5440,6 +6034,7 @@
 4190,262,1,261,5,0,0,0,0,0,0,0,0 //MO_ABSORBSPIRITS#Absorb Spirit Sphere#
 4190,365,1,9,1,0,0,0,0,0,0,0,0 //HW_MAGICCRASHER#Stave Crasher#
 4190,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
+
 //Super Baby (Expanded)
 4191,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4191,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -5525,6 +6120,7 @@
 4191,262,1,261,5,0,0,0,0,0,0,0,0 //MO_ABSORBSPIRITS#Absorb Spirit Sphere#
 4191,365,1,9,1,0,0,0,0,0,0,0,0 //HW_MAGICCRASHER#Stave Crasher#
 4191,2535,1,41,1,0,0,0,0,0,0,0,0 //ALL_BUYING_STORE#Open Buying Store#
+
 //Kagerou
 4211,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4211,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -5578,6 +6174,7 @@
 4211,3023,5,3012,1,0,0,0,0,0,0,0,0 //KG_KAGEHUMI##
 4211,3024,5,3023,2,0,0,0,0,0,0,0,0 //KG_KYOMU##
 4211,3025,5,3024,3,0,0,0,0,0,0,0,0 //KG_KAGEMUSYA##
+
 //Oboro
 4212,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
 4212,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
@@ -5631,3 +6228,51 @@
 4212,3026,5,3021,1,0,0,0,0,0,0,0,0 //OB_ZANGETSU##
 4212,3027,5,3029,3,0,0,0,0,0,0,0,0 //OB_OBOROGENSOU##
 4212,3029,5,3026,2,0,0,0,0,0,0,0,0 //OB_AKAITSUKI##
+
+//Rebellion
+4215,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
+4215,142,1,0,0,0,0,0,0,0,0,0,0 //NV_FIRSTAID#First Aid#
+4215,500,5,0,0,0,0,0,0,0,0,0,0 //GS_GLITTERING#Flip the Coin#
+4215,501,1,500,1,0,0,0,0,0,0,0,0 //GS_FLING#Fling#
+4215,502,1,500,1,511,10,0,0,0,0,0,0 //GS_TRIPLEACTION#Triple Action#
+4215,503,1,500,5,512,10,0,0,0,0,0,0 //GS_BULLSEYE#Bulls Eye#
+4215,504,1,500,4,517,10,0,0,0,0,0,0 //GS_MADNESSCANCEL#Madness Canceler#
+4215,505,1,500,4,513,5,0,0,0,0,0,0 //GS_ADJUSTMENT#AdJustment#
+4215,506,1,500,2,510,10,0,0,0,0,0,0 //GS_INCREASING#Increasing Accuracy#
+4215,507,1,500,1,0,0,0,0,0,0,0,0 //GS_MAGICALBULLET#Magical Bullet#
+4215,508,1,500,1,0,0,0,0,0,0,0,0 //GS_CRACKER#Cracker#
+4215,509,10,0,0,0,0,0,0,0,0,0,0 //GS_SINGLEACTION#Single Action#
+4215,510,10,0,0,0,0,0,0,0,0,0,0 //GS_SNAKEEYE#Snake Eye#
+4215,511,10,509,1,0,0,0,0,0,0,0,0 //GS_CHAINACTION#Chain Action#
+4215,512,10,509,5,0,0,0,0,0,0,0,0 //GS_TRACKING#Tracking#
+4215,513,5,512,7,0,0,0,0,0,0,0,0 //GS_DISARM#Disarm#
+4215,514,5,512,5,0,0,0,0,0,0,0,0 //GS_PIERCINGSHOT#Piercing Shot#
+4215,515,10,511,3,0,0,0,0,0,0,0,0 //GS_RAPIDSHOWER#Rapid Shower#
+4215,516,10,515,5,0,0,0,0,0,0,0,0 //GS_DESPERADO#Desperado#
+4215,517,10,515,7,516,5,0,0,0,0,0,0 //GS_GATLINGFEVER#Gatling Fever#
+4215,518,10,509,5,0,0,0,0,0,0,0,0 //GS_DUST#Dust#
+4215,519,10,518,3,0,0,0,0,0,0,0,0 //GS_FULLBUSTER#Full Buster#
+4215,520,10,519,5,0,0,0,0,0,0,0,0 //GS_SPREADATTACK#Spread Attack#
+4215,521,10,520,7,0,0,0,0,0,0,0,0 //GS_GROUNDDRIFT#Ground Drift#
+4215,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
+4215,681,1,0,0,0,0,0,0,0,0,0,0 //ALL_INCCARRY#Enlarge Weight Limit R#
+4215,2552,1,500,5,0,0,0,0,0,0,0,0 //RL_RICHS_COIN#Rich's Coin#
+4215,2553,5,514,1,0,0,0,0,0,0,0,0 //RL_MASS_SPIRAL#Mass Spiral#
+4215,2554,5,2557,1,0,0,0,0,0,0,0,0 //RL_BANISHING_BUSTER#Banishing Buster#
+4215,2555,5,0,0,0,0,0,0,0,0,0,0 //RL_B_TRAP#Bind Trap#
+4215,2556,1,501,1,0,0,0,0,0,0,0,0 //RL_FLICKER#Flicker#
+4215,2557,5,513,1,518,1,0,0,0,0,0,0 //RL_S_STORM#Shatter Storm#
+4215,2558,10,511,10,0,0,0,0,0,0,0,0 //RL_E_CHAIN#Eternal Chain#
+4215,2559,1,2558,1,0,0,0,0,0,0,0,0 //RL_QD_SHOT#Quick Draw Shot#
+4215,2560,1,506,1,0,0,0,0,0,0,0,0 //RL_C_MARKER#Crimson Marker#
+4215,2561,5,2564,1,0,0,0,0,0,0,0,0 //RL_FIREDANCE#Fire Dance#
+4215,2562,5,520,1,0,0,0,0,0,0,0,0 //RL_H_MINE#Howling Mine#
+4215,2563,5,0,0,0,0,0,0,0,0,0,0 //RL_P_ALTER#Platinum Alter#
+4215,2564,5,516,10,0,0,0,0,0,0,0,0 //RL_FALLEN_ANGEL#Fallen Angel#
+4215,2565,5,2567,1,0,0,0,0,0,0,0,0 //RL_R_TRIP#Round Trip#
+4215,2566,5,2560,1,2562,3,0,0,0,0,0,0 //RL_D_TAIL#Dragon Tail#
+4215,2567,5,517,1,0,0,0,0,0,0,0,0 //RL_FIRE_RAIN#Fire Rain#
+4215,2568,5,2561,2,0,0,0,0,0,0,0,0 //RL_HEAT_BARREL#Heat Barrel#
+4215,2569,5,2553,1,0,0,0,0,0,0,0,0 //RL_AM_BLAST#Anti-Material Blast#
+4215,2570,5,2554,3,0,0,0,0,0,0,0,0 //RL_SLUGSHOT#Slug Shot#
+4215,2571,5,2569,3,0,0,0,0,0,0,0,0 //RL_HAMMER_OF_GOD#Hammer of God#

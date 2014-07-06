@@ -1406,7 +1406,7 @@ char * job_name(int class_)
 	switch (class_) {
 	case JOB_NOVICE:    return "Novice";
 	case JOB_SWORDMAN:    return "Swordsman";
-	case JOB_MAGE:    return "Mage";
+	case JOB_MAGE:    return "Magician";
 	case JOB_ARCHER:    return "Archer";
 	case JOB_ACOLYTE:    return "Acolyte";
 	case JOB_MERCHANT:    return "Merchant";
@@ -1433,9 +1433,10 @@ char * job_name(int class_)
 	case JOB_XMAS: return "Christmas";
 	case JOB_SUMMER: return "Summer";
 	case JOB_HANBOK: return "Hanbok";
+	case JOB_OKTOBERFEST: return "Oktoberfest";
 	case JOB_NOVICE_HIGH: return "Novice High";
 	case JOB_SWORDMAN_HIGH: return "Swordsman High";
-	case JOB_MAGE_HIGH: return "Mage High";
+	case JOB_MAGE_HIGH: return "Magician High";
 	case JOB_ARCHER_HIGH: return "Archer High";
 	case JOB_ACOLYTE_HIGH: return "Acolyte High";
 	case JOB_MERCHANT_HIGH: return "Merchant High";
@@ -1446,7 +1447,7 @@ char * job_name(int class_)
 	case JOB_WHITESMITH: return "Whitesmith";
 	case JOB_SNIPER: return "Sniper";
 	case JOB_ASSASSIN_CROSS: return "Assassin Cross";
-	case JOB_LORD_KNIGHT2: return "Peko Knight";
+	case JOB_LORD_KNIGHT2: return "Peco Knight";
 	case JOB_PALADIN: return "Paladin";
 	case JOB_CHAMPION: return "Champion";
 	case JOB_PROFESSOR: return "Professor";
@@ -1454,10 +1455,10 @@ char * job_name(int class_)
 	case JOB_CREATOR: return "Creator";
 	case JOB_CLOWN: return "Clown";
 	case JOB_GYPSY: return "Gypsy";
-	case JOB_PALADIN2: return "Peko Paladin";
+	case JOB_PALADIN2: return "Peco Paladin";
 	case JOB_BABY: return "Baby Novice";
 	case JOB_BABY_SWORDMAN: return "Baby Swordsman";
-	case JOB_BABY_MAGE: return "Baby Mage";
+	case JOB_BABY_MAGE: return "Baby Magician";
 	case JOB_BABY_ARCHER: return "Baby Archer";
 	case JOB_BABY_ACOLYTE: return "Baby Acolyte";
 	case JOB_BABY_MERCHANT: return "Baby Merchant";
@@ -1485,40 +1486,27 @@ char * job_name(int class_)
 	case JOB_GANGSI: return "Bongun/Munak";
 	case JOB_DEATH_KNIGHT: return "Death Knight";
 	case JOB_DARK_COLLECTOR: return "Dark Collector";
-	case JOB_RUNE_KNIGHT: return "Rune Knight";
-	case JOB_WARLOCK: return "Warlock";
-	case JOB_RANGER: return "Ranger";
-	case JOB_ARCH_BISHOP: return "Arch Bishop";
-	case JOB_MECHANIC: return "Mechanic";
-	case JOB_GUILLOTINE_CROSS: return "Guillotine Cross";
-	case JOB_RUNE_KNIGHT_T: return "Rune Knight";
-	case JOB_WARLOCK_T: return "Warlock";
-	case JOB_RANGER_T: return "Ranger";
-	case JOB_ARCH_BISHOP_T: return "Arch Bishop";
-	case JOB_MECHANIC_T: return "Mechanic";
-	case JOB_GUILLOTINE_CROSS_T: return "Guillotine Cross";
-	case JOB_ROYAL_GUARD: return "Royal Guard";
-	case JOB_SORCERER: return "Sorcerer";
-	case JOB_MINSTREL: return "Minstrel";
-	case JOB_WANDERER: return "Wanderer";
-	case JOB_SURA: return "Sura";
-	case JOB_GENETIC: return "Genetic";
-	case JOB_SHADOW_CHASER: return "Shadow Chaser";
-	case JOB_ROYAL_GUARD_T: return "Royal Guard";
-	case JOB_SORCERER_T: return "Sorcerer";
-	case JOB_MINSTREL_T: return "Minstrel";
-	case JOB_WANDERER_T: return "Wanderer";
-	case JOB_SURA_T: return "Sura";
-	case JOB_GENETIC_T: return "Genetic";
-	case JOB_SHADOW_CHASER_T: return "Shadow Chaser";
-	case JOB_RUNE_KNIGHT2: return "Rune Knight Dragon";
-	case JOB_RUNE_KNIGHT_T2: return "Rune Knight Dragon";
-	case JOB_ROYAL_GUARD2: return "Royal Guard Gryphon";
-	case JOB_ROYAL_GUARD_T2: return "Royal Guard Gryphon";
-	case JOB_RANGER2: return "Ranger Warg";
-	case JOB_RANGER_T2: return "Ranger Warg";
-	case JOB_MECHANIC2: return "Mechanic Mado Gear";
-	case JOB_MECHANIC_T2: return "Mechanic Mado Gear";
+	case JOB_RUNE_KNIGHT: case JOB_RUNE_KNIGHT_T: return "Rune Knight";
+	case JOB_WARLOCK: case JOB_WARLOCK_T: return "Warlock";
+	case JOB_RANGER: case JOB_RANGER_T: return "Ranger";
+	case JOB_ARCH_BISHOP: case JOB_ARCH_BISHOP_T: return "Arch Bishop";
+	case JOB_MECHANIC: case JOB_MECHANIC_T: return "Mechanic";
+	case JOB_GUILLOTINE_CROSS: case JOB_GUILLOTINE_CROSS_T: return "Guillotine Cross";
+	case JOB_ROYAL_GUARD: case JOB_ROYAL_GUARD_T: return "Royal Guard";
+	case JOB_SORCERER: case JOB_SORCERER_T: return "Sorcerer";
+	case JOB_MINSTREL: case JOB_MINSTREL_T: return "Minstrel";
+	case JOB_WANDERER: case JOB_WANDERER_T: return "Wanderer";
+	case JOB_SURA: case JOB_SURA_T: return "Sura";
+	case JOB_GENETIC: case JOB_GENETIC_T: return "Genetic";
+	case JOB_SHADOW_CHASER: case JOB_SHADOW_CHASER_T: return "Shadow Chaser";
+	case JOB_RUNE_KNIGHT2: case JOB_RUNE_KNIGHT_T2:
+	case JOB_RUNE_KNIGHT3: case JOB_RUNE_KNIGHT_T3:
+	case JOB_RUNE_KNIGHT4: case JOB_RUNE_KNIGHT_T4:
+	case JOB_RUNE_KNIGHT5: case JOB_RUNE_KNIGHT_T5:
+	case JOB_RUNE_KNIGHT6: case JOB_RUNE_KNIGHT_T6: return "Rune Knight Dragon";
+	case JOB_ROYAL_GUARD2: case JOB_ROYAL_GUARD_T2: return "Royal Guard Gryphon";
+	case JOB_RANGER2: case JOB_RANGER_T2: return "Ranger Warg";
+	case JOB_MECHANIC2: case JOB_MECHANIC_T2: return "Mechanic Mado Gear";
 	case JOB_BABY_RUNE: return "Baby Rune Knight";
 	case JOB_BABY_WARLOCK: return "Baby Warlock";
 	case JOB_BABY_RANGER: return "Baby Ranger";
@@ -1536,10 +1524,11 @@ char * job_name(int class_)
 	case JOB_BABY_GUARD2: return "Baby Royal Guard Gryphon";
 	case JOB_BABY_RANGER2: return "Baby Ranger Warg";
 	case JOB_BABY_MECHANIC2: return "Baby Mechanic Mado Gear";
-	case JOB_SUPER_NOVICE_E:   return "Expanded Super Novice";
-	case JOB_SUPER_BABY_E:   return "Expanded Super Baby";
-	case JOB_KAGEROU:   return "Kagerou";
-	case JOB_OBORO:   return "Oboro";
+	case JOB_SUPER_NOVICE_E: return "Expanded Super Novice";
+	case JOB_SUPER_BABY_E: return "Expanded Super Baby";
+	case JOB_KAGEROU: return "Kagerou";
+	case JOB_OBORO: return "Oboro";
+	case JOB_REBELLION: return "Rebellion";
 	}
 	return "Unknown Job";
 }

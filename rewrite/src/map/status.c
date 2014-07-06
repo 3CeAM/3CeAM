@@ -693,7 +693,7 @@ void initChangeTables(void)
 	SkillStatusChangeTable[SL_SOULLINKER]  = (sc_type)MAPID_SOUL_LINKER,
 	SkillStatusChangeTable[SL_DEATHKNIGHT] = (sc_type)MAPID_DEATH_KNIGHT,
 	SkillStatusChangeTable[SL_COLLECTOR]   = (sc_type)MAPID_DARK_COLLECTOR,
-	SkillStatusChangeTable[SL_NINJA]       = (sc_type)MAPID_NINJA,//Fix this to work with Kagerou/Oboro. [Rytech]
+	SkillStatusChangeTable[SL_NINJA]       = (sc_type)MAPID_NINJA,
 	SkillStatusChangeTable[SL_GUNNER]      = (sc_type)MAPID_GUNSLINGER,
 
 	//Status that don't have a skill associated.
@@ -2155,11 +2155,12 @@ static unsigned int status_base_pc_maxhp(struct map_session_data* sd, struct sta
 	unsigned int val = pc_class2idx(sd->status.class_);
 	val = 35 + sd->status.base_level*hp_coefficient2[val]/100 + hp_sigma_val[val][sd->status.base_level];
 
-	if((sd->class_&MAPID_UPPERMASK) == MAPID_NINJA || (sd->class_&MAPID_UPPERMASK) == MAPID_GUNSLINGER)
+	if((sd->class_&MAPID_UPPERMASK) == MAPID_NINJA || (sd->class_&MAPID_UPPERMASK) == MAPID_GUNSLINGER || 
+		(sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION)
 		val += 100; //Since their HP can't be approximated well enough without this.
 	if((sd->class_&MAPID_UPPERMASK) == MAPID_TAEKWON && sd->status.base_level >= 90 && pc_famerank(sd->status.char_id, MAPID_TAEKWON))
 		val *= 3; //Triple max HP for top ranking Taekwons over level 90.
-	if((sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE && sd->status.base_level >= 99)
+	if(((sd->class_&MAPID_BASEMASK) == MAPID_SUPER_NOVICE || (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE_E) && sd->status.base_level >= 99)
 		val += 2000; //Supernovice lvl99 hp bonus.
 
 	val += val * status->vit/100; // +1% per each point of VIT
@@ -2633,7 +2634,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	}
 
 	// If a Super Novice has never died and is at least joblv 70, he gets all stats +10
-	if( (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE && sd->die_counter == 0 && sd->status.job_level >= 70 )
+	if(((sd->class_&MAPID_BASEMASK) == MAPID_SUPER_NOVICE && sd->status.job_level >= 70 || (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE_E) && sd->die_counter == 0)
 	{
 		status->str += 10;
 		status->agi += 10;
@@ -6825,7 +6826,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 				val2 = 0;
 			break;
 		case SC_SUITON:
-			if (!val2 || (sd && (sd->class_&MAPID_UPPERMASK) == MAPID_NINJA)) {
+			if (!val2 || (sd && ((sd->class_&MAPID_BASEMASK) == MAPID_NINJA || (sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO))) {
 				//No penalties.
 				val2 = 0; //Agi penalty
 				val3 = 0; //Walk speed penalty

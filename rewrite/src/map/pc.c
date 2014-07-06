@@ -1746,7 +1746,7 @@ int pc_calc_skilltree_normalize_job(struct map_session_data *sd)
 	if( pc_checkskill(sd, NV_BASIC) < 9 )
 		c = MAPID_NOVICE; // Consider Novice Tree when you don't have NV_BASIC maxed.
 
-	else if( (sd->class_&JOBL_2) && (sd->class_&MAPID_UPPERMASK) != MAPID_SUPER_NOVICE )
+	else if(sd->class_&JOBL_2)
 	{
 		if( sd->change_level[0] <= 0 )
 		{
@@ -4965,23 +4965,26 @@ int pc_jobid2mapid(unsigned short b_class)
 		case JOB_ACOLYTE:               return MAPID_ACOLYTE;
 		case JOB_MERCHANT:              return MAPID_MERCHANT;
 		case JOB_THIEF:                 return MAPID_THIEF;
+		case JOB_SUPER_NOVICE:          return MAPID_SUPER_NOVICE;
 		case JOB_TAEKWON:               return MAPID_TAEKWON;
 		case JOB_WEDDING:               return MAPID_WEDDING;
 		case JOB_GUNSLINGER:            return MAPID_GUNSLINGER;
 		case JOB_NINJA:                 return MAPID_NINJA;
 		case JOB_XMAS:                  return MAPID_XMAS;
 		case JOB_SUMMER:                return MAPID_SUMMER;
-		case JOB_HANBOK:                return MAPID_HANBOK;
 		case JOB_GANGSI:                return MAPID_GANGSI;
+		case JOB_HANBOK:                return MAPID_HANBOK;
+		case JOB_OKTOBERFEST:           return MAPID_OKTOBERFEST;
 	//2-1 Jobs
-		case JOB_SUPER_NOVICE:          return MAPID_SUPER_NOVICE;
 		case JOB_KNIGHT:                return MAPID_KNIGHT;
 		case JOB_WIZARD:                return MAPID_WIZARD;
 		case JOB_HUNTER:                return MAPID_HUNTER;
 		case JOB_PRIEST:                return MAPID_PRIEST;
 		case JOB_BLACKSMITH:            return MAPID_BLACKSMITH;
 		case JOB_ASSASSIN:              return MAPID_ASSASSIN;
+		case JOB_SUPER_NOVICE_E:        return MAPID_SUPER_NOVICE_E;
 		case JOB_STAR_GLADIATOR:        return MAPID_STAR_GLADIATOR;
+		case JOB_REBELLION:             return MAPID_REBELLION;
 		case JOB_KAGEROU:
 		case JOB_OBORO:                 return MAPID_KAGEROUOBORO;
 		case JOB_DEATH_KNIGHT:          return MAPID_DEATH_KNIGHT;
@@ -5043,7 +5046,6 @@ int pc_jobid2mapid(unsigned short b_class)
 		case JOB_BABY_ALCHEMIST:        return MAPID_BABY_ALCHEMIST;
 		case JOB_BABY_ROGUE:            return MAPID_BABY_ROGUE;
 	//3-1 Jobs
-		case JOB_SUPER_NOVICE_E:        return MAPID_SUPER_NOVICE_E;
 		case JOB_RUNE_KNIGHT:           return MAPID_RUNE_KNIGHT;
 		case JOB_WARLOCK:               return MAPID_WARLOCK;
 		case JOB_RANGER:                return MAPID_RANGER;
@@ -5107,23 +5109,26 @@ int pc_mapid2jobid(unsigned short class_, int sex)
 		case MAPID_ACOLYTE:               return JOB_ACOLYTE;
 		case MAPID_MERCHANT:              return JOB_MERCHANT;
 		case MAPID_THIEF:                 return JOB_THIEF;
+		case MAPID_SUPER_NOVICE:          return JOB_SUPER_NOVICE;
 		case MAPID_TAEKWON:               return JOB_TAEKWON;
 		case MAPID_WEDDING:               return JOB_WEDDING;
 		case MAPID_GUNSLINGER:            return JOB_GUNSLINGER;
 		case MAPID_NINJA:                 return JOB_NINJA;
 		case MAPID_XMAS:                  return JOB_XMAS;
 		case MAPID_SUMMER:                return JOB_SUMMER;
-		case MAPID_HANBOK:                return JOB_HANBOK;
 		case MAPID_GANGSI:                return JOB_GANGSI;
+		case MAPID_HANBOK:                return JOB_HANBOK;
+		case MAPID_OKTOBERFEST:           return JOB_OKTOBERFEST;
 	//2-1 Jobs
-		case MAPID_SUPER_NOVICE:          return JOB_SUPER_NOVICE;
 		case MAPID_KNIGHT:                return JOB_KNIGHT;
 		case MAPID_WIZARD:                return JOB_WIZARD;
 		case MAPID_HUNTER:                return JOB_HUNTER;
 		case MAPID_PRIEST:                return JOB_PRIEST;
 		case MAPID_BLACKSMITH:            return JOB_BLACKSMITH;
 		case MAPID_ASSASSIN:              return JOB_ASSASSIN;
+		case MAPID_SUPER_NOVICE_E:        return JOB_SUPER_NOVICE_E;
 		case MAPID_STAR_GLADIATOR:        return JOB_STAR_GLADIATOR;
+		case MAPID_REBELLION:             return JOB_REBELLION;
 		case MAPID_KAGEROUOBORO:          return sex?JOB_KAGEROU:JOB_OBORO;
 		case MAPID_DEATH_KNIGHT:          return JOB_DEATH_KNIGHT;
 	//2-2 Jobs
@@ -5181,7 +5186,6 @@ int pc_mapid2jobid(unsigned short class_, int sex)
 		case MAPID_BABY_ALCHEMIST:        return JOB_BABY_ALCHEMIST;
 		case MAPID_BABY_ROGUE:            return JOB_BABY_ROGUE;
 	//3-1 Jobs
-		case MAPID_SUPER_NOVICE_E:        return JOB_SUPER_NOVICE_E;
 		case MAPID_RUNE_KNIGHT:           return JOB_RUNE_KNIGHT;
 		case MAPID_WARLOCK:               return JOB_WARLOCK;
 		case MAPID_RANGER:                return JOB_RANGER;
@@ -5280,6 +5284,9 @@ char* job_name(int class_)
 	case JOB_HANBOK:
 		return msg_txt(655);
 
+	case JOB_OKTOBERFEST:
+		return msg_txt(657);
+
 	case JOB_NOVICE_HIGH:
 	case JOB_SWORDMAN_HIGH:
 	case JOB_MAGE_HIGH:
@@ -5339,7 +5346,7 @@ char* job_name(int class_)
 	case JOB_BABY_ALCHEMIST:
 	case JOB_BABY_BARD:
 	case JOB_BABY_DANCER:
-		return msg_txt(608 - JOB_BABY_CRUSADER + class_);
+		return msg_txt(608 - JOB_BABY_CRUSADER +class_);
 		
 	case JOB_BABY_CRUSADER2:
 		return msg_txt(608);
@@ -5396,6 +5403,14 @@ char* job_name(int class_)
 
 	case JOB_RUNE_KNIGHT2:
 	case JOB_RUNE_KNIGHT_T2:
+	case JOB_RUNE_KNIGHT3:
+	case JOB_RUNE_KNIGHT_T3:
+	case JOB_RUNE_KNIGHT4:
+	case JOB_RUNE_KNIGHT_T4:
+	case JOB_RUNE_KNIGHT5:
+	case JOB_RUNE_KNIGHT_T5:
+	case JOB_RUNE_KNIGHT6:
+	case JOB_RUNE_KNIGHT_T6:
 		return msg_txt(625);
 
 	case JOB_ROYAL_GUARD2:
@@ -5445,8 +5460,11 @@ char* job_name(int class_)
 	case JOB_OBORO:
 		return msg_txt(653 - JOB_KAGEROU+class_);
 
+	case JOB_REBELLION:
+		return msg_txt(656);
+	
 	default:
-		return msg_txt(655);
+		return msg_txt(699);
 	}
 }
 
@@ -5551,7 +5569,7 @@ int pc_checkbaselevelup(struct map_session_data *sd)
 	status_calc_pc(sd,0);
 	status_percent_heal(&sd->bl,100,100);
 
-	if((sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE)
+	if((sd->class_&MAPID_BASEMASK) == MAPID_SUPER_NOVICE || (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE_E)
 	{
 		sc_start(&sd->bl,status_skill2sc(PR_KYRIE),100,1,skill_get_time(PR_KYRIE,1));
 		sc_start(&sd->bl,status_skill2sc(PR_IMPOSITIO),100,1,skill_get_time(PR_IMPOSITIO,1));
@@ -5996,7 +6014,7 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 		return 0;
 	}*/
 
-	if( !pc_isSkillFromJob(c, skill_num) && (sd->class_&JOBL_2) && (sd->class_&MAPID_UPPERMASK) != MAPID_SUPER_NOVICE )
+	if( !pc_isSkillFromJob(c, skill_num) && (sd->class_&JOBL_2) )
 	{
 		if( sd->status.skill_point >= sd->status.job_level && (sd->change_level[0] > 0 ? ( skill_point < sd->change_level[0] + 8 ) : (skill_point < 58)) )
 		{	// 1st job skills are not used.	
@@ -6004,7 +6022,7 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 			clif_msgtable_num(sd->fd,MSG_UPGRADESKER_FIRSTJOB,i);
 			return 0;
 		}//May need to update in the future to include new 3rd job skills from the 5000 range. [Rytech]
-		if( sd->class_&JOBL_THIRD && (skill_num >= RK_ENCHANTBLADE && skill_num <= SR_RIDEINLIGHTNING) &&
+		if( sd->class_&JOBL_THIRD && (skill_num >= RK_ENCHANTBLADE && skill_num <= LG_OVERBRAND_PLUSATK || skill_num >= GC_DARKCROW && skill_num <= NC_MAGMA_ERUPTION_DOTDAMAGE) &&
 			skill_point < (sd->change_level[1] > 0 ? sd->change_level[0] + sd->change_level[1] + 7 : (sd->class_&JOBL_UPPER) ? 127 : 107) )
 		{	// 2nd job skill not usd.
 			i = (sd->change_level[1] > 0 ? sd->change_level[0] + sd->change_level[1] + 7 : (sd->class_&JOBL_UPPER) ? 127 : 107) - skill_point;
@@ -6638,7 +6656,7 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 	}
 
 	// activate Steel body if a super novice dies at 99+% exp [celest]
-	if ((sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE && !sd->state.snovice_dead_flag)
+	if (((sd->class_&MAPID_BASEMASK) == MAPID_SUPER_NOVICE || (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE_E) && !sd->state.snovice_dead_flag)
   	{
 		unsigned int next = pc_nextbaseexp(sd);
 		if( next == 0 ) next = pc_thisbaseexp(sd);
@@ -7837,7 +7855,7 @@ int pc_setregistry(struct map_session_data *sd,const char *reg,int val,int type)
 	case 3: //Char reg
 		if( !strcmp(reg,"PC_DIE_COUNTER") && sd->die_counter != val )
 		{
-			i = (!sd->die_counter && (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE);
+			i = (!sd->die_counter && ((sd->class_&MAPID_BASEMASK) == MAPID_SUPER_NOVICE || (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE_E));
 			sd->die_counter = val;
 			if( i )
 				status_calc_pc(sd,0); // Lost the bonus.

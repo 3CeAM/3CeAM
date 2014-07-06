@@ -1254,34 +1254,34 @@ ACMD_FUNC(jobchange)
 	{
 		int i, found = 0;
 		const struct { char name[16]; int id; } jobs[] = {
-			{ "novice",		0 },
-			{ "swordman",	1 },
-			{ "swordsman",	1 },
-			{ "magician",	2 },
-			{ "mage",		2 },
-			{ "archer",		3 },
-			{ "acolyte",	4 },
-			{ "merchant",	5 },
-			{ "thief",		6 },
-			{ "knight",		7 },
-			{ "priest",		8 },
-			{ "priestess",	8 },
-			{ "wizard",		9 },
-			{ "blacksmith",	10 },
-			{ "hunter",		11 },
-			{ "assassin",	12 },
-			{ "crusader",	14 },
-			{ "monk",		15 },
-			{ "sage",		16 },
-			{ "rogue",		17 },
-			{ "alchemist",	18 },
-			{ "bard",		19 },
-			{ "dancer",		20 },
+			{ "novice",			0 },
+			{ "swordman",		1 },
+			{ "swordsman",		1 },
+			{ "magician",		2 },
+			{ "mage",			2 },
+			{ "archer",			3 },
+			{ "acolyte",		4 },
+			{ "merchant",		5 },
+			{ "thief",			6 },
+			{ "knight",			7 },
+			{ "priest",			8 },
+			{ "priestess",		8 },
+			{ "wizard",			9 },
+			{ "blacksmith",		10 },
+			{ "hunter",			11 },
+			{ "assassin",		12 },
+			{ "crusader",		14 },
+			{ "monk",			15 },
+			{ "sage",			16 },
+			{ "rogue",			17 },
+			{ "alchemist",		18 },
+			{ "bard",			19 },
+			{ "dancer",			20 },
 			{ "super novice",	23 },
 			{ "supernovice",	23 },
-			{ "gunslinger",	24 },
-			{ "gunner",	24 },
-			{ "ninja",	25 },
+			{ "gunslinger",		24 },
+			{ "gunner",			24 },
+			{ "ninja",			25 },
 			{ "novice high",	4001 },
 			{ "high novice",	4001 },
 			{ "swordman high",	4002 },
@@ -1297,15 +1297,15 @@ ACMD_FUNC(jobchange)
 			{ "high priestess",	4009 },
 			{ "high wizard",	4010 },
 			{ "whitesmith",		4011 },
-			{ "sniper",		4012 },
+			{ "sniper",			4012 },
 			{ "assassin cross",	4013 },
-			{ "paladin",	4015 },
-			{ "champion",	4016 },
-			{ "professor",	4017 },
-			{ "stalker",	4018 },
-			{ "creator",	4019 },
-			{ "clown",		4020 },
-			{ "gypsy",		4021 },
+			{ "paladin",		4015 },
+			{ "champion",		4016 },
+			{ "professor",		4017 },
+			{ "stalker",		4018 },
+			{ "creator",		4019 },
+			{ "clown",			4020 },
+			{ "gypsy",			4021 },
 			{ "baby novice",	4023 },
 			{ "baby swordman",	4024 },
 			{ "baby swordsman",	4024 },
@@ -1335,37 +1335,37 @@ ACMD_FUNC(jobchange)
 			{ "taekwon girl",	4046 },
 			{ "star gladiator",	4047 },
 			{ "soul linker",	4049 },
-			{ "gangsi",		4050 },
-			{ "bongun",		4050 },
-			{ "munak",		4050 },
+			{ "gangsi",			4050 },
+			{ "bongun",			4050 },
+			{ "munak",			4050 },
 			{ "death knight",	4051 },
 			{ "dark collector",	4052 },
 			{ "rune knight",	4054 },
 			{ "warlock",		4055 },
-			{ "ranger",		4056 },
+			{ "ranger",			4056 },
 			{ "arch bishop",	4057 },
 			{ "mechanic",		4058 },
 			{ "guillotine",		4059 },
-			{ "rune knight2",	4060 },
-			{ "warlock2",		4061 },
-			{ "ranger2",		4062 },
-			{ "arch bishop2",	4063 },
-			{ "mechanic2",		4064 },
-			{ "guillotine2",	4065 },
+			{ "rune knight 2",	4060 },
+			{ "warlock 2",		4061 },
+			{ "ranger 2",		4062 },
+			{ "arch bishop 2",	4063 },
+			{ "mechanic 2",		4064 },
+			{ "guillotine 2",	4065 },
 			{ "royal guard",	4066 },
 			{ "sorcerer",		4067 },
 			{ "minstrel",		4068 },
 			{ "wanderer",		4069 },
-			{ "sura",		4070 },
+			{ "sura",			4070 },
 			{ "genetic",		4071 },
 			{ "shadow chaser",	4072 },
-			{ "royal guard2",	4073 },
-			{ "sorcerer2",		4074 },
-			{ "minstrel2",		4075 },
-			{ "wanderer2",		4076 },
-			{ "sura2",		4077 },
-			{ "genetic2",		4078 },
-			{ "shadow chaser2",	4079 },
+			{ "royal guard 2",	4073 },
+			{ "sorcerer 2",		4074 },
+			{ "minstrel 2",		4075 },
+			{ "wanderer 2",		4076 },
+			{ "sura 2",			4077 },
+			{ "genetic 2",		4078 },
+			{ "shadow chaser 2",4079 },
 			{ "baby rune",		4096 },
 			{ "baby warlock",	4097 },
 			{ "baby ranger",	4098 },
@@ -1382,7 +1382,8 @@ ACMD_FUNC(jobchange)
 			{ "super novice e",	4190 },
 			{ "super baby e",	4191 },
 			{ "kagerou",		4211 },
-			{ "oboro",		4212 },
+			{ "oboro",			4212 },
+			{ "rebellion",		4215 },
 		};
 
 		for (i=0; i < ARRAYLENGTH(jobs); i++) {
@@ -1395,7 +1396,7 @@ ACMD_FUNC(jobchange)
 		}
 
 		if (!found) {
-			clif_displaymessage(fd, "Please, enter a job ID (usage: @job/@jobchange <job name/ID>).");
+			clif_displaymessage(fd, "Please enter a job ID (usage: @job/@jobchange <job name/ID>).");
 			clif_displaymessage(fd, "----- Novice / 1st Class -----");
 			clif_displaymessage(fd, "   0 Novice              1 Swordman            2 Magician            3 Archer");
 			clif_displaymessage(fd, "   4 Acolyte             5 Merchant            6 Thief");
@@ -1426,7 +1427,7 @@ ACMD_FUNC(jobchange)
 			clif_displaymessage(fd, "  23 Super Novice       24 Gunslinger         25 Ninja            4045 Super Baby");
 			clif_displaymessage(fd, "4046 Taekwon          4047 Star Gladiator   4049 Soul Linker      4050 Gangsi");
 			clif_displaymessage(fd, "4051 Death Knight     4052 Dark Collector   4190 Ex. Super Novice 4191 Ex. Super Baby");
-			clif_displaymessage(fd, "4211 Kagerou          4212 Oboro");
+			clif_displaymessage(fd, "4211 Kagerou          4212 Oboro            4215 Rebellion");
 			clif_displaymessage(fd, "----- Baby Novice And Baby 1st Class -----");
 			clif_displaymessage(fd, "4023 Baby Novice      4024 Baby Swordman    4025 Baby Magician    4026 Baby Archer");
 			clif_displaymessage(fd, "4027 Baby Acolyte     4028 Baby Merchant    4029 Baby Thief");
@@ -1440,17 +1441,17 @@ ACMD_FUNC(jobchange)
 			clif_displaymessage(fd, "4100 Baby Mechanic    4101 Baby Glt. Cross  4102 Baby Royal Guard 4103 Baby Sorcerer");
 			clif_displaymessage(fd, "4104 Baby Minstrel    4105 Baby Wanderer    4106 Baby Sura        4107 Baby Genetic");
 			clif_displaymessage(fd, "4108 Baby Shadow Chaser");
-			//clif_displaymessage(fd, "---- Modes And Others ----");
-			//clif_displaymessage(fd, "  22 Wedding            26 Christmas          27 Summer           4048 Star Gladiator (Union)");
 			return -1;
 		}
 	}
 
-	if (job == 13 || job == 21 || job == 22 || job == 26 || job == 27 || job == 28 || job == 4014 || job == 4022 || job == 4036 || job == 4044 || 
-		job == 4048 || (job >= JOB_RUNE_KNIGHT2 && job <= JOB_MECHANIC_T2) || (job >= JOB_BABY_RUNE2 && job <= JOB_BABY_MECHANIC2)
-	) // Deny direct transformation into dummy jobs
-		{clif_displaymessage(fd, "You can not change to this job by command.");
-		return 0;}
+	if (job == 13 || job == 21 || job == 22 || job == 26 || job == 27 || job == 28 || job == 29 || job == 4014 || job == 4022 ||
+		job == 4036 || job == 4044 || job == 4048 || (job >= JOB_RUNE_KNIGHT2 && job <= JOB_RUNE_KNIGHT_T6) ||
+		(job >= JOB_BABY_RUNE2 && job <= JOB_BABY_MECHANIC2))
+	{// Deny direct transformation into dummy jobs
+		clif_displaymessage(fd, "You can not change into this job by command.");
+		return 0;
+	}
 
 	if (pcdb_checkid(job))
 	{
@@ -1461,53 +1462,51 @@ ACMD_FUNC(jobchange)
 			return -1;
 		}
 	} else {
-			clif_displaymessage(fd, "Please enter a valid job ID (usage: @job/@jobchange <job name/ID>).");
-			clif_displaymessage(fd, "----- Novice / 1st Class -----");
-			clif_displaymessage(fd, "   0 Novice              1 Swordman            2 Magician            3 Archer");
-			clif_displaymessage(fd, "   4 Acolyte             5 Merchant            6 Thief");
-			clif_displaymessage(fd, "----- 2nd Class -----");
-			clif_displaymessage(fd, "   7 Knight              8 Priest              9 Wizard             10 Blacksmith");
-			clif_displaymessage(fd, "  11 Hunter             12 Assassin           14 Crusader           15 Monk");
-			clif_displaymessage(fd, "  16 Sage               17 Rogue              18 Alchemist          19 Bard");
-			clif_displaymessage(fd, "  20 Dancer");
-			clif_displaymessage(fd, "----- High Novice / High 1st Class -----");
-			clif_displaymessage(fd, "4001 Novice High      4002 Swordman High    4003 Magician High    4004 Archer High");
-			clif_displaymessage(fd, "4005 Acolyte High     4006 Merchant High    4007 Thief High");
-			clif_displaymessage(fd, "----- Transcendent 2nd Class -----");
-			clif_displaymessage(fd, "4008 Lord Knight      4009 High Priest      4010 High Wizard      4011 Whitesmith");
-			clif_displaymessage(fd, "4012 Sniper           4013 Assassin Cross   4015 Paladin          4016 Champion");
-			clif_displaymessage(fd, "4017 Professor        4018 Stalker          4019 Creator          4020 Clown");
-			clif_displaymessage(fd, "4021 Gypsy");
-			clif_displaymessage(fd, "----- 3rd Class (Regular) -----");
-			clif_displaymessage(fd, "4054 Rune Knight      4055 Warlock          4056 Ranger           4057 Arch Bishop");
-			clif_displaymessage(fd, "4058 Mechanic         4059 Guillotine Cross 4066 Royal Guard      4067 Sorcerer");
-			clif_displaymessage(fd, "4068 Minstrel         4069 Wanderer         4070 Sura             4071 Genetic");
-			clif_displaymessage(fd, "4072 Shadow Chaser");
-			clif_displaymessage(fd, "----- 3rd Class (Transcendent) -----");
-			clif_displaymessage(fd, "4060 Rune Knight      4061 Warlock          4062 Ranger           4063 Arch Bishop");
-			clif_displaymessage(fd, "4064 Mechanic         4065 Guillotine Cross 4073 Royal Guard      4074 Sorcerer");
-			clif_displaymessage(fd, "4075 Minstrel         4076 Wanderer         4077 Sura             4078 Genetic");
-			clif_displaymessage(fd, "4079 Shadow Chaser");
-			clif_displaymessage(fd, "----- Expanded Class -----");
-			clif_displaymessage(fd, "  23 Super Novice       24 Gunslinger         25 Ninja            4045 Super Baby");
-			clif_displaymessage(fd, "4046 Taekwon          4047 Star Gladiator   4049 Soul Linker      4050 Gangsi");
-			clif_displaymessage(fd, "4051 Death Knight     4052 Dark Collector   4190 Ex. Super Novice 4191 Ex. Super Baby");
-			clif_displaymessage(fd, "4211 Kagerou          4212 Oboro");
-			clif_displaymessage(fd, "----- Baby Novice And Baby 1st Class -----");
-			clif_displaymessage(fd, "4023 Baby Novice      4024 Baby Swordman    4025 Baby Magician    4026 Baby Archer");
-			clif_displaymessage(fd, "4027 Baby Acolyte     4028 Baby Merchant    4029 Baby Thief");
-			clif_displaymessage(fd, "---- Baby 2nd Class ----");
-			clif_displaymessage(fd, "4030 Baby Knight      4031 Baby Priest      4032 Baby Wizard      4033 Baby Blacksmith");
-			clif_displaymessage(fd, "4034 Baby Hunter      4035 Baby Assassin    4037 Baby Crusader    4038 Baby Monk");
-			clif_displaymessage(fd, "4039 Baby Sage        4040 Baby Rogue       4041 Baby Alchemist   4042 Baby Bard");
-			clif_displaymessage(fd, "4043 Baby Dancer");
-			clif_displaymessage(fd, "---- Baby 3rd Class ----");
-			clif_displaymessage(fd, "4096 Baby Rune Knight 4097 Baby Warlock     4098 Baby Ranger      4099 Baby Arch Bishop");
-			clif_displaymessage(fd, "4100 Baby Mechanic    4101 Baby Glt. Cross  4102 Baby Royal Guard 4103 Baby Sorcerer");
-			clif_displaymessage(fd, "4104 Baby Minstrel    4105 Baby Wanderer    4106 Baby Sura        4107 Baby Genetic");
-			clif_displaymessage(fd, "4108 Baby Shadow Chaser");
-			//clif_displaymessage(fd, "---- Modes And Others ----");
-			//clif_displaymessage(fd, "  22 Wedding            26 Christmas          27 Summer           4048 Star Gladiator (Union)");
+		clif_displaymessage(fd, "Please enter a valid job ID (usage: @job/@jobchange <job name/ID>).");
+		clif_displaymessage(fd, "----- Novice / 1st Class -----");
+		clif_displaymessage(fd, "   0 Novice              1 Swordman            2 Magician            3 Archer");
+		clif_displaymessage(fd, "   4 Acolyte             5 Merchant            6 Thief");
+		clif_displaymessage(fd, "----- 2nd Class -----");
+		clif_displaymessage(fd, "   7 Knight              8 Priest              9 Wizard             10 Blacksmith");
+		clif_displaymessage(fd, "  11 Hunter             12 Assassin           14 Crusader           15 Monk");
+		clif_displaymessage(fd, "  16 Sage               17 Rogue              18 Alchemist          19 Bard");
+		clif_displaymessage(fd, "  20 Dancer");
+		clif_displaymessage(fd, "----- High Novice / High 1st Class -----");
+		clif_displaymessage(fd, "4001 Novice High      4002 Swordman High    4003 Magician High    4004 Archer High");
+		clif_displaymessage(fd, "4005 Acolyte High     4006 Merchant High    4007 Thief High");
+		clif_displaymessage(fd, "----- Transcendent 2nd Class -----");
+		clif_displaymessage(fd, "4008 Lord Knight      4009 High Priest      4010 High Wizard      4011 Whitesmith");
+		clif_displaymessage(fd, "4012 Sniper           4013 Assassin Cross   4015 Paladin          4016 Champion");
+		clif_displaymessage(fd, "4017 Professor        4018 Stalker          4019 Creator          4020 Clown");
+		clif_displaymessage(fd, "4021 Gypsy");
+		clif_displaymessage(fd, "----- 3rd Class (Regular) -----");
+		clif_displaymessage(fd, "4054 Rune Knight      4055 Warlock          4056 Ranger           4057 Arch Bishop");
+		clif_displaymessage(fd, "4058 Mechanic         4059 Guillotine Cross 4066 Royal Guard      4067 Sorcerer");
+		clif_displaymessage(fd, "4068 Minstrel         4069 Wanderer         4070 Sura             4071 Genetic");
+		clif_displaymessage(fd, "4072 Shadow Chaser");
+		clif_displaymessage(fd, "----- 3rd Class (Transcendent) -----");
+		clif_displaymessage(fd, "4060 Rune Knight      4061 Warlock          4062 Ranger           4063 Arch Bishop");
+		clif_displaymessage(fd, "4064 Mechanic         4065 Guillotine Cross 4073 Royal Guard      4074 Sorcerer");
+		clif_displaymessage(fd, "4075 Minstrel         4076 Wanderer         4077 Sura             4078 Genetic");
+		clif_displaymessage(fd, "4079 Shadow Chaser");
+		clif_displaymessage(fd, "----- Expanded Class -----");
+		clif_displaymessage(fd, "  23 Super Novice       24 Gunslinger         25 Ninja            4045 Super Baby");
+		clif_displaymessage(fd, "4046 Taekwon          4047 Star Gladiator   4049 Soul Linker      4050 Gangsi");
+		clif_displaymessage(fd, "4051 Death Knight     4052 Dark Collector   4190 Ex. Super Novice 4191 Ex. Super Baby");
+		clif_displaymessage(fd, "4211 Kagerou          4212 Oboro            4215 Rebellion");
+		clif_displaymessage(fd, "----- Baby Novice And Baby 1st Class -----");
+		clif_displaymessage(fd, "4023 Baby Novice      4024 Baby Swordman    4025 Baby Magician    4026 Baby Archer");
+		clif_displaymessage(fd, "4027 Baby Acolyte     4028 Baby Merchant    4029 Baby Thief");
+		clif_displaymessage(fd, "---- Baby 2nd Class ----");
+		clif_displaymessage(fd, "4030 Baby Knight      4031 Baby Priest      4032 Baby Wizard      4033 Baby Blacksmith");
+		clif_displaymessage(fd, "4034 Baby Hunter      4035 Baby Assassin    4037 Baby Crusader    4038 Baby Monk");
+		clif_displaymessage(fd, "4039 Baby Sage        4040 Baby Rogue       4041 Baby Alchemist   4042 Baby Bard");
+		clif_displaymessage(fd, "4043 Baby Dancer");
+		clif_displaymessage(fd, "---- Baby 3rd Class ----");
+		clif_displaymessage(fd, "4096 Baby Rune Knight 4097 Baby Warlock     4098 Baby Ranger      4099 Baby Arch Bishop");
+		clif_displaymessage(fd, "4100 Baby Mechanic    4101 Baby Glt. Cross  4102 Baby Royal Guard 4103 Baby Sorcerer");
+		clif_displaymessage(fd, "4104 Baby Minstrel    4105 Baby Wanderer    4106 Baby Sura        4107 Baby Genetic");
+		clif_displaymessage(fd, "4108 Baby Shadow Chaser");
 		return -1;
 	}
 

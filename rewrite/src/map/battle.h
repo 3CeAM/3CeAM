@@ -239,7 +239,7 @@ extern struct Battle_Config
 	int max_hp;
 	int max_sp;
 	int max_lv, aura_lv;
-	int max_parameter, max_baby_parameter, max_third_parameter, max_baby_third_paramater;
+	int max_parameter, max_baby_parameter;
 	int max_cart_weight;
 	int skill_log;
 	int battle_log;
@@ -507,7 +507,8 @@ extern struct Battle_Config
 	// Casting Time Renewal Settings
 	int renewal_cast_3rd_skills;
 	int castrate_dex_scale_3rd;
-
+	int max_third_parameter;
+	int max_baby_third_paramater;
 	int max_highlvl_nerf; // [Pinky]
 	int max_joblvl_nerf; // [Pinky]
 	int max_joblvl_nerf_misc; // [Pinky]

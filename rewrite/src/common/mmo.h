@@ -105,7 +105,7 @@
 #define MAX_ZENY 1000000000
 #define MAX_FAME 1000000000
 #define MAX_CART 100
-#define MAX_SKILL 3040
+#define MAX_SKILL 5016
 #define GLOBAL_REG_NUM 256
 #define ACCOUNT_REG_NUM 64
 #define ACCOUNT_REG2_NUM 16
@@ -121,7 +121,7 @@
 #define MAX_GUILDPOSITION 20	// increased max guild positions to accomodate for all members [Valaris] (removed) [PoW]
 #define MAX_GUILDEXPULSION 32
 #define MAX_GUILDALLIANCE 16
-#define MAX_GUILDSKILL	15 // increased max guild skills because of new skills [Sara-chan]
+#define MAX_GUILDSKILL	17 // increased max guild skills because of new skills [Sara-chan]
 #define MAX_GUILDCASTLE 34	// Updated to include new entries for WoE:SE. [L0ne_W0lf]
 #define MAX_GUILDLEVEL 50
 #define MAX_GUARDIANS 8	//Local max per castle. [Skotlex]
@@ -196,26 +196,26 @@
 #define MAX_ELESKILLTREE 3
 
 enum item_types {
-	IT_HEALING = 0,		//IT_HEAL		= 0x00
-	IT_UNKNOWN, //1		//IT_SCHANGE		= 0x01
-	IT_USABLE,  //2		//IT_SPECIAL		= 0x02
-	IT_ETC,     //3		//IT_EVENT		= 0x03
-	IT_WEAPON,  //4		//IT_ARMOR		= 0x04
-	IT_ARMOR,   //5		//IT_WEAPON		= 0x05
-	IT_CARD,    //6		//IT_CARD		= 0x06
-	IT_PETEGG,  //7		//IT_QUEST		= 0x07
-	IT_PETARMOR,//8		//IT_BOW		= 0x08
-	IT_UNKNOWN2,//9		//IT_BOTHHAND		= 0x09
-	IT_AMMO,    //10	//IT_ARROW		= 0x0a
-	IT_DELAYCONSUME,//11	//IT_ARMORTM		= 0x0b
-				//IT_ARMORTB		= 0x0c
-				//IT_ARMORMB		= 0x0d
-				//IT_ARMORTMB		= 0x0e
-				//IT_GUN		= 0x0f
-				//IT_AMMO		= 0x10
-				//IT_THROWWEAPON	= 0x11
-	IT_CASH = 18,		//IT_CASH_POINT_ITEM	= 0x12
-				//IT_CANNONBALL		= 0x13
+	IT_HEALING = 0,	//0  HEAL
+	IT_UNKNOWN,		//1  SCHANGE
+	IT_USABLE,		//2  SPECIAL
+	IT_ETC,			//3  EVENT
+	IT_WEAPON,		//4  ARMOR
+	IT_ARMOR,		//5  WEAPON
+	IT_CARD,		//6  CARD
+	IT_PETEGG,		//7  QUEST
+	IT_PETARMOR,	//8  BOW
+	IT_UNKNOWN2,	//9  BOTHHAND
+	IT_AMMO,		//10 ARROW
+	IT_DELAYCONSUME,//11 ARMORTM
+					//12 ARMORTB
+					//13 ARMORMB
+					//14 ARMORTMB
+					//15 GUN
+					//16 AMMO
+					//17 THROWWEAPON
+	IT_CASH = 18,	//18 CASH_POINT_ITEM
+					//19 CANNONBALL
 	IT_MAX 
 };
 
@@ -608,12 +608,14 @@ enum {
 	GD_RESTORE=10012,
 	GD_EMERGENCYCALL=10013,
 	GD_DEVELOPMENT=10014,
+	GD_ITEMEMERGENCYCALL=10015,
+	GD_GUILD_STORAGE=10016,
 };
 
 
 //These mark the ID of the jobs, as expected by the client. [Skotlex]
 enum {
-	JOB_NOVICE,
+	JOB_NOVICE = 0,
 	JOB_SWORDMAN,
 	JOB_MAGE,
 	JOB_ARCHER,
@@ -642,6 +644,7 @@ enum {
 	JOB_XMAS,
 	JOB_SUMMER,
 	JOB_HANBOK,
+	JOB_OKTOBERFEST,
 	JOB_MAX_BASIC,
 
 	JOB_NOVICE_HIGH = 4001,
@@ -738,8 +741,16 @@ enum {
 	JOB_RANGER_T2,
 	JOB_MECHANIC2,
 	JOB_MECHANIC_T2,
+	JOB_RUNE_KNIGHT3,
+	JOB_RUNE_KNIGHT_T3,
+	JOB_RUNE_KNIGHT4,
+	JOB_RUNE_KNIGHT_T4,
+	JOB_RUNE_KNIGHT5,
+	JOB_RUNE_KNIGHT_T5,
+	JOB_RUNE_KNIGHT6,
+	JOB_RUNE_KNIGHT_T6,
 
-	JOB_BABY_RUNE = 4096,
+	JOB_BABY_RUNE,
 	JOB_BABY_WARLOCK,
 	JOB_BABY_RANGER,
 	JOB_BABY_BISHOP,
@@ -763,6 +774,8 @@ enum {
 
 	JOB_KAGEROU = 4211,
 	JOB_OBORO,
+
+	JOB_REBELLION = 4215,
 
 	JOB_MAX,
 };
