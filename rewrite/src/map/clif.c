@@ -9358,14 +9358,14 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 		clif_updatestatus(sd,SP_SKILLPOINT);
 		clif_initialstatus(sd);
 
-		if( sd->sc.option&OPTION_FALCON )
+		if (sd->sc.option&OPTION_FALCON)
 			clif_status_load(&sd->bl, SI_FALCON, 1);
 
-		if( sd->sc.option&OPTION_RIDING || sd->sc.option&(OPTION_RIDING_DRAGON) )
+		if (sd->sc.option&OPTION_RIDING || sd->sc.option&OPTION_DRAGON)
 			clif_status_load(&sd->bl, SI_RIDING, 1);
 
-		if( sd->sc.option&OPTION_RIDING_WUG )
-			clif_status_load(&sd->bl, SI_WUGMOUNT, 1);
+		if (sd->sc.option&OPTION_WUGRIDER)
+			clif_status_load(&sd->bl, SI_WUGRIDER, 1);
 
 		if( sd->status.manner < 0 )
 			sc_start(&sd->bl,SC_NOCHAT,100,0,0);
@@ -9865,8 +9865,8 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 		if( sd->sc.option&(OPTION_WEDDING|OPTION_XMAS|OPTION_SUMMER) )
 			return;
 
-		if( sd->sc.option&OPTION_RIDING_WUG && sd->weapontype1 )
-			return;
+		if( sd->sc.option&OPTION_WUGRIDER && sd->weapontype1 )
+			return;//Is it really possible to attack while mounted if you have no weapon equipped? [Rytech]
 
 		// Can't attack
 		if( sd->sc.data[SC_BASILICA] || sd->sc.data[SC__SHADOWFORM] || (tsc && tsc->data[SC__MANHOLE]) ||
@@ -10623,14 +10623,11 @@ void clif_parse_GetItemFromCart(int fd,struct map_session_data *sd)
  *------------------------------------------*/
 void clif_parse_RemoveOption(int fd,struct map_session_data *sd)
 {
-#if ( PACKETVER >= 20120201 )
-	pc_setoption(sd,sd->sc.option&~(OPTION_RIDING|OPTION_FALCON|OPTION_RIDING_DRAGON|OPTION_MADO));
-	if( sd->sc.data[SC_ON_PUSH_CART] )
+	//Can only remove Cart/Riding/Falcon/Dragon/Warg/Mado.
+	pc_setoption(sd,sd->sc.option&~(OPTION_CART|OPTION_RIDING|OPTION_FALCON|OPTION_DRAGON|OPTION_MADOGEAR));
+
+	if (sd->sc.data[SC_ON_PUSH_CART])
 		pc_setcart(sd,0);
-#else
-	//Can only remove Cart/Riding Peco/Falcon/Riding Dragon/Mado.
-	pc_setoption(sd,sd->sc.option&~(OPTION_CART|OPTION_RIDING|OPTION_FALCON|OPTION_RIDING_DRAGON|OPTION_MADO));
-#endif
 }
 
 /*==========================================
@@ -10646,10 +10643,10 @@ void clif_parse_ChangeCart(int fd,struct map_session_data *sd)
 	type = (int)RFIFOW(fd,2);
 
 #if ( PACKETVER >= 20120201 )
-	if( (type == 9 && sd->status.base_level > 131) ||
-	(type == 8 && sd->status.base_level > 121) ||
-	(type == 7 && sd->status.base_level > 111) ||
-	(type == 6 && sd->status.base_level > 101) ||
+	if( (type == 9 && sd->status.base_level > 130) ||
+	(type == 8 && sd->status.base_level > 120) ||
+	(type == 7 && sd->status.base_level > 110) ||
+	(type == 6 && sd->status.base_level > 100) ||
 	(type == 5 && sd->status.base_level >  90) ||
 	(type == 4 && sd->status.base_level >  80) ||
 	(type == 3 && sd->status.base_level >  65) ||

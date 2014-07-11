@@ -7412,11 +7412,7 @@ BUILDIN_FUNC(setoption)
 		flag = script_getnum(st,3);
 	else if( !option ){// Request to remove everything.
 		flag = 0;
-#if ( PACKETVER >= 20120201 )
-		option = OPTION_FALCON|OPTION_RIDING|OPTION_RIDING_DRAGON|OPTION_WUG|OPTION_RIDING_WUG|OPTION_MADO;
-#else
-		option = OPTION_CART|OPTION_FALCON|OPTION_RIDING|OPTION_RIDING_DRAGON|OPTION_WUG|OPTION_RIDING_WUG|OPTION_MADO;
-#endif
+		option = OPTION_CART|OPTION_FALCON|OPTION_RIDING|OPTION_DRAGON|OPTION_WUG|OPTION_WUGRIDER|OPTION_MADOGEAR;
 	}
 	if( flag ){// Add option
 		if( option&OPTION_WEDDING && !battle_config.wedding_modifydisplay )
@@ -7532,7 +7528,7 @@ BUILDIN_FUNC(checkriding)
 	if( sd == NULL )
 		return 0;// no player attached, report source
 
-	if( pc_isriding(sd, OPTION_RIDING|(OPTION_RIDING_DRAGON)|OPTION_RIDING_WUG|OPTION_MADO) )
+	if( pc_isriding(sd) )
 		script_pushint(st, 1);
 	else
 		script_pushint(st, 0);
@@ -7561,47 +7557,165 @@ BUILDIN_FUNC(setriding)
 	return 0;
 }
 
-/// Returns if the player has a warg. 
-/// 
-/// checkwarg() -> <bool> 
-/// 
-/// @author Diablo 
-BUILDIN_FUNC(checkwarg) 
-{ 
-	TBL_PC* sd; 
+/// Returns if the player is on a dragon.
+///
+/// checkdragon() -> <bool>
+BUILDIN_FUNC(checkdragon)
+{
+	TBL_PC* sd;
 
-	sd = script_rid2sd(st); 
-	if( sd == NULL ) 
-		return 0;// no player attached, report source 
- 
-	if( pc_iswarg(sd) ) 
-		script_pushint(st, 1); 
-	else 
-		script_pushint(st, 0); 
+	sd = script_rid2sd(st);
+	if( sd == NULL )
+		return 0;// no player attached, report source
 
-	return 0; 
+	if( pc_isdragon(sd) )
+		script_pushint(st, 1);
+	else
+		script_pushint(st, 0);
+
+	return 0;
 }
 
-/// Sets if the player has a warg or not. 
-/// <flag> defaults to 1 
-/// 
-/// setwarg <flag>; 
-/// setwarg; 
-BUILDIN_FUNC(setwarg) 
-{ 
-	int flag = 1; 
-	TBL_PC* sd; 
+/// Sets if the player is on a dragon.
+/// <flag> defaults to 1
+///
+/// setdragon <flag>;
+/// setdragon;
+BUILDIN_FUNC(setdragon)
+{
+	int flag = 1;
+	TBL_PC* sd;
 
-	sd = script_rid2sd(st); 
-	if( sd == NULL ) 
-		return 0;// no player attached, report source 
+	sd = script_rid2sd(st);
+	if( sd == NULL )
+		return 0;// no player attached, report source
 
-	if( script_hasdata(st,2) ) 
-		flag = script_getnum(st,2); 
+	if( script_hasdata(st,2) )
+		flag = script_getnum(st,2);
+	pc_setdragon(sd, flag);
 
-	pc_setwarg(sd, flag); 
+	return 0;
+}
 
-	return 0; 
+/// Returns if the player has a warg.
+///
+/// checkwug() -> <bool>
+BUILDIN_FUNC(checkwug)
+{
+	TBL_PC* sd;
+
+	sd = script_rid2sd(st);
+	if( sd == NULL )
+		return 0;// no player attached, report source
+
+	if( pc_iswug(sd) )
+		script_pushint(st, 1);
+	else
+		script_pushint(st, 0);
+
+	return 0;
+}
+
+/// Sets if the player has a warg or not.
+/// <flag> defaults to 1
+///
+/// setwug <flag>;
+/// setwug;
+BUILDIN_FUNC(setwug)
+{
+	int flag = 1;
+	TBL_PC* sd;
+
+	sd = script_rid2sd(st);
+	if( sd == NULL )
+		return 0;// no player attached, report source
+
+	if( script_hasdata(st,2) )
+		flag = script_getnum(st,2);
+
+	pc_setwug(sd, flag);
+
+	return 0;
+}
+
+/// Returns if the player is on a warg.
+///
+/// checkwugrider() -> <bool>
+BUILDIN_FUNC(checkwugrider)
+{
+	TBL_PC* sd;
+
+	sd = script_rid2sd(st);
+	if( sd == NULL )
+		return 0;// no player attached, report source
+
+	if( pc_iswugrider(sd) )
+		script_pushint(st, 1);
+	else
+		script_pushint(st, 0);
+
+	return 0;
+}
+
+/// Sets if the player is on a warg.
+/// <flag> defaults to 1
+///
+/// setwugrider <flag>;
+/// setwugrider;
+BUILDIN_FUNC(setwugrider)
+{
+	int flag = 1;
+	TBL_PC* sd;
+
+	sd = script_rid2sd(st);
+	if( sd == NULL )
+		return 0;// no player attached, report source
+
+	if( script_hasdata(st,2) )
+		flag = script_getnum(st,2);
+	pc_setwugrider(sd, flag);
+
+	return 0;
+}
+
+/// Returns if the player is on a mado.
+///
+/// checkmadogear() -> <bool>
+BUILDIN_FUNC(checkmadogear)
+{
+	TBL_PC* sd;
+
+	sd = script_rid2sd(st);
+	if( sd == NULL )
+		return 0;// no player attached, report source
+
+	if( pc_ismadogear(sd) )
+		script_pushint(st, 1);
+	else
+		script_pushint(st, 0);
+
+	return 0;
+}
+
+/// Sets if the player is on a mado.
+/// <flag> defaults to 1
+///
+/// setmadogear <flag>;
+/// setmadogear;
+BUILDIN_FUNC(setmadogear)
+{
+	int flag = 1;
+	TBL_PC* sd;
+
+	sd = script_rid2sd(st);
+	if( sd == NULL )
+		return 0;// no player attached, report source
+
+	if( script_hasdata(st,2) )
+		flag = script_getnum(st,2);
+	pc_setmadogear(sd, flag);
+
+	return 0;
 }
 
 /// Sets the save point of the player.
@@ -15041,8 +15155,14 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(checkfalcon,""),
 	BUILDIN_DEF(setriding,"?"),
 	BUILDIN_DEF(checkriding,""),
-	BUILDIN_DEF(setwarg,"?"),
-	BUILDIN_DEF(checkwarg,""),
+	BUILDIN_DEF(setdragon,"?"),
+	BUILDIN_DEF(checkdragon,""),
+	BUILDIN_DEF(setwug,"?"),
+	BUILDIN_DEF(checkwug,""),
+	BUILDIN_DEF(setwugrider,"?"),
+	BUILDIN_DEF(checkwugrider,""),
+	BUILDIN_DEF(setmadogear,"?"),
+	BUILDIN_DEF(checkmadogear,""),
 	BUILDIN_DEF2(savepoint,"save","sii"),
 	BUILDIN_DEF(savepoint,"sii"),
 	BUILDIN_DEF(gettimetick,"i"),

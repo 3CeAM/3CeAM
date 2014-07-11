@@ -49,7 +49,6 @@ The eA Job System:
 
 	EAJL_UPPER	0x1000
 	EAJL_BABY	0x2000
-	EAJL_THIRD	0x4000
 
 So using these three categories, any job class can be constructed from the others. Let's take a swordman, for example.
 
@@ -103,7 +102,7 @@ EAJL_UPPER:
 
 EAJL_BABY:
 	Check if a class is an adopted class.
-	if (@job&EAJ_BABY)
+	if (@job&EAJL_BABY)
 		mes "Don't you hate being weak?";
 
 EAJ_UPPERMASK:

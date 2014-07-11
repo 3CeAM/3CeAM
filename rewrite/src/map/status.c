@@ -557,6 +557,18 @@ void initChangeTables(void)
 
 	set_sc( ALL_ODINS_POWER               , SC_ODINS_POWER , SI_ODINS_POWER                , SCB_WATK|SCB_MATK|SCB_DEF|SCB_MDEF );
 
+	set_sc( RL_B_TRAP      , SC_B_TRAP       , SI_B_TRAP       , SCB_NONE );
+	set_sc( RL_E_CHAIN     , SC_E_CHAIN      , SI_E_CHAIN      , SCB_NONE );
+	//set_sc( RL_E_CHAIN     , SC_E_QD_SHOT_READY , SI_E_QD_SHOT_READY , SCB_NONE );
+	set_sc( RL_C_MARKER    , SC_C_MARKER     , SI_C_MARKER     , SCB_NONE );
+	set_sc( RL_H_MINE      , SC_H_MINE       , SI_H_MINE       , SCB_NONE );
+	//set_sc( RL_H_MINE      , SC_H_MINE_SPLASH , SI_H_MINE_SPLASH , SCB_NONE );
+	set_sc( RL_P_ALTER     , SC_P_ALTER      , SI_P_ALTER      , SCB_NONE );
+	set_sc( RL_HEAT_BARREL , SC_HEAT_BARREL  , SI_HEAT_BARREL  , SCB_NONE );
+	//set_sc( RL_HEAT_BARREL , SC_HEAT_BARREL_AFTER , SI_HEAT_BARREL_AFTER , SCB_NONE );
+	set_sc( RL_AM_BLAST    , SC_ANTI_M_BLAST , SI_ANTI_M_BLAST , SCB_NONE );
+	set_sc( RL_SLUGSHOT    , SC_SLUGSHOT     , SI_SLUGSHOT     , SCB_NONE );
+
 	set_sc( KO_YAMIKUMO          , SC_HIDING          , SI_HIDING          , SCB_NONE );
 	set_sc( KO_JYUMONJIKIRI      , SC_JYUMONJIKIRI    , SI_KO_JYUMONJIKIRI , SCB_NONE );
 	set_sc( KO_MEIKYOUSISUI      , SC_MEIKYOUSISUI    , SI_MEIKYOUSISUI    , SCB_NONE );
@@ -575,18 +587,18 @@ void initChangeTables(void)
 	set_sc( OB_AKAITSUKI         , SC_AKAITSUKI       , SI_AKAITSUKI       , SCB_NONE );
 
 	//Adjust SCB flags as support for these skills are added. [Rytech]
-	//set_sc( GC_DARKCROW           , SC_DARKCROW           , SI_DARKCROW           , SCB_NONE );
-	//set_sc( RA_UNLIMIT            , SC_UNLIMIT            , SI_UNLIMIT            , SCB_NONE );
-	//set_sc( GN_ILLUSIONDOPING     , SC_HALLUCINATION      , SI_HALLUCINATION      , SCB_NONE );
-	//add_sc( RK_DRAGONBREATH_WATER , SC_FREEZING           );
-	//add_sc( NC_MAGMA_ERUPTION     , SC_BURNING            );
-	//set_sc( WM_FRIGG_SONG         , SC_FRIGG_SONG         , SI_FRIGG_SONG         , SCB_NONE );
-	//set_sc( SR_FLASHCOMBO         , SC_FLASH_COMBO_ATK    , SI_BLANK              , SCB_NONE );
-	//add_sc( SC_ESCAPE             , SC_ANKLE              );
-	//set_sc( AB_OFFERTORIUM        , SC_OFFERTORIUM        , SI_OFFERTORIUM        , SCB_NONE );
-	//set_sc( WL_TELEKINESIS_INTENSE, SC_TELEKINESIS_INTENSE, SI_TELEKINESIS_INTENSE, SCB_NONE );
-	//set_sc( LG_KINGS_GRACE        , SC_KINGS_GRACE        , SI_KINGS_GRACE        , SCB_NONE );
-	//set_sc( ALL_FULL_THROTTLE     , SC_FULL_THROTTLE      , SI_FULL_THROTTLE      , SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK );
+	set_sc( GC_DARKCROW           , SC_DARKCROW           , SI_DARKCROW           , SCB_NONE );
+	set_sc( RA_UNLIMIT            , SC_UNLIMIT            , SI_UNLIMIT            , SCB_NONE );
+	set_sc( GN_ILLUSIONDOPING     , SC_ILLUSIONDOPING     , SI_ILLUSIONDOPING     , SCB_NONE );
+	add_sc( RK_DRAGONBREATH_WATER , SC_FREEZING           );
+	add_sc( NC_MAGMA_ERUPTION     , SC_BURNING            );
+	set_sc( WM_FRIGG_SONG         , SC_FRIGG_SONG         , SI_FRIGG_SONG         , SCB_NONE );
+	set_sc( SR_FLASHCOMBO         , SC_FLASHCOMBO         , SI_FLASHCOMBO         , SCB_NONE );
+	add_sc( SC_ESCAPE             , SC_ANKLE              );
+	set_sc( AB_OFFERTORIUM        , SC_OFFERTORIUM        , SI_OFFERTORIUM        , SCB_NONE );
+	set_sc( WL_TELEKINESIS_INTENSE, SC_TELEKINESIS_INTENSE, SI_TELEKINESIS_INTENSE, SCB_NONE );
+	set_sc( LG_KINGS_GRACE        , SC_KINGS_GRACE        , SI_KINGS_GRACE        , SCB_NONE );
+	set_sc( ALL_FULL_THROTTLE     , SC_FULL_THROTTLE      , SI_FULL_THROTTLE      , SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK );
 
 	set_sc( HLIF_AVOID           , SC_AVOID           , SI_BLANK           , SCB_SPEED );
 	set_sc( HLIF_CHANGE          , SC_CHANGE          , SI_BLANK           , SCB_VIT|SCB_INT );
@@ -926,6 +938,7 @@ void initChangeTables(void)
 	StatusChangeFlagTable[SC_EXTRACT_SALAMINE_JUICE] |= SCB_ASPD;
 
 	StatusChangeFlagTable[SC_ALL_RIDING] |= SCB_SPEED;
+	StatusChangeFlagTable[SC_ON_PUSH_CART] |= SCB_SPEED;
 	StatusChangeFlagTable[SC_REBOUND] |= SCB_SPEED;//Recheck later.
 
 	if( !battle_config.display_hallucination ) //Disable Hallucination.
@@ -1614,24 +1627,24 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 		}
 		if (sc->option&OPTION_CHASEWALK && skill_num != ST_CHASEWALK)
 			return 0;
-		if (sc->option&OPTION_RIDING_WUG && ((TBL_PC*)src)->skillitem != skill_num)//Only usable skill while riding warg.
+		if (sc->option&OPTION_WUGRIDER && ((TBL_PC*)src)->skillitem != skill_num)//Only usable skill while riding warg.
 			switch( skill_num )
 			{
-				case HT_ANKLESNARE:	case HT_SHOCKWAVE:
-				case HT_SANDMAN:	case HT_FLASHER:
+				case HT_ANKLESNARE:		case HT_SHOCKWAVE:
+				case HT_SANDMAN:		case HT_FLASHER:
 				case HT_FREEZINGTRAP:	case HT_BLASTMINE:
 				case HT_CLAYMORETRAP:	case HT_TALKIEBOX:
-				case RA_DETONATOR:	case RA_ELECTRICSHOCKER:
+				case RA_DETONATOR:		case RA_ELECTRICSHOCKER:
 				case RA_CLUSTERBOMB:	case RA_WUGRIDER:
-				case RA_WUGDASH:	case RA_WUGSTRIKE:
+				case RA_WUGDASH:		case RA_WUGSTRIKE:
 				case RA_MAGENTATRAP:	case RA_COBALTTRAP:
-				case RA_MAIZETRAP:	case RA_VERDURETRAP:
-				case RA_FIRINGTRAP:	case RA_ICEBOUNDTRAP:
+				case RA_MAIZETRAP:		case RA_VERDURETRAP:
+				case RA_FIRINGTRAP:		case RA_ICEBOUNDTRAP:
 					break;
 				default:
 					return 0;
 			}
-		if( battle_config.mado_skill_limit == 0 && sc->option&OPTION_MADO && ((TBL_PC*)src)->skillitem != skill_num )
+		if( battle_config.mado_skill_limit == 0 && sc->option&OPTION_MADOGEAR && ((TBL_PC*)src)->skillitem != skill_num )
 		{
 			switch( skill_num )
 			{ //Blacksmiths and Mastersmiths skills are unusable when Mado is equipped. [Jobbie]
@@ -2295,15 +2308,13 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	//Give them all modes except these (useful for clones)
 	status->mode = MD_MASK&~(MD_BOSS|MD_PLANT|MD_DETECTOR|MD_ANGRY|MD_TARGETWEAK);
 
-	status->size = (sd->class_&JOBL_BABY) ? 0 : 1;
-	if( battle_config.character_size && pc_isriding(sd,OPTION_RIDING|OPTION_RIDING_DRAGON|OPTION_RIDING_WUG|OPTION_MADO) )
-	{ //[Lupus]
-		if( sd->class_&JOBL_BABY )
-		{
-			if( battle_config.character_size & 2 )
+	status->size = (sd->class_&JOBL_BABY)?0:1;
+	if (battle_config.character_size && (pc_isriding(sd)||pc_isdragon(sd)||pc_iswugrider(sd)||pc_ismadogear(sd))) { //[Lupus]
+		if (sd->class_&JOBL_BABY) {
+			if (battle_config.character_size&2)
 				status->size++;
-		}
-		else if( battle_config.character_size & 1 )
+		} else
+		if(battle_config.character_size&1)
 			status->size++;
 	}
 	status->aspd_rate = 1000;
@@ -2607,11 +2618,17 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	sd->left_weapon.atkmods[1] = atkmods[1][sd->weapontype2];
 	sd->left_weapon.atkmods[2] = atkmods[2][sd->weapontype2];
 
-	if( pc_isriding(sd,OPTION_RIDING|OPTION_RIDING_DRAGON) && (sd->status.weapon == W_1HSPEAR || sd->status.weapon == W_2HSPEAR) )
+	if((pc_isriding(sd)||pc_isdragon(sd)) && (sd->status.weapon==W_1HSPEAR || sd->status.weapon==W_2HSPEAR))
 	{	//When Riding with spear, damage modifier to mid-class becomes 
 		//same as versus large size.
 		sd->right_weapon.atkmods[1] = sd->right_weapon.atkmods[2];
 		sd->left_weapon.atkmods[1] = sd->left_weapon.atkmods[2];
+		//Damage from players mounted on a dragon will have no penaltys on all sizes.
+		if (pc_isdragon(sd))
+		{//Makes damage to small size become the same as large size.
+			sd->right_weapon.atkmods[0] = sd->right_weapon.atkmods[2];
+			sd->left_weapon.atkmods[0] = sd->left_weapon.atkmods[2];
+		}
 	}
 
 // ----- STATS CALCULATION -----
@@ -2844,7 +2861,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		status->def = cap_value(i, CHAR_MIN, CHAR_MAX);
 	}
 
-	if( pc_isriding(sd,OPTION_MADO) && (skill = pc_checkskill(sd,NC_MAINFRAME)) > 0 )
+	if( pc_ismadogear(sd) && (skill = pc_checkskill(sd,NC_MAINFRAME)) > 0 )
 		status->def += 2 + 2 * skill;
 
 	if( !battle_config.weapon_defense_type && status->def > battle_config.max_def )
@@ -2878,16 +2895,16 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	status->amotion = cap_value(i,battle_config.max_aspd,2000);
 
 	// Relative modifiers from passive skills
-	if( (skill=pc_checkskill(sd,SA_ADVANCEDBOOK)) > 0 && sd->status.weapon == W_BOOK )
-		status->aspd_rate -= 5 * skill;
-	if( (skill = pc_checkskill(sd,SG_DEVIL)) > 0 && !pc_nextjobexp(sd) )
-		status->aspd_rate -= 30 * skill;
-	if( (skill=pc_checkskill(sd,GS_SINGLEACTION)) > 0 && (sd->status.weapon >= W_REVOLVER && sd->status.weapon <= W_GRENADE) )
-		status->aspd_rate -= ((skill + 1) / 2) * 10;
-	if( pc_isriding(sd,OPTION_RIDING) )			// If there is the !(sd->class_&JOBL_THIRD), than aspd reduction isn't applied to griff users. FIXME: pc_isriding(sd,OPTION_RIDING) is only true for griffs and pecos? [Xazax]
-		status->aspd_rate += 500 - 100 * pc_checkskill(sd,KN_CAVALIERMASTERY);
-	if( pc_isriding(sd,OPTION_RIDING_DRAGON) && (sd->class_&JOBL_THIRD) && (skill = pc_checkskill(sd,RK_DRAGONTRAINING)) > 0 )
-		status->aspd_rate += 500 - 100 * skill;
+	if((skill=pc_checkskill(sd,SA_ADVANCEDBOOK))>0 && sd->status.weapon == W_BOOK)
+		status->aspd_rate -= 5*skill;
+	if((skill = pc_checkskill(sd,SG_DEVIL)) > 0 && !pc_nextjobexp(sd))
+		status->aspd_rate -= 30*skill;
+	if((skill=pc_checkskill(sd,GS_SINGLEACTION))>0 && (sd->status.weapon >= W_REVOLVER && sd->status.weapon <= W_GRENADE))
+		status->aspd_rate -= ((skill+1)/2) * 10;
+	if(pc_isriding(sd))
+		status->aspd_rate += 500-100*pc_checkskill(sd,KN_CAVALIERMASTERY);
+	if(pc_isdragon(sd))
+		status->aspd_rate += 250-50*pc_checkskill(sd,RK_DRAGONTRAINING);
 
 	status->adelay = 2 * status->amotion;
 
@@ -2902,18 +2919,16 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 // ----- MISC CALCULATIONS -----
 
 	// Weight
-	if( (skill=pc_checkskill(sd,MC_INCCARRY)) > 0 )
-		sd->max_weight += 2000 * skill;
-	if( pc_isriding(sd,OPTION_RIDING) && pc_checkskill(sd,KN_RIDING) > 0 )
-		sd->max_weight += 10000; // Same in gryphons
-	if( pc_isriding(sd,OPTION_RIDING_DRAGON) && (skill = pc_checkskill(sd,RK_DRAGONTRAINING)) > 0 )
-		sd->max_weight += 5000  + 2000 * skill; // 700(Lv1) ~ 1500(Lv5)
-	if( sd->sc.option&OPTION_MADO )
-		sd->max_weight += 20000;
-	if( sc->data[SC_KNOWLEDGE] )
-		sd->max_weight += sd->max_weight * sc->data[SC_KNOWLEDGE]->val1 / 10;
-	if( (skill=pc_checkskill(sd,ALL_INCCARRY)) > 0 )
-		sd->max_weight += 2000 * skill;
+	if((skill=pc_checkskill(sd,MC_INCCARRY))>0)
+		sd->max_weight += 2000*skill;
+	if(pc_isriding(sd) && pc_checkskill(sd,KN_RIDING)>0)
+		sd->max_weight += 10000;
+	if(sc->data[SC_KNOWLEDGE])
+		sd->max_weight += sd->max_weight*sc->data[SC_KNOWLEDGE]->val1/10;
+	if((skill=pc_checkskill(sd,ALL_INCCARRY))>0)
+		sd->max_weight += 2000*skill;
+	if(pc_isdragon(sd) && (skill=pc_checkskill(sd,RK_DRAGONTRAINING))>0)
+		sd->max_weight += 5000+2000*skill;
 
 	if( pc_checkskill(sd,SM_MOVINGRECOVERY) > 0 )
 		sd->regen.state.walk = 1;
@@ -4736,24 +4751,14 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 			if( sc->data[SC_FUSION] )
 				val = 25;
 			else
-			if( sd && pc_isriding(sd,OPTION_RIDING) )
-				val = 25;
-			else
-			if( sd && pc_isriding(sd, OPTION_RIDING_DRAGON) )
-				val = 25;
-			else
-			if( sd && pc_isriding(sd,OPTION_RIDING_WUG) )
-				val = 15 + 5 * pc_checkskill(sd, RA_WUGRIDER);
-			else
-			if( sd && pc_isriding(sd,OPTION_MADO) )
-			{
-				val = (- 10 * (5 - pc_checkskill(sd,NC_MADOLICENCE)));
-				if( sc->data[SC_ACCELERATION] )
-					val += 25;
-			}
-			else
-			if( sc->data[SC_ALL_RIDING] )
+			if( sc->data[SC_ALL_RIDING] )//Set to 25 by default in the battle config.
 				val = battle_config.rental_mount_speed_boost;
+			else
+			if( sd && (pc_isriding(sd)||pc_isdragon(sd)) )
+				val = 25;
+			else
+			if( sd && pc_iswugrider(sd) )
+				val = 10 * pc_checkskill(sd, RA_WUGRIDER);//10% increase per level. This should do. [Rytech]
 
 			speed_rate -= val;
 		}
@@ -4858,6 +4863,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				val = max( val, 75 );
 			if( sc->data[SC_CLOAKINGEXCEED] )
 				val = max( val, sc->data[SC_CLOAKINGEXCEED]->val3);
+			if( sc->data[SC_ACCELERATION] )
+				val = max( val, 25 );
 			if( sc->data[SC_HOVERING] )
 				val = max( val, 10 );
 			if( sc->data[SC_GN_CARTBOOST] )
@@ -4884,6 +4891,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 	{
 		if( sd && pc_iscarton(sd) )
 			speed += speed * (50 - 5 * pc_checkskill(sd,MC_PUSHCART)) / 100;
+		if( sd && pc_ismadogear(sd) )
+			speed += speed * (50 - 10 * pc_checkskill(sd,NC_MADOLICENCE)) / 100;
 		if( speed_rate != 100 )
 			speed = speed * speed_rate / 100;
 		if( sc->data[SC_STEELBODY] )
@@ -5505,13 +5514,19 @@ void status_set_viewdata(struct block_list *bl, int class_)
 				if (sd->sc.option&OPTION_WEDDING)
 					class_ = JOB_WEDDING;
 				else
-				if (sd->sc.option&OPTION_SUMMER)
-					class_ = JOB_SUMMER;
-				else
 				if (sd->sc.option&OPTION_XMAS)
 					class_ = JOB_XMAS;
 				else
-				if (sd->sc.option&OPTION_RIDING || sd->sc.option&(OPTION_RIDING_DRAGON))
+				if (sd->sc.option&OPTION_SUMMER)
+					class_ = JOB_SUMMER;
+				else
+				if (sd->sc.option&OPTION_HANBOK)
+					class_ = JOB_HANBOK;
+				else
+				if (sd->sc.option&OPTION_OKTOBERFEST)
+					class_ = JOB_OKTOBERFEST;
+				else
+				if (sd->sc.option&OPTION_RIDING)
 				switch (class_)
 				{	//Adapt class to a Mounted one.
 				case JOB_KNIGHT:
@@ -5532,41 +5547,100 @@ void status_set_viewdata(struct block_list *bl, int class_)
 				case JOB_BABY_CRUSADER:
 					class_ = JOB_BABY_CRUSADER2;
 					break;
-				case JOB_RUNE_KNIGHT:
-					class_ = JOB_RUNE_KNIGHT2;
-					break;
-				case JOB_RUNE_KNIGHT_T:
-					class_ = JOB_RUNE_KNIGHT_T2;
-					break;
 				case JOB_ROYAL_GUARD:
 					class_ = JOB_ROYAL_GUARD2;
 					break;
 				case JOB_ROYAL_GUARD_T:
 					class_ = JOB_ROYAL_GUARD_T2;
 					break;
+				case JOB_BABY_GUARD:
+					class_ = JOB_BABY_GUARD2;
+					break;
+				}
+				else
+				if (sd->sc.option&OPTION_DRAGON1)
+				switch (class_)
+				{
+				case JOB_RUNE_KNIGHT:
+					class_ = JOB_RUNE_KNIGHT2;
+					break;
+				case JOB_RUNE_KNIGHT_T:
+					class_ = JOB_RUNE_KNIGHT_T2;
+					break;
+				case JOB_BABY_RUNE:
+					class_ = JOB_BABY_RUNE2;
+					break;
+				}
+				else
+				if (sd->sc.option&OPTION_WUGRIDER)
+				switch (class_)
+				{
 				case JOB_RANGER:
 					class_ = JOB_RANGER2;
 					break;
 				case JOB_RANGER_T:
 					class_ = JOB_RANGER_T2;
 					break;
+				case JOB_BABY_RANGER:
+					class_ = JOB_BABY_RANGER2;
+					break;
+				}
+				else
+				if (sd->sc.option&OPTION_MADOGEAR)
+				switch (class_)
+				{
 				case JOB_MECHANIC:
 					class_ = JOB_MECHANIC2;
 					break;
 				case JOB_MECHANIC_T:
 					class_ = JOB_MECHANIC_T2;
 					break;
-				case JOB_BABY_RUNE:
-					class_ = JOB_BABY_RUNE2;
-					break;
-				case JOB_BABY_RANGER:
-					class_ = JOB_BABY_RANGER2;
-					break;
 				case JOB_BABY_MECHANIC:
 					class_ = JOB_BABY_MECHANIC2;
 					break;
-				case JOB_BABY_GUARD:
-					class_ = JOB_BABY_GUARD2;
+				}
+				else
+				if (sd->sc.option&OPTION_DRAGON2)
+				switch (class_)
+				{
+				case JOB_RUNE_KNIGHT:
+					class_ = JOB_RUNE_KNIGHT3;
+					break;
+				case JOB_RUNE_KNIGHT_T:
+					class_ = JOB_RUNE_KNIGHT_T3;
+					break;
+				}
+				else
+				if (sd->sc.option&OPTION_DRAGON3)
+				switch (class_)
+				{
+				case JOB_RUNE_KNIGHT:
+					class_ = JOB_RUNE_KNIGHT4;
+					break;
+				case JOB_RUNE_KNIGHT_T:
+					class_ = JOB_RUNE_KNIGHT_T4;
+					break;
+				}
+				else
+				if (sd->sc.option&OPTION_DRAGON4)
+				switch (class_)
+				{
+				case JOB_RUNE_KNIGHT:
+					class_ = JOB_RUNE_KNIGHT5;
+					break;
+				case JOB_RUNE_KNIGHT_T:
+					class_ = JOB_RUNE_KNIGHT_T5;
+					break;
+				}
+				else
+				if (sd->sc.option&OPTION_DRAGON5)
+				switch (class_)
+				{
+				case JOB_RUNE_KNIGHT:
+					class_ = JOB_RUNE_KNIGHT6;
+					break;
+				case JOB_RUNE_KNIGHT_T:
+					class_ = JOB_RUNE_KNIGHT_T6;
 					break;
 				}
 				sd->vd.class_ = class_;
@@ -6275,14 +6349,14 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			return 0;
 	break;
 	case SC_ALL_RIDING:
-		if( !sd || pc_isriding(sd,OPTION_RIDING|OPTION_RIDING_DRAGON|OPTION_RIDING_WUG|OPTION_MADO) )
-			return 0;
-		if( sc->data[type] )
-		{	// Already mounted, just dismount.
-			status_change_end(bl, SC_ALL_RIDING, -1);
+		if ( !sd || pc_isriding(sd) || pc_isdragon(sd) || pc_iswugrider(sd) || pc_ismadogear(sd) )
+			return 0;//Do not get on a rental mount if your on a class mount.
+		if ( sc->data[type] )
+		{
+			status_change_end(bl,SC_ALL_RIDING,INVALID_TIMER);
 			return 0;
 		}
-		break;
+	break;
 	}
 
 	//Check for BOSS resistances
@@ -7701,12 +7775,13 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val_flag |= 1|2|4;
 			if( sd )
 			{// Removes Animals
-				if( pc_isriding(sd,OPTION_RIDING|OPTION_RIDING_DRAGON|OPTION_RIDING_WUG) ) pc_setriding(sd, 0);
-				if( pc_isfalcon(sd) ) pc_setoption(sd, sd->sc.option&~OPTION_FALCON);
-				if( pc_iswarg(sd) ) pc_setoption(sd, sd->sc.option&~OPTION_WUG);
-				if( sd->status.pet_id > 0 ) pet_menu(sd, 3);
-				if( merc_is_hom_active(sd->hd) ) merc_hom_vaporize(sd,1);
-				//if( sd->md ) merc_delete(sd->md,3);//Info shows nothing about Merc's being removed. Probely true since their not a animal. [Rytech]
+				if ( pc_isfalcon(sd) ) pc_setoption(sd, sd->sc.option&~OPTION_FALCON);
+				if ( pc_isriding(sd) ) pc_setoption(sd, sd->sc.option&~OPTION_RIDING);
+				if ( pc_isdragon(sd) ) pc_setoption(sd, sd->sc.option&~OPTION_DRAGON);
+				if ( pc_iswug(sd) ) pc_setoption(sd, sd->sc.option&~OPTION_WUG);
+				if ( pc_iswugrider(sd) ) pc_setoption(sd, sd->sc.option&~OPTION_WUGRIDER);
+				if ( sd->status.pet_id > 0 ) pet_menu(sd, 3);
+				if ( merc_is_hom_active(sd->hd) ) merc_hom_vaporize(sd,1);
 				//Are rental mounts stripped as well? Well find out once I add them in.
 			}
 			break;

@@ -942,7 +942,7 @@ int unit_resume_running(int tid, unsigned int tick, int id, intptr data)
 	struct unit_data *ud = (struct unit_data *)data;
 	TBL_PC * sd = map_id2sd(id);
 
-	if(sd && pc_isriding(sd, OPTION_RIDING_WUG))
+	if(sd && pc_iswugrider(sd))
 		clif_skill_nodamage(ud->bl,ud->bl,RA_WUGDASH,ud->skilllv,
 			sc_start4(ud->bl,status_skill2sc(RA_WUGDASH),100,ud->skilllv,unit_getdir(ud->bl),0,0,1));
 	else

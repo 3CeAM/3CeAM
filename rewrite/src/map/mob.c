@@ -3689,7 +3689,7 @@ static bool mob_readdb_sub(char* fields[], int columns, int current)
 
 static void mob_readdb(void)
 {
-	const char* filename[] = { "mob_db.txt", "mob_db2.txt" };
+	const char* filename[] = { "mob_db.txt", "mob_db2.txt", "mob_db_3ceam.txt" };
 	int fi;
 	
 	for( fi = 0; fi < ARRAYLENGTH(filename); ++fi )

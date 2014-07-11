@@ -705,7 +705,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 				skill_castend_damage_id(src,bl,HT_BLITZBEAT,(skill<rate)?skill:rate,tick,SD_LEVEL);
 			}
 			// Automatic trigger of Warg Strike [Jobbie]
-			if( pc_iswarg(sd) && sd->status.weapon == W_BOW && (skill=pc_checkskill(sd,RA_WUGSTRIKE)) > 0 && rand()%1000 <= sstatus->luk*10/3+1 )
+			if( pc_iswug(sd) && sd->status.weapon == W_BOW && (skill=pc_checkskill(sd,RA_WUGSTRIKE)) > 0 && rand()%1000 <= sstatus->luk*10/3+1 )
 				skill_castend_damage_id(src,bl,RA_WUGSTRIKE,skill,tick,0);
 			// Gank
 			if(dstmd && sd->status.weapon != W_BOW &&
@@ -4226,7 +4226,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		{
 			if( skillid == RA_WUGSTRIKE )
 			{
-				if( sd && pc_isriding(sd,OPTION_RIDING_WUG) && !map_flag_gvg(src->m) && !map[src->m].flag.battleground && unit_movepos(src,bl->x,bl->y,1,1) )
+				if( sd && pc_iswugrider(sd) && !map_flag_gvg(src->m) && !map[src->m].flag.battleground && unit_movepos(src,bl->x,bl->y,1,1) )
 					clif_slide(src, bl->x, bl->y);
 			}
 
@@ -4718,8 +4718,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				if (tsc->data[SC_BERSERK])
 					heal = 0; //Needed so that it actually displays 0 when healing.
 			}
-			if( dstsd && dstsd->sc.option&OPTION_MADO )
-				heal = 0;
+			if( dstsd && dstsd->sc.option&OPTION_MADOGEAR )
+				heal = 0;//Mado's cant be healed. Only Repair can heal them.
 
 			heal_get_jobexp = status_heal(bl,heal,0,0);
 			clif_skill_nodamage (src, bl, skillid, heal, 1);
@@ -7896,7 +7896,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case RA_WUGMASTERY:
 		if( sd )
 		{
-			if( !pc_iswarg(sd) )
+			if( !pc_iswug(sd) )
 				pc_setoption(sd,sd->sc.option|OPTION_WUG);
 			else
 				pc_setoption(sd,sd->sc.option&~OPTION_WUG);
@@ -7907,15 +7907,15 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case RA_WUGRIDER:
 		if( sd )
 		{
-			if( pc_isriding(sd, OPTION_RIDING_WUG) )
+			if( pc_iswugrider(sd) )
 			{
-				pc_setriding(sd,0);
+				pc_setoption(sd,sd->sc.option&~OPTION_WUGRIDER);
 				pc_setoption(sd,sd->sc.option|OPTION_WUG);
 			}
-			else if( pc_iswarg(sd) )
+			else if( pc_iswug(sd) )
 			{
-				pc_setriding(sd,1);
 				pc_setoption(sd,sd->sc.option&~OPTION_WUG);
+				pc_setoption(sd,sd->sc.option|OPTION_WUGRIDER);
 			}
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
@@ -7928,7 +7928,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			map_freeblock_unlock();
 			return 0;
 		}
-		if( sd && pc_isriding(sd, OPTION_RIDING_WUG) )
+		if( sd && pc_iswugrider(sd) )
 		{
 			clif_skill_nodamage(src,bl,skillid,skilllv,sc_start4(bl,type,100,skilllv,unit_getdir(bl),0,0,1));
 			clif_walkok(sd);
@@ -7955,9 +7955,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case NC_SELFDESTRUCTION:
 		if( sd )
 		{
-			pc_setoption(sd, sd->sc.option&~OPTION_MADO);
 			clif_skill_nodamage(src, bl, skillid, skilllv, 1);
 			skill_castend_damage_id(src, src, skillid, skilllv, tick, flag);
+			pc_setoption(sd, sd->sc.option&~OPTION_MADOGEAR);
 		}
 		break;
 
@@ -7981,15 +7981,26 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case NC_REPAIR:
 		if( sd )
 		{
+			short percent;
 			int heal;
-			if( dstsd && pc_isriding(dstsd,OPTION_MADO) )
+
+			switch (skilllv)
 			{
-				heal = dstsd->status.max_hp * (3+3*skilllv) / 100;
+				case 1: percent = 4;
+				case 2: percent = 7;
+				case 3: percent = 13;
+				case 4: percent = 17;
+				case 5: percent = 23;
+			}
+
+			if( dstsd && pc_ismadogear(dstsd) )
+			{
+				heal = dstsd->status.max_hp * percent / 100;
 				status_heal(bl,heal,0,2);
 			}
 			else
 			{
-				heal = sd->status.max_hp * (3+3*skilllv) / 100;
+				heal = sd->status.max_hp * percent / 100;
 				status_heal(src,heal,0,2);
 			}
 
@@ -12811,21 +12822,21 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		}
 		break;
 	case RA_WUGDASH:
-		if(!pc_isriding(sd, OPTION_RIDING_WUG))
+		if(!pc_iswugrider(sd))
 		{
 			clif_skill_fail(sd,skill,0,0,0);
 			return 0;
 		}
 		break;
 	case RA_SENSITIVEKEEN:
-		if(!pc_iswarg(sd))
+		if(!pc_iswug(sd))
 		{
 			clif_skill_fail(sd,skill,0x17,0,0);
 			return 0;
 		}
 		break;
 	case RA_WUGRIDER:
-		if(!pc_isriding(sd,OPTION_RIDING_WUG) && !pc_iswarg(sd))
+		if(!pc_iswugrider(sd) && !pc_iswug(sd))
 		{
 			clif_skill_fail(sd,skill,0x17,0,0);
 			return 0;
@@ -12972,13 +12983,7 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		}
 		break;
 	case ST_RIDING:
-		if(!pc_isriding(sd,OPTION_RIDING|OPTION_RIDING_DRAGON)) {// Necessary to check some 2nd job skills that need it.
-			clif_skill_fail(sd,skill,0,0,0);
-			return 0;
-		}
-		break;
-	case ST_RIDINGDRAGON:
-		if(!pc_isriding(sd,OPTION_RIDING_DRAGON)) {
+		if(!(pc_isriding(sd)||pc_isdragon(sd))) {
 			clif_skill_fail(sd,skill,0,0,0);
 			return 0;
 		}
@@ -13040,20 +13045,26 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			break;
 		clif_skill_fail(sd,skill,0,0,0);
 		return 0;
+	case ST_DRAGON:
+		if(!pc_isdragon(sd)) {
+			clif_skill_fail(sd,skill,0,0,0);
+			return 0;
+		}
+		break;
 	case ST_WUG:
-		if(!pc_iswarg(sd)) {
+		if(!pc_iswug(sd)) {
 			clif_skill_fail(sd,skill,0,0,0);
 			return 0;
 		}
 		break;
-	case ST_RIDINGWUG:
-		if(!pc_isriding(sd,OPTION_RIDING_WUG) && !pc_iswarg(sd)){
+	case ST_WUGRIDER:
+		if(!pc_iswugrider(sd) && !pc_iswug(sd)){
 			clif_skill_fail(sd,skill,0,0,0);
 			return 0;
 		}
 		break;
-	case ST_MADO:
-		if(!pc_isriding(sd,OPTION_MADO)) {
+	case ST_MADOGEAR:
+		if(!pc_ismadogear(sd)) {
 			clif_skill_fail(sd,skill,0,0,0);
 			return 0;
 		}
@@ -17447,10 +17458,10 @@ static bool skill_parse_row_requiredb(char* split[], int columns, int current)
 	else if( strcmpi(split[10],"recover_weight_rate")==0 ) skill_db[i].state = ST_RECOV_WEIGHT_RATE;
 	else if( strcmpi(split[10],"move_enable")==0 ) skill_db[i].state = ST_MOVE_ENABLE;
 	else if( strcmpi(split[10],"water")==0 ) skill_db[i].state = ST_WATER;
-	else if( strcmpi(split[10],"dragon")==0 ) skill_db[i].state = ST_RIDINGDRAGON;
+	else if( strcmpi(split[10],"dragon")==0 ) skill_db[i].state = ST_DRAGON;
 	else if( strcmpi(split[10],"warg")==0 ) skill_db[i].state = ST_WUG;
-	else if( strcmpi(split[10],"ridingwarg")==0 ) skill_db[i].state = ST_RIDINGWUG;
-	else if( strcmpi(split[10],"mado")==0 ) skill_db[i].state = ST_MADO;
+	else if( strcmpi(split[10],"ridingwarg")==0 ) skill_db[i].state = ST_WUGRIDER;
+	else if( strcmpi(split[10],"mado")==0 ) skill_db[i].state = ST_MADOGEAR;
 	else if( strcmpi(split[10],"elementalspirit")==0 ) skill_db[i].state = ST_ELEMENTALSPIRIT;
 	else skill_db[i].state = ST_NONE;
 
