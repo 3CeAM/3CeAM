@@ -789,7 +789,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			mobskill_event((TBL_MOB*)bl,src,gettick(),MSC_SKILLUSED|(skill_num<<16));
 	}
 
-	if( sd && pc_isriding(sd,OPTION_MADO) && (element == ELE_FIRE || element == ELE_WATER) && rand()%100 < 50 )
+	if( sd && pc_ismadogear(sd) && (element == ELE_FIRE || element == ELE_WATER) && rand()%100 < 50 )
 		pc_overheat(sd,element == ELE_FIRE ? 1 : -1);
 		
 	if( sc && sc->data[SC__SHADOWFORM]  )
@@ -985,8 +985,8 @@ int battle_addmastery(struct map_session_data *sd,struct block_list *target,int 
 	if( (skill = pc_checkskill(sd,NC_RESEARCHFE)) > 0 && (status->def_ele == ELE_FIRE || status->def_ele == ELE_EARTH) )
 		damage += (skill * 10);
 	
-	if( pc_isriding(sd, OPTION_MADO) )
-		damage += 15 * pc_checkskill(sd, NC_MADOLICENCE);
+	if( (skill = pc_checkskill(sd,NC_MADOLICENCE)) > 0 && pc_ismadogear(sd) )
+		damage += (skill * 15);
 
 	if(type == 0)
 		weapon = sd->weapontype1;
@@ -1008,10 +1008,12 @@ int battle_addmastery(struct map_session_data *sd,struct block_list *target,int 
 		case W_1HSPEAR:
 		case W_2HSPEAR:
 			if((skill = pc_checkskill(sd,KN_SPEARMASTERY)) > 0) {
-				if(!pc_isriding(sd, OPTION_RIDING|OPTION_RIDING_DRAGON))
-					damage += skill * 4;
+				if(pc_isdragon(sd))
+					damage += (skill * 10);
+				else if(pc_isriding(sd))
+					damage += (skill * 5);
 				else
-					damage += skill * (5 + pc_checkskill(sd,RK_DRAGONTRAINING));//Mastery damage is higher when on a Dragon Mount. [Rytech]
+					damage += (skill * 4);
 			}
 			break;
 		case W_1HAXE:

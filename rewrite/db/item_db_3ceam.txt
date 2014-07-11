@@ -407,7 +407,7 @@
 15056,Special_Ninja_Suit_,Special Ninja Suit,5,100000,,1200,,10,,1,0x20000000,7,2,16,,100,1,0,{ bonus bAgi,1+(getrefine()/3); },{},{}
 
 // Serect Gunslinger Bullet???
-13208,Gong_Bug,Gong Bug,10,1,,5,50,,,,0x01000000,7,2,32768,,50,,3,{},{},{}
+13208,Gong_Bug,Gong Bug,10,1,,20,50,,,,0x01000000,7,2,32768,,50,,3,{},{},{}
 
 // Mutated Homunculus Food
 6098,Small_Snow_Flower,Small Snow Flower,3,1000,,10,,,,,,,,,,,,,{},{},{}

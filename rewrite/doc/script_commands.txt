@@ -4,7 +4,7 @@
 //= A reference manual for the eAthena scripting language.
 //= Commands are sorted depending on their functionality.
 //===== Version ===========================================
-//= 3.39.20110322
+//= 3.51.20130619
 //=========================================================
 //= 1.0 - First release, filled will as much info as I could
 //=       remember or figure out, most likely there are errors,
@@ -168,6 +168,32 @@
 //=       Documented optional parameter 'npc name' of 'waitingroom2bg' command.
 //= 3.40.20110404
 //=       Updated description of 'waitingroom' command to include required zeny/lvl. [Kisuka]
+//= 3.41.20110427
+//=       Updated description of 'itemheal' primarily to remove overhead and lies
+//=       about client effects. [Ai4rei]
+//= 3.42.20110508
+//=       Updated description of all instance commands to reflect actual behavior.
+//=       [Ai4rei]
+//= 3.43.20110529
+//=       Updated 'npcshopitem', 'npcshopadditem' and 'npcshopdelitem' to support
+//=       cashshops as well. [Ai4rei]
+//= 3.44.20110530
+//=       Documented special map names recognized by 'warpguild'. [Ai4rei]
+//= 3.45.20110709
+//=       Added 'getmercinfo' command. [Ai4rei]
+//= 3.46.20110810
+//=       Added information on OnTouchNPC and 'unitwarp' special case [Skotlex]
+//= 3.47.20111128
+//=       Added 'showdigit' command. [Ai4rei]
+//= 3.48.20120108
+//=       Updated 'viewpoint' to mention effect of type 0. [Ai4rei]
+//= 3.49.20120319
+//=       Added 'getnpcid' command. [Ai4rei]
+//= 3.50.20120416
+//=       Allow any type of argument in 'escape_sql' command. [FlavioJS]
+//= 3.51.20130619
+//=       Added 'setdragon', 'checkdragon', 'setwug', 'checkwug', 
+//=       'setwugrider', 'checkwugrider', 'setmadogear', 'checkmadogear'. [Rytech]
 //=========================================================
 
 This document is a reference manual for all the scripting commands and functions 
@@ -291,7 +317,7 @@ explanation, see 'setmapflag'.
 
 Map name is the name of the map the monsters will spawn on. x,y are the
 coordinates where the mob should spawn. If xs and ys are non-zero, they
-specify the diameters of a spawn-rectangle area who's center is x,y.
+specify the 'radius' of a spawn-rectangle area centered at x,y.
 Putting zeros instead of these coordinates will spawn the monsters randomly.
 Note this is only the initial spawn zone, as mobs random-walk, they are free
 to move away from their specified spawn region.
@@ -316,13 +342,10 @@ below).
 Amount is the amount of monsters that will be spawned when this command is 
 executed, it is affected by spawn rates in 'battle_athena.conf'.
 
-Delay1 and delay2 are the monster respawn delays - the first one counts the time 
-since a monster defined in this spawn was last respawned and the second one 
-counts the time since the monster of this spawn was last killed. Whichever turns 
-out to be higher will be used. If the resulting number is smaller than a random 
-value between 5 and 10 seconds, this value will be used instead. (Which is 
-normally the case if both delay values are zero.) The times are given in
-1/1000ths of a second.
+Delay1 and delay2 control monster respawn delays - the first one is the fixed
+base respawn time, and the second is random variance on top of the base time.
+Both values are given in miliseconds (1000 = 1 second).
+Note that the server also enforces a minimum respawn delay of 5 seconds.
 
 You can specify a custom level to use for the mob different from the one of
 the database by adjoining the level after the name with a comma. eg:
@@ -410,7 +433,8 @@ spanning triggerX cells in every direction across X and triggerY in every
 direction across Y. Walking into that area will trigger the NPC. If no 
 'OnTouch:' special label is present in the NPC code, the execution will start 
 from the beginning of the script, otherwise, it will start from the 'OnTouch:' 
-label.
+label. Monsters can also trigger the NPC, though the label 'OnTouchNPC:' is 
+used in this case.
 
 The code part is the script code that will execute whenever the NPC is 
 triggered. It may contain commands and function calls, descriptions of which 
@@ -489,7 +513,7 @@ What a RID is and why do you need to know
 Most scripting commands and functions will want to request data about a 
 character, store variables referenced to that character, send stuff to the 
 client connected to that specific character. Whenever a script is invoked by a 
-character, it is passed a so-called RID - this is the character ID number of a 
+character, it is passed a so-called RID - this is the account ID number of a 
 character that caused the code to execute by clicking on it, walking into it's 
 OnTouch zone, or otherwise.
 
@@ -561,7 +585,9 @@ Variables
 ---------
 
 The meat of every programming language is variables - places where you store 
-data. 
+data.
+
+In the eAthena scripting language, variable names are not case sensitive.
 
 Variables are divided into and uniquely identified by the combination of:
 prefix  - determines the scope and extent (or lifetime) of the variable
@@ -598,7 +624,9 @@ nothing  - A permanent variable attached to the character, the default variable
 "."      - A NPC variable.
            They exist in the NPC and disappear when the server restarts or the 
            NPC is reloaded. Can be accessed from inside the NPC or by calling 
-           'getvariableofnpc'.
+           'getvariableofnpc'. Function objects can also have .variables which 
+           are accessible from inside the function, however 'getvariableofnpc' 
+           does NOT work on function objects.
 ".@"     - A scope variable.
            They are unique to the instance and scope. Each instance has it's 
            own scope that ends when the script ends. Calling a function with 
@@ -656,7 +684,7 @@ StatusPoint - Amount of status points remaining.
 BaseLevel   - Current base level
 SkillPoint  - Amount of skill points remaining
 Class       - Current job
-Upper       - 0: Normal jobs, 1: Adv jobs. 2: Baby jobs, 4: Normal 3rd jobs. 5: Adv. 3rd jobs. 6: Baby 3rd jobs. 
+Upper       - 1 if the character is an advanced job class.
 Zeny        - Current amount of Zeny
 Sex         - Character's gender, 0 if female, 1 if male.
 Weight      - The weight the character currently carries.
@@ -1287,6 +1315,9 @@ Example(s):
 	
 //This will set the .var variable of TargetNPC to 1.
 	set getvariableofnpc(.var,"TargetNPC"),1;
+
+Note: even though function objects can have .variables, 
+getvariableofnpc will not work on them.
 
 ---------------------------------------
 
@@ -2106,7 +2137,7 @@ Notice that @array[4] and @array[5] won't be copied to the second array, and it 
 
 ---------------------------------------
 
-*deletearray <array name>[<first value>],<how much to delete>
+*deletearray <array name>[<first value>],<how much to delete>;
 
 This command will delete a specified number of array elements totally from an 
 array, shifting all the elements beyond this towards the beginning.
@@ -2151,6 +2182,7 @@ Whatever it returns is determined by type.
  1 - The visible part of the NPC's display name
  2 - The hidden part of the NPC's display name
  3 - The NPC's unique name (::name)
+ 4 - The name of the map the NPC is in.
 
 ---------------------------------------
 
@@ -2179,10 +2211,14 @@ This will make @arraysize == 6. But if you try this:
 This command retrieves the value of the element of given array at given index.
 This is equivalent to using:
 
-    array[index]
+    <array name>[<index>]
 
 The reason for this is, that this short form is internally converted into a call
 to getelementofarray, when the script is loaded.
+
+Also useful when passing arrays to functions or accessing another npc's arrays: 
+    getelementofarray(getarg(0),<index>)
+    getelementofarray(getvariableofnpc(.var, "testNPC"),<index>)
 
 ---------------------------------------
 
@@ -2250,6 +2286,19 @@ print "player not attached!" error messages, so it is preferred to use
 "playerattached" to check for the character attached to the script.
 
 if( getcharid(2) == 0 ) mes "Only members of a guild are allowed here!";
+
+---------------------------------------
+
+*getnpcid(<type>{,"<npc name>"});
+
+Retrieves IDs of the currently invoked NPC. If a unique npc name is
+given, IDs of that NPC are retrieved instead. Type specifies what ID
+to retrieve and can be one of the following:
+
+    0 - Unit ID (GID)
+
+If an invalid type is given or the NPC does not exist, return value
+is 0.
 
 ---------------------------------------
 
@@ -3453,6 +3502,74 @@ bird and 0 if they don't.
 
 ---------------------------------------
 
+*setdragon {<flag>};
+*checkdragon()
+
+'setdragon' Command Info: The flag sets if the player will be mounted or dismounted to a Dragon.
+Flag 0: Dismounted player from the Dragon.
+Flag 1: Mounts the player to a Dragon.
+
+Example: setdragon 1; // Mounts the player to a Dragon.
+
+Note: The player must know the skill RK_DRAGONTRAINING to mount on a Dragon.
+
+'checkdragon' Command Info: Checks if the player is mounted on a Dragon.
+
+Example: if (checkdragon()) mes "We have detected that your mounted on a Dragon.
+
+---------------------------------------
+
+*setwug {<flag>};
+*checkwug()
+
+'setwug' Command Info: The flag sets if the player warg will be given or removed.
+Flag 0: Removes the player's Warg.
+Flag 1: Gives the player a Warg.
+
+Example: setwug 1; // Gives the player a Warg.
+
+Note: The player must know the skill RA_WUGMASTERY to have a Warg.
+
+'checkwug' Command Info: Checks if the player has a Warg.
+
+Example: if (checkwug()) mes "We have detected that you have a Warg.
+
+---------------------------------------
+
+*setwugrider {<flag>};
+*checkwugrider()
+
+'setwugrider' Command Info: The flag sets if the player will be mounted or dismounted to a Warg.
+Flag 0: Dismounted player from the Warg.
+Flag 1: Mounts the player to a Warg.
+
+Example: setwugrider 1; // Mounts the player to a Warg.
+
+Note: The player must know the skill RA_WUGRIDER to mount on a Warg.
+
+'checkwugrider' Command Info: Checks if the player is mounted on a Warg.
+
+Example: if (checkwugrider()) mes "We have detected that your mounted on a Warg.
+
+---------------------------------------
+
+*setmadogear {<flag>};
+*checkmadogear()
+
+'setmadogear' Command Info: The flag sets if the player will be mounted or dismounted to a Mado.
+Flag 0: Dismounted player from the Mado.
+Flag 1: Mounts the player to a Mado.
+
+Example: setmadogear 1; // Mounts the player to a Mado.
+
+Note: The player must know the skill NC_MADOLICENCE to mount on a Mado.
+
+'checkmadogear' Command Info: Checks if the player is mounted on a Mado.
+
+Example: if (checkmadogear()) mes "We have detected that your mounted on a Mado.
+
+---------------------------------------
+
 *checkvending ({"<player name>"})
 *checkchatting ({"<Player Name>"})
 
@@ -3674,7 +3791,7 @@ is executing this script, unless it's some kind of "chosen" script.
  
 Example:
  
-warpchar "prontera",150,100,20000001;
+warpchar "prontera",150,100,150001;
  
 ---------------------------------------
  
@@ -3683,6 +3800,13 @@ warpchar "prontera",150,100,20000001;
 Warps a guild to specified map and coordinate given the guild id, which you can get with 
 getcharid(2). You can also request another guild id given the member's name with getcharid(2,<player_name>).
  
+You can use the following "map names" for special warping behavior:
+Random:       All party members are randomly warped in their current map (as if they
+              all used a fly wing)
+SavePointAll: All party members are warped to their respective save point.
+SavePoint:    All party members are warped to the save point of the currently
+              attached player (will fail if there's no player attached).
+
 Example:
  
 warpguild "prontera",x,y,Guild_ID;
@@ -3727,15 +3851,10 @@ character and produces no other output whatsoever.
 
 *itemheal <hp>,<sp>;
 
-This command works on the invoking character like 'heal', however, it is not 
-normally used in NPC scripts and will not work as expected there, but is used 
-all over in item scripts. 
-
-Unlike 'heal', which just alters hp/sp and doesn't do anything else at all, this 
-command also shows healing animations for potions and other stuff, checks 
-whether the potion was made by a famous alchemist and alters the amount healed, 
-etc, etc. Since which kind of effect is shown depends on what item was used, 
-using it in an NPC script will not have a desired effect.
+This command heals given absolute amounts of HP and/or SP on the invoking
+character. Unlike heal, this command is intended for use in item scripts. It
+applies potion-related bonuses, such as alchemist ranking, cards and status
+changes. When used inside an NPC script, certain bonuses are omitted.
 
 There is also a nice example on using this with the 'rand' function, to give you 
 a random amount of healing.
@@ -3789,7 +3908,6 @@ swordsman. The upper values are:
 0: Normal/standard classes
 1: High/Advanced classes
 2: Baby classes
-4: Third Classes.
 
 This command will also set a permanent character-based variable 
 'jobchange_level' which will contain the job level at the time right before 
@@ -4000,7 +4118,7 @@ wall), the character is pushed only up to the obstacle.
 
 This command will give a specific amount of specified items to the target 
 character. If the character is not online, nothing will happen.
-If <character ID> is not specified, items will be created in the invoking 
+If <account ID> is not specified, items will be created in the invoking 
 character inventory instead.
 
 In the first and most commonly used version of this command, items are 
@@ -4042,7 +4160,7 @@ quite a few item scripts. For more examples check just about any official script
 *getitem2 "<Item name>",<amount>,<identify>,<refine>,<attribute>,<card1>,<card2>,<card3>,<card4>{,<account ID>};
 
 This command will give an amount of specified items to the invoking character. 
-If an optional character ID is specified, and that character is currently 
+If an optional account ID is specified, and the target character is currently 
 online, items will be created in their inventory instead. If they are not 
 online, nothing will happen. It works essentially the same as 'getitem' (it even 
 works for negative ID numbers the same way, which is kinda silly) but is a lot 
@@ -5198,25 +5316,6 @@ the homunculus must have above 91000 intimacy with it's owner.
 
 ---------------------------------------
 
-*hommutation;
-Use: hommutation ID#;
-Example: hommutation 6048;// Mutates homunculus into Eira.
-
-Mutation ID's....
-6048 Eira
-6049 Bayeri
-6050 Sera
-6051 Dieter
-6052 Eleanor
-
-This command will attempt to mutate the current player's homunculus.
-If it fails, the /swt emotion will appear.
-
-To mutate a homunculus, the player must have a homunculus, it
-must be level 99, and it must be in its evolved form.
-
----------------------------------------
-
 *unitwalk <GID>,<x>,<y>;
 *unitwalk <GID>,<mapid>;
 
@@ -5246,6 +5345,10 @@ Example(s):
 
 Okay, these commands should be fairly self explaining.
 For the emotions, you can look in db/const.txt for prefixes with e_
+PS: unitwarp supports a <GID> of zero, which causes the executor of the script to be affected. This can be used with OnTouchNPC to warp monsters:
+
+OnTouchNPC:
+	unitwarp 0,"this",-1,-1;
 
 ---------------------------------------
 
@@ -5564,7 +5667,7 @@ currently ignored by the client and appears always green.
 5,1.- End of time-related commands
 //
 
-*announce "<text>",<flag>{,<fontColor>{,<fontType>{,<fontSize>{,<fontAlign>{,<fontY>}}}}}};
+*announce "<text>",<flag>{,<fontColor>{,<fontType>{,<fontSize>{,<fontAlign>{,<fontY>}}}}};
 
 This command will broadcast a message to all or most players, similar to 
 @kami/@kamib GM commands.
@@ -5679,7 +5782,7 @@ npcshopitem was used. After rechecking the source, I found what caused this.
 
 *npcshopitem "<name>",<item id>,<price>{,<item id>,<price>{,<item id>,<price>{,...}}}
 
-This command lets you override the contents of an existing NPC shop. The
+This command lets you override the contents of an existing NPC shop or cashshop. The
 current sell list will be wiped, and only the items specified with the price
 specified will be for sale.
 
@@ -5692,7 +5795,7 @@ Note that you cannot use -1 to specify default selling price!
 *npcshopadditem "<name>",<item id>,<price>{,<item id>,<price>{,<item id>,<price>{,...}}}
 
 This command will add more items at the end of the selling list for the
-specified NPC shop. If you specify an item already for sell, that item will
+specified NPC shop or cashshop. If you specify an item already for sell, that item will
 appear twice on the sell list.
 
 The function returns 1 if shop was updated successfully, or 0 if not found.
@@ -5703,7 +5806,7 @@ Note that you cannot use -1 to specify default selling price!
 
 *npcshopdelitem "<name>",<item id>{,<item id>{,<item id>{,...}}}
 
-This command will remove items from the specified NPC shop.
+This command will remove items from the specified NPC shop or cashshop.
 If the item to remove exists more than once on the shop, all instances will be
 removed.
 
@@ -6069,17 +6172,19 @@ sprite based sprite id in 'db/mob-avail.txt' with this.
 
 ---------------------------------------
 
-*movenpc <NPC name>,x,y;
+*movenpc "<NPC name>",<x>,<y>{,<dir>};
 
 This command looks like the NPCWalkToxy function,but is a little different.
 
-While NPCWalkToXY just makes the NPC 'walk' to the coordinates given 
-(which sometimes gives problems if the path isn't a straight line without objects),
-this command just moves the NPC. It basically warps out and in on the current and given spot.
+While NPCWalkToXY just makes the NPC 'walk' to the coordinates given (which 
+sometimes gives problems if the path isn't a straight line without objects), 
+this command just moves the NPC. It basically warps out and in on the current 
+and given spot. Direction can be used to change the NPC's facing direction.
 
 Example(s):
 
-//This will move Bugga from it's current position to the coordinates 100,20 (if those coordinates are walkable (legit)).
+// This will move Bugga from it's current position to the coordinates 100,20 
+// (if those coordinates are walkable (legit)).
 	moveNPC "Bugga",100,20;
 	
 ---------------------------------------
@@ -6124,13 +6229,14 @@ the NPC with the said name.
 
 *rand(<number>{,<number>});
 
-This function returns a number, randomly positioned between 0 and the number you 
-specify (if you only specify one) and the two numbers you specify if you give it 
-two.
+This function returns a number ...
+(if you specify one) ... randomly positioned between 0 and the number you specify -1.
+(if you specify two) ... randomly positioned between the two numbers you specify.
 
-rand(10) would result in 0,1,2,3,4,5,6,7,8 or 9
+rand(10)  would result in 0,1,2,3,4,5,6,7,8 or 9
+rand(0,9) would result in 0,1,2,3,4,5,6,7,8 or 9
 
-rand(2,10) would result in 2,3,4,5,6,7,8,9 or 10
+rand(2,5) would result in 2,3,4 or 5
 
 ---------------------------------------
 
@@ -6143,7 +6249,8 @@ used to color text in 'mes' output, but are written as hexadecimal numbers in C.
 (They look like 0x<six numbers>.)
 
 Action is what you want to do with a point, 1 will set it, while 2 will clear 
-it. Point number is the number of the point - you can have several. If more than 
+it. 0 will also set it, but automatically removes the point after 15 seconds.
+Point number is the number of the point - you can have several. If more than 
 one point is drawn at the same coordinates, they will cycle, which can be used 
 to create flashing marks.
 
@@ -6473,10 +6580,10 @@ to query the server log tables.
 
 ---------------------------------------
 
-*escape_sql("<string>")
+*escape_sql(<value>)
 
-Escapes special characters in the string, so that it is safe to use in query_sql(), 
-and returns the escaped form of the given string.
+Converts the value to a string and escapes special characters so that it is safe to use in query_sql().
+Returns the escaped form of the given value.
 
 Example 1:
 	set .@str$, "John's Laptop";
@@ -6499,7 +6606,7 @@ Valid types are:
 
 Example:
 
-setiteminfo 7049,6,999; // Stone now weighs 999
+setiteminfo 7049,6,9990; // Stone now weighs 999.0
 
 ---------------------------------------
 
@@ -6559,8 +6666,121 @@ is a letter, 0 if it isn't a letter but a digit or a space.
 The first letter is position 0.
 
 ---------------------------------------
+*charat(<string>,<index>)
 
-*setfont <font>
+	Returns char at specified index. If index is out of range, 
+	returns empty string.
+	
+	Example:
+	
+	charat("This is a string", 10); //returns "s"
+	
+---------------------------------------
+*setchar(<string>,<char>,<index>)
+
+	Returns the original string with the char at the specified
+	index set to the specified char. If index out of range, the
+	original string will be returned.
+	Only the 1st char in the <char> parameter will be used.
+	
+	Example:
+	
+	setchar("Cat", "B", 0); //returns "Bat"
+	
+---------------------------------------
+*insertchar(<string>,<char>,<index>)
+	
+	Returns the original string with the specified char inserted
+	at the specified index. If index is out of range, the char 
+	will be inserted on the end of the string that it is closest.
+	Only the 1st char in the <char> parameter will be used.
+	
+	Example:
+	
+	insertchar("laughter", "s", 0); //returns "slaughter"
+	
+---------------------------------------
+
+*delchar(<string>,<index>)
+
+	Returns the original string with the char at the specified index
+	removed. If index is out of range, original string will be returned.
+	
+	Example:
+	
+	delchar("Diet", 3); //returns "Die"
+	
+---------------------------------------
+
+*strtoupper(<string>)
+*strtolower(<string>)
+
+	Returns the specified string in it's uppercase/lowercase form.
+	All non-alpha characters will be preserved
+	
+	Example:
+	
+	strtoupper("The duck is blue!!"); //returns "THE DUCK IS BLUE!!"
+
+---------------------------------------
+
+*charisupper(<string>,<index>)
+*charislower(<string>,<index>)
+
+	Returns 1 if character at specified index of specified string is
+	uppercase/lowercase. Otherwise, 0. Characters not of the alphabelt
+	will return 0.
+
+	Example:
+	
+	charisupper("rAthena", 1); //returns 1
+	
+---------------------------------------
+
+*substr(<string>,<start_index>,<end_index>)
+	
+	Returns the sub-string of the specified string inclusively between
+	the set indexes.
+	If indexes are out of range, or the start index is after the end
+	index, an empty string will be returned.
+
+	Example:
+	
+	substr("foobar", 3, 5); //returns "bar"
+	
+---------------------------------------
+*explode(<dest_array>,<string>,<delimiter>)
+
+	Breaks a string up into substrings based on the specified delimiter.
+	Substrings will be stored within the specified string array.
+	Only the 1st char of the delimiter parameter will be used.
+	If an empty string is passed as a delimiter, the string will be placed
+	in the array in it's original form.
+	
+	Example:
+	
+	explode(.@my_array$, "Explode:Test:1965:red:PIE", ":");
+	//.@my_array$ contents will be...
+	//.@my_array$[0]: "Explode"
+	//.@my_array$[1]: "Test"
+	//.@my_array$[2]: "1965"
+	//.@my_array$[3]: "red"
+	//.@my_array$[4]: "PIE"
+
+---------------------------------------
+
+*implode(<string_array>{,<glue>})
+
+	Combines all substrings within the specified string array into a single string.
+	If the glue parameter is specified, it will be inserted inbetween each substring.
+	
+	Example:
+	setarray .@my_array$[0], "This", "is", "a", "test";
+	implode(.@my_array$, " "); //returns "This is a test"
+
+---------------------------------------
+
+*setfont <font>;
 
 This command sets the current RO client interface font to one of the
 fonts stored in data\*.eot by using an ID of the font. When the ID
@@ -6577,6 +6797,33 @@ again.
     7 - RixKid
     8 - RixMagic
     9 - RixJJangu
+
+---------------------------------------
+
+*showdigit <value>{,<type>};
+
+Displays given numeric 'value' in large digital clock font on top of
+the screen. The optional parameter 'type' specifies visual aspects
+of the "clock" and can be one of the following values:
+
+    0 - Displays the value for 5 seconds (default).
+    1 - Incremental counter (1 tick/second).
+    2 - Decremental counter (1 tick/second). Does not stop at zero,
+        but overflows.
+    3 - Decremental counter (1 tick/second). Two digits only, stops
+        at zero.
+
+For type 1 and 2 the start value is set by using negative number of
+the one intended to set (ex. -10 starts the counter at 10 seconds).
+Except for type 3 the value is interpreted as seconds and formatted
+as time in days, hours, minutes and seconds. Note, that the official
+script command does not have the optional parameter.
+
+    // displays 23:59:59 for 5 seconds
+    showdigit 86399;
+
+    // counter that starts at 60 and runs for 60 seconds
+    showdigit 60,3;
 
 ---------------------------------------
 
@@ -6786,18 +7033,17 @@ This will open a book item at the specified page
 ========================
 ---------------------------------------
 
-*instance_create("<Instance Name>",<Party ID>,<Instance>)
+*instance_create("<instance name>",<party id>);
 
-Create an instance using the name "<Instance Name>" for the Party of <Party ID>.
-Instance ID currently will only be ID_ENDLESS (5) or ID_CATACOMBS (6)
-Most Instance_* commands are used in conjunction with this command and depend
+Create an instance using the name "<instance name>" for the Party of <party id>.
+Most instance_* commands are used in conjunction with this command and depend
 on the ID this command returns.
 
 Example: 
 	// Store the Party ID of the invoking character.
 	set .@party_id, getcharid(1);
 	// Attempt to create an instance using that party ID.
-	set .@id, instance_create("Endless Tower", .@party_id, ID_ENDLESS);
+	set .@id, instance_create("Endless Tower", .@party_id);
 	if (.@id == -1) { // Party ID is in use by another instance.
 		...
 	}
@@ -6806,67 +7052,111 @@ Example:
 	}
 ---------------------------------------
 
-*instance_destroy(<Instance ID>)
+*instance_destroy {<instance id>};
 
-Destroys instance with the ID <Instance ID>.
-
----------------------------------------
-
-*instance_attachmap(<Instance ID>,"<Map Name>")
-*instance_detachmap(<Instance ID>,"<Map Name>")
-
-Attach or detach the map "<Map Name>" to the instance with the <Instance ID>.
+Destroys instance with the ID <instance id>. If no ID is specified, the instance,
+the script is attached to, is used. If the script is not attached to an instance,
+the instance of the currently attached player's party is used. If no player is
+currently attached, the command fails and causes the script to halt.
 
 ---------------------------------------
 
-*instance_init(<Instance ID>);
+*instance_attachmap("<map name>",<instance id>{,<use base name>});
 
-Initiate the instance of <Instance ID>.
+Attaches the map "<map name>" to the instance specified with <instance id>. The
+optional parameter specifies, whether a map requires emulation for instancing (1)
+or not (0 = default).
 
----------------------------------------
-
-*instance_announce <Instance ID>,"<text>",<flag>{,<color>};
-
-Works like announce, but has the <Instance ID> parameter, where 0 = active instance?
+Returns the resulting map name on success or an empty string on failure.
 
 ---------------------------------------
 
-*instance_attach(<Instance ID>);
+*instance_detachmap "<map name>"{,<instance id>};
 
-Attaches a script to the provided <Instance ID>?
-
----------------------------------------
-
-*instance_npcname("<NPC Name>",<Instance ID>)
-
-Retrieve the unique name given to a copy of an NPC for an instance, the given
-"<NPC Name>" that belongs to instance <Instance ID>. Can be used with such commands
-as enablenpc and disablenpc, donpcevent, etc.
+Detach the map "<map name>" to the instance with the <instance id>. If no ID is
+specified, the instance, the script is attached to, is used. If the script is not
+attached to an instance, the instance of the currently attached player's party is
+used. If no player is currently attached, the command fails and causes the script
+to halt.
 
 ---------------------------------------
 
-*has_instance("<Map Name>")
+*instance_init <instance id>;
 
-Check if the player has been queued for the <Map Name> instance.
-
----------------------------------------
-
-*instance_id(<?>)
-
-Apparently returns the ID the player is currently attached too.
+Initializes the instance given by <instance id>. This copies all NPCs from the
+source maps to the instanced maps.
 
 ---------------------------------------
 
-*instance_warpall "<Map Name>",<x>,<y>;
+*instance_announce <instance id>,"<text>",<flag>{,<fontColor>{,<fontType>{,<fontSize>{,<fontAlign>{,<fontY>}}}}};
 
-Warp all players in the instance to <map name> and given coordinates.
+Works like announce, but has the <instance id> parameter. If instance id is 0, the
+instance, the script is attached to, is used. If the script is not attached to an
+instance, the instance of the currently attached player's party is used. If no
+player is currently attached, the command fails and causes the script to halt.
 
 ---------------------------------------
 
-*instance_set_timeout <Time1>,<Time2>,<Instance ID>;
+*instance_attach <instance id>;
 
-Lifetime of <Time1> for <Instance ID>, while <Time2> is how long until the 
-instance times out while inactive. 
+Attaches the current script to the instance given by <instance id>.
+
+---------------------------------------
+
+*instance_npcname("<npc name>"{,<instance id>});
+
+Retrieves the unique name given to a copy of an NPC given by "<npc name>" in an
+instance specified <instance id>. If no ID is specified, the instance, the script
+is attached to, is used. If the script is not attached to an instance, the
+instance of the currently attached player's party is used. If no player is
+currently attached, the command fails and causes the script to halt.
+
+---------------------------------------
+
+*has_instance("<map name>"{,<instance id>});
+
+Checks whether or not the given map belongs to specified instance. If no ID is
+specified, the instance, the script is attached to, is used. If the script is not
+attached to an instance, the instance of the currently attached player's party
+is used. If no player is currently attached, the command fails and causes the
+script to halt.
+
+Returns the name of the instanced map on success, otherwise an empty string.
+
+---------------------------------------
+
+*instance_id({<type>});
+
+Retrieves the instance id, depending on <type>. If type is not given, it defaults
+to 0.
+
+Type:
+    0 - Instance ID the script is attached to.
+    1 - Instance ID of the currently attached player's party.
+
+---------------------------------------
+
+*instance_warpall "<map name>",<x>,<y>{,<instance id>};
+
+Warps all players in the instance <instance id> to <map name> at given
+coordinates. If no ID is specified, the instance, the script is attached to,
+is used. If the script is not attached to an instance, the instance of the
+currently attached player's party is used. If no player is currently attached,
+the command fails and causes the script to halt.
+
+---------------------------------------
+
+*instance_set_timeout <alive timeout>,<idle timeout>{,<instance id>};
+
+Sets the timeout values for an instance given by <instance id>. If no ID is
+specified, the instance, the script is attached to, is used. If the script is
+not attached to an instance, the instance of the currently attached player's
+party is used. If no player is currently attached, the command fails and causes
+the script to halt.
+
+Parameter <alive timeout> specifies the total amount of time the instance will
+exist. Parameter <idle timeout> specifies how long players have, when they are
+outside of the instance, until it is destroyed.
 
 ---------------------------------------
 
@@ -7133,6 +7423,28 @@ attached character. Guild can be one or the following constants:
     SWORD_MERC_GUILD
 
 ---------------------------------------
+
+*getmercinfo(<type>{,<char id>});
+
+Retrieves information about mercenary of the currently attached
+character. If char id is given, the information of that character is
+retrieved instead. Type specifies what information to retrieve and
+can be one of the following:
+
+    0 - Database ID
+    1 - Class
+    2 - Name
+    3 - Faith value for this mercenary's guild, if any
+    4 - Calls value for this mercenary's guild, if any
+    5 - Kill count
+    6 - Remaining life time in msec
+    7 - Level
+
+If the character does not have a mercenary, the command returns ""
+for name and 0 for all other types.
+
+----------------------------------------
+
 
 Whew.
 That's about all of them.

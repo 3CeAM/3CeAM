@@ -332,9 +332,9 @@ int pc_delspiritball_attribute(struct map_session_data *sd,int count,int type)
 int pc_overheat(struct map_session_data *sd, int val)
 {
 	int heat = val, skill,
-		limit[] = { 10, 20, 28, 46, 66 };
+		limit[] = { 10, 20, 28, 46, 66 };//Will need to update this later. [Rytech]
 
-	if( !sd || !pc_isriding(sd,OPTION_MADO) || sd->sc.data[SC_OVERHEAT] )
+	if( !sd || !pc_ismadogear(sd) || sd->sc.data[SC_OVERHEAT] )
 		return 0; // already burning
 
 	skill = cap_value(pc_checkskill(sd,NC_MAINFRAME),0,4);
@@ -763,14 +763,10 @@ int pc_makesavestatus(struct map_session_data *sd)
 	if(!battle_config.save_clothcolor)
 		sd->status.clothes_color=0;
 
-  	//Only copy the Cart/Peco/Falcon/Dragon/Warg/Mado options, the rest are handled via
+  	//Only copy the Cart/Peco/Falcon/Dragon/Warg/Mado options, the rest are handled via 
 	//status change load/saving. [Skotlex]
-#if ( PACKETVER >= 20120201 )
-	sd->status.option = sd->sc.option&(OPTION_FALCON|OPTION_RIDING|OPTION_RIDING_DRAGON|OPTION_WUG|OPTION_RIDING_WUG|OPTION_MADO);
-#else
-	sd->status.option = sd->sc.option&(OPTION_CART|OPTION_FALCON|OPTION_RIDING|OPTION_RIDING_DRAGON|OPTION_WUG|OPTION_RIDING_WUG|OPTION_MADO);
-#endif
-		
+	sd->status.option = sd->sc.option&(OPTION_CART|OPTION_FALCON|OPTION_RIDING|OPTION_DRAGON|OPTION_WUG|OPTION_WUGRIDER|OPTION_MADOGEAR);
+
 	if (sd->sc.data[SC_JAILED])
 	{	//When Jailed, do not move last point.
 		if(pc_isdead(sd)){
@@ -1140,21 +1136,13 @@ int pc_isequip(struct map_session_data *sd,int n)
 	//Not equipable by class. [Skotlex]
 	if (!(1<<(sd->class_&MAPID_BASEMASK)&item->class_base[(sd->class_&JOBL_2_1)?1:((sd->class_&JOBL_2_2)?2:0)]))
 		return 0;
-	
-	//Not equipable by upper class. [Skotlex]
-	//if(!(1<<((sd->class_&JOBL_THIRD)?3:(sd->class_&JOBL_BABY)?2:(sd->class_&JOBL_UPPER)?1:0)&item->class_upper))
-	//	return 0;
 
-	//As Jobbie told me that in kro items for 'trans classes only' are availbable for 3rd classes as well.
-	//Always do something with backward compatiblity. You needn't have done massive db modifications. [Inkfish]
-	while( 1 )
-	{
-		if( item->class_upper&1 && !(sd->class_&(JOBL_UPPER|JOBL_THIRD|JOBL_BABY)) ) break;
-		if( item->class_upper&2 && sd->class_&(JOBL_UPPER|JOBL_THIRD) ) break;
-		if( item->class_upper&4 && sd->class_&JOBL_BABY ) break;
-		if( item->class_upper&8 && sd->class_&JOBL_THIRD ) break;
+	//Checks if the player has the required upper mask to use the item. [Rytech]
+	if (!((item->class_upper&1 && !(sd->class_&(JOBL_UPPER|JOBL_BABY|JOBL_THIRD))) ||
+		(item->class_upper&2 && sd->class_&(JOBL_UPPER|JOBL_THIRD)) ||
+		(item->class_upper&4 && sd->class_&JOBL_BABY) ||
+		(item->class_upper&8 && sd->class_&JOBL_THIRD)))
 		return 0;
-	}
 
 	return 1;
 }
@@ -4052,7 +4040,7 @@ int pc_isUseitem(struct map_session_data *sd,int n)
 	if( nameid >= 12153 && nameid <= 12182 && sd->md != NULL )
 		return 0; // Mercenary Scrolls
 
-	if( pc_isriding(sd, OPTION_RIDING_WUG) && ((nameid >= 686 && nameid <= 700) || (nameid >= 12215 && nameid <= 12220) || (nameid >= 12000 && nameid <= 12003)) )
+	if( pc_iswugrider(sd) && ((nameid >= 686 && nameid <= 700) || (nameid >= 12215 && nameid <= 12220) || (nameid >= 12000 && nameid <= 12003)) )
 		return 0; // Magic Scrolls cannot be used while riding a Warg. [Jobbie]
 
 	//added item_noequip.txt items check by Maya&[Lupus]
@@ -4077,15 +4065,12 @@ int pc_isUseitem(struct map_session_data *sd,int n)
 	))
 		return 0;
 
-	//Always do something with backward compatiblity. You needn't have done massive db modifications. [Inkfish]
-	while( 1 )
-	{
-		if( item->class_upper&1 && !(sd->class_&(JOBL_UPPER|JOBL_THIRD|JOBL_BABY)) ) break;
-		if( item->class_upper&2 && sd->class_&(JOBL_UPPER|JOBL_THIRD) ) break;
-		if( item->class_upper&4 && sd->class_&JOBL_BABY ) break;
-		if( item->class_upper&8 && sd->class_&JOBL_THIRD ) break;
+	//Checks if the player has the required upper mask to use the item. [Rytech]
+	if (!((item->class_upper&1 && !(sd->class_&(JOBL_UPPER|JOBL_BABY|JOBL_THIRD))) ||
+		(item->class_upper&2 && sd->class_&(JOBL_UPPER|JOBL_THIRD)) ||
+		(item->class_upper&4 && sd->class_&JOBL_BABY) ||
+		(item->class_upper&8 && sd->class_&JOBL_THIRD)))
 		return 0;
-	}
 
 	//Dead Branch & Bloody Branch & Porings Box
 	if((log_config.branch > 0) && (nameid == 604 || nameid == 12103 || nameid == 12109))
@@ -6269,29 +6254,27 @@ int pc_resetskill(struct map_session_data* sd, int flag)
 		i = sd->sc.option;
 		if( i&OPTION_RIDING && pc_checkskill(sd, KN_RIDING) )
 			i &= ~OPTION_RIDING;
-#if ( PACKETVER >= 20120201 )
-		if( sd->sc.data[SC_ON_PUSH_CART] )
-			pc_setcart(sd, 0);
-#else
 		if( i&OPTION_CART && pc_checkskill(sd, MC_PUSHCART) )
 			i &= ~OPTION_CART;
-#endif
 		if( i&OPTION_FALCON && pc_checkskill(sd, HT_FALCON) )
 			i &= ~OPTION_FALCON;
-		if( i&(OPTION_RIDING_DRAGON) && pc_checkskill(sd, RK_DRAGONTRAINING) )
-			i &= ~(OPTION_RIDING_DRAGON);
+		if( i&OPTION_DRAGON && pc_checkskill(sd, RK_DRAGONTRAINING) )
+			i &= ~OPTION_DRAGON;
 		if( i&OPTION_WUG && pc_checkskill(sd, RA_WUGMASTERY) )
 			i &= ~OPTION_WUG;
-		if( i&OPTION_RIDING_WUG && pc_checkskill(sd, RA_WUGRIDER) )
-			i &= ~OPTION_RIDING_WUG;
-		if( i&OPTION_MADO && (sd->class_ == MAPID_MECHANIC || sd->class_ == MAPID_MECHANIC_T) ) // You can equip a Mado w/o license.
-			i &= ~OPTION_MADO;
+		if( i&OPTION_WUGRIDER && pc_checkskill(sd, RA_WUGRIDER ) )
+			i &= ~OPTION_WUGRIDER;
+		if( i&OPTION_MADOGEAR && pc_checkskill(sd, NC_MADOLICENCE) )
+			i &= ~OPTION_MADOGEAR;
 
 		if( i != sd->sc.option )
 			pc_setoption(sd, i);
 
 		if( merc_is_hom_active(sd->hd) && pc_checkskill(sd, AM_CALLHOMUN) )
 			merc_hom_vaporize(sd, 0);
+
+		if( sd->sc.data[SC_ON_PUSH_CART] && pc_checkskill(sd, MC_PUSHCART))
+			pc_setcart(sd, 0);
 	}
 
 	for( i = 1; i < MAX_SKILL; i++ )
@@ -6511,8 +6494,8 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 	}
 
 	// Every time you die you lose your Magic Gear. [pakpil]
-	if( battle_config.mado_loss_on_death == 1 && pc_isriding(sd, OPTION_MADO) )
-		pc_setriding(sd, 0);
+	if( battle_config.mado_loss_on_death == 1 && pc_ismadogear(sd) )
+		pc_setoption(sd, sd->sc.option&~OPTION_MADOGEAR);
 
 	if(sd->status.pet_id > 0 && sd->pd)
 	{
@@ -7199,9 +7182,6 @@ int pc_jobchange(struct map_session_data *sd,int job, int upper)
 		}
 	}
 
-	if( sd->sc.option&OPTION_MADO )
-		pc_setoption(sd,sd->sc.option&~OPTION_MADO);
-	
 	sd->status.class_ = job;
 	fame_flag = pc_famerank(sd->status.char_id,sd->class_&MAPID_UPPERMASK);
 	sd->class_ = (unsigned short)b_class;
@@ -7235,23 +7215,27 @@ int pc_jobchange(struct map_session_data *sd,int job, int upper)
 	i = sd->sc.option;
 	if(i&OPTION_RIDING && !pc_checkskill(sd, KN_RIDING))
 		i&=~OPTION_RIDING;
-#if ( PACKETVER >= 20120201 )
-	if( sd->sc.data[SC_ON_PUSH_CART] && !pc_checkskill(sd, MC_PUSHCART) )
-		pc_setcart(sd, 0);
-#else
 	if(i&OPTION_CART && !pc_checkskill(sd, MC_PUSHCART))
 		i&=~OPTION_CART;
-#endif
 	if(i&OPTION_FALCON && !pc_checkskill(sd, HT_FALCON))
 		i&=~OPTION_FALCON;
-	if(i&(OPTION_RIDING_DRAGON) && !pc_checkskill(sd, RK_DRAGONTRAINING))
-		i&=~(OPTION_RIDING_DRAGON);
+	if(i&OPTION_DRAGON && !pc_checkskill(sd, RK_DRAGONTRAINING))
+		i&=~OPTION_DRAGON;
+	if(i&OPTION_WUG && !pc_checkskill(sd, RA_WUGMASTERY))
+		i&=~OPTION_WUG;
+	if(i&OPTION_WUGRIDER && !pc_checkskill(sd, RA_WUGRIDER))
+		i&=~OPTION_WUGRIDER;
+	if(i&OPTION_MADOGEAR && !pc_checkskill(sd, NC_MADOLICENCE))
+		i&=~OPTION_MADOGEAR;
 
 	if(i != sd->sc.option)
 		pc_setoption(sd, i);
 
 	if(merc_is_hom_active(sd->hd) && !pc_checkskill(sd, AM_CALLHOMUN))
 		merc_hom_vaporize(sd, 0);
+
+	if( sd->sc.data[SC_ON_PUSH_CART] && !pc_checkskill(sd, MC_PUSHCART))
+			pc_setcart(sd, 0);
 	
 	if(sd->status.manner < 0)
 		clif_changestatus(&sd->bl,SP_MANNER,sd->status.manner);
@@ -7371,109 +7355,96 @@ int pc_setoption(struct map_session_data *sd,int type)
 	nullpo_ret(sd);
 	p_type = sd->sc.option;
 
-	if( p_type&OPTION_MADO && p_type&OPTION_CART) // Don't remove cart when you're removing your mado.
-		type |= (p_type&OPTION_CART);
+	//if( p_type&OPTION_CART && p_type&OPTION_MADO) // Don't remove cart when you're removing your mado.
+	//	type |= (p_type&OPTION_CART);//Gotta find a better way to code this. [Rytech]
 
 	//Option has to be changed client-side before the class sprite or it won't always work (eg: Wedding sprite) [Skotlex]
 	sd->sc.option = type;
 	clif_changeoption(&sd->bl);
 
-	if( (sd->class_&MAPID_UPPERMASK) == MAPID_KNIGHT || (sd->class_&MAPID_UPPERMASK) == MAPID_CRUSADER )
-	{
-		if( (type&OPTION_RIDING && !(p_type&OPTION_RIDING)) || (type&OPTION_RIDING_DRAGON && !(p_type&OPTION_RIDING_DRAGON) && (sd->class_&MAPID_UPPERMASK_THIRD) == MAPID_RUNE_KNIGHT) )
-		{ // Mounting
-			clif_status_load(&sd->bl,SI_RIDING,1);
-			status_calc_pc(sd,0);
-		}
-		else if( (!(type&OPTION_RIDING) && p_type&OPTION_RIDING) || (!(type&OPTION_RIDING_DRAGON) && p_type&OPTION_RIDING_DRAGON && (sd->class_&MAPID_UPPERMASK_THIRD) == MAPID_RUNE_KNIGHT) )
-		{ // Dismount
-			clif_status_load(&sd->bl,SI_RIDING,0);
-			status_calc_pc(sd,0);
-		}
+	//The SI_RIDING status icon is displayed when mounted on a Peco, Dragon, or Gryphon. [Rytech]
+	if (type&OPTION_RIDING && !(p_type&OPTION_RIDING) || type&OPTION_DRAGON && !(p_type&OPTION_DRAGON))
+	{	//We are going to mount. [Skotlex]
+		clif_status_load(&sd->bl,SI_RIDING,1);
+		status_calc_pc(sd,0); //Mounting/Umounting affects walk and attack speeds.
+	}
+	else if (!(type&OPTION_RIDING) && p_type&OPTION_RIDING || !(type&OPTION_DRAGON) && p_type&OPTION_DRAGON)
+	{	//We are going to dismount.
+		clif_status_load(&sd->bl,SI_RIDING,0);
+		status_calc_pc(sd,0); //Mounting/Umounting affects walk and attack speeds.
 	}
 
-#if ( PACKETVER < 20120201 )
-	if( type&OPTION_CART && !(p_type&OPTION_CART) )
-  	{ // Cart On
+	//The SI_WUGRIDER icon is displayed when mounted on a Warg. [Rytech]
+	if (type&OPTION_WUGRIDER && !(p_type&OPTION_WUGRIDER))
+	{
+		clif_status_load(&sd->bl,SI_WUGRIDER,1);
+		status_calc_pc(sd,0); //Update movement speed.
+	}
+	else if (!(type&OPTION_WUGRIDER) && p_type&OPTION_WUGRIDER)
+	{
+		clif_status_load(&sd->bl,SI_WUGRIDER,0);
+		status_calc_pc(sd,0); //Update movement speed.
+	}
+
+	//No icon is displayed when mounted in a Mado, but we still need to update the movement speed. [Rytech]
+	if (type&OPTION_MADOGEAR && !(p_type&OPTION_MADOGEAR))
+	{
+		status_calc_pc(sd,0); //Update movement speed.
+		status_change_end(&sd->bl,SC_MAXIMIZEPOWER,-1);
+		status_change_end(&sd->bl,SC_OVERTHRUST,-1);
+		status_change_end(&sd->bl,SC_WEAPONPERFECTION,-1);
+		status_change_end(&sd->bl,SC_ADRENALINE,-1);
+		status_change_end(&sd->bl,SC_CARTBOOST,-1);
+		status_change_end(&sd->bl,SC_MELTDOWN,-1);
+		status_change_end(&sd->bl,SC_MAXOVERTHRUST,-1);
+	}
+	else if (!(type&OPTION_MADOGEAR) && p_type&OPTION_MADOGEAR)
+	{
+		status_calc_pc(sd,0); //Update movement speed.
+		status_change_end(&sd->bl,SC_SHAPESHIFT,-1);
+		status_change_end(&sd->bl,SC_HOVERING,-1);
+		status_change_end(&sd->bl,SC_ACCELERATION,-1);
+		status_change_end(&sd->bl,SC_OVERHEAT_LIMITPOINT,-1);
+		status_change_end(&sd->bl,SC_OVERHEAT,-1);
+	}
+
+	if(type&OPTION_CART && !(p_type&OPTION_CART))
+  	{ //Cart On
 		clif_cartlist(sd);
 		clif_updatestatus(sd, SP_CARTINFO);
-		if( pc_checkskill(sd, MC_PUSHCART) < 10 )
+		if(pc_checkskill(sd, MC_PUSHCART) < 10)
 			status_calc_pc(sd,0); //Apply speed penalty.
-	}
-	else if( !(type&OPTION_CART) && p_type&OPTION_CART )
+	} else
+	if(!(type&OPTION_CART) && p_type&OPTION_CART)
 	{ //Cart Off
 		clif_clearcart(sd->fd);
-		if( pc_checkskill(sd, MC_PUSHCART) < 10 )
+		if(pc_checkskill(sd, MC_PUSHCART) < 10)
 			status_calc_pc(sd,0); //Remove speed penalty.
 	}
-#endif
 
-	if( type&OPTION_FALCON && !(p_type&OPTION_FALCON) )
-		clif_status_load(&sd->bl,SI_FALCON,1);  // Falcon ON
-	else if( !(type&OPTION_FALCON) && p_type&OPTION_FALCON )
-		clif_status_load(&sd->bl,SI_FALCON,0); // Falcon OFF
+	if (type&OPTION_FALCON && !(p_type&OPTION_FALCON)) //Falcon ON
+		clif_status_load(&sd->bl,SI_FALCON,1);
+	else if (!(type&OPTION_FALCON) && p_type&OPTION_FALCON) //Falcon OFF
+		clif_status_load(&sd->bl,SI_FALCON,0);
 
-	// WUG unmounted and following the char don't use a SI.
-
-	if( sd->class_&JOBL_THIRD )
-	{
-		if( (sd->class_&MAPID_UPPERMASK) == MAPID_HUNTER )
-		{
-			if( type&OPTION_RIDING_WUG && !(p_type&OPTION_RIDING_WUG) )
-			{ // Mounting
-				clif_status_load(&sd->bl,SI_WUGMOUNT,1);
-				status_calc_pc(sd,0);
-			}
-			else if( !(type&OPTION_RIDING_WUG) && p_type&OPTION_RIDING_WUG )
-			{ // Dismount
-				clif_status_load(&sd->bl,SI_WUGMOUNT,0);
-				status_calc_pc(sd,0);
-			}
-		}
-		
-		if( (sd->class_&MAPID_UPPERMASK) == MAPID_BLACKSMITH )
-		{
-			if( type&OPTION_MADO && !(p_type&OPTION_MADO) )
-			{
-				status_calc_pc(sd, 0);
-				status_change_end(&sd->bl,SC_MAXIMIZEPOWER,-1);
-				status_change_end(&sd->bl,SC_OVERTHRUST,-1);
-				status_change_end(&sd->bl,SC_WEAPONPERFECTION,-1);
-				status_change_end(&sd->bl,SC_ADRENALINE,-1);
-				status_change_end(&sd->bl,SC_CARTBOOST,-1);
-				status_change_end(&sd->bl,SC_MELTDOWN,-1);
-				status_change_end(&sd->bl,SC_MAXOVERTHRUST,-1);
-			}
-			else if( !(type&OPTION_MADO) && p_type&OPTION_MADO )
-			{
-				status_calc_pc(sd, 0);
-				status_change_end(&sd->bl,SC_SHAPESHIFT,-1);
-				status_change_end(&sd->bl,SC_HOVERING,-1);
-				status_change_end(&sd->bl,SC_ACCELERATION,-1);
-				status_change_end(&sd->bl,SC_OVERHEAT_LIMITPOINT,-1);
-				status_change_end(&sd->bl,SC_OVERHEAT,-1);
-			}
-		}
-	}
-
-	if( type&OPTION_FLYING && !(p_type&OPTION_FLYING) )
+	if (type&OPTION_FLYING && !(p_type&OPTION_FLYING))
 		new_look = JOB_STAR_GLADIATOR2;
-	else if( !(type&OPTION_FLYING) && p_type&OPTION_FLYING )
+	else if (!(type&OPTION_FLYING) && p_type&OPTION_FLYING)
 		new_look = -1;
-
-	if( type&OPTION_WEDDING && !(p_type&OPTION_WEDDING) )
+	
+	if (type&OPTION_WEDDING && !(p_type&OPTION_WEDDING))
 		new_look = JOB_WEDDING;
-	else if( !(type&OPTION_WEDDING) && p_type&OPTION_WEDDING )
+	else if (!(type&OPTION_WEDDING) && p_type&OPTION_WEDDING)
 		new_look = -1;
 
-	if( type&OPTION_XMAS && !(p_type&OPTION_XMAS) )
+	if (type&OPTION_XMAS && !(p_type&OPTION_XMAS))
 		new_look = JOB_XMAS;
-	else if( !(type&OPTION_XMAS) && p_type&OPTION_XMAS )
+	else if (!(type&OPTION_XMAS) && p_type&OPTION_XMAS)
 		new_look = -1;
 
-	if( type&OPTION_SUMMER && !(p_type&OPTION_SUMMER) )
+	if (type&OPTION_SUMMER && !(p_type&OPTION_SUMMER))
 		new_look = JOB_SUMMER;
-	else if( !(type&OPTION_SUMMER) && p_type&OPTION_SUMMER )
+	else if (!(type&OPTION_SUMMER) && p_type&OPTION_SUMMER)
 		new_look = -1;
 
 	if( sd->disguise || !new_look )
@@ -7499,50 +7470,45 @@ int pc_setoption(struct map_session_data *sd,int type)
  *------------------------------------------*/
 int pc_setcart(struct map_session_data *sd,int type)
 {
-	int maxcarts = 9;
-#if ( PACKETVER < 20120201 )
+#if PACKETVER < 20120410
 	int cart[6] = {0x0000,OPTION_CART1,OPTION_CART2,OPTION_CART3,OPTION_CART4,OPTION_CART5};
 	int option;
-	maxcarts = 5;
 #endif
+	unsigned char maxcarts = 5;
 
 	nullpo_ret(sd);
+
+	if ( PACKETVER >= 20120410 )
+		maxcarts = 9;
 
 	if( type < 0 || type > maxcarts )
 		return 1;// Never trust the values sent by the client! [Skotlex]
 
-	if( pc_checkskill(sd,MC_PUSHCART) <= 0 && type != 0 )
+	if( pc_checkskill(sd,MC_PUSHCART) <= 0 )
 		return 1;// Push cart is required
 
-#if ( PACKETVER >= 20120201 )
-	switch( type ) {
-		case 0:
-			if( !sd->sc.data[SC_ON_PUSH_CART] )
-				return 0;
-			status_change_end(&sd->bl,SC_ON_PUSH_CART,INVALID_TIMER);
-			clif_clearcart(sd->fd);
-			break;
-		default:// Everything else is an allowed ID so we can move on
-			if( !sd->sc.data[SC_ON_PUSH_CART] )// First time, so fill cart data
-				clif_cartlist(sd);
-			clif_updatestatus(sd, SP_CARTINFO);
-			sc_start(&sd->bl, SC_ON_PUSH_CART, 100, type, 0);
-			//clif_status_load_notick(&sd->bl, SI_ON_PUSH_CART,   2 , type, 0, 0);
-			//clif_status_change_single(&sd->bl, SI_ON_PUSH_CART, 2, 9999, type, 0, 0);
-			clif_status_change(&sd->bl, SI_ON_PUSH_CART, 2, 9999, type, 0, 0);
-			if (sd->sc.data[SC_ON_PUSH_CART])// Forcefully update
-				sd->sc.data[SC_ON_PUSH_CART]->val1 = type;
-			break;
-	}
-	
-	if(pc_checkskill(sd, MC_PUSHCART) < 10)
-		status_calc_pc(sd,0);//Recalc speed penalty.
-#else
+	//If the date of the client used is older then 2012-04-10, OPTIONS for carts will be used.
+	//If the date of the client used is equal or newer then 2012-04-10, SC_ON_PUSH_CART will be used.
+#if PACKETVER < 20120410
 	// Update option
 	option = sd->sc.option;
 	option &= ~OPTION_CART;// clear cart bits
 	option |= cart[type]; // set cart
 	pc_setoption(sd, option);
+#else
+	if ( type == 0 )
+	{
+		status_change_end(&sd->bl,SC_ON_PUSH_CART,INVALID_TIMER);
+		clif_clearcart(sd->fd);
+	}
+	else
+	{	
+		if ( sd->sc.data[SC_ON_PUSH_CART] )//Needed for when changing to a lower type value. [Rytech]
+			status_change_end(&sd->bl,SC_ON_PUSH_CART,INVALID_TIMER);
+		sc_start(&sd->bl, SC_ON_PUSH_CART, 100, type, -1);
+		clif_cartlist(sd);
+		clif_updatestatus(sd, SP_CARTINFO);
+	}
 #endif
 
 	return 0;
@@ -7553,38 +7519,11 @@ int pc_setcart(struct map_session_data *sd,int type)
  *------------------------------------------*/
 int pc_setfalcon(TBL_PC* sd, int flag)
 {
-	if( sd->sc.data[SC__GROOMY] )
-		return 0;
-
-	if( flag )
-	{ // You cannot get falcon while riding warg or while you have warg.
-		if( pc_checkskill(sd,HT_FALCON)>0 && !(sd->sc.option&OPTION_RIDING_WUG || sd->sc.option&OPTION_WUG) )	// ファルコンマスタリ?スキル所持
-			pc_setoption(sd,sd->sc.option|OPTION_FALCON);
-	}
-	else if( pc_isfalcon(sd) )
-	{
-		pc_setoption(sd,sd->sc.option&~OPTION_FALCON); // remove falcon
-	}
-
-	return 0;
-}
-
-/*==========================================
- *
- *------------------------------------------*/
-int pc_setwarg(TBL_PC* sd, int flag)
-{
-
-	if( sd->sc.data[SC__GROOMY] )
-		return 0;
-
 	if( flag ){
-		if( (pc_checkskill(sd,RA_WUGMASTERY)>0) && !(pc_isfalcon(sd)) && (!pc_iswarg(sd) || battle_config.warg_can_falcon) && !(pc_isriding(sd, OPTION_RIDING_WUG)) )
-			pc_setoption(sd,sd->sc.option|OPTION_WUG);
-	} else if( pc_isriding(sd, OPTION_RIDING_WUG) ) {
-		pc_setoption(sd,sd->sc.option&~OPTION_RIDING_WUG);
-	} else if( pc_iswarg(sd) ){
-		pc_setoption(sd,sd->sc.option&~OPTION_WUG); // remove warg
+		if( pc_checkskill(sd,HT_FALCON)>0 )	// ファルコンマスタリ?スキル所持
+			pc_setoption(sd,sd->sc.option|OPTION_FALCON);
+	} else if( pc_isfalcon(sd) ){
+		pc_setoption(sd,sd->sc.option&~OPTION_FALCON); // remove falcon
 	}
 
 	return 0;
@@ -7595,75 +7534,74 @@ int pc_setwarg(TBL_PC* sd, int flag)
  *------------------------------------------*/
 int pc_setriding(TBL_PC* sd, int flag)
 {
-	int option = 0, skillnum = 0;
-
-	if( (sd->class_&MAPID_UPPERMASK) == MAPID_KNIGHT || (sd->class_&MAPID_UPPERMASK) == MAPID_CRUSADER )
-	{
-		if( (sd->class_&MAPID_UPPERMASK_THIRD) == MAPID_RUNE_KNIGHT )
-		{ // Rune Knight
-			option = (pc_isriding(sd,OPTION_RIDING_DRAGON)) ? OPTION_RIDING_DRAGON :
-				(flag == 2) ? OPTION_BLACK_DRAGON :
-				(flag == 3) ? OPTION_WHITE_DRAGON :
-				(flag == 4) ? OPTION_BLUE_DRAGON :
-				(flag == 5) ? OPTION_RED_DRAGON : OPTION_GREEN_DRAGON;
-			skillnum = RK_DRAGONTRAINING;
-		}
-		else
-		{ // Knight - Lord Knight - Crusader - Paladin - Royal Guard
-			option = OPTION_RIDING;
-			skillnum = KN_RIDING;
-		}
+	if( flag ){
+		if( pc_checkskill(sd,KN_RIDING) > 0 ) // ライディングスキル所持
+			pc_setoption(sd, sd->sc.option|OPTION_RIDING);
+	} else if( pc_isriding(sd) ){
+		pc_setoption(sd, sd->sc.option&~OPTION_RIDING);
 	}
-	else if( sd->class_&JOBL_THIRD )
-	{
-		if( (sd->class_&MAPID_UPPERMASK) == MAPID_HUNTER )
-		{ // Ranger
-			option = OPTION_RIDING_WUG;
-			skillnum = RA_WUGRIDER;
-		}
-		else if( (sd->class_&MAPID_UPPERMASK) == MAPID_BLACKSMITH )
-			option = OPTION_MADO; // Mechanic
-	}
-
-	if( !option )
-		return -1;
-
-		//Players with the Groomy status or riding a rental mount can not mount on regular mounts.
-	if( sd->sc.data[SC__GROOMY] || sd->sc.data[SC_ALL_RIDING])
-		return -1;
-
-	if( flag )
-	{		
-		if( option&OPTION_MADO || (pc_checkskill(sd,skillnum) > 0) ) // Check if you have the necessary skill to mount. Mechanics do not require any skill to ride a meado.
-			pc_setoption(sd, sd->sc.option|option);
-	}
-	else if( pc_isriding(sd,OPTION_RIDING|(OPTION_RIDING_DRAGON)|OPTION_RIDING_WUG|OPTION_MADO) )
-		pc_setoption(sd, sd->sc.option&~option);
 
 	return 0;
 }
 
-/*========================================
- * Check if a char is mounted or not.
- -----------------------------------------*/
-bool pc_isriding( struct map_session_data *sd, int flag )
+/*==========================================
+ * Mounts the player on a dragon through script command.
+ *------------------------------------------*/
+int pc_setdragon(TBL_PC* sd, int flag)
 {
-	bool isriding = false;
-
-	if( (sd->class_&MAPID_UPPERMASK) == MAPID_KNIGHT || (sd->class_&MAPID_UPPERMASK) == MAPID_CRUSADER )
-	{
-		if( (sd->class_&MAPID_UPPERMASK_THIRD) == MAPID_RUNE_KNIGHT )
-			isriding = (bool)( sd->sc.option&OPTION_RIDING_DRAGON && flag&OPTION_RIDING_DRAGON );
-		else
-			isriding = (bool)( sd->sc.option&OPTION_RIDING && flag&OPTION_RIDING );
+	if( flag ){
+		if( pc_checkskill(sd,RK_DRAGONTRAINING) > 0 )
+			pc_setoption(sd, sd->sc.option|OPTION_DRAGON1);
+	} else if( pc_isdragon(sd) ){
+		pc_setoption(sd, sd->sc.option&~OPTION_DRAGON1);
 	}
 
-	if( (sd->class_&MAPID_UPPERMASK_THIRD) == MAPID_RANGER )
-		isriding = (bool)( sd->sc.option&OPTION_RIDING_WUG && flag&OPTION_RIDING_WUG );
-	if( (sd->class_&MAPID_UPPERMASK_THIRD) == MAPID_MECHANIC )
-		isriding = (bool)( sd->sc.option&OPTION_MADO && flag&OPTION_MADO );
+	return 0;
+}
 
-	return isriding;
+/*==========================================
+ * Gives the player a warg through script command.
+ *------------------------------------------*/
+int pc_setwug(TBL_PC* sd, int flag)
+{
+	if( flag ){
+		if( pc_checkskill(sd,RA_WUGMASTERY)>0 )
+			pc_setoption(sd,sd->sc.option|OPTION_WUG);
+	} else if( pc_iswug(sd) ){
+		pc_setoption(sd,sd->sc.option&~OPTION_WUG);
+	}
+
+	return 0;
+}
+
+/*==========================================
+ * Mounts the player on a warg through script command.
+ *------------------------------------------*/
+int pc_setwugrider(TBL_PC* sd, int flag)
+{
+	if( flag ){
+		if( pc_checkskill(sd,RA_WUGRIDER) > 0 )
+			pc_setoption(sd, sd->sc.option|OPTION_WUGRIDER);
+	} else if( pc_iswugrider(sd) ){
+		pc_setoption(sd, sd->sc.option&~OPTION_WUGRIDER);
+	}
+
+	return 0;
+}
+
+/*==========================================
+ * Mounts the player in a mado through script command.
+ *------------------------------------------*/
+int pc_setmadogear(TBL_PC* sd, int flag)
+{
+	if( flag ){
+		if( pc_checkskill(sd,NC_MADOLICENCE) > 0 )
+			pc_setoption(sd, sd->sc.option|OPTION_MADOGEAR);
+	} else if( pc_ismadogear(sd) ){
+		pc_setoption(sd, sd->sc.option&~OPTION_MADOGEAR);
+	}
+
+	return 0;
 }
 
 /*==========================================
@@ -9241,7 +9179,7 @@ int pc_readdb(void)
 	fclose(fp);
 	for (i = 0; i < JOB_MAX; i++) {
 		if (!pcdb_checkid(i)) continue;
-		if (i == JOB_WEDDING || i == JOB_XMAS || i == JOB_SUMMER || i == JOB_HANBOK)
+		if (i == JOB_WEDDING || i == JOB_XMAS || i == JOB_SUMMER || i == JOB_HANBOK || i == JOB_OKTOBERFEST)
 			continue; //Classes that do not need exp tables.
 		j = pc_class2idx(i);
 		if (!max_level[j][0])

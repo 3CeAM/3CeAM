@@ -4681,103 +4681,122 @@ ACMD_FUNC(mapinfo)
 }
 
 /*==========================================
- *
+ * Mounting command for all jobs that have
+ * their own class exclusive mount. [Rytech]
  *------------------------------------------*/
 ACMD_FUNC(mount)
 {
-	int msg[4] = { 0, 0, 0, 0 }, option = 0, skillnum = 0, val, riding_flag = 0;
 	nullpo_retr(-1, sd);
 
-	if( !message || !*message || sscanf(message, "%d", &val) < 1 || val < 1 || val > 5 )
-		val = 0; // Default color to riding dragon
+	if (sd->disguise)
+	{	// Check to see if the player is in disguise. If yes, then don't bother continuing. [Rytech]
+		clif_displaymessage(fd, msg_txt(700));// You can't mount while in disguise.
+		return -1;
+	}
 
-	if( (sd->class_&MAPID_UPPERMASK) == MAPID_KNIGHT || (sd->class_&MAPID_UPPERMASK) == MAPID_CRUSADER )
-	{
-		if( sd->class_&JOBL_THIRD )
+	// Checks for Knight, Crusader, Lord Knight, Paladin, Baby Knight, and Baby Crusader. [Rytech]
+	if (((sd->class_&MAPID_UPPERMASK) == MAPID_KNIGHT || (sd->class_&MAPID_UPPERMASK) == MAPID_CRUSADER) && 
+		(!((sd->class_&MAPID_THIRDMASK) >= MAPID_RUNE_KNIGHT && (sd->class_&MAPID_THIRDMASK) <= MAPID_BABY_CHASER)))
+		if (!pc_isriding(sd))// If not on a Peco Peco, check for required skill and mount if possiable.
 		{
-			if( (sd->class_&MAPID_UPPERMASK) == MAPID_KNIGHT )
-			{ // Rune Knight
-				if( pc_isriding(sd,OPTION_RIDING_DRAGON) )
-					riding_flag = 1;
-				msg[0] = 700; msg[1] = 702; msg[2] = 701; msg[3] = 703;
-				option = pc_isriding(sd,OPTION_RIDING_DRAGON) ? OPTION_RIDING_DRAGON :
-					(val == 2) ? OPTION_BLACK_DRAGON :
-					(val == 3) ? OPTION_WHITE_DRAGON :
-					(val == 4) ? OPTION_BLUE_DRAGON :
-					(val == 5) ? OPTION_RED_DRAGON :
-					OPTION_GREEN_DRAGON;
-				skillnum = RK_DRAGONTRAINING;
+			if (!pc_checkskill(sd, KN_RIDING))
+			{
+				clif_displaymessage(fd, msg_txt(702)); // You must learn the Riding skill to mount with your current job.
+				return -1;
 			}
-			else
-			{ // Royal Guard
-				if( pc_isriding(sd,OPTION_RIDING) )
-					riding_flag = 1;
-				msg[0] = 714; msg[1] = 716; msg[2] = 715; msg[3] = 717;
-				option = OPTION_RIDING;
-				skillnum = KN_RIDING;
-			}
-		}
+
+			pc_setoption(sd, sd->sc.option | OPTION_RIDING);
+			clif_displaymessage(fd, msg_txt(703)); // You mounted on a Peco Peco.
+		} 
 		else
-		{ // Lord Knight - Knight - Paladin - Crusader
-			if( pc_isriding(sd,OPTION_RIDING) )
-				riding_flag = 1;
-			msg[0] = 102; msg[1] = 214; msg[2] = 213; msg[3] = 212;
-			option = OPTION_RIDING;
-			skillnum = KN_RIDING;
-		}
-	}
-	else if( sd->class_&JOBL_THIRD )
-	{
-		if( (sd->class_&MAPID_UPPERMASK) == MAPID_HUNTER )
-		{ // Ranger
-			if( pc_iswarg(sd) )
-				pc_setoption(sd,sd->sc.option&~OPTION_WUG);
-			if( pc_isriding(sd,OPTION_RIDING_WUG) )
-				riding_flag = 1;
-			msg[0] = 704; msg[1] = 706; msg[2] = 705; msg[3] = 707;
-			option = OPTION_RIDING_WUG;
-			skillnum = RA_WUGRIDER;
-		}
-		else if( (sd->class_&MAPID_UPPERMASK) == MAPID_BLACKSMITH )
 		{
-			if( pc_isriding(sd, OPTION_MADO) )
-				riding_flag = 1;
-			msg[0] = 710; msg[1] = 712; msg[2] = 711; msg[3] = 713;
-			option = OPTION_MADO;
+			clif_displaymessage(fd, msg_txt(704)); // Your already mounted on a Peco Peco.
+			return -1;
 		}
-	}
 
-	if( !option )
-	{
-		clif_displaymessage(fd, "You can not mount with your current job.");
-		return -1;
-	}
+	// Checks for Rune Knight, Trans Rune Knight, and Baby Rune Knight
+	else if ((sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT || (sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT_T || 
+		(sd->class_&MAPID_THIRDMASK) == MAPID_BABY_RUNE)
+		if (!pc_isdragon(sd))// If not on a Dragon, check for required skill and mount if possiable.
+		{
+			if (!pc_checkskill(sd, RK_DRAGONTRAINING))
+			{
+				clif_displaymessage(fd, msg_txt(705)); // You must learn the Dragon Training skill to mount with your current job.
+				return -1;
+			}
 
-	if( skillnum && !pc_checkskill(sd,skillnum) )
-	{ // You haven't required skill to mount
-		clif_displaymessage(fd, msg_txt(msg[2])); // You can not mount with your current job.
-		return -1;
-	}
-	if( sd->disguise )
-	{ // Disguised
-		clif_displaymessage(fd, msg_txt(msg[3])); // Cannot mount while in disguise.
-		return -1;
-	}
-	//Players with the Groomy status or riding a rental mount can not mount on regular mounts.
-	if( sd->sc.data[SC__GROOMY] || sd->sc.data[SC_ALL_RIDING])
-		return -1;
-	if( riding_flag )
-	{ //Dismount
-		pc_setoption(sd, sd->sc.option & ~option);
-		if( option == OPTION_RIDING_WUG )
-			pc_setoption(sd, sd->sc.option&OPTION_WUG);
-		clif_displaymessage(fd, msg_txt(msg[1])); // You have released your mount.
-	}
+			pc_setoption(sd, sd->sc.option | OPTION_DRAGON1);
+			clif_displaymessage(fd, msg_txt(706)); // You mounted on a Dragon.
+		} 
+		else
+		{
+			clif_displaymessage(fd, msg_txt(707)); // Your already mounted on a Dragon.
+			return -1;
+		}
+
+	// Checks for Ranger, Trans Ranger, and Baby Ranger
+	else if ((sd->class_&MAPID_THIRDMASK) == MAPID_RANGER || (sd->class_&MAPID_THIRDMASK) == MAPID_RANGER_T || 
+		(sd->class_&MAPID_THIRDMASK) == MAPID_BABY_RANGER)
+		if (!pc_iswugrider(sd))// If not on a Warg, check for required skill and mount if possiable.
+		{
+			if (!pc_checkskill(sd, RA_WUGRIDER))
+			{
+				clif_displaymessage(fd, msg_txt(708)); // You must learn the Warg Rider skill to mount with your current job.
+				return -1;
+			}
+
+			pc_setoption(sd, sd->sc.option | OPTION_WUGRIDER);
+			clif_displaymessage(fd, msg_txt(709)); // You mounted on a Warg.
+		} 
+		else
+		{
+			clif_displaymessage(fd, msg_txt(710)); // Your already mounted on a Warg.
+			return -1;
+		}
+
+	// Checks for Mechanic, Trans Mechanic, and Baby Mechanic
+	else if ((sd->class_&MAPID_THIRDMASK) == MAPID_MECHANIC || (sd->class_&MAPID_THIRDMASK) == MAPID_MECHANIC_T || 
+		(sd->class_&MAPID_THIRDMASK) == MAPID_BABY_MECHANIC)
+		if (!pc_ismadogear(sd))// If not on a Mado Gear, check for required skill and mount if possiable.
+		{
+			if (!pc_checkskill(sd, NC_MADOLICENCE))
+			{
+				clif_displaymessage(fd, msg_txt(711)); // You must learn the Mado License skill to mount with your current job.
+				return -1;
+			}
+
+			pc_setoption(sd, sd->sc.option | OPTION_MADOGEAR);
+			clif_displaymessage(fd, msg_txt(712)); // You mounted on a Mado Gear.
+		} 
+		else
+		{
+			clif_displaymessage(fd, msg_txt(713)); // Your already mounted on a Mado Gear.
+			return -1;
+		}
+
+	// Checks for Royal Guard, Trans Royal Guard, and Baby Royal Guard
+	else if ((sd->class_&MAPID_THIRDMASK) == MAPID_ROYAL_GUARD || (sd->class_&MAPID_THIRDMASK) == MAPID_ROYAL_GUARD_T || 
+		(sd->class_&MAPID_THIRDMASK) == MAPID_BABY_GUARD)
+		if (!pc_isriding(sd))// If not on a Gryphon, check for required skill and mount if possiable.
+		{
+			if (!pc_checkskill(sd, KN_RIDING))
+			{
+				clif_displaymessage(fd, msg_txt(714)); // You must learn the Riding skill to mount with your current job.
+				return -1;
+			}
+
+			pc_setoption(sd, sd->sc.option | OPTION_RIDING);
+			clif_displaymessage(fd, msg_txt(715)); // You mounted on a Gryphon.
+		} 
+		else
+		{
+			clif_displaymessage(fd, msg_txt(716)); // Your already mounted on a Gryphon.
+			return -1;
+		}
+
+	// If the player's job is a job that doesen't have a class mount, then its not possiable to mount.
 	else
-	{ // Mount
-		pc_setoption(sd, sd->sc.option | option);
-		clif_displaymessage(fd, msg_txt(msg[0])); // You have mounted.
-	}
+		clif_displaymessage(fd, msg_txt(701)); // You can't mount with your current job.
 
 	return 0;
 }
@@ -5466,7 +5485,7 @@ ACMD_FUNC(disguise)
 		return -1;
 	}
 
-	if( pc_isriding(sd, OPTION_RIDING|OPTION_RIDING_DRAGON|OPTION_RIDING_WUG|OPTION_MADO) )
+	if(pc_isriding(sd)||pc_isdragon(sd)||pc_iswugrider(sd)||pc_ismadogear(sd))
 	{
 		//FIXME: wrong message [ultramage]
 		//clif_displaymessage(fd, msg_txt(227)); // Character cannot wear disguise while riding a PecoPeco.

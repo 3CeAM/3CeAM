@@ -605,8 +605,12 @@ extern int duel_count;
 #endif
 
 #define pc_isfalcon(sd)       ( (sd)->sc.option&OPTION_FALCON )
-#define pc_iswarg(sd)         ( (sd)->sc.option&OPTION_WUG )
+#define pc_isriding(sd)       ( (sd)->sc.option&OPTION_RIDING )
 #define pc_isinvisible(sd)    ( (sd)->sc.option&OPTION_INVISIBLE )
+#define pc_isdragon(sd)       ( (sd)->sc.option&OPTION_DRAGON )
+#define pc_iswug(sd)          ( (sd)->sc.option&OPTION_WUG )
+#define pc_iswugrider(sd)     ( (sd)->sc.option&OPTION_WUGRIDER )
+#define pc_ismadogear(sd)     ( (sd)->sc.option&OPTION_MADOGEAR )
 #define pc_is50overweight(sd) ( (sd)->weight*100 >= (sd)->max_weight*battle_config.natural_heal_weight_rate )
 #define pc_is90overweight(sd) ( (sd)->weight*10 >= (sd)->max_weight*9 )
 #define pc_maxparameter(sd)   ( \
@@ -756,9 +760,11 @@ int pc_jobchange(struct map_session_data *,int, int);
 int pc_setoption(struct map_session_data *,int);
 int pc_setcart(struct map_session_data* sd, int type);
 int pc_setfalcon(struct map_session_data* sd, int flag);
-int pc_setwarg(struct map_session_data* sd, int flag);
 int pc_setriding(struct map_session_data* sd, int flag);
-bool pc_isriding( struct map_session_data *sd, int flag );
+int pc_setdragon(struct map_session_data* sd, int flag);
+int pc_setwug(struct map_session_data* sd, int flag);
+int pc_setwugrider(struct map_session_data* sd, int flag);
+int pc_setmadogear(struct map_session_data* sd, int flag);
 int pc_changelook(struct map_session_data *,int,int);
 int pc_equiplookall(struct map_session_data *sd);
 
