@@ -1797,9 +1797,8 @@ packet_ver: 30
 0x0802,26,partyinvite2,2
 // 0x0436,4 // CZ_GANGSI_RANK
 0x023b,26,friendslistadd,2
-0x0361,5,hommenu,2:4
+0x0361,5,hommenu,4
 0x08a4,36,storagepassword,0
-0x09df,7
 
 // New Packets
 0x0447,2 // CZ_BLOCKING_PLAY_CANCEL
@@ -1812,6 +1811,11 @@ packet_ver: 30
 0x099f,22 // ZC_SKILL_ENTRY4
 0x09ab,6 //CZ_REQ_BANKING_CHECK
 0x09ca,23 //ZC_SKILL_ENTRY5
+0x09d4,2 //CZ_NPC_TRADE_QUIT
+0x09df,7//ZC_ACK_WHISPER2
+0x097c,4//CZ_REQ_RANKING
+0x097d,288//ZC_ACK_RANKING
+0x097e,12//ZC_UPDATE_RANKING_POINT
 
 0x0844,2,CashShopOpen,2
 0x084a,2,CashShopClose,2
