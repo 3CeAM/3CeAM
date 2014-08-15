@@ -5887,20 +5887,27 @@ int clif_wis_message(int fd, const char* nick, const char* mes, int mes_len)
 	return 0;
 }
 
-/*==========================================
- * Inform the player about the result of his whisper action
- * R 0098 <type>.B
- * 0: success to send wisper
- * 1: target character is not loged in
- * 2: ignored by target
- * 3: everyone ignored by target
- *------------------------------------------*/
+/// Inform the player about the result of his whisper action (ZC_ACK_WHISPER).
+/// 0098 <result>.B
+/// 09df <result>.B <CCODE>.L <---Unconfirmed.
+/// result:
+/// 0 = success to send wisper
+/// 1 = target character is not loged in
+/// 2 = ignored by target
+/// 3 = everyone ignored by target
 int clif_wis_end(int fd, int flag)
 {
-	WFIFOHEAD(fd,packet_len(0x98));
-	WFIFOW(fd,0) = 0x98;
-	WFIFOW(fd,2) = flag;
-	WFIFOSET(fd,packet_len(0x98));
+#if PACKETVER < 20131223
+		short packet = 0x98;
+#else
+		short packet = 0x9df;
+#endif
+
+	WFIFOHEAD(fd,packet_len(packet));
+	WFIFOW(fd,0) = packet;
+	WFIFOB(fd,2) = flag;
+	WFIFOL(fd,3) = 0;//Unknown. Likely for the CCODE system. [Rytech]
+	WFIFOSET(fd,packet_len(packet));
 	return 0;
 }
 
@@ -9859,14 +9866,11 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 	case 0x00: // once attack
 	case 0x07: // continuous attack
 
-		if( pc_cant_act(sd) || sd->sc.option&OPTION_HIDE )
+		if( pc_cant_act(sd) || sd->sc.option&OPTION_HIDE || sd->sc.option&OPTION_WUGRIDER )
 			return;
 
 		if( sd->sc.option&(OPTION_WEDDING|OPTION_XMAS|OPTION_SUMMER) )
 			return;
-
-		if( sd->sc.option&OPTION_WUGRIDER && sd->weapontype1 )
-			return;//Is it really possible to attack while mounted if you have no weapon equipped? [Rytech]
 
 		// Can't attack
 		if( sd->sc.data[SC_BASILICA] || sd->sc.data[SC__SHADOWFORM] || (tsc && tsc->data[SC__MANHOLE]) ||
@@ -16141,7 +16145,7 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0, 14,  6, 50,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0, 14,  6, 50,  0,  0,  4,288, 12,  0,
 	//#0x0980
 	    0,  0,  0, 29, 28,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	   31,  0,  0,  0,  0,  0,  0, -1,  8, 11,  9,  8,  0,  0,  0, 22,
@@ -16149,7 +16153,7 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0,  0,  0,  0, 14,  0,  0,  0,  0,  0,  0,  0,  0,
 	//#0x09C0
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 23,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  7,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	};

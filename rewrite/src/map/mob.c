@@ -4251,7 +4251,7 @@ static bool mob_parse_row_mobskilldb(char** str, int columns, int current)
  *------------------------------------------*/
 static void mob_readskilldb(void)
 {
-	const char* filename[] = { "mob_skill_db.txt", "mob_skill_db2.txt" };
+	const char* filename[] = { "mob_skill_db.txt", "mob_skill_db2.txt", "mob_skill_db_3ceam.txt" };
 	int fi;
 
 	if( battle_config.mob_skill_rate == 0 )
