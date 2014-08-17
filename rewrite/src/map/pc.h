@@ -616,7 +616,7 @@ extern int duel_count;
 #define pc_maxparameter(sd)   ( \
 	(sd)->class_ == MAPID_SUPER_NOVICE_E || (sd)->class_ == MAPID_SUPER_BABY_E || \
 	(sd)->class_ == MAPID_KAGEROUOBORO || (sd)->class_ == MAPID_REBELLION || (sd)->class_&JOBL_THIRD ? \
-	(sd)->class_&JOBL_BABY ? battle_config.max_baby_third_paramater : battle_config.max_third_parameter : \
+	(sd)->class_&JOBL_BABY ? battle_config.max_baby_parameter_renewal_jobs : battle_config.max_parameter_renewal_jobs : \
 	(sd)->class_&JOBL_BABY ? battle_config.max_baby_parameter : battle_config.max_parameter \
 	)
 

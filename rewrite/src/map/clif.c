@@ -12785,7 +12785,7 @@ void clif_parse_NoviceDoriDori(int fd, struct map_session_data *sd)
 		case MAPID_TAEKWON:
 			if (!sd->state.rest)
 				break;
-		case MAPID_SUPER_NOVICE:
+		case MAPID_SUPER_NOVICE://Should this be checked with BASEMASK? [Rytech]
 		case MAPID_SUPER_NOVICE_E:
 			sd->state.doridori=1;
 			break;	
@@ -13204,6 +13204,122 @@ void clif_parse_RankingPk(int fd,struct map_session_data *sd)
 	}
 	WFIFOSET(fd, packet_len(0x238));
 	return;
+}
+
+/// Ranking List (ZC_ACK_RANKING)
+/// 97d <PacketType>.W <RankingType>.W <CharName>.B <Point>.L <myPoint>.L
+void clif_ranking(struct map_session_data* sd, int rankingtype)
+{
+	int i, mypoint, fd = sd->fd;
+	const char* name;
+
+	WFIFOHEAD(fd,packet_len(0x97d));
+	WFIFOW(fd,0) = 0x97d;
+	WFIFOW(fd,2) = rankingtype;
+	//Packet size limits this list to 10 players.
+	for (i = 0; i < 10 && i < MAX_FAME_LIST; i++)
+	{//Client command /blacksmith
+		if (rankingtype == RANKING_BLACKSMITH)
+		{
+			if (smith_fame_list[i].id > 0)
+			{
+				if (strcmp(smith_fame_list[i].name, "-") == 0 &&
+					(name = map_charid2nick(smith_fame_list[i].id)) != NULL)
+				{
+					strncpy((char *)(WFIFOP(fd, 4 + 24 * i)), name, NAME_LENGTH);
+				} else
+					strncpy((char *)(WFIFOP(fd, 4 + 24 * i)), smith_fame_list[i].name, NAME_LENGTH);
+			} else
+				strncpy((char *)(WFIFOP(fd, 4 + 24 * i)), "None", 5);
+			WFIFOL(fd, 244 + i * 4) = smith_fame_list[i].fame;
+		}//Client command /alchemist
+		else if (rankingtype == RANKING_ALCHEMIST)
+		{
+			if (chemist_fame_list[i].id > 0)
+			{
+				if (strcmp(chemist_fame_list[i].name, "-") == 0 &&
+					(name = map_charid2nick(chemist_fame_list[i].id)) != NULL)
+				{
+					strncpy((char *)(WFIFOP(fd, 4 + 24 * i)), name, NAME_LENGTH);
+				} else
+					strncpy((char *)(WFIFOP(fd, 4 + 24 * i)), chemist_fame_list[i].name, NAME_LENGTH);
+			} else
+				strncpy((char *)(WFIFOP(fd, 4 + 24 * i)), "None", 5);
+			WFIFOL(fd, 244 + i * 4) = chemist_fame_list[i].fame;
+		}//Client command /taekwon
+		else if (rankingtype == RANKING_TAEKWON)
+		{
+			if (taekwon_fame_list[i].id > 0)
+			{
+				if (strcmp(taekwon_fame_list[i].name, "-") == 0 &&
+					(name = map_charid2nick(taekwon_fame_list[i].id)) != NULL)
+				{
+					strncpy((char *)(WFIFOP(fd, 4 + 24 * i)), name, NAME_LENGTH);
+				} else
+					strncpy((char *)(WFIFOP(fd, 4 + 24 * i)), taekwon_fame_list[i].name, NAME_LENGTH);
+			} else
+				strncpy((char *)(WFIFOP(fd, 4 + 24 * i)), "None", 5);
+			WFIFOL(fd, 244 + i * 4) = taekwon_fame_list[i].fame;
+		}
+		//Player Killer Ranking disabled until the system is fully coded in. [Rytech]
+		//Client command /pk
+		/*else if (rankingtype == RANKING_KILLER)
+		{
+			if (killer_fame_list[i].id > 0)
+			{
+				if (strcmp(killer_fame_list[i].name, "-") == 0 &&
+					(name = map_charid2nick(killer_fame_list[i].id)) != NULL)
+				{
+					strncpy((char *)(WFIFOP(fd, 4 + 24 * i)), name, NAME_LENGTH);
+				} else
+					strncpy((char *)(WFIFOP(fd, 4 + 24 * i)), killer_fame_list[i].name, NAME_LENGTH);
+			} else
+				strncpy((char *)(WFIFOP(fd, 4 + 24 * i)), "None", 5);
+			WFIFOL(fd, 244 + i * 4) = killer_fame_list[i].fame;
+		}*/
+	}
+	for(;i < 10; i++) { //In case the MAX is less than 10.
+		strncpy((char *)(WFIFOP(fd, 4 + 24 * i)), "Unavailable", 12);
+		WFIFOL(fd, 244 + i * 4) = 0;
+	}
+
+	//
+	if ( (sd->class_&MAPID_UPPERMASK) == MAPID_BLACKSMITH && rankingtype == RANKING_BLACKSMITH || 
+		(sd->class_&MAPID_UPPERMASK) == MAPID_ALCHEMIST && rankingtype == RANKING_ALCHEMIST || 
+		(sd->class_&MAPID_BASEMASK) == MAPID_TAEKWON && rankingtype == RANKING_TAEKWON )
+		mypoint = sd->status.fame;
+	else
+		mypoint = 0;
+
+	WFIFOL(fd,284) = mypoint;
+	WFIFOSET(fd, packet_len(0x97d));
+}
+
+
+/// Ranking List Request (CZ_REQ_RANKING)
+/// 97c <PacketType>.W <RankingType>.W
+/// /blacksmith = RANKING_BLACKSMITH = 0
+/// /alchemist = RANKING_ALCHEMIST = 1
+/// /taekwon = RANKING_TAEKWON = 2
+/// /pk = RANKING_KILLER = 3
+void clif_parse_ranking(int fd,struct map_session_data *sd)
+{
+	clif_ranking(sd,RFIFOW(fd,2));
+}
+
+
+/// Ranking Point Notification (ZC_UPDATE_RANKING_POINT)
+/// 97e <PacketType>.W <RankingType>.W <Point>.L <TotalPoint>.L
+void clif_fame_ranking(struct map_session_data *sd, int rankingtype, int points)
+{
+	int fd = sd->fd;
+
+	WFIFOHEAD(fd,packet_len(0x97e));
+	WFIFOW(fd,0) = 0x97e;
+	WFIFOW(fd,2) = rankingtype;
+	WFIFOL(fd,4) = points;
+	WFIFOL(fd,8) = sd->status.fame;
+	WFIFOSET(fd, packet_len(0x97e));
 }
 
 /*==========================================
@@ -16360,6 +16476,7 @@ static int packetdb_readdb(void)
 		{clif_parse_CloseSearchStoreInfo,"closesearchstoreinfo"},
 		{clif_parse_SearchStoreInfoListItemClick,"searchstoreinfolistitemclick"},
 		//{ clif_parse_MoveItem , "moveitem" },
+		{clif_parse_ranking,"ranking"},
 		{NULL,NULL}
 	};
 

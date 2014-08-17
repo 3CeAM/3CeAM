@@ -223,6 +223,31 @@ enum map_type
 	MAPTYPE_UNUSED               = 29,
 };
 
+enum ranking_type
+{
+	RANKING_BLACKSMITH = 0,
+	RANKING_ALCHEMIST,
+	RANKING_TAEKWON,
+	RANKING_KILLER,
+	RANKING_BATTLE_1VS1_ALL,
+	RANKING_BATTLE_7VS7_ALL,
+	RANKING_RUNE_KNIGHT,
+	RANKING_WARLOCK,
+	RANKING_RANGER,
+	RANKING_MECHANIC,
+	RANKING_GUILLOTINE_CROSS,
+	RANKING_ARCHBISHOP,
+	RANKING_ROYAL_GUARD,
+	RANKING_SORCERER,
+	RANKING_MINSTREL,
+	RANKING_WANDERER,
+	RANKING_GENETIC,
+	RANKING_SHADOW_CHASER,
+	RANKING_SURA,
+	RANKING_KAGEROU,
+	RANKING_OBORO,
+};
+
 int clif_setip(const char* ip);
 void clif_setbindip(const char* ip);
 void clif_setport(uint16 port);
@@ -301,6 +326,7 @@ int clif_refresh(struct map_session_data*);	// self
 int clif_fame_blacksmith(struct map_session_data *, int);
 int clif_fame_alchemist(struct map_session_data *, int);
 int clif_fame_taekwon(struct map_session_data *, int);
+void clif_fame_ranking(struct map_session_data *sd, int rankingtype, int points);
 
 void clif_emotion(struct block_list *bl,int type);
 void clif_talkiebox(struct block_list* bl, const char* talkie);
