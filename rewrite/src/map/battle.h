@@ -167,7 +167,6 @@ extern struct Battle_Config
 	int skillup_limit;
 	int wp_rate;
 	int pp_rate;
-	int rune_produce_rate;
 	int monster_active_enable;
 	int monster_damage_delay_rate;
 	int monster_loot_type;
@@ -350,8 +349,6 @@ extern struct Battle_Config
 	int gm_cant_party_min_lv;
 	int gm_can_party; // [SketchyPhoenix]
 
-	int pc_camouflage_check_type;
-
 // eAthena additions
 	int night_at_start; // added by [Yor]
 	int day_duration; // added by [Yor]
@@ -491,6 +488,9 @@ extern struct Battle_Config
 	int searchstore_querydelay;
 	int searchstore_maxresults;
 	int display_party_name;
+	int cashshop_show_points;
+	int mail_show_status;
+	int client_limit_unit_lv;
 
 	// [BattleGround Settings]
 	int bg_update_interval;
@@ -501,14 +501,17 @@ extern struct Battle_Config
 	int bg_misc_damage_rate;
 	int bg_flee_penalty;
 
+	// 3CeAM Added
+	int renewal_casting_renewal_skills;
+	int castrate_dex_scale_renewal_jobs;
+	int max_parameter_renewal_jobs;
+	int max_baby_parameter_renewal_jobs;
+	int max_aspd_renewal_jobs;
+	int all_riding_speed;
+	int rune_produce_rate;
+	int pc_camouflage_check_type;
 	int warg_can_falcon;
 	int use_renewal_statpoints;
-
-	// Casting Time Renewal Settings
-	int renewal_cast_3rd_skills;
-	int castrate_dex_scale_3rd;
-	int max_third_parameter;
-	int max_baby_third_paramater;
 	int max_highlvl_nerf; // [Pinky]
 	int max_joblvl_nerf; // [Pinky]
 	int max_joblvl_nerf_misc; // [Pinky]
@@ -519,7 +522,6 @@ extern struct Battle_Config
 	int renewal_baselvl_skill_effect;
 	int mado_skill_limit;
 	int mado_loss_on_death;
-	int rental_mount_speed_boost;
 
 	// Renewal EDP Formula Config For Guillotine Cross Skills
 	int gc_skill_edp_boost_formula_a;

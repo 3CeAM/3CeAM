@@ -557,6 +557,7 @@ void pc_addfame(struct map_session_data *sd,int count)
 		sd->status.fame = MAX_FAME;
 	switch( sd->class_&MAPID_UPPERMASK )
 	{
+#if PACKETVER < 20131223
 		case MAPID_BLACKSMITH: // Blacksmith
 			clif_fame_blacksmith(sd,count);
 			break;
@@ -565,7 +566,18 @@ void pc_addfame(struct map_session_data *sd,int count)
 			break;
 		case MAPID_TAEKWON: // Taekwon
 			clif_fame_taekwon(sd,count);
-			break;	
+			break;
+#else
+		case MAPID_BLACKSMITH: // Blacksmith
+			clif_fame_ranking(sd,RANKING_BLACKSMITH,count);
+			break;
+		case MAPID_ALCHEMIST: // Alchemist
+			clif_fame_ranking(sd,RANKING_ALCHEMIST,count);
+			break;
+		case MAPID_TAEKWON: // Taekwon
+			clif_fame_ranking(sd,RANKING_TAEKWON,count);
+			break;
+#endif
 	}
 	chrif_updatefamelist(sd);
 }

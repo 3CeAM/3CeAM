@@ -1813,15 +1813,15 @@ packet_ver: 30
 0x09ca,23 //ZC_SKILL_ENTRY5
 0x09d4,2 //CZ_NPC_TRADE_QUIT
 0x09df,7//ZC_ACK_WHISPER2
-0x097c,4//CZ_REQ_RANKING
+0x097c,4,ranking,2//CZ_REQ_RANKING
 0x097d,288//ZC_ACK_RANKING
 0x097e,12//ZC_UPDATE_RANKING_POINT
 
-0x0844,2,CashShopOpen,2
-0x084a,2,CashShopClose,2
-0x0846,4,CashShopReqTab,2
-0x08c9,2,CashShopSchedule,0
-0x0848,-1,CashShopBuy,2
+0x0844,2,cashshopopen,2
+0x084a,2,cashshopclose,2
+0x0846,4,cashshopreqtab,2
+0x08c9,2,cashshopschedule,0
+0x0848,-1,cashshopbuy,2
 
 //Add new packets here.
 //packet_ver: 31

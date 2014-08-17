@@ -2892,7 +2892,13 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 
 	// Basic ASPD value
 	i = status_base_amotion_pc(sd,status);
-	status->amotion = cap_value(i,battle_config.max_aspd,2000);
+
+	// Config for setting seprate ASPD cap for 3rd jobs and other jobs released in renewal. 
+	if ( sd && ((sd->class_&MAPID_THIRDMASK) >= MAPID_RUNE_KNIGHT || (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE_E ||
+		(sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION))
+		status->amotion = cap_value(i,battle_config.max_aspd_renewal_jobs,2000);
+	else
+		status->amotion = cap_value(i,battle_config.max_aspd,2000);
 
 	// Relative modifiers from passive skills
 	if((skill=pc_checkskill(sd,SA_ADVANCEDBOOK))>0 && sd->status.weapon == W_BOOK)
@@ -3726,9 +3732,14 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 			
 			if(status->aspd_rate != 1000)
 				amotion = amotion*status->aspd_rate/1000;
-			
-			status->amotion = cap_value(amotion,battle_config.max_aspd,2000);
-			
+
+			// Config for setting seprate ASPD cap for 3rd jobs and other jobs released in renewal. 
+			if ( sd && ((sd->class_&MAPID_THIRDMASK) >= MAPID_RUNE_KNIGHT || (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE_E ||
+				(sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION))
+				status->amotion = cap_value(amotion,battle_config.max_aspd_renewal_jobs,2000);
+			else
+				status->amotion = cap_value(amotion,battle_config.max_aspd,2000);
+
 			status->adelay = 2*status->amotion;
 		}
 		else if( bl->type&BL_HOM )
@@ -4752,7 +4763,7 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				val = 25;
 			else
 			if( sc->data[SC_ALL_RIDING] )//Set to 25 by default in the battle config.
-				val = battle_config.rental_mount_speed_boost;
+				val = battle_config.all_riding_speed;
 			else
 			if( sd && (pc_isriding(sd)||pc_isdragon(sd)) )
 				val = 25;

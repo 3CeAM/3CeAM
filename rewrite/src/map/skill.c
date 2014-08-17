@@ -13609,7 +13609,7 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 	// Calculates regular and variable cast time.
 	if( !(skill_get_castnodex(skill_id, skill_lv)&1) )
 	{	//If renewal casting is enabled, all renewal skills will follow the renewal cast formula.
-		if (battle_config.renewal_cast_3rd_skills == 1 && (skill_id >= RK_ENCHANTBLADE && skill_id <= NC_MAGMA_ERUPTION_DOTDAMAGE || skill_id >= MH_SUMMON_LEGION && skill_id <= MH_VOLCANIC_ASH))
+		if (battle_config.renewal_casting_renewal_skills == 1 && (skill_id >= RK_ENCHANTBLADE && skill_id <= NC_MAGMA_ERUPTION_DOTDAMAGE || skill_id >= MH_SUMMON_LEGION && skill_id <= MH_VOLCANIC_ASH))
 		{
 			time -= time * (status_get_dex(bl) * 2 + status_get_int(bl)) / 530;
 			if ( time < 0 ) time = 0;// No return of 0 since were adding the fixed_time later.
@@ -13623,7 +13623,7 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 			//fixed cast value of 0 to be added and not affect the actural cast time.
 			time = time + fixed_time;
 			if ( sd && ((sd->class_&MAPID_THIRDMASK) >= MAPID_RUNE_KNIGHT || (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE_E || (sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION))
-			rate = battle_config.castrate_dex_scale_3rd;
+			rate = battle_config.castrate_dex_scale_renewal_jobs;
 			else
 			rate = battle_config.castrate_dex_scale;
 			scale = rate - status_get_dex(bl);
@@ -13726,7 +13726,7 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 
 	//Only add variable and fixed times when renewal casting for renewal skills are on. Without this check,
 	//it will add the 2 together during the above phase and then readd the fixed time.
-	if (battle_config.renewal_cast_3rd_skills == 1 && (skill_id >= RK_ENCHANTBLADE && skill_id <= NC_MAGMA_ERUPTION_DOTDAMAGE || skill_id >= MH_SUMMON_LEGION && skill_id <= MH_VOLCANIC_ASH))
+	if (battle_config.renewal_casting_renewal_skills == 1 && (skill_id >= RK_ENCHANTBLADE && skill_id <= NC_MAGMA_ERUPTION_DOTDAMAGE || skill_id >= MH_SUMMON_LEGION && skill_id <= MH_VOLCANIC_ASH))
 	final_time = time + fixed_time;
 	else
 	final_time = time;
@@ -17475,7 +17475,7 @@ static bool skill_parse_row_requiredb(char* split[], int columns, int current)
 }
 
 static bool skill_parse_row_castdb(char* split[], int columns, int current)
-{// SkillID,CastingTime,AfterCastActDelay,Cooldown,AfterCastWalkDelay,Duration1,Duration2
+{// SkillID,CastingTime,AfterCastActDelay,AfterCastWalkDelay,Duration1,Duration2
 	int i = atoi(split[0]);
 	i = skill_get_index(i);
 	if( !i ) // invalid skill id
@@ -17483,12 +17483,27 @@ static bool skill_parse_row_castdb(char* split[], int columns, int current)
 
 	skill_split_atoi(split[1],skill_db[i].cast);
 	skill_split_atoi(split[2],skill_db[i].delay);
-	skill_split_atoi(split[3],skill_db[i].cooldown);
-	skill_split_atoi(split[4],skill_db[i].walkdelay);
-	skill_split_atoi(split[5],skill_db[i].upkeep_time);
-	skill_split_atoi(split[6],skill_db[i].upkeep_time2);
-	if( split[7] )
-		skill_split_atoi(split[7],skill_db[i].fixed_cast);
+	skill_split_atoi(split[3],skill_db[i].walkdelay);
+	skill_split_atoi(split[4],skill_db[i].upkeep_time);
+	skill_split_atoi(split[5],skill_db[i].upkeep_time2);
+
+	return true;
+}
+
+static bool skill_parse_row_renewalcastdb(char* split[], int columns, int current)
+{// SkillID,VariableCastTime,FixedCastTime,AfterCastActDelay,Cooldown,AfterCastWalkDelay,Duration1,Duration2
+	int i = atoi(split[0]);
+	i = skill_get_index(i);
+	if( !i ) // invalid skill id
+		return false;
+
+	skill_split_atoi(split[1],skill_db[i].cast);
+	skill_split_atoi(split[2],skill_db[i].fixed_cast);
+	skill_split_atoi(split[3],skill_db[i].delay);
+	skill_split_atoi(split[4],skill_db[i].cooldown);
+	skill_split_atoi(split[5],skill_db[i].walkdelay);
+	skill_split_atoi(split[6],skill_db[i].upkeep_time);
+	skill_split_atoi(split[7],skill_db[i].upkeep_time2);
 
 	return true;
 }
@@ -17721,12 +17736,13 @@ static void skill_readdb(void)
 	// load skill databases
 	safestrncpy(skill_db[0].name, "UNKNOWN_SKILL", sizeof(skill_db[0].name));
 	safestrncpy(skill_db[0].desc, "Unknown Skill", sizeof(skill_db[0].desc));
-	sv_readdb(db_path, "skill_db.txt"          , ',',  17, 17, MAX_SKILL_DB, skill_parse_row_skilldb);
-	sv_readdb(db_path, "skill_require_db.txt"  , ',',  32, 32, MAX_SKILL_DB, skill_parse_row_requiredb);
-	sv_readdb(db_path, "skill_cast_db.txt"     , ',',   7,  8, MAX_SKILL_DB, skill_parse_row_castdb);
-	sv_readdb(db_path, "skill_castnodex_db.txt", ',',   2,  3, MAX_SKILL_DB, skill_parse_row_castnodexdb);
-	sv_readdb(db_path, "skill_nocast_db.txt"   , ',',   2,  2, MAX_SKILL_DB, skill_parse_row_nocastdb);
-	sv_readdb(db_path, "skill_unit_db.txt"     , ',',   8,  8, MAX_SKILL_DB, skill_parse_row_unitdb);
+	sv_readdb(db_path, "skill_db.txt"             , ',',  17, 17, MAX_SKILL_DB, skill_parse_row_skilldb);
+	sv_readdb(db_path, "skill_require_db.txt"     , ',',  32, 32, MAX_SKILL_DB, skill_parse_row_requiredb);
+	sv_readdb(db_path, "skill_cast_db.txt"        , ',',   6,  6, MAX_SKILL_DB, skill_parse_row_castdb);
+	sv_readdb(db_path, "skill_renewal_cast_db.txt", ',',   8,  8, MAX_SKILL_DB, skill_parse_row_renewalcastdb);
+	sv_readdb(db_path, "skill_castnodex_db.txt"   , ',',   2,  3, MAX_SKILL_DB, skill_parse_row_castnodexdb);
+	sv_readdb(db_path, "skill_nocast_db.txt"      , ',',   2,  2, MAX_SKILL_DB, skill_parse_row_nocastdb);
+	sv_readdb(db_path, "skill_unit_db.txt"        , ',',   8,  8, MAX_SKILL_DB, skill_parse_row_unitdb);
 	skill_init_unit_layout();
 	skill_init_nounit_layout();
 	sv_readdb(db_path, "produce_db.txt"        , ',',   4,  4+2*MAX_PRODUCE_RESOURCE, MAX_SKILL_PRODUCE_DB, skill_parse_row_producedb);
