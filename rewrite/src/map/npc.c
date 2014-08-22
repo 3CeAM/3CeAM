@@ -86,6 +86,7 @@ static struct eri *timer_event_ers; //For the npc timer data. [Skotlex]
 
 //For holding the view data of npc classes. [Skotlex]
 static struct view_data npc_viewdb[MAX_NPC_CLASS];
+static struct view_data npc_viewdb_2[MAX_NPC_CLASS_2];
 
 static struct script_event_s
 {	//Holds pointers to the commonly executed scripts for speedup. [Skotlex]
@@ -99,7 +100,10 @@ struct view_data* npc_get_viewdata(int class_)
 	if (class_ == INVISIBLE_CLASS)
 		return &npc_viewdb[0];
 	if (npcdb_checkid(class_) || class_ == WARP_CLASS)
-		return &npc_viewdb[class_];
+		if ( class_ >= NPC_CLASS_BASE_2 )
+			return &npc_viewdb_2[class_-NPC_CLASS_BASE_2];
+		else
+			return &npc_viewdb[class_];
 	return NULL;
 }
 
@@ -3497,6 +3501,8 @@ int do_init_npc(void)
 	npc_viewdb[0].class_ = INVISIBLE_CLASS; //Invisible class is stored here.
 	for( i = 1; i < MAX_NPC_CLASS; i++ ) 
 		npc_viewdb[i].class_ = i;
+	for( i = NPC_CLASS_BASE_2; i < NPC_CLASS_MAX_2; i++ ) 
+		npc_viewdb_2[i-NPC_CLASS_BASE_2].class_ = i;
 
 	ev_db = strdb_alloc((DBOptions)(DB_OPT_DUP_KEY|DB_OPT_RELEASE_DATA),2*NAME_LENGTH+2+1);
 	npcname_db = strdb_alloc(DB_OPT_BASE,NAME_LENGTH);
