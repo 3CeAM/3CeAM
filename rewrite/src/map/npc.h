@@ -74,10 +74,20 @@ struct npc_data {
 #define FLAG_CLASS 722
 #define INVISIBLE_CLASS 32767
 
+//1st NPC ID Range ( 45 - 125 Including 139)
+//2nd NPC ID Range ( 400 - 999 )
 #define MAX_NPC_CLASS 1000
+
+//3nd NPC ID Range ( 10001 - 19999 )
+//Officially the 3nd NPC range is 10000 - 19999, but we dont need a range that big.
+//Having space for 1000 NPC's is good enough until we need to expand the range. [Rytech]
+#define MAX_NPC_CLASS_2 1000 //Increase this as needed. Current setting allows ID's 10001 - 11000.
+#define NPC_CLASS_BASE_2 10001
+#define NPC_CLASS_MAX_2 (NPC_CLASS_BASE_2+MAX_NPC_CLASS_2-1)
+
 //Checks if a given id is a valid npc id. [Skotlex]
 //Since new npcs are added all the time, the max valid value is the one before the first mob (Scorpion = 1001)
-#define npcdb_checkid(id) ((id >=  46 && id <= 125) || id == 139 || (id >= 400 && id <= MAX_NPC_CLASS) || id == INVISIBLE_CLASS)
+#define npcdb_checkid(id) ( ( (id) >= 46 && (id) <= 125) || (id) == 139 || ( (id) > 400 && (id) < MAX_NPC_CLASS )  || ( (id) >= NPC_CLASS_BASE_2 && (id) < NPC_CLASS_MAX_2 ) || (id) == INVISIBLE_CLASS )
 
 #ifdef PCRE_SUPPORT
 void npc_chat_finalize(struct npc_data* nd);
