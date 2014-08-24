@@ -5537,6 +5537,9 @@ void status_set_viewdata(struct block_list *bl, int class_)
 				if (sd->sc.option&OPTION_OKTOBERFEST)
 					class_ = JOB_OKTOBERFEST;
 				else
+				if (sd->sc.option&OPTION_SUMMER2)
+					class_ = JOB_SUMMER2;
+				else
 				if (sd->sc.option&OPTION_RIDING)
 				switch (class_)
 				{	//Adapt class to a Mounted one.
@@ -5738,6 +5741,9 @@ void status_set_viewdata(struct block_list *bl, int class_)
 		(vd->class_==JOB_WEDDING && battle_config.wedding_ignorepalette)
 		|| (vd->class_==JOB_XMAS && battle_config.xmas_ignorepalette)
 		|| (vd->class_==JOB_SUMMER && battle_config.summer_ignorepalette)
+		|| (vd->class_==JOB_HANBOK && battle_config.hanbok_ignorepalette)
+		|| (vd->class_==JOB_OKTOBERFEST && battle_config.oktoberfest_ignorepalette)
+		|| (vd->class_==JOB_SUMMER2 && battle_config.summer2_ignorepalette)
 	))
 		vd->cloth_color = 0;
 }
@@ -6961,6 +6967,9 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_WEDDING:
 		case SC_XMAS:
 		case SC_SUMMER:
+		case SC_HANBOK:
+		case SC_OKTOBERFEST:
+		case SC_SUMMER2:
 			if (!vd) return 0;
 			//Store previous values as they could be removed.
 			val1 = vd->class_;
@@ -6970,7 +6979,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			unit_stop_attack(bl);
 			clif_changelook(bl,LOOK_WEAPON,0);
 			clif_changelook(bl,LOOK_SHIELD,0);
-			clif_changelook(bl,LOOK_BASE,type==SC_WEDDING?JOB_WEDDING:type==SC_XMAS?JOB_XMAS:JOB_SUMMER);
+			clif_changelook(bl,LOOK_BASE,type==SC_WEDDING?JOB_WEDDING:type==SC_XMAS?JOB_XMAS:type==SC_SUMMER?JOB_SUMMER:type==SC_HANBOK?JOB_HANBOK:type==SC_OKTOBERFEST?JOB_OKTOBERFEST:JOB_SUMMER2);
 			clif_changelook(bl,LOOK_CLOTHES_COLOR,vd->cloth_color);
 			break;
 		case SC_NOCHAT:
@@ -8184,9 +8193,12 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_WEDDING:
 		case SC_XMAS:
 		case SC_SUMMER:
+		case SC_HANBOK:
+		case SC_OKTOBERFEST:
+		case SC_SUMMER2:
 			clif_changelook(bl,LOOK_WEAPON,0);
 			clif_changelook(bl,LOOK_SHIELD,0);
-			clif_changelook(bl,LOOK_BASE,type==SC_WEDDING?JOB_WEDDING:type==SC_XMAS?JOB_XMAS:JOB_SUMMER);
+			clif_changelook(bl,LOOK_BASE,type==SC_WEDDING?JOB_WEDDING:type==SC_XMAS?JOB_XMAS:type==SC_SUMMER?JOB_SUMMER:type==SC_HANBOK?JOB_HANBOK:type==SC_OKTOBERFEST?JOB_OKTOBERFEST:JOB_SUMMER2);
 			clif_changelook(bl,LOOK_CLOTHES_COLOR,val4);
 			break;	
 		case SC_KAAHI:
@@ -8392,6 +8404,15 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			break;
 		case SC_SUMMER:
 			sc->option |= OPTION_SUMMER;
+			break;
+		case SC_HANBOK:
+			sc->option |= OPTION_HANBOK;
+			break;
+		case SC_OKTOBERFEST:
+			sc->option |= OPTION_OKTOBERFEST;
+			break;
+		case SC_SUMMER2:
+			sc->option |= OPTION_SUMMER2;
 			break;
 		case SC_ORCISH:
 			sc->option |= OPTION_ORCISH;
@@ -8630,11 +8651,14 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 		case SC_WEDDING:
 		case SC_XMAS:
 		case SC_SUMMER:
+		case SC_HANBOK:
+		case SC_OKTOBERFEST:
+		case SC_SUMMER2:
 			if (!vd) break;
 			if (sd)
 			{	//Load data from sd->status.* as the stored values could have changed.
 				//Must remove OPTION to prevent class being rechanged.
-				sc->option &= type==SC_WEDDING?~OPTION_WEDDING:type==SC_XMAS?~OPTION_XMAS:~OPTION_SUMMER;
+				sc->option &= type==SC_WEDDING?~OPTION_WEDDING:type==SC_XMAS?~OPTION_XMAS:type==SC_SUMMER?~OPTION_SUMMER:type==SC_HANBOK?~OPTION_HANBOK:type==SC_OKTOBERFEST?~OPTION_OKTOBERFEST:~OPTION_SUMMER2;
 				clif_changeoption(&sd->bl);
 				status_set_viewdata(bl, sd->status.class_);
 			} else {
@@ -9037,14 +9061,23 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 	case SC_SIGHT:
 		sc->option &= ~OPTION_SIGHT;
 		break;
-	case SC_WEDDING:	
+	case SC_WEDDING:
 		sc->option &= ~OPTION_WEDDING;
 		break;
-	case SC_XMAS:	
+	case SC_XMAS:
 		sc->option &= ~OPTION_XMAS;
 		break;
 	case SC_SUMMER:
 		sc->option &= ~OPTION_SUMMER;
+		break;
+	case SC_HANBOK:
+		sc->option &= ~OPTION_HANBOK;
+		break;
+	case SC_OKTOBERFEST:
+		sc->option &= ~OPTION_OKTOBERFEST;
+		break;
+	case SC_SUMMER2:
+		sc->option &= ~OPTION_SUMMER2;
 		break;
 	case SC_ORCISH:
 		sc->option &= ~OPTION_ORCISH;
