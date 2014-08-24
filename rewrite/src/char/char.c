@@ -1431,7 +1431,7 @@ char * job_name(int class_)
 	case JOB_GUNSLINGER: return "Gunslinger";
 	case JOB_NINJA: return "Ninja";
 	case JOB_XMAS: return "Christmas";
-	case JOB_SUMMER: return "Summer";
+	case JOB_SUMMER: case JOB_SUMMER2: return "Summer";
 	case JOB_HANBOK: return "Hanbok";
 	case JOB_OKTOBERFEST: return "Oktoberfest";
 	case JOB_NOVICE_HIGH: return "Novice High";

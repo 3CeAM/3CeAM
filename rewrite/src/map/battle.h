@@ -522,6 +522,9 @@ extern struct Battle_Config
 	int renewal_baselvl_skill_effect;
 	int mado_skill_limit;
 	int mado_loss_on_death;
+	int hanbok_ignorepalette;
+	int oktoberfest_ignorepalette;
+	int summer2_ignorepalette;
 
 	// Renewal EDP Formula Config For Guillotine Cross Skills
 	int gc_skill_edp_boost_formula_a;
