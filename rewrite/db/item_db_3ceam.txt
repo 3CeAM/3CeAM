@@ -437,3 +437,32 @@
 
 // New GM Equip? It gives access to a hand full of skills.
 2904,Naqsh,Naqsh,5,20,,0,,0,,0,0xFFFFFFFF,7,2,136,,1,0,0,{ Skill "BS_MAXIMIZE",5; Skill "BS_WEAPONPERFECT",5; Skill "WL_RECOGNIZEDSPELL",5; Skill "ECL_SNOWFLIP",1; Skill "ECL_PEONYMAMY",1; Skill "ECL_SADAGUI",1; Skill "ECL_SEQUOIADUST",1; },{},{}
+
+
+
+
+// Structure of Database:
+// ID,Name,Name,Type,Price,Sell,Weight,ATK,DEF,Range,Slot,Job,Upper,Gender,Loc,wLV,eLV,Refineable,View,{ Script },{ OnEquip_Script },{ OnUnequip_Script }
+
+// Rebellion Skill Required Items
+7663,Full_Metal_Jacket,Full Metal Jacket,3,20,,2,,,,,,,,,,,,,{},{},{}
+7664,Throwing_Mine,Throwing Mine,3,20,,3,,,,,,,,,,,,,{},{},{}
+7665,Dragon_Tail_Missile,Dragon Tail Missile,3,20,,100,,,,,,,,,,,,,{},{},{}
+
+// Bullets
+//13200,Bullet,Bullet,10,1,,2,10,,,,0x01000000,7,2,32768,,1,,3,{},{},{}
+//13201,Silver_Bullet,Silver Bullet,10,15,,2,15,,,,0x01000000,7,2,32768,,1,,3,{ bonus bAtkEle,Ele_Holy; },{},{}
+//13202,Shell_Of_Blood,Bloody Shell,10,30,,2,30,,,,0x01000000,7,2,32768,,1,,3,{ bonus2 bAddEff,Eff_Bleeding,100; },{},{}
+//13203,Flare_Sphere,Flare Sphere,10,80,,5,50,,,,0x01000000,7,2,32768,,1,,5,{ bonus bAtkEle,Ele_Fire; },{},{}
+//13204,Lighting_Sphere,Lightning Sphere,10,80,,5,50,,,,0x01000000,7,2,32768,,1,,5,{ bonus bAtkEle,Ele_Wind; },{},{}
+//13205,Poison_Sphere,Poison Sphere,10,80,,5,50,,,,0x01000000,7,2,32768,,1,,5,{ bonus bAtkEle,Ele_Poison; bonus2 bAddEff,Eff_Poison,500; },{},{}
+//13206,Blind_Sphere,Blind Sphere,10,80,,5,50,,,,0x01000000,7,2,32768,,1,,5,{ bonus bAtkEle,Ele_Dark; bonus2 bAddEff,Eff_Blind,500; },{},{}
+//13207,Freezing_Sphere,Freezing Sphere,10,80,,5,50,,,,0x01000000,7,2,32768,,1,,5,{ bonus bAtkEle,Ele_Water; },{},{}
+
+
+
+
+
+
+
+

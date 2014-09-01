@@ -858,3 +858,29 @@ out that its not creating a splash. Its just attacking the attacker back. I give
 can stay broken until I care enough to attempt fixing it again. Too much time wasted.
 
 
+
+
+
+
+
+
+
+RL_RICHS_COIN
+Fully working.
+
+RL_MASS_SPIRAL
+Coded, but the bonus damage from the target's DEF
+is not coded due to formula being unknown.
+
+RL_C_MARKER
+Coded to apply the status and reduce FLEE.
+Skill description says reduces flee by 10. So that means a fixed amount right?
+Limit currently not set on the number of marks you can have.
+Doesn't track the target's position, but the packet support is in
+and waitting for a system to be made to use them.
+
+RL_E_CHAIN
+Fully working.
+Im guessing it only double attacks as long as you have a weapon equipped.
+So its set to not work bare handed. Also since its only self casted, I
+don't need to code in any additional weapon checks.

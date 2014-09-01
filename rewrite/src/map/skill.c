@@ -3426,6 +3426,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case WM_GREAT_ECHO:
 	case GN_CRAZYWEED_ATK:
 	case GN_SLINGITEM_RANGEMELEEATK:
+	//case RL_MASS_SPIRAL://<--Enable once skill effect file is fixed. [Rytech]
 	case KO_JYUMONJIKIRI:
 	case KO_SETSUDAN:
 	case KO_BAKURETSU:
@@ -3437,6 +3438,11 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	//case MH_MIDNIGHT_FRENZY:
 	case MH_STAHL_HORN:
 	case MH_TINDER_BREAKER:
+		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
+		break;
+
+	case RL_MASS_SPIRAL:
+		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
@@ -5189,6 +5195,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SR_GENTLETOUCH_REVITALIZE:
 	case GN_CARTBOOST:
 	case ALL_ODINS_POWER:
+	case RL_E_CHAIN:
+	case RL_C_MARKER:
 	case KO_MEIKYOUSISUI:
 		clif_skill_nodamage(src,bl,skillid,skilllv,
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
@@ -7188,7 +7196,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 			if(rand()%100 < (20+10*skilllv))
 				pc_addspiritball(sd,skill_get_time(skillid,skilllv),10);
-			else if(sd->spiritball > 0)
+			//If player knows Rich's Coin, failure will not remove a coin sphere.
+			else if(sd->spiritball > 0 && !(pc_checkskill(sd,RL_RICHS_COIN) > 0))
 				pc_delspiritball(sd,1,0);
 		}
 		break;
@@ -8875,6 +8884,14 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, 0, 1, skillid, -2, 6);
 			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), BL_CHAR,
 				src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
+		}
+		break;
+
+	case RL_RICHS_COIN:
+		if(sd) {
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+			for (i = 0; i < 10; i++)
+				pc_addspiritball(sd,skill_get_time(skillid,skilllv),10);
 		}
 		break;
 

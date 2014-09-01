@@ -646,7 +646,7 @@
 1004,0,0,15,0,0,0,99,2,1,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//AS_VENOMKNIFE#ÉxÉiÉÄÉiÉCÉt#
 1005,0,0,25,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RG_CLOSECONFINE#ÉN??[ÉYÉRÉìÉtÉ@ÉCÉì#
 1006,0,0,40,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//WZ_SIGHTBLASTER#ÉTÉCÉgÉuÉâÉXÉ^?[#
-1007,0,0,30,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SA_CREATECON#ÉGÉãÉå?ÉìÉ^ÉãÉRÉìÉo?[É^?ªë?
+1007,0,0,30,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SA_CREATECON#ÉGÉãÉå?ÉìÉ^ÉãÉRÉìÉo?[É^?ªÅE
 1008,0,0,30,0,0,0,99,0,0,none,0,12115,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SA_ELEMENTWATER#ÉGÉãÉå?ÉìÉ^ÉãÉ`ÉFÉìÉW#
 1009,0,0,10,0,0,0,11,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//HT_PHANTASMIC#ÉtÉ@ÉìÉ^ÉXÉ~ÉbÉNÉA??[#
 1010,0,0,20,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//BA_PANGVOICE#ÉpÉìÉ{ÉCÉX#
@@ -989,15 +989,22 @@
 //2548,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//GM_ITEM_MATKMIN#Minimal Magic Attack#
 //2549,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//ALL_LIGHTGUARD#Light Guard#
 
+
+// Structure of Database:
+// SkillID,HPCost,MaxHPTrigger,SPCost,HPRateCost,SPRateCost,ZenyCost,RequiredWeapons,RequiredAmmoTypes,RequiredAmmoAmount,RequiredState,SpiritSphereCost,
+//RequiredItemID1,RequiredItemAmount1,RequiredItemID2,RequiredItemAmount2,RequiredItemID3,RequiredItemAmount3,RequiredItemID4,RequiredItemAmount4,RequiredItemID5,RequiredItemAmount5,RequiredItemID6,RequiredItemAmount6,RequiredItemID7,RequiredItemAmount7,RequiredItemID8,RequiredItemAmount8,RequiredItemID9,RequiredItemAmount9,RequiredItemID10,RequiredItemAmount10
+//
 // Rebellion
 2551,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RL_GLITTERING_GREED#Flip The Coin Greed#
-2552,0,0,10,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RL_RICHS_COIN#Rich's Coin#
-2553,0,0,80:84:88:92:96,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RL_MASS_SPIRAL#Mass Spiral#
+2552,0,0,10,0,0,100,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RL_RICHS_COIN#Rich's Coin#
+
+2553,0,0,80:84:88:92:96,0,0,0,18,0,0,none,1,7663,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RL_MASS_SPIRAL#Mass Spiral#
 2554,0,0,55:60:65:70:75,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RL_BANISHING_BUSTER#Banishing Buster#
 2555,0,0,30:32:34:36:38,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RL_B_TRAP#Bind Trap#
 2556,0,0,2,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RL_FLICKER#Flicker#
 2557,0,0,50:55:60:65:70,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RL_S_STORM#Shatter Storm#
-2558,0,0,45,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RL_E_CHAIN#Eternal Chain#
+
+2558,0,0,45,0,0,0,99,0,0,none,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RL_E_CHAIN#Eternal Chain#
 2559,0,0,5,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RL_QD_SHOT#Quick Draw Shot#
 2560,0,0,10,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RL_C_MARKER#Crimson Marker#
 2561,0,0,10,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RL_FIREDANCE#Fire Dance#

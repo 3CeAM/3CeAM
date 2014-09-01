@@ -1435,18 +1435,28 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 		short generate = rand()%100 + 1;//Generates a random number between 1 - 100 which is then used to determine if fear breeze or double attacking will happen.
 
 		// First we go through a number of checks to see if their's any chance of double attacking a target. Only the highest success chance is taken.
+
+		// Double Attack chance from cards and equips.
 		if ( sd->double_rate > 0 && sd->weapontype1 != W_FIST )
 			dachance = sd->double_rate;
 
+		// Shadow Warrior - Buff Skill
 		if ( sc && sc->data[SC_KAGEMUSYA] && 10 * sc->data[SC_KAGEMUSYA]->val1 > dachance && sd->weapontype1 != W_FIST )
 			dachance = 10 * sc->data[SC_KAGEMUSYA]->val1;
 
+		// Double Attack - Passive Skill
 		if ( 5 * pc_checkskill(sd,TF_DOUBLE) > dachance && sd->weapontype1 == W_DAGGER )
 			dachance = 5 * pc_checkskill(sd,TF_DOUBLE);
 
+		// Eternal Chain - Buff Skill
+		if ( sc && sc->data[SC_E_CHAIN] && 5 * sc->data[SC_E_CHAIN]->val1 > dachance && sd->weapontype1 != W_FIST )
+			dachance = 5 * sc->data[SC_E_CHAIN]->val1;
+
+		// Chain Action - Passive Skill
 		if ( 5 * pc_checkskill(sd,GS_CHAINACTION) > dachance && sd->weapontype1 == W_REVOLVER )
 			dachance = 5 * pc_checkskill(sd,GS_CHAINACTION);
 
+		// Fear Breeze - Buff Skill
 		// This checks if the generated value is within fear breeze's success chance range for the level used as set by gendetect.
 		if ( sc && sc->data[SC_FEARBREEZE] && generate <= gendetect[sc->data[SC_FEARBREEZE]->val1 - 1] && sd->weapontype1 == W_BOW )
 		{
@@ -2631,6 +2641,13 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 								break;
 						}
 					}
+					break;
+				case RL_MASS_SPIRAL:
+					skillratio = 200 * skill_lv;
+					//Deals additional damage depending on targets DEF.
+					//Skill desc says 200%*LV + Additional Damage from DEF
+					//The additional damage is likely a added on fixed amount.
+					//flag.pdef = flag.pdef2 = 2;
 					break;
 				case KO_JYUMONJIKIRI:
 					skillratio = 150 * skill_lv;
