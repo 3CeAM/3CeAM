@@ -8696,6 +8696,44 @@ int clif_party_xy_remove(struct map_session_data *sd)
 	return 0;
 }
 
+int clif_crimson_marker_xy(struct map_session_data *sd)
+{
+	unsigned char buf[16];
+
+	nullpo_ret(sd);
+
+	WBUFW(buf,0)=0x9c1;
+	WBUFL(buf,2)=sd->status.account_id;
+	WBUFW(buf,6)=sd->bl.x;
+	WBUFW(buf,8)=sd->bl.y;
+	clif_send(buf,packet_len(0x9c1),&sd->bl,PARTY_SAMEMAP_WOS);
+	
+	return 0;
+}
+
+int clif_crimson_marker_xy_single(int fd, struct map_session_data *sd)
+{
+	WFIFOHEAD(fd,packet_len(0x9c1));
+	WFIFOW(fd,0)=0x9c1;
+	WFIFOL(fd,2)=sd->status.account_id;
+	WFIFOW(fd,6)=sd->bl.x;
+	WFIFOW(fd,8)=sd->bl.y;
+	WFIFOSET(fd,packet_len(0x9c1));
+	return 0;
+}
+
+int clif_crimson_marker_xy_remove(struct map_session_data *sd)
+{
+	unsigned char buf[16];
+	nullpo_ret(sd);
+	WBUFW(buf,0)=0x9c1;
+	WBUFL(buf,2)=sd->status.account_id;
+	WBUFW(buf,6)=-1;
+	WBUFW(buf,8)=-1;
+	clif_send(buf,packet_len(0x9c1),&sd->bl,PARTY_SAMEMAP_WOS);
+	return 0;
+}
+
 //Displays gospel-buff information (thanks to Rayce):
 //Type determines message based on this table:
 /*
@@ -16275,7 +16313,7 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0, 14,  0,  0,  0,  0,  0,  0,  0,  0,
 	//#0x09C0
-	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 23,  0,  0,  0,  0,  0,
+	    0, 10,  0,  0,  0,  0,  0,  0,  0,  0, 23,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  7,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,

@@ -1816,6 +1816,7 @@ packet_ver: 30
 0x097c,4,ranking,2//CZ_REQ_RANKING
 0x097d,288//ZC_ACK_RANKING
 0x097e,12//ZC_UPDATE_RANKING_POINT
+0x9c1,10//ZC_C_MARKERINFO
 
 0x0844,2,cashshopopen,2
 0x084a,2,cashshopclose,2

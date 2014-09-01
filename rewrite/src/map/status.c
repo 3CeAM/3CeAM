@@ -560,7 +560,7 @@ void initChangeTables(void)
 	set_sc( RL_B_TRAP      , SC_B_TRAP       , SI_B_TRAP       , SCB_NONE );
 	set_sc( RL_E_CHAIN     , SC_E_CHAIN      , SI_E_CHAIN      , SCB_NONE );
 	//set_sc( RL_E_CHAIN     , SC_E_QD_SHOT_READY , SI_E_QD_SHOT_READY , SCB_NONE );
-	set_sc( RL_C_MARKER    , SC_C_MARKER     , SI_C_MARKER     , SCB_NONE );
+	set_sc( RL_C_MARKER    , SC_C_MARKER     , SI_C_MARKER     , SCB_FLEE );
 	set_sc( RL_H_MINE      , SC_H_MINE       , SI_H_MINE       , SCB_NONE );
 	//set_sc( RL_H_MINE      , SC_H_MINE_SPLASH , SI_H_MINE_SPLASH , SCB_NONE );
 	set_sc( RL_P_ALTER     , SC_P_ALTER      , SI_P_ALTER      , SCB_NONE );
@@ -4540,6 +4540,8 @@ static signed short status_calc_flee(struct block_list *bl, struct status_change
 		flee += flee * 20 / 100;
 	if ( sc->data[SC_TEARGAS] )
 		flee -= flee * 50 / 100;
+	if ( sc->data[SC_C_MARKER] )
+		flee -= 10;
 	if( sc->data[SC_WATER_BARRIER] )
 		flee -= sc->data[SC_WATER_BARRIER]->val3;
 	if( sc->data[SC_WIND_STEP_OPTION] )
