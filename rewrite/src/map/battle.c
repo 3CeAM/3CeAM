@@ -1631,6 +1631,10 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 			case LG_BANISHINGPOINT:
 				hitrate += 3 * skill_lv;
 				break;
+			case RL_SLUGSHOT:
+				if ( distance_bl(src,target) > 3 )
+					hitrate -= (11 - skill_lv) * (distance_bl(src,target) - 3);
+				break;
 		}
 
 		// Weaponry Research hidden bonus
@@ -2643,11 +2647,23 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					}
 					break;
 				case RL_MASS_SPIRAL:
-					skillratio = 200 * skill_lv;
 					//Deals additional damage depending on targets DEF.
 					//Skill desc says 200%*LV + Additional Damage from DEF
 					//The additional damage is likely a added on fixed amount.
-					//flag.pdef = flag.pdef2 = 2;
+					//Need a test and confirm on formula. [Rytech]
+					skillratio = 200 * skill_lv;
+					break;
+				case RL_H_MINE:
+					skillratio = 200 + 200 * skill_lv;
+					break;
+				case RL_SLUGSHOT:
+					if (sd)
+					{
+						//Ratio appears to be 10% for every 0.1 weight. Need more info. [Rytech]
+						short index = sd->equip_index[EQI_AMMO];
+						if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_AMMO )
+							skillratio = 10 * sd->inventory_data[index]->weight;
+					}
 					break;
 				case KO_JYUMONJIKIRI:
 					skillratio = 150 * skill_lv;
