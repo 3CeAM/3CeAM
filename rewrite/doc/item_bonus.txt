@@ -3,7 +3,7 @@
 //===== By ================================================
 //= Developers
 //===== Version ===========================================
-//= 1.1.20130626
+//= 1.1.20130908
 //=========================================================
 //= 1.0 - Standardized doc file
 //= 1.1.20080612 - skill command and bonuses (bAutoSpell, bSkillAtk, 
@@ -27,6 +27,7 @@
 //=   bAddEffOnSkill, bNoMiscDamage, bLongAtkRate, bUnstripable,
 //=   bHPDrainValueRace, bMagicSPGainValue and bMagicHPGainValue. [Ai4rei]
 //= 1.1.20130626 - Added bFixedCastTime. [Rytech]
+//= 1.1.20140908 - Added bAddMatk. [Rytech]
 //===== Description =======================================
 //= List of script instructions used in item bonuses,
 //= mainly bonus/bonus2/bonus3/bonus4/bonus5 arguments
@@ -443,3 +444,4 @@ bonus3 bAddClassDropItem,s,x,n;		Adds an n/100% chance of dropping item s when k
 
 bonus bFixedCastrate,-n;	Skill fixed cast time reduction in percentage. n is the percentage value and must be set as a negeative value.
 bonus2 bFixedCastrate,x,-n;	Skill fixed cast time reduction for a certain skill. x is the skill ID. n is the percentage value and must be set as a negeative value.
+bonus bAddMatk,n;		Magical attack power + n
