@@ -2384,6 +2384,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		+ sizeof(sd->setitem_hash2)
 		+ sizeof(sd->itemhealrate2)
 		+ sizeof(sd->shieldmdef)
+		+ sizeof(sd->add_matk)
 		// shorts
 		+ sizeof(sd->splash_range)
 		+ sizeof(sd->splash_add_range)
@@ -2778,6 +2779,12 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	status_calc_misc(&sd->bl, status, sd->status.base_level);
 
 	//Equipment modifiers for misc settings
+	if ( sd->add_matk > 0 )
+	{	//Increases MATK by a fixed amount. [Rytech]
+		status->matk_min += sd->add_matk;
+		status->matk_max += sd->add_matk;
+	}
+
 	if( sd->matk_rate < 0 )
 		sd->matk_rate = 0;
 	if( sd->matk_rate != 100 )
@@ -3702,11 +3709,19 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 		status->matk_min = status_base_matk_min(status);
 		status->matk_max = status_base_matk_max(status);
 
-		if( bl->type&BL_PC && sd->matk_rate != 100 )
+		if( bl->type&BL_PC )
 		{
-			//Bonuses from previous matk
-			status->matk_max = status->matk_max * sd->matk_rate/100;
-			status->matk_min = status->matk_min * sd->matk_rate/100;
+			if ( sd->add_matk > 0 )
+			{	//Increases MATK by a fixed amount. [Rytech]
+				status->matk_min += sd->add_matk;
+				status->matk_max += sd->add_matk;
+			}
+			if ( sd->matk_rate != 100 )
+			{
+				//Bonuses from previous matk
+				status->matk_max = status->matk_max * sd->matk_rate/100;
+				status->matk_min = status->matk_min * sd->matk_rate/100;
+			}
 		}
 			
 		status->matk_min = status_calc_matk(bl, sc, status->matk_min);
@@ -7339,10 +7354,14 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 				case TK_COUNTER:
 					clif_skill_nodamage(bl,bl,TK_READYCOUNTER,1,1);
 					break;
+				case MO_TRIPLEATTACK:
+						clif_skillupdateinfo(sd, SR_DRAGONCOMBO, INF_SELF_SKILL, 1);
+					break;
 				case MO_COMBOFINISH:
 				case CH_TIGERFIST:
 				case CH_CHAINCRUSH:
 				case SR_DRAGONCOMBO:
+				case SR_FALLENEMPIRE:
 					if( sd )
 					{
 						sd->state.combo = 1;
@@ -8840,7 +8859,7 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 				}
 				if( sd->skillid_old == sce->val1 )
 					sd->skillid_old = sd->skilllv_old = 0;
-				clif_skillupdateinfo(sd,SR_DRAGONCOMBO,0,0);	// To avoid a glitch with Dragon Combo.
+				clif_skillupdateinfo(sd, SR_DRAGONCOMBO, INF_ATTACK_SKILL, 1);
 			}
 			break;
 

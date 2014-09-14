@@ -4739,7 +4739,9 @@ int clif_skillinfoblock(struct map_session_data *sd)
 		if( (id = sd->status.skill[i].id) != 0 )
 		{
 			WFIFOW(fd,len)   = id;
-			if( (id == MO_EXTREMITYFIST && sd->state.combo&1) || (id == TK_JUMPKICK && sd->state.combo&2) )
+			if( (id == MO_EXTREMITYFIST && sd->state.combo&1) || (id == TK_JUMPKICK && sd->state.combo&2) || 
+				(id == SR_DRAGONCOMBO && sd->state.combo&1) || (id == SR_TIGERCANNON && sd->state.combo&1) || 
+				(id == SR_GATEOFHELL && sd->state.combo&1) )
 				WFIFOW(fd,len+2) = INF_SELF_SKILL;
 			else
 				WFIFOW(fd,len+2) = skill_get_inf(id);
@@ -4776,7 +4778,9 @@ int clif_addskill(struct map_session_data *sd, int id )
 	WFIFOHEAD(fd, packet_len(0x111));
 	WFIFOW(fd,0) = 0x111;
 	WFIFOW(fd,2) = id;
-	if( (id == MO_EXTREMITYFIST && sd->state.combo&1) || (id == TK_JUMPKICK && sd->state.combo&2) )
+	if( (id == MO_EXTREMITYFIST && sd->state.combo&1) || (id == TK_JUMPKICK && sd->state.combo&2) || 
+		(id == SR_DRAGONCOMBO && sd->state.combo&1) || (id == SR_TIGERCANNON && sd->state.combo&1) || 
+		(id == SR_GATEOFHELL && sd->state.combo&1) )
 		WFIFOW(fd,4) = INF_SELF_SKILL;
 	else
 		WFIFOW(fd,4) = skill_get_inf(id);

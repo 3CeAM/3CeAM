@@ -2139,24 +2139,32 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 		switch(skillid)
 		{
 			case MO_TRIPLEATTACK:
-				if( pc_checkskill(sd, MO_CHAINCOMBO) > 0 || pc_checkskill(sd, SR_DRAGONCOMBO) > 0 )
-					flag = 1;
+				if ((pc_checkskill(sd, MO_CHAINCOMBO) > 0) || (pc_checkskill(sd, SR_DRAGONCOMBO) > 0))
+					flag=1;
 				break;
 			case MO_CHAINCOMBO:
-				if( pc_checkskill(sd, MO_COMBOFINISH) > 0 && sd->spiritball > 0)
-					flag = 1;
+				if(pc_checkskill(sd, MO_COMBOFINISH) > 0 && sd->spiritball > 0)
+					flag=1;
 				break;
 			case MO_COMBOFINISH:
-				if( sd->status.party_id > 0 ) //bonus from SG_FRIEND [Komurka]
+				if (sd->status.party_id>0) //bonus from SG_FRIEND [Komurka]
 					party_skill_check(sd, sd->status.party_id, MO_COMBOFINISH, skilllv);
-				if( pc_checkskill(sd, CH_TIGERFIST) > 0 && sd->spiritball > 0 )
-					flag = 1;
+				if (pc_checkskill(sd, CH_TIGERFIST) > 0 && sd->spiritball > 0)
+					flag=1;
 			case CH_TIGERFIST:
-				if( !flag && pc_checkskill(sd, CH_CHAINCRUSH) > 0 && sd->spiritball > 1 )
-					flag = 1;
+				if (!flag && pc_checkskill(sd, CH_CHAINCRUSH) > 0 && sd->spiritball > 1)
+					flag=1;
 			case CH_CHAINCRUSH:
-				if( !flag && pc_checkskill(sd, MO_EXTREMITYFIST) > 0 && sd->spiritball > 0 && sd->sc.data[SC_EXPLOSIONSPIRITS] )
-					flag = 1;
+				if (!flag && pc_checkskill(sd, MO_EXTREMITYFIST) > 0 && sd->spiritball > 0 && sd->sc.data[SC_EXPLOSIONSPIRITS])
+					flag=1;
+				break;
+			case SR_DRAGONCOMBO:
+				if(pc_checkskill(sd, SR_SKYNETBLOW) > 0 || (pc_checkskill(sd, SR_FALLENEMPIRE) > 0 && sd->spiritball > 1))
+					flag=1;
+				break;
+			case SR_FALLENEMPIRE:
+				if((pc_checkskill(sd, SR_TIGERCANNON) > 0 && sd->spiritball > 1) || (pc_checkskill(sd, SR_GATEOFHELL) > 0 && sd->spiritball > 4))
+					flag=1;
 				break;
 			case AC_DOUBLE:
 				if( (tstatus->race == RC_BRUTE || tstatus->race == RC_INSECT) && pc_checkskill(sd, HT_POWER))
@@ -2175,29 +2183,18 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 				break;
 			case SL_STIN:
 			case SL_STUN:
-				if( skilllv >= 7 && !sd->sc.data[SC_SMA] )
+				if (skilllv >= 7 && !sd->sc.data[SC_SMA])
 					sc_start(src,SC_SMA,100,skilllv,skill_get_time(SL_SMA, skilllv));
 				break;
 			case GS_FULLBUSTER:
 				//Can't attack nor use items until skill's delay expires. [Skotlex]
 				sd->ud.attackabletime = sd->canuseitem_tick = sd->ud.canact_tick;
 				break;
-			case SR_DRAGONCOMBO:
-				if( pc_checkskill(sd, SR_FALLENEMPIRE) > 0 )
-					flag = 1;
-				break;
-			case SR_FALLENEMPIRE:
-				if( pc_checkskill(sd, SR_TIGERCANNON) > 0 || pc_checkskill(sd, SR_GATEOFHELL) > 0 )
-					flag = 1;
-				break;
 		}	//Switch End
 		if (flag) { //Possible to chain
 			flag = DIFF_TICK(sd->ud.canact_tick, tick);
 			if (flag < 0) flag = 0;
 			flag += 300 * battle_config.combo_delay_rate/100;
-			// Dragon Combo must change into self skill and auto-select target when used as combo skill.
-			if( skillid == MO_TRIPLEATTACK && pc_checkskill(sd, SR_DRAGONCOMBO) > 0 )
-				clif_skillupdateinfo(sd,SR_DRAGONCOMBO,INF_SELF_SKILL,0);
 			sc_start(src,SC_COMBO,100,skillid,flag);
 			clif_combo_delay(src, flag);
 		}
@@ -3420,6 +3417,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case LG_RAGEBURST:
 	case LG_RAYOFGENESIS:
 	case LG_HESPERUSLIT:
+	case SR_DRAGONCOMBO:
 	case SR_SKYNETBLOW:
 	case SR_FALLENEMPIRE:
 	case SR_CRESCENTELBOW_AUTOSPELL:
@@ -4331,12 +4329,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 
 	case LG_OVERBRAND_BRANDISH://Will test later officially to find the real ASPD delay. [Rytech]
 		skill_addtimerskill(src, tick + status_get_amotion(src)*8/10, bl->id, 0, 0, skillid, skilllv, BF_WEAPON, flag|SD_LEVEL);
-		break;
-
-	case SR_DRAGONCOMBO:
-		if( sd ) // Dragon Combo must back to target-selectable skill after use it as combo.
-			clif_skillupdateinfo(sd,SR_DRAGONCOMBO,0,0);
-		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
 	case SR_KNUCKLEARROW:
@@ -9185,8 +9177,8 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 			inf = skill_get_inf(ud->skillid);
 			inf2 = skill_get_inf2(ud->skillid);
 
-			if(inf&INF_ATTACK_SKILL || (inf&INF_SELF_SKILL && inf2&INF2_NO_TARGET_SELF) || //Combo skills
-				(ud->skillid == SR_DRAGONCOMBO && src == target) )	// Casted through combo.
+			if(inf&INF_ATTACK_SKILL ||
+				(inf&INF_SELF_SKILL && inf2&INF2_NO_TARGET_SELF)) //Combo skills
 				inf = BCT_ENEMY; //Offensive skill.
 			else if(inf2&INF2_NO_ENEMY)
 				inf = BCT_NOENEMY;
@@ -12521,6 +12513,16 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		if(sc->data[SC_COMBO]->val1 != MO_COMBOFINISH && sc->data[SC_COMBO]->val1 != CH_TIGERFIST)
 			return 0;
 		break;
+	case SR_DRAGONCOMBO:
+		//Dragon Combo can be used normally, but can also be used in a combo.
+		//If used in a combo, it must only work if comboed after Triple Attack.
+		if(sc && sc->data[SC_COMBO] && !(sc->data[SC_COMBO]->val1 == MO_TRIPLEATTACK))
+			return 0;
+		break;
+	case SR_FALLENEMPIRE:
+		if(!(sc && sc->data[SC_COMBO] && sc->data[SC_COMBO]->val1 == SR_DRAGONCOMBO))
+			return 0;
+		break;
 	case MO_EXTREMITYFIST:
 //		if(sc && sc->data[SC_EXTREMITYFIST]) //To disable Asura during the 5 min skill block uncomment this...
 //			return 0;
@@ -12904,10 +12906,6 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			clif_skill_fail(sd,skill,0,0,0);
 			return 0;
 		}
-		break;
-	case SR_FALLENEMPIRE:
-		if( !(sc && sc->data[SC_COMBO] && sc->data[SC_COMBO]->val1 == SR_DRAGONCOMBO) )
-			return 0;
 		break;
 	case SR_CRESCENTELBOW:
 		if( sc && sc->data[SC_CRESCENTELBOW] )

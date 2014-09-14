@@ -594,6 +594,7 @@ bMagicHPGainValue	2044
 bAddClassDropItem	2045
 
 bFixedCastRate	2101
+bAddMatk	2102
 
 EQI_HEAD_TOP	1
 EQI_ARMOR	2
