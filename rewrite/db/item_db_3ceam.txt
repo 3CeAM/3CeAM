@@ -361,7 +361,7 @@
 // Armguards
 2171,Fox_Armguard,Fox Armguard,5,40000,,200,,5,,1,0x20000000,7,2,32,,100,1,0,{ bonus bFlee,5; },{},{}
 2172,Wolf_Armguard,Wolf Armguard,5,45000,,250,,7,,1,0x20000000,7,2,32,,100,1,0,{ autobonus "{ bonus bBaseAtk,100; bonus bFlee,-50; }",10,5000,BF_WEAPON,"{ specialeffect2 EF_ENHANCE; }"; },{},{}
-2173,Crescent_Armguard,Crescent Armguard,5,45000,,250,,5,,1,0x20000000,7,2,32,,100,1,0,{ bonus bDelayRate,-2; },{},{}
+2173,Crescent_Armguard,Crescent Armguard,5,45000,,250,,5,,1,0x20000000,7,2,32,,100,1,0,{ bonus bDelayrate,-(getrefine()*4); },{},{}
 
 // Makibishi
 6493,Makibishi,Makibishi,3,30,,1,,,,,,,,,,,,,{},{},{}
@@ -375,30 +375,30 @@
 // Daggers
 //13074,Ninja_Cutter,Ninja_Cutter,4,10,,0,0,,1,0,0x20000000,7,2,2,4,99,1,1,{},{},{}
 13075,Kurenai,Kurenai,4,5000,,700,130,,1,0,0x20000000,7,2,2,3,99,1,1,{ bonus bInt,3; },{},{}
-13076,Raksasa_Dagger,Raksasa Dagger,4,40000,,600,120,,1,1,0x20000000,7,2,2,3,110,1,1,{ bonus bInt,3; },{},{}
+13076,Raksasa_Dagger,Raksasa Dagger,4,40000,,600,120,,1,1,0x20000000,7,2,2,3,110,1,1,{ bonus bInt,3; bonus bAddMatk,100; },{},{}
 //13077,Kagekiri,Kagekiri,4,40000,,600,50,,1,0,0x02000000,7,2,2,4,100,1,1,{},{},{}
-13078,Mikatsuki,Mikazuki,4,40000,,600,50,,1,1,0x02000000,7,2,2,4,100,1,1,{},{},{}
+13078,Mikatsuki,Mikazuki,4,40000,,600,50,,1,1,0x02000000,7,2,2,4,100,1,1,{ bonus bAddMatk,120; bonus bUseSPrate,-5; bonus bCastrate,-5; },{},{}
 
 // Shurikens / Kunais
-13291,Starfish,Starfish,10,10,,5,110,,,,0x02000000,7,2,32768,,50,,6,{},{},{}
-13292,Dried_Squid,Dried Squid,10,10,,20,50,,,,0x02000000,7,2,32768,,50,,7,{ bonus bAtkEle,Ele_Neutral; },{},{}
-13293,Flying_Fish,Flying Fish,10,10,,20,50,,,,0x02000000,7,2,32768,,50,,7,{ bonus bAtkEle,Ele_Neutral; },{},{}
-13294,Explosive_Kunai,Explosive Kunai,10,100,,30,50,,,,0x20000000,7,2,32768,,100,,7,{ bonus bAtkEle,Ele_Neutral; },{},{}
+13291,Starfish,Starfish,10,10,,5,110,,,,0x02000000,7,2,32768,,50,,6,{ bonus2 bAddEff,Eff_Stun,1000; },{},{}
+13292,Dried_Squid,Dried Squid,10,10,,20,50,,,,0x02000000,7,2,32768,,50,,7,{ bonus2 bAddEff,Eff_Stun,1000; },{},{}
+13293,Flying_Fish,Flying Fish,10,10,,20,50,,,,0x02000000,7,2,32768,,50,,7,{ bonus2 bAddEff,Eff_Bleeding,1000; },{},{}
+13294,Explosive_Kunai,Explosive Kunai,10,100,,30,50,,,,0x20000000,7,2,32768,,100,,7,{},{},{}
 13295,Light_Shuriken,Light Shuriken,10,10,,5,5,,,,0x02000000,7,2,32768,,1,,6,{},{},{}
 
 // Huuma Shurikens
 13311,Huuma_Shadow,Shadow Huuma Shuriken,4,5000,,1500,170,,1,0,0x20000000,7,2,34,4,99,1,22,{ bonus bStr,3; },{},{}
 //13312,Huuma_Job_Test,Huuma Job Test,4,90000,,3000,0,,1,0,0x20000000,7,2,34,4,99,1,22,{},{},{}
-13313,Huuma_Swirling_Petal,Swirling Petal Huuma Shuriken,4,100000,,1500,150,,1,2,0x20000000,7,2,34,3,110,1,22,{ /*bonus bEquipmentMatk,50;*/ },{},{}
-13314,Huuma_Fluttering_Snow,Fluttering Snow Huuma Shuriken,4,100000,,1500,200,,1,0,0x20000000,7,2,34,4,110,1,22,{ /*bonus bEquipmentMatk,50;*/ bonus bAtkEle,Ele_Water; },{},{}
-13315,Huuma_Thunderstorm,Thunderstorm Huuma Shuriken,4,100000,,1500,200,,1,0,0x20000000,7,2,34,4,110,1,22,{ /*bonus bEquipmentMatk,50;*/ bonus bAtkEle,Ele_Wind; },{},{}
-13316,Upg_Huuma_Shuriken,Upgraded Huuma Shuriken,4,20,,1500,55,,1,1,0x20000000,7,2,34,3,1,1,22,{ bonus bUnbreakableWeapon,0; bonus bBaseAtk,10*getrefine(); /*bonus bEquipmentMatk,5*getrefine();*/ bonus bLongAtkRate,getrefine(); if(BaseLevel>=70) { bonus bBaseAtk,5*((BaseLevel-60)/10); } },{},{}
+13313,Huuma_Swirling_Petal,Swirling Petal Huuma Shuriken,4,100000,,1500,150,,1,2,0x20000000,7,2,34,3,110,1,22,{ bonus bAddMatk,50; bonus2 bSkillAtk,"KO_HUUMARANKA",20; },{},{}
+13314,Huuma_Fluttering_Snow,Fluttering Snow Huuma Shuriken,4,100000,,1500,200,,1,0,0x20000000,7,2,34,4,110,1,22,{ bonus bAddMatk,50; bonus bAtkEle,Ele_Water; bonus3 bAutoSpell,"NJ_HYOUSYOURAKU",(getskilllv("NJ_HYOUSYOURAKU")?getskilllv("NJ_HYOUSYOURAKU"):1),100; },{},{}
+13315,Huuma_Thunderstorm,Thunderstorm Huuma Shuriken,4,100000,,1500,200,,1,0,0x20000000,7,2,34,4,110,1,22,{ bonus bAddMatk,50; bonus bAtkEle,Ele_Wind; bonus3 bAutoSpell,"NJ_RAIGEKISAI",(getskilllv("NJ_RAIGEKISAI")?getskilllv("NJ_RAIGEKISAI"):1),100; },{},{}
+13316,Upg_Huuma_Shuriken,Upgraded Huuma Shuriken,4,20,,1500,55,,1,1,0x20000000,7,2,34,3,1,1,22,{ bonus bUnbreakableWeapon,0; bonus bBaseAtk,20*getrefine(); bonus bAddMatk,10*getrefine(); bonus bLongAtkRate,getrefine()*2; if(BaseLevel>=70) {bonus bBaseAtk,5*((BaseLevel-60)/10);} },{},{}
 
 // Armors
-15053,Special_Ninja_Suit,Special Ninja Suit,5,10000,,1200,,10,,0,0x20000000,7,2,16,,100,1,0,{ bonus bAgi,1+(getrefine()/3); },{},{}
-15054,Ninja_Scale_Armor,Ninja Scale Armor,5,10000,,1800,,13,,1,0x20000000,7,2,16,,100,1,0,{ bonus bMaxHPRate,15; bonus bMaxSPRate,-30; },{},{}
-15055,Tenebris_Latitantes,Tenebris Latitantes,5,10000,,1500,,9,,1,0x20000000,7,2,16,,100,1,0,{ bonus bAgi,1; },{},{}
-15056,Special_Ninja_Suit_,Special Ninja Suit,5,10000,,1200,,10,,1,0x20000000,7,2,16,,100,1,0,{ bonus bAgi,1+(getrefine()/3); },{},{}
+15053,Special_Ninja_Suit,Special Ninja Suit,5,10000,,1200,,10,,0,0x20000000,7,2,16,,100,1,0,{ bonus bAgi,2+(getrefine()/2); if(isequipped(2171)) bonus bAgi,2; },{},{}
+15054,Ninja_Scale_Armor,Ninja Scale Armor,5,10000,,1800,,13,,1,0x20000000,7,2,16,,100,1,0,{ bonus bMaxHPRate,15; bonus bMaxSPRate,-30; if(isequipped(2172)) {bonus bAtkRate,10; bonus bStr,2;} },{},{}
+15055,Tenebris_Latitantes,Tenebris Latitantes,5,10000,,1500,,9,,1,0x20000000,7,2,16,,100,1,0,{ bonus bAgi,1; bonus3 bAutoSpellWhenHit,"KO_ZANZOU",1,50; if(isequipped(2173)) {bonus bFlee,10; bonus bFlee2,10;} },{},{}
+15056,Special_Ninja_Suit_,Special Ninja Suit,5,10000,,1200,,10,,1,0x20000000,7,2,16,,100,1,0,{ bonus bAgi,2+(getrefine()/2); if(isequipped(2171)) bonus bAgi,2; },{},{}
 
 // Serect Gunslinger Bullet???
 13208,Gong_Bug,Gong Bug,10,1,,20,50,,,,0x01000000,7,2,32768,,50,,3,{ bonus2 bAddEff,Eff_Stun,1000; },{},{}
@@ -485,3 +485,11 @@
 22747,Bullet_Case_Lightning,Lightning Cartridge,2,2,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13218,500; },{},{}
 22748,Bullet_Case_Manastone,Manastone Cartridge,2,2,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13219,500; },{},{}
 22749,Bullet_Case_Purification,Purification Cartridge,2,2,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13220,500; },{},{}
+
+// New Mechanic Pile Bunkers
+16030,Pilebuncker_S,Pile Bunker S,4,10000,,3000,400,,1,1,0x00000400,8,2,2,4,130,1,8,{ bonus bAspdRate,getrefine(); },{},{}
+16031,Pilebuncker_P,Pile Bunker P,4,10000,,4000,450,,1,0,0x00000400,8,2,2,4,130,1,8,{ bonus bBaseAtk,getrefine()*10; },{},{}
+16032,Pilebuncker_T,Pile Bunker T,4,10000,,3500,400,,1,1,0x00000400,8,2,2,4,130,1,8,{ bonus bUseSPrate,getrefine()*2; },{},{}
+
+// Hunter's Falcon Flute
+12848,Falcon_Flute,Falcon Flute,11,10000,,0,,,,,0xFFFFFFFF,7,2,,,,,,{ setfalcon 1; },{},{}

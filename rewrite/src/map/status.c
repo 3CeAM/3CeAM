@@ -1627,41 +1627,47 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 		}
 		if (sc->option&OPTION_CHASEWALK && skill_num != ST_CHASEWALK)
 			return 0;
-		if (sc->option&OPTION_WUGRIDER && ((TBL_PC*)src)->skillitem != skill_num)//Only usable skill while riding warg.
+		if (sc->option&OPTION_WUGRIDER && ((TBL_PC*)src)->skillitem != skill_num)
 			switch( skill_num )
-			{
+			{//List of skills usable while mounted on a warg.
+				case HT_SKIDTRAP:		case HT_LANDMINE:
 				case HT_ANKLESNARE:		case HT_SHOCKWAVE:
 				case HT_SANDMAN:		case HT_FLASHER:
 				case HT_FREEZINGTRAP:	case HT_BLASTMINE:
 				case HT_CLAYMORETRAP:	case HT_TALKIEBOX:
-				case RA_DETONATOR:		case RA_ELECTRICSHOCKER:
-				case RA_CLUSTERBOMB:	case RA_WUGRIDER:
-				case RA_WUGDASH:		case RA_WUGSTRIKE:
-				case RA_MAGENTATRAP:	case RA_COBALTTRAP:
-				case RA_MAIZETRAP:		case RA_VERDURETRAP:
-				case RA_FIRINGTRAP:		case RA_ICEBOUNDTRAP:
+				case BS_GREED:			case RA_DETONATOR:
+				case RA_ELECTRICSHOCKER:case RA_CLUSTERBOMB:
+				case RA_WUGRIDER:		case RA_WUGDASH:
+				case RA_WUGSTRIKE:		case RA_MAGENTATRAP:
+				case RA_COBALTTRAP:		case RA_MAIZETRAP:
+				case RA_VERDURETRAP:	case RA_FIRINGTRAP:
+				case RA_ICEBOUNDTRAP:	case ALL_FULL_THROTTLE:
 					break;
 				default:
 					return 0;
 			}
-		if( battle_config.mado_skill_limit == 0 && sc->option&OPTION_MADOGEAR && ((TBL_PC*)src)->skillitem != skill_num )
-		{
-			switch( skill_num )
-			{ //Blacksmiths and Mastersmiths skills are unusable when Mado is equipped. [Jobbie]
-				case BS_REPAIRWEAPON:  case WS_MELTDOWN:
-				case BS_HAMMERFALL:    case WS_CARTBOOST:
-				case BS_ADRENALINE:    case WS_WEAPONREFINE:
-				case BS_WEAPONPERFECT: case WS_CARTTERMINATION:
-				case BS_OVERTHRUST:    case WS_OVERTHRUSTMAX:
-				case BS_MAXIMIZE:
-				case BS_ADRENALINE2:
-				case BS_UNFAIRLYTRICK:
-				case BS_GREED:
-					return 0;
-				default: //Only Mechanic exlcusive skill can be used.
+		if ( battle_config.mado_skill_limit == 0 && sc->option&OPTION_MADOGEAR && ((TBL_PC*)src)->skillitem != skill_num )
+			switch ( skill_num )
+			{//List of skills usable while mounted on a mado.
+				case BS_GREED:			case NC_BOOSTKNUCKLE:
+				case NC_PILEBUNKER:		case NC_VULCANARM:
+				case NC_FLAMELAUNCHER:	case NC_COLDSLOWER:
+				case NC_ARMSCANNON:		case NC_ACCELERATION:
+				case NC_HOVERING:		case NC_F_SIDESLIDE:
+				case NC_B_SIDESLIDE:	case NC_SELFDESTRUCTION:
+				case NC_SHAPESHIFT:		case NC_EMERGENCYCOOL:
+				case NC_INFRAREDSCAN:	case NC_ANALYZE:
+				case NC_MAGNETICFIELD:	case NC_NEUTRALBARRIER:
+				case NC_STEALTHFIELD:	case NC_REPAIR:
+				case NC_AXEBOOMERANG:	case NC_POWERSWING:
+				case NC_AXETORNADO:		case NC_SILVERSNIPER:
+				case NC_MAGICDECOY:		case NC_DISJOINT:
+				case NC_MAGMA_ERUPTION:	case ALL_FULL_THROTTLE:
+				case NC_MAGMA_ERUPTION_DOTDAMAGE:
 					break;
+				default:
+					return 0;
 			}
-		}
 	}
 	if( target == NULL || target == src ) //No further checking needed.
 		return 1;

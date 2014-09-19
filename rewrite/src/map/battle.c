@@ -2403,17 +2403,17 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						skillratio = 0;//Prevents ATK damage from being done on LV 2 usage since LV 2 us MATK. [Rytech]
 					break;
 				case LG_OVERBRAND:
-					skillratio = 200 * skill_lv + 50 * pc_checkskill(sd,CR_SPEARQUICKEN);
+					skillratio = 400 * skill_lv + 50 * pc_checkskill(sd,CR_SPEARQUICKEN);
 					if( re_baselv_bonus == 1 && s_level >= 100 )
 						skillratio = skillratio * s_level / 100;	// Base level bonus.
 					break;
 				case LG_OVERBRAND_BRANDISH:
-					skillratio = 100 * skill_lv + sstatus->str + sstatus->dex;
+					skillratio = 300 * skill_lv + sstatus->str + sstatus->dex;
 					if( re_baselv_bonus == 1 && s_level >= 100 )
 						skillratio = skillratio * s_level / 100;	// Base level bonus.
 					break;
 				case LG_OVERBRAND_PLUSATK:
-					skillratio = 100 * skill_lv + rnd_value( 1, 100);
+					skillratio = 200 * skill_lv + rnd_value( 10, 100);
 					break;
 				case LG_MOONSLASHER:
 					skillratio = 120 * skill_lv + 80 * pc_checkskill(sd,LG_OVERBRAND);
@@ -4396,10 +4396,10 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		md.damage = 200 + 100 * skill_lv + sstatus->int_;
 		break;
 	case GN_HELLS_PLANT_ATK:
-		if ( re_baselv_bonus == 1 && s_level >= 100 )
-		md.damage = (( skill_lv * s_level * 10 ) + sstatus->int_ * 7 / 2 * ( 18 + sd->status.job_level / 4 )) * 5 / ( 10 - pc_checkskill(sd,AM_CANNIBALIZE) );
+		if ( re_baselv_bonus == 1 )
+		md.damage = (( skill_lv * status_get_lv(target) * 10 ) + sstatus->int_ * 7 / 2 * ( 18 + sd->status.job_level / 4 )) * 5 / ( 10 - pc_checkskill(sd,AM_CANNIBALIZE) );
 		else
-		md.damage = (( skill_lv * 150 * 10 ) + sstatus->int_ * 7 / 2 * ( 18 + 50 / 4 )) * 5 / ( 10 - pc_checkskill(sd,AM_CANNIBALIZE) );
+		md.damage = (( skill_lv * status_get_lv(target) * 10 ) + sstatus->int_ * 7 / 2 * ( 18 + 50 / 4 )) * 5 / ( 10 - pc_checkskill(sd,AM_CANNIBALIZE) );
 		break;
 	case KO_MUCHANAGE:
 		md.damage = skill_get_zeny(skill_num ,skill_lv);

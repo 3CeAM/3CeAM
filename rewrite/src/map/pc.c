@@ -7407,24 +7407,28 @@ int pc_setoption(struct map_session_data *sd,int type)
 
 	//No icon is displayed when mounted in a Mado, but we still need to update the movement speed. [Rytech]
 	if (type&OPTION_MADOGEAR && !(p_type&OPTION_MADOGEAR))
-	{
+	{//Merchant, Blacksmith, and Whitesmith buffs are removed when mounted on a mado.
 		status_calc_pc(sd,0); //Update movement speed.
-		status_change_end(&sd->bl,SC_MAXIMIZEPOWER,-1);
-		status_change_end(&sd->bl,SC_OVERTHRUST,-1);
-		status_change_end(&sd->bl,SC_WEAPONPERFECTION,-1);
 		status_change_end(&sd->bl,SC_ADRENALINE,-1);
-		status_change_end(&sd->bl,SC_CARTBOOST,-1);
+		status_change_end(&sd->bl,SC_WEAPONPERFECTION,-1);
+		status_change_end(&sd->bl,SC_OVERTHRUST,-1);
+		status_change_end(&sd->bl,SC_MAXIMIZEPOWER,-1);
+		status_change_end(&sd->bl,SC_LOUD,-1);
 		status_change_end(&sd->bl,SC_MELTDOWN,-1);
+		status_change_end(&sd->bl,SC_CARTBOOST,-1);
 		status_change_end(&sd->bl,SC_MAXOVERTHRUST,-1);
 	}
 	else if (!(type&OPTION_MADOGEAR) && p_type&OPTION_MADOGEAR)
-	{
+	{//Mechanic mado buffs are removed when unmounting from a mado.
 		status_calc_pc(sd,0); //Update movement speed.
-		status_change_end(&sd->bl,SC_SHAPESHIFT,-1);
-		status_change_end(&sd->bl,SC_HOVERING,-1);
 		status_change_end(&sd->bl,SC_ACCELERATION,-1);
-		status_change_end(&sd->bl,SC_OVERHEAT_LIMITPOINT,-1);
+		status_change_end(&sd->bl,SC_HOVERING,-1);
+		status_change_end(&sd->bl,SC_SHAPESHIFT,-1);
+		status_change_end(&sd->bl,SC_MAGNETICFIELD,-1);
+		status_change_end(&sd->bl,SC_NEUTRALBARRIER_MASTER,-1);
+		status_change_end(&sd->bl,SC_STEALTHFIELD_MASTER,-1);
 		status_change_end(&sd->bl,SC_OVERHEAT,-1);
+		status_change_end(&sd->bl,SC_OVERHEAT_LIMITPOINT,-1);
 	}
 
 	if(type&OPTION_CART && !(p_type&OPTION_CART))
@@ -7554,7 +7558,9 @@ int pc_setcart(struct map_session_data *sd,int type)
 int pc_setfalcon(TBL_PC* sd, int flag)
 {
 	if( flag ){
-		if( pc_checkskill(sd,HT_FALCON)>0 )	// ファルコンマスタリ?スキル所持
+		if ( pc_iswug(sd) || pc_iswugrider(sd) )
+			return 0;//Can't have a falcon and warg at the same time.
+		else if( pc_checkskill(sd,HT_FALCON)>0 )	// ファルコンマスタリ?スキル所持
 			pc_setoption(sd,sd->sc.option|OPTION_FALCON);
 	} else if( pc_isfalcon(sd) ){
 		pc_setoption(sd,sd->sc.option&~OPTION_FALCON); // remove falcon
