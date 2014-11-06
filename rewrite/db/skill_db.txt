@@ -893,23 +893,17 @@
 //725,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		NPC_REVERBERATION,Reverberation 2
 //726,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		NPC_REVERBERATION_ATK,Reverberation Attack
 //727,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		NPC_LEX_AETERNA,Lex Aeterna 2
-
-//Unknown NPC Skill ID's found in 2014-12-23cRagexe client.
-//These tags are guessed based on the animations triggered
-//through ID triggering with the displayskill command.
-//None of these are fully confirmed. These skills are likely
-//used for the 3rd job biolabs.
-//728 = Unknown. It does make the character swing his arms
-//729 = Shows same animation as Coluceo Heal. Might be NPC_CHEAL
-//730 = NPC_CURSEDCIRCLE
-//731 = NPC_DRAGONBREATH
-//732 = NPC_FATALMENACE
-//733 = Same animation as BS_HAMMERFALL, but NC_MAGMA_ERUPTION also uses it. Could be NPC_MAGMA_ERUPTION
-//734 = Unknown. Just makes the character flench. It could be NPC_MAGMA_ERUPTION_DOTDAMAGE
-//735 = NPC_MANDRAGORA
-//736 = NPC_PSYCHIC_WAVE
-//737 = NPC_RAYOFGENESIS
-//738 = NPC_VENOMIMPRESS
+//728,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_ARROWSTORM,NPC Arrow Storm
+//729,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_CHEAL,NPC Coluceo Heal
+//730,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_SR_CURSEDCIRCLE,NPC 
+//731,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_DRAGONBREATH,NPC Dragon Breath
+//732,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_FATALMENACE,NPC Fatal Menace
+//733,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_MAGMA_ERUPTION,NPC Magma Eruption
+//734,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_MAGMA_ERUPTION_DOTDAMAGE,NPC Magma Eruption Dot Damage
+//735,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_MANDRAGORA,NPC Howling of Mandragora
+//736,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_PSYCHIC_WAVE,NPC Psychic Wave
+//737,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_RAYOFGENESIS,NPC Ray of Genesis
+//738,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_VENOMIMPRESS,NPC Venom Impress
 
 // 2nd Job Quest Skills
 1001,9,6,1,-1,0,0,1,1,no,0,0x1,0,weapon,0,	KN_CHARGEATK,Charge Attack
@@ -940,7 +934,7 @@
 2005,1,6,2,4,0x2,2,5,1,no,0,0,0,weapon,3,	RK_WINDCUTTER,Wind Cutter
 2006,0,6,4,-1,0x2,5,5,1,no,0,0,0,weapon,0,	RK_IGNITIONBREAK,Ignition Break
 2007,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		RK_DRAGONTRAINING,Dragon Training
-2008,9,6,2,3,0x2,1:1:1:2:2:2:3:3:4:4,10,1,no,0,0,0,weapon,0,	RK_DRAGONBREATH,Dragon Breath
+2008,9,6,2,3,0x2,1:1:1:2:2:2:3:3:3:4,10,1,no,0,0,0,weapon,0,	RK_DRAGONBREATH,Dragon Breath
 2009,0,6,4,0,0x3,3:4:5:6:7,5,1,no,0,0,0,none,0,	RK_DRAGONHOWLING,Dragon Howling//This has direct attack set for some reason. Maybe it does 100% ATK damage? Check soon.
 2010,0,0,0,0,0,0,10,0,no,0,0,0,none,0,		RK_RUNEMASTERY,Rune Mastery
 2011,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		RK_MILLENNIUMSHIELD,Millenium Shield
@@ -1346,12 +1340,13 @@
 //3038,0,0,0,0,0,0,??,0,no,0,0,0,none,0,	ITEM_OPTION_SPLASH_ATTACK,Option Splash Attack
 //3039,18,6,16,0,0,0,1,1,no,0,0,0,none,0,	GM_FORCE_TRANSFER,Force Transfer
 //3040,9,6,16,0,0,0,1,1,no,0,0,0,none,0,	GM_WIDE_RESURRECTION,Wide Resurrection//Not sure if its ground targeted or player targeted with splash.
+//3038,0,0,0,0,0,0,??,0,no,0,0,0,none,0,	ALL_NIFLHEIM_RECALL, Niflheim Recall
 
 // EP 14.3 Part 2 3rd Job Skills
 5001,1,8,1,-1,0,0,5,-3,no,0,0,0,weapon,0,	GC_DARKCROW,Dark Claw//Confirmed to deal 500% ATK through 3 sub-hits.
 5002,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		RA_UNLIMIT,Unlimited
 5003,7,6,1,-1,0x2,4:5:6:7:8,5,1,no,0,0,0,weapon,0,GN_ILLUSIONDOPING,Illusion Doping//Its said it deals 100% damage. Also need to recheck the AoE size.
-5004,9,6,2,1,0x2,1:1:1:2:2:2:3:3:4:4,10,1,no,0,0,0,weapon,0,	RK_DRAGONBREATH_WATER,Dragon Breath - Water
+5004,9,6,2,1,0x2,1:1:1:2:2:2:3:3:3:4,10,1,no,0,0,0,weapon,0,	RK_DRAGONBREATH_WATER,Dragon Breath - Water//jRO says AoE is 7x7 at level 9. Is it the same for the fire one?
 5005,0,6,4,0,0x3,3,1,1,no,0,0,0,none,0,		RK_LUXANIMA,Lux Anima
 5006,1,6,2,3,0,0,5,1,no,0,0,3,weapon,0,		NC_MAGMA_ERUPTION,Magma Eruption//Deals damage every half a second. So its a active damage AoE and not a trap.
 5007,0,6,4,0,0x3,5:6:7:8:9,5,1,no,0,0,0,none,0,	WM_FRIGG_SONG,Frigg's Song//AoE size may need updating.
