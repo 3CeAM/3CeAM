@@ -598,7 +598,7 @@ void initChangeTables(void)
 	set_sc( AB_OFFERTORIUM        , SC_OFFERTORIUM        , SI_OFFERTORIUM        , SCB_NONE );
 	set_sc( WL_TELEKINESIS_INTENSE, SC_TELEKINESIS_INTENSE, SI_TELEKINESIS_INTENSE, SCB_NONE );
 	set_sc( LG_KINGS_GRACE        , SC_KINGS_GRACE        , SI_KINGS_GRACE        , SCB_NONE );
-	set_sc( ALL_FULL_THROTTLE     , SC_FULL_THROTTLE      , SI_FULL_THROTTLE      , SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK );
+	set_sc( ALL_FULL_THROTTLE     , SC_FULL_THROTTLE      , SI_FULL_THROTTLE      , SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK|SCB_SPEED );
 
 	set_sc( HLIF_AVOID           , SC_AVOID           , SI_BLANK           , SCB_SPEED );
 	set_sc( HLIF_CHANGE          , SC_CHANGE          , SI_BLANK           , SCB_VIT|SCB_INT );
@@ -939,7 +939,7 @@ void initChangeTables(void)
 
 	StatusChangeFlagTable[SC_ALL_RIDING] |= SCB_SPEED;
 	StatusChangeFlagTable[SC_ON_PUSH_CART] |= SCB_SPEED;
-	StatusChangeFlagTable[SC_REBOUND] |= SCB_SPEED;//Recheck later.
+	StatusChangeFlagTable[SC_REBOUND] |= SCB_SPEED|SCB_REGEN;//Recheck later.
 
 	if( !battle_config.display_hallucination ) //Disable Hallucination.
 		StatusIconChangeTable[SC_HALLUCINATION] = SI_BLANK;
@@ -3404,6 +3404,7 @@ void status_calc_regen_rate(struct block_list *bl, struct regen_data *regen, str
 		|| sc->data[SC_MAGICMUSHROOM]
 		|| sc->data[SC_RAISINGDRAGON]
 		|| sc->data[SC_SATURDAYNIGHTFEVER]
+		|| sc->data[SC_REBOUND]
 	)	//No regen
 		regen->flag = 0;
 
@@ -4883,6 +4884,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 					val = max( val, sc->data[SC_POWER_OF_GAIA]->val2 );
 				if( sc->data[SC_MELON_BOMB] )
 					val = max( val, sc->data[SC_MELON_BOMB]->val1 );
+				if( sc->data[SC_REBOUND] )
+					val = max( val, 25 );
 
 				if( sd && sd->speed_rate + sd->speed_add_rate > 0 ) // permanent item-based speedup
 					val = max( val, sd->speed_rate + sd->speed_add_rate );
@@ -4925,6 +4928,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				val = max( val, sc->data[SC_GN_CARTBOOST]->val2 );
 			if( sc->data[SC_SWINGDANCE] )
 				val = max( val, sc->data[SC_SWINGDANCE]->val3 );
+			if( sc->data[SC_FULL_THROTTLE] )
+				val = max( val, 25 );
 			if( sc->data[SC_WIND_STEP_OPTION] )
 				val = max( val, sc->data[SC_WIND_STEP_OPTION]->val2 );
 
@@ -8124,6 +8129,15 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_UNLIMIT:
 			val2 = 50 * val1;// Physical Ranged Damage Increase
 			break;
+		case SC_FULL_THROTTLE:
+			val2 = tick/1000;
+			tick = 1000;
+			break;
+		case SC_REBOUND:
+			val2 = tick/2000;
+			tick = 2000;
+			clif_emotion(bl,E_SWT);
+			break;
 		case SC_PYROTECHNIC_OPTION:
 			val2 = 60;	// Watk TODO: Renewal (Atk2)
 			val3 = 11;	// % Increase damage.
@@ -8543,6 +8557,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			clif_bossmapinfo(sd->fd, map_id2boss(sce->val1), 0); // First Message
 			break;
 		case SC_MERC_HPUP:
+		case SC_FULL_THROTTLE:
 			status_percent_heal(bl, 100, 0); // Recover Full HP
 			break;
 		case SC_MERC_SPUP:
@@ -9069,6 +9084,9 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 				pc_setstand(sd);
 				clif_standing(bl,true);
 			}
+			break;
+		case SC_FULL_THROTTLE:
+			sc_start(bl,SC_REBOUND,100,sce->val1,skill_get_time2(ALL_FULL_THROTTLE, sce->val1));
 			break;
 		}
 
@@ -10103,6 +10121,25 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 			return 0;
 		}
 		break;
+
+	case SC_FULL_THROTTLE:
+		if( --(sce->val2) >= 0 )
+		{
+			if( !status_charge(bl, 0, status->max_sp * ( 6 - sce->val1 ) / 100) )
+				break;
+			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
+
+	case SC_REBOUND:
+		if(--(sce->val2)>0)
+		{
+			clif_emotion(bl,E_SWT);
+			sc_timer_next(2000+tick, status_change_timer,bl->id, data);
+			return 0;
+		}
+	break;
 
 	case SC_CIRCLE_OF_FIRE:
 	case SC_FIRE_CLOAK:

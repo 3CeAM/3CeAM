@@ -1205,7 +1205,8 @@ int clif_spawn(struct block_list *bl)
 	int len;
 
 	vd = status_get_viewdata(bl);
-	if( !vd || vd->class_ == INVISIBLE_CLASS )
+	if( !vd || vd->class_ == INVISIBLE_CLASS ||
+		bl->type == BL_NPC && ((TBL_NPC*)bl)->sc.option&OPTION_INVISIBLE )
 		return 0;
 
 	len = clif_set_unit_idle(bl, buf,true);
@@ -1294,6 +1295,10 @@ int clif_spawn(struct block_list *bl)
 				clif_status_change(&sd->bl,SI_ALL_RIDING,1,9999,sd->sc.data[SC_ALL_RIDING]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_ON_PUSH_CART] )
 				clif_status_change(&sd->bl,SI_ON_PUSH_CART,1,9999,sd->sc.data[SC_ON_PUSH_CART]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_DARKCROW] )
+				clif_status_change(&sd->bl,SI_DARKCROW,1,9999,sd->sc.data[SC_DARKCROW]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_UNLIMIT] )
+				clif_status_change(&sd->bl,SI_UNLIMIT,1,9999,sd->sc.data[SC_UNLIMIT]->val1,0,0);
 		}
 		break;
 	case BL_MOB:
@@ -1515,7 +1520,8 @@ void clif_move(struct unit_data *ud)
 	struct block_list* bl = ud->bl;
 
 	vd = status_get_viewdata(bl);
-	if (!vd || vd->class_ == INVISIBLE_CLASS)
+	if (!vd || vd->class_ == INVISIBLE_CLASS ||
+		bl->type == BL_NPC && ((TBL_NPC*)bl)->sc.option&OPTION_INVISIBLE )
 		return; //This performance check is needed to keep GM-hidden objects from being notified to bots.
 	
 	if (ud->state.speed_changed) {
@@ -4048,7 +4054,8 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 	int len;
 	
 	vd = status_get_viewdata(bl);
-	if (!vd || vd->class_ == INVISIBLE_CLASS)
+	if (!vd || vd->class_ == INVISIBLE_CLASS ||
+		bl->type == BL_NPC && ((TBL_NPC*)bl)->sc.option&OPTION_INVISIBLE )
 		return;
 
 	ud = unit_bl2ud(bl);
@@ -4133,6 +4140,10 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_ALL_RIDING,1,9999,tsd->sc.data[SC_ALL_RIDING]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_ON_PUSH_CART] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_ON_PUSH_CART,1,9999,tsd->sc.data[SC_ON_PUSH_CART]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_DARKCROW] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_DARKCROW,1,9999,tsd->sc.data[SC_DARKCROW]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_UNLIMIT] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_UNLIMIT,1,9999,tsd->sc.data[SC_UNLIMIT]->val1,0,0);
 		}
 		break;
 	case BL_MER: // Devotion Effects

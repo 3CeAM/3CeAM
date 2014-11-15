@@ -6352,6 +6352,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_FIGHTINGSPIRIT:			case SC_ABUNDANCE:			case SC__SHADOWFORM:
 				case SC_RECOGNIZEDSPELL:		case SC_ON_PUSH_CART:		case SC_KAHU_ENTEN:
 				case SC_HYOUHU_HUBUKI:			case SC_KAZEHU_SEIRAN:			case SC_DOHU_KOUKAI:
+				case SC_FULL_THROTTLE:		case SC_REBOUND:
 					continue;
 				case SC_ASSUMPTIO:
 					if( bl->type == BL_MOB )
@@ -7740,7 +7741,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_STEALTHFIELD_MASTER: case SC_STEALTHFIELD:
 				case SC_ON_PUSH_CART:		case SC_KAHU_ENTEN:
 				case SC_HYOUHU_HUBUKI:			case SC_KAZEHU_SEIRAN:
-				case SC_DOHU_KOUKAI:
+				case SC_DOHU_KOUKAI:	case SC_FULL_THROTTLE:		case SC_REBOUND:
 					continue;
 				case SC_ASSUMPTIO:
 					if( bl->type == BL_MOB )
@@ -9737,6 +9738,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case SO_EARTH_INSIGNIA:
 	case RL_B_TRAP:
 	case KO_MAKIBISHI:
+	case LG_KINGS_GRACE:
 	case MH_POISON_MIST:
 	case MH_XENO_SLASHER:
 	case MH_LAVA_SLIDE:
