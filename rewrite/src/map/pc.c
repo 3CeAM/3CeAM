@@ -4110,7 +4110,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 		return 0;
 
 	// In this case these sc are OFFICIALS cooldowns for these skills
-	if( itemdb_is_rune(sd->status.inventory[n].nameid) )
+	if( itemdb_is_rune(sd->status.inventory[n].nameid) )//Check
 	{
 		switch(sd->status.inventory[n].nameid)
 		{
@@ -6472,6 +6472,7 @@ void pc_damage(struct map_session_data *sd,struct block_list *src,unsigned int h
 		pc_setstand(sd);
 		skill_sit(sd,0);
 		clif_standing(&sd->bl,true);	// To sincronize client and server.
+		clif_status_load(&sd->bl, SI_SIT, 0);
 	}
 
 	if( sd->progressbar.npc_id )
@@ -6558,6 +6559,7 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 	npc_script_event(sd,NPCE_DIE);
 
 	pc_setdead(sd);
+	clif_status_load(&sd->bl, SI_SIT, 0);//Removes the sit status icon if you died while sitting.
 	//Reset menu skills/item skills
 	if (sd->skillitem)
 		sd->skillitem = sd->skillitemlv = 0;
@@ -6843,14 +6845,13 @@ int pc_readparam(struct map_session_data* sd,int type)
 	case SP_BASELEVEL:   val = sd->status.base_level; break;
 	case SP_JOBLEVEL:    val = sd->status.job_level; break;
 	case SP_CLASS:       val = sd->status.class_; break;
-	case SP_BASEJOB:     val = pc_mapid2jobid(sd->class_&MAPID_UPPERMASK, sd->status.sex); break; //Base job, extracting upper type.
-	//This is way wrong. Since there are no trans-baby classes, this way might be fine with clean eA. But now we have trans-3rd classes. [Inkfish]
-	//case SP_UPPER:       val = sd->class_&JOBL_THIRD?3:(sd->class_&JOBL_UPPER?1:(sd->class_&JOBL_BABY?2:0)); break;
-	case SP_UPPER:       val = ((sd->class_&MAPID_JOBMASK)>>12); break;
 	case SP_BASECLASS:   val = pc_mapid2jobid(sd->class_&MAPID_BASEMASK, sd->status.sex); break; //Extract base class tree. [Skotlex]
+	case SP_BASEJOB:     val = pc_mapid2jobid(sd->class_&MAPID_UPPERMASK, sd->status.sex); break; //Base job, extracting upper type.
+	case SP_BASETHIRD:   val = pc_mapid2jobid(sd->class_&MAPID_THIRDMASK, sd->status.sex); break; //Third job
+	case SP_UPPER:       val = sd->class_&JOBL_UPPER?1:(sd->class_&JOBL_BABY?2:0); break;
 	case SP_SEX:         val = sd->status.sex; break;
-	case SP_WEIGHT:      val = sd->weight; break;
-	case SP_MAXWEIGHT:   val = sd->max_weight; break;
+	case SP_WEIGHT:      val = sd->weight; break; // client shows value/10
+	case SP_MAXWEIGHT:   val = sd->max_weight; break; // client shows value/10
 	case SP_BASEEXP:     val = sd->status.base_exp; break;
 	case SP_JOBEXP:      val = sd->status.job_exp; break;
 	case SP_NEXTBASEEXP: val = pc_nextbaseexp(sd); break;
@@ -7184,7 +7185,7 @@ int pc_jobchange(struct map_session_data *sd,int job, int upper)
 		pc_setglobalreg(sd, "CLONE_SKILL_LV", 0);
 	}
 	if(sd->reproduceskill_id)
-	{
+	{//Check
 		sd->reproduceskill_id = 0;
 		pc_setglobalreg(sd, "REPRODUCE_SKILL",0);
 		pc_setglobalreg(sd, "REPRODUCE_SKILL_LV",0);
@@ -7558,7 +7559,7 @@ int pc_setcart(struct map_session_data *sd,int type)
 int pc_setfalcon(TBL_PC* sd, int flag)
 {
 	if( flag ){
-		if ( pc_iswug(sd) || pc_iswugrider(sd) )
+		if ( battle_config.falcon_and_wug == 0 && (pc_iswug(sd) || pc_iswugrider(sd)) )
 			return 0;//Can't have a falcon and warg at the same time.
 		else if( pc_checkskill(sd,HT_FALCON)>0 )	// ファルコンマスタリ?スキル所持
 			pc_setoption(sd,sd->sc.option|OPTION_FALCON);
@@ -7589,11 +7590,29 @@ int pc_setriding(TBL_PC* sd, int flag)
  *------------------------------------------*/
 int pc_setdragon(TBL_PC* sd, int flag)
 {
-	if( flag ){
+	if( flag )
+	{
 		if( pc_checkskill(sd,RK_DRAGONTRAINING) > 0 )
-			pc_setoption(sd, sd->sc.option|OPTION_DRAGON1);
-	} else if( pc_isdragon(sd) ){
-		pc_setoption(sd, sd->sc.option&~OPTION_DRAGON1);
+		{
+			if ((sd->class_&MAPID_THIRDMASK) == MAPID_BABY_RUNE && flag != 1)
+				flag = 1;// Baby Rune Knights only have a green dragon sprite.
+			switch ( flag )// Sets player to the requested dragon color.
+			{
+				case 1:// Green Dragon
+					pc_setoption(sd, sd->sc.option | OPTION_DRAGON1);
+				case 2:// Black Dragon
+					pc_setoption(sd, sd->sc.option | OPTION_DRAGON2);
+				case 3:// White Dragon
+					pc_setoption(sd, sd->sc.option | OPTION_DRAGON3);
+				case 4:// Blue Dragon
+					pc_setoption(sd, sd->sc.option | OPTION_DRAGON4);
+				case 5:// Red Dragon
+					pc_setoption(sd, sd->sc.option | OPTION_DRAGON5);
+			}
+		}
+	}
+	else if( pc_isdragon(sd) ){
+		pc_setoption(sd, sd->sc.option&~OPTION_DRAGON);
 	}
 
 	return 0;
@@ -7605,7 +7624,9 @@ int pc_setdragon(TBL_PC* sd, int flag)
 int pc_setwug(TBL_PC* sd, int flag)
 {
 	if( flag ){
-		if( pc_checkskill(sd,RA_WUGMASTERY)>0 )
+		if ( battle_config.falcon_and_wug == 0 && (pc_isfalcon(sd) || pc_iswugrider(sd)) )
+			return 0;//Can't have a falcon and warg at the same time.
+		else if( pc_checkskill(sd,RA_WUGMASTERY)>0 )
 			pc_setoption(sd,sd->sc.option|OPTION_WUG);
 	} else if( pc_iswug(sd) ){
 		pc_setoption(sd,sd->sc.option&~OPTION_WUG);
@@ -7620,7 +7641,9 @@ int pc_setwug(TBL_PC* sd, int flag)
 int pc_setwugrider(TBL_PC* sd, int flag)
 {
 	if( flag ){
-		if( pc_checkskill(sd,RA_WUGRIDER) > 0 )
+		if ( battle_config.falcon_and_wug == 0 && (pc_isfalcon(sd) || pc_iswug(sd)) )
+			return 0;//Can't have a falcon and warg at the same time.
+		else if( pc_checkskill(sd,RA_WUGRIDER) > 0 )
 			pc_setoption(sd, sd->sc.option|OPTION_WUGRIDER);
 	} else if( pc_iswugrider(sd) ){
 		pc_setoption(sd, sd->sc.option&~OPTION_WUGRIDER);

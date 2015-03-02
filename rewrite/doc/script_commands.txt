@@ -3507,11 +3507,17 @@ bird and 0 if they don't.
 
 'setdragon' Command Info: The flag sets if the player will be mounted or dismounted to a Dragon.
 Flag 0: Dismounted player from the Dragon.
-Flag 1: Mounts the player to a Dragon.
+Flag 1: Mounts the player to a Green Dragon.
+Flag 2: Mounts the player to a Black Dragon.
+Flag 3: Mounts the player to a White Dragon.
+Flag 4: Mounts the player to a Blue Dragon.
+Flag 5: Mounts the player to a Red Dragon.
 
-Example: setdragon 1; // Mounts the player to a Dragon.
+Example: setdragon 1; // Mounts the player to a Green Dragon.
 
 Note: The player must know the skill RK_DRAGONTRAINING to mount on a Dragon.
+Also if the player is a Baby Rune Knight, the player will be forced to mount
+to a green dragon since they don't have their own sprites for other colors.
 
 'checkdragon' Command Info: Checks if the player is mounted on a Dragon.
 

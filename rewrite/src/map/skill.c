@@ -3081,6 +3081,7 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 							pc_setsit(tsd);
 							skill_sit(tsd,1);
 							clif_sitting(&tsd->bl,true);
+							clif_status_load(&tsd->bl, SI_SIT, 1);
 						}
 					}
 					break;
@@ -12193,7 +12194,7 @@ static int skill_check_condition_char_sub (struct block_list *bl, va_list ap)
 
 	if( skill_get_inf2(skillid)&INF2_CHORUS_SKILL )
 	{
-		if( tsd->status.party_id == sd->status.party_id && (tsd->class_&MAPID_UPPERMASK_THIRD) == MAPID_MINSTRELWANDERER )
+		if( tsd->status.party_id == sd->status.party_id && (tsd->class_&MAPID_THIRDMASK) == MAPID_MINSTRELWANDERER )
 			p_sd[(*c)++] = tsd->bl.id;
 		return 1;
 	}
@@ -12217,13 +12218,13 @@ static int skill_check_condition_char_sub (struct block_list *bl, va_list ap)
 		}
 		case WL_COMET:
 		{ // Comet does not consume Red Gemstones when there is at least 1 Warlock class next to the caster
-			if( (tsd->class_&MAPID_UPPERMASK_THIRD) == MAPID_WARLOCK )
+			if( (tsd->class_&MAPID_THIRDMASK) == MAPID_WARLOCK )
 				p_sd[(*c)++] = tsd->bl.id;
 			return 1;
 		}
 		case LG_RAYOFGENESIS:
 		{
-			if( tsd->status.party_id == sd->status.party_id && (tsd->class_&MAPID_UPPERMASK_THIRD) == MAPID_ROYAL_GUARD &&
+			if( tsd->status.party_id == sd->status.party_id && (tsd->class_&MAPID_THIRDMASK) == MAPID_ROYAL_GUARD &&
 				tsd->sc.data[SC_BANDING] )
 				p_sd[(*c)++] = tsd->bl.id;
 			return 1;
@@ -12765,6 +12766,13 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			return 0;
 		}
 		break;
+	case RK_HUNDREDSPEAR:
+	case RK_PHANTOMTHRUST://Well make this skill ask for a spear even tho its not official. It does require a spear type.
+		if( require.weapon && !pc_check_weapontype(sd,require.weapon) ) {
+			clif_skill_fail(sd,skill,USESKILL_FAIL_NEED_EQUIPPED_WEAPON_CLASS,4,0);//Spear required.
+			return 0;
+		}
+		break;
 	case AB_ANCILLA:
 		{
 			int count = 0;
@@ -12848,7 +12856,7 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		}
 		break;
 	case RA_WUGMASTERY:
-		if((pc_isfalcon(sd) && !battle_config.warg_can_falcon) || sc && sc->data[SC__GROOMY])
+		if((pc_isfalcon(sd) && !battle_config.falcon_and_wug) || sc && sc->data[SC__GROOMY])
 		{
 			clif_skill_fail(sd,skill,0x17,0,0);
 			return 0;
@@ -13199,6 +13207,8 @@ int skill_check_condition_castend(struct map_session_data* sd, short skill, shor
 		return 0;
 	}
 
+	require = skill_get_requirement(sd,skill,lv);
+
 	// perform skill-specific checks (and actions)
 	switch( skill )
 	{
@@ -13229,6 +13239,14 @@ int skill_check_condition_castend(struct map_session_data* sd, short skill, shor
 				clif_skill_fail(sd,skill,0,0,0);
 				return 0;
 			}
+		}
+		break;
+	case RK_HUNDREDSPEAR:
+	case RK_PHANTOMTHRUST://Well make this skill ask for a spear even tho its not official. It is spear exclusive.
+		if( require.weapon && !pc_check_weapontype(sd,require.weapon) )
+		{
+			clif_skill_fail(sd,skill,USESKILL_FAIL_NEED_EQUIPPED_WEAPON_CLASS,4,0);//Spear required.
+			return 0;
 		}
 		break;
 	}

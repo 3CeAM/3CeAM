@@ -510,7 +510,7 @@ extern struct Battle_Config
 	int all_riding_speed;
 	int rune_produce_rate;
 	int pc_camouflage_check_type;
-	int warg_can_falcon;
+	int falcon_and_wug;
 	int use_renewal_statpoints;
 	int max_highlvl_nerf; // [Pinky]
 	int max_joblvl_nerf; // [Pinky]
@@ -522,6 +522,7 @@ extern struct Battle_Config
 	int renewal_baselvl_skill_effect;
 	int mado_skill_limit;
 	int mado_loss_on_death;
+	int marionette_renewal_jobs;
 	int hanbok_ignorepalette;
 	int oktoberfest_ignorepalette;
 	int summer2_ignorepalette;

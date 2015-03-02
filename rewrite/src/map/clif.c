@@ -9974,6 +9974,7 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 		pc_setsit(sd);
 		skill_sit(sd,1);
 		clif_sitting(&sd->bl,true);
+		clif_status_load(&sd->bl, SI_SIT, 1);
 	break;
 	case 0x03: // standup
 		if( sd->sc.data[SC_SITDOWN_FORCE] )
@@ -9987,6 +9988,7 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 		pc_setstand(sd);
 		skill_sit(sd,0); 
 		clif_standing(&sd->bl,true);
+		clif_status_load(&sd->bl, SI_SIT, 0);
 	break;
 	}
 }

@@ -67,9 +67,7 @@ struct item_data;
 //for filtering and quick checking.
 #define MAPID_BASEMASK 0x00ff  //Checking 1st Jobs.
 #define MAPID_UPPERMASK 0x0fff //Checking 2nd Jobs. Not related to JOBL_UPPER.
-#define MAPID_THIRDMASK 0xffff //Checking 3rd Jobs.
-#define MAPID_UPPERMASK_THIRD (JOBL_THIRD|MAPID_UPPERMASK)//To replace with THIRDMASK later. [Rytech]
-#define MAPID_JOBMASK 0xf000
+#define MAPID_THIRDMASK 0x4fff //Checking 3rd Jobs.
 
 enum {
 //Novice And 1-1 Jobs
@@ -398,7 +396,7 @@ enum _sp {
 	
 	//3CeAM
 	SP_FIXEDCASTRATE = 2101, //2101
-	SP_ADD_MATK
+	SP_ADD_MATK, SP_BASETHIRD
 };
 
 enum _look {

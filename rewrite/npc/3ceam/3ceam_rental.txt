@@ -1,0 +1,148 @@
+//===== 3CeAM Script ========================================= 
+//= Custom Rental NPC
+//===== By: ================================================== 
+//= Rytech
+//===== Current Version: ===================================== 
+//= 1.0
+//===== Compatible With: ===================================== 
+//= 3CeAM r750+
+//===== Description: ========================================= 
+//= A NPC that offers a number of things players can rent.
+//===== Additional Comments: ================================= 
+//= 1.0 First release. [Rytech]
+//============================================================ 
+prontera,160,184,0	script	Rental Npc	50,{
+	mes "[Rental Npc]";
+	mes "Hi, interested in renting something?";
+	next;
+	switch(select("Peco:Falcon:Cart:Dragon:Mado Gear:Gryphon"))
+	{
+		case 1:
+			if ((BaseJob == Job_Knight || BaseJob == Job_Crusader) && !(BaseThird == Job_Rune_Knight || BaseThird == Job_Royal_Guard)
+			&& checkriding() == 0 && getskilllv("KN_RIDING")>0)
+			{
+				setriding;
+				close;
+			}
+			else if (checkriding() == 1)
+			{
+				mes "[Rental Npc]";
+				mes "Your already mounted on a peco.";
+				close;
+			}
+			else
+			{
+				mes "[Rental Npc]";
+				mes "Sorry, but you must be a Knight, Crusader, Lord Knight, or Paladin and have the riding skill learned.";
+				close;
+			}
+		case 2:
+			if(BaseJob == Job_Hunter && checkfalcon() == 0 && getskilllv("HT_FALCON")>0)
+			{
+				if (checkwug() == 1 || checkwugrider() == 1)
+				{
+					mes "[Rental Npc]";
+					mes "You can't have a falcon and a warg at the same time.";
+					close;
+				}
+				else
+				{
+					setfalcon;
+					close;
+				}
+			}
+			else if (checkfalcon() == 1)
+			{
+				mes "[Rental Npc]";
+				mes "You already have a falcon.";
+				close;
+			}
+			else
+			{
+				mes "[Rental Npc]";
+				mes "Sorry, but you must be a Hunter type and have the Falcon Mastery skill learned.";
+				close;
+			}
+		case 3:
+			if((BaseClass == Job_Merchant || BaseJob == Job_SuperNovice) && checkcart() == 0 && getskilllv("MC_PUSHCART")>0)
+			{
+				setcart;
+				close;
+			}
+			else if (checkcart() == 1)
+			{
+				mes "[Rental Npc]";
+				mes "You already have a cart.";
+				close;
+			}
+			else
+			{
+				mes "[Rental Npc]";
+				mes "Sorry, but you must be a Marchant or Super Novice type and have the Push Cart skill learned.";
+				close;
+			}
+		case 4:
+			if (BaseThird == Job_Rune_Knight && checkdragon() == 0 && getskilllv("RK_DRAGONTRAINING")>0)
+			{
+				mes "[Rental Npc]";
+				mes "What dragon color would you like?";
+				switch(select("Green:Black:White:Blue:Red"))
+				{
+					case 1: setdragon(1);
+					case 2: setdragon(2);
+					case 3: setdragon(3);
+					case 4: setdragon(4);
+					case 5: setdragon(5);
+				}
+				close;
+			}
+			else if (checkdragon() == 1)
+			{
+				mes "[Rental Npc]";
+				mes "Your already mounted on a dragon.";
+				close;
+			}
+			else
+			{
+				mes "[Rental Npc]";
+				mes "Sorry, but you must be a Rune Knight and have the Dragon Training skill learned.";
+				close;
+			}
+		case 5:
+			if (BaseThird == Job_Mechanic && checkmadogear() == 0 && getskilllv("NC_MADOLICENCE")>0)
+			{
+				setmadogear;
+				close;
+			}
+			else if (checkmadogear() == 1)
+			{
+				mes "[Rental Npc]";
+				mes "Your already mounted on a mado gear.";
+				close;
+			}
+			else
+			{
+				mes "[Rental Npc]";
+				mes "Sorry, but you must be a Mechanic and have the Mado License skill learned.";
+				close;
+			}
+		case 6:
+			if (BaseThird == Job_Royal_Guard && checkriding() == 0 && getskilllv("KN_RIDING")>0)
+			{
+				setriding;
+				close;
+			}
+			else if (checkriding() == 1)
+			{
+				mes "[Rental Npc]";
+				mes "Your already mounted on a gryphon.";
+				close;
+			}
+			else
+			{
+				mes "[Rental Npc]";
+				mes "Sorry, but you must be a Royal Guard and have the Riding skill learned.";
+				close;
+			}
+	}
+}

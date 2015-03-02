@@ -7578,6 +7578,12 @@ BUILDIN_FUNC(checkdragon)
 
 /// Sets if the player is on a dragon.
 /// <flag> defaults to 1
+/// <type>=0 : Removes Dragon
+/// <type>=1 : Green Dragon
+/// <type>=2 : Black Dragon
+/// <type>=3 : White Dragon
+/// <type>=4 : Blue Dragon
+/// <type>=5 : Red Dragon
 ///
 /// setdragon <flag>;
 /// setdragon;
