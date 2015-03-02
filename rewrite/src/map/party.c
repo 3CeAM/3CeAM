@@ -1051,7 +1051,7 @@ int party_sub_count_chorus(struct block_list *bl, va_list ap)
 	if (battle_config.idle_no_share && pc_isidle(sd))
 		return 0;
 
-	if ( (sd->class_&MAPID_UPPERMASK_THIRD) != MAPID_MINSTRELWANDERER )
+	if ( (sd->class_&MAPID_THIRDMASK) != MAPID_MINSTRELWANDERER )
 		return 0;
 
 	return 1;

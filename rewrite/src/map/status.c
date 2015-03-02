@@ -5309,6 +5309,25 @@ int status_get_lv(struct block_list *bl)
 	return 1;
 }
 
+int status_get_job_lv(struct block_list *bl)
+{
+	nullpo_ret(bl);
+	switch (bl->type) {
+		case BL_PC:
+			return ((TBL_PC*)bl)->status.job_level;
+		//Non-Player characters don't have job levels. Well just send the most common max job level.
+		//This will allow skills and status's that take job levels into formula's to have max effectiveness
+		//for non-player characters using them. [Rytech]
+		case BL_MOB:
+		case BL_PET:
+		case BL_HOM:
+		case BL_MER:
+		case BL_ELEM:
+			return 50;
+	}
+	return 1;
+}
+
 struct regen_data *status_get_regen_data(struct block_list *bl)
 {
 	nullpo_retr(NULL, bl);
@@ -7204,6 +7223,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			if (sd) {
 				pc_setsit(sd);
 				clif_sitting(&sd->bl,true);
+				clif_status_load(&sd->bl, SI_SIT, 1);
 			}
 			val2 = 12; //SP cost
 			val4 = 10000; //Decrease at 10secs intervals.
@@ -7271,7 +7291,14 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 
 			val3 = 0;
 			val4 = 0;
-			max_stat = battle_config.max_parameter; //Cap to 99 (default)
+			if ( sd && battle_config.marionette_renewal_jobs == 1 &&
+				((sd->class_&MAPID_THIRDMASK) >= MAPID_RUNE_KNIGHT ||
+				(sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE_E ||
+				(sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO ||
+				(sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION))
+				max_stat = battle_config.max_parameter_renewal_jobs;//Custom cap for renewal jobs.
+			else
+				max_stat = battle_config.max_parameter; //Cap to 99 (default)
 			stat = (psce->val3 >>16)&0xFF; stat = min(stat, max_stat - status->str ); val3 |= cap_value(stat,0,0xFF)<<16;
 			stat = (psce->val3 >> 8)&0xFF; stat = min(stat, max_stat - status->agi ); val3 |= cap_value(stat,0,0xFF)<<8;
 			stat = (psce->val3 >> 0)&0xFF; stat = min(stat, max_stat - status->vit ); val3 |= cap_value(stat,0,0xFF);
@@ -7997,7 +8024,8 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			{
 				pc_setsit(sd);
 				skill_sit(sd,1);
-				clif_sitting(bl,true);
+				clif_sitting(&sd->bl,true);
+				clif_status_load(&sd->bl, SI_SIT, 1);
 			}
 			break;
 		case SC_REFLECTDAMAGE:
@@ -9082,7 +9110,8 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 			if( sd && pc_issit(sd) )
 			{
 				pc_setstand(sd);
-				clif_standing(bl,true);
+				clif_standing(&sd->bl,true);
+				clif_status_load(&sd->bl, SI_SIT, 0);
 			}
 			break;
 		case SC_FULL_THROTTLE:
@@ -10169,7 +10198,8 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 				pc_stop_walking(sd,1|4);
 				pc_stop_attack(sd);
 				pc_setsit(sd);
-				clif_sitting(bl,true);
+				clif_sitting(&sd->bl,true);
+				clif_status_load(&sd->bl, SI_SIT, 1);
 			}
 			sc_timer_next(10000 + tick, status_change_timer, bl->id, data);
 		}

@@ -1306,7 +1306,7 @@ enum si_type {
 //	SI_PC_IZ_DUN05 = 619,
 	SI_CRUSHSTRIKE = 620,
 //	SI_MONSTER_TRANSFORM = 621,
-//	SI_SIT = 622,
+	SI_SIT = 622,
 //	SI_ONAIR = 623,
 //	SI_MTF_ASPD = 624,
 //	SI_MTF_RANGEATK = 625,
@@ -1543,6 +1543,21 @@ enum si_type {
 //	SI_DRESS_UP = 856,
 //	SI_MAPLE_FALLS = 857,
 //	SI_ALL_NIFLHEIM_RECALL = 858,
+//	SI_ = 859,
+//	SI_ = 860,
+//	SI_ = 861,
+//	SI_ = 862,
+//	SI_ = 863,
+//	SI_ = 864,
+//	SI_DRACULA_CARD = 865,
+//	SI_ = 866,
+//	SI_LIMIT_POWER_BOOSTER = 867,
+//	SI_ = 868,
+//	SI_ = 869,
+//	SI_ = 870,
+//	SI_ = 871,
+//	SI_TIME_ACCESSORY = 872,
+//	SI_EP16_DEF = 873,
 };
 
 enum wl_spheres {
@@ -1863,6 +1878,7 @@ struct status_data *status_get_base_status(struct block_list *bl);
 const char * status_get_name(struct block_list *bl);
 int status_get_class(struct block_list *bl);
 int status_get_lv(struct block_list *bl);
+int status_get_job_lv(struct block_list *bl);
 #define status_get_range(bl) status_get_status_data(bl)->rhw.range
 #define status_get_hp(bl) status_get_status_data(bl)->hp
 #define status_get_max_hp(bl) status_get_status_data(bl)->max_hp

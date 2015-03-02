@@ -1069,6 +1069,8 @@
 //3038,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//ITEM_OPTION_SPLASH_ATTACK#Option Splash Attack#
 //3039,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//GM_FORCE_TRANSFER#Force Transfer#
 //3040,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//GM_WIDE_RESURRECTION#Wide Resurrection#
+//3041,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//ALL_NIFLHEIM_RECALL#Return To Niflheim#
+//3042,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//ALL_PRONTERA_RECALL#Return To Prontera#
 
 // EP 14.3 Part 2 3rd Job Skills
 5001,0,0,22:34:46:58:70,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//GC_DARKCROW#Dark Claw#
