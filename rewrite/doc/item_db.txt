@@ -116,7 +116,7 @@ Knight + Priest+ Wizard + Blacksmith + Hunter + Assassin
 0x00000800 (Hunter) + 0x00001000 (Assassin) = 0x00001F80
 --------------------------------
 Regular Jobs Bitmask Table
-0x00000001 = Novice/Super Novice (Expanded Super Novice inherits this permission)
+0x00000001 = Novice/Super Novice
 0x00000002 = Swordman
 0x00000004 = Magician
 0x00000008 = Archer

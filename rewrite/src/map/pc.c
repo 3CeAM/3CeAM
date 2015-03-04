@@ -1746,7 +1746,8 @@ int pc_calc_skilltree_normalize_job(struct map_session_data *sd)
 	if( pc_checkskill(sd, NV_BASIC) < 9 )
 		c = MAPID_NOVICE; // Consider Novice Tree when you don't have NV_BASIC maxed.
 
-	else if(sd->class_&JOBL_2)
+	//Do not send S. Novices to first class (Novice)
+	else if( (sd->class_&JOBL_2) && (sd->class_&MAPID_UPPERMASK) != MAPID_SUPER_NOVICE )
 	{
 		if( sd->change_level[0] <= 0 )
 		{
@@ -4966,7 +4967,6 @@ int pc_jobid2mapid(unsigned short b_class)
 		case JOB_ACOLYTE:               return MAPID_ACOLYTE;
 		case JOB_MERCHANT:              return MAPID_MERCHANT;
 		case JOB_THIEF:                 return MAPID_THIEF;
-		case JOB_SUPER_NOVICE:          return MAPID_SUPER_NOVICE;
 		case JOB_TAEKWON:               return MAPID_TAEKWON;
 		case JOB_WEDDING:               return MAPID_WEDDING;
 		case JOB_GUNSLINGER:            return MAPID_GUNSLINGER;
@@ -4978,13 +4978,13 @@ int pc_jobid2mapid(unsigned short b_class)
 		case JOB_OKTOBERFEST:           return MAPID_OKTOBERFEST;
 		case JOB_SUMMER2:               return MAPID_SUMMER2;
 	//2-1 Jobs
+		case JOB_SUPER_NOVICE:          return MAPID_SUPER_NOVICE;
 		case JOB_KNIGHT:                return MAPID_KNIGHT;
 		case JOB_WIZARD:                return MAPID_WIZARD;
 		case JOB_HUNTER:                return MAPID_HUNTER;
 		case JOB_PRIEST:                return MAPID_PRIEST;
 		case JOB_BLACKSMITH:            return MAPID_BLACKSMITH;
 		case JOB_ASSASSIN:              return MAPID_ASSASSIN;
-		case JOB_SUPER_NOVICE_E:        return MAPID_SUPER_NOVICE_E;
 		case JOB_STAR_GLADIATOR:        return MAPID_STAR_GLADIATOR;
 		case JOB_REBELLION:             return MAPID_REBELLION;
 		case JOB_KAGEROU:
@@ -5048,6 +5048,7 @@ int pc_jobid2mapid(unsigned short b_class)
 		case JOB_BABY_ALCHEMIST:        return MAPID_BABY_ALCHEMIST;
 		case JOB_BABY_ROGUE:            return MAPID_BABY_ROGUE;
 	//3-1 Jobs
+		case JOB_SUPER_NOVICE_E:        return MAPID_SUPER_NOVICE_E;
 		case JOB_RUNE_KNIGHT:           return MAPID_RUNE_KNIGHT;
 		case JOB_WARLOCK:               return MAPID_WARLOCK;
 		case JOB_RANGER:                return MAPID_RANGER;
@@ -5111,7 +5112,6 @@ int pc_mapid2jobid(unsigned short class_, int sex)
 		case MAPID_ACOLYTE:               return JOB_ACOLYTE;
 		case MAPID_MERCHANT:              return JOB_MERCHANT;
 		case MAPID_THIEF:                 return JOB_THIEF;
-		case MAPID_SUPER_NOVICE:          return JOB_SUPER_NOVICE;
 		case MAPID_TAEKWON:               return JOB_TAEKWON;
 		case MAPID_WEDDING:               return JOB_WEDDING;
 		case MAPID_GUNSLINGER:            return JOB_GUNSLINGER;
@@ -5123,13 +5123,13 @@ int pc_mapid2jobid(unsigned short class_, int sex)
 		case MAPID_OKTOBERFEST:           return JOB_OKTOBERFEST;
 		case MAPID_SUMMER2:               return JOB_SUMMER2;
 	//2-1 Jobs
+		case MAPID_SUPER_NOVICE:          return JOB_SUPER_NOVICE;
 		case MAPID_KNIGHT:                return JOB_KNIGHT;
 		case MAPID_WIZARD:                return JOB_WIZARD;
 		case MAPID_HUNTER:                return JOB_HUNTER;
 		case MAPID_PRIEST:                return JOB_PRIEST;
 		case MAPID_BLACKSMITH:            return JOB_BLACKSMITH;
 		case MAPID_ASSASSIN:              return JOB_ASSASSIN;
-		case MAPID_SUPER_NOVICE_E:        return JOB_SUPER_NOVICE_E;
 		case MAPID_STAR_GLADIATOR:        return JOB_STAR_GLADIATOR;
 		case MAPID_REBELLION:             return JOB_REBELLION;
 		case MAPID_KAGEROUOBORO:          return sex?JOB_KAGEROU:JOB_OBORO;
@@ -5189,6 +5189,7 @@ int pc_mapid2jobid(unsigned short class_, int sex)
 		case MAPID_BABY_ALCHEMIST:        return JOB_BABY_ALCHEMIST;
 		case MAPID_BABY_ROGUE:            return JOB_BABY_ROGUE;
 	//3-1 Jobs
+		case MAPID_SUPER_NOVICE_E:        return JOB_SUPER_NOVICE_E;
 		case MAPID_RUNE_KNIGHT:           return JOB_RUNE_KNIGHT;
 		case MAPID_WARLOCK:               return JOB_WARLOCK;
 		case MAPID_RANGER:                return JOB_RANGER;
@@ -5573,7 +5574,7 @@ int pc_checkbaselevelup(struct map_session_data *sd)
 	status_calc_pc(sd,0);
 	status_percent_heal(&sd->bl,100,100);
 
-	if((sd->class_&MAPID_BASEMASK) == MAPID_SUPER_NOVICE || (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE_E)
+	if((sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE)
 	{
 		sc_start(&sd->bl,status_skill2sc(PR_KYRIE),100,1,skill_get_time(PR_KYRIE,1));
 		sc_start(&sd->bl,status_skill2sc(PR_IMPOSITIO),100,1,skill_get_time(PR_IMPOSITIO,1));
@@ -6660,7 +6661,7 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 	}
 
 	// activate Steel body if a super novice dies at 99+% exp [celest]
-	if (((sd->class_&MAPID_BASEMASK) == MAPID_SUPER_NOVICE || (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE_E) && !sd->state.snovice_dead_flag)
+	if ((sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE && !sd->state.snovice_dead_flag)
   	{
 		unsigned int next = pc_nextbaseexp(sd);
 		if( next == 0 ) next = pc_thisbaseexp(sd);
@@ -7593,8 +7594,9 @@ int pc_setdragon(TBL_PC* sd, int flag)
 	if( flag )
 	{
 		if( pc_checkskill(sd,RK_DRAGONTRAINING) > 0 )
-		{
-			if ((sd->class_&MAPID_THIRDMASK) == MAPID_BABY_RUNE && flag != 1)
+		{	// MAPID_THIRDMASK isnt good enough for a baby 3rd check. A custom mask value is used instead.
+			// MAPID_THIRDMASK (0x4fff) + JOBL_BABY (0x2000) = 0x6fff.
+			if ((sd->class_&0x6fff) == MAPID_BABY_RUNE && flag != 1)
 				flag = 1;// Baby Rune Knights only have a green dragon sprite.
 			switch ( flag )// Sets player to the requested dragon color.
 			{
@@ -7856,7 +7858,7 @@ int pc_setregistry(struct map_session_data *sd,const char *reg,int val,int type)
 	case 3: //Char reg
 		if( !strcmp(reg,"PC_DIE_COUNTER") && sd->die_counter != val )
 		{
-			i = (!sd->die_counter && ((sd->class_&MAPID_BASEMASK) == MAPID_SUPER_NOVICE || (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE_E));
+			i = (!sd->die_counter && (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE);
 			sd->die_counter = val;
 			if( i )
 				status_calc_pc(sd,0); // Lost the bonus.

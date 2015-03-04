@@ -4696,7 +4696,7 @@ ACMD_FUNC(mount)
 
 	// Checks for Knight, Crusader, Lord Knight, Paladin, Baby Knight, and Baby Crusader. [Rytech]
 	if (((sd->class_&MAPID_UPPERMASK) == MAPID_KNIGHT || (sd->class_&MAPID_UPPERMASK) == MAPID_CRUSADER) && 
-		(!((sd->class_&MAPID_THIRDMASK) >= MAPID_RUNE_KNIGHT && (sd->class_&MAPID_THIRDMASK) <= MAPID_BABY_CHASER)))
+		!((sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT || (sd->class_&MAPID_THIRDMASK) == MAPID_ROYAL_GUARD))
 		if (!pc_isriding(sd))// If not on a Peco Peco, check for required skill and mount if possiable.
 		{
 			if (!pc_checkskill(sd, KN_RIDING))
@@ -4715,8 +4715,7 @@ ACMD_FUNC(mount)
 		}
 
 	// Checks for Rune Knight, Trans Rune Knight, and Baby Rune Knight
-	else if ((sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT || (sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT_T || 
-		(sd->class_&MAPID_THIRDMASK) == MAPID_BABY_RUNE)
+	else if ((sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT)
 		if (!pc_isdragon(sd))// If not on a Dragon, check for required skill and mount if possiable.
 		{
 			if (!pc_checkskill(sd, RK_DRAGONTRAINING))
@@ -4735,8 +4734,7 @@ ACMD_FUNC(mount)
 		}
 
 	// Checks for Ranger, Trans Ranger, and Baby Ranger
-	else if ((sd->class_&MAPID_THIRDMASK) == MAPID_RANGER || (sd->class_&MAPID_THIRDMASK) == MAPID_RANGER_T || 
-		(sd->class_&MAPID_THIRDMASK) == MAPID_BABY_RANGER)
+	else if ((sd->class_&MAPID_THIRDMASK) == MAPID_RANGER)
 		if (!pc_iswugrider(sd))// If not on a Warg, check for required skill and mount if possiable.
 		{
 			if (!pc_checkskill(sd, RA_WUGRIDER))
@@ -4755,8 +4753,7 @@ ACMD_FUNC(mount)
 		}
 
 	// Checks for Mechanic, Trans Mechanic, and Baby Mechanic
-	else if ((sd->class_&MAPID_THIRDMASK) == MAPID_MECHANIC || (sd->class_&MAPID_THIRDMASK) == MAPID_MECHANIC_T || 
-		(sd->class_&MAPID_THIRDMASK) == MAPID_BABY_MECHANIC)
+	else if ((sd->class_&MAPID_THIRDMASK) == MAPID_MECHANIC)
 		if (!pc_ismadogear(sd))// If not on a Mado Gear, check for required skill and mount if possiable.
 		{
 			if (!pc_checkskill(sd, NC_MADOLICENCE))
@@ -4775,8 +4772,7 @@ ACMD_FUNC(mount)
 		}
 
 	// Checks for Royal Guard, Trans Royal Guard, and Baby Royal Guard
-	else if ((sd->class_&MAPID_THIRDMASK) == MAPID_ROYAL_GUARD || (sd->class_&MAPID_THIRDMASK) == MAPID_ROYAL_GUARD_T || 
-		(sd->class_&MAPID_THIRDMASK) == MAPID_BABY_GUARD)
+	else if ((sd->class_&MAPID_THIRDMASK) == MAPID_ROYAL_GUARD)
 		if (!pc_isriding(sd))// If not on a Gryphon, check for required skill and mount if possiable.
 		{
 			if (!pc_checkskill(sd, KN_RIDING))
@@ -4824,8 +4820,7 @@ ACMD_FUNC(dragon)
 	}
 
 	// Checks for Rune Knight, Trans Rune Knight, and Baby Rune Knight
-	if ((sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT || (sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT_T || 
-		(sd->class_&MAPID_THIRDMASK) == MAPID_BABY_RUNE)
+	if ((sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT)
 		if (!pc_isdragon(sd))// If not on a Dragon, check for required skill and mount if possiable.
 		{
 			if (!pc_checkskill(sd, RK_DRAGONTRAINING))
@@ -4833,8 +4828,9 @@ ACMD_FUNC(dragon)
 				clif_displaymessage(fd, msg_txt(705));// You must learn the Dragon Training skill to mount with your current job.
 				return -1;
 			}
-
-			if ((sd->class_&MAPID_THIRDMASK) == MAPID_BABY_RUNE && color != 1)
+			// MAPID_THIRDMASK isnt good enough for a baby 3rd check. A custom mask value is used instead.
+			// MAPID_THIRDMASK (0x4fff) + JOBL_BABY (0x2000) = 0x6fff.
+			if ((sd->class_&0x6fff) == MAPID_BABY_RUNE && color != 1)
 			{
 				clif_displaymessage(fd, msg_txt(717));// Baby Rune Knights can only mount on green dragons.
 				return -1;
@@ -4917,7 +4913,7 @@ ACMD_FUNC(cart)
 	nullpo_retr(-1, sd);
 
 	// Checks for all Marchant and Super Novice types
-	if ((sd->class_&MAPID_BASEMASK) == MAPID_MERCHANT || (sd->class_&MAPID_BASEMASK) == MAPID_SUPER_NOVICE)
+	if ((sd->class_&MAPID_BASEMASK) == MAPID_MERCHANT || (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE)
 		if (!pc_iscarton(sd))// If player has no cart, check for required skill and give one if possiable.
 		{
 			if (!pc_checkskill(sd, MC_PUSHCART))
