@@ -211,10 +211,9 @@ static void itemdb_jobid2mapid(unsigned int *bclass, unsigned int jobmask)
 	bclass[0]= bclass[1]= bclass[2]= 0;
 	//Base classes
 	if (jobmask & 1<<JOB_NOVICE)
-	{	//Novice, Super Novice, and Expanded Super Novice all share the same item permissions. [Rytech]
+	{	//Both Novice/Super-Novice are counted with the same ID
 		bclass[0] |= 1<<MAPID_NOVICE;
-		bclass[0] |= 1<<MAPID_SUPER_NOVICE;
-		bclass[1] |= 1<<MAPID_SUPER_NOVICE;
+		bclass[1] |= 1<<MAPID_NOVICE;
 	}
 	for (i = JOB_NOVICE+1; i <= JOB_THIEF; i++)
 	{

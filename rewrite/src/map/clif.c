@@ -12847,8 +12847,8 @@ void clif_parse_NoviceDoriDori(int fd, struct map_session_data *sd)
 		case MAPID_TAEKWON:
 			if (!sd->state.rest)
 				break;
-		case MAPID_SUPER_NOVICE://Should this be checked with BASEMASK? [Rytech]
-		case MAPID_SUPER_NOVICE_E:
+		case MAPID_SUPER_NOVICE:
+		//case MAPID_SUPER_NOVICE_E://Shouldnt be needed, but left here in case we do later. [Rytech]
 			sd->state.doridori=1;
 			break;	
 	}
@@ -12866,7 +12866,7 @@ void clif_parse_NoviceDoriDori(int fd, struct map_session_data *sd)
 ///       "Help me out~ Please~ T_T"
 void clif_parse_NoviceExplosionSpirits(int fd, struct map_session_data *sd)
 {
-	if( (( sd->class_&MAPID_BASEMASK ) == MAPID_SUPER_NOVICE || (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE_E) )
+	if( ( sd->class_&MAPID_UPPERMASK ) == MAPID_SUPER_NOVICE )
 	{
 		unsigned int next = pc_nextbaseexp(sd);
 
