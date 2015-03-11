@@ -6846,10 +6846,10 @@ int pc_readparam(struct map_session_data* sd,int type)
 	case SP_BASELEVEL:   val = sd->status.base_level; break;
 	case SP_JOBLEVEL:    val = sd->status.job_level; break;
 	case SP_CLASS:       val = sd->status.class_; break;
-	case SP_BASECLASS:   val = pc_mapid2jobid(sd->class_&MAPID_BASEMASK, sd->status.sex); break; //Extract base class tree. [Skotlex]
-	case SP_BASEJOB:     val = pc_mapid2jobid(sd->class_&MAPID_UPPERMASK, sd->status.sex); break; //Base job, extracting upper type.
-	case SP_BASETHIRD:   val = pc_mapid2jobid(sd->class_&MAPID_THIRDMASK, sd->status.sex); break; //Third job
-	case SP_UPPER:       val = sd->class_&JOBL_UPPER?1:(sd->class_&JOBL_BABY?2:0); break;
+	case SP_BASECLASS:   val = pc_mapid2jobid(sd->class_&MAPID_BASEMASK, sd->status.sex); break;//Checking 1st jobs.
+	case SP_BASEJOB:     val = pc_mapid2jobid(sd->class_&MAPID_UPPERMASK, sd->status.sex); break;//Checking 2st jobs.
+	case SP_BASETHIRD:   val = pc_mapid2jobid(sd->class_&MAPID_THIRDMASK, sd->status.sex); break;//Checking 3st jobs.
+	case SP_UPPER:       val = sd->class_&JOBL_UPPER?1:(sd->class_&JOBL_BABY?2:0); break;//Checking if a job is trans or baby.
 	case SP_SEX:         val = sd->status.sex; break;
 	case SP_WEIGHT:      val = sd->weight; break; // client shows value/10
 	case SP_MAXWEIGHT:   val = sd->max_weight; break; // client shows value/10
@@ -7602,14 +7602,19 @@ int pc_setdragon(TBL_PC* sd, int flag)
 			{
 				case 1:// Green Dragon
 					pc_setoption(sd, sd->sc.option | OPTION_DRAGON1);
+					break;
 				case 2:// Black Dragon
 					pc_setoption(sd, sd->sc.option | OPTION_DRAGON2);
+					break;
 				case 3:// White Dragon
 					pc_setoption(sd, sd->sc.option | OPTION_DRAGON3);
+					break;
 				case 4:// Blue Dragon
 					pc_setoption(sd, sd->sc.option | OPTION_DRAGON4);
+					break;
 				case 5:// Red Dragon
 					pc_setoption(sd, sd->sc.option | OPTION_DRAGON5);
+					break;
 			}
 		}
 	}

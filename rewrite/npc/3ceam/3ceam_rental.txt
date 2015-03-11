@@ -3,13 +3,14 @@
 //===== By: ================================================== 
 //= Rytech
 //===== Current Version: ===================================== 
-//= 1.0
+//= 1.1
 //===== Compatible With: ===================================== 
 //= 3CeAM r750+
 //===== Description: ========================================= 
 //= A NPC that offers a number of things players can rent.
 //===== Additional Comments: ================================= 
 //= 1.0 First release. [Rytech]
+//= 1.1 Added missing breaks in the dragon color selection code. [Rytech]
 //============================================================ 
 prontera,160,184,0	script	Rental Npc	50,{
 	mes "[Rental Npc]";
@@ -88,11 +89,11 @@ prontera,160,184,0	script	Rental Npc	50,{
 				mes "What dragon color would you like?";
 				switch(select("Green:Black:White:Blue:Red"))
 				{
-					case 1: setdragon(1);
-					case 2: setdragon(2);
-					case 3: setdragon(3);
-					case 4: setdragon(4);
-					case 5: setdragon(5);
+					case 1: setdragon(1); break;
+					case 2: setdragon(2); break;
+					case 3: setdragon(3); break;
+					case 4: setdragon(4); break;
+					case 5: setdragon(5); break;
 				}
 				close;
 			}

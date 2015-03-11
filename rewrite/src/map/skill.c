@@ -1161,14 +1161,26 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		break;
 	case LG_PINPOINTATTACK:
 		if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-		rate = 30 + 5 * (sd ? pc_checkskill(sd,LG_PINPOINTATTACK) : 1) + (sstatus->agi + status_get_lv(src)) / 10;
+		rate = 5 * (sd ? pc_checkskill(sd,LG_PINPOINTATTACK) : 5) + (sstatus->agi + status_get_lv(src)) / 10;
 		else
-		rate = 30 + 5 * (sd ? pc_checkskill(sd,LG_PINPOINTATTACK) : 1) + (sstatus->agi + 150) / 10;
+		rate = 5 * (sd ? pc_checkskill(sd,LG_PINPOINTATTACK) : 5) + (sstatus->agi + 150) / 10;
 		switch( skilllv )
 		{
-			case 1: sc_start(bl,SC_BLEEDING,rate,skilllv,skill_get_time(skillid,skilllv)); break;
-			case 2: if( dstsd && dstsd->spiritball && rand()%100 < rate ) pc_delspiritball(dstsd, dstsd->spiritball, 0); break;
-			default: skill_break_equip(bl,(skilllv == 3) ? EQP_SHIELD : (skilllv == 4) ? EQP_ARMOR : EQP_WEAPON,rate,BCT_ENEMY); break;
+			case 1://Gives Bleeding Status
+				sc_start(bl,SC_BLEEDING,rate,skilllv,skill_get_time(skillid,skilllv));
+				break;
+			case 2://Breaks Top Headgear
+				skill_break_equip(bl, EQP_HEAD_TOP, 100*rate, BCT_ENEMY);
+				break;
+			case 3://Breaks Shield
+				skill_break_equip(bl, EQP_SHIELD, 100*rate, BCT_ENEMY);
+				break;
+			case 4://Breaks Armor
+				skill_break_equip(bl, EQP_ARMOR, 100*rate, BCT_ENEMY);
+				break;
+			case 5://Breaks Weapon
+				skill_break_equip(bl, EQP_WEAPON, 100*rate, BCT_ENEMY);
+				break;
 		}
 		break;
 	case LG_MOONSLASHER:
