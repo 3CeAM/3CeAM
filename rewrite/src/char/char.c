@@ -2385,6 +2385,38 @@ int parse_fromlogin(int fd)
 								char_dat[i].status.skill[j].lv = 0;
 							}
 						}
+						// Removes Minstrel exclusive skills.
+						for(j = 2381; j <= 2383; j++) {
+							if (char_dat[i].status.skill[j].id > 0 && !char_dat[i].status.skill[j].flag) {
+								char_dat[i].status.skill_point += char_dat[i].status.skill[j].lv;
+								char_dat[i].status.skill[j].id = 0;
+								char_dat[i].status.skill[j].lv = 0;
+							}
+						}
+						// Removes Wanderer exclusive skills.
+						for(j = 2350; j <= 2352; j++) {
+							if (char_dat[i].status.skill[j].id > 0 && !char_dat[i].status.skill[j].flag) {
+								char_dat[i].status.skill_point += char_dat[i].status.skill[j].lv;
+								char_dat[i].status.skill[j].id = 0;
+								char_dat[i].status.skill[j].lv = 0;
+							}
+						}
+						// Removes Kagerou exclusive skills.
+						for(j = 3023; j <= 3025; j++) {
+							if (char_dat[i].status.skill[j].id > 0 && !char_dat[i].status.skill[j].flag) {
+								char_dat[i].status.skill_point += char_dat[i].status.skill[j].lv;
+								char_dat[i].status.skill[j].id = 0;
+								char_dat[i].status.skill[j].lv = 0;
+							}
+						}
+						// Removes Oboro exclusive skills.
+						for(j = 3026; j <= 3029; j++) {
+							if (char_dat[i].status.skill[j].id > 0 && !char_dat[i].status.skill[j].flag) {
+								char_dat[i].status.skill_point += char_dat[i].status.skill[j].lv;
+								char_dat[i].status.skill[j].id = 0;
+								char_dat[i].status.skill[j].lv = 0;
+							}
+						}
 					}
 					// to avoid any problem with equipment and invalid sex, equipment is unequiped.
 					for (j = 0; j < MAX_INVENTORY; j++) {

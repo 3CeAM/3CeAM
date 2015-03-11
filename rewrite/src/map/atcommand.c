@@ -4840,14 +4840,19 @@ ACMD_FUNC(dragon)
 			{
 				case 1:// Green Dragon
 					pc_setoption(sd, sd->sc.option | OPTION_DRAGON1);
+					break;
 				case 2:// Black Dragon
 					pc_setoption(sd, sd->sc.option | OPTION_DRAGON2);
+					break;
 				case 3:// White Dragon
 					pc_setoption(sd, sd->sc.option | OPTION_DRAGON3);
+					break;
 				case 4:// Blue Dragon
 					pc_setoption(sd, sd->sc.option | OPTION_DRAGON4);
+					break;
 				case 5:// Red Dragon
 					pc_setoption(sd, sd->sc.option | OPTION_DRAGON5);
+					break;
 			}
 
 			clif_displaymessage(fd, msg_txt(706));// You mounted on a Dragon.

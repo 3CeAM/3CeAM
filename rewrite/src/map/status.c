@@ -4811,8 +4811,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 			if( sd && (pc_isriding(sd)||pc_isdragon(sd)) )
 				val = 25;
 			else
-			if( sd && pc_iswugrider(sd) )
-				val = 10 * pc_checkskill(sd, RA_WUGRIDER);//10% increase per level. This should do. [Rytech]
+			if( sd && pc_iswugrider(sd) )//Formula confirmed from testing and finalized. Do not touch. [Rytech]
+				val = 15 + 5 * pc_checkskill(sd, RA_WUGRIDER);
 
 			speed_rate -= val;
 		}
