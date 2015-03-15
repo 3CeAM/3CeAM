@@ -4252,6 +4252,8 @@ static unsigned short status_calc_luk(struct block_list *bl, struct status_chang
 
 	if(sc->data[SC_CURSE])
 		return 0;
+	if(sc->data[SC_FULL_THROTTLE])
+		luk += luk * 20 / 100;
 	if(sc->data[SC_INCALLSTATUS])
 		luk += sc->data[SC_INCALLSTATUS]->val1;
 	if(sc->data[SC_INCLUK])
@@ -4299,6 +4301,12 @@ static unsigned short status_calc_batk(struct block_list *bl, struct status_chan
 		batk += sc->data[SC_ATKPOTION]->val1;
 	if(sc->data[SC_BATKFOOD])
 		batk += sc->data[SC_BATKFOOD]->val1;
+	if(sc->data[SC_GATLINGFEVER])
+		batk += sc->data[SC_GATLINGFEVER]->val3;
+	if(sc->data[SC_MADNESSCANCEL])
+		batk += 100;
+	if(sc->data[SC_FULL_SWING_K])
+		batk += sc->data[SC_FULL_SWING_K]->val1;
 	if(sc->data[SC_INCATKRATE])
 		batk += batk * sc->data[SC_INCATKRATE]->val1/100;
 	if(sc->data[SC_PROVOKE])
@@ -4309,6 +4317,10 @@ static unsigned short status_calc_batk(struct block_list *bl, struct status_chan
 		batk += batk * 3;
 	if(sc->data[SC_BLOODLUST])
 		batk += batk * sc->data[SC_BLOODLUST]->val2/100;
+	if(sc->data[SC_FLEET])
+		batk += batk * sc->data[SC_FLEET]->val3/100;
+	if(sc->data[SC__BLOODYLUST])
+		batk += batk * 32 / 100;
 	if(sc->data[SC_JOINTBEAT] && sc->data[SC_JOINTBEAT]->val2&BREAK_WAIST)
 		batk -= batk * 25/100;
 	if(sc->data[SC_CURSE])
@@ -4316,18 +4328,8 @@ static unsigned short status_calc_batk(struct block_list *bl, struct status_chan
 //Curse shouldn't effect on this?  <- Curse OR Bleeding??
 //	if(sc->data[SC_BLEEDING])
 //		batk -= batk * 25/100;
-	if(sc->data[SC_FLEET])
-		batk += batk * sc->data[SC_FLEET]->val3/100;
-	if(sc->data[SC_GATLINGFEVER])
-		batk += sc->data[SC_GATLINGFEVER]->val3;
-	if(sc->data[SC_MADNESSCANCEL])
-		batk += 100;
 	if(sc->data[SC__ENERVATION])
 		batk -= batk * sc->data[SC__ENERVATION]->val2 / 100;
-	if(sc->data[SC__BLOODYLUST])
-		batk += batk * 32 / 100;
-	if(sc->data[SC_FULL_SWING_K])
-		batk += sc->data[SC_FULL_SWING_K]->val1;
 
 	return (unsigned short)cap_value(batk,0,USHRT_MAX);
 }
@@ -4345,6 +4347,28 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += sc->data[SC_DRUMBATTLE]->val2;
 	if(sc->data[SC_VOLCANO])
 		watk += sc->data[SC_VOLCANO]->val2;
+	if(sc->data[SC_MERC_ATKUP])
+		watk += sc->data[SC_MERC_ATKUP]->val2;
+	if(sc->data[SC_FIGHTINGSPIRIT])
+		watk += sc->data[SC_FIGHTINGSPIRIT]->val1;
+	if(sc->data[SC_CAMOUFLAGE])
+		watk += 30 * sc->data[SC_CAMOUFLAGE]->val2;
+	if(sc->data[SC_STRIKING])
+		watk += sc->data[SC_STRIKING]->val2;
+	if(sc->data[SC_SHIELDSPELL_DEF] && sc->data[SC_SHIELDSPELL_DEF]->val1 == 3)
+		watk += sc->data[SC_SHIELDSPELL_DEF]->val2;
+	if( sc->data[SC_BANDING] && sc->data[SC_BANDING]->val2 > 1 )
+		watk += (10 + 10 * sc->data[SC_BANDING]->val1) * sc->data[SC_BANDING]->val2;
+	if(sc->data[SC_INSPIRATION])
+		watk += sc->data[SC_INSPIRATION]->val2;
+	if(sc->data[SC_GT_CHANGE])
+		watk += sc->data[SC_GT_CHANGE]->val2;
+	if(sc->data[SC_RUSHWINDMILL])
+		watk += sc->data[SC_RUSHWINDMILL]->val3;
+	if(sc->data[SC_SATURDAYNIGHTFEVER])
+		watk += 100 * sc->data[SC_SATURDAYNIGHTFEVER]->val1;
+	if(sc->data[SC_ODINS_POWER])
+		watk += 40 + 30 * sc->data[SC_ODINS_POWER]->val1;
 	if(sc->data[SC_INCATKRATE])
 		watk += watk * sc->data[SC_INCATKRATE]->val1/100;
 	if(sc->data[SC_PROVOKE])
@@ -4367,38 +4391,17 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += watk * sc->data[SC_BLOODLUST]->val2/100;
 	if(sc->data[SC_FLEET])
 		watk += watk * sc->data[SC_FLEET]->val3/100;
+	if(sc->data[SC__BLOODYLUST])
+		watk += watk * 32 / 100;
+	if(sc->data[SC_DOHU_KOUKAI])//Recheck to see if it increases BATK [Rytech]
+		watk += watk * (15 * sc->data[SC_DOHU_KOUKAI]->val2) / 100;
 	if(sc->data[SC_CURSE])
 		watk -= watk * 25/100;
 	if(sc->data[SC_STRIPWEAPON])
 		watk -= watk * sc->data[SC_STRIPWEAPON]->val2/100;
-	if(sc->data[SC_MERC_ATKUP])
-		watk += sc->data[SC_MERC_ATKUP]->val2;
-	if(sc->data[SC_FIGHTINGSPIRIT])
-		watk += sc->data[SC_FIGHTINGSPIRIT]->val1;
-	if(sc->data[SC_CAMOUFLAGE])
-		watk += 30 * sc->data[SC_CAMOUFLAGE]->val2;
 	if(sc->data[SC__ENERVATION])
 		watk -= watk * sc->data[SC__ENERVATION]->val2 / 100;
-	if(sc->data[SC__BLOODYLUST])
-		watk += watk * 32 / 100;
-	if(sc->data[SC_STRIKING])
-		watk += sc->data[SC_STRIKING]->val2;
-	if(sc->data[SC_SHIELDSPELL_DEF] && sc->data[SC_SHIELDSPELL_DEF]->val1 == 3)
-		watk += sc->data[SC_SHIELDSPELL_DEF]->val2;
-	if( sc->data[SC_BANDING] && sc->data[SC_BANDING]->val2 > 1 )
-		watk += (10 + 10 * sc->data[SC_BANDING]->val1) * sc->data[SC_BANDING]->val2;
-	if(sc->data[SC_INSPIRATION])
-		watk += sc->data[SC_INSPIRATION]->val2;
-	if(sc->data[SC_GT_CHANGE])
-		watk += sc->data[SC_GT_CHANGE]->val2;
-	if(sc->data[SC_RUSHWINDMILL])
-		watk += sc->data[SC_RUSHWINDMILL]->val3;
-	if(sc->data[SC_SATURDAYNIGHTFEVER])
-		watk += 100 * sc->data[SC_SATURDAYNIGHTFEVER]->val1;
-	if(sc->data[SC_ODINS_POWER])
-		watk += 40 + 30 * sc->data[SC_ODINS_POWER]->val1;
-	if(sc->data[SC_DOHU_KOUKAI])
-		watk += watk * (15 * sc->data[SC_DOHU_KOUKAI]->val2) / 100;
+	//Not bothering to organize these until I rework the elemental spirits. [Rytech]
 	if( sc->data[SC_TROPIC_OPTION] )
 		watk += sc->data[SC_TROPIC_OPTION]->val2;
 	if( sc->data[SC_HEATER_OPTION] )
@@ -4422,20 +4425,21 @@ static unsigned short status_calc_matk(struct block_list *bl, struct status_chan
 		matk += sc->data[SC_MATKPOTION]->val1;
 	if(sc->data[SC_MATKFOOD])
 		matk += sc->data[SC_MATKFOOD]->val1;
-	if(sc->data[SC_MAGICPOWER])
-		matk += matk * sc->data[SC_MAGICPOWER]->val3/100;
-	if(sc->data[SC_MINDBREAKER])
-		matk += matk * sc->data[SC_MINDBREAKER]->val2/100;
-	if(sc->data[SC_INCMATKRATE])
-		matk += matk * sc->data[SC_INCMATKRATE]->val1/100;
 	if(sc->data[SC_MOONLITSERENADE])
 		matk += sc->data[SC_MOONLITSERENADE]->val3;
 	if(sc->data[SC_MANA_PLUS])
 		matk += sc->data[SC_MANA_PLUS]->val1;
 	if(sc->data[SC_ODINS_POWER])
 		matk += 40 + 30 * sc->data[SC_ODINS_POWER]->val1;
-	if(sc->data[SC_IZAYOI])
+	if(sc->data[SC_IZAYOI])//Recheck the MATK increase please. [Rytech]
 		matk += sc->data[SC_IZAYOI]->val2;
+	if(sc->data[SC_MAGICPOWER])
+		matk += matk * sc->data[SC_MAGICPOWER]->val3/100;
+	if(sc->data[SC_MINDBREAKER])
+		matk += matk * sc->data[SC_MINDBREAKER]->val2/100;
+	if(sc->data[SC_INCMATKRATE])
+		matk += matk * sc->data[SC_INCMATKRATE]->val1/100;
+	//Not bothering to organize these until I rework the elemental spirits. [Rytech]
 	if(sc->data[SC_AQUAPLAY_OPTION])
 		matk += sc->data[SC_AQUAPLAY_OPTION]->val2;
 	if(sc->data[SC_CHILLY_AIR_OPTION])
@@ -4461,14 +4465,14 @@ static signed short status_calc_critical(struct block_list *bl, struct status_ch
 		critical += sc->data[SC_TRUESIGHT]->val2;
 	if(sc->data[SC_CLOAKING])
 		critical += critical;
+	if(sc->data[SC_BEYONDOFWARCRY])// Recheck. May be incorrect.
+		critical += 10 * sc->data[SC_BEYONDOFWARCRY]->val3;
 	if(sc->data[SC_CAMOUFLAGE])
 		critical += critical * ( 10 * sc->data[SC_CAMOUFLAGE]->val2 ) / 100;
 	if(sc->data[SC__INVISIBILITY])
 		critical += critical * sc->data[SC__INVISIBILITY]->val2 / 100;
 	if(sc->data[SC__UNLUCKY])
 		critical -= critical * sc->data[SC__UNLUCKY]->val2 / 100;
-	if(sc->data[SC_BEYONDOFWARCRY])// Recheck. May be incorrect.
-		critical += 10 * sc->data[SC_BEYONDOFWARCRY]->val3;
 	if(sc->data[SC_STRIKING])
 		critical += critical * sc->data[SC_STRIKING]->val1 / 100;
 
@@ -4491,22 +4495,24 @@ static signed short status_calc_hit(struct block_list *bl, struct status_change 
 		hit += sc->data[SC_HUMMING]->val2;
 	if(sc->data[SC_CONCENTRATION])
 		hit += sc->data[SC_CONCENTRATION]->val3;
-	if(sc->data[SC_INCHITRATE])
-		hit += hit * sc->data[SC_INCHITRATE]->val1/100;
-	if(sc->data[SC_BLIND] || sc->data[SC_PYREXIA])
-		hit -= hit * 25/100;
-	if(sc->data[SC_ADJUSTMENT])
-		hit -= 30;
 	if(sc->data[SC_INCREASING])
 		hit += 20; // RockmanEXE; changed based on updated [Reddozen]
 	if(sc->data[SC_MERC_HITUP])
 		hit += sc->data[SC_MERC_HITUP]->val2;
+	if(sc->data[SC_INSPIRATION])//Unable to add job level check at this time with current coding. Will add later. [Rytech]
+		hit += 5 * sc->data[SC_INSPIRATION]->val1 + 25;
+	if(sc->data[SC_INCHITRATE])
+		hit += hit * sc->data[SC_INCHITRATE]->val1/100;
+	if(sc->data[SC_ADJUSTMENT])
+		hit -= 30;
+	if(sc->data[SC_BLIND])
+		hit -= hit * 25/100;
+	if(sc->data[SC_PYREXIA])
+		hit -= hit * 25/100;
 	if(sc->data[SC__GROOMY])
 		hit -= hit * sc->data[SC__GROOMY]->val2 / 100;
 	if(sc->data[SC_FEAR])
 		hit -= hit * 20 / 100;
-	if(sc->data[SC_INSPIRATION])//Unable to add job level check at this time with current coding. Will add later. [Rytech]
-		hit += 5 * sc->data[SC_INSPIRATION]->val1 + 25;
 	if ( sc->data[SC_TEARGAS] )
 		hit -= hit * 50 / 100;
 	return (short)cap_value(hit,1,SHRT_MAX);
@@ -4533,48 +4539,51 @@ static signed short status_calc_flee(struct block_list *bl, struct status_change
 		flee += sc->data[SC_WHISTLE]->val2;
 	if(sc->data[SC_WINDWALK])
 		flee += sc->data[SC_WINDWALK]->val2;
-	if(sc->data[SC_INCFLEERATE])
-		flee += flee * sc->data[SC_INCFLEERATE]->val1/100;
 	if(sc->data[SC_VIOLENTGALE])
 		flee += sc->data[SC_VIOLENTGALE]->val2;
 	if(sc->data[SC_MOON_COMFORT]) //SG skill [Komurka]
 		flee += sc->data[SC_MOON_COMFORT]->val2;
 	if(sc->data[SC_CLOSECONFINE])
 		flee += 10;
-	if(sc->data[SC_SPIDERWEB] && sc->data[SC_SPIDERWEB]->val1)
-		flee -= flee * 50/100;
-	if(sc->data[SC_BERSERK])
-		flee -= flee * 50/100;
-	if(sc->data[SC_BLIND] || sc->data[SC_PYREXIA])
-		flee -= flee * 25/100;
 	if(sc->data[SC_ADJUSTMENT])
 		flee += 30;
-	if(sc->data[SC_GATLINGFEVER])
-		flee -= sc->data[SC_GATLINGFEVER]->val4;
 	if(sc->data[SC_SPEED])
 		flee += 10 + sc->data[SC_SPEED]->val1 * 10;
 	if(sc->data[SC_MERC_FLEEUP])
 		flee += sc->data[SC_MERC_FLEEUP]->val2;
-	if(sc->data[SC_FEAR])
-		flee -= flee * 20 / 100;
-	if(sc->data[SC_PARALYSE])
-		flee -= flee / 10; // 10% Flee reduction
 	if( sc->data[SC_HALLUCINATIONWALK] )
 		flee += sc->data[SC_HALLUCINATIONWALK]->val2;
+	if(sc->data[SC_INCFLEERATE])
+		flee += flee * sc->data[SC_INCFLEERATE]->val1/100;
+	if ( sc->data[SC_SMOKEPOWDER] )
+		flee += flee * 20 / 100;
+	if(sc->data[SC_GATLINGFEVER])
+		flee -= sc->data[SC_GATLINGFEVER]->val4;
+	if( sc->data[SC_GLOOMYDAY] )
+		flee -= sc->data[SC_GLOOMYDAY]->val2;
+	if ( sc->data[SC_C_MARKER] )
+		flee -= 10;
+	if(sc->data[SC_SPIDERWEB] && sc->data[SC_SPIDERWEB]->val1)
+		flee -= flee * 50/100;
+	if(sc->data[SC_BERSERK])
+		flee -= flee * 50/100;
+	if(sc->data[SC_BLIND])
+		flee -= flee * 25/100;
+	if(sc->data[SC_FEAR])
+		flee -= flee * 20 / 100;
+	if(sc->data[SC_PYREXIA])
+		flee -= flee * 25/100;
+	if(sc->data[SC_PARALYSE])
+		flee -= flee * 10 / 100; // 10% Flee reduction
 	if(sc->data[SC_INFRAREDSCAN])
 		flee -= flee * 30 / 100;
 	if( sc->data[SC__LAZINESS] )
 		flee -= flee * sc->data[SC__LAZINESS]->val2 / 100;
-	if( sc->data[SC_GLOOMYDAY] )
-		flee -= sc->data[SC_GLOOMYDAY]->val2;
 	if( sc->data[SC_SATURDAYNIGHTFEVER] )
 		flee -= flee * (40 + 10 * sc->data[SC_SATURDAYNIGHTFEVER]->val1) / 100;
-	if ( sc->data[SC_SMOKEPOWDER] )
-		flee += flee * 20 / 100;
 	if ( sc->data[SC_TEARGAS] )
 		flee -= flee * 50 / 100;
-	if ( sc->data[SC_C_MARKER] )
-		flee -= 10;
+	//Not bothering to organize these until I rework the elemental spirits. [Rytech]
 	if( sc->data[SC_WATER_BARRIER] )
 		flee -= sc->data[SC_WATER_BARRIER]->val3;
 	if( sc->data[SC_WIND_STEP_OPTION] )
@@ -4623,8 +4632,24 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 		def += sc->data[SC_DRUMBATTLE]->val3;
 	if(sc->data[SC_DEFENCE])	//[orn]
 		def += sc->data[SC_DEFENCE]->val2 ;
+	if(sc->data[SC_STONEHARDSKIN])// Final DEF increase divided by 10 since were using classic (pre-renewal) mechanics. [Rytech]
+		def += sc->data[SC_STONEHARDSKIN]->val1;
+	if( sc->data[SC_SHIELDSPELL_REF] && sc->data[SC_SHIELDSPELL_REF]->val1 == 2 )
+		def += sc->data[SC_SHIELDSPELL_REF]->val2;
+	if( sc->data[SC_PRESTIGE] )
+		def += sc->data[SC_PRESTIGE]->val1;
+	if( sc->data[SC_BANDING] && sc->data[SC_BANDING]->val2 > 1 )//DEF formula divided by 10 to balance it for us on pre_renewal mechanics. [Rytech]
+		def += (5 + sc->data[SC_BANDING]->val1) * sc->data[SC_BANDING]->val2 / 10;
 	if(sc->data[SC_INCDEFRATE])
 		def += def * sc->data[SC_INCDEFRATE]->val1/100;
+	if( sc->data[SC_NEUTRALBARRIER] )
+		def += def * ( 10 + 5 * sc->data[SC_NEUTRALBARRIER]->val1 ) / 100;
+	if( sc->data[SC_ECHOSONG] )
+		def += def * sc->data[SC_ECHOSONG]->val3 / 100;
+	if(sc->data[SC_DOHU_KOUKAI])//Does this also increase DEF gained from refinement bonuses? Also need offical DEF increase value. [Rytech]
+		def += def * (5 * sc->data[SC_DOHU_KOUKAI]->val2) / 100;
+	if(sc->data[SC_ODINS_POWER])
+		def -= 2 * sc->data[SC_ODINS_POWER]->val1;
 	if(sc->data[SC_STONE] && sc->opt1 == OPT1_STONE)
 		def >>=1;
 	if(sc->data[SC_FREEZE])
@@ -4641,34 +4666,19 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 		def -= def * sc->data[SC_STRIPSHIELD]->val2/100;
 	if (sc->data[SC_FLING])
 		def -= def * (sc->data[SC_FLING]->val2)/100;
-	if(sc->data[SC_STONEHARDSKIN])// Final DEF increase divided by 10 since were using classic (pre-renewal) mechanics. [Rytech]
-		def += sc->data[SC_STONEHARDSKIN]->val1;
 	if( sc->data[SC_FREEZING] )
 		def -= def * 10 / 100;
 	if(sc->data[SC_CAMOUFLAGE])
 		def -= def * ( 5 * sc->data[SC_CAMOUFLAGE]->val2 ) / 100;
 	if( sc->data[SC_ANALYZE] )
 		def -= def * ( 14 * sc->data[SC_ANALYZE]->val1 ) / 100;
-	if( sc->data[SC_NEUTRALBARRIER] )
-		def += def * ( 10 + 5 * sc->data[SC_NEUTRALBARRIER]->val1 ) / 100;
 	if( sc->data[SC__BLOODYLUST] )
 		def -= def * 55 / 100;
-	if( sc->data[SC_SHIELDSPELL_REF] && sc->data[SC_SHIELDSPELL_REF]->val1 == 2 )
-		def += sc->data[SC_SHIELDSPELL_REF]->val2;
-	if( sc->data[SC_PRESTIGE] )
-		def += sc->data[SC_PRESTIGE]->val1;
-	if( sc->data[SC_BANDING] && sc->data[SC_BANDING]->val2 > 1 )//DEF formula divided by 10 to balance it for us on pre_renewal mechanics. [Rytech]
-		def += (5 + sc->data[SC_BANDING]->val1) * sc->data[SC_BANDING]->val2 / 10;
-	if( sc->data[SC_ECHOSONG] )
-		def += def * sc->data[SC_ECHOSONG]->val3 / 100;
 	if(sc->data[SC_SATURDAYNIGHTFEVER])
 		def -= def * (10 + 10 * sc->data[SC_SATURDAYNIGHTFEVER]->val1) / 100;
 	if(sc->data[SC_EARTHDRIVE])
 		def -= def * 25 / 100;
-	if(sc->data[SC_ODINS_POWER])
-		def -= 2 * sc->data[SC_ODINS_POWER]->val1;
-	if(sc->data[SC_DOHU_KOUKAI])//Does this also increase DEF gained from refinement bonuses? Also need offical DEF increase value. [Rytech]
-		def += def * (5 * sc->data[SC_DOHU_KOUKAI]->val2) / 100;
+	//Not bothering to organize these until I rework the elemental spirits. [Rytech]
 	if( sc->data[SC_ROCK_CRUSHER] )
 		def -= def * sc->data[SC_ROCK_CRUSHER]->val2 / 100;
 	if( sc->data[SC_POWER_OF_GAIA] )
@@ -4690,6 +4700,8 @@ static signed short status_calc_def2(struct block_list *bl, struct status_change
 		return 1;
 	if(sc->data[SC_SUN_COMFORT])
 		def2 += sc->data[SC_SUN_COMFORT]->val2;
+	if( sc->data[SC_GT_REVITALIZE] )
+		def2 += sc->data[SC_GT_REVITALIZE]->val2;
 	if(sc->data[SC_ANGELUS])
 		def2 += def2 * sc->data[SC_ANGELUS]->val2/100;
 	if(sc->data[SC_CONCENTRATION])
@@ -4711,8 +4723,6 @@ static signed short status_calc_def2(struct block_list *bl, struct status_change
 		def2 -= def2 * 10 / 100;
 	if(sc->data[SC_ANALYZE])
 		def2 -= def2 * ( 14 * sc->data[SC_ANALYZE]->val1 ) / 100;
-	if( sc->data[SC_GT_REVITALIZE] )
-		def2 += sc->data[SC_GT_REVITALIZE]->val2;
 
 	return (short)cap_value(def2,1,SHRT_MAX);
 }
@@ -4732,20 +4742,18 @@ static signed char status_calc_mdef(struct block_list *bl, struct status_change 
 		return 90;
 	if(sc->data[SC_UNLIMIT])
 		return 1;
-	if(sc->data[SC_ARMORCHANGE])
-		mdef += sc->data[SC_ARMORCHANGE]->val3;
-	if(sc->data[SC_STONE] && sc->opt1 == OPT1_STONE)
-		mdef += 25*mdef/100;
-	if(sc->data[SC_FREEZE])
-		mdef += 25*mdef/100;
 	if(sc->data[SC_ENDURE] && sc->data[SC_ENDURE]->val4 == 0)
 		mdef += sc->data[SC_ENDURE]->val1;
 	if(sc->data[SC_CONCENTRATION])
 		mdef += 1; //Skill info says it adds a fixed 1 Mdef point.
+	if(sc->data[SC_ARMORCHANGE])
+		mdef += sc->data[SC_ARMORCHANGE]->val3;
 	if(sc->data[SC_STONEHARDSKIN])// Final MDEF increase divided by 10 since were using classic (pre-renewal) mechanics. [Rytech]
 		mdef += sc->data[SC_STONEHARDSKIN]->val1;
-	if(sc->data[SC_ANALYZE])
-		mdef -= mdef * ( 14 * sc->data[SC_ANALYZE]->val1 ) / 100;
+	if(sc->data[SC_STONE] && sc->opt1 == OPT1_STONE)
+		mdef += 25*mdef/100;
+	if(sc->data[SC_FREEZE])
+		mdef += 25*mdef/100;
 	if( sc->data[SC_NEUTRALBARRIER] )
 		mdef += mdef * ( 10 + 5 * sc->data[SC_NEUTRALBARRIER]->val1 ) / 100;
 	if(sc->data[SC_SYMPHONYOFLOVER])
@@ -4756,6 +4764,9 @@ static signed char status_calc_mdef(struct block_list *bl, struct status_change 
 				mdef = 0;}
 	if(sc->data[SC_ODINS_POWER])
 		mdef -= 2 * sc->data[SC_ODINS_POWER]->val1;
+	if(sc->data[SC_ANALYZE])
+		mdef -= mdef * ( 14 * sc->data[SC_ANALYZE]->val1 ) / 100;
+	//Not bothering to organize these until I rework the elemental spirits. [Rytech]
 	if(sc->data[SC_WATER_BARRIER])
 		mdef += sc->data[SC_WATER_BARRIER]->val2;
 
@@ -4835,9 +4846,9 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				if( sd && sc->data[SC_DANCING] )
 					val = max( val, 500 - (40 + 10 * (sc->data[SC_SPIRIT] && sc->data[SC_SPIRIT]->val2 == SL_BARDDANCER)) * pc_checkskill(sd,(sd->status.sex?BA_MUSICALLESSON:DC_DANCINGLESSON)) );
 
-				if( sc->data[SC_DECREASEAGI] || sc->data[SC_ADORAMUS] )
+				if( sc->data[SC_DECREASEAGI] )
 					val = max( val, 25 );
-				if( sc->data[SC_QUAGMIRE] || sc->data[SC_HALLUCINATIONWALK_POSTDELAY] /*|| sc->data[SC_PARALYSE]*/ )
+				if( sc->data[SC_QUAGMIRE] )
 					val = max( val, 50 );
 				if( sc->data[SC_DONTFORGETME] )
 					val = max( val, sc->data[SC_DONTFORGETME]->val3 );
@@ -4861,12 +4872,14 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 					val = max( val, sc->data[SC_SUITON]->val3 );
 				if( sc->data[SC_SWOO] )
 					val = max( val, 300 );
+				if( sc->data[SC_ADORAMUS] )
+					val = max( val, 25 );
+				if( sc->data[SC_HALLUCINATIONWALK_POSTDELAY] )
+					val = max( val, 50 );
 				if( sc->data[SC_FREEZING] )
 					val = max( val, 50 );
-				/* Enable this if Gravity reviewed the skill behavior.
-				   Currently the movement speed reduction does not work.
 				if( sc->data[SC_PARALYSE] )
-					val = max( val, 50 );*/
+					val = max( val, 10 );
 				if( sc->data[SC_MARSHOFABYSS] )
 					val = max( val, sc->data[SC_MARSHOFABYSS]->val3 );
 				if( sc->data[SC_CAMOUFLAGE] && sc->data[SC_CAMOUFLAGE]->val1 > 2 )
@@ -4877,6 +4890,7 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 					val = max( val, 25);
 				if( sc->data[SC_BANDING_DEFENCE] )
 					val = max( val, sc->data[SC_BANDING_DEFENCE]->val1 );//+90% walking speed.
+				//Not bothering to organize these until I rework the elemental spirits. [Rytech]
 				if( sc->data[SC_ROCK_CRUSHER_ATK] )
 					val = max( val, sc->data[SC_ROCK_CRUSHER_ATK]->val2 );
 				if( sc->data[SC_POWER_OF_GAIA] )
@@ -4917,18 +4931,18 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				val = max( val, 10 * sc->data[SC_AVOID]->val1 );
 			if( sc->data[SC_INVINCIBLE] && !sc->data[SC_INVINCIBLEOFF] )
 				val = max( val, 75 );
-			if( sc->data[SC_CLOAKINGEXCEED] )
-				val = max( val, sc->data[SC_CLOAKINGEXCEED]->val3);
 			if( sc->data[SC_ACCELERATION] )
 				val = max( val, 25 );
-			if( sc->data[SC_HOVERING] )
-				val = max( val, 10 );
+			if( sc->data[SC_CLOAKINGEXCEED] )
+				val = max( val, sc->data[SC_CLOAKINGEXCEED]->val3);
+			if( sc->data[SC_SWINGDANCE] )
+				val = max( val, 25 );
 			if( sc->data[SC_GN_CARTBOOST] )
 				val = max( val, sc->data[SC_GN_CARTBOOST]->val2 );
-			if( sc->data[SC_SWINGDANCE] )
-				val = max( val, sc->data[SC_SWINGDANCE]->val3 );
+			//I can only guess Full Throttles placement and speed increase right now. [Rytech]
 			if( sc->data[SC_FULL_THROTTLE] )
-				val = max( val, 25 );
+				val = max( val, 100 );
+			//Not bothering to organize these until I rework the elemental spirits. [Rytech]
 			if( sc->data[SC_WIND_STEP_OPTION] )
 				val = max( val, sc->data[SC_WIND_STEP_OPTION]->val2 );
 
@@ -5023,10 +5037,20 @@ static short status_calc_aspd_rate(struct block_list *bl, struct status_change *
 		aspd_rate -= max;
 
 	  	//These stack with the rest of bonuses.
+		max = 0;
 		if( sc->data[SC_BERSERK] )
-			aspd_rate -= 300;
-		else if( sc->data[SC_MADNESSCANCEL] )
-			aspd_rate -= 200;
+			max = 300;
+
+		if( sc->data[SC_MADNESSCANCEL] && max < 200 )
+			max = 200;
+
+		if( sc->data[SC_SWINGDANCE] && max < (10 * sc->data[SC_SWINGDANCE]->val3) )
+			max = 10 * sc->data[SC_SWINGDANCE]->val3;
+
+		if( sc->data[SC_DANCEWITHWUG] && max < (10 * sc->data[SC_DANCEWITHWUG]->val3) )
+			max = 10 * sc->data[SC_DANCEWITHWUG]->val3;
+
+		aspd_rate -= max;
 	}
 
 	if( sc->data[i=SC_ASPDPOTION3] ||
@@ -5034,6 +5058,14 @@ static short status_calc_aspd_rate(struct block_list *bl, struct status_change *
 		sc->data[i=SC_ASPDPOTION1] ||
 		sc->data[i=SC_ASPDPOTION0])
 		aspd_rate -= sc->data[i]->val2;
+	if( sc->data[SC_FIGHTINGSPIRIT] )
+		aspd_rate -= 10 * sc->data[SC_FIGHTINGSPIRIT]->val2;
+	if( sc->data[SC_GT_CHANGE] )
+		aspd_rate -= 10 * sc->data[SC_GT_CHANGE]->val3;
+	if( sc->data[SC_BOOST500] )
+		aspd_rate -= 10 * sc->data[SC_BOOST500]->val1;
+	if(sc->data[SC_EXTRACT_SALAMINE_JUICE])
+		aspd_rate -= 10 * sc->data[SC_EXTRACT_SALAMINE_JUICE]->val1;
 	if( sc->data[SC_DONTFORGETME] )
 		aspd_rate += 10 * sc->data[SC_DONTFORGETME]->val2;
 	if( sc->data[SC_LONGING] )
@@ -5059,32 +5091,20 @@ static short status_calc_aspd_rate(struct block_list *bl, struct status_change *
 		aspd_rate += 150;
 	if( sc->data[SC_HALLUCINATIONWALK_POSTDELAY] )
 		aspd_rate += 500;
-	if( sc->data[SC_FIGHTINGSPIRIT] && sc->data[SC_FIGHTINGSPIRIT]->val2 )
-		aspd_rate -= sc->data[SC_FIGHTINGSPIRIT]->val2;
 	if( sc->data[SC_PARALYSE] )
 		aspd_rate += 100;
 	if( sc->data[SC__BODYPAINT] )
-		aspd_rate += aspd_rate * (5 * sc->data[SC__BODYPAINT]->val1) / 100;
+		aspd_rate += 10 * (5 * sc->data[SC__BODYPAINT]->val1);
 	if( sc->data[SC__INVISIBILITY] )
-		aspd_rate += aspd_rate * sc->data[SC__INVISIBILITY]->val3 / 100;
+		aspd_rate += 10 * sc->data[SC__INVISIBILITY]->val3;
 	if( sc->data[SC__GROOMY] )
-		aspd_rate += aspd_rate * sc->data[SC__GROOMY]->val3 / 100;
-	if( sc->data[SC_SWINGDANCE] )
-		aspd_rate -= aspd_rate * sc->data[SC_SWINGDANCE]->val3 / 100;
+		aspd_rate += 10 * sc->data[SC__GROOMY]->val3;
 	if( sc->data[SC_GLOOMYDAY] )
-		aspd_rate += aspd_rate * sc->data[SC_GLOOMYDAY]->val3 / 100;
-	if( sc->data[SC_DANCEWITHWUG] )
-		aspd_rate -= aspd_rate * sc->data[SC_DANCEWITHWUG]->val3 / 100;	
+		aspd_rate += 10 * sc->data[SC_GLOOMYDAY]->val3;
 	if( sc->data[SC_EARTHDRIVE] )
-		aspd_rate += aspd_rate * 25 / 100;
-	if( sc->data[SC_GT_CHANGE] )
-		aspd_rate -= aspd_rate * sc->data[SC_GT_CHANGE]->val3 / 100;
+		aspd_rate += 250;
 	if( sc->data[SC_MELON_BOMB] )
-		aspd_rate += aspd_rate * sc->data[SC_MELON_BOMB]->val1 / 100;
-	if( sc->data[SC_BOOST500] )
-		aspd_rate -= aspd_rate * sc->data[SC_BOOST500]->val1/100;
-	if(sc->data[SC_EXTRACT_SALAMINE_JUICE])
-		aspd_rate -= aspd_rate * sc->data[SC_EXTRACT_SALAMINE_JUICE]->val1/100;
+		aspd_rate += 10 * sc->data[SC_MELON_BOMB]->val1;
 
 	return (short)cap_value(aspd_rate,0,SHRT_MAX);
 }
@@ -5109,48 +5129,47 @@ static unsigned int status_calc_maxhp(struct block_list *bl, struct status_chang
 	if(!sc || !sc->count)
 		return cap_value(maxhp,1,UINT_MAX);
 
+	if(sc->data[SC_LERADSDEW])
+		maxhp += sc->data[SC_LERADSDEW]->val3;
 	if(sc->data[SC_INCMHPRATE])
 		maxhp += maxhp * sc->data[SC_INCMHPRATE]->val1/100;
 	if(sc->data[SC_APPLEIDUN])
 		maxhp += maxhp * sc->data[SC_APPLEIDUN]->val2/100;
 	if(sc->data[SC_DELUGE])
 		maxhp += maxhp * sc->data[SC_DELUGE]->val2/100;
-	if(sc->data[SC_BERSERK] )
+	if(sc->data[SC_BERSERK])
 		maxhp += maxhp * 2;
-	if(sc->data[SC_MARIONETTE])
-		maxhp -= 1000;
-
 	if(sc->data[SC_MERC_HPUP])
 		maxhp += maxhp * sc->data[SC_MERC_HPUP]->val2/100;
-
 	if(sc->data[SC_EPICLESIS])
 		maxhp += maxhp * 5 * sc->data[SC_EPICLESIS]->val1 / 100;
+	if(sc->data[SC_FORCEOFVANGUARD])
+		maxhp += maxhp * 3 * sc->data[SC_FORCEOFVANGUARD]->val1 / 100;
+	if(sc->data[SC_RAISINGDRAGON])
+		maxhp += maxhp * (2 + sc->data[SC_RAISINGDRAGON]->val1) / 100;
+	if(sc->data[SC_GT_REVITALIZE])
+		maxhp += maxhp * (2 * sc->data[SC_GT_REVITALIZE]->val1) / 100;
+	if(sc->data[SC_MUSTLE_M])
+		maxhp += maxhp * sc->data[SC_MUSTLE_M]->val1/100;
+	if(sc->data[SC_INSPIRATION])//Snce it gives a percentage and fixed amount, should be last on percentage calculations list. [Rytech]
+		maxhp += maxhp * 5 * sc->data[SC_INSPIRATION]->val1 / 100 + 600 * sc->data[SC_INSPIRATION]->val1;
+	if(sc->data[SC_MARIONETTE])
+		maxhp -= 1000;
 	if(sc->data[SC_VENOMBLEED])
 		maxhp -= maxhp * 15 / 100;
 	if(sc->data[SC__WEAKNESS])
 		maxhp -= maxhp * sc->data[SC__WEAKNESS]->val2 / 100;
-	if(sc->data[SC_FORCEOFVANGUARD])
-		maxhp += maxhp * 3 * sc->data[SC_FORCEOFVANGUARD]->val1 / 100;
-	if(sc->data[SC_INSPIRATION])
-		maxhp += maxhp * 5 * sc->data[SC_INSPIRATION]->val1 / 100 + 600 * sc->data[SC_INSPIRATION]->val1;
-	if(sc->data[SC_RAISINGDRAGON])
-		maxhp += maxhp * (2 + sc->data[SC_RAISINGDRAGON]->val1) / 100;
 	if(sc->data[SC_GT_CHANGE])
 		maxhp -= maxhp * (4 * sc->data[SC_GT_CHANGE]->val1) / 100;
-	if(sc->data[SC_GT_REVITALIZE])
-		maxhp += maxhp * (2 * sc->data[SC_GT_REVITALIZE]->val1) / 100;
-	if(sc->data[SC_LERADSDEW])
-		maxhp += sc->data[SC_LERADSDEW]->val3;
 	if(sc->data[SC_BEYONDOFWARCRY])
 		maxhp -= maxhp * sc->data[SC_BEYONDOFWARCRY]->val4 / 100;
-	if(sc->data[SC_MUSTLE_M])
-		maxhp += maxhp * sc->data[SC_MUSTLE_M]->val1/100;
+	if(sc->data[SC_MYSTERIOUS_POWDER])
+		maxhp -= maxhp * sc->data[SC_MYSTERIOUS_POWDER]->val1 / 100;
+	//Not bothering to organize these until I rework the elemental spirits. [Rytech]
 	if(sc->data[SC_SOLID_SKIN_OPTION])
 		maxhp += 2000;// Fix amount.
 	if(sc->data[SC_POWER_OF_GAIA])
 		maxhp += 3000;
-	if(sc->data[SC_MYSTERIOUS_POWDER])
-		maxhp -= sc->data[SC_MYSTERIOUS_POWDER]->val1 / 100;
 
 	return cap_value(maxhp,1,UINT_MAX);
 }
@@ -5169,7 +5188,7 @@ static unsigned int status_calc_maxsp(struct block_list *bl, struct status_chang
 	if(sc->data[SC_RAISINGDRAGON])
 		maxsp += maxsp * (2 + sc->data[SC_RAISINGDRAGON]->val1) / 100;
 	if(sc->data[SC_LIFE_FORCE_F])
-		maxsp += maxsp * sc->data[SC_LIFE_FORCE_F]->val1/100;
+		maxsp += maxsp * sc->data[SC_LIFE_FORCE_F]->val1 / 100;
 
 	return cap_value(maxsp,1,UINT_MAX);
 }
@@ -6086,9 +6105,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		{
 		case SC_QUAGMIRE://Tester said it protects against this and decrease agi.
 		case SC_DECREASEAGI:
-		case SC_BURNING:
-		case SC_FREEZING:
-		case SC_WHITEIMPRISON://Need confirm. Protected against this in the past. [Rytech]
 		case SC_MARSHOFABYSS:
 		case SC_TOXIN:
 		case SC_PARALYSE:
@@ -6098,8 +6114,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_PYREXIA:
 		case SC_OBLIVIONCURSE:
 		case SC_LEECHESEND://Need confirm. If it protects against nearly every Guillotine poison, it should work on this too right? [Rytech]
-		case SC_CRYSTALIZE:
-		case SC_DEEPSLEEP:
 		case SC_MANDRAGORA:
 			return 0;
 		}
@@ -6111,9 +6125,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			return 0; // Immune to status ailements
 		switch( type )
 		{
-			case SC_BURNING:
-			case SC_FREEZING:
-			case SC_FEAR:
 			case SC_TOXIN:
 			case SC_PARALYSE:
 			case SC_VENOMBLEED:
@@ -6129,8 +6140,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC_LAZINESS:
 			case SC_UNLUCKY:
 			case SC_WEAKNESS:
-			case SC_DEEPSLEEP:
-			case SC_CRYSTALIZE:
 			case SC_SATURDAYNIGHTFEVER:
 				return 0;
 		}
@@ -7928,7 +7937,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			tick = 1000;
 			break;
 		case SC_SWINGDANCE:
-			val3 = 5 * val1 + val2;//Movement Speed And ASPD Increase
+			val3 = 5 * val1 + val2;//ASPD Increase
 			break;
 		case SC_SYMPHONYOFLOVER:
 			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(bl) >= 100 )
