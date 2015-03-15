@@ -7501,7 +7501,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			if( flag&1 )
 			{
 				if( src == bl )
-					sc_start2(bl,type,100,atkbonus,10*(sd?pc_checkskill(sd,RK_RUNEMASTERY):10),skill_get_time(skillid,skilllv));
+					sc_start2(bl,type,100,atkbonus,sd?pc_checkskill(sd,RK_RUNEMASTERY):10,skill_get_time(skillid,skilllv));
 				else
 					sc_start(bl,type,100,atkbonus / 4,skill_get_time(skillid,skilllv));
 			}
@@ -7510,7 +7510,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				if( sd->status.party_id )
 					party_foreachsamemap(skill_area_sub,sd,skill_get_splash(skillid,skilllv),src,skillid,skilllv,tick,flag|BCT_PARTY|1,skill_castend_nodamage_id);
 				else
-					sc_start2(bl,type,100,7,10*(sd?pc_checkskill(sd,RK_RUNEMASTERY):10),skill_get_time(skillid,skilllv));
+					sc_start2(bl,type,100,7,sd?pc_checkskill(sd,RK_RUNEMASTERY):10,skill_get_time(skillid,skilllv));
 				clif_skill_nodamage(src,bl,skillid,1,1);
 			}
 		}

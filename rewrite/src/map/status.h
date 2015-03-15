@@ -41,8 +41,8 @@ typedef enum sc_type {
 	SC_FREEZING,//FROSTMISTY
 	SC_CRYSTALIZE,//COLD, Crystalize. Another not so common status, but officially treated as one.
 	SC_NORECOVER,
-	//SC_ICEEXPLO,//ICEEXPLO and ILLUSION are also listed as common treated,
-	//SC_ILLUSION,//but not yet confirmed in the zone.
+	//SC_ICEEXPLO,//ICEEXPLO and NEW_POISON are also listed as common treated,
+	//SC_NEW_POISON,//but not yet confirmed in the zone.
 	SC_COMMON_MAX = 17, // end
 	
 	//Next up, we continue on 20, to leave enough room for additional "common" ailments in the future.
