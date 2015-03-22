@@ -674,7 +674,7 @@ void pc_inventory_rentals(struct map_session_data *sd)
 		if( sd->status.inventory[i].expire_time <= time(NULL) )
 		{
 			clif_rental_expired(sd->fd, sd->status.inventory[i].nameid);
-			if( sd->status.inventory[i].nameid == ITEMID_REINS )
+			if( sd->status.inventory[i].nameid == ITEMID_BOARDING_HATLER )
 				status_change_end(&sd->bl, SC_ALL_RIDING, -1);
 			pc_delitem(sd, i, sd->status.inventory[i].amount, 0, 0);
 		}
@@ -4246,7 +4246,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 		clif_useitemack(sd,n,amount,1);
 	else
 	{
-		if( sd->status.inventory[n].expire_time == 0 && nameid != ITEMID_REINS )
+		if( sd->status.inventory[n].expire_time == 0 && nameid != ITEMID_BOARDING_HATLER )
 		{	// Don't remove Reins.
 			clif_useitemack(sd,n,amount-1,1);
 
@@ -7031,7 +7031,7 @@ void pc_heal(struct map_session_data *sd,unsigned int hp,unsigned int sp, int ty
  *------------------------------------------*/
 int pc_itemheal(struct map_session_data *sd,int itemid, int hp,int sp)
 {
-	int i, bonus;
+	int i, bonus, penalty;
 
 	if(hp) {
 		bonus = 100 + (sd->battle_status.vit<<1)
@@ -7069,19 +7069,29 @@ int pc_itemheal(struct map_session_data *sd,int itemid, int hp,int sp)
 			sp = sp * bonus / 100;
 	}
 
-	bonus = 0;
-	if( sd->sc.data[SC_CRITICALWOUND] )
-		bonus += sd->sc.data[SC_CRITICALWOUND]->val2;
-	if( sd->sc.data[SC_DEATHHURT] )
-		bonus += 20;
+	if( sd->sc.data[SC_EXTRACT_WHITE_POTION_Z] )
+		hp += hp * sd->sc.data[SC_EXTRACT_WHITE_POTION_Z]->val1 / 100;// 20% Increase on HP recovery
 
-	hp -= hp * bonus / 100;
-	sp -= sp * bonus / 100;
+	if( sd->sc.data[SC_VITATA_500] )
+		sp += sp * sd->sc.data[SC_VITATA_500]->val1 / 100;// 20% Increase on SP recovery
 
 	if( sd->sc.data[SC_VITALITYACTIVATION] )
 	{
-		hp += hp / 2; // 1.5 times
-		sp -= sp / 2;
+		hp += hp * 50 / 100;// 50% Increase on HP recovery
+		sp -= sp * 50 / 100;// 50% Decrease on SP recovery
+	}
+
+	// Critical Wound and Death Hurt stacks with each other.
+	penalty = 0;
+	if( sd->sc.data[SC_CRITICALWOUND] )
+		penalty += sd->sc.data[SC_CRITICALWOUND]->val2;
+	if( sd->sc.data[SC_DEATHHURT] )
+		penalty += 20;
+	// Apply a penalty to recovery if there is one.
+	if (penalty > 0)
+	{
+		hp -= hp * penalty / 100;
+		sp -= sp * penalty / 100;
 	}
 
 	return status_heal(&sd->bl, hp, sp, 1);

@@ -14,3 +14,6 @@
 12210,60000	//Bubble_Gum
 14538,300000	//Glass_Of_Illusion
 14586,180000	//Spark_Candy
+
+//3CeAM
+12622,3000	//Boarding_Halter

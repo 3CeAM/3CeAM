@@ -2626,27 +2626,31 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					{
 						switch( sd->itemid )
 						{
-							case 13260: // Apple Bomob
-								skillratio = sstatus->str + sstatus->dex + 300;
+							case ITEMID_APPLE_BOMB:
+								skillratio = 300 + sstatus->str + sstatus->dex;
 								break;
-							case 13262: // Melon Bomb
-								skillratio = sstatus->str + sstatus->dex + 500;
+							case ITEMID_COCONUT_BOMB:
+							case ITEMID_PINEAPPLE_BOMB:
+								skillratio = 800 + sstatus->str + sstatus->dex;
 								break;
-							case 13261: // Coconut Bomb
-							case 13263: // Pinapple Bomb
-							case 13264: // Banana Bomb
-								skillratio = sstatus->str + sstatus->dex + 800;
+							case ITEMID_MELON_BOMB:
+								skillratio = 500 + sstatus->str + sstatus->dex;
 								break;
-							case 13265: 
-								skillratio = (sstatus->str + sstatus->agi + sstatus->dex) / 3; // Black Lump
+							case ITEMID_BANANA_BOMB:
+								skillratio = 877 + sstatus->str + sstatus->dex;
 								break;
-							case 13266: 
-								skillratio = (sstatus->str + sstatus->agi + sstatus->dex) / 2; // Hard Black Lump
+							case ITEMID_DARK_LUMP:
+								skillratio = (sstatus->str + sstatus->agi + sstatus->dex) / 3;
 								break;
-							case 13267: 
-								skillratio = sstatus->str + sstatus->agi + sstatus->dex; // Extremely Hard Black Lump
+							case ITEMID_HARD_DARK_LUMP:
+								skillratio = (sstatus->str + sstatus->agi + sstatus->dex) / 2;
+								break;
+							case ITEMID_VERY_HARD_DARK_LUMP:
+								skillratio = sstatus->str + sstatus->agi + sstatus->dex;
 								break;
 						}
+						if( re_baselv_bonus == 1 && s_level >= 100 )
+							skillratio += skillratio * s_level / 100;// Base level bonus.
 					}
 					break;
 				case RL_MASS_SPIRAL:

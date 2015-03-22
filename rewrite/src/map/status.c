@@ -794,28 +794,28 @@ void initChangeTables(void)
 
 	StatusIconChangeTable[SC_CURSEDCIRCLE_ATKER] = SI_CURSEDCIRCLE_ATKER;
 
+	//Genetics New Food Items Status Icons
 	StatusIconChangeTable[SC_STOMACHACHE] = SI_STOMACHACHE;
 	StatusIconChangeTable[SC_MYSTERIOUS_POWDER] = SI_MYSTERIOUS_POWDER;
 	StatusIconChangeTable[SC_MELON_BOMB] = SI_MELON_BOMB;
-	StatusIconChangeTable[SC_BANANA_BOMB] = SI_BANANA_BOMB;
 	StatusIconChangeTable[SC_BANANA_BOMB_SITDOWN] = SI_BANANA_BOMB_SITDOWN_POSTDELAY;
-
-	//Genetics New Food Items Status Icons
+	StatusIconChangeTable[SC_PROMOTE_HEALTH_RESERCH] = SI_PROMOTE_HEALTH_RESERCH;
+	StatusIconChangeTable[SC_ENERGY_DRINK_RESERCH] = SI_ENERGY_DRINK_RESERCH;
+	StatusIconChangeTable[SC_EXTRACT_WHITE_POTION_Z] |= SI_EXTRACT_WHITE_POTION_Z;
+	StatusIconChangeTable[SC_VITATA_500] |= SI_VITATA_500;
+	StatusIconChangeTable[SC_EXTRACT_SALAMINE_JUICE] |= SI_EXTRACT_SALAMINE_JUICE;
+	StatusIconChangeTable[SC_BOOST500] |= SI_BOOST500;
+	StatusIconChangeTable[SC_FULL_SWING_K] |= SI_FULL_SWING_K;
+	StatusIconChangeTable[SC_MANA_PLUS] |= SI_MANA_PLUS;
+	StatusIconChangeTable[SC_MUSTLE_M] |= SI_MUSTLE_M;
+	StatusIconChangeTable[SC_LIFE_FORCE_F] |= SI_LIFE_FORCE_F;
 	StatusIconChangeTable[SC_SAVAGE_STEAK] = SI_SAVAGE_STEAK;
 	StatusIconChangeTable[SC_COCKTAIL_WARG_BLOOD] = SI_COCKTAIL_WARG_BLOOD;
 	StatusIconChangeTable[SC_MINOR_BBQ] = SI_MINOR_BBQ;
 	StatusIconChangeTable[SC_SIROMA_ICE_TEA] = SI_SIROMA_ICE_TEA;
 	StatusIconChangeTable[SC_DROCERA_HERB_STEAMED] = SI_DROCERA_HERB_STEAMED;
 	StatusIconChangeTable[SC_PUTTI_TAILS_NOODLES] = SI_PUTTI_TAILS_NOODLES;
-
-	StatusIconChangeTable[SC_BOOST500] |= SI_BOOST500;
-	StatusIconChangeTable[SC_FULL_SWING_K] |= SI_FULL_SWING_K;
-	StatusIconChangeTable[SC_MANA_PLUS] |= SI_MANA_PLUS;
-	StatusIconChangeTable[SC_MUSTLE_M] |= SI_MUSTLE_M;
-	StatusIconChangeTable[SC_LIFE_FORCE_F] |= SI_LIFE_FORCE_F;
-	StatusIconChangeTable[SC_EXTRACT_WHITE_POTION_Z] |= SI_EXTRACT_WHITE_POTION_Z;
-	StatusIconChangeTable[SC_VITATA_500] |= SI_VITATA_500;
-	StatusIconChangeTable[SC_EXTRACT_SALAMINE_JUICE] |= SI_EXTRACT_SALAMINE_JUICE;
+	StatusIconChangeTable[SC_BANANA_BOMB] = SI_BANANA_BOMB;
 
 	// Elemental Spirit's 'side' status change icons.
 	StatusIconChangeTable[SC_CIRCLE_OF_FIRE] = SI_CIRCLE_OF_FIRE;
@@ -918,24 +918,23 @@ void initChangeTables(void)
 	StatusChangeFlagTable[SC_STOMACHACHE] |= SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK;
 	StatusChangeFlagTable[SC_MYSTERIOUS_POWDER] |= SCB_MAXHP;
 	StatusChangeFlagTable[SC_MELON_BOMB] |= SCB_SPEED|SCB_ASPD;
-	StatusChangeFlagTable[SC_BANANA_BOMB] = SCB_LUK;
-
-	//Genetics New Food Items.
+	StatusChangeFlagTable[SC_PROMOTE_HEALTH_RESERCH] |= SCB_MAXHP;
+	StatusChangeFlagTable[SC_ENERGY_DRINK_RESERCH] |= SCB_MAXSP;
+	//StatusChangeFlagTable[SC_EXTRACT_WHITE_POTION_Z] |= SCB_REGEN;
+	StatusChangeFlagTable[SC_VITATA_500] |= SCB_MAXSP;
+	StatusChangeFlagTable[SC_EXTRACT_SALAMINE_JUICE] |= SCB_ASPD;
+	StatusChangeFlagTable[SC_BOOST500] |= SCB_ASPD;
+	StatusChangeFlagTable[SC_FULL_SWING_K] |= SCB_WATK;
+	StatusChangeFlagTable[SC_MANA_PLUS] |= SCB_MATK;
+	StatusChangeFlagTable[SC_MUSTLE_M] |= SCB_MAXHP;
+	StatusChangeFlagTable[SC_LIFE_FORCE_F] |= SCB_MAXSP;
 	StatusChangeFlagTable[SC_SAVAGE_STEAK] |= SCB_STR;
 	StatusChangeFlagTable[SC_COCKTAIL_WARG_BLOOD] |= SCB_INT;
 	StatusChangeFlagTable[SC_MINOR_BBQ] |= SCB_VIT;
 	StatusChangeFlagTable[SC_SIROMA_ICE_TEA] |= SCB_DEX;
 	StatusChangeFlagTable[SC_DROCERA_HERB_STEAMED] |= SCB_AGI;
 	StatusChangeFlagTable[SC_PUTTI_TAILS_NOODLES] |= SCB_LUK;
-
-	StatusChangeFlagTable[SC_BOOST500] |= SCB_ASPD;
-	StatusChangeFlagTable[SC_FULL_SWING_K] |= SCB_BATK;
-	StatusChangeFlagTable[SC_MANA_PLUS] |= SCB_MATK;
-	StatusChangeFlagTable[SC_MUSTLE_M] |= SCB_MAXHP;
-	StatusChangeFlagTable[SC_LIFE_FORCE_F] |= SCB_MAXSP;
-	StatusChangeFlagTable[SC_EXTRACT_WHITE_POTION_Z] |= SCB_REGEN;
-	StatusChangeFlagTable[SC_VITATA_500] |= SCB_REGEN;
-	StatusChangeFlagTable[SC_EXTRACT_SALAMINE_JUICE] |= SCB_ASPD;
+	StatusChangeFlagTable[SC_BANANA_BOMB] = SCB_LUK;
 
 	StatusChangeFlagTable[SC_ALL_RIDING] |= SCB_SPEED;
 	StatusChangeFlagTable[SC_ON_PUSH_CART] |= SCB_SPEED;
@@ -3439,17 +3438,9 @@ void status_calc_regen_rate(struct block_list *bl, struct regen_data *regen, str
 		else
 			regen->flag &=~ sce->val4; //Remove regen as specified by val4
 	}
-	if( sc->data[SC_DEATHHURT] )
-	{
-		regen->rate.hp -= 1;
-		regen->rate.sp -= 1;
-	}
+
 	if( sc->data[SC_VITALITYACTIVATION] )
 		regen->flag &=~RGN_SP;
-	if(sc->data[SC_EXTRACT_WHITE_POTION_Z])
-		regen->rate.hp += regen->rate.hp * sc->data[SC_EXTRACT_WHITE_POTION_Z]->val1/100;
-	if(sc->data[SC_VITATA_500])
-		regen->rate.sp += regen->rate.sp * sc->data[SC_VITATA_500]->val1/100;
 }
 
 /// Recalculates parts of an object's battle status according to the specified flags.
@@ -4277,7 +4268,7 @@ static unsigned short status_calc_luk(struct block_list *bl, struct status_chang
 	if(sc->data[SC__STRIPACCESSORY])
 		luk -= luk * sc->data[SC__STRIPACCESSORY]->val2 / 100;
 	if(sc->data[SC_BANANA_BOMB])
-		luk -= luk * sc->data[SC_BANANA_BOMB]->val1 / 100;
+		luk -= 77;
 	if(sc->data[SC_STOMACHACHE])
 		luk -= sc->data[SC_STOMACHACHE]->val1;
 	if(sc->data[SC_KYOUGAKU])
@@ -4305,8 +4296,6 @@ static unsigned short status_calc_batk(struct block_list *bl, struct status_chan
 		batk += sc->data[SC_GATLINGFEVER]->val3;
 	if(sc->data[SC_MADNESSCANCEL])
 		batk += 100;
-	if(sc->data[SC_FULL_SWING_K])
-		batk += sc->data[SC_FULL_SWING_K]->val1;
 	if(sc->data[SC_INCATKRATE])
 		batk += batk * sc->data[SC_INCATKRATE]->val1/100;
 	if(sc->data[SC_PROVOKE])
@@ -4369,6 +4358,8 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += 100 * sc->data[SC_SATURDAYNIGHTFEVER]->val1;
 	if(sc->data[SC_ODINS_POWER])
 		watk += 40 + 30 * sc->data[SC_ODINS_POWER]->val1;
+	if(sc->data[SC_FULL_SWING_K])
+		watk += sc->data[SC_FULL_SWING_K]->val1;
 	if(sc->data[SC_INCATKRATE])
 		watk += watk * sc->data[SC_INCATKRATE]->val1/100;
 	if(sc->data[SC_PROVOKE])
@@ -4896,7 +4887,7 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				if( sc->data[SC_POWER_OF_GAIA] )
 					val = max( val, sc->data[SC_POWER_OF_GAIA]->val2 );
 				if( sc->data[SC_MELON_BOMB] )
-					val = max( val, sc->data[SC_MELON_BOMB]->val1 );
+					val = max( val, sc->data[SC_MELON_BOMB]->val2 );
 				if( sc->data[SC_REBOUND] )
 					val = max( val, 25 );
 
@@ -5104,7 +5095,7 @@ static short status_calc_aspd_rate(struct block_list *bl, struct status_change *
 	if( sc->data[SC_EARTHDRIVE] )
 		aspd_rate += 250;
 	if( sc->data[SC_MELON_BOMB] )
-		aspd_rate += 10 * sc->data[SC_MELON_BOMB]->val1;
+		aspd_rate += 10 * sc->data[SC_MELON_BOMB]->val3;
 
 	return (short)cap_value(aspd_rate,0,SHRT_MAX);
 }
@@ -5131,6 +5122,8 @@ static unsigned int status_calc_maxhp(struct block_list *bl, struct status_chang
 
 	if(sc->data[SC_LERADSDEW])
 		maxhp += sc->data[SC_LERADSDEW]->val3;
+	if(sc->data[SC_PROMOTE_HEALTH_RESERCH])
+		maxhp += sc->data[SC_PROMOTE_HEALTH_RESERCH]->val4;
 	if(sc->data[SC_INCMHPRATE])
 		maxhp += maxhp * sc->data[SC_INCMHPRATE]->val1/100;
 	if(sc->data[SC_APPLEIDUN])
@@ -5150,7 +5143,7 @@ static unsigned int status_calc_maxhp(struct block_list *bl, struct status_chang
 	if(sc->data[SC_GT_REVITALIZE])
 		maxhp += maxhp * (2 * sc->data[SC_GT_REVITALIZE]->val1) / 100;
 	if(sc->data[SC_MUSTLE_M])
-		maxhp += maxhp * sc->data[SC_MUSTLE_M]->val1/100;
+		maxhp += maxhp * sc->data[SC_MUSTLE_M]->val1 / 100;
 	if(sc->data[SC_INSPIRATION])//Snce it gives a percentage and fixed amount, should be last on percentage calculations list. [Rytech]
 		maxhp += maxhp * 5 * sc->data[SC_INSPIRATION]->val1 / 100 + 600 * sc->data[SC_INSPIRATION]->val1;
 	if(sc->data[SC_MARIONETTE])
@@ -5189,6 +5182,10 @@ static unsigned int status_calc_maxsp(struct block_list *bl, struct status_chang
 		maxsp += maxsp * (2 + sc->data[SC_RAISINGDRAGON]->val1) / 100;
 	if(sc->data[SC_LIFE_FORCE_F])
 		maxsp += maxsp * sc->data[SC_LIFE_FORCE_F]->val1 / 100;
+	if(sc->data[SC_ENERGY_DRINK_RESERCH])
+		maxsp += maxsp * sc->data[SC_ENERGY_DRINK_RESERCH]->val4 / 100;
+	if(sc->data[SC_VITATA_500])
+		maxsp += maxsp * sc->data[SC_VITATA_500]->val2 / 100;
 
 	return cap_value(maxsp,1,UINT_MAX);
 }
@@ -8271,14 +8268,34 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_POWER_OF_GAIA:
 			val2 = 33;
 			break;
-		case SC_MELON_BOMB:
-		case SC_BANANA_BOMB:
-			val1 = 15;
-			break;
 		case SC_STOMACHACHE:
 			val2 = 8;	// SP consume.
 			val4 = tick / 10000;
 			tick = 10000;
+			break;
+		case SC_PROMOTE_HEALTH_RESERCH:
+			//Val1: 1 = Regular Potion, 2 = Thrown Potion
+			//Val2: 1 = Small Potion, 2 = Medium Potion, 3 = Large Potion
+			//Val3: BaseLV of Thrower For Thrown Potions
+			//Val4: MaxHP Increase By Fixed Amount
+			if (val1 == 1)// If potion was normally used, take the user's BaseLv.
+				val4 = (1000 * val2 - 500) + (status_get_lv(bl) * 10 / 3);
+			else if (val1 == 2)// If potion was thrown at someone, take the thrower's BaseLv.
+				val4 = (1000 * val2 - 500) + (val3 * 10 / 3);
+			if (val4 <= 0)//Prevents a negeative value from happening.
+				val4 = 0;
+			break;
+		case SC_ENERGY_DRINK_RESERCH:
+			//Val1: 1 = Regular Potion, 2 = Thrown Potion
+			//Val2: 1 = Small Potion, 2 = Medium Potion, 3 = Large Potion
+			//Val3: BaseLV of Thrower For Thrown Potions
+			//Val4: MaxSP Increase By Percentage Amount
+			if (val1 == 1)// If potion was normally used, take the user's BaseLv.
+				val4 = status_get_lv(bl) / 10 + (5 * val2 - 10);
+			else if (val1 == 2)// If potion was thrown at someone, take the thrower's BaseLv.
+				val4 = val3 / 10 + (5 * val2 - 10);
+			if (val4 <= 0)//Prevents a negeative value from happening.
+				val4 = 0;
 			break;
 
 		default:

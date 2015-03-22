@@ -9953,7 +9953,7 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 			clif_skill_fail(sd, 1, 0, 2, 0);
 			break;
 		}
-		if( sd->sc.data[SC_SITDOWN_FORCE] )
+		if( sd->sc.data[SC_SITDOWN_FORCE] || sd->sc.data[SC_BANANA_BOMB_SITDOWN] )
 			return;
 
 		if(pc_issit(sd)) {
@@ -9977,7 +9977,7 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 		clif_status_load(&sd->bl, SI_SIT, 1);
 	break;
 	case 0x03: // standup
-		if( sd->sc.data[SC_SITDOWN_FORCE] )
+		if( sd->sc.data[SC_SITDOWN_FORCE] || sd->sc.data[SC_BANANA_BOMB_SITDOWN] )
 			return;
 
 		if (!pc_issit(sd)) {
