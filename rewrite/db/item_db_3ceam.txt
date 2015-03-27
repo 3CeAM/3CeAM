@@ -198,7 +198,7 @@
 12721,Poison_Numb,Toxin,2,2,,20,,,,,0x00001000,7,2,,,,,,{ specialeffect2 EF_ENCHANTPOISON; sc_start SC_TOXIN,300000,0; },{},{}
 12722,Poison_Fever,Pyrexia,2,2,,20,,,,,0x00001000,7,2,,,,,,{ specialeffect2 EF_ENCHANTPOISON; sc_start SC_PYREXIA,300000,0; },{},{}
 12723,Poison_Laughing,Magic Mushroom,2,2,,20,,,,,0x00001000,7,2,,,,,,{ specialeffect2 EF_ENCHANTPOISON; sc_start SC_MAGICMUSHROOM,300000,0; },{},{}
-12724,Poison_Fatigue,Venom Bleed,2,2,,20,,,,,0x00001000,7,2,,,,,,{ specialeffect2 EF_ENCHANTPOISON; sc_start SC_VENOMBLEED,15000,0; },{},{}
+12724,Poison_Fatigue,Venom Bleed,2,2,,20,,,,,0x00001000,7,2,,,,,,{ specialeffect2 EF_ENCHANTPOISON; sc_start SC_VENOMBLEED,300000,0; },{},{}
 
 // Rune Knight's Rune Stones
 12725,Runstone_Nosiege,Nauthiz Rune,11,2,,100,,,,,0xFFFFFFFF,7,2,,,,,,{ itemskill "RK_REFRESH",1; },{},{}

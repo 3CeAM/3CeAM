@@ -3769,7 +3769,7 @@ int pc_additem(struct map_session_data *sd,struct item *item_data,int amount)
 	if(sd->weight + w > sd->max_weight)
 		return 2;
 		
-	if( itemdb_is_rune(item_data->nameid) && amount > MAX_RUNE )
+	if( itemid_is_rune(item_data->nameid) && amount > MAX_RUNE )
 	{
 		clif_msgtable(sd->fd,1418);
 		return 1;
@@ -3785,7 +3785,7 @@ int pc_additem(struct map_session_data *sd,struct item *item_data,int amount)
 			{
 				if( amount > MAX_AMOUNT - sd->status.inventory[i].amount )
 					return 5;
-				if( itemdb_is_rune(sd->status.inventory[i].nameid) && amount > MAX_RUNE - sd->status.inventory[i].amount )
+				if( itemid_is_rune(sd->status.inventory[i].nameid) && amount > MAX_RUNE - sd->status.inventory[i].amount )
 				{
 					clif_msgtable(sd->fd,1418);
 					return 1;
@@ -4111,67 +4111,70 @@ int pc_useitem(struct map_session_data *sd,int n)
 		return 0;
 
 	// In this case these sc are OFFICIALS cooldowns for these skills
-	if( itemdb_is_rune(sd->status.inventory[n].nameid) )//Check
+	if( itemid_is_rune(sd->status.inventory[n].nameid) )//Check
 	{
 		switch(sd->status.inventory[n].nameid)
 		{
-			case ITEMID_NAUTHIZ:
+			case ITEMID_NAUTHIZ_RUNE:
 				if( skill_blockpc_get(sd,RK_REFRESH) != -1 )
 					return 0;
 				break;
-			case ITEMID_RAIDO:
+			case ITEMID_RAIDO_RUNE:
 				if( skill_blockpc_get(sd,RK_CRUSHSTRIKE) != -1 )
 					return 0;
 				break;
-			case ITEMID_BERKANA:
+			case ITEMID_BERKANA_RUNE:
 				if( skill_blockpc_get(sd,RK_MILLENNIUMSHIELD) != -1 )
 					return 0;
 				break;
-			case ITEMID_ISA:
+			case ITEMID_ISA_RUNE:
 				if( skill_blockpc_get(sd,RK_VITALITYACTIVATION) != -1 )
 					return 0;
 				break;
-			case ITEMID_EIHWAZ:
+			case ITEMID_EIHWAZ_RUNE:
 				if( skill_blockpc_get(sd,RK_FIGHTINGSPIRIT) != -1 )
 					return 0;
 				break;
-			case ITEMID_URUZ:
+			case ITEMID_URUZ_RUNE:
 				if( skill_blockpc_get(sd,RK_ABUNDANCE) != -1 )
 					return 0;
 				break;
-			case ITEMID_THURISAZ:
+			case ITEMID_THURISAZ_RUNE:
 				if( skill_blockpc_get(sd,RK_GIANTGROWTH) != -1 )
 					return 0;
 				break;
-			case ITEMID_PERTHRO:
+			case ITEMID_PERTHRO_RUNE:
 				if( skill_blockpc_get(sd,RK_STORMBLAST) != -1 )
 					return 0;
 				break;
-			case ITEMID_HAGALAZ:
+			case ITEMID_HAGALAZ_RUNE:
 				if( skill_blockpc_get(sd,RK_STONEHARDSKIN) != -1 )
+					return 0;
+			case ITEMID_LUX_ANIMA_RUNE:
+				if( skill_blockpc_get(sd,RK_LUXANIMA) != -1 )
 					return 0;
 				break;
 		}
 	}
 
 	// Eclage status cure items must each be tied to their own cooldowns.
-	if( itemdb_is_eclage_cures(sd->status.inventory[n].nameid) )
+	if( itemid_is_eclage_cures(sd->status.inventory[n].nameid) )
 	{
 		switch(sd->status.inventory[n].nameid)
 		{
-			case ITEMID_SNOWFLIP:
+			case ITEMID_SNOW_FLIP:
 				if( skill_blockpc_get(sd,ECL_SNOWFLIP) != -1 )
 					return 0;
 				break;
-			case ITEMID_PEONYMAMY:
+			case ITEMID_PEONY_MOMMY:
 				if( skill_blockpc_get(sd,ECL_PEONYMAMY) != -1 )
 					return 0;
 				break;
-			case ITEMID_SADAGUI:
+			case ITEMID_SLAPPING_HERB:
 				if( skill_blockpc_get(sd,ECL_SADAGUI) != -1 )
 					return 0;
 				break;
-			case ITEMID_SEQUOIADUST:
+			case ITEMID_YGGDRASIL_DUST:
 				if( skill_blockpc_get(sd,ECL_SEQUOIADUST) != -1 )
 					return 0;
 				break;
