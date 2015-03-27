@@ -25,12 +25,54 @@ enum item_itemid
 	ITEMID_MAKEOVER_BRUSH = 6121,
 	ITEMID_PAINT_BRUSH = 6122,
 	ITEMID_SURFACE_PAINT = 6123,
+	ITEMID_MAGICBOOK_FIREBOLT = 6189,
+	ITEMID_MAGICBOOK_COLDBOLT,
+	ITEMID_MAGICBOOK_LIGHTNINGBOLT,
+	ITEMID_MAGICBOOK_STORMGUST,
+	ITEMID_MAGICBOOK_VERMILION,
+	ITEMID_MAGICBOOK_METEOR,
+	ITEMID_MAGICBOOK_COMET,
+	ITEMID_MAGICBOOK_TETRAVORTEX,
+	ITEMID_MAGICBOOK_THUNDERSTORM,
+	ITEMID_MAGICBOOK_JUPITEL,
+	ITEMID_MAGICBOOK_WATERBALL,
+	ITEMID_MAGICBOOK_HEAVENDRIVE,
+	ITEMID_MAGICBOOK_EARTHSPIKE,
+	ITEMID_MAGICBOOK_EARTHSTRAIN,
+	ITEMID_MAGICBOOK_CHAINLIGHTNING,
+	ITEMID_MAGICBOOK_CRIMSONROCK,
+	ITEMID_MAGICBOOK_DRAINLIFE,
+	ITEMID_SCARLETT_POINT = 6360,
+	ITEMID_INDIGO_POINT,
+	ITEMID_YELLOW_WISH_POINT,
+	ITEMID_LIME_GREEN_POINT,
 	ITEMID_STONE = 7049,
 	ITEMID_SKULL_ = 7420,
 	ITEMID_TOKEN_OF_SIEGFRIED = 7621,
 	ITEMID_SPECIAL_ALLOY_TRAP = 7940,
 	ITEMID_ANCILLA = 12333,
 	ITEMID_BOARDING_HATLER = 12622,
+	ITEMID_PARALYSIS_POISON = 12717,
+	ITEMID_LEECH_POISON,
+	ITEMID_OBLIVION_POISON,
+	ITEMID_CONTAMINATION_POISON,
+	ITEMID_NUMB_POISON,
+	ITEMID_FEVER_POISON,
+	ITEMID_LAUGHING_POISON,
+	ITEMID_FATIGUE_POISON,
+	ITEMID_NAUTHIZ_RUNE = 12725,
+	ITEMID_RAIDO_RUNE,
+	ITEMID_BERKANA_RUNE,
+	ITEMID_ISA_RUNE,
+	ITEMID_EIHWAZ_RUNE,
+	ITEMID_URUZ_RUNE,
+	ITEMID_THURISAZ_RUNE,
+	ITEMID_PERTHRO_RUNE,
+	ITEMID_HAGALAZ_RUNE,
+	ITEMID_SNOW_FLIP = 12812,
+	ITEMID_PEONY_MOMMY,
+	ITEMID_SLAPPING_HERB,
+	ITEMID_YGGDRASIL_DUST,
 	ITEMID_APPLE_BOMB = 13260,
 	ITEMID_COCONUT_BOMB,
 	ITEMID_MELON_BOMB,
@@ -62,14 +104,20 @@ enum item_itemid
 	ITEMID_THROW_DROCERA_HERB_STEAMED,
 	ITEMID_THROW_PUTTI_TAILS_NOODLES,
 	ITEMID_THROW_OVERDONE_FOOD,
+	ITEMID_LUX_ANIMA_RUNE = 22540,
 };
 
 #define itemid_isgemstone(id) ( (id) >= ITEMID_YELLOW_GEMSTONE && (id) <= ITEMID_BLUE_GEMSTONE )
 #define itemdb_iscashfood(id) ( (id) >= 12202 && (id) <= 12207 )
 
 //3CeAM
+#define itemid_is_rune(id) ( (id) >= ITEMID_NAUTHIZ_RUNE && (id) <= ITEMID_HAGALAZ_RUNE || (id) == ITEMID_LUX_ANIMA_RUNE )
+#define itemid_is_spell_book(id) ( (id) >= ITEMID_MAGICBOOK_FIREBOLT && (id) <= ITEMID_MAGICBOOK_DRAINLIFE )
+#define itemid_is_guillotine_poison(id) ( (id) >= ITEMID_PARALYSIS_POISON && (id) <= ITEMID_FATIGUE_POISON )
 #define itemid_is_sling_atk(id) ( (id) >= ITEMID_APPLE_BOMB && (id) <= ITEMID_VERY_HARD_DARK_LUMP )
 #define itemid_is_sling_buff(id) ( (id) >= ITEMID_MYSTERIOUS_POWDER && (id) <= ITEMID_THROW_OVERDONE_FOOD )
+#define itemid_is_element_point(id) ( (id) >= ITEMID_SCARLETT_POINT && (id) <= ITEMID_LIME_GREEN_POINT )
+#define itemid_is_eclage_cures(id) ( (id) >= ITEMID_SNOW_FLIP && (id) <= ITEMID_YGGDRASIL_DUST )
 
 //The only item group required by the code to be known. See const.txt for the full list.
 #define IG_FINDINGORE 6
@@ -135,25 +183,6 @@ struct item_group {
 	int qty; //Counts amount of items in the group.
 };
 
-enum rune_stones {
-	ITEMID_NAUTHIZ = 12725,
-	ITEMID_RAIDO,
-	ITEMID_BERKANA,
-	ITEMID_ISA,
-	ITEMID_EIHWAZ,
-	ITEMID_URUZ,
-	ITEMID_THURISAZ,
-	ITEMID_PERTHRO,
-	ITEMID_HAGALAZ,
-};
-
-enum eclage_cures {
-	ITEMID_SNOWFLIP = 12812,
-	ITEMID_PEONYMAMY,
-	ITEMID_SADAGUI,
-	ITEMID_SEQUOIADUST,
-};
-
 struct item_data* itemdb_searchname(const char *name);
 int itemdb_searchname_array(struct item_data** data, int size, const char *str);
 struct item_data* itemdb_load(int nameid);
@@ -176,11 +205,6 @@ struct item_data* itemdb_exists(int nameid);
 #define itemdb_viewid(n) (itemdb_search(n)->view_id)
 #define itemdb_autoequip(n) (itemdb_search(n)->flag.autoequip)
 const char* itemdb_typename(int type);
-#define itemdb_is_rune(n) (n >= ITEMID_NAUTHIZ && n <= ITEMID_HAGALAZ)
-#define itemdb_is_poison(n) (n >= 12717 && n <= 12724)
-#define itemdb_is_spellbook(n) (n >= 6189 && n <= 6205)
-#define itemdb_is_element(n) (n >= 6360 && n <= 6363)
-#define itemdb_is_eclage_cures(n) (n >= ITEMID_SNOWFLIP && n <= ITEMID_SEQUOIADUST)
 
 int itemdb_group_bonus(struct map_session_data* sd, int itemid);
 int itemdb_searchrandomid(int flags);

@@ -1242,15 +1242,15 @@ int clif_spawn(struct block_list *bl)
 			if( sd->sc.count && sd->sc.data[SC_DUPLELIGHT] )
 				clif_status_change(&sd->bl,SI_DUPLELIGHT,1,9999,sd->sc.data[SC_DUPLELIGHT]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_SPHERE_1] )
-				clif_status_change(&sd->bl,SI_SPHERE_1,1,9999,sd->sc.data[SC_SPHERE_1]->val1,0,0);
+				clif_status_change(&sd->bl,SI_SUMMON1,1,9999,sd->sc.data[SC_SPHERE_1]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_SPHERE_2] )
-				clif_status_change(&sd->bl,SI_SPHERE_2,1,9999,sd->sc.data[SC_SPHERE_2]->val1,0,0);
+				clif_status_change(&sd->bl,SI_SUMMON2,1,9999,sd->sc.data[SC_SPHERE_2]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_SPHERE_3] )
-				clif_status_change(&sd->bl,SI_SPHERE_3,1,9999,sd->sc.data[SC_SPHERE_3]->val1,0,0);
+				clif_status_change(&sd->bl,SI_SUMMON3,1,9999,sd->sc.data[SC_SPHERE_3]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_SPHERE_4] )
-				clif_status_change(&sd->bl,SI_SPHERE_4,1,9999,sd->sc.data[SC_SPHERE_4]->val1,0,0);
+				clif_status_change(&sd->bl,SI_SUMMON4,1,9999,sd->sc.data[SC_SPHERE_4]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_SPHERE_5] )
-				clif_status_change(&sd->bl,SI_SPHERE_5,1,9999,sd->sc.data[SC_SPHERE_5]->val1,0,0);
+				clif_status_change(&sd->bl,SI_SUMMON5,1,9999,sd->sc.data[SC_SPHERE_5]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_FREEZING] )
 				clif_status_change(&sd->bl,SI_FROSTMISTY,1,9999,sd->sc.data[SC_FREEZING]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_VENOMIMPRESS] )
@@ -1264,13 +1264,13 @@ int clif_spawn(struct block_list *bl)
 			if( sd->sc.count && sd->sc.data[SC_CRYSTALIZE] )
 				clif_status_change(&sd->bl,SI_COLD,1,9999,sd->sc.data[SC_CRYSTALIZE]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_DEEPSLEEP] )
-				clif_status_change(&sd->bl,SI_DEEPSLEEP,1,9999,sd->sc.data[SC_DEEPSLEEP]->val1,0,0);
+				clif_status_change(&sd->bl,SI_DEEP_SLEEP,1,9999,sd->sc.data[SC_DEEPSLEEP]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_CURSEDCIRCLE_ATKER] )
 				clif_status_change(&sd->bl,SI_CURSEDCIRCLE_ATKER,1,9999,sd->sc.data[SC_CURSEDCIRCLE_ATKER]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_CURSEDCIRCLE_TARGET] )
 				clif_status_change(&sd->bl,SI_CURSEDCIRCLE_TARGET,1,9999,sd->sc.data[SC_CURSEDCIRCLE_TARGET]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_BLOODSUCKER] )
-				clif_status_change(&sd->bl,SI_BLOODSUCKER,1,9999,sd->sc.data[SC_BLOODSUCKER]->val1,0,0);
+				clif_status_change(&sd->bl,SI_BLOOD_SUCKER,1,9999,sd->sc.data[SC_BLOODSUCKER]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC__SHADOWFORM] )
 				clif_status_change(&sd->bl,SI_SHADOWFORM,1,9999,sd->sc.data[SC__SHADOWFORM]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC__MANHOLE] )
@@ -3094,7 +3094,7 @@ int clif_poison_list(struct map_session_data *sd, int skill_lv)
 
 	for( i = 0, c = 0; i < MAX_INVENTORY; i ++ )
 	{
-		if( itemdb_is_poison(sd->status.inventory[i].nameid) )
+		if( itemid_is_guillotine_poison(sd->status.inventory[i].nameid) )
 		{ 
 			WFIFOW(fd, c * 2 + 4) = sd->status.inventory[i].nameid;
 			c ++;
@@ -3133,7 +3133,7 @@ int clif_magicdecoy_list(struct map_session_data *sd, int skill_lv, short x, sho
 
 	for( i = 0, c = 0; i < MAX_INVENTORY; i ++ )
 	{
-		if( itemdb_is_element(sd->status.inventory[i].nameid) )
+		if( itemid_is_element_point(sd->status.inventory[i].nameid) )
 		{ 
 			WFIFOW(fd, c * 2 + 4) = sd->status.inventory[i].nameid;
 			c ++;
@@ -3172,7 +3172,7 @@ int clif_spellbook_list(struct map_session_data *sd)
 
 	for( i = 0, c = 0; i < MAX_INVENTORY; i ++ )
 	{
-		if( itemdb_is_spellbook(sd->status.inventory[i].nameid) )
+		if( itemid_is_spell_book(sd->status.inventory[i].nameid) )
 		{ 
 			WFIFOW(fd, c * 2 + 4) = sd->status.inventory[i].nameid;
 			c ++;
@@ -4087,15 +4087,15 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 			if( tsd->sc.count && tsd->sc.data[SC_DUPLELIGHT] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_DUPLELIGHT,1,9999,tsd->sc.data[SC_DUPLELIGHT]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_SPHERE_1] )
-				clif_status_change_single(&sd->bl,&tsd->bl,SI_SPHERE_1,1,9999,tsd->sc.data[SC_SPHERE_1]->val1,0,0);
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_SUMMON1,1,9999,tsd->sc.data[SC_SPHERE_1]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_SPHERE_2] )
-				clif_status_change_single(&sd->bl,&tsd->bl,SI_SPHERE_2,1,9999,tsd->sc.data[SC_SPHERE_2]->val1,0,0);
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_SUMMON2,1,9999,tsd->sc.data[SC_SPHERE_2]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_SPHERE_3] )
-				clif_status_change_single(&sd->bl,&tsd->bl,SI_SPHERE_3,1,9999,tsd->sc.data[SC_SPHERE_3]->val1,0,0);
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_SUMMON3,1,9999,tsd->sc.data[SC_SPHERE_3]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_SPHERE_4] )
-				clif_status_change_single(&sd->bl,&tsd->bl,SI_SPHERE_4,1,9999,tsd->sc.data[SC_SPHERE_4]->val1,0,0);
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_SUMMON4,1,9999,tsd->sc.data[SC_SPHERE_4]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_SPHERE_5] )
-				clif_status_change_single(&sd->bl,&tsd->bl,SI_SPHERE_5,1,9999,tsd->sc.data[SC_SPHERE_5]->val1,0,0);
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_SUMMON5,1,9999,tsd->sc.data[SC_SPHERE_5]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_FREEZING] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_FROSTMISTY,1,9999,tsd->sc.data[SC_FREEZING]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_VENOMIMPRESS] )
@@ -4109,13 +4109,13 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 			if( tsd->sc.count && tsd->sc.data[SC_CRYSTALIZE] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_COLD,1,9999,tsd->sc.data[SC_CRYSTALIZE]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_DEEPSLEEP] )
-				clif_status_change_single(&sd->bl,&tsd->bl,SI_DEEPSLEEP,1,9999,tsd->sc.data[SC_DEEPSLEEP]->val1,0,0);
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_DEEP_SLEEP,1,9999,tsd->sc.data[SC_DEEPSLEEP]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_CURSEDCIRCLE_ATKER] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_CURSEDCIRCLE_ATKER,1,9999,tsd->sc.data[SC_CURSEDCIRCLE_ATKER]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_CURSEDCIRCLE_TARGET] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_CURSEDCIRCLE_TARGET,1,9999,tsd->sc.data[SC_CURSEDCIRCLE_TARGET]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_BLOODSUCKER] )
-				clif_status_change_single(&sd->bl,&tsd->bl,SI_BLOODSUCKER,1,9999,tsd->sc.data[SC_BLOODSUCKER]->val1,0,0);
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_BLOOD_SUCKER,1,9999,tsd->sc.data[SC_BLOODSUCKER]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC__SHADOWFORM] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_SHADOWFORM,1,9999,tsd->sc.data[SC__SHADOWFORM]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC__MANHOLE] )
