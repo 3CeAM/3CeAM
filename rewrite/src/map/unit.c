@@ -912,15 +912,14 @@ int unit_can_move(struct block_list *bl)
 				sc->data[SC_CAMOUFLAGE]->val1 < 3 && !(sc->data[SC_CAMOUFLAGE]->val3&1))
 			|| sc->data[SC_MADNESSCANCEL]
 			|| (sc->data[SC_GRAVITATION] && sc->data[SC_GRAVITATION]->val3 == BCT_SELF)
-			|| sc->data[SC_WHITEIMPRISON]
+			|| (sc->data[SC_FEAR] && sc->data[SC_FEAR]->val2 > 0)
+			|| sc->data[SC_DEEPSLEEP]
+			|| sc->data[SC_CRYSTALIZE]
 			|| sc->data[SC_ELECTRICSHOCKER]
 			|| sc->data[SC_BITE]
 			|| sc->data[SC_MAGNETICFIELD]
 			|| sc->data[SC_THORNSTRAP]
-			|| sc->data[SC_CRYSTALIZE]
 			|| sc->data[SC__MANHOLE]
-			|| (sc->data[SC_FEAR] && sc->data[SC_FEAR]->val2 > 0)
-			|| sc->data[SC_DEEPSLEEP]
 			|| sc->data[SC_VACUUM_EXTREME]
 			|| sc->data[SC_CURSEDCIRCLE_ATKER]
 			|| sc->data[SC_CURSEDCIRCLE_TARGET]
@@ -1155,13 +1154,6 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 			if (skill_check_pc_partner(sd, skill_num, &skill_lv, 1, 0) < 1)
 			{
 				clif_skill_fail(sd,skill_num,0,0,0);
-				return 0;
-			}
-			break;
-		case WL_WHITEIMPRISON:
-			if( battle_check_target(src,target,BCT_SELF|BCT_ENEMY) < 0 )
-			{
-				clif_skill_fail(sd,skill_num,0xb,0,0);
 				return 0;
 			}
 			break;
