@@ -801,14 +801,14 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_BANANA_BOMB_SITDOWN] = SI_BANANA_BOMB_SITDOWN_POSTDELAY;
 	StatusIconChangeTable[SC_PROMOTE_HEALTH_RESERCH] = SI_PROMOTE_HEALTH_RESERCH;
 	StatusIconChangeTable[SC_ENERGY_DRINK_RESERCH] = SI_ENERGY_DRINK_RESERCH;
-	StatusIconChangeTable[SC_EXTRACT_WHITE_POTION_Z] |= SI_EXTRACT_WHITE_POTION_Z;
-	StatusIconChangeTable[SC_VITATA_500] |= SI_VITATA_500;
-	StatusIconChangeTable[SC_EXTRACT_SALAMINE_JUICE] |= SI_EXTRACT_SALAMINE_JUICE;
-	StatusIconChangeTable[SC_BOOST500] |= SI_BOOST500;
-	StatusIconChangeTable[SC_FULL_SWING_K] |= SI_FULL_SWING_K;
-	StatusIconChangeTable[SC_MANA_PLUS] |= SI_MANA_PLUS;
-	StatusIconChangeTable[SC_MUSTLE_M] |= SI_MUSTLE_M;
-	StatusIconChangeTable[SC_LIFE_FORCE_F] |= SI_LIFE_FORCE_F;
+	StatusIconChangeTable[SC_EXTRACT_WHITE_POTION_Z] = SI_EXTRACT_WHITE_POTION_Z;
+	StatusIconChangeTable[SC_VITATA_500] = SI_VITATA_500;
+	StatusIconChangeTable[SC_EXTRACT_SALAMINE_JUICE] = SI_EXTRACT_SALAMINE_JUICE;
+	StatusIconChangeTable[SC_BOOST500] = SI_BOOST500;
+	StatusIconChangeTable[SC_FULL_SWING_K] = SI_FULL_SWING_K;
+	StatusIconChangeTable[SC_MANA_PLUS] = SI_MANA_PLUS;
+	StatusIconChangeTable[SC_MUSTLE_M] = SI_MUSTLE_M;
+	StatusIconChangeTable[SC_LIFE_FORCE_F] = SI_LIFE_FORCE_F;
 	StatusIconChangeTable[SC_SAVAGE_STEAK] = SI_SAVAGE_STEAK;
 	StatusIconChangeTable[SC_COCKTAIL_WARG_BLOOD] = SI_COCKTAIL_WARG_BLOOD;
 	StatusIconChangeTable[SC_MINOR_BBQ] = SI_MINOR_BBQ;
@@ -934,7 +934,7 @@ void initChangeTables(void)
 	StatusChangeFlagTable[SC_SIROMA_ICE_TEA] |= SCB_DEX;
 	StatusChangeFlagTable[SC_DROCERA_HERB_STEAMED] |= SCB_AGI;
 	StatusChangeFlagTable[SC_PUTTI_TAILS_NOODLES] |= SCB_LUK;
-	StatusChangeFlagTable[SC_BANANA_BOMB] = SCB_LUK;
+	StatusChangeFlagTable[SC_BANANA_BOMB] |= SCB_LUK;
 
 	StatusChangeFlagTable[SC_ALL_RIDING] |= SCB_SPEED;
 	StatusChangeFlagTable[SC_ON_PUSH_CART] |= SCB_SPEED;
@@ -1500,7 +1500,7 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 
 	if( sc && sc->count )
 	{
-		if( sc->opt1 > 0 && sc->opt1 != OPT1_BURNING && skill_num != SR_GENTLETOUCH_CURE )
+		if( sc->opt1 > 0 && sc->opt1 != OPT1_BURNING && skill_num != RK_REFRESH && skill_num != SR_GENTLETOUCH_CURE )
 		{	//Stuned/Frozen/etc
 			if (flag != 1) //Can't cast, casted stuff can't damage. 
 				return 0;
@@ -1565,17 +1565,16 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 		) {	//Skills blocked through status changes...
 			if (!flag && ( //Blocked only from using the skill (stuff like autospell may still go through
 				sc->data[SC_SILENCE] ||
+				sc->data[SC_DEEPSLEEP] ||
+				sc->data[SC_CRYSTALIZE] ||
 				(sc->data[SC_MARIONETTE] && skill_num != CG_MARIONETTE) || //Only skill you can use is marionette again to cancel it
 				(sc->data[SC_MARIONETTE2] && skill_num == CG_MARIONETTE) || //Cannot use marionette if you are being buffed by another
 				sc->data[SC_STEELBODY] ||
 				sc->data[SC_BERSERK] ||
 				sc->data[SC_OBLIVIONCURSE] ||
-				sc->data[SC_WHITEIMPRISON] ||
 				sc->data[SC_STASIS] && skill_stasis_check(src, skill_num)||
 				sc->data[SC__INVISIBILITY] ||
-				sc->data[SC_CRYSTALIZE] ||
 				sc->data[SC__IGNORANCE] || 
-				sc->data[SC_DEEPSLEEP] ||
 				sc->data[SC_CURSEDCIRCLE_TARGET] || 
 				sc->data[SC__SHADOWFORM] || 
 				(sc->data[SC_KYOMU] && rand()%100 < 5 * sc->data[SC_KYOMU]->val1) ||
@@ -5909,11 +5908,7 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 		sc_def = 3 + status->vit;
 		break;
 	case SC_SLEEP:
-		sc_def = 3 +status->int_;
-		break;
-	case SC_DEEPSLEEP:
-		tick_def = status->int_ / 20 + status_get_lv(bl) / 20; //Reduces duration by 1 second for every 20 INT and 20 BaseLv's
-		//sc_def = 5 * status->int_ /10;iRO documents shows no info about natural immunity.
+		sc_def = 3 + status->int_;
 		break;
 	case SC_DECREASEAGI:
 	case SC_ADORAMUS:
@@ -5941,14 +5936,17 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 			tick /= 5;
 		sc_def = status->agi / 2;
 		break;
-	case SC_WHITEIMPRISON:
-		rate -= (status_get_lv(bl) / 5 + status->vit / 4 + status->agi / 10)*100; // Lineal Reduction of Rate
-		tick_def = (int)floor(log10(status_get_lv(bl)) * 10.);
-		break;
 	case SC_BURNING:
 		// From iROwiki : http://forums.irowiki.org/showpost.php?p=577240&postcount=583
 		tick -= 50*status->luk + 60*status->int_ + 170*status->vit;//Hoping to get the official resistance formula soon. [Rytech]
 		tick = max(tick,5000); // Minimum Duration 10s.//2011 document for Warlock says min duration is 5. [Rytech]
+		break;
+	case SC_WHITEIMPRISON:// A 2010 kRO sakray update says its natural immunity stat is STR. But I want a official test soon. [Rytech]
+		sc_def = 3 + status->str;
+		break;
+	case SC_DEEPSLEEP:
+		tick_def = status->int_ / 20 + status_get_lv(bl) / 20; //Reduces duration by 1 second for every 20 INT and 20 BaseLv's
+		//sc_def = 5 * status->int_ /10;iRO documents shows no info about natural immunity.
 		break;
 	case SC_FREEZING:
 		tick -= 1000 * ((status->vit + status->dex) / 20);
@@ -6165,26 +6163,31 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	//Check for inmunities / sc fails
 	switch (type)
 	{
-	case SC_STONE:
-		if(sc->data[SC_POWER_OF_GAIA])
-			return 0;
+
 	case SC_FREEZE:
+		// Warmer makes you immune to freezing.
+		if ( sc->data[SC_WARMER] )
+			return 0;
+	case SC_STONE:
 		//Undead are immune to Freeze/Stone
 		if (undead_flag && !(flag&1))
 			return 0;
 	case SC_SLEEP:
 	case SC_STUN:
-	case SC_FREEZING:
+	case SC_BURNING:
+		// Burning can't be given to someone in freezing status.
+		if ( type == SC_BURNING && sc->data[SC_FREEZING] )
+			return 0;
+	case SC_WHITEIMPRISON:
 		if (sc->opt1)
 			return 0; //Cannot override other opt1 status changes. [Skotlex]
-		if((type == SC_FREEZE || type == SC_FREEZING || type == SC_CRYSTALIZE) && sc->data[SC_WARMER])
-			return 0; //Immune to Frozen and Freezing status if under Warmer status. [Jobbie] Added Crystalize status too. [Rytech]
 	break;
-		
-	case SC_BURNING:
-		if(sc->data[SC_FREEZING] || sc->opt1)
+
+	case SC_FREEZING:
+	case SC_CRYSTALIZE:
+		// Burning makes you immune to freezing.
+		if ( type == SC_FREEZING && sc->data[SC_BURNING] || sc->data[SC_WARMER] )
 			return 0;
-	break;
 
 	case SC_SIGNUMCRUCIS:
 		//Only affects demons and undead element (but not players)
@@ -6465,20 +6468,19 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC_RICHMANKIM:
 			case SC_ROKISWEIL:
 			case SC_FOGWALL:
-			case SC_FREEZING://We will need to go over this list one day to recheck what status's boss and MVP's resist. [Rytech]
-			case SC_BURNING: // Place here until we have info about its behavior on Boss-monsters. [pakpil]
 			case SC_MARSHOFABYSS:
 			case SC_ADORAMUS:
 
-			// Exploid prevention - kRO Fix
-			case SC_PYREXIA:
+			// Exploit prevention - kRO Fix
+			// Soon to replace with NEW_POISON SC range.
+			case SC_PARALYSE:
+			case SC_LEECHESEND:
+			case SC_OBLIVIONCURSE:
 			case SC_DEATHHURT:
 			case SC_TOXIN:
-			case SC_PARALYSE:
-			case SC_VENOMBLEED:
+			case SC_PYREXIA:
 			case SC_MAGICMUSHROOM:
-			case SC_OBLIVIONCURSE:
-			case SC_LEECHESEND:
+			case SC_VENOMBLEED:
 
 			// Ranger Effects
 			case SC_BITE:
@@ -6487,7 +6489,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 
 			// Other Effects
 			case SC_VACUUM_EXTREME:
-			case SC_CRYSTALIZE:
 				return 0;
 		}
 	}
@@ -6747,13 +6748,18 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC_BLIND:
 			case SC_BLEEDING:
 			case SC_DPOISON:
+			case SC_BURNING:
+			case SC_WHITEIMPRISON:// Can't recast imprison on enemy with this status, but here to be safe.
+			case SC_FEAR:
+			case SC_DEEPSLEEP:
+			case SC_FREEZING:
+			case SC_CRYSTALIZE:
 			case SC_CLOSECONFINE2: //Can't be re-closed in.
 			case SC_MARIONETTE:
 			case SC_MARIONETTE2:
 			case SC_NOCHAT:
 			case SC_CHANGE: //Otherwise your Hp/Sp would get refilled while still within effect of the last invocation.
 			case SC_ABUNDANCE:
-			case SC_FEAR:
 			case SC_TOXIN:
 			case SC_PARALYSE:
 			case SC_VENOMBLEED:
@@ -7175,7 +7181,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_READYCOUNTER:
 		case SC_READYTURN:
 		case SC_DODGE:
-		case SC_ON_PUSH_CART:
 			tick = -1;
 			break;
 
@@ -7790,15 +7795,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_SECRAMENT:
 			val2 = 10 * val1;
 			break;
-		case SC_WHITEIMPRISON://Does White Imprison still remove these status's? [Rytech]
-			status_change_end(bl, SC_BURNING, -1);
-			status_change_end(bl, SC_FREEZING, -1);
-			status_change_end(bl, SC_FREEZE, -1);
-			status_change_end(bl, SC_STONE, -1);
-			break;
-		case SC_FREEZING:
-			status_change_end(bl, SC_BURNING, -1);
-			break;
 		case SC_MARSHOFABYSS:
 			val2 = 3 * val1;//AGI and DEX Reduction
 			val3 = 10 * val1;//Movement Speed Reduction
@@ -8338,7 +8334,9 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_STUN:
 		case SC_SLEEP:
 		case SC_STONE:
+		case SC_WHITEIMPRISON:
 		case SC_DEEPSLEEP:
+		case SC_CRYSTALIZE:
 			if (sd && pc_issit(sd)) //Avoid sprite sync problems.
 				pc_setstand(sd);
 		case SC_TRICKDEAD:
@@ -8360,8 +8358,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_THORNSTRAP:
 		case SC__MANHOLE:
 		case SC_CHAOS:
-		case SC_CRYSTALIZE:
-		case SC_WHITEIMPRISON:
 		case SC_VACUUM_EXTREME:
 		case SC_CURSEDCIRCLE_ATKER:
 		case SC_CURSEDCIRCLE_TARGET:
@@ -8660,6 +8656,7 @@ int status_change_clear(struct block_list* bl, int type)
 		case SC_WEIGHT90:
 		case SC_EDP:
 		case SC_MELTDOWN:
+		case SC_WEDDING:
 		case SC_XMAS:
 		case SC_SUMMER:
 		case SC_NOCHAT:
@@ -8682,7 +8679,11 @@ int status_change_clear(struct block_list* bl, int type)
 		case SC_FOOD_DEX_CASH:
 		case SC_FOOD_INT_CASH:
 		case SC_FOOD_LUK_CASH:
+		case SC_ALL_RIDING:
 		case SC_ON_PUSH_CART:
+		case SC_HANBOK:
+		case SC_OKTOBERFEST:
+		case SC_SUMMER2:
 			continue;
 		}
 
@@ -8750,6 +8751,8 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 			case SC_FREEZE:
 			case SC_STUN:
 			case SC_SLEEP:
+			case SC_BURNING:
+			case SC_WHITEIMPRISON:
 			if (sce->val1) {
 			  	//Removing the 'level' shouldn't affect anything in the code
 				//since these SC are not affected by it, and it lets us know
@@ -9165,6 +9168,9 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 	case SC_SIGNUMCRUCIS:
 	case SC_CHAOS:
 		sc->opt2 &= ~OPT2_SIGNUMCRUCIS;
+		break;
+	case SC_FEAR:
+		sc->opt2 &= ~OPT2_FEAR;
 		break;
 
 	case SC_HIDING:
@@ -10393,6 +10399,7 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC_PUTTI_TAILS_NOODLES:
 			case SC_CURSEDCIRCLE_ATKER:
 			case SC_CURSEDCIRCLE_TARGET:
+			case SC_ALL_RIDING:
 			case SC_ON_PUSH_CART:
 			case SC_KAHU_ENTEN:
 			case SC_HYOUHU_HUBUKI:
@@ -10470,6 +10477,10 @@ int status_change_spread( struct block_list *src, struct block_list *bl )
 			case SC_BLIND:
 			case SC_BLEEDING:
 			case SC_DPOISON:
+			case SC_BURNING:
+			case SC_FEAR:
+			case SC_FREEZING:
+			//case SC_CRYSTALIZE:
 			//case SC_NOCHAT:
 			case SC_HALLUCINATION:
 			case SC_SIGNUMCRUCIS:
@@ -10485,10 +10496,6 @@ int status_change_spread( struct block_list *src, struct block_list *bl )
 			//case SC_STRIPHELM:
 			//case SC__STRIPACCESSORY:
 			//case SC_BITE:
-			//Additional Commons
-			case SC_BURNING:
-			case SC_FREEZING:
-			case SC_FEAR:
 			//Guillotine Cross Poisons
 			case SC_TOXIN:
 			case SC_PARALYSE:

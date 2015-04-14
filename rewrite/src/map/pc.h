@@ -24,7 +24,7 @@
 
 #define MAX_RUNE 20
 #define MAX_RAGE 15
-#define MAX_SPELLBOOK 10
+#define MAX_SPELLBOOK 7
 
 struct weapon_data {
 	int atkmods[3];

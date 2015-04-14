@@ -398,17 +398,6 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			return 0;
 		}
 
-		if( sc->data[SC_WHITEIMPRISON] && skill_num != HW_GRAVITATION && skill_num != PA_PRESSURE )
-		{ // Gravitation and Pressure do damage without removing the effect
-			if( skill_num == MG_NAPALMBEAT || skill_num == MG_SOULSTRIKE || skill_num == WL_SOULEXPANSION || element == ELE_GHOST )
-				status_change_end(bl,SC_WHITEIMPRISON,-1); // Those skills do damage and removes effect
-			else
-			{
-				d->dmg_lv = ATK_BLOCK;
-				return 0;
-			}
-		}
-
 		if( sc->data[SC_SAFETYWALL] && (flag&(BF_SHORT|BF_MAGIC)) == BF_SHORT )
 		{
 			struct skill_unit_group* group = skill_id2group(sc->data[SC_SAFETYWALL]->val3);
@@ -549,6 +538,22 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			if( skill_num != ASC_BREAKER || !(flag&BF_WEAPON) )
 				status_change_end(bl, SC_AETERNA, INVALID_TIMER); //Shouldn't end until Breaker's non-weapon part connects.
 		}
+
+		if( sc->data[SC_WHITEIMPRISON] )
+		{
+			if ( element == ELE_GHOST )
+			{
+				if( skill_num == MG_NAPALMBEAT || skill_num == MG_SOULSTRIKE || skill_num == HW_NAPALMVULCAN || skill_num == WL_SOULEXPANSION )
+					damage <<= 1;// Deals double damage with Napalm Beat, Soul Strike, Napalm Vulcan, and Soul Expansion
+				status_change_end(bl, SC_WHITEIMPRISON, INVALID_TIMER);
+			}
+			else
+			{
+				d->dmg_lv = ATK_BLOCK;
+				return 0;
+			}
+		}
+
 		if( sc->data[SC_DEEPSLEEP] )
 		{
 			damage += damage / 2; // 1.5 times more damage while in Deep Sleep.
@@ -3935,6 +3940,8 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						skillratio = 300 * skill_lv;
 						if( sc && sc->data[SC_BANDING] && sc->data[SC_BANDING]->val2 > 1 )
 							skillratio += 200 * sc->data[SC_BANDING]->val2;
+						if( sc && sc->data[SC_INSPIRATION] )
+							skillratio += 600;
 						if( re_baselv_bonus == 1 && s_level >= 100 )
 							skillratio = skillratio * s_job_level / 25;	// Job level bonus.
 						break;

@@ -307,6 +307,7 @@ int skill_get_range2(struct block_list *bl, int id, int lv)
 		case WL_HELLINFERNO:
 		case WL_COMET:
 		case WL_CHAINLIGHTNING:
+		case WL_EARTHSTRAIN:
 		case WL_TETRAVORTEX:
 		case WL_RELEASE:
 		//case WL_READING_SP:// Code shows this in here. Why when its self casted?
@@ -1269,14 +1270,14 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 			{
 				case ITEMID_COCONUT_BOMB://Causes stun and bleeding.
 					sc_start(bl, SC_STUN, 5 + joblv / 2, skilllv, 1000 * joblv / 3);
-					sc_start(bl, SC_BLEEDING, 3 + joblv / 2, skilllv, 1000 * ((baselv / 4) + (joblv/3)));
+					sc_start(bl, SC_BLEEDING, 3 + joblv / 2, skilllv, 1000 * (baselv / 4 + joblv / 3));
 					break;
 				case ITEMID_MELON_BOMB://Reduces movement and attack speed.
 					sc_start4(bl, SC_MELON_BOMB, 100, skilllv, 20 + joblv, 10 + joblv / 2, 0, 1000 * baselv / 4);
 					break;
-				case ITEMID_BANANA_BOMB://Reduces LUK and chance to force sit.
-					sc_start(bl, SC_BANANA_BOMB, 100, skilllv, 77000);//Info in official says reduces LUK by 77, but doesn't work on official server. Bug maybe or disabled?
+				case ITEMID_BANANA_BOMB://Reduces LUK and chance to force sit. Must do the force sit success chance first before LUK reduction.
 					sc_start(bl, SC_BANANA_BOMB_SITDOWN, baselv + joblv + sstatus->dex / 6 - tbaselv - tstatus->agi / 4 - tstatus->luk / 5, skilllv, 1000 * joblv / 4);
+					//sc_start(bl, SC_BANANA_BOMB, 100, skilllv, 77000);//Info says reduces LUK by 77, but doesn't work on official. Bug maybe or disabled for above reason.
 					break;
 			}
 		}
@@ -3464,7 +3465,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	//case RL_MASS_SPIRAL://<--Enable once skill effect file is fixed. [Rytech]
 	case RL_H_MINE:
 	case RL_SLUGSHOT:
-	case KO_JYUMONJIKIRI:
 	case KO_SETSUDAN:
 	case KO_BAKURETSU:
 	case KO_HUUMARANKA:
@@ -4029,6 +4029,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 			sc_start(src,SC_HIDING,100,skilllv,skill_get_time(skillid,skilllv));
 		break;
 	case NJ_KIRIKAGE:
+	case KO_JYUMONJIKIRI:
 		if( !map_flag_gvg(src->m) && !map[src->m].flag.battleground )
 		{	//You don't move on GVG grounds.
 			short x, y;
@@ -4036,7 +4037,8 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 			if (unit_movepos(src, x, y, 0, 0))
 				clif_slide(src,src->x,src->y);
 		}
-		status_change_end(src, SC_HIDING, INVALID_TIMER);
+		if ( skillid == NJ_KIRIKAGE )
+			status_change_end(src, SC_HIDING, INVALID_TIMER);
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 	case RK_PHANTOMTHRUST:
@@ -5936,7 +5938,13 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			status_change_end(bl, SC_STONE, INVALID_TIMER);
 			status_change_end(bl, SC_SLEEP, INVALID_TIMER);
 			status_change_end(bl, SC_STUN, INVALID_TIMER);
+			status_change_end(bl, SC_WHITEIMPRISON, INVALID_TIMER);
+			//Burning is also removed too right? All the other BODYSTATE stuff is removed by this skill. Need confirm. [Rytech]
+			//status_change_end(bl, SC_BURNING, INVALID_TIMER);
 		}
+		//Change in kRO on 6/26/2012
+		status_change_end(bl, SC_STASIS, INVALID_TIMER);
+
 		//Is this equation really right? It looks so... special.
 		if(battle_check_undead(tstatus->race,tstatus->def_ele))
 		{
@@ -7525,11 +7533,14 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			status_change_end(bl, SC_BLIND, -1);
 			status_change_end(bl, SC_BLEEDING, -1);
 			status_change_end(bl, SC_DPOISON, -1);
+			status_change_end(bl, SC_BURNING, -1);
+			status_change_end(bl, SC_WHITEIMPRISON, -1);
+			status_change_end(bl, SC_FEAR, -1);
+			status_change_end(bl, SC_DEEPSLEEP, -1);
+			status_change_end(bl, SC_FREEZING, -1);
+			status_change_end(bl, SC_CRYSTALIZE, -1);
 			status_change_end(bl, SC_QUAGMIRE, -1);
 			status_change_end(bl, SC_DECREASEAGI, -1);
-			status_change_end(bl, SC_BURNING, -1);
-			status_change_end(bl, SC_FREEZING, -1);
-			status_change_end(bl, SC_WHITEIMPRISON, -1);
 			status_change_end(bl, SC_MARSHOFABYSS, -1);
 			status_change_end(bl, SC_TOXIN, -1);
 			status_change_end(bl, SC_PARALYSE, -1);
@@ -7539,8 +7550,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			status_change_end(bl, SC_PYREXIA, -1);
 			status_change_end(bl, SC_OBLIVIONCURSE, -1);
 			status_change_end(bl, SC_LEECHESEND, -1);
-			status_change_end(bl, SC_CRYSTALIZE, -1);
-			status_change_end(bl, SC_DEEPSLEEP, -1);
 			status_change_end(bl, SC_MANDRAGORA, -1);
 		}
 		break;
@@ -7926,15 +7935,49 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case WL_WHITEIMPRISON:
-		if( !(tsc && tsc->data[type]) && (src == bl || battle_check_target(src, bl, BCT_ENEMY)) )
 		{
-			int rate = 50 + 3 * skilllv + s_job_level / 4;
-			i = sc_start2(bl,type,rate,skilllv,src->id,(src == bl)?skill_get_time2(skillid,skilllv):skill_get_time(skillid, skilllv));
-			clif_skill_nodamage(src,bl,skillid,skilllv,i);
+			int duration = 0;
+			short status_flag = 0;
+
+			// Target check. Can only be casted on monsters, enemy players, or yourself. Also fails if target is already imprisoned.
+			if ( !(bl->type == BL_MOB || bl->type == BL_PC && battle_check_target(src,bl,BCT_ENEMY) > 0 || src == bl) || ( tsc && tsc->data[SC_WHITEIMPRISON] ))
+			{
+				clif_skill_fail(sd,skillid,USESKILL_FAIL_TOTARGET,0,0);
+				break;
+			}
+
+			// Success chance.
+			if ( bl->type == BL_MOB || bl->type == BL_PC && battle_check_target(src,bl,BCT_ENEMY) > 0 )
+			{	// Success chance for monsters and enemy players.
+				if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
+					rate = 50 + 3 * skilllv + status_get_job_lv(src) / 4;
+				else
+					rate = 50 + 3 * skilllv + 50 / 4;
+				// Enemy targets have natural immunity through STR, but it does not affect duration.
+				status_flag = 2;
+			}
+			else
+			{
+				rate = 100;// Success for caster targeting self.
+				status_flag = 10;// Natural immunity and duration reduction does not apply when self casted.
+			}
+
+			// Status duration.
+			if ( bl->type == BL_MOB )
+			{	// Monsters have a resistance.
+				duration = 20000 - 1000 * (tstatus->vit + tstatus->luk) / 20;
+				if ( duration < 10000 )// Duration cant be reduced below 10 seconds.
+					duration = 10000;
+			}
+			else if ( bl->type == BL_PC && battle_check_target(src,bl,BCT_ENEMY) > 0)
+				duration = skill_get_time(skillid,skilllv);// Enemy players get a fixed duration set by skill level.
+			else
+				duration = 5000;// Duration for caster targeting self.
+
+			// Everything checks out and is set. Attempt to give the status.
+			clif_skill_nodamage(src,bl,skillid,skilllv,status_change_start(bl, type, 100*rate, skilllv, 0, 0, 0, duration, status_flag));
+			break;
 		}
-		else if( sd )
-			clif_skill_fail(sd,skillid,0,0,0);
-		break;
 
 	case WL_MARSHOFABYSS:
 		{
@@ -7990,10 +8033,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case WL_STASIS:
 		if( flag&1 )
 		{
-		int timereduct = skill_get_time(skillid, skilllv) - (tstatus->vit + tstatus->dex) / 20 * 1000;
-		if ( timereduct < 5000 )
-			timereduct = 5000;//Duration cant go below 5 seconds.
-			sc_start(bl,type,100,skilllv,timereduct);
+		int duration = skill_get_time(skillid, skilllv) - 1000 * (tstatus->vit + tstatus->dex) / 20;
+		if ( duration < 10000 )
+			duration = 10000;// Duration cant go below 10 seconds.
+			sc_start(bl,type,100,skilllv,duration);
 		}
 		else
 		{
@@ -10566,16 +10609,17 @@ int skill_castend_map (struct map_session_data *sd, short skill_num, const char 
 		sd->sc.data[SC_SILENCE] ||
 		sd->sc.data[SC_ROKISWEIL] ||
 		sd->sc.data[SC_AUTOCOUNTER] ||
-		sd->sc.data[SC_DEATHBOUND] ||
 		sd->sc.data[SC_STEELBODY] ||
 		sd->sc.data[SC_DANCING] ||
 		sd->sc.data[SC_BERSERK] ||
 		sd->sc.data[SC_BASILICA] ||
 		sd->sc.data[SC_MARIONETTE] ||
-		sd->sc.data[SC_WHITEIMPRISON] ||
+		sd->sc.data[SC_DEATHBOUND] ||
 		//sd->sc.data[SC_STASIS] ||//Not sure if this is needed. Does as it should without it, but leaving here for now. [Rytech]
+		sd->sc.data[SC_DEEPSLEEP] ||
 		sd->sc.data[SC_CRYSTALIZE] ||
-		sd->sc.data[SC__MANHOLE]
+		sd->sc.data[SC__MANHOLE] ||
+		sd->sc.data[SC_ALL_RIDING]
 	 )) {
 		skill_failed(sd);
 		return 0;
@@ -16684,6 +16728,7 @@ int skill_spellbook (struct map_session_data *sd, int nameid)
 	}
 
 	max_preserve = 4 * pc_checkskill(sd,WL_FREEZE_SP) + status_get_int(&sd->bl) / 10 + sd->status.base_level / 10;
+	if (battle_config.renewal_baselvl_skill_ratio == 0) max_preserve = 4 * pc_checkskill(sd,WL_FREEZE_SP) + status_get_int(&sd->bl) / 10 + 15;
 	for( i = 0; i < MAX_SPELLBOOK && sd->rsb[i].skillid; i++ )
 		preserved += sd->rsb[i].points;
 

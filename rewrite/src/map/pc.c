@@ -4196,7 +4196,6 @@ int pc_useitem(struct map_session_data *sd,int n)
 		sd->sc.data[SC_TRICKDEAD] ||
 		sd->sc.data[SC_HIDING] ||
 		(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOITEM) ||
-		sd->sc.data[SC_WHITEIMPRISON] ||
 		sd->sc.data[SC__SHADOWFORM] ||
 		sd->sc.data[SC__INVISIBILITY] ||
 		sd->sc.data[SC_CRYSTALIZE] ||
@@ -7555,10 +7554,15 @@ int pc_setcart(struct map_session_data *sd,int type)
 		clif_clearcart(sd->fd);
 	}
 	else
-	{	
-		if ( sd->sc.data[SC_ON_PUSH_CART] )//Needed for when changing to a lower type value. [Rytech]
-			status_change_end(&sd->bl,SC_ON_PUSH_CART,INVALID_TIMER);
-		sc_start(&sd->bl, SC_ON_PUSH_CART, 100, type, -1);
+	{
+		if ( sd->sc.data[SC_ON_PUSH_CART] )
+		{	//If player already has a cart, chances are were changing the cart's look.
+			sd->sc.data[SC_ON_PUSH_CART]->val1 = type;
+			clif_status_change(&sd->bl, SI_ON_PUSH_CART, 1, 9999, sd->sc.data[SC_ON_PUSH_CART]->val1, 0, 0);
+		}
+		else
+			sc_start(&sd->bl, SC_ON_PUSH_CART, 100, type, -1);
+
 		clif_cartlist(sd);
 		clif_updatestatus(sd, SP_CARTINFO);
 	}
