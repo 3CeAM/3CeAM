@@ -526,6 +526,9 @@ extern struct Battle_Config
 	int hanbok_ignorepalette;
 	int oktoberfest_ignorepalette;
 	int summer2_ignorepalette;
+	int max_homunculus_hp;
+	int max_homunculus_sp;
+	int max_homunculus_parameter;
 
 	// Renewal EDP Formula Config For Guillotine Cross Skills
 	int gc_skill_edp_boost_formula_a;

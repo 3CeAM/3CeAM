@@ -216,6 +216,26 @@ void merc_hom_skillup(struct homun_data *hd,int skillnum)
 	}
 }
 
+void merc_hom_stats_cap_check(struct homun_data *hd)
+{
+	struct s_homunculus *hom;
+	int max_hp_limit = battle_config.max_homunculus_hp;
+	int max_sp_limit = battle_config.max_homunculus_sp;
+	short stat_limit = battle_config.max_homunculus_parameter;
+
+	// Makes sure the homunculus MaxHP/MaxSP/Stats are not above
+	// their limits. If they are, set them to the limit.
+	hom = &hd->homunculus;
+	hom->max_hp = cap_value(hom->max_hp, 0, max_hp_limit);
+	hom->max_sp = cap_value(hom->max_sp, 0, max_sp_limit);
+	hom->str = cap_value(hom->str, 0, 10*stat_limit);
+	hom->agi = cap_value(hom->agi, 0, 10*stat_limit);
+	hom->vit = cap_value(hom->vit, 0, 10*stat_limit);
+	hom->int_= cap_value(hom->int_,0, 10*stat_limit);
+	hom->dex = cap_value(hom->dex, 0, 10*stat_limit);
+	hom->luk = cap_value(hom->luk, 0, 10*stat_limit);
+}
+
 int merc_hom_levelup(struct homun_data *hd)
 {
 	struct s_homunculus *hom;
@@ -273,9 +293,14 @@ int merc_hom_levelup(struct homun_data *hd)
 	hom->int_+= growth_int;
 	hom->luk += growth_luk;
 
+	// MaxHP/MaxSP/Stats Cap Check
+	merc_hom_stats_cap_check(hd);
+
 	// Needed to update skill list for mutated homunculus so unlocked skills will appear when the needed level is reached.
+	status_calc_homunculus(hd,0);
+	clif_hominfo(hd->master,hd,0);
 	clif_homskillinfoblock(hd->master);
-	
+
 	if ( battle_config.homunculus_show_growth ) {
 		sprintf(output,
 			"Growth: hp:%d sp:%d str(%.2f) agi(%.2f) vit(%.2f) int(%.2f) dex(%.2f) luk(%.2f) ",
@@ -333,6 +358,10 @@ int merc_hom_evolution(struct homun_data *hd)
 	hom->int_+= 10*rand(min->int_,max->int_);
 	hom->dex += 10*rand(min->dex, max->dex);
 	hom->luk += 10*rand(min->luk, max->luk);
+
+	// MaxHP/MaxSP/Stats Cap Check
+	merc_hom_stats_cap_check(hd);
+
 	hom->intimacy = 500;
 
 	unit_remove_map(&hd->bl, CLR_OUTSIGHT);
@@ -356,9 +385,10 @@ int merc_hom_evolution(struct homun_data *hd)
 int merc_hom_mutation(struct homun_data *hd, int class_)
 {
 	struct s_homunculus *hom;
+	struct h_stats *base;
 	struct map_session_data *sd;
 	nullpo_ret(hd);
-	
+
 	//Only allows mutating level 99 evolved homunculus and also prevents mutating already mutated homunculus.
 	if( hd->homunculus.level < 99 || !(hd->homunculus.class_ >= 6009 && hd->homunculus.class_ <= 6016) || 
 		hd->homunculus.class_ >= MH_CLASS_BASE && hd->homunculus.class_ <= MH_CLASS_MAX)
@@ -370,17 +400,43 @@ int merc_hom_mutation(struct homun_data *hd, int class_)
 	if (!sd)
 		return 0;
 
+	// Remove homunculus base stats.
+	// Homunculus get their base stats replaced when
+	// they mutate to a new form. So we start by removing
+	// the base stats for their current form before mutation.
+	hom = &hd->homunculus;
+	base = &hd->homunculusDB->base;
+	hom->max_hp -= base->HP;
+	hom->max_sp -= base->SP;
+	hom->str -= 10*base->str;
+	hom->agi -= 10*base->agi;
+	hom->vit -= 10*base->vit;
+	hom->int_-= 10*base->int_;
+	hom->dex -= 10*base->dex;
+	hom->luk -= 10*base->luk;
+
+	// Then we change the homunculus form through mutation.
 	if (!merc_hom_change_class(hd, class_)) {
 		ShowError("merc_hom_mutation: Can't mutate homunc from %d to %d", hd->homunculus.class_, class_);
 		return 0;
 	}
 
-	// Its said the player can rename the homunculus again after mutation.
-	// This might be true since the homunculus's form completely changes.
-	hd->homunculus.rename_flag = 0;
+	// Apply base stats for the homunculus new form.
+	// After mutation, it gets the base stats for its new form.
+	hom = &hd->homunculus;
+	base = &hd->homunculusDB->base;
+	hom->max_hp += base->HP;
+	hom->max_sp += base->SP;
+	hom->str += 10*base->str;
+	hom->agi += 10*base->agi;
+	hom->vit += 10*base->vit;
+	hom->int_+= 10*base->int_;
+	hom->dex += 10*base->dex;
+	hom->luk += 10*base->luk;
 
-	//Apply mutation bonuses.
-	//Bonuses are the same for all mutations.
+	// Apply mutation bonuses.
+	// Finally, we apply the mutation bonus.
+	// Bonuses are the same for all mutations.
 	hom = &hd->homunculus;
 	hom->max_hp += rand(1000, 2000);
 	hom->max_sp += rand(10, 200);
@@ -390,6 +446,15 @@ int merc_hom_mutation(struct homun_data *hd, int class_)
 	hom->int_+= 10*rand(1, 10);
 	hom->dex += 10*rand(1, 10);
 	hom->luk += 10*rand(1, 10);
+
+	// MaxHP/MaxSP/Stats Cap Check
+	merc_hom_stats_cap_check(hd);
+
+	hom->intimacy = 500;
+
+	// Its said the player can rename the homunculus again after mutation.
+	// This might be true since the homunculus's form completely changes.
+	hd->homunculus.rename_flag = 0;
 
 	unit_remove_map(&hd->bl, CLR_OUTSIGHT);
 	map_addblock(&hd->bl);
@@ -944,6 +1009,9 @@ int merc_hom_shuffle(struct homun_data *hd)
 		hom->dex += 10*rand(min->dex, max->dex);
 		hom->luk += 10*rand(min->luk, max->luk);
 	}
+
+	// MaxHP/MaxSP/Stats Cap Check
+	merc_hom_stats_cap_check(hd);
 
 	hd->homunculus.exp = exp;
 	memcpy(&hd->homunculus.hskill, &b_skill, sizeof(b_skill));
