@@ -1332,12 +1332,19 @@ int clif_hominfo(struct map_session_data *sd, struct homun_data *hd, int flag)
 {
 	struct status_data *status;
 	unsigned char buf[128];
+	short PacketType;
 	
 	nullpo_ret(hd);
 
+#if PACKETVER < 20141223
+	PacketType = 0x22e;
+#else
+	PacketType = 0x9f7;
+#endif
+
 	status = &hd->battle_status;
-	memset(buf,0,packet_len(0x22e));
-	WBUFW(buf,0)=0x22e;
+	memset(buf,0,packet_len(PacketType));
+	WBUFW(buf,0)=PacketType;
 	memcpy(WBUFP(buf,2),hd->homunculus.name,NAME_LENGTH);
 	// Bit field, bit 0 : rename_flag (1 = already renamed), bit 1 : homunc vaporized (1 = true), bit 2 : homunc dead (1 = true)
 	WBUFB(buf,26)=(battle_config.hom_rename?0:hd->homunculus.rename_flag) | (hd->homunculus.vaporize << 1) | (hd->homunculus.hp?0:4);
@@ -1356,6 +1363,9 @@ int clif_hominfo(struct map_session_data *sd, struct homun_data *hd, int flag)
 	WBUFW(buf,45)=status->mdef;
 	WBUFW(buf,47)=status->flee;
 	WBUFW(buf,49)=(flag)?0:status->amotion;
+
+
+#if PACKETVER < 20141223
 	if (status->max_hp > SHRT_MAX) {
 		WBUFW(buf,51) = status->hp/(status->max_hp/100);
 		WBUFW(buf,53) = 100;
@@ -1374,7 +1384,22 @@ int clif_hominfo(struct map_session_data *sd, struct homun_data *hd, int flag)
 	WBUFL(buf,63)=hd->exp_next;
 	WBUFW(buf,67)=hd->homunculus.skillpts;
 	WBUFW(buf,69)=status_get_range(&hd->bl);
-	clif_send(buf,packet_len(0x22e),&sd->bl,SELF);
+#else
+		WBUFL(buf,51)=status->hp;
+		WBUFL(buf,55)=status->max_hp;
+	if (status->max_sp > SHRT_MAX) {
+		WBUFW(buf,59) = status->sp/(status->max_sp/100);
+		WBUFW(buf,61) = 100;
+	} else {
+		WBUFW(buf,59)=status->sp;
+		WBUFW(buf,61)=status->max_sp;
+	}
+	WBUFL(buf,63)=hd->homunculus.exp;
+	WBUFL(buf,67)=hd->exp_next;
+	WBUFW(buf,71)=hd->homunculus.skillpts;
+	WBUFW(buf,73)=status_get_range(&hd->bl);
+#endif
+	clif_send(buf,packet_len(PacketType),&sd->bl,SELF);
 	return 0;
 }
 
@@ -16333,7 +16358,7 @@ static int packetdb_readdb(void)
 	    0, 10,  0,  0,  0,  0,  0,  0,  0,  0, 23,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  7,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0, 75,  0,  0,  0,  0,  0,  0,  0,  0,
 	};
 	struct {
 		void (*func)(int, struct map_session_data *);

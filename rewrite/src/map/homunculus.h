@@ -61,6 +61,7 @@ void merc_hom_skillup(struct homun_data *hd,int skillnum);
 int merc_hom_calc_skilltree(struct homun_data *hd) ;
 int merc_hom_checkskill(struct homun_data *hd,int skill_id) ;
 int merc_hom_gainexp(struct homun_data *hd,int exp) ;
+void merc_hom_stats_cap_check(struct homun_data *hd);
 int merc_hom_levelup(struct homun_data *hd) ;
 int merc_hom_evolution(struct homun_data *hd) ;
 int merc_hom_mutation(struct homun_data *hd, int class_);

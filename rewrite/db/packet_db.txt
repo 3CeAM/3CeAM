@@ -1826,3 +1826,5 @@ packet_ver: 30
 
 //Add new packets here.
 //packet_ver: 31
+// Required client unknown
+//0x09f7,75//ZC_PROPERTY_HOMUN_2
