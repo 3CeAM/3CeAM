@@ -427,49 +427,51 @@
 
 // Rebellion Weapons
 // Handgun
-13120,Heavens_Feather_And_Hells_Fire,Heavens Feather & Hells Fire,4,50000,,800,150,,7,1,0x40000000,7,2,34,3,99,1,17,{},{},{}
+13120,Heavens_Feather_And_Hells_Fire,Heavens Feather & Hells Fire,4,1200000,,800,150,,7,1,0x40000000,7,2,34,3,99,1,17,{},{},{}
 //13121
-13122,Altair_And_Ares,Altair & Ares,4,50000,,1000,200,,7,0,0x40000000,7,2,34,3,140,1,17,{},{},{}
+13122,Altair_And_Ares,Altair & Ares,4,1450000,,1000,200,,7,0,0x40000000,7,2,34,3,140,1,17,{},{},{}
 //13123
-13124,Altair_And_Ares_,Altair & Ares,4,50000,,1000,200,,7,1,0x40000000,7,2,34,3,140,1,17,{},{},{}
+13124,Altair_And_Ares_,Altair & Ares,4,10,,1000,200,,7,1,0x40000000,7,2,34,3,140,1,17,{},{},{}
 
 // Rifle
-13189,Color_Scope,Color Scope,4,5000,,1200,240,,9,2,0x40000000,7,2,34,3,105,1,18,{},{},{}
-13190,RAG203,RAG203,4,5000,,1300,260,,9,1,0x40000000,7,2,34,3,140,1,18,{},{},{}
-//
-13195,RAG203_,RAG203,4,5000,,1300,260,,9,0,0x40000000,7,2,34,3,140,1,18,{},{},{}
+13189,Color_Scope,Color Scope,4,1350000,,1200,240,,9,2,0x40000000,7,2,34,3,105,1,18,{},{},{}
+13190,RAG203,RAG203,4,10,,1300,260,,9,1,0x40000000,7,2,34,3,140,1,18,{},{},{}
+//13191,
+13195,RAG203_,RAG203,4,1800000,,1300,260,,9,0,0x40000000,7,2,34,3,140,1,18,{},{},{}
 
 // Gatling
-13197,Mini_Mei,Mini Mei,4,5000,,2500,220,,9,2,0x40000000,7,2,34,2,106,1,19,{},{},{}
-13198,Tempest,Tempest,4,5000,,2500,250,,9,0,0x40000000,7,2,34,4,140,1,19,{},{},{}
-13199,Tempest_,Tempest,4,5000,,2500,250,,9,1,0x40000000,7,2,34,4,140,1,19,{},{},{}
+13197,Mini_Mei,Mini Mei,4,1600000,,2500,220,,9,2,0x40000000,7,2,34,2,106,1,19,{},{},{}
+13198,Tempest,Tempest,4,2200000,,2500,250,,9,0,0x40000000,7,2,34,4,140,1,19,{},{},{}
+13199,Tempest_,Tempest,4,10,,2500,250,,9,1,0x40000000,7,2,34,4,140,1,19,{},{},{}
 
 // Shotgun
-13192,Death_Fire,Death Fire,4,5000,,2000,400,,5,1,0x40000000,7,2,34,3,108,1,20,{},{},{}
-13193,Rolling_Thunder,Rolling Thunder,4,5000,,1800,280,,9,1,0x40000000,7,2,34,3,120,1,20,{},{},{}
-13194,Peace_Breaker,Peace Breaker,4,5000,,1400,250,,9,0,0x40000000,7,2,34,3,140,1,20,{},{},{}
+13192,Death_Fire,Death Fire,4,1250000,,2000,400,,5,1,0x40000000,7,2,34,3,108,1,20,{},{},{}
+13193,Rolling_Thunder,Rolling Thunder,4,1350000,,1800,280,,9,1,0x40000000,7,2,34,3,120,1,20,{},{},{}
+13194,Peace_Breaker,Peace Breaker,4,1950000,,1400,250,,9,0,0x40000000,7,2,34,3,140,1,20,{},{},{}
 //
-13196,Peace_Breaker_,Peace Breaker,4,5000,,1400,250,,9,1,0x40000000,7,2,34,3,140,1,20,{},{},{}
+13196,Peace_Breaker_,Peace Breaker,4,10,,1400,250,,9,1,0x40000000,7,2,34,3,140,1,20,{},{},{}
 
 // Grenade
-28200,End_Of_Horizon,End of Horizon,4,5000,,2400,410,,9,1,0x40000000,7,2,34,3,110,1,21,{},{},{}
-28201,Southern_Cross,Southern Cross,4,5000,,2000,480,,9,0,0x40000000,7,2,34,3,141,1,21,{},{},{}
-28202,Southern_Cross_,Southern Cross,4,5000,,2000,480,,9,1,0x40000000,7,2,34,3,141,1,21,{},{},{}
+28200,End_Of_Horizon,End of Horizon,4,2700000,,2400,410,,9,1,0x40000000,7,2,34,3,110,1,21,{},{},{}
+28201,Southern_Cross,Southern Cross,4,2800000,,2000,480,,9,0,0x40000000,7,2,34,3,141,1,21,{},{},{}
+28202,Southern_Cross_,Southern Cross,4,10,,2000,480,,9,1,0x40000000,7,2,34,3,141,1,21,{},{},{}
 
 // Rebellion Skill Required Items
-7663,Full_Metal_Jacket,Full Metal Jacket,3,20,,2,,,,,,,,,,,,,{},{},{}
-7664,Throwing_Mine,Throwing Mine,3,20,,3,,,,,,,,,,,,,{},{},{}
-7665,Dragon_Tail_Missile,Dragon Tail Missile,3,20,,100,,,,,,,,,,,,,{},{},{}
+7663,Full_Metal_Jacket,Full Metal Jacket,3,200,,2,,,,,,,,,,,,,{},{},{}
+7664,Throwing_Mine,Throwing Mine,3,450,,3,,,,,,,,,,,,,{},{},{}
+7665,Dragon_Tail_Missile,Dragon Tail Missile,3,1500,,100,,,,,,,,,,,,,{},{},{}
 
 // Rebellion Slug Ammo
-13210,Slug_Ammo_L,Slug Ammo L,10,25,,250,30,,,,0x40000000,7,2,32768,,99,,3,{},{},{}
-13211,Slug_Ammo_M,Slug Ammo M,10,50,,500,30,,,,0x40000000,7,2,32768,,99,,3,{},{},{}
-13212,Slug_Ammo_H,Slug Ammo H,10,75,,750,30,,,,0x40000000,7,2,32768,,99,,3,{},{},{}
-13213,Slug_Ammo_SH,Slug Ammo SH,10,100,,1000,30,,,,0x40000000,7,2,32768,,99,,3,{},{},{}
-13214,Slug_Ammo_XH,Slug Ammo XH,10,120,,1200,30,,,,0x40000000,7,2,32768,,99,,3,{},{},{}
+13210,Slug_Ammo_L,Slug Ammo L,10,250,,250,30,,,,0x40000000,7,2,32768,,99,,3,{},{},{}
+13211,Slug_Ammo_M,Slug Ammo M,10,500,,500,30,,,,0x40000000,7,2,32768,,99,,3,{},{},{}
+13212,Slug_Ammo_H,Slug Ammo H,10,750,,750,30,,,,0x40000000,7,2,32768,,99,,3,{},{},{}
+13213,Slug_Ammo_SH,Slug Ammo SH,10,1000,,1000,30,,,,0x40000000,7,2,32768,,99,,3,{},{},{}
+13214,Slug_Ammo_XH,Slug Ammo XH,10,1200,,1200,30,,,,0x40000000,7,2,32768,,99,,3,{},{},{}
 
 // Rebellion Ammo
 //Note: 13221 - 13227 are copys of the gunslinger bullets and spheres. Why?
+//The copied bullets were made since prices for bullets were reduced, but didn't want to change them
+//directly on the old bullet ID's to prevent accidently changing bullet prices on other servers outside kRO.
 13215,Armor-Piercing_Bullet,Armor-Piercing Bullet,10,50,,2,50,,,,0x40000000,7,2,32768,,100,,3,{},{},{}
 13216,Scorching_Bullet,Scorching Bullet,10,40,,2,40,,,,0x40000000,7,2,32768,,100,,3,{ bonus bAtkEle,Ele_Fire; },{},{}
 13217,Freezing_Bullet,Freezing Bullet,10,40,,2,40,,,,0x40000000,7,2,32768,,100,,3,{ bonus bAtkEle,Ele_Water; },{},{}
@@ -479,17 +481,19 @@
 
 // Rebellion Bullet Cases
 //Note: 22737 - 22743 are copys of the gunslingers bullet and sphere cases. Why?
-22744,Bullet_Case_Armor-Piercing,Armor-Piercing Cartridge,2,2,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13215,500; },{},{}
-22745,Bullet_Case_Scorching,Scorching Cartridge,2,2,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13216,500; },{},{}
-22746,Bullet_Case_Freezing,Freezing Cartridge,2,2,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13217,500; },{},{}
-22747,Bullet_Case_Lightning,Lightning Cartridge,2,2,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13218,500; },{},{}
-22748,Bullet_Case_Manastone,Manastone Cartridge,2,2,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13219,500; },{},{}
-22749,Bullet_Case_Purification,Purification Cartridge,2,2,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13220,500; },{},{}
+//The copied bullet cases were made since prices for bullets were reduced, but didn't want to change them
+//directly on the old bullet case ID's to prevent accidently changing case prices on other servers outside kRO.
+22744,Bullet_Case_Armor-Piercing,Armor-Piercing Cartridge,2,25000,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13215,500; },{},{}
+22745,Bullet_Case_Scorching,Scorching Cartridge,2,20000,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13216,500; },{},{}
+22746,Bullet_Case_Freezing,Freezing Cartridge,2,20000,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13217,500; },{},{}
+22747,Bullet_Case_Lightning,Lightning Cartridge,2,20000,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13218,500; },{},{}
+22748,Bullet_Case_Manastone,Manastone Cartridge,2,20000,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13219,500; },{},{}
+22749,Bullet_Case_Purification,Purification Cartridge,2,20000,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13220,500; },{},{}
 
 // New Mechanic Pile Bunkers
-16030,Pilebuncker_S,Pile Bunker S,4,10000,,3000,400,,1,1,0x00000400,8,2,2,4,130,1,8,{ bonus bAspdRate,getrefine(); },{},{}
-16031,Pilebuncker_P,Pile Bunker P,4,10000,,4000,450,,1,0,0x00000400,8,2,2,4,130,1,8,{ bonus bBaseAtk,getrefine()*10; },{},{}
-16032,Pilebuncker_T,Pile Bunker T,4,10000,,3500,400,,1,1,0x00000400,8,2,2,4,130,1,8,{ bonus bUseSPrate,getrefine()*2; },{},{}
+16030,Pilebuncker_S,Pile Bunker S,4,250000,,3000,400,,1,1,0x00000400,8,2,2,4,130,1,8,{ bonus bAspdRate,getrefine(); },{},{}
+16031,Pilebuncker_P,Pile Bunker P,4,250000,,4000,450,,1,0,0x00000400,8,2,2,4,130,1,8,{ bonus bBaseAtk,getrefine()*10; },{},{}
+16032,Pilebuncker_T,Pile Bunker T,4,250000,,3500,400,,1,1,0x00000400,8,2,2,4,130,1,8,{ bonus bUseSPrate,getrefine()*2; },{},{}
 
 // Hunter's Falcon Flute
 12848,Falcon_Flute,Falcon Flute,11,10000,,0,,,,,0xFFFFFFFF,7,2,,,,,,{ setfalcon 1; },{},{}

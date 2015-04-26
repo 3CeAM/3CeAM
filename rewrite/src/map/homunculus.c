@@ -387,6 +387,7 @@ int merc_hom_mutation(struct homun_data *hd, int class_)
 	struct s_homunculus *hom;
 	struct h_stats *base;
 	struct map_session_data *sd;
+	//int i;
 	nullpo_ret(hd);
 
 	//Only allows mutating level 99 evolved homunculus and also prevents mutating already mutated homunculus.
@@ -452,8 +453,11 @@ int merc_hom_mutation(struct homun_data *hd, int class_)
 
 	hom->intimacy = 500;
 
-	// Its said the player can rename the homunculus again after mutation.
-	// This might be true since the homunculus's form completely changes.
+	// The player can rename the homunculus again after mutation.
+	// Doesn't it take the name of its new form as well?
+	//i = search_homunculusDB_index(class_,HOMUNCULUS_CLASS);
+	//if(i < 0) return 0;
+	//strncpy(hom->name, homunculus_db[i].name, NAME_LENGTH-1);
 	hd->homunculus.rename_flag = 0;
 
 	unit_remove_map(&hd->bl, CLR_OUTSIGHT);
@@ -1018,6 +1022,36 @@ int merc_hom_shuffle(struct homun_data *hd)
 	hd->homunculus.skillpts = skillpts;
 	clif_homskillinfoblock(sd);
 	status_calc_homunculus(hd,0);
+	status_percent_heal(&hd->bl, 100, 100);
+	clif_specialeffect(&hd->bl,568,AREA);
+
+	return 1;
+}
+
+int merc_hom_max(struct homun_data *hd)
+{
+	struct s_homunculus *hom;
+	int max_hp_limit = battle_config.max_homunculus_hp;
+	int max_sp_limit = battle_config.max_homunculus_sp;
+	short stat_limit = battle_config.max_homunculus_parameter;
+
+	if (!merc_is_hom_active(hd))
+		return 0;
+
+	// Maxes out homunculus MaxHP, MaxSP, and stats to the max.
+	// The cap limits set in homun.conf determines the max.
+	hom = &hd->homunculus;
+	hom->max_hp = max_hp_limit;
+	hom->max_sp = max_sp_limit;
+	hom->str = 10*stat_limit;
+	hom->agi = 10*stat_limit;
+	hom->vit = 10*stat_limit;
+	hom->int_= 10*stat_limit;
+	hom->dex = 10*stat_limit;
+	hom->luk = 10*stat_limit;
+
+	status_calc_homunculus(hd,0);
+	//clif_hominfo(hd->master,hd,0);
 	status_percent_heal(&hd->bl, 100, 100);
 	clif_specialeffect(&hd->bl,568,AREA);
 
