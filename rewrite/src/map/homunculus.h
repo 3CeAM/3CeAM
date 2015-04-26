@@ -71,6 +71,7 @@ int merc_resurrect_homunculus(struct map_session_data *sd, unsigned char per, sh
 void merc_hom_revive(struct homun_data *hd, unsigned int hp, unsigned int sp);
 void merc_reset_stats(struct homun_data *hd);
 int merc_hom_shuffle(struct homun_data *hd); // [Zephyrus]
+int merc_hom_max(struct homun_data *hd);
 void merc_save(struct homun_data *hd);
 int merc_call_homunculus(struct map_session_data *sd);
 int merc_create_homunculus_request(struct map_session_data *sd, int class_);
