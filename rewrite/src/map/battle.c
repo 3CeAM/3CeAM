@@ -711,9 +711,9 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 		if( sc->data[SC__DEADLYINFECT] && flag&BF_SHORT && damage > 0 && rand()%100 < 30 + 10 * sc->data[SC__DEADLYINFECT]->val1 )
 			status_change_spread(bl, src); // Deadly infect attacked side
 
+		// Magma Flow autotriggers a splash AoE around self by chance when hit.
 		if ( sc->data[SC_MAGMA_FLOW] && rand()%100 < 3 * sc->data[SC_MAGMA_FLOW]->val1)
-		{skill_castend_damage_id(bl,src,MH_MAGMA_FLOW,sc->data[SC_MAGMA_FLOW]->val1,0,flag);
-		skill_castend_nodamage_id(bl,src,MH_MAGMA_FLOW,sc->data[SC_MAGMA_FLOW]->val1,0,flag);}
+			skill_castend_nodamage_id(bl,bl,MH_MAGMA_FLOW,sc->data[SC_MAGMA_FLOW]->val1,0,flag|2);
 	}
 
 	if( tsc && tsc->count )
@@ -5911,6 +5911,7 @@ static const struct _battle_data {
 	{ "mado_skill_limit",                   &battle_config.mado_skill_limit,                0,      0,      1,              },
 	{ "mado_loss_on_death",                 &battle_config.mado_loss_on_death,              1,      0,      1,              },
 	{ "marionette_renewal_jobs",            &battle_config.marionette_renewal_jobs,         0,      0,      1,              },
+	{ "banana_bomb_sit_duration",           &battle_config.banana_bomb_sit_duration,        1,      0,      1,              },
 	{ "hanbok_ignorepalette",               &battle_config.hanbok_ignorepalette,            0,      0,      1,              },
 	{ "oktoberfest_ignorepalette",          &battle_config.oktoberfest_ignorepalette,       0,      0,      1,              },
 	{ "summer2_ignorepalette",              &battle_config.summer2_ignorepalette,           0,      0,      1,              },

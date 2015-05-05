@@ -1401,7 +1401,7 @@
 8036,3:4:5:6:7,6,1,0,0,0,5,1,no,0,0,0,weapon,0,	MH_TINDER_BREAKER,Tinder Breaker//Is this a attack? [Rytech]
 8037,1,6,4,0,0,0,5,1,no,0,0x200,0,weapon,0,	MH_CBC,Continual Break Combo// CHECK - How much damage does this skill deal? [Rytech]
 8038,1,6,4,0,0,0,5,1,no,0,0x200,0,weapon,0,	MH_EQC,Eternal Quick Combo
-8039,0,6,4,3,0x2,1:1:1:2:2,5,1,no,0,0,0,weapon,0,	MH_MAGMA_FLOW,Magma Flow//Does it deal weapon or magic type damage? [Rytech]
+8039,0,6,4,3,0x2,1:1:1:2:2,5,1,no,0,0,0,weapon,0,	MH_MAGMA_FLOW,Magma Flow
 8040,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		MH_GRANITIC_ARMOR,Granitic Armor
 8041,7,6,2,3,0,0,5,1,no,0,0,1,weapon,0,		MH_LAVA_SLIDE,Lava Slide//CHECK - Does it deal Physical or Magical damage? [Rytech]
 8042,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		MH_PYROCLASTIC,Pyroclastic

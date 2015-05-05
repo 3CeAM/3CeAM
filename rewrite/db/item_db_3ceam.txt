@@ -253,9 +253,6 @@
 13289,Petti_Noodle_To_Throw,Throwing Petite Tail Soup,10,100,,50,0,,,,0x00040000,8,2,32768,,99,,9,{},{},{}
 13290,Black_Thing_To_Throw,Throwing Black Mass,10,100,,50,0,,,,0x00040000,8,2,32768,,99,,9,{},{},{}
 
-// Unknown Item. Rune Knight Armor???
-15002,Rune_Plate,Rune Plate,5,0,,0,,10,,1,0x00000002,8,2,16,,99,1,0,{},{},{}
-
 // Mechanic Mado Gear Cannonball Ammo
 18000,Cannon_Ball,Cannon Ball,10,100,,10,100,,,,0x00040400,8,2,32768,,99,,8,{},{},{}
 18001,Holy_Cannon_Ball,Holy Cannon Ball,10,200,,10,120,,,,0x00040400,8,2,32768,,99,,8,{ bonus bAtkEle,Ele_Holy; },{},{}

@@ -523,6 +523,7 @@ extern struct Battle_Config
 	int mado_skill_limit;
 	int mado_loss_on_death;
 	int marionette_renewal_jobs;
+	int banana_bomb_sit_duration;
 	int hanbok_ignorepalette;
 	int oktoberfest_ignorepalette;
 	int summer2_ignorepalette;
