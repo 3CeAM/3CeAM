@@ -1275,9 +1275,17 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 				case ITEMID_MELON_BOMB://Reduces movement and attack speed.
 					sc_start4(bl, SC_MELON_BOMB, 100, skilllv, 20 + joblv, 10 + joblv / 2, 0, 1000 * baselv / 4);
 					break;
-				case ITEMID_BANANA_BOMB://Reduces LUK and chance to force sit. Must do the force sit success chance first before LUK reduction.
-					sc_start(bl, SC_BANANA_BOMB_SITDOWN, baselv + joblv + sstatus->dex / 6 - tbaselv - tstatus->agi / 4 - tstatus->luk / 5, skilllv, 1000 * joblv / 4);
-					//sc_start(bl, SC_BANANA_BOMB, 100, skilllv, 77000);//Info says reduces LUK by 77, but doesn't work on official. Bug maybe or disabled for above reason.
+				case ITEMID_BANANA_BOMB:
+					{
+						short duration;
+						if ( battle_config.banana_bomb_sit_duration == 1 )
+							duration = 1000 * joblv / 4;// Official force sit duration.
+						else
+							duration = 200;// Config to allow player to stand up after forced sit, but small duration needed for sitting to happen.
+						// Reduces LUK and chance to force sit. Must do the force sit success chance first before LUK reduction.
+						sc_start(bl, SC_BANANA_BOMB_SITDOWN, baselv + joblv + sstatus->dex / 6 - tbaselv - tstatus->agi / 4 - tstatus->luk / 5, skilllv, duration);
+						//sc_start(bl, SC_BANANA_BOMB, 100, skilllv, 77000);//Info says reduces LUK by 77, but doesn't work on official. Bug maybe or disabled for above reason.
+					}
 					break;
 			}
 		}
@@ -2260,9 +2268,11 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 		else // the central target doesn't display an animation
 			dmg.dmotion = clif_skill_damage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, 5); // needs -2(!) as skill level
 		break;
+	case RK_IGNITIONBREAK:
+		dmg.dmotion = clif_skill_damage(dsrc,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,NV_BASIC,-1,5);
+		break;
 	case WL_HELLINFERNO:
 	//case SR_EARTHSHAKER:
-	case MH_MAGMA_FLOW:
 		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,1,skillid,-2,6);
 		break;
 	case WL_SOULEXPANSION:
@@ -3714,6 +3724,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case KO_HAPPOKUNAI:
 	case KO_MUCHANAGE:
 	case MH_HEILIGE_STANGE:
+	case MH_MAGMA_FLOW:
 		if( flag&1 )
 		{	//Recursive invocation
 			// skill_area_temp[0] holds number of targets in area
@@ -4502,13 +4513,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		status_change_end(src, SC_HYOUHU_HUBUKI, INVALID_TIMER);
 		status_change_end(src, SC_KAZEHU_SEIRAN, INVALID_TIMER);
 		status_change_end(src, SC_DOHU_KOUKAI, INVALID_TIMER);
-		break;
-
-	case MH_MAGMA_FLOW:
-		if ( flag&1 )
-			skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv, tick, flag);
-		else if( sd )
-			map_foreachinrange(skill_area_sub, bl, 3/*skill_get_splash(skillid, skilllv)*/, BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY|SD_SPLASH|1, skill_castend_damage_id);
 		break;
 
 	case EL_FIRE_BOMB:
@@ -5571,6 +5575,14 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), splash_target(src), 
 			src, skillid, skilllv, tick, flag|BCT_ENEMY|SD_SPLASH|1, skill_castend_damage_id);
 		break;
+
+	case RK_IGNITIONBREAK:
+		skill_area_temp[1] = 0;
+		clif_skill_damage(src, bl, tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
+		map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), splash_target(src), 
+			src, skillid, skilllv, tick, flag|BCT_ENEMY|SD_SPLASH|1, skill_castend_damage_id);
+		break;
+
 	case NC_EMERGENCYCOOL:
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		status_change_end(src,SC_OVERHEAT_LIMITPOINT,-1);
@@ -7400,15 +7412,17 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 	case MH_MAGMA_FLOW:
 		{
-			struct status_change* sc = status_get_sc(src);
-			if ( sc && sc->data[SC_MAGMA_FLOW] )
-				clif_skill_nodamage(src,bl,skillid,skilllv,flag);
-			else
-			{
-				clif_skill_nodamage(src,bl,skillid,skilllv,
-				sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
-				if (hd)
-					skill_blockhomun_start(hd, skillid, skill_get_time2(skillid,skilllv));
+			if ( flag&2 )
+			{// Splash AoE around the homunculus should only trigger by chance when status is active.
+				skill_area_temp[1] = 0;
+				clif_skill_nodamage(src,bl,skillid,skilllv,1);
+				map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), splash_target(src), src, skillid, skilllv, tick, flag|BCT_ENEMY|SD_SPLASH|1, skill_castend_damage_id);
+			}
+			else if ( !flag )
+			{// Using the skill normally only starts the status. It does not trigger a splash AoE attack this way.
+				clif_skill_nodamage(src,bl,skillid,skilllv,sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
+				if (hd)// Skill cooldown directed to the homunculus.
+					skill_blockhomun_start(hd, skillid, skill_get_cooldown(skillid,skilllv));
 			}
 		}
 		break;
@@ -7493,7 +7507,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				skill_castend_nodamage_id);
 		}
 		break;
-	case RK_IGNITIONBREAK:
 	case LG_EARTHDRIVE:
 		clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
 		if( skillid == LG_EARTHDRIVE )
@@ -7517,40 +7530,30 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 	case RK_REFRESH:
 		if( sd && pc_checkskill(sd,RK_RUNEMASTERY) >= 8 )
-		{
-			int heal = status_get_max_hp(bl) * 25 / 100;
+		{// First give immunity to all status's before removing.
 			clif_skill_nodamage(src,bl,skillid,skilllv,
 				sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
-			status_heal(bl,heal,0,1);
-			status_change_end(bl, SC_STONE, -1);
-			status_change_end(bl, SC_FREEZE, -1);
-			status_change_end(bl, SC_STUN, -1);
-			status_change_end(bl, SC_SLEEP, -1);
-			status_change_end(bl, SC_POISON, -1);
-			status_change_end(bl, SC_CURSE, -1);
-			status_change_end(bl, SC_SILENCE, -1);
-			status_change_end(bl, SC_CONFUSION, -1);
-			status_change_end(bl, SC_BLIND, -1);
-			status_change_end(bl, SC_BLEEDING, -1);
-			status_change_end(bl, SC_DPOISON, -1);
-			status_change_end(bl, SC_BURNING, -1);
-			status_change_end(bl, SC_WHITEIMPRISON, -1);
-			status_change_end(bl, SC_FEAR, -1);
-			status_change_end(bl, SC_DEEPSLEEP, -1);
-			status_change_end(bl, SC_FREEZING, -1);
-			status_change_end(bl, SC_CRYSTALIZE, -1);
-			status_change_end(bl, SC_QUAGMIRE, -1);
-			status_change_end(bl, SC_DECREASEAGI, -1);
-			status_change_end(bl, SC_MARSHOFABYSS, -1);
-			status_change_end(bl, SC_TOXIN, -1);
-			status_change_end(bl, SC_PARALYSE, -1);
-			status_change_end(bl, SC_VENOMBLEED, -1);
-			status_change_end(bl, SC_MAGICMUSHROOM, -1);
-			status_change_end(bl, SC_DEATHHURT, -1);
-			status_change_end(bl, SC_PYREXIA, -1);
-			status_change_end(bl, SC_OBLIVIONCURSE, -1);
-			status_change_end(bl, SC_LEECHESEND, -1);
-			status_change_end(bl, SC_MANDRAGORA, -1);
+
+			// Immunity active. Now to remove status's your immune to.
+			if ( tsc )
+			{
+				const enum sc_type scs[] = { SC_MARSHOFABYSS, SC_MANDRAGORA };
+				// Checking for common status's.
+				for (i = SC_COMMON_MIN; i <= SC_COMMON_MAX; i++)
+					if (tsc->data[i])
+						status_change_end(bl, (sc_type)i, INVALID_TIMER);
+				// Checking for Guillotine poisons.
+				for (i = SC_NEW_POISON_MIN; i <= SC_NEW_POISON_MAX; i++)
+					if (tsc->data[i])
+						status_change_end(bl, (sc_type)i, INVALID_TIMER);
+				// Checking for additional status's.
+				for (i = 0; i < ARRAYLENGTH(scs); i++)
+					if (tsc->data[scs[i]])
+						status_change_end(bl, scs[i], INVALID_TIMER);
+			}
+
+			// Finally, give a 25% MaxHP Heal.
+			status_heal(bl,status_get_max_hp(bl) * 25 / 100,0,1);
 		}
 		break;
 

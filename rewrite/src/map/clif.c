@@ -9978,8 +9978,6 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 			clif_skill_fail(sd, 1, 0, 2, 0);
 			break;
 		}
-		if( sd->sc.data[SC_SITDOWN_FORCE] || sd->sc.data[SC_BANANA_BOMB_SITDOWN] )
-			return;
 
 		if(pc_issit(sd)) {
 			//Bugged client? Just refresh them.
@@ -9992,7 +9990,8 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 
 		if (sd->sc.count && (
 			sd->sc.data[SC_DANCING] ||
-			(sd->sc.data[SC_GRAVITATION] && sd->sc.data[SC_GRAVITATION]->val3 == BCT_SELF)
+			(sd->sc.data[SC_GRAVITATION] && sd->sc.data[SC_GRAVITATION]->val3 == BCT_SELF) ||
+			sd->sc.data[SC_SITDOWN_FORCE] || sd->sc.data[SC_BANANA_BOMB_SITDOWN]
 		)) //No sitting during these states either.
 			break;
 
@@ -10002,14 +10001,17 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 		clif_status_load(&sd->bl, SI_SIT, 1);
 	break;
 	case 0x03: // standup
-		if( sd->sc.data[SC_SITDOWN_FORCE] || sd->sc.data[SC_BANANA_BOMB_SITDOWN] )
-			return;
-
 		if (!pc_issit(sd)) {
 			//Bugged client? Just refresh them.
 			clif_standing(&sd->bl,false);
 			return;
 		}
+
+		if (sd->sc.count && (
+			sd->sc.data[SC_SITDOWN_FORCE] || sd->sc.data[SC_BANANA_BOMB_SITDOWN]
+		)) //No standing during these states either.
+			break;
+
 		pc_setstand(sd);
 		skill_sit(sd,0); 
 		clif_standing(&sd->bl,true);

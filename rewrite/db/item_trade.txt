@@ -1549,20 +1549,20 @@
 2795,115,100	// Green_Apple_Ring
 2796,123,100	// Magical_Stone
 2797,123,100	// Magical_Stone_
-5746,91,100	// Rune_Circlet
-5747,91,100	// Mitra
-5748,91,100	// Sniper_Goggle
-5749,91,100	// Driver_Band
-5750,91,100	// Shadow_Handicraft
-5751,91,100	// Minstrel_Song_Hat
-5752,91,100	// Midas_Whisper
-5753,91,100	// Magic_Stone_Hat
-5754,91,100	// Blazing_Soul
-5755,91,100	// Silent_Executer
-5756,91,100	// Wind_Whisper
-5757,91,100	// Schmidt_Helm
-5758,91,100	// Dying_Swan
-5760,91,100	// Driver_Band_
+//5746,91,100	// Rune_Circlet
+//5747,91,100	// Mitra
+//5748,91,100	// Sniper_Goggle
+//5749,91,100	// Driver_Band
+//5750,91,100	// Shadow_Handicraft
+//5751,91,100	// Minstrel_Song_Hat
+//5752,91,100	// Midas_Whisper
+//5753,91,100	// Magic_Stone_Hat
+//5754,91,100	// Blazing_Soul
+//5755,91,100	// Silent_Executer
+//5756,91,100	// Wind_Whisper
+//5757,91,100	// Schmidt_Helm
+//5758,91,100	// Dying_Swan
+//5760,91,100	// Driver_Band_
 6151,115,100	// Peice_Of_Great_Bradium
 6152,115,100	// Glittering_Crystal
 6153,123,100	// Special_Exchange_Coupon
@@ -1588,7 +1588,50 @@
 12390,123,100	// Runstone_Millennium
 2798,115,100	// Will_Of_Exhausted_Angel
 12258,115,100	// Bombring_Box
+//12333,123,100	// Ansila
+//12725,91,100	// Runstone_Nosiege
+//12726,91,100	// Runstone_Rhydo
+//12727,91,100	// Runstone_Verkana
+//12728,91,100	// Runstone_Isia
+//12729,91,100	// Runstone_Asir
+//12730,91,100	// Runstone_Urj
+//12731,91,100	// Runstone_Turisus
+//12732,91,100	// Runstone_Pertz
+//12733,91,100	// Runstone_Hagalas
+
+// * New Novice Training Grounds
+2819,115,100	// Swordman_Manual
+2820,115,100	// Thief_Manual
+2821,115,100	// Acolyte_Manual
+2822,115,100	// Archer_Manual
+2823,115,100	// Merchant_Manual
+2824,115,100	// Mage_Manual
+
+// 3CeAM
+// 3rd Job Headgears
+5746,83,100	// Rune_Circlet
+5747,83,100	// Mitra
+5748,83,100	// Sniper_Goggle
+5749,83,100	// Driver_Band
+5750,83,100	// Shadow_Handicraft
+5751,83,100	// Minstrel_Song_Hat
+5752,83,100	// Midas_Whisper
+5753,83,100	// Magic_Stone_Hat
+5754,83,100	// Blazing_Soul
+5755,83,100	// Silent_Executer
+5756,83,100	// Wind_Whisper
+5757,83,100	// Schmidt_Helm
+5758,83,100	// Dying_Swan
+5760,83,100	// Driver_Band_
+
+// 3rd Job Character Bound 
+6121,123,100	//Makeover_Brush
+6122,123,100	//Paint_brush
+6124,123,100	//Wolf's_Flute
+
 12333,123,100	// Ansila
+
+// Rune Knight Runes
 12725,91,100	// Runstone_Nosiege
 12726,91,100	// Runstone_Rhydo
 12727,91,100	// Runstone_Verkana
@@ -1598,11 +1641,6 @@
 12731,91,100	// Runstone_Turisus
 12732,91,100	// Runstone_Pertz
 12733,91,100	// Runstone_Hagalas
+22540,91,100	// Runstone_Luxanima
 
-// * New Novice Training Grounds
-2819,115,100	// Swordman_Manual
-2820,115,100	// Thief_Manual
-2821,115,100	// Acolyte_Manual
-2822,115,100	// Archer_Manual
-2823,115,100	// Merchant_Manual
-2824,115,100	// Mage_Manual
+12622,123,100	// Boarding_Halter
