@@ -2207,7 +2207,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					{
 						short index = sd->equip_index[EQI_HAND_R];
 						if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_WEAPON )
-							skillratio = sstatus->rhw.atk + sd->inventory_data[index]->weight / 10 + sd->inventory_data[index]->wlv * (sd->status.inventory[index].refine + 6) * 100;
+							skillratio = sd->inventory_data[index]->wlv * (sd->status.inventory[index].refine + 6) * 100 + sd->inventory_data[index]->atk + sd->inventory_data[index]->weight / 10;
 					}
 					break;
 				case RK_STORMBLAST:

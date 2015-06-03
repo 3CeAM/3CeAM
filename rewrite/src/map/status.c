@@ -611,7 +611,7 @@ void initChangeTables(void)
 	add_sc( MH_POISON_MIST       , SC_BLIND );
 	set_sc( MH_PAIN_KILLER       , SC_PAIN_KILLER       , SI_PAIN_KILLER       , SCB_NONE );
 	set_sc( MH_LIGHT_OF_REGENE   , SC_LIGHT_OF_REGENE   , SI_LIGHT_OF_REGENE   , SCB_NONE );
-	set_sc( MH_OVERED_BOOST      , SC_OVERED_BOOST      , SI_OVERED_BOOST      , SCB_NONE );
+	set_sc( MH_OVERED_BOOST      , SC_OVERED_BOOST      , SI_OVERED_BOOST      , SCB_FLEE|SCB_DEF|SCB_ASPD );
 
 	add_sc( MH_XENO_SLASHER      , SC_BLEEDING );
 	set_sc( MH_SILENT_BREEZE     , SC_SILENT_BREEZE     , SI_SILENT_BREEZE     , SCB_NONE );
@@ -1206,6 +1206,22 @@ int status_damage(struct block_list *src,struct block_list *target,int hp, int s
 		status_change_clear(target,0);
 		clif_skill_nodamage(target,target,ALL_RESURRECTION,1,1);
 		sc_start(target,status_skill2sc(PR_KYRIE),100,10,time);
+
+		if( target->type == BL_MOB ) 
+			((TBL_MOB*)target)->state.rebirth = 1;
+
+		return hp+sp;
+	}
+
+	if( !(flag&8) && sc && sc->data[SC_LIGHT_OF_REGENE] )
+	{ //flag&8 = Disable Light of Regeneration
+		//Look for Osiris Card's bonus effect on the character and revive 100% or revive normally
+		if ( target->type == BL_PC && BL_CAST(BL_PC,target)->special_state.restart_full_recover == 1 )
+			status_revive(target, 100, 100);
+		else
+			status_revive(target, sc->data[SC_LIGHT_OF_REGENE]->val2, 0);
+		status_change_clear(target,0);
+		clif_skill_nodamage(target,target,ALL_RESURRECTION,1,1);
 
 		if( target->type == BL_MOB ) 
 			((TBL_MOB*)target)->state.rebirth = 1;
@@ -4521,6 +4537,8 @@ static signed short status_calc_flee(struct block_list *bl, struct status_change
 	if(!sc || !sc->count)
 		return cap_value(flee,1,SHRT_MAX);
 
+	if(sc->data[SC_OVERED_BOOST])
+		return sc->data[SC_OVERED_BOOST]->val2;
 	if(sc->data[SC_INCFLEE])
 		flee += sc->data[SC_INCFLEE]->val1;
 	if(sc->data[SC_FLEEFOOD])
@@ -4668,6 +4686,8 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 		def -= def * (10 + 10 * sc->data[SC_SATURDAYNIGHTFEVER]->val1) / 100;
 	if(sc->data[SC_EARTHDRIVE])
 		def -= def * 25 / 100;
+	if(sc->data[SC_OVERED_BOOST])
+		def -= def * 50 / 100;
 	//Not bothering to organize these until I rework the elemental spirits. [Rytech]
 	if( sc->data[SC_ROCK_CRUSHER] )
 		def -= def * sc->data[SC_ROCK_CRUSHER]->val2 / 100;
@@ -6072,6 +6092,7 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val1,int val2,int val3,int val4, int tick,int flag)
 {
 	struct map_session_data *sd = NULL;
+	struct homun_data *hd;
 	struct status_change* sc;
 	struct status_change_entry* sce;
 	struct status_data *status;
@@ -6135,6 +6156,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	}
 
 	sd = BL_CAST(BL_PC, bl);
+	hd = BL_CAST(BL_HOM, bl);
 
 	//Adjust tick according to status resistances
 	if( !(flag&(1|4)) )
@@ -6464,6 +6486,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 
 			// Other Effects
 			case SC_VACUUM_EXTREME:
+			case SC_SILENT_BREEZE:
 				return 0;
 		}
 	}
@@ -8019,12 +8042,11 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			if( sd )
 			{	// Players
 				short index = sd->equip_index[EQI_HAND_R];
-				val1 += 10 * sd->status.job_level;
 				if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_WEAPON )
 					if( battle_config.renewal_baselvl_skill_ratio == 1 && status_get_lv(bl) >= 100 )
-						val1 += sd->inventory_data[index]->weight / 10 * sd->inventory_data[index]->wlv * status_get_lv(bl) / 100;
+						val1 += 10 * status_get_job_lv(bl) + sd->inventory_data[index]->weight / 10 * sd->inventory_data[index]->wlv * status_get_lv(bl) / 100;
 						else
-						val1 += sd->inventory_data[index]->weight / 10 * sd->inventory_data[index]->wlv;
+						val1 += 500 + sd->inventory_data[index]->weight / 10 * sd->inventory_data[index]->wlv;
 			}
 			else	// Monster Use
 				val1 += 500;
@@ -8139,6 +8161,24 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val2 = tick/2000;
 			tick = 2000;
 			clif_emotion(bl,E_SWT);
+			break;
+		case SC_LIGHT_OF_REGENE:
+			val2 = 20 * val1;// Percent of HP recovered when resurrected.
+			break;
+		case SC_OVERED_BOOST:
+			// Hunger and SP reduction if skill is recasted while status is active.
+			if (sc && sc->data[SC_OVERED_BOOST])
+				if (hd)
+				{// Homunculus hunger is reduced by 50% of max hunger.
+					short hunger = hd->homunculus.hunger - 50;
+					if (hunger < 1)// Hunger isnt reduced below 1.
+						hunger = 1;
+					hd->homunculus.hunger = hunger;
+				}
+				else if (sd)// Master's SP is reduced by 50% of MaxSP
+					status_zap(bl,0,status->max_sp * 50 / 100);
+			val2 = 300 + 40 * val1;//Fixed FLEE
+			val3 = 179 + 2 * val1;//Fixed ASPD //Currently not working. Fixed ASPD function needed. [Rytech]
 			break;
 		case SC_PYROTECHNIC_OPTION:
 			val2 = 60;	// Watk TODO: Renewal (Atk2)
@@ -8691,6 +8731,7 @@ int status_change_clear(struct block_list* bl, int type)
 int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 {
 	struct map_session_data *sd;
+	struct homun_data *hd;
 	struct status_change *sc;
 	struct status_change_entry *sce;
 	struct status_data *status;
@@ -8706,6 +8747,7 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 		return 0;
 
 	sd = BL_CAST(BL_PC,bl);
+	hd = BL_CAST(BL_HOM, bl);
 
 	if (sce->timer != tid && tid != INVALID_TIMER)
 		return 0;
@@ -9114,6 +9156,17 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 				clif_standing(&sd->bl,true);
 				clif_status_load(&sd->bl, SI_SIT, 0);
 			}
+			break;
+		case SC_OVERED_BOOST:
+			if (hd)
+			{// Homunculus hunger is reduced by 50% of max hunger.
+				short hunger = hd->homunculus.hunger - 50;
+				if (hunger < 1)// Hunger isnt reduced below 1.
+					hunger = 1;
+				hd->homunculus.hunger = hunger;
+			}
+			else if (sd)// Master's SP is reduced by 50% of MaxSP
+				status_zap(bl,0,status->max_sp * 50 / 100);
 			break;
 		case SC_FULL_THROTTLE:
 			sc_start(bl,SC_REBOUND,100,sce->val1,skill_get_time2(ALL_FULL_THROTTLE, sce->val1));

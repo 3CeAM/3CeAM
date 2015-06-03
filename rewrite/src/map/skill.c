@@ -2903,6 +2903,13 @@ static int skill_check_condition_mercenary(struct block_list *bl, int skill, int
 				if( hd->homunculus.intimacy < (unsigned int)battle_config.hvan_explosion_intimate )
 					return 0;
 				break;
+			case MH_LIGHT_OF_REGENE:
+				// Zone data shows it needs a intimacy 901.
+				// But description says it needs to be loyal, which would requie 911.
+				// Best to set it to loyal requirements to be accurate to the description.
+				if( hd->homunculus.intimacy <= 91000 )
+					return 0;
+				break;
 		}
 	}
 
@@ -5276,12 +5283,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		clif_skill_nodamage(src,bl,skillid,skilllv,
 			sc_start2(bl,type,100,skilllv,skillid,skill_get_time(skillid,skilllv)));
 		break;
-	case HLIF_AVOID:
-	case HAMI_DEFENCE:
-		i = skill_get_time(skillid,skilllv);
-		clif_skill_nodamage(bl,bl,skillid,skilllv,sc_start(bl,type,100,skilllv,i)); // Master
-		clif_skill_nodamage(src,src,skillid,skilllv,sc_start(src,type,100,skilllv,i)); // Homunc
-		break;
 	case NJ_BUNSINJYUTSU:
 		clif_skill_nodamage(src,bl,skillid,skilllv,
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
@@ -7408,6 +7409,48 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
 		if (hd)
 			skill_blockhomun_start(hd, skillid, skill_get_time2(skillid,skilllv));
+		break;
+
+	//Homunculus buffs that affects both the homunculus and its master.
+	case HLIF_AVOID:
+	case HAMI_DEFENCE:
+	case MH_OVERED_BOOST:
+		i = skill_get_time(skillid,skilllv);
+		clif_skill_nodamage(bl,bl,skillid,skilllv,sc_start(bl,type,100,skilllv,i)); // Master
+		clif_skill_nodamage(src,src,skillid,skilllv,sc_start(src,type,100,skilllv,i)); // Homunc
+		break;
+
+	//Homunculus buffs that affects only its master.
+	case MH_LIGHT_OF_REGENE:
+		if (hd)
+		{// Homunculus intimact is set to a random value in the cordial range.
+			hd->homunculus.intimacy = rnd_value(75100 , 85000);
+			if (hd->master)
+				clif_send_homdata(hd->master,SP_INTIMATE,hd->homunculus.intimacy/100);
+		}
+		clif_skill_nodamage(bl,bl,skillid,skilllv,sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
+		break;
+
+	case MH_SILENT_BREEZE:
+		{// If skill is used by anything not a homunculus, hunger value will be treated as max possible.
+			short hunger = 100;
+			if (hd)// Checks hunger when used by a homunculus.
+				hunger = hd->homunculus.hunger;
+			clif_skill_nodamage(src,bl,skillid,skilllv,sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
+			if ( tsc )
+			{// Status's the skill cures.
+				const enum sc_type scs[] = { SC_DEEPSLEEP, SC_HALLUCINATION, SC_HARMONIZE, SC_VOICEOFSIREN, SC_MANDRAGORA };
+				for (i = 0; i < ARRAYLENGTH(scs); i++)
+					if (tsc->data[scs[i]])
+						status_change_end(bl, scs[i], INVALID_TIMER);
+			}
+			sc_start(bl,SC_SILENCE,100,skilllv,skill_get_time(skillid,skilllv));
+			status_heal(bl,5 * (hunger + status_get_lv(src)),0,2);
+			//Its said that the homunculus is silenced too, but I need a confirm on that first.
+			//clif_skill_nodamage(src,src,skillid,skilllv,sc_start(src,type,100,skilllv,skill_get_time(skillid,skilllv)));
+			if (hd)// Skill cooldown directed to the homunculus.
+				skill_blockhomun_start(hd, skillid, skill_get_cooldown(skillid,skilllv));
+		}
 		break;
 
 	case MH_MAGMA_FLOW:
