@@ -306,6 +306,11 @@ function	script	F_GetArmorType	{
 		case 128: return "Accessory"; break;
 		case 256: return "Upper Headgear"; break;
 		case 512: return "Middle Headgear"; break;
+		case 1024: return "Costume Upper Headgear"; break;
+		case 2048: return "Costume Middle Headgear"; break;
+		case 4096: return "Costume Lower Headgear"; break;
+		case 8192: return "Costume Garment"; break;
+		case 16384: return "Costume Floor"; break;
 		default: return "Unable to Determine Equip Location"; break;
 	}
 	end;
