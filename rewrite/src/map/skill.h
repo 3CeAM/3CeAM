@@ -19,7 +19,7 @@ struct status_change_entry;
 #define MAX_ARROW_RESOURCE		5
 #define MAX_SKILL_ABRA_DB		350
 #define MAX_SKILL_SPELLBOOK_DB	17
-#define MAX_SKILL_IMPROVISE_DB 50
+#define MAX_SKILL_IMPROVISE_DB 16
 #define MAX_SKILL_MAGICMUSHROOM_DB 23
 
 #define MAX_SKILL_LEVEL 100
@@ -188,6 +188,7 @@ enum {
 	UF_ENSEMBLE      = 0x0200,	// Duet
 	UF_SONG          = 0x0400,	// Song
 	UF_DUALMODE      = 0x0800,	// Spells should trigger both ontimer and onplace/onout/onleft effects.
+	UF_SINGLEANIMATION = 0x1000,// Displays a single animation at center of AoE.
 };
 
 // アイテム作成デ?タベ?ス

@@ -307,13 +307,18 @@ int battle_attr_fix(struct block_list *src, struct block_list *target, int damag
 	}
 	if( tsc && tsc->count )
 	{
-		if( tsc->data[SC_ORATIO] && atk_elem == ELE_HOLY )
-			ratio += tsc->data[SC_ORATIO]->val1 * 2;
-		if( tsc->data[SC_VENOMIMPRESS] && atk_elem == ELE_POISON)
+		if(tsc->data[SC_VENOMIMPRESS] && atk_elem == ELE_POISON)
 			ratio += tsc->data[SC_VENOMIMPRESS]->val2;
-		if( atk_elem == ELE_FIRE && tsc->data[SC_THORNSTRAP] )
+		if(tsc->data[SC_ORATIO] && atk_elem == ELE_HOLY )
+			ratio += tsc->data[SC_ORATIO]->val1 * 2;
+		if ((tsc->data[SC_FIRE_INSIGNIA] && atk_elem == ELE_WATER) ||
+			(tsc->data[SC_WATER_INSIGNIA] && atk_elem == ELE_WIND) ||
+			(tsc->data[SC_WIND_INSIGNIA] && atk_elem == ELE_EARTH) ||
+			(tsc->data[SC_EARTH_INSIGNIA] && atk_elem == ELE_FIRE))
+			ratio += 50;
+		if(tsc->data[SC_THORNSTRAP] && atk_elem == ELE_FIRE)
 			status_change_end(target, SC_THORNSTRAP, -1);
-		if( tsc->data[SC_FIRE_CLOAK_OPTION] && atk_elem == ELE_FIRE)
+		if(tsc->data[SC_FIRE_CLOAK_OPTION] && atk_elem == ELE_FIRE)
 			damage -= damage * tsc->data[SC_FIRE_CLOAK_OPTION]->val2 / 100;
 	}
 	if( target && target->type == BL_SKILL )
@@ -3486,9 +3491,10 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 
 	struct map_session_data *sd, *tsd;
 	struct Damage ad;
+	struct status_change *sc = status_get_sc(src);
+	struct status_change *tsc = status_get_sc(target);
 	struct status_data *sstatus = status_get_status_data(src);
 	struct status_data *tstatus = status_get_status_data(target);
-	struct status_change *sc = status_get_sc(src);
 
 	struct
 	{
@@ -3856,20 +3862,17 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							skillratio = skillratio * s_level / 100;	// Base level bonus.
 						break;
 					case WL_JACKFROST:
+						if( tsc && tsc->data[SC_FREEZING] )
 						{
-							struct status_change *tsc = status_get_sc(target);
-							if( tsc && tsc->data[SC_FREEZING] )
-							{
 							skillratio += 900 + 300 * skill_lv;
 							if( re_baselv_bonus == 1 && s_level >= 100 )
 								skillratio = skillratio * s_level / 100;	// Base level bonus.
-							}
-							else
-							{
+						}
+						else
+						{
 							skillratio += 400 + 100 * skill_lv;
 							if( re_baselv_bonus == 1 && s_level >= 100 )
 								skillratio = skillratio * s_level / 150;	// Base level bonus.
-							}
 						}
 						break;
 					case WL_DRAINLIFE:
@@ -4079,6 +4082,62 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						skillratio += 1100;
 						break;
 				}
+
+				if ( sc )
+				{// Insignia's increases the damage of offensive magic by a fixed percentage depending on the element.
+					if ((sc->data[SC_FIRE_INSIGNIA] && sc->data[SC_FIRE_INSIGNIA]->val1 == 3 && s_ele == ELE_FIRE) ||
+						(sc->data[SC_WATER_INSIGNIA] && sc->data[SC_WATER_INSIGNIA]->val1 == 3 && s_ele == ELE_WATER) ||
+						(sc->data[SC_WIND_INSIGNIA] && sc->data[SC_WIND_INSIGNIA]->val1 == 3 && s_ele == ELE_WIND) ||
+						(sc->data[SC_EARTH_INSIGNIA] && sc->data[SC_EARTH_INSIGNIA]->val1 == 3 && s_ele == ELE_EARTH))
+						skillratio += 25;
+				}
+
+				// The code below is disabled until I can get more accurate information on the skills that insignias
+				// increase the damage on. Right now it appears that certain skills get the increase, but need more info.
+				/*if ( sc )
+				{// Insignia's appear to only increase the damage of certain magic skills and not all of a certain
+				//  element like it claims to. Need a confirm on Ninja skills for sure. [Rytech]
+					if (( sc->data[SC_FIRE_INSIGNIA] && sc->data[SC_FIRE_INSIGNIA]->val1 == 3 && (
+						skill_num == MG_FIREBALL ||
+						skill_num == MG_FIREWALL ||
+						skill_num == MG_FIREBOLT ||
+						skill_num == WZ_FIREPILLAR ||
+						skill_num == WZ_SIGHTRASHER ||
+						skill_num == WZ_METEOR ||
+						skill_num == WL_CRIMSONROCK ||
+						skill_num == WL_HELLINFERNO ||
+						skill_num == WL_SUMMON_ATK_FIRE ||
+						skill_num == SO_FIREWALK ))
+						||
+					( sc->data[SC_WATER_INSIGNIA] && sc->data[SC_WATER_INSIGNIA]->val1 == 3 && (
+						skill_num == MG_COLDBOLT ||
+						skill_num == MG_FROSTDIVER ||
+						skill_num == WZ_WATERBALL ||
+						skill_num == WZ_FROSTNOVA ||
+						skill_num == WZ_STORMGUST ||
+						skill_num == WL_FROSTMISTY ||
+						skill_num == WL_JACKFROST ||
+						skill_num == WL_SUMMON_ATK_WATER ||
+						skill_num == SO_DIAMONDDUST ))
+						||
+					( sc->data[SC_WIND_INSIGNIA] && sc->data[SC_WIND_INSIGNIA]->val1 == 3 && (
+						skill_num == MG_LIGHTNINGBOLT ||
+						skill_num == MG_THUNDERSTORM ||
+						skill_num == WZ_JUPITEL ||
+						skill_num == WZ_VERMILION ||
+						skill_num == WL_CHAINLIGHTNING_ATK ||
+						skill_num == WL_SUMMON_ATK_WIND ||
+						skill_num == SO_ELECTRICWALK ||
+						skill_num == SO_VARETYR_SPEAR ))
+						||
+					( sc->data[SC_EARTH_INSIGNIA] && sc->data[SC_EARTH_INSIGNIA]->val1 == 3 && (
+						skill_num == WZ_EARTHSPIKE ||
+						skill_num == WZ_HEAVENDRIVE ||
+						skill_num == WL_EARTHSTRAIN ||
+						skill_num == WL_SUMMON_ATK_GROUND ||
+						skill_num == SO_EARTHGRAVE )))
+						skillratio += 25;
+				}*/
 
 				MATK_RATE(skillratio);
 			
