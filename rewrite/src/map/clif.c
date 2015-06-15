@@ -4533,7 +4533,8 @@ static void clif_getareachar_skillunit(struct map_session_data *sd, struct skill
 	WFIFOL(fd, 8)=unit->group->src_id;
 	WFIFOW(fd,12)=unit->bl.x;
 	WFIFOW(fd,14)=unit->bl.y;
-	if (battle_config.traps_setting&1 && skill_get_inf2(unit->group->skill_id)&INF2_TRAP)
+	if ((battle_config.traps_setting&1 && skill_get_inf2(unit->group->skill_id)&INF2_TRAP) ||
+		(skill_get_unit_flag(unit->group->skill_id)&UF_SINGLEANIMATION && !(unit->val2&UF_SINGLEANIMATION)))
 		WFIFOL(fd,16)=UNT_DUMMYSKILL;
 	else
 		WFIFOL(fd,16)=unit->group->unit_id;
@@ -5277,6 +5278,8 @@ void clif_skill_setunit(struct skill_unit *unit)
 	WBUFW(buf,14)=unit->bl.y;
 	if (unit->group->state.song_dance&0x1 && unit->val2&UF_ENSEMBLE)
 		WBUFL(buf,16)=unit->val2&UF_SONG?UNT_DISSONANCE:UNT_UGLYDANCE;
+	else if (skill_get_unit_flag(unit->group->skill_id)&UF_SINGLEANIMATION && !(unit->val2&UF_SINGLEANIMATION))
+		WBUFL(buf,16)=UNT_DUMMYSKILL;
 	else
 		WBUFL(buf,16)=unit->group->unit_id;
 	WBUFB(buf,20)=(unsigned char)unit->range;

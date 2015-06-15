@@ -379,6 +379,8 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, int skill
 				hp += hp * sc->data[SC_INCHEALRATE]->val1/100;
 			if( sc->data[SC_EXTRACT_WHITE_POTION_Z] )
 				hp += hp * sc->data[SC_EXTRACT_WHITE_POTION_Z]->val1 / 100;
+			if ( sc->data[SC_WATER_INSIGNIA] && sc->data[SC_WATER_INSIGNIA]->val1 == 2 )
+				hp += hp * 10 / 100;
 		}
 		//Critical Wound and Death Hurt stacks. Need to fix when I fix the bugs in this heal code. [Rytech]
 		if( sc->data[SC_CRITICALWOUND] && heal ) // Critical Wound has no effect on offensive heal. [Inkfish]
@@ -11305,6 +11307,10 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 			break;
 		}
 
+		// This animation hack should only work if val2 is not already in use for anything.
+		if (skill_get_unit_flag(skillid)&UF_SINGLEANIMATION && i == (layout->count / 2) && val2 == 0)
+			val2 |= UF_SINGLEANIMATION;
+
 		if( range <= 0 )
 			map_foreachincell(skill_cell_overlap,src->m,ux,uy,BL_SKILL,skillid,&alive, src);
 		if( !alive )
@@ -11446,6 +11452,10 @@ static int skill_unit_onplace (struct skill_unit *src, struct block_list *bl, un
 	case UNT_VOLCANO:
 	case UNT_DELUGE:
 	case UNT_VIOLENTGALE:
+	case UNT_FIRE_INSIGNIA:
+	case UNT_WATER_INSIGNIA:
+	case UNT_WIND_INSIGNIA:
+	case UNT_EARTH_INSIGNIA:
 	case UNT_WATER_BARRIER:
 	case UNT_ZEPHYR:
 	case UNT_POWER_OF_GAIA:
@@ -12183,13 +12193,6 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			sc_start(bl,SC_BANDING_DEFENCE,rate,90,skill_get_time2(sg->skill_id,sg->skill_lv));}}
 			break;
 
-		case UNT_FIRE_INSIGNIA:
-		case UNT_WATER_INSIGNIA:
-		case UNT_WIND_INSIGNIA:
-		case UNT_EARTH_INSIGNIA:
-			sc_start(bl, type, 100, sg->skill_lv, skill_get_time2(sg->skill_id,sg->skill_lv));
-			break;
-
 		case UNT_FIRE_MANTLE:
 			if( battle_check_target(&src->bl, bl, BCT_ENEMY) )
 				skill_attack(BF_MAGIC,ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
@@ -12374,6 +12377,10 @@ static int skill_unit_onleft (int skill_id, struct block_list *bl, unsigned int 
 		case NJ_SUITON:
 		case SC_MAELSTROM:
 		case SC_BLOODYLUST:
+		case SO_FIRE_INSIGNIA:
+		case SO_WATER_INSIGNIA:
+		case SO_WIND_INSIGNIA:
+		case SO_EARTH_INSIGNIA:
 		case EL_WATER_BARRIER:
 		case EL_ZEPHYR:
 		case EL_POWER_OF_GAIA:
@@ -13834,8 +13841,19 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 	}
 
 	for( i = 0; i < MAX_SKILL_ITEM_REQUIRE; i++ )
-	{
-		if( (skill == AM_POTIONPITCHER || skill == CR_SLIMPITCHER || skill == CR_CULTIVATION) && i != lv%11 - 1 )
+	{// Skills that have different item requirements on each level.
+		if((skill == AM_POTIONPITCHER ||
+			skill == CR_SLIMPITCHER ||
+			skill == CR_CULTIVATION ||
+			skill == SO_SUMMON_AGNI ||
+			skill == SO_SUMMON_AQUA ||
+			skill == SO_SUMMON_VENTUS ||
+			skill == SO_SUMMON_TERA ||
+			skill == SO_FIRE_INSIGNIA ||
+			skill == SO_WATER_INSIGNIA ||
+			skill == SO_WIND_INSIGNIA ||
+			skill == SO_EARTH_INSIGNIA)
+			&& i != lv%11 - 1 )
 			continue;
 
 		switch( skill )
@@ -13848,19 +13866,12 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 			if( lv <= 5 )	// no gems required at level 1-5
 				continue;
 			break;
-		case NC_SHAPESHIFT:
+		case NC_SHAPESHIFT://FIX ME
 			if( i < 4 )
 				continue;
 			break;
-		case GN_FIRE_EXPANSION:
+		case GN_FIRE_EXPANSION://CHECK ME
 			if( i < 5 )
-				continue;
-			break;
-		case SO_SUMMON_AGNI:
-		case SO_SUMMON_AQUA:
-		case SO_SUMMON_VENTUS:
-		case SO_SUMMON_TERA:
-			if( i < 3 )
 				continue;
 			break;
 		}
@@ -13889,8 +13900,7 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 		)	// Not consume it
 			req.itemid[i] = req.amount[i] = 0;
 	}
-	if( skill == NC_SHAPESHIFT || skill == GN_FIRE_EXPANSION || skill == SO_SUMMON_AGNI ||
-		skill == SO_SUMMON_AQUA || skill == SO_SUMMON_VENTUS || skill == SO_SUMMON_TERA )
+	if( skill == NC_SHAPESHIFT || skill == GN_FIRE_EXPANSION )
 	{		
 		req.itemid[lv-1] = skill_db[j].itemid[lv-1];
 		req.amount[lv-1] = skill_db[j].amount[lv-1];
@@ -14055,19 +14065,22 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 			time -= time * 50 / 100;
 			if ((sc->data[SC_MEMORIZE]->val2) <= 0)
 				status_change_end(bl, SC_MEMORIZE, -1);}
-		if (sc->data[SC_SLOWCAST])
-			time += time * sc->data[SC_SLOWCAST]->val2 / 100;
+		if (sc->data[SC_WATER_INSIGNIA] && sc->data[SC_WATER_INSIGNIA]->val1 == 3 &&
+			skill_get_ele(skill_id, skill_lv) == ELE_WATER && skill_get_type(skill_id) == BF_MAGIC)
+			time -= time * 30 / 100;
 		if (sc->data[SC_IZAYOI])
 			time -= time * 50 / 100;
+		if (sc->data[SC_SLOWCAST])
+			time += time * sc->data[SC_SLOWCAST]->val2 / 100;
 	}
 
 	//These status's adjust the fixed cast time by a fixed amount. Fixed adjustments stack and can increase or decrease the time.
 	if (sc && sc->count)
 	{
-		if( sc->data[SC_MANDRAGORA] )
-			fixed_time += 500 * sc->data[SC_MANDRAGORA]->val1;
 		if( sc->data[SC_GUST_OPTION] || sc->data[SC_BLAST_OPTION] || sc->data[SC_WILD_STORM_OPTION] )
 			fixed_time -= 1000;
+		if( sc->data[SC_MANDRAGORA] )
+			fixed_time += 500 * sc->data[SC_MANDRAGORA]->val1;
 	}
 
 	//Fixed cast time reductions in a percentage starts here where reductions from any worn equips and cards that give fixed cast
@@ -14214,6 +14227,10 @@ int skill_delayfix (struct block_list *bl, int skill_id, int skill_lv)
 				time -= time * sc->data[SC_POEMBRAGI]->val3 / 100;
 		}
 	}
+
+	if (sc && sc->data[SC_WIND_INSIGNIA] && sc->data[SC_WIND_INSIGNIA]->val1 == 3 &&
+		skill_get_ele(skill_id, skill_lv) == ELE_WIND && skill_get_type(skill_id) == BF_MAGIC)
+		time -= time * 50 / 100;
 
 	if( !(delaynodex&4) && sd && sd->delayrate != 100 )
 		time = time * sd->delayrate / 100;
@@ -14787,6 +14804,10 @@ struct skill_unit_group *skill_locate_element_field(struct block_list *bl)
 			case NJ_SUITON:
 			case SO_WARMER:
 			case SO_CLOUD_KILL:
+			case SO_FIRE_INSIGNIA:
+			case SO_WATER_INSIGNIA:
+			case SO_WIND_INSIGNIA:
+			case SO_EARTH_INSIGNIA:
 				return ud->skillunit[i];
 		}
 	}
