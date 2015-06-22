@@ -785,4 +785,11 @@ int clif_crimson_marker_xy(struct map_session_data *sd);
 int clif_crimson_marker_xy_single(int fd, struct map_session_data *sd);
 int clif_crimson_marker_xy_remove(struct map_session_data *sd);
 
+// V5 Item Packets
+void clif_inventorylist_v5(struct map_session_data *sd);
+void clif_equiplist_v5(struct map_session_data *sd);
+void clif_storagelist_v5(struct map_session_data* sd, struct item* items, int items_length);
+void clif_cartlist_v5(struct map_session_data *sd);
+void clif_viewequip_ack_v5(struct map_session_data* sd, struct map_session_data* tsd);
+
 #endif /* _CLIF_H_ */

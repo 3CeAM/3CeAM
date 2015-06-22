@@ -234,7 +234,7 @@ struct item {
 	int id;
 	short nameid;
 	short amount;
-	unsigned short equip; // location(s) where item is equipped (using enum equip_pos for bitmasking)
+	unsigned int equip; // location(s) where item is equipped (using enum equip_pos for bitmasking)
 	char identify;
 	char refine;
 	char attribute;
