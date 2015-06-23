@@ -238,7 +238,7 @@ Costume Equips
 Ammo
   32768 = Ammo
 
-Shadow Equips (Not Yet Supported, But Placed Here For Reference)
+Shadow Equips
   65536 = Shadow Armor
  131072 = Shadow Weapon
  262144 = Shadow Shield
@@ -257,7 +257,7 @@ Costume Equips
    5120 = Costume Upper/Lower Headgear
    6144 = Costume Middle/Lower Headgear
    7168 = Costume Upper/Middle/Lower Headgear
-Shadow Equips (Not Yet Supported, But Placed Here For Reference)
+Shadow Equips
 3145728 = Shadow Accessory (Left And Right) (Normally Used On All Shadow Accessory Items)
 --------------------------------
 
@@ -290,7 +290,7 @@ are scripted. Refinements can also affect the effectiveness of certain skills.
 Sets the view ID for a item.
 Required for weapon, armor, and ammo type items.
 This setting serves a number of different functions.
-For headgears, shields, costume headgears, and costume robes, the setting sets which sprite
+For headgears, shields, robes, costume headgears, and costume robes, the setting sets which sprite
 will appear when the item is equipped. Which range of sprites you can select from depends on
 the equip location thats set to the item. Example being items equipped on the head will display
 headgear sprites, shield equips will display shields, and costume robes will display special

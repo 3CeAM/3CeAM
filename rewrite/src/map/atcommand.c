@@ -2810,6 +2810,18 @@ ACMD_FUNC(refine)
 		clif_displaymessage(fd, atcmd_output);
 		sprintf(atcmd_output, "%d: Costume Floor", EQP_COSTUME_FLOOR);
 		clif_displaymessage(fd, atcmd_output);
+		sprintf(atcmd_output, "%d: Shadow Armor", EQP_SHADOW_ARMOR);
+		clif_displaymessage(fd, atcmd_output);
+		sprintf(atcmd_output, "%d: Shadow Weapon", EQP_SHADOW_WEAPON);
+		clif_displaymessage(fd, atcmd_output);
+		sprintf(atcmd_output, "%d: Shadow Shield", EQP_SHADOW_SHIELD);
+		clif_displaymessage(fd, atcmd_output);
+		sprintf(atcmd_output, "%d: Shadow Shoes", EQP_SHADOW_SHOES);
+		clif_displaymessage(fd, atcmd_output);
+		sprintf(atcmd_output, "%d: Shadow Right Accessory", EQP_SHADOW_ACC_R);
+		clif_displaymessage(fd, atcmd_output);
+		sprintf(atcmd_output, "%d: Shadow Left Accessory", EQP_SHADOW_ACC_L);
+		clif_displaymessage(fd, atcmd_output);
 		return -1;
 	}
 
@@ -8833,6 +8845,19 @@ ACMD_FUNC(itemlist)
 				strcat(equipstr, "Costume Robe, ");
 			if( it->equip & EQP_COSTUME_FLOOR )
 				strcat(equipstr, "Costume Floor, ");
+			if( it->equip & EQP_SHADOW_ARMOR )
+				strcat(equipstr, "Shadow Armor, ");
+			if( it->equip & EQP_SHADOW_WEAPON )
+				strcat(equipstr, "Shadow Weapon, ");
+			if( it->equip & EQP_SHADOW_SHIELD )
+				strcat(equipstr, "Shadow Shield, ");
+			if( it->equip & EQP_SHADOW_SHOES )
+				strcat(equipstr, "Shadow Shoes, ");
+			if( it->equip & EQP_SHADOW_ACC_R )
+				strcat(equipstr, "Shadow Right Accessory, ");
+			if( it->equip & EQP_SHADOW_ACC_L )
+				strcat(equipstr, "Shadow Left Accessory, ");
+
 			// remove final ', '
 			equipstr[strlen(equipstr) - 2] = '\0';
 			StringBuf_AppendStr(&buf, equipstr);

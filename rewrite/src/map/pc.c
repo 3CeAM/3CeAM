@@ -8288,6 +8288,15 @@ int pc_equipitem(struct map_session_data *sd,int n,int req_pos)
 	}
 	if(pos & EQP_SHOES)
 		clif_changelook(&sd->bl,LOOK_SHOES,0);
+
+	if(pos & EQP_GARMENT && pc_checkequip(sd,EQP_COSTUME_GARMENT) == -1) {
+		if(id)
+			sd->status.robe = id->look;
+		else
+			sd->status.robe = 0;
+		clif_changelook(&sd->bl,LOOK_ROBE,sd->status.robe);
+	}
+
 	// Costume system support for headgears.
 	if(pos & EQP_COSTUME_HEAD_LOW) {
 		if(id && !(pos&(EQP_COSTUME_HEAD_TOP|EQP_COSTUME_HEAD_MID)))
@@ -8430,6 +8439,12 @@ int pc_unequipitem(struct map_session_data *sd,int n,int flag)
 
 	if( sd->status.inventory[n].equip & EQP_SHOES )
 		clif_changelook(&sd->bl,LOOK_SHOES,0);
+
+	if( sd->status.inventory[n].equip & EQP_GARMENT && pc_checkequip(sd,EQP_COSTUME_GARMENT) == -1 )
+	{
+		sd->status.robe = 0;
+		clif_changelook(&sd->bl,LOOK_ROBE,sd->status.robe);
+	}
 
 	// Costume system support for headgears.
 	if( sd->status.inventory[n].equip & EQP_COSTUME_HEAD_LOW )

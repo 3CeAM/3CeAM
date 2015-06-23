@@ -1317,7 +1317,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl, SC_BLIND, 10 + 10 * skilllv, skilllv, skill_get_time2(skillid,skilllv));
 		break;
 	case MH_XENO_SLASHER:
-		sc_start(bl, SC_BLEEDING, 1 * skilllv, skilllv, skill_get_time(skillid,skilllv));
+		sc_start(bl, SC_BLEEDING, 1 * skilllv, skilllv, skill_get_time2(skillid,skilllv));
 		break;
 	case MH_STAHL_HORN:
 		sc_start(bl, SC_STUN, 16 + 4 * skilllv, skilllv, skill_get_time(skillid,skilllv));
