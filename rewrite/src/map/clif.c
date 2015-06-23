@@ -4847,7 +4847,8 @@ static void clif_getareachar_skillunit(struct map_session_data *sd, struct skill
 	WFIFOL(fd, 6)=unit->group->src_id;
 	WFIFOW(fd,10)=unit->bl.x;
 	WFIFOW(fd,12)=unit->bl.y;
-	if (battle_config.traps_setting&1 && skill_get_inf2(unit->group->skill_id)&INF2_TRAP)
+	if ((battle_config.traps_setting&1 && skill_get_inf2(unit->group->skill_id)&INF2_TRAP) ||
+		(skill_get_unit_flag(unit->group->skill_id)&UF_SINGLEANIMATION && !(unit->val2&UF_SINGLEANIMATION)))
 		WFIFOB(fd,14)=UNT_DUMMYSKILL; //Use invisible unit id for traps.
 	else
 		WFIFOB(fd,14)=unit->group->unit_id;
@@ -5593,6 +5594,8 @@ void clif_skill_setunit(struct skill_unit *unit)
 	WBUFW(buf,12)=unit->bl.y;
 	if (unit->group->state.song_dance&0x1 && unit->val2&UF_ENSEMBLE)
 		WBUFB(buf,14)=unit->val2&UF_SONG?UNT_DISSONANCE:UNT_UGLYDANCE;
+	else if (skill_get_unit_flag(unit->group->skill_id)&UF_SINGLEANIMATION && !(unit->val2&UF_SINGLEANIMATION))
+		WBUFB(buf,14)=UNT_DUMMYSKILL;
 	else
 		WBUFB(buf,14)=unit->group->unit_id;
 	WBUFB(buf,15)=1; // ignored by client (always gets set to 1)

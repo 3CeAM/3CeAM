@@ -311,6 +311,12 @@ function	script	F_GetArmorType	{
 		case 4096: return "Costume Lower Headgear"; break;
 		case 8192: return "Costume Garment"; break;
 		case 16384: return "Costume Floor"; break;
+		case 65536: return "Shadow Armor"; break;
+		case 131072: return "Shadow Weapon"; break;
+		case 262144: return "Shadow Shield"; break;
+		case 524288: return "Shadow Shoes"; break;
+		case 1048576: return "Shadow Right Accessory"; break;
+		case 2097152: return "Shadow Left Accessory"; break;
 		default: return "Unable to Determine Equip Location"; break;
 	}
 	end;
