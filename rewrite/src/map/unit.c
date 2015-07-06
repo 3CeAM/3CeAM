@@ -923,6 +923,7 @@ int unit_can_move(struct block_list *bl)
 			|| sc->data[SC_VACUUM_EXTREME]
 			|| sc->data[SC_CURSEDCIRCLE_ATKER]
 			|| sc->data[SC_CURSEDCIRCLE_TARGET]
+			|| sc->data[SC_NETHERWORLD]
 			|| sc->data[SC_MEIKYOUSISUI]
 			|| sc->data[SC_KAGEHUMI]
 		))
@@ -1858,6 +1859,7 @@ int unit_skillcastcancel(struct block_list *bl,int type)
 {
 	struct map_session_data *sd = NULL;
 	struct unit_data *ud = unit_bl2ud( bl);
+	struct status_change *sc = status_get_sc(bl);
 	unsigned int tick=gettick();
 	int ret=0, skill;
 	
@@ -1875,6 +1877,12 @@ int unit_skillcastcancel(struct block_list *bl,int type)
 		if (sd && (sd->special_state.no_castcancel2 ||
 			(sd->special_state.no_castcancel && !map_flag_gvg(bl->m) && !map[bl->m].flag.battleground))) //fixed flags being read the wrong way around [blackhole89]
 			return 0;
+
+		if (sc && sc->count)
+		{// Unlimited Humming Voice may prevent cast interruptions, but it doesn't work in WoE or Battlegrounds.
+			if (sc->data[SC_UNLIMITEDHUMMINGVOICE] && !map_flag_gvg(bl->m) && !map[bl->m].flag.battleground)
+				return 0;
+		}
 	}
 	
 	ud->canact_tick = tick;
@@ -2055,6 +2063,7 @@ int unit_remove_map_(struct block_list *bl, clr_type clrtype, const char* file, 
 		status_change_end(bl, SC_CRYSTALIZE, INVALID_TIMER);
 		status_change_end(bl, SC__SHADOWFORM, INVALID_TIMER);
 		status_change_end(bl, SC__MANHOLE, INVALID_TIMER);
+		status_change_end(bl, SC_NETHERWORLD, INVALID_TIMER);
 		status_change_end(bl, SC_VACUUM_EXTREME, INVALID_TIMER);
 	}
 

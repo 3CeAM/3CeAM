@@ -520,7 +520,7 @@ void initChangeTables(void)
 	set_sc( MI_RUSH_WINDMILL          , SC_RUSHWINDMILL         , SI_RUSH_WINDMILL          , SCB_WATK );
 	set_sc( MI_ECHOSONG               , SC_ECHOSONG             , SI_ECHOSONG               , SCB_DEF );
 	set_sc( MI_HARMONIZE              , SC_HARMONIZE            , SI_HARMONIZE              , SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK );
-	set_sc( WM_POEMOFNETHERWORLD      , SC_STOP                 , SI_NETHERWORLD            , SCB_NONE );
+	set_sc( WM_POEMOFNETHERWORLD      , SC_NETHERWORLD          , SI_NETHERWORLD            , SCB_NONE );
 	set_sc( WM_VOICEOFSIREN           , SC_VOICEOFSIREN         , SI_SIREN                  , SCB_NONE );
 	set_sc( WM_LULLABY_DEEPSLEEP      , SC_DEEPSLEEP            , SI_DEEP_SLEEP             , SCB_NONE );
 	set_sc( WM_SIRCLEOFNATURE         , SC_SIRCLEOFNATURE       , SI_SIRCLEOFNATURE         , SCB_NONE );
@@ -6515,6 +6515,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			// Other Effects
 			case SC_VACUUM_EXTREME:
 			case SC_SILENT_BREEZE:
+			case SC_NETHERWORLD:
 				return 0;
 		}
 	}
@@ -8036,12 +8037,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val4 = 4 * val1 + 4 * val2;//MaxHP Reduction
 			break;
 		case SC_UNLIMITEDHUMMINGVOICE:
-			{
-				struct unit_data *ud = unit_bl2ud(bl);
-				if( ud == NULL ) return 0;
-				ud->state.skillcastcancel = 0;
-				val3 = 15 - (3 * val2);//Increased SP Cost.
-			}
+			val3 = 15 - (3 * val2);//Increased SP Cost.
 			break;
 		case SC_SITDOWN_FORCE:
 		case SC_BANANA_BOMB_SITDOWN:
@@ -8411,6 +8407,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_VACUUM_EXTREME:
 		case SC_CURSEDCIRCLE_ATKER:
 		case SC_CURSEDCIRCLE_TARGET:
+		case SC_NETHERWORLD:
 		case SC_MEIKYOUSISUI:
 			unit_stop_walking(bl,1);
 		break;

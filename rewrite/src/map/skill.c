@@ -1248,6 +1248,14 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 	case SO_VARETYR_SPEAR:
 		sc_start(bl, SC_STUN, 5 + 5 * skilllv, skilllv, skill_get_time(skillid, skilllv));
 		break;
+	case WM_POEMOFNETHERWORLD:
+		{
+			int duration = skill_get_time2(skillid,skilllv) - ( 1000 * status_get_lv(bl) / 50 + 1000 * status_get_job_lv(bl) / 10);
+			if ( duration < 4000 )
+				duration = 4000;// Duration can't be reduced below 4 seconds.
+			sc_start(bl, SC_NETHERWORLD, 100, skilllv, duration);
+		}
+		break;
 	case GN_HELLS_PLANT_ATK:
 		sc_start(bl, SC_STUN, 20 + 10 * skilllv, skilllv, skill_get_time(skillid, skilllv));
 		sc_start(bl, SC_BLEEDING, 5 + 5 * skilllv, skilllv, skill_get_time(skillid, skilllv));
@@ -1279,7 +1287,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 					break;
 				case ITEMID_BANANA_BOMB:
 					{
-						short duration;
+						int duration;
 						if ( battle_config.banana_bomb_sit_duration == 1 )
 							duration = 1000 * joblv / 4;// Official force sit duration.
 						else
@@ -1321,6 +1329,9 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		break;
 	case MH_STAHL_HORN:
 		sc_start(bl, SC_STUN, 16 + 4 * skilllv, skilllv, skill_get_time(skillid,skilllv));
+		break;
+	case MH_LAVA_SLIDE:
+		sc_start(bl, SC_BURNING, 10 * skilllv, skilllv, skill_get_time2(skillid,skilllv));
 		break;
 	case EL_WIND_SLASH:	// Non confirmed rate.
 		sc_start(bl, SC_BLEEDING, 25, skilllv, skill_get_time(skillid,skilllv));
@@ -1939,9 +1950,9 @@ int skill_blown(struct block_list* src, struct block_list* target, int count, in
 			break;
 		case BL_SKILL:
 			su = (struct skill_unit *)target;
-			if( su && su->group && (su->group->unit_id == UNT_ANKLESNARE || su->group->unit_id == UNT_ELECTRICSHOCKER
-				|| su->group->unit_id == UNT_CLUSTERBOMB || su->group->unit_id == UNT_REVERBERATION) )
-				return 0; // ankle snare, electricshocker, clusterbomb, reverberation cannot be knocked back
+			if( su && su->group && (su->group->unit_id == UNT_ANKLESNARE || su->group->unit_id == UNT_ELECTRICSHOCKER ||
+				su->group->unit_id == UNT_REVERBERATION || su->group->unit_id == UNT_POEMOFNETHERWORLD) )
+				return 0; // ankle snare, electric shocker, reverberation, and poem of the netherworld cannot be knocked back
 			break;
 	}
 
@@ -2296,16 +2307,14 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 		break;
 	case WM_REVERBERATION_MELEE:
 	case WM_REVERBERATION_MAGIC:
-		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,WM_REVERBERATION,-2,6);
-		break;
 	case WM_SEVERE_RAINSTORM_MELEE:
-		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,WM_SEVERE_RAINSTORM,-2,6);
+		dmg.dmotion = clif_skill_damage(dsrc,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,skillid,65534,6);
 		break;
-	case GN_CRAZYWEED_ATK:
+	case GN_CRAZYWEED_ATK:// FIX ME
 		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,skillid, -2, 6);
 		break;
 	case GN_SLINGITEM_RANGEMELEEATK://Server sends a skill level of 65534 and type 6. Interesting.
-		dmg.dmotion = clif_skill_damage(src,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,skillid,65534,6);
+		dmg.dmotion = clif_skill_damage(dsrc,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,skillid,65534,6);
 		break;
 	case KO_HUUMARANKA:
 		dmg.dmotion = clif_skill_damage(src,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, 8);
@@ -2731,6 +2740,8 @@ static int skill_check_unit_range_sub (struct block_list *bl, va_list ap)
 		case RA_FIRINGTRAP:
 		case RA_ICEBOUNDTRAP:
 		case SC_DIMENSIONDOOR:
+		case WM_REVERBERATION:
+		case WM_POEMOFNETHERWORLD:
 		case GN_THORNS_TRAP:
 		case GN_HELLS_PLANT:
 			//Non stackable on themselves and traps (including venom dust which does not has the trap inf2 set)
@@ -3107,10 +3118,6 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 						}
 					}
 					break;
-				case WM_REVERBERATION_MELEE:
-				case WM_REVERBERATION_MAGIC:
-					skill_attack(skill_get_type(skl->skill_id),src, src, target, skl->skill_id, skl->skill_lv, 0, SD_LEVEL);
-					break;
 				case SC_FATALMENACE:
 					if( src == target ) // Casters Part
 						unit_warp(src, -1, skl->x, skl->y, 3);
@@ -3255,17 +3262,15 @@ static int skill_reveal_trap (struct block_list *bl, va_list ap)
 	return 0;
 }
 
-static int skill_ative_reverberation( struct block_list *bl, va_list ap)
+static int skill_trigger_reverberation (struct block_list *bl, va_list ap)
 {
-	struct skill_unit *su = (TBL_SKILL*)bl;
-	struct skill_unit_group *sg;
-	if( bl->type != BL_SKILL )
-		return 0;
-	if( su->alive && (sg = su->group) && sg->skill_id == WM_REVERBERATION )
-	{
-		clif_changetraplook(bl, UNT_USED_TRAPS);
-		su->limit=DIFF_TICK(gettick(),sg->tick)+1500;
-		sg->unit_id = UNT_USED_TRAPS;
+	unsigned int tick = va_arg(ap,unsigned int);
+	TBL_SKILL *su = (TBL_SKILL*)bl;
+
+	if (su->alive && su->group && su->group->unit_id == UNT_REVERBERATION)
+	{// Trigger all reverberations in the AoE.
+		su->group->limit = DIFF_TICK(tick,su->group->tick) + 1500;
+		return 1;
 	}
 	return 0;
 }
@@ -3726,7 +3731,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case SR_RAMPAGEBLASTER:
 	case SR_WINDMILL:
 	case SR_RIDEINLIGHTNING:
-	case WM_REVERBERATION:
 	case SO_VARETYR_SPEAR:
 	case GN_CART_TORNADO:
 	case GN_CARTCANNON:
@@ -4410,6 +4414,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		status_change_end(bl, SC_RUSHWINDMILL, -1);
 		status_change_end(bl, SC_ECHOSONG, -1);
 		status_change_end(bl, SC_HARMONIZE, -1);
+		status_change_end(bl, SC_NETHERWORLD, -1);
 		status_change_end(bl, SC_VOICEOFSIREN, -1);
 		status_change_end(bl, SC_DEEPSLEEP, -1);
 		status_change_end(bl, SC_SIRCLEOFNATURE, -1);
@@ -5959,6 +5964,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		//Change in kRO on 6/26/2012
 		status_change_end(bl, SC_STASIS, INVALID_TIMER);
+
+		//Other confirms
+		status_change_end(bl, SC_NETHERWORLD, INVALID_TIMER);
 
 		//Is this equation really right? It looks so... special.
 		if(battle_check_undead(tstatus->race,tstatus->def_ele))
@@ -10506,7 +10514,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 
 	case WM_DOMINION_IMPULSE:
 		i = skill_get_splash(skillid, skilllv);
-		map_foreachinarea( skill_ative_reverberation,src->m, x-i, y-i, x+i,y+i,BL_SKILL);
+		map_foreachinarea( skill_trigger_reverberation, src->m, x-i, y-i, x+i,y+i,BL_SKILL);
 		break;
 
 	case GN_CRAZYWEED:
@@ -10970,6 +10978,8 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 	//case RA_VERDURETRAP:
 	//case RA_FIRINGTRAP:
 	//case RA_ICEBOUNDTRAP:
+	//case WM_REVERBERATION:
+	case WM_POEMOFNETHERWORLD:// I don't think trap duration is increased in WoE. [Rytech]
 	//case GN_THORNS_TRAP:
 	//case GN_HELLS_PLANT:
 		if( map_flag_gvg(src->m) || map[src->m].flag.battleground )
@@ -11134,14 +11144,6 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 		limit = -1;
 		break;
 
-	case WM_REVERBERATION:
-		interval = limit;
-		val2 = 1;
-	case WM_POEMOFNETHERWORLD:	// Can't be placed on top of Land Protector.
-		if( map_getcell(src->m, x, y, CELL_CHKLANDPROTECTOR) )
-			return NULL;
-		break;
-
 	case SO_CLOUD_KILL:
 		skill_clear_group(src, 4);
 		break;
@@ -11295,7 +11297,7 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 			val2 = 0;
 			break;
 		case WM_REVERBERATION:
-			val1 = 1;
+			val1 = 1 + skilllv;// Reverberation's HP. It takes 1 damage per hit.
 			break;
 		case GN_WALLOFTHORN:
 			val1 = 2000 + 2000 * skilllv;//Thorn Walls HP
@@ -11600,6 +11602,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			case UNT_FIREPILLAR_ACTIVE:
 			case UNT_ELECTRICSHOCKER:
 			case UNT_MANHOLE://Not sure if this is needed, but meh. [Rytech]
+			//case UNT_POEMOFNETHERWORLD:// Likely not needed, but placed here in case.
 				return 0;
 			default:
 				ShowError("skill_unit_onplace_timer: interval error (unit id %x)\n", sg->unit_id);
@@ -11820,10 +11823,11 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 		case UNT_VERDURETRAP:
 		case UNT_FIRINGTRAP:
 		case UNT_ICEBOUNDTRAP:
-
+		case UNT_REVERBERATION:
+		case UNT_POEMOFNETHERWORLD:
 			map_foreachinrange(skill_trap_splash,&src->bl, skill_get_splash(sg->skill_id, sg->skill_lv), sg->bl_flag, &src->bl,tick);
-			if( sg->unit_id != UNT_FIREPILLAR_ACTIVE )
-				clif_changetraplook(&src->bl, sg->unit_id == UNT_LANDMINE ? UNT_FIREPILLAR_ACTIVE : sg->unit_id == UNT_FIRINGTRAP ? UNT_DUMMYSKILL : UNT_USED_TRAPS);
+			if (sg->unit_id != UNT_FIREPILLAR_ACTIVE)
+				clif_changetraplook(&src->bl, sg->unit_id == UNT_LANDMINE ? UNT_FIREPILLAR_ACTIVE : UNT_USED_TRAPS);
 			src->range = -1; //Disable range so it does not invoke a for each in area again.
 			sg->limit = DIFF_TICK(tick,sg->tick) + 1500;
 			break;
@@ -12082,23 +12086,9 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 		//	if( sg->src_id == bl->id )
 		//	break; //Does not affect the caster.*/
 
-		case UNT_REVERBERATION:
-			clif_changetraplook(&src->bl,UNT_USED_TRAPS);
-			map_foreachinrange(skill_trap_splash,&src->bl, skill_get_splash(sg->skill_id, sg->skill_lv), sg->bl_flag, &src->bl,tick);
-			sg->limit = DIFF_TICK(tick,sg->tick) + 1500;
-			break;
-
 		case UNT_SEVERE_RAINSTORM:
 			if( battle_check_target(&src->bl, bl, BCT_ENEMY) )
 				skill_attack(BF_WEAPON,ss,&src->bl,bl,WM_SEVERE_RAINSTORM_MELEE,sg->skill_lv,tick,0);
-			break;
-
-		case UNT_POEMOFNETHERWORLD:
-			if( !(status_get_mode(bl)&MD_BOSS) )
-			{
-				if( !(tsc && tsc->data[type]) )
-					sc_start(bl, type, 100, sg->skill_lv, skill_get_time2(sg->skill_id,sg->skill_lv));
-			}
 			break;
 
 		case UNT_THORNS_TRAP:
@@ -12243,11 +12233,8 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			break;
 
 		case UNT_POISON_MIST:
-			skill_attack(skill_get_type(sg->skill_id),ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
-			break;
 		case UNT_LAVA_SLIDE:
 			skill_attack(skill_get_type(sg->skill_id),ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
-			sc_start(bl, SC_BURNING, 10 * sg->skill_lv, sg->skill_lv, 15000);
 			break;
 	}
 
@@ -12494,6 +12481,7 @@ int skill_unit_ondamaged (struct skill_unit *src, struct block_list *bl, int dam
 	case UNT_ANKLESNARE:
 	case UNT_ICEWALL:
 	case UNT_REVERBERATION:
+	//case UNT_POEMOFNETHERWORLD:// Need a confirm on if this can be damaged.
 	case UNT_WALLOFTHORN:
 		src->val1 -= damage;
 		break;
@@ -15038,6 +15026,7 @@ static int skill_trap_splash (struct block_list *bl, va_list ap)
 		case UNT_COBALTTRAP:
 		case UNT_MAIZETRAP:
 		case UNT_VERDURETRAP:
+		case UNT_POEMOFNETHERWORLD:
 			skill_additional_effect(ss,bl,sg->skill_id,sg->skill_lv,BF_MISC,ATK_DEF,tick);
 			break;
 		case UNT_GROUNDDRIFT_WIND:
@@ -15070,10 +15059,13 @@ static int skill_trap_splash (struct block_list *bl, va_list ap)
 				clif_skill_damage(bl,bl,tick,0,0,-30000,1,sg->skill_id,sg->skill_lv,5);
 			break;
 		case UNT_REVERBERATION:
-			skill_attack(BF_WEAPON,ss,src,bl,WM_REVERBERATION_MELEE,sg->skill_lv,tick,0);
-			skill_addtimerskill(ss,tick+200,bl->id,0,0,WM_REVERBERATION_MAGIC,sg->skill_lv,BF_MAGIC,SD_LEVEL);
+			{// Check for all enemys in a 5x5 range of the reverberation unit so we can divide damage in the following skill attacks.
+				short enemy_count = map_foreachinrange(skill_area_sub, src, 2, BL_CHAR, src, sg->skill_id, sg->skill_lv, tick, BCT_ENEMY, skill_area_sub_count);
+				skill_addtimerskill(ss, tick+status_get_amotion(ss), bl->id, 0, 0, WM_REVERBERATION_MELEE, sg->skill_lv, BF_WEAPON, enemy_count);
+				skill_addtimerskill(ss, tick+2*status_get_amotion(ss), bl->id, 0, 0, WM_REVERBERATION_MAGIC, sg->skill_lv, BF_MAGIC, enemy_count);
+			}
 			break;
-		default:
+		default:// ss = Caster / src = Skill Unit / bl = Enemy/Target
 			skill_attack(skill_get_type(sg->skill_id),ss,src,bl,sg->skill_id,sg->skill_lv,tick,0);
 			break;
 	}
@@ -15648,6 +15640,20 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 			}
 			break;
 
+			case UNT_REVERBERATION:
+			{
+				if( unit->val1 > 0 )
+				{
+					map_foreachinrange(skill_trap_splash, &unit->bl, skill_get_splash(group->skill_id, group->skill_lv), group->bl_flag, &unit->bl, tick);
+					group->unit_id = UNT_USED_TRAPS;
+					clif_changelook(&unit->bl, LOOK_BASE, group->unit_id);
+					unit->range = -1;
+					group->limit=DIFF_TICK(tick+1500,group->tick);
+					unit->limit=DIFF_TICK(tick+1500,group->tick);
+				}
+			}
+			break;
+
 			case UNT_WARP_ACTIVE:
 				// warp portal opens (morph to a UNT_WARP_WAITING cell)
 				group->unit_id = skill_get_unit_id(group->skill_id, 1); // UNT_WARP_WAITING
@@ -15676,19 +15682,6 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 				}
 				skill_delunit(unit);
 			}
-			break;
-
-			case UNT_REVERBERATION:
-				if( unit->val1 <= 0 ) // If it was deactivated.
-				{
-					skill_delunit(unit);
-					break;
-				}
-				clif_changetraplook(bl,UNT_USED_TRAPS);
-				map_foreachinrange(skill_trap_splash, bl, skill_get_splash(group->skill_id, group->skill_lv), group->bl_flag, bl, tick);
-				group->limit = DIFF_TICK(tick,group->tick) + 1500;
-				unit->limit = DIFF_TICK(tick,group->tick) + 1500;
-				group->unit_id = UNT_USED_TRAPS;
 			break;
 
 			case UNT_FEINTBOMB:
@@ -15738,7 +15731,8 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 			case UNT_TALKIEBOX:
 			case UNT_ANKLESNARE:
 			case UNT_ELECTRICSHOCKER:
-			case UNT_CLUSTERBOMB:
+			case UNT_CLUSTERBOMB:// This shouldnt be here. It doesn't inflect any status's. [Rytech]
+			case UNT_POEMOFNETHERWORLD:
 				if( unit->val1 <= 0 ) {
 					if( (group->unit_id == UNT_ANKLESNARE || group->unit_id == UNT_ELECTRICSHOCKER) && group->val2 > 0 )
 						skill_delunit(unit);
@@ -15748,10 +15742,6 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 					}
 				}
 				break;			
-			case UNT_REVERBERATION:
-				if( unit->val1 <= 0 )
-					unit->limit = DIFF_TICK(tick + 700,group->tick);
-				break;
 			case UNT_WALLOFTHORN:
 				if( unit->val1 <= 0 )
 				{
