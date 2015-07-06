@@ -1277,7 +1277,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 	flag.rh = 1;
 	flag.weapon = 1;
 	flag.infdef =(tstatus->mode&MD_PLANT) ? 1 : 0;
-	if( !flag.infdef && (target->type == BL_SKILL && ((TBL_SKILL*)target)->group->unit_id == UNT_REVERBERATION) )
+
+	if( target->type == BL_SKILL && ((TBL_SKILL*)target)->group->unit_id == UNT_REVERBERATION )
 		flag.infdef = 1; // Reberberation takes 1 damage
 
 	//Initial Values
@@ -2579,6 +2580,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio += 200 + 100 * skill_lv;
 					if( re_baselv_bonus == 1 && s_level >= 100 )
 						skillratio = skillratio * s_level / 100;	// Base level bonus.
+					if (wflag <= 0)// wflag holds the number of enemy targets in the AoE to divide the damage between.
+						wflag = 1;// Make sure its always at least 1 to avoid divide by 0 crash.
+					skillratio = skillratio / wflag;
 					break;
 				case WM_SEVERE_RAINSTORM_MELEE:
 					skillratio = (sstatus->agi + sstatus->dex) * skill_lv / 5;
@@ -3595,11 +3599,11 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 
 	//Skill Range Criteria
 	ad.flag |= battle_range_type(src, target, skill_num, skill_lv);
-	flag.infdef = (tstatus->mode&MD_PLANT?1:0);	
-	if( !flag.infdef && (target->type == BL_SKILL && ((TBL_SKILL*)target)->group->unit_id == UNT_REVERBERATION) )
+	flag.infdef = (tstatus->mode&MD_PLANT?1:0);
+
+	if( target->type == BL_SKILL && ((TBL_SKILL*)target)->group->unit_id == UNT_REVERBERATION )
 		flag.infdef = 1; // Reberberation takes 1 damage
-	
-		
+
 	switch(skill_num)
 	{
 		case MG_FIREWALL:
@@ -3957,6 +3961,9 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						skillratio += 100 * skill_lv;
 						if( re_baselv_bonus == 1 && s_level >= 100 )
 							skillratio = skillratio * s_level / 100;	// Base level bonus.
+						if (mflag <= 0)// mflag holds the number of enemy targets in the AoE to divide the damage between.
+							mflag = 1;// Make sure its always at least 1 to avoid divide by 0 crash.
+						skillratio = skillratio / mflag;
 						break;
 					case SO_FIREWALK:
 						skillratio = 60 * skill_lv;
@@ -4586,6 +4593,9 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		md.damage = 0;
 	else if(md.damage && tstatus->mode&MD_PLANT)
 		md.damage = 1;
+
+	if( target->type == BL_SKILL && ((TBL_SKILL*)target)->group->unit_id == UNT_REVERBERATION )
+		md.damage = 1; // Reberberation takes 1 damage
 
 	if(!(nk&NK_NO_ELEFIX))
 		md.damage=battle_attr_fix(src, target, md.damage, s_ele, tstatus->def_ele, tstatus->ele_lv);
@@ -5303,7 +5313,7 @@ int battle_check_target( struct block_list *src, struct block_list *target,int f
 					default:
 						return 0;
 				}
-			} else if (su->group->skill_id==WZ_ICEWALL || su->group->skill_id == GN_WALLOFTHORN || su->group->skill_id == WM_REVERBERATION)
+			} else if (su->group->skill_id==WZ_ICEWALL || su->group->skill_id == GN_WALLOFTHORN)
 			{
 				state |= BCT_ENEMY;
 				strip_enemy = 0;
