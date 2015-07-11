@@ -2799,6 +2799,20 @@ void clif_clearcart(int fd)
 
 }
 
+int clif_dressing_room(struct map_session_data *sd, int view)
+{
+	int fd;
+
+	nullpo_ret(sd);
+
+	fd = sd->fd;
+	WFIFOHEAD(fd,packet_len(0xa02));
+	WFIFOW(fd,0)=0xa02;
+	WFIFOW(fd,2)=view;
+	WFIFOSET(fd,packet_len(0xa02));
+	return 0;
+}
+
 // Guild XY locators [Valaris]
 int clif_guild_xy(struct map_session_data *sd)
 {
@@ -16762,6 +16776,11 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  7,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0, 75,  0,  0,  0,  0,  0,  0,  0,  0,
+	//#0x0A00
+	    0,  0,  4,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	};
 	struct {
 		void (*func)(int, struct map_session_data *);
