@@ -821,7 +821,11 @@ int memitemdata_to_sql(const struct item items[], int max, int id, int tableswit
 	return 0;
 }
 
+#if PACKETVER < 20150513
 int mmo_char_tobuf(uint8* buf, struct mmo_charstatus* p);
+#else
+int mmo_char_tobuf(uint8* buf, struct mmo_charstatus* p, int sex);
+#endif
 
 #ifndef TXT_SQL_CONVERT
 //=====================================================================================================
@@ -891,12 +895,21 @@ int mmo_chars_fromsql(struct char_session_data* sd, uint8* buf)
 		SqlStmt_Free(stmt);
 		return 0;
 	}
+#if PACKETVER < 20150513
 	for( i = 0; i < MAX_CHARS && SQL_SUCCESS == SqlStmt_NextRow(stmt); i++ )
 	{
 		p.last_point.map = mapindex_name2id(last_map);
 		sd->found_char[i] = p.char_id;
 		j += mmo_char_tobuf(WBUFP(buf, j), &p);
 	}
+#else
+	for( i = 0; i < MAX_CHARS && SQL_SUCCESS == SqlStmt_NextRow(stmt); i++ )
+	{
+		p.last_point.map = mapindex_name2id(last_map);
+		sd->found_char[i] = p.char_id;
+		j += mmo_char_tobuf(WBUFP(buf, j), &p, sd->sex);
+	}
+#endif
 	for( ; i < MAX_CHARS; i++ )
 		sd->found_char[i] = -1;
 
@@ -1573,8 +1586,12 @@ int count_users(void)
 // Writes char data to the buffer in the format used by the client.
 // Used in packets 0x6b (chars info) and 0x6d (new char info)
 // Returns the size
-#define MAX_CHAR_BUF 144 //Max size (for WFIFOHEAD calls)
+#define MAX_CHAR_BUF 147 //Max size (for WFIFOHEAD calls)
+#if PACKETVER < 20150513
 int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p)
+#else
+int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p, int sex)
+#endif
 {
 	unsigned short offset = 0;
 	uint8* buf;
@@ -1607,7 +1624,13 @@ int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p)
 	WBUFW(buf,48) = min(p->max_sp, SHRT_MAX);
 	WBUFW(buf,50) = DEFAULT_WALK_SPEED; // p->speed;
 	WBUFW(buf,52) = p->class_;
+#if PACKETVER < 20150513
 	WBUFW(buf,54) = p->hair;
+#else
+	WBUFL(buf,54) = p->hair;
+	offset += 2;
+	buf = WBUFP(buffer,offset);
+#endif
 	WBUFW(buf,56) = p->option&0x7E80020 ? 0 : p->weapon; //When the weapon is sent and your option is riding, the client crashes on login!?
 	WBUFW(buf,58) = p->base_level;
 	WBUFW(buf,60) = min(p->skill_point, SHRT_MAX);
@@ -1648,6 +1671,10 @@ int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p)
 #if PACKETVER >= 20111025
 	WBUFL(buf,136) = 0;  // unknown purpose (0 = disabled, otherwise displays "Add-Ons" sidebar)
 	offset += 4;
+#endif
+#if PACKETVER >= 20150513
+	WBUFB(buf,140) = sex;// The character's sex.
+	offset += 1;
 #endif
 	return 106+offset;
 }
@@ -3663,7 +3690,11 @@ int parse_char(int fd)
 				// send to player
 				WFIFOHEAD(fd,2+MAX_CHAR_BUF);
 				WFIFOW(fd,0) = 0x6d;
+#if PACKETVER < 20150513
 				len = 2 + mmo_char_tobuf(WFIFOP(fd,2), &char_dat);
+#else
+				len = 2 + mmo_char_tobuf(WFIFOP(fd,2), &char_dat, sd->sex);
+#endif
 				WFIFOSET(fd,len);
 
 				// add new entry to the chars list

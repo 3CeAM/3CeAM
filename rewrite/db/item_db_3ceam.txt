@@ -494,3 +494,11 @@
 
 // Hunter's Falcon Flute
 12848,Falcon_Flute,Falcon Flute,11,10000,,0,,,,,0xFFFFFFFF,7,2,,,,,,{ setfalcon 1; },{},{}
+
+// Shadow Equips - Promotion Set
+24012,S_Promotion_Weapon,Promotion Shadow Weapon,5,20,,0,,0,,0,0xFFFFFFFF,7,2,131072,,1,0,0,{ bonus bDex,1; },{},{}
+24013,S_Promotion_Armor,Promotion Shadow Armor,5,20,,0,,0,,0,0xFFFFFFFF,7,2,65536,,1,0,0,{ bonus bLuk,1; },{},{}
+24014,S_Promotion_Shoes,Promotion Shadow Shoes,5,20,,0,,0,,0,0xFFFFFFFF,7,2,524288,,1,0,0,{ bonus bAgi,1; },{},{}
+24015,S_Promotion_Shield,Promotion Shadow Shield,5,20,,0,,0,,0,0xFFFFFFFF,7,2,262144,,1,0,0,{ bonus bVit,1; },{},{}
+24016,S_Promotion_Earring,Promotion Shadow Earring,5,20,,0,,0,,0,0xFFFFFFFF,7,2,1048576,,1,0,0,{ bonus bInt,1; },{},{}
+24017,S_Promotion_Pendant,Promotion Shadow Pendant,5,20,,0,,0,,0,0xFFFFFFFF,7,2,2097152,,1,0,0,{ bonus bStr,1; },{},{}

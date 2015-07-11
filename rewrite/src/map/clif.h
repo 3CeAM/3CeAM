@@ -29,7 +29,7 @@ struct party_booking_ad_info;
 #include <stdarg.h>
 // packet DB
 #define MAX_PACKET_DB		0xf00
-#define MAX_PACKET_VER		30
+#define MAX_PACKET_VER		31
 #define	MAX_PACKET_POS		20
 
 struct s_packet_db {
@@ -791,5 +791,7 @@ void clif_equiplist_v5(struct map_session_data *sd);
 void clif_storagelist_v5(struct map_session_data* sd, struct item* items, int items_length);
 void clif_cartlist_v5(struct map_session_data *sd);
 void clif_viewequip_ack_v5(struct map_session_data* sd, struct map_session_data* tsd);
+
+int clif_dressing_room(struct map_session_data *sd, int view);
 
 #endif /* _CLIF_H_ */

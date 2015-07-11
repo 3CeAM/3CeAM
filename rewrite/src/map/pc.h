@@ -550,6 +550,8 @@ enum equip_pos {
 
 //Equip indexes constants. (eg: sd->equip_index[EQI_AMMO] returns the index
 //where the arrows are equipped)
+//Note: EQI_AMMO must always be the end of the index behind EQI_MAX because
+//its treated a special way in the code.
 enum equip_index {
 	EQI_ACC_L = 0,
 	EQI_ACC_R,
@@ -561,7 +563,6 @@ enum equip_index {
 	EQI_ARMOR,
 	EQI_HAND_L,
 	EQI_HAND_R,
-	EQI_AMMO,
 	EQI_COSTUME_HEAD_LOW,
 	EQI_COSTUME_HEAD_MID,
 	EQI_COSTUME_HEAD_TOP,
@@ -573,6 +574,7 @@ enum equip_index {
 	EQI_SHADOW_SHOES,
 	EQI_SHADOW_ACC_R,
 	EQI_SHADOW_ACC_L,
+	EQI_AMMO,
 	EQI_MAX
 };
 
