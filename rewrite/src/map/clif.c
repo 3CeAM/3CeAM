@@ -793,6 +793,9 @@ static int clif_setlevel(int lv)
  *------------------------------------------*/
 static int clif_set_unit_idle(struct block_list* bl, unsigned char* buffer, bool spawn)
 {
+#if PACKETVER >= 20131223
+	return clif_set_unit_idle_v10( bl, buffer, spawn);
+#else
 	struct map_session_data* sd;
 	struct status_change* sc = status_get_sc(bl);
 	struct view_data* vd = status_get_viewdata(bl);
@@ -953,6 +956,7 @@ static int clif_set_unit_idle(struct block_list* bl, unsigned char* buffer, bool
 #else
 	return packet_len(WBUFW(buffer,0));
 #endif
+#endif
 }
 
 /*==========================================
@@ -960,6 +964,9 @@ static int clif_set_unit_idle(struct block_list* bl, unsigned char* buffer, bool
  *------------------------------------------*/
 static int clif_set_unit_walking(struct block_list* bl, struct unit_data* ud, unsigned char* buffer)
 {
+#if PACKETVER >= 20131223
+	return clif_set_unit_walking_v10( bl, ud, buffer);
+#else
 	struct map_session_data* sd;
 	struct status_change* sc = status_get_sc(bl);
 	struct view_data* vd = status_get_viewdata(bl);
@@ -1060,6 +1067,169 @@ static int clif_set_unit_walking(struct block_list* bl, struct unit_data* ud, un
 #else
 	return packet_len(WBUFW(buffer,0));
 #endif
+#endif
+}
+
+// Unit stand/spawn packets for v10 and higher versions of ZC_NOTIFY_NEWENTRY/ZC_NOTIFY_STANDENTRY.
+// Currently supports v10/v11.
+int clif_set_unit_idle_v10(struct block_list* bl, unsigned char* buffer, bool spawn)
+{
+	struct map_session_data* sd;
+	struct status_change* sc = status_get_sc(bl);
+	struct view_data* vd = status_get_viewdata(bl);
+	struct status_data *status;
+	unsigned char *buf = WBUFP(buffer,0);
+	unsigned short offset = 0;
+	const char *name;
+
+	sd = BL_CAST(BL_PC, bl);
+	name = status_get_name(bl);
+	status = status_get_status_data(bl);
+
+#if PACKETVER < 20150513
+	WBUFW(buf,0) = spawn?0x9dc:0x9dd;// PacketType
+	WBUFW(buf,2) = (spawn?77:78)+strlen(name);// PacketLength
+#else
+	WBUFW(buf,0) = spawn?0x9fe:0x9ff;// PacketType
+	WBUFW(buf,2) = (spawn?79:80)+strlen(name);// PacketLength
+#endif
+	WBUFB(buf,4) = clif_bl_type(bl);// objecttype
+	WBUFL(buf,5) = bl->id;// AID
+	WBUFL(buf,9) = (sd)?sd->status.char_id:0;// GID/CCODE
+	WBUFW(buf,13) = status_get_speed(bl);// speed
+	WBUFW(buf,15) = (sc)?sc->opt1:0;// bodyState
+	WBUFW(buf,17) = (sc)?sc->opt2:0;// healthState
+	WBUFL(buf,19) = (sc)?sc->option:0;// effectState
+	WBUFW(buf,23) = vd->class_;// job
+	WBUFW(buf,25) = vd->hair_style;// head
+	WBUFW(buf,27) = vd->weapon;// weapon - Right hand???
+	WBUFW(buf,29) = vd->shield;// weapon - Left hand???
+	WBUFW(buf,31) = vd->head_bottom;// accessory
+	WBUFW(buf,33) = vd->head_top;// accessory2
+	WBUFW(buf,35) = vd->head_mid;// accessory3
+
+	// Dont know if this is needed anymore.
+	//if( bl->type == BL_NPC && vd->class_ == FLAG_CLASS )
+	//{	//The hell, why flags work like this?
+	//	WBUFL(buf,22) = status_get_emblem_id(bl);
+	//	WBUFL(buf,26) = status_get_guild_id(bl);
+	//}
+
+	WBUFW(buf,37) = vd->hair_color;// headpalette
+	WBUFW(buf,39) = vd->cloth_color;// bodypalette
+	WBUFW(buf,41) = (sd)?sd->head_dir:0;// headDir
+	WBUFW(buf,43) = vd->robe;// robe
+	WBUFL(buf,45) = status_get_guild_id(bl);// GUID
+	WBUFW(buf,49) = status_get_emblem_id(bl);// GEmblemVer
+	WBUFW(buf,51) = (sd)?sd->status.manner:0;// honor
+	WBUFL(buf,53) = (sc)?sc->opt3:0;// virtue
+	WBUFB(buf,57) = (sd)?sd->status.karma:0;// isPKModeON
+	WBUFB(buf,58) = vd->sex;// sex
+	WBUFPOS(buf,59,bl->x,bl->y,unit_getdir(bl));// PosDir
+	WBUFB(buf,62) = (sd)?5:0;// xSize
+	WBUFB(buf,63) = (sd)?5:0;// ySize
+	if (!spawn) {
+		WBUFB(buf,64) = vd->dead_sit;// state
+		offset++;
+		buf = WBUFP(buffer,offset);
+	}
+	WBUFW(buf,64) = clif_setlevel(status_get_lv(bl));// clevel
+	WBUFW(buf,66) = sd?sd->state.user_font:0;// font
+	if ( battle_config.monster_hp_info == 1 && bl->type == BL_MOB &&
+		status_get_hp(bl) < status_get_max_hp(bl) )
+	{
+		WBUFL(buf,68) = status_get_max_hp(bl);// maxHP
+		WBUFL(buf,72) = status_get_hp(bl);// HP
+		WBUFB(buf,76) = (status->mode&MD_BOSS)?1:0;// isBoss
+	}
+	else
+	{
+		WBUFL(buf,68) = -1;// maxHP
+		WBUFL(buf,72) = -1;// HP
+		WBUFB(buf,76) = 0;// isBoss
+	}
+#if PACKETVER >= 20150513
+	WBUFW(buf,77) = 0;// body
+	offset+= 2;
+	buf = WBUFP(buffer,offset);
+#endif
+	strcpy((char*)WBUFP(buf,77), name);
+	return WBUFW(buffer,2);
+}
+
+// Unit movement packets for v10 and higher versions of ZC_NOTIFY_MOVEENTRY.
+// Currently supports v10/v11.
+int clif_set_unit_walking_v10(struct block_list* bl, struct unit_data* ud, unsigned char* buffer)
+{
+	struct map_session_data* sd;
+	struct status_change* sc = status_get_sc(bl);
+	struct view_data* vd = status_get_viewdata(bl);
+	struct status_data *status;
+	unsigned char* buf = WBUFP(buffer,0);
+	unsigned short offset = 0;
+	const char *name;
+
+	sd = BL_CAST(BL_PC, bl);
+	name = status_get_name(bl);
+	status = status_get_status_data(bl);
+
+#if PACKETVER < 20150513
+	WBUFW(buf,0) = 0x9db;// PacketType
+	WBUFW(buf,2) = 84+strlen(name);// PacketLength
+#else
+	WBUFW(buf,0) = 0x9fd;// PacketType
+	WBUFW(buf,2) = 86+strlen(name);// PacketLength
+#endif
+	WBUFB(buf,4) = clif_bl_type(bl);// objecttype
+	WBUFL(buf,5) = bl->id;// AID
+	WBUFL(buf,9) = (sd)?sd->status.char_id:0;// GID/CCODE
+	WBUFW(buf,13) = status_get_speed(bl);// speed
+	WBUFW(buf,15) = (sc)?sc->opt1:0;// bodyState
+	WBUFW(buf,17) = (sc)?sc->opt2:0;// healthState
+	WBUFL(buf,19) = (sc)?sc->option:0;// effectState
+	WBUFW(buf,23) = vd->class_;// job
+	WBUFW(buf,25) = vd->hair_style;// head
+	WBUFW(buf,27) = vd->weapon;// weapon - Right hand???
+	WBUFW(buf,29) = vd->shield;// weapon - Left hand???
+	WBUFW(buf,31) = vd->head_bottom;// accessory
+	WBUFL(buf,33) = gettick();// moveStartTime
+	WBUFW(buf,37) = vd->head_top;// accessory2
+	WBUFW(buf,39) = vd->head_mid;// accessory3
+	WBUFW(buf,41) = vd->hair_color;// headpalette
+	WBUFW(buf,43) = vd->cloth_color;// bodypalette
+	WBUFW(buf,45) = (sd)?sd->head_dir:0;// headDir
+	WBUFW(buf,47) = vd->robe;// robe
+	WBUFL(buf,49) = status_get_guild_id(bl);// GUID
+	WBUFW(buf,53) = status_get_emblem_id(bl);// GEmblemVer
+	WBUFW(buf,55) = (sd)?sd->status.manner:0;// honor
+	WBUFL(buf,57) = (sc)?sc->opt3:0;// virtue
+	WBUFB(buf,61) = (sd)?sd->status.karma:0;// isPKModeON
+	WBUFB(buf,62) = vd->sex;// sex
+	WBUFPOS2(buf,63,bl->x,bl->y,ud->to_x,ud->to_y,8,8);// MoveData
+	WBUFB(buf,69) = (sd)?5:0;// xSize
+	WBUFB(buf,70) = (sd)?5:0;// ySize
+	WBUFW(buf,71) = clif_setlevel(status_get_lv(bl));// clevel
+	WBUFW(buf,73) = sd?sd->state.user_font:0;// font
+	if ( battle_config.monster_hp_info == 1 && bl->type == BL_MOB &&
+		status_get_hp(bl) < status_get_max_hp(bl) )
+	{
+		WBUFL(buf,75) = status_get_max_hp(bl);// maxHP
+		WBUFL(buf,79) = status_get_hp(bl);// HP
+		WBUFB(buf,83) = (status->mode&MD_BOSS)?1:0;// isBoss
+	}
+	else
+	{
+		WBUFL(buf,75) = -1;// maxHP
+		WBUFL(buf,79) = -1;// HP
+		WBUFB(buf,83) = 0;// isBoss
+	}
+#if PACKETVER >= 20150513
+	WBUFW(buf,84) = 0;// body
+	offset+= 2;
+	buf = WBUFP(buffer,offset);
+#endif
+	strcpy((char*)WBUFP(buf,84), name);
+	return WBUFW(buffer,2);
 }
 
 //Modifies the buffer for disguise characters and sends it to self.
@@ -4540,14 +4710,6 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 				clif_specialeffect_single(bl,423,sd->fd);
 			else if(md->special_state.size==1)
 				clif_specialeffect_single(bl,421,sd->fd);
-#if PACKETVER >= 20120404
-			if( !(md->status.mode&MD_BOSS) ){
-				int i;
-				for(i = 0; i < DAMAGELOG_SIZE; i++)// must show hp bar to all char who already hit the mob.
-					if( md->dmglog[i].id == sd->status.char_id )
-						clif_monster_hp_bar(md, sd->fd);
-			}
-#endif
 		}
 		break;
 	case BL_PET:
@@ -4582,33 +4744,10 @@ static int clif_calc_walkdelay(struct block_list *bl,int delay, int type, int da
 	return delay>0?delay:1; //Return 1 to specify there should be no noticeable delay, but you should stop walking.
 }
 
-/*==========================================
- * Sends a 'damage' packet (src performs action on dst)
- * R 008a <src ID>.L <dst ID>.L <server tick>.L <src speed>.L <dst speed>.L <damage>.W <div>.W <type>.B <damage2>.W
- * R 02e1 <src ID>.L <dst ID>.L <server tick>.L <src speed>.L <dst speed>.L <damage>.L <div>.W <type>.B <damage2>.L
- * 
- * type=00 damage [param1: total damage, param2: div, param3: assassin dual-wield damage]
- * type=01 pick up item
- * type=02 sit down
- * type=03 stand up
- * type=04 reflected/absorbed damage?
- * type=08 double attack
- * type=09 don't display flinch animation (endure)
- * type=0a critical hit
- * type=0b lucky dodge
- *------------------------------------------*/
-
-/*==========================================
- * Sends a 'damage' packet (src performs action on dst)
- * R 008a <src ID>.l <dst ID>.l <server tick>.l <src speed>.l <dst speed>.l <damage>.w <div>.w <type>.B <damage2>.w
- * R 02e1 <src ID>.l <dst ID>.l <server tick>.l <src speed>.l <dst speed>.l <damage>.l <div>.w <type>.B <damage2>.l [pakpil]
- * R 08c8 <src ID>.L <dst ID>.L <server tick>.L <src speed>.L <dst speed>.L <damage>.L <IsSPDamage>.B <div>.W <type>.B <damage2>.L (ZC_NOTIFY_ACT3) (Not Coded In - Rytech)
- * packet sended by src->type:
- * 	- BL_PC 	=	0x008a
- *	- BL_MOB	=	0x02e1
- *	- BL_PET	=	0x02e1ｿ?
- *	- BL_HOM	=	0x02e1ｿ?
- *	- BL_MER	=	0x02e1ｿ?
+/// Sends a 'damage' packet (src performs action on dst)
+/// 008a <src ID>.L <dst ID>.L <server tick>.L <src speed>.L <dst speed>.L <damage>.W <div>.W <type>.B <damage2>.W (ZC_NOTIFY_ACT)
+/// 02e1 <src ID>.L <dst ID>.L <server tick>.L <src speed>.L <dst speed>.L <damage>.L <div>.W <type>.B <damage2>.L (ZC_NOTIFY_ACT2)
+/// 08c8 <src ID>.L <dst ID>.L <server tick>.L <src speed>.L <dst speed>.L <damage>.L <IsSPDamage>.B <div>.W <type>.B <damage2>.L (ZC_NOTIFY_ACT3) (Not Coded In - Rytech)
 ///	Types:
 ///     0 = ATTACK - damage [ damage: total damage, div: amount of hits, damage2: assassin dual-wield damage ]
 ///     1 = ITEMPICKUP - pick up item
@@ -4623,83 +4762,103 @@ static int clif_calc_walkdelay(struct block_list *bl,int delay, int type, int da
 ///    10 = ATTACK_CRITICAL - critical hit
 ///    11 = ATTACK_LUCKY - lucky dodge
 ///    12 = TOUCHSKILL - (touch skill?)
- *------------------------------------------*/
 int clif_damage(struct block_list* src, struct block_list* dst, unsigned int tick, int sdelay, int ddelay, int damage, int div, int type, int damage2)
 {
-	unsigned char buf[256];
+	unsigned char buf[34];
 	struct status_change *sc;
-	int i = 0, cmd = 0x8a;
+#if PACKETVER < 20071113
+	const int cmd = 0x8a;
+#elif PACKETVER < 20131223
+	const int cmd = 0x2e1;
+#else
+	const int cmd = 0x8c8;
+#endif
 
 	nullpo_ret(src);
 	nullpo_ret(dst);
 
-#if PACKETVER >= 20071113
-	if( src->type == BL_MOB )
-	{
-		cmd = 0x2e1;
-		i = 2;
-	}
-#endif
-
-
 	type = clif_calc_delay(type,div,damage+damage2,ddelay);
 	sc = status_get_sc(dst);
-	if( sc && sc->count )
+	if(sc && sc->count)
 	{
 		if(sc->data[SC_HALLUCINATION])
 		{
-			if( damage ) damage = damage * ( sc->data[SC_HALLUCINATION]->val2) + rand()%100;
-			if( damage2 ) damage2 = damage2 * (sc->data[SC_HALLUCINATION]->val2) + rand()%100;
+			if(damage) damage = damage*(sc->data[SC_HALLUCINATION]->val2) + rand()%100;
+			if(damage2) damage2 = damage2*(sc->data[SC_HALLUCINATION]->val2) + rand()%100;
 		}
 	}
 
-	WBUFW(buf, 0) = cmd;
-	WBUFL(buf, 2) = src->id;
-	WBUFL(buf, 6) = dst->id;
-	WBUFL(buf,10) = tick;
-	WBUFL(buf,14) = sdelay;
-	WBUFL(buf,18) = ddelay;
-
-	if( battle_config.hide_woe_damage && map_flag_gvg(src->m) )
-	{
+	WBUFW(buf,0)=cmd;
+	WBUFL(buf,2)=src->id;
+	WBUFL(buf,6)=dst->id;
+	WBUFL(buf,10)=tick;
+	WBUFL(buf,14)=sdelay;
+	WBUFL(buf,18)=ddelay;
 #if PACKETVER < 20071113
-		WBUFW(buf,22) = damage ? div : 0;
-		WBUFW(buf,i + 27) = damage2 ? div : 0;
-#else
-		WBUFL(buf,22) = damage ? div : 0;
-		WBUFL(buf,i + 27) = damage2 ? div : 0;
-#endif
+	if (battle_config.hide_woe_damage && map_flag_gvg(src->m))
+	{
+		WBUFW(buf,22)=damage?div:0;
+		WBUFW(buf,27)=damage2?div:0;
 	}
 	else
 	{
-#if PACKETVER < 20071113
-		WBUFW(buf,22) = min(damage, SHRT_MAX);
-		WBUFW(buf,i + 27) = damage2;
-#else
-		WBUFL(buf,22) = min(damage, INT_MAX);
-		WBUFL(buf,i + 27) = damage2;
-#endif
+		WBUFW(buf,22)=min(damage, SHRT_MAX);
+		WBUFW(buf,27)=damage2;
 	}
-	WBUFW(buf,i + 24) = div;
-	WBUFB(buf,i + 26) = type;
-
-	if( disguised(dst) )
+	WBUFW(buf,24)=div;
+	WBUFB(buf,26)=type;
+#elif PACKETVER < 20131223
+	if (battle_config.hide_woe_damage && map_flag_gvg(src->m))
+	{
+		WBUFL(buf,22)=damage?div:0;
+		WBUFL(buf,29)=damage2?div:0;
+	}
+	else
+	{
+		WBUFL(buf,22)=damage;
+		WBUFL(buf,29)=damage2;
+	}
+	WBUFW(buf,26)=div;
+	WBUFB(buf,28)=type;
+#else
+	if (battle_config.hide_woe_damage && map_flag_gvg(src->m))
+	{
+		WBUFL(buf,22)=damage?div:0;
+		WBUFL(buf,30)=damage2?div:0;
+	}
+	else
+	{
+		WBUFL(buf,22)=damage;
+		WBUFL(buf,30)=damage2;
+	}
+	WBUFB(buf,26)=0;// IsSPDamage - Displays blue digits. Need a way to handle this. [Rytech]
+	WBUFW(buf,27)=div;
+	WBUFB(buf,29)=type;
+#endif
+	if(disguised(dst))
 	{
 		clif_send(buf,packet_len(cmd),dst,AREA_WOS);
-
 		WBUFL(buf,6) = -dst->id;
 		clif_send(buf,packet_len(cmd),dst,SELF);
 	}
 	else
 		clif_send(buf,packet_len(cmd),dst,AREA);
 
-	if( disguised(src) )
+	if(disguised(src))
 	{
 		WBUFL(buf,2) = -src->id;
-		if( disguised(dst) )
+		if (disguised(dst))
 			WBUFL(buf,6) = dst->id;
-		if( damage > 0 ) WBUFW(buf,22) = -1;
-		if( damage2 > 0 ) WBUFW(buf,27) = -1;
+#if PACKETVER < 20071113
+		if(damage > 0) WBUFW(buf,22) = -1;
+		if(damage2 > 0) WBUFW(buf,27) = -1;
+#elif PACKETVER < 20131223
+		if(damage > 0) WBUFL(buf,22) = -1;
+		if(damage2 > 0) WBUFL(buf,29) = -1;
+#else
+		if(damage > 0) WBUFL(buf,22) = -1;
+		if(damage2 > 0) WBUFL(buf,30) = -1;
+#endif
 		clif_send(buf,packet_len(cmd),src,SELF);
 	}
 	//Return adjusted can't walk delay for further processing.
@@ -5224,23 +5383,31 @@ int clif_skillup(struct map_session_data *sd,int skill_num)
 	return 0;
 }
 
-/*==========================================
- * スキル詠唱エフェクトを送信する
- * pl:
- * 0 = Yellow cast aura
- * 1 = Water elemental cast aura
- * 2 = Earth elemental cast aura
- * 3 = Fire elemental cast aura
- * 4 = Wind elemental cast aura
- * 5 = Poison elemental cast aura
- * 6 = White cast aura
- * ? = like 0
- *------------------------------------------*/
-int clif_skillcasting(struct block_list* bl,
-	int src_id,int dst_id,int dst_x,int dst_y,int skill_num,int pl, int casttime)
+/// Notifies clients in area, that an object is about to use a skill.
+/// 013e <src id>.L <dst id>.L <x>.W <y>.W <skill id>.W <property>.L <delaytime>.L (ZC_USESKILL_ACK)
+/// 07fb <src id>.L <dst id>.L <x>.W <y>.W <skill id>.W <property>.L <delaytime>.L <is disposable>.B (ZC_USESKILL_ACK2)
+/// property:
+///     0 = Yellow cast aura
+///     1 = Water elemental cast aura
+///     2 = Earth elemental cast aura
+///     3 = Fire elemental cast aura
+///     4 = Wind elemental cast aura
+///     5 = Poison elemental cast aura
+///     6 = Holy elemental cast aura
+///     ? = like 0
+/// is disposable:
+///     0 = yellow chat text "[src name] will use skill [skill name]."
+///     1 = no text
+int clif_skillcasting(struct block_list* bl,int src_id,int dst_id,int dst_x,int dst_y,int skill_num,int pl, int casttime)
 {
+#if PACKETVER < 20091124
+	const int cmd = 0x13e;
+#else
+	const int cmd = 0x7fb;
+#endif
 	unsigned char buf[32];
-	WBUFW(buf,0) = 0x13e;
+
+	WBUFW(buf,0) = cmd;
 	WBUFL(buf,2) = src_id;
 	WBUFL(buf,6) = dst_id;
 	WBUFW(buf,10) = dst_x;
@@ -5248,12 +5415,16 @@ int clif_skillcasting(struct block_list* bl,
 	WBUFW(buf,14) = skill_num;
 	WBUFL(buf,16) = pl<0?0:pl; //Avoid sending negatives as element [Skotlex]
 	WBUFL(buf,20) = casttime;
+#if PACKETVER >= 20091124
+	WBUFB(buf,24) = 0;  // isDisposable
+#endif
+
 	if (disguised(bl)) {
-		clif_send(buf,packet_len(0x13e), bl, AREA_WOS);
+		clif_send(buf,packet_len(cmd), bl, AREA_WOS);
 		WBUFL(buf,2) = -src_id;
-		clif_send(buf,packet_len(0x13e), bl, SELF);
+		clif_send(buf,packet_len(cmd), bl, SELF);
 	} else
-		clif_send(buf,packet_len(0x13e), bl, AREA);
+		clif_send(buf,packet_len(cmd), bl, AREA);
 
 	return 0;
 }
@@ -5366,10 +5537,9 @@ int clif_skill_cooldown(struct map_session_data *sd, int skillid, unsigned int t
 	return 0;
 }
 
-/*==========================================
- * skill attack effect and damage
- * R 01de <skill ID>.w <src ID>.l <dst ID>.l <tick>.l <src delay>.l <dst delay>.l <damage>.l <skillv>.w <div>.w <type>.B
- *------------------------------------------*/
+/// Skill attack effect and damage.
+/// 0114 <skill id>.W <src id>.L <dst id>.L <tick>.L <src delay>.L <dst delay>.L <damage>.W <level>.W <div>.W <type>.B (ZC_NOTIFY_SKILL)
+/// 01de <skill id>.W <src id>.L <dst id>.L <tick>.L <src delay>.L <dst delay>.L <damage>.L <level>.W <div>.W <type>.B (ZC_NOTIFY_SKILL2)
 int clif_skill_damage(struct block_list *src,struct block_list *dst,unsigned int tick,int sdelay,int ddelay,int damage,int div,int skill_id,int skill_lv,int type)
 {
 	unsigned char buf[64];
@@ -5431,7 +5601,15 @@ int clif_skill_damage(struct block_list *src,struct block_list *dst,unsigned int
 	}
 	WBUFW(buf,28)=skill_lv;
 	WBUFW(buf,30)=div;
+	// For some reason, late 2013 and newer clients have
+	// a issue that causes players and monsters to endure
+	// type 6 (ACTION_SKILL) skills. So we have to do a small
+	// hack to set all type 6 to be sent as type 8 ACTION_ATTACK_MULTIPLE
+#if PACKETVER < 20131223
 	WBUFB(buf,32)=type;
+#else
+	WBUFB(buf,32)=(type==6)?8:type;
+#endif
 	if (disguised(dst)) {
 		clif_send(buf,packet_len(0x1de),dst,AREA_WOS);
 		WBUFL(buf,8)=-dst->id;
@@ -16289,16 +16467,12 @@ void clif_search_store_info_click_ack(struct map_session_data* sd, short x, shor
 
 void clif_monster_hp_bar( struct mob_data* md, int fd )
 {
-#if PACKETVER >= 20120404	
 	WFIFOHEAD(fd,packet_len(0x977));
-	
 	WFIFOW(fd,0)  = 0x977;
 	WFIFOL(fd,2)  = md->bl.id;
 	WFIFOL(fd,6)  = md->status.hp;
 	WFIFOL(fd,10) = md->status.max_hp;
-	
 	WFIFOSET(fd,packet_len(0x977));
-#endif
 }
 
 /*==========================================
@@ -16752,7 +16926,7 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	//#0x08C0
-	    0,  0,  0,  0,  0,  0,  0,  0,  0,  2,  0,  0,  0,  0,  0, 10,
+	    0,  0,  0,  0,  0,  0,  0,  0, 34,  2,  0,  0,  0,  0,  0, 10,
 	    9,  7, 10,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 24,
@@ -16773,9 +16947,9 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0,  0,  0,  0, 14,  0,  0,  0,  0,  0,  0,  0,  0,
 	//#0x09C0
 	    0, 10,  0,  0,  0,  0,  0,  0,  0,  0, 23,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  7,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, -1, -1, -1,  0,  7,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0, 75,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0, 75,  0,  0,  0,  0,  0, -1, -1, -1,
 	//#0x0A00
 	    0,  0,  4,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,

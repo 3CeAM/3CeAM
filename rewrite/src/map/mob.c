@@ -1937,6 +1937,12 @@ void mob_log_damage(struct mob_data *md, struct block_list *src, int damage)
 //Call when a mob has received damage.
 void mob_damage(struct mob_data *md, struct block_list *src, int damage)
 {
+#if PACKETVER >= 20131223
+	uint8 buf[128];
+	struct unit_data *ud;
+	ud = unit_bl2ud(&md->bl);
+#endif
+
 	if (damage > 0)
 	{	//Store total damage...
 		if (UINT_MAX - (unsigned int)damage > md->tdmg)
@@ -1961,21 +1967,16 @@ void mob_damage(struct mob_data *md, struct block_list *src, int damage)
 
 	if (battle_config.show_mob_info&3)
 		clif_charnameack (0, &md->bl);
-	
+
+#if PACKETVER >= 20131223
+	// Resend ZC_NOTIFY_MOVEENTRY (Version 10 or higher) packet to update HP bar.
+	if ( battle_config.monster_hp_info == 1 )
+		clif_send(buf,clif_set_unit_walking_v10( &md->bl, ud, buf),&md->bl,AREA);
+#endif
+
 	if (!src)
 		return;
 
-#if PACKETVER >= 20120404
-	if( !(md->status.mode&MD_BOSS) ){
-		int i;
-		for(i = 0; i < DAMAGELOG_SIZE; i++){ // must show hp bar to all char who already hit the mob.
-			struct map_session_data *sd = map_charid2sd(md->dmglog[i].id);
-			if( sd && check_distance_bl(&md->bl, &sd->bl, AREA_SIZE) ) // check if in range
-				clif_monster_hp_bar(md, sd->fd);
-		}
-	}
-#endif
-	
 	if(md->special_state.ai==2/* && md->master_id == src->id*/)
 	{	//LOne WOlf explained that ANYONE can trigger the marine countdown skill. [Skotlex]
 		md->state.alchemist = 1;
@@ -2659,8 +2660,18 @@ int mob_class_change (struct mob_data *md, int class_)
  *------------------------------------------*/
 void mob_heal(struct mob_data *md,unsigned int heal)
 {
+#if PACKETVER >= 20131223
+	uint8 buf[128];
+	struct unit_data *ud;
+	ud = unit_bl2ud(&md->bl);
+#endif
 	if (battle_config.show_mob_info&3)
 		clif_charnameack (0, &md->bl);
+#if PACKETVER >= 20131223
+	// Resend ZC_NOTIFY_MOVEENTRY (Version 10 or higher) packet to update HP bar.
+	if ( battle_config.monster_hp_info == 1 )
+		clif_send(buf,clif_set_unit_walking_v10( &md->bl, ud, buf),&md->bl,AREA);
+#endif
 }
 
 /*==========================================

@@ -1856,11 +1856,7 @@ int count_users(void)
 // Used in packets 0x6b (chars info) and 0x6d (new char info)
 // Returns the size
 #define MAX_CHAR_BUF 147 //Max size (for WFIFOHEAD calls)
-#if PACKETVER < 20150513
 int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p)
-#else
-int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p, int sex)
-#endif
 {
 	unsigned short offset = 0;
 	uint8* buf;
@@ -1893,11 +1889,10 @@ int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p, int sex)
 	WBUFW(buf,48) = min(p->max_sp, SHRT_MAX);
 	WBUFW(buf,50) = DEFAULT_WALK_SPEED; // p->speed;
 	WBUFW(buf,52) = p->class_;
-#if PACKETVER < 20150513
 	WBUFW(buf,54) = p->hair;
-#else
-	WBUFL(buf,54) = p->hair;
-	offset += 2;
+#if PACKETVER >= 20150513
+	WBUFW(buf,56) = 0;// body
+	offset+=2;
 	buf = WBUFP(buffer,offset);
 #endif
 	WBUFW(buf,56) = p->option&0x7E80020 ? 0 : p->weapon; //When the weapon is sent and your option is riding, the client crashes on login!?
@@ -1942,7 +1937,7 @@ int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p, int sex)
 	offset += 4;
 #endif
 #if PACKETVER >= 20150513
-	WBUFB(buf,140) = sex;// The character's sex.
+	WBUFB(buf,140) = 99;// Character's sex. (0 = Female, 1 = Male, 99 = Undefined)
 	offset += 1;
 #endif
 	return 106+offset;
@@ -1969,13 +1964,8 @@ int mmo_char_send006b(int fd, struct char_session_data* sd)
 	WFIFOB(fd,6) = MAX_CHARS;	// Premium slots.
 #endif
 	memset(WFIFOP(fd,4 + offset), 0, 20); // unknown bytes
-#if PACKETVER < 20150513
 	for(i = 0; i < found_num; i++)
 		j += mmo_char_tobuf(WFIFOP(fd,j), &char_dat[sd->found_char[i]].status);
-#else
-	for(i = 0; i < found_num; i++)
-		j += mmo_char_tobuf(WFIFOP(fd,j), &char_dat[sd->found_char[i]].status, sd->sex);
-#endif
 	WFIFOW(fd,2) = j; // packet len
 	WFIFOSET(fd,j);
 
@@ -3920,11 +3910,7 @@ int parse_char(int fd)
 				// send to player
 				WFIFOHEAD(fd,2+MAX_CHAR_BUF);
 				WFIFOW(fd,0) = 0x6d;
-#if PACKETVER < 20150513
 				len = 2 + mmo_char_tobuf(WFIFOP(fd,2), &char_dat[i].status);
-#else
-				len = 2 + mmo_char_tobuf(WFIFOP(fd,2), &char_dat[i].status, sd->sex);
-#endif
 				WFIFOSET(fd,len);
 
 				// add new entry to the chars list

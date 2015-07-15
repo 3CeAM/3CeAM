@@ -792,6 +792,9 @@ void clif_storagelist_v5(struct map_session_data* sd, struct item* items, int it
 void clif_cartlist_v5(struct map_session_data *sd);
 void clif_viewequip_ack_v5(struct map_session_data* sd, struct map_session_data* tsd);
 
+int clif_set_unit_idle_v10(struct block_list* bl, unsigned char* buffer, bool spawn);
+int clif_set_unit_walking_v10(struct block_list* bl, struct unit_data* ud, unsigned char* buffer);
+
 int clif_dressing_room(struct map_session_data *sd, int view);
 
 #endif /* _CLIF_H_ */
