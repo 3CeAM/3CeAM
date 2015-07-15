@@ -413,7 +413,7 @@ enum _look {
 	LOOK_COSTUMEBODY,	//COSTUMEBODY - Used to be BODY and didn't do anything at the time of testing.
 	LOOK_RESET_COSTUMES,//RESET_COSTUMES - Makes all headgear sprites on player vanish when activated.
 	LOOK_ROBE,			//ROBE
-	LOOK_BODY2,			//BODY2 - Purpose unknown.
+	LOOK_BODY2,			//BODY2 - Changes body appearance.
 };
 
 // used by map_setcell()

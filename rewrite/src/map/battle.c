@@ -5981,6 +5981,7 @@ static const struct _battle_data {
 	{ "mado_loss_on_death",                 &battle_config.mado_loss_on_death,              1,      0,      1,              },
 	{ "marionette_renewal_jobs",            &battle_config.marionette_renewal_jobs,         0,      0,      1,              },
 	{ "banana_bomb_sit_duration",           &battle_config.banana_bomb_sit_duration,        1,      0,      1,              },
+	{ "monster_hp_info",                    &battle_config.monster_hp_info,                 1,      0,      1,              },
 	{ "hanbok_ignorepalette",               &battle_config.hanbok_ignorepalette,            0,      0,      1,              },
 	{ "oktoberfest_ignorepalette",          &battle_config.oktoberfest_ignorepalette,       0,      0,      1,              },
 	{ "summer2_ignorepalette",              &battle_config.summer2_ignorepalette,           0,      0,      1,              },

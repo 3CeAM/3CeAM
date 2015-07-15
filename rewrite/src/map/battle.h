@@ -524,9 +524,14 @@ extern struct Battle_Config
 	int mado_loss_on_death;
 	int marionette_renewal_jobs;
 	int banana_bomb_sit_duration;
+	int monster_hp_info;
+
+	// Costume Outfits
 	int hanbok_ignorepalette;
 	int oktoberfest_ignorepalette;
 	int summer2_ignorepalette;
+
+	// Homunculus Limits
 	int max_homunculus_hp;
 	int max_homunculus_sp;
 	int max_homunculus_parameter;
