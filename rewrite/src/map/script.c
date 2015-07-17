@@ -9425,6 +9425,8 @@ BUILDIN_FUNC(changebase)
 		clif_changelook(&sd->bl,LOOK_WEAPON,sd->status.weapon);
 		if (sd->vd.cloth_color)
 			clif_changelook(&sd->bl,LOOK_CLOTHES_COLOR,sd->vd.cloth_color);
+		if (sd->vd.body_style)
+			clif_changelook(&sd->bl,LOOK_BODY2,sd->vd.body_style);
 		clif_skillinfoblock(sd);
 	}
 
@@ -12083,6 +12085,7 @@ BUILDIN_FUNC(getlook)
         case LOOK_SHIELD: val=sd->status.shield; break; //8
         case LOOK_SHOES: break; //9
         case LOOK_ROBE: val=sd->status.robe; break; //12
+		case LOOK_BODY2: val=sd->status.body; break; //13
         }
 
         script_pushint(st,val);

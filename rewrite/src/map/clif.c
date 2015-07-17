@@ -1149,7 +1149,7 @@ int clif_set_unit_idle_v10(struct block_list* bl, unsigned char* buffer, bool sp
 		WBUFB(buf,76) = 0;// isBoss
 	}
 #if PACKETVER >= 20150513
-	WBUFW(buf,77) = 0;// body
+	WBUFW(buf,77) = vd->body_style;// body
 	offset+= 2;
 	buf = WBUFP(buffer,offset);
 #endif
@@ -1224,7 +1224,7 @@ int clif_set_unit_walking_v10(struct block_list* bl, struct unit_data* ud, unsig
 		WBUFB(buf,83) = 0;// isBoss
 	}
 #if PACKETVER >= 20150513
-	WBUFW(buf,84) = 0;// body
+	WBUFW(buf,84) = vd->body_style;// body
 	offset+= 2;
 	buf = WBUFP(buffer,offset);
 #endif
@@ -1386,6 +1386,8 @@ int clif_spawn(struct block_list *bl)
 
 	if (vd->cloth_color)
 		clif_refreshlook(bl,bl->id,LOOK_CLOTHES_COLOR,vd->cloth_color,AREA_WOS);
+	if (vd->body_style)
+		clif_refreshlook(bl,bl->id,LOOK_BODY2,vd->body_style,AREA_WOS);
 		
 	switch (bl->type)
 	{
@@ -1680,6 +1682,8 @@ static void clif_move2(struct block_list *bl, struct view_data *vd, struct unit_
 		
 	if(vd->cloth_color)
 		clif_refreshlook(bl,bl->id,LOOK_CLOTHES_COLOR,vd->cloth_color,AREA_WOS);
+	if(vd->body_style)
+		clif_refreshlook(bl,bl->id,LOOK_BODY2,vd->body_style,AREA_WOS);
 
 	switch(bl->type)
 	{
@@ -3323,6 +3327,11 @@ void clif_changelook(struct block_list *bl,int type,int val)
 				(vd->class_ == JOB_SUMMER2 && battle_config.summer2_ignorepalette)
 			))
 				clif_changelook(bl,LOOK_CLOTHES_COLOR,0);
+			if (vd->body_style && (
+				vd->class_ == JOB_WEDDING || vd->class_ == JOB_XMAS ||
+				vd->class_ == JOB_SUMMER || vd->class_ == JOB_HANBOK ||
+				vd->class_ == JOB_OKTOBERFEST || vd->class_ == JOB_SUMMER2))
+				clif_changelook(bl,LOOK_BODY2,0);
 		break;
 		case LOOK_HAIR:
 			vd->hair_style = val;
@@ -3368,6 +3377,14 @@ void clif_changelook(struct block_list *bl,int type,int val)
 		break;
 		case LOOK_ROBE:
 			vd->robe = val;
+		break;
+		case LOOK_BODY2:
+			if (val && (
+				vd->class_ == JOB_WEDDING || vd->class_ == JOB_XMAS ||
+				vd->class_ == JOB_SUMMER || vd->class_ == JOB_HANBOK ||
+				vd->class_ == JOB_OKTOBERFEST || vd->class_ == JOB_SUMMER2))
+				val = 0;
+			vd->body_style = val;
 		break;
 	}
 
@@ -4606,6 +4623,8 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 
 	if (vd->cloth_color)
 		clif_refreshlook(&sd->bl,bl->id,LOOK_CLOTHES_COLOR,vd->cloth_color,SELF);
+	if (vd->body_style)
+		clif_refreshlook(&sd->bl,bl->id,LOOK_BODY2,vd->body_style,SELF);
 
 	switch (bl->type)
 	{
@@ -6982,6 +7001,15 @@ void clif_openvending(struct map_session_data* sd, int id, struct s_vending* ven
 		clif_addcards(WFIFOP(fd,22+i*22), &sd->status.cart[index]);
 	}
 	WFIFOSET(fd,WFIFOW(fd,2));
+
+// Borrowed from Hercules - Vending still broken. It wants something else??? [Rytech]
+#if PACKETVER >= 20150513
+	WFIFOHEAD(fd, 3);
+	WFIFOW(fd,0) = 0xa28;
+	WFIFOB(fd,2) = 0;
+	WFIFOSET(fd, 3);
+#endif
+
 }
 
 /*==========================================
@@ -8964,6 +8992,8 @@ int clif_refresh(struct map_session_data *sd)
 		clif_spiritball_attribute_single(sd->fd, sd);
 	if (sd->vd.cloth_color)
 		clif_refreshlook(&sd->bl,sd->bl.id,LOOK_CLOTHES_COLOR,sd->vd.cloth_color,SELF);
+	if (sd->vd.body_style)
+		clif_refreshlook(&sd->bl,sd->bl.id,LOOK_BODY2,sd->vd.body_style,SELF);
 	if(merc_is_hom_active(sd->hd))
 		clif_send_homdata(sd,0,0);
 	if( sd->md )
@@ -9896,6 +9926,8 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 
 	if(sd->vd.cloth_color)
 		clif_refreshlook(&sd->bl,sd->bl.id,LOOK_CLOTHES_COLOR,sd->vd.cloth_color,SELF);
+	if(sd->vd.body_style)
+		clif_refreshlook(&sd->bl,sd->bl.id,LOOK_BODY2,sd->vd.body_style,SELF);
 
 	// item
 	clif_inventorylist(sd);  // inventory list first, otherwise deleted items in pc_checkitem show up as 'unknown item'
@@ -16953,7 +16985,7 @@ static int packetdb_readdb(void)
 	//#0x0A00
 	    0,  0,  4,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  3,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	};
 	struct {

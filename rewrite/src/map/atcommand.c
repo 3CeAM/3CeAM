@@ -2188,6 +2188,33 @@ ACMD_FUNC(model)
 }
 
 /*==========================================
+ * @bodystyle [Rytech]
+ *------------------------------------------*/
+ACMD_FUNC(body_style)
+{
+	int body_style = 0;
+	nullpo_retr(-1, sd);
+
+	memset(atcmd_output, '\0', sizeof(atcmd_output));
+
+	if (!message || !*message || sscanf(message, "%d", &body_style) < 1) {
+		sprintf(atcmd_output, "Please, enter a body style (usage: @bodystyle <body ID: %d-%d>).", MIN_BODY_STYLE, MAX_BODY_STYLE);
+		clif_displaymessage(fd, atcmd_output);
+		return -1;
+	}
+
+	if (body_style >= MIN_BODY_STYLE && body_style <= MAX_BODY_STYLE) {
+			pc_changelook(sd, LOOK_BODY2, body_style);
+			clif_displaymessage(fd, msg_txt(36)); // Appearence changed.
+	} else {
+		clif_displaymessage(fd, msg_txt(37)); // An invalid number was specified.
+		return -1;
+	}
+
+	return 0;
+}
+
+/*==========================================
  * @dye && @ccolor
  *------------------------------------------*/
 ACMD_FUNC(dye)
@@ -6321,13 +6348,13 @@ ACMD_FUNC(divorce)
 ACMD_FUNC(changelook)
 {
 	int type = 0, value = 0;//p = Position, v = Value.
-	int pos[6] = { LOOK_HEAD_TOP,LOOK_HEAD_MID,LOOK_HEAD_BOTTOM,LOOK_WEAPON,LOOK_SHIELD,LOOK_ROBE };
+	int pos[7] = { LOOK_HEAD_TOP,LOOK_HEAD_MID,LOOK_HEAD_BOTTOM,LOOK_WEAPON,LOOK_SHIELD,LOOK_ROBE,LOOK_BODY2 };
 
-	if( sscanf(message, "%d %d", &type, &value) != 2 || type < 1 || type > 6 || value < 0)
+	if( sscanf(message, "%d %d", &type, &value) != 2 || type < 1 || type > 7 || value < 0)
 	{//If only 1 value is given, the position value is not between 1 - 6, or the view id value is below 0, it will fail.
 		clif_displaymessage(fd, "Usage: @changelook <position> <view id>");
-		clif_displaymessage(fd, "Position must be a number between 1 - 6 and view id must be 0 or higher.");
-		clif_displaymessage(fd, "Position: 1-Top Head 2-Middle Head 3-Bottom Head 4-Weapon 5-Shield 6-Robe");
+		clif_displaymessage(fd, "Position must be a number between 1 - 7 and view id must be 0 or higher.");
+		clif_displaymessage(fd, "Position: 1-Top Head 2-Middle Head 3-Bottom Head 4-Weapon 5-Shield 6-Robe 7-Body");
 		return -1;
 	}//If the check passes, display the requested result on the character.
 	clif_changelook(&sd->bl,pos[type-1],value);
@@ -9421,6 +9448,7 @@ AtCommandInfo atcommand_info[] = {
 	{ "dragon",            20,20,     atcommand_dragon },
 	{ "falcon",            20,20,     atcommand_falcon },
 	{ "cart",              20,20,     atcommand_cart },
+	{ "bodystyle",         40,40,     atcommand_body_style },
 	//Mutated Homunculus Commands
 	{ "hommutate",         60,60,     atcommand_hommutation },
 	{ "hommutation",       60,60,     atcommand_hommutation },

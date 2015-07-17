@@ -104,6 +104,8 @@ void battle_consume_ammo(struct map_session_data* sd, int skill, int lv);
 #define MAX_HAIR_COLOR battle_config.max_hair_color
 #define MIN_CLOTH_COLOR battle_config.min_cloth_color
 #define MAX_CLOTH_COLOR battle_config.max_cloth_color
+#define MIN_BODY_STYLE battle_config.min_body_style
+#define MAX_BODY_STYLE battle_config.max_body_style
 
 extern struct Battle_Config
 {
@@ -525,6 +527,9 @@ extern struct Battle_Config
 	int marionette_renewal_jobs;
 	int banana_bomb_sit_duration;
 	int monster_hp_info;
+	int min_body_style;
+	int max_body_style;
+	int save_body_style;
 
 	// Costume Outfits
 	int hanbok_ignorepalette;
