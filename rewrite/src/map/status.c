@@ -5796,6 +5796,7 @@ void status_set_viewdata(struct block_list *bl, int class_)
 				sd->vd.cloth_color = sd->status.clothes_color;
 				sd->vd.sex = sd->status.sex;
 				sd->vd.robe = sd->status.robe;
+				sd->vd.body_style = sd->status.body;
 			} else if (vd)
 				memcpy(&sd->vd, vd, sizeof(struct view_data));
 			else
@@ -5875,6 +5876,11 @@ void status_set_viewdata(struct block_list *bl, int class_)
 		|| (vd->class_==JOB_SUMMER2 && battle_config.summer2_ignorepalette)
 	))
 		vd->cloth_color = 0;
+	if (vd && vd->body_style && (
+		vd->class_==JOB_WEDDING || vd->class_==JOB_XMAS ||
+		vd->class_==JOB_SUMMER || vd->class_==JOB_HANBOK ||
+		vd->class_==JOB_OKTOBERFEST || vd->class_==JOB_SUMMER2))
+		vd->body_style = 0;
 }
 
 /// Returns the status_change data of bl or NULL if it doesn't exist.
@@ -7086,6 +7092,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			clif_changelook(bl,LOOK_SHIELD,0);
 			clif_changelook(bl,LOOK_BASE,type==SC_WEDDING?JOB_WEDDING:type==SC_XMAS?JOB_XMAS:type==SC_SUMMER?JOB_SUMMER:type==SC_HANBOK?JOB_HANBOK:type==SC_OKTOBERFEST?JOB_OKTOBERFEST:JOB_SUMMER2);
 			clif_changelook(bl,LOOK_CLOTHES_COLOR,vd->cloth_color);
+			clif_changelook(bl,LOOK_BODY2,0);
 			break;
 		case SC_NOCHAT:
 			tick = 60000;
@@ -8599,6 +8606,16 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		calc_flag&=~SCB_DYE;
 	}
 
+	/*if (calc_flag&SCB_BODY)// Might be needed in the future. [Rytech]
+	{	//Reset body style
+		if (vd && vd->body_style)
+		{
+			val4 = vd->body_style;
+			clif_changelook(bl,LOOK_BODY2,0);
+		}
+		calc_flag&=~SCB_BODY;
+	}*/
+
 	if( (vd && (pcdb_checkid(vd->class_))) || bl->type == BL_MER || bl->type == BL_MOB )
 		clif_status_change(bl,StatusIconChangeTable[type],1,duration,(val_flag&1)?val1:1,(val_flag&2)?val2:0,(val_flag&4)?val3:0);
 	else if( sd ) //Send packet to self otherwise (disguised player?)
@@ -8842,6 +8859,7 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 			clif_changelook(bl,LOOK_CLOTHES_COLOR,vd->cloth_color);
 			clif_changelook(bl,LOOK_WEAPON,vd->weapon);
 			clif_changelook(bl,LOOK_SHIELD,vd->shield);
+			clif_changelook(bl,LOOK_BODY2,vd->body_style);
 			if(sd) clif_skillinfoblock(sd);
 		break;
 		case SC_RUN:
@@ -9376,6 +9394,13 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 			clif_changelook(bl,LOOK_CLOTHES_COLOR,sce->val4);
 		calc_flag&=~SCB_DYE;
 	}
+
+	/*if (calc_flag&SCB_BODY)// Might be needed in the future. [Rytech]
+	{	//Restore body style
+		if (vd && !vd->body_style && sce->val4)
+			clif_changelook(bl,LOOK_BODY2,sce->val4);
+		calc_flag&=~SCB_BODY;
+	}*/
 
 	//On Aegis, when turning off a status change, first goes the sc packet, then the option packet.
 	if( vd && (pcdb_checkid(vd->class_) || bl->type == BL_MER || bl->type == BL_MOB) )

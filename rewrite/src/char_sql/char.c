@@ -506,7 +506,8 @@ int mmo_char_tosql(int char_id, struct mmo_charstatus* p)
 
 	//Values that will seldom change (to speed up saving)
 	if (
-		(p->hair != cp->hair) || (p->hair_color != cp->hair_color) || (p->clothes_color != cp->clothes_color) ||
+		(p->hair != cp->hair) || (p->hair_color != cp->hair_color) ||
+		(p->clothes_color != cp->clothes_color) || (p->body != cp->body) ||
 		(p->class_ != cp->class_) ||
 		(p->partner_id != cp->partner_id) || (p->father != cp->father) ||
 		(p->mother != cp->mother) || (p->child != cp->child) ||
@@ -515,12 +516,12 @@ int mmo_char_tosql(int char_id, struct mmo_charstatus* p)
 	)
 	{
 		if( SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `class`='%d',"
-			"`hair`='%d',`hair_color`='%d',`clothes_color`='%d',"
+			"`hair`='%d',`hair_color`='%d',`clothes_color`='%d',`body`='%d',"
 			"`partner_id`='%d', `father`='%d', `mother`='%d', `child`='%d',"
 			"`karma`='%d',`manner`='%d', `fame`='%d'"
 			" WHERE  `account_id`='%d' AND `char_id` = '%d'",
 			char_db, p->class_,
-			p->hair, p->hair_color, p->clothes_color,
+			p->hair, p->hair_color, p->clothes_color, p->body,
 			p->partner_id, p->father, p->mother, p->child,
 			p->karma, p->manner, p->fame,
 			p->account_id, p->char_id) )
@@ -846,7 +847,7 @@ int mmo_chars_fromsql(struct char_session_data* sd, uint8* buf)
 		"`char_id`,`char_num`,`name`,`class`,`base_level`,`job_level`,`base_exp`,`job_exp`,`zeny`,"
 		"`str`,`agi`,`vit`,`int`,`dex`,`luk`,`max_hp`,`hp`,`max_sp`,`sp`,"
 		"`status_point`,`skill_point`,`option`,`karma`,`manner`,`hair`,`hair_color`,"
-		"`clothes_color`,`weapon`,`shield`,`head_top`,`head_mid`,`head_bottom`,`last_map`,`rename`,`delete_date`,`robe`"
+		"`clothes_color`,`weapon`,`shield`,`head_top`,`head_mid`,`head_bottom`,`last_map`,`rename`,`delete_date`,`robe`,`body`"
 		" FROM `%s` WHERE `account_id`='%d' AND `char_num` < '%d'", char_db, sd->account_id, MAX_CHARS)
 	||	SQL_ERROR == SqlStmt_Execute(stmt)
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 0,  SQLDT_INT,    &p.char_id, 0, NULL, NULL)
@@ -885,6 +886,7 @@ int mmo_chars_fromsql(struct char_session_data* sd, uint8* buf)
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 33, SQLDT_SHORT,	&p.rename, 0, NULL, NULL)
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 34, SQLDT_UINT32, &p.delete_date, 0, NULL, NULL)
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 35, SQLDT_SHORT,  &p.robe, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 36, SQLDT_SHORT,  &p.body, 0, NULL, NULL)
 	)
 	{
 		SqlStmt_ShowDebug(stmt);
@@ -943,7 +945,7 @@ int mmo_char_fromsql(int char_id, struct mmo_charstatus* p, bool load_everything
 		"`str`,`agi`,`vit`,`int`,`dex`,`luk`,`max_hp`,`hp`,`max_sp`,`sp`,"
 		"`status_point`,`skill_point`,`option`,`karma`,`manner`,`party_id`,`guild_id`,`pet_id`,`homun_id`,`elemental_id`,`hair`,"
 		"`hair_color`,`clothes_color`,`weapon`,`shield`,`head_top`,`head_mid`,`head_bottom`,`last_map`,`last_x`,`last_y`,"
-		"`save_map`,`save_x`,`save_y`,`partner_id`,`father`,`mother`,`child`,`fame`,`rename`,`delete_date`,`robe`"
+		"`save_map`,`save_x`,`save_y`,`partner_id`,`father`,`mother`,`child`,`fame`,`rename`,`delete_date`,`robe`,`body`"
 		" FROM `%s` WHERE `char_id`=? LIMIT 1", char_db)
 	||	SQL_ERROR == SqlStmt_BindParam(stmt, 0, SQLDT_INT, &char_id, 0)
 	||	SQL_ERROR == SqlStmt_Execute(stmt)
@@ -999,6 +1001,7 @@ int mmo_char_fromsql(int char_id, struct mmo_charstatus* p, bool load_everything
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 49, SQLDT_SHORT,	&p->rename, 0, NULL, NULL)
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 50, SQLDT_UINT32, &p->delete_date, 0, NULL, NULL)
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 51, SQLDT_SHORT,  &p->robe, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 52, SQLDT_SHORT,  &p->body, 0, NULL, NULL)
 	)
 	{
 		SqlStmt_ShowDebug(stmt);
@@ -1609,7 +1612,7 @@ int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p)
 	WBUFW(buf,52) = p->class_;
 	WBUFW(buf,54) = p->hair;
 #if PACKETVER >= 20150513
-	WBUFW(buf,56) = 0;// body
+	WBUFW(buf,56) = p->body;// body
 	offset+=2;
 	buf = WBUFP(buffer,offset);
 #endif

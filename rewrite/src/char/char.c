@@ -525,7 +525,7 @@ int mmo_char_tostr(char *str, struct mmo_charstatus *p, struct global_reg *reg, 
 		"%d\t%d,%d\t%s\t%d,%d,%d\t%u,%u,%d" //Up to Zeny field
 		"\t%d,%d,%d,%d\t%d,%d,%d,%d,%d,%d\t%d,%d" //Up to Skill Point
 		"\t%d,%d,%d\t%d,%d,%d,%d" //Up to hom id
-		"\t%d,%d,%d\t%d,%d,%d,%d,%d,%d" //Up to robe
+		"\t%d,%d,%d,%d\t%d,%d,%d,%d,%d,%d" //Up to robe
 		"\t%d,%d,%d\t%d,%d,%d" //last point + save point
 		",%d,%d,%d,%d,%d,%lu\t",	//Family info + delete date
 		p->char_id, p->account_id, p->slot, p->name, //
@@ -536,7 +536,7 @@ int mmo_char_tostr(char *str, struct mmo_charstatus *p, struct global_reg *reg, 
 		p->status_point, p->skill_point,
 		p->option, p->karma, p->manner,	//
 		p->party_id, p->guild_id, p->pet_id, p->hom_id,
-		p->hair, p->hair_color, p->clothes_color,
+		p->hair, p->hair_color, p->clothes_color, p->body,
 		p->weapon, p->shield, p->head_top, p->head_mid, p->head_bottom, p->robe,
 		p->last_point.map, p->last_point.x, p->last_point.y, //
 		p->save_point.map, p->save_point.x, p->save_point.y,
@@ -599,6 +599,25 @@ int mmo_char_fromstr(char *str, struct mmo_charstatus *p, struct global_reg *reg
 	// initilialise character
 	memset(p, '\0', sizeof(struct mmo_charstatus));
 	
+// Char structure of 3CeAM r769 (body)
+	if (sscanf(str, "%d\t%d,%d\t%127[^\t]\t%d,%d,%d\t%u,%u,%d\t%d,%d,%d,%d\t%d,%d,%d,%d,%d,%d\t%d,%d"
+		"\t%d,%d,%d\t%d,%d,%d,%d\t%d,%d,%d,%d\t%d,%d,%d,%d,%d,%d"
+		"\t%d,%d,%d\t%d,%d,%d,%d,%d,%d,%d,%d,%lu%n",
+		&tmp_int[0], &tmp_int[1], &tmp_int[2], tmp_str[0],
+		&tmp_int[3], &tmp_int[4], &tmp_int[5],
+		&tmp_uint[0], &tmp_uint[1], &tmp_int[8],
+		&tmp_int[9], &tmp_int[10], &tmp_int[11], &tmp_int[12],
+		&tmp_int[13], &tmp_int[14], &tmp_int[15], &tmp_int[16], &tmp_int[17], &tmp_int[18],
+		&tmp_int[19], &tmp_int[20],
+		&tmp_int[21], &tmp_int[22], &tmp_int[23],
+		&tmp_int[24], &tmp_int[25], &tmp_int[26], &tmp_int[44],
+		&tmp_int[27], &tmp_int[28], &tmp_int[29], &tmp_int[48],
+		&tmp_int[30], &tmp_int[31], &tmp_int[32], &tmp_int[33], &tmp_int[34], &tmp_int[47],
+		&tmp_int[45], &tmp_int[35], &tmp_int[36],
+		&tmp_int[46], &tmp_int[37], &tmp_int[38], &tmp_int[39], 
+		&tmp_int[40], &tmp_int[41], &tmp_int[42], &tmp_int[43], &tmp_ulong[0], &next) != 51)
+	{
+	tmp_int[48] = 0;// body
 // Char structure of version 14797 (robe)
 	if (sscanf(str, "%d\t%d,%d\t%127[^\t]\t%d,%d,%d\t%u,%u,%d\t%d,%d,%d,%d\t%d,%d,%d,%d,%d,%d\t%d,%d"
 		"\t%d,%d,%d\t%d,%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d,%d,%d"
@@ -763,6 +782,7 @@ int mmo_char_fromstr(char *str, struct mmo_charstatus *p, struct global_reg *reg
 	}	// Char structure of version 1500 (homun + mapindex maps)
 	}	// Char structure of version 14700 (delete date)
 	}	// Char structure of version 14797 (robe)
+	}	// Char structure of 3CeAM r769 (body)
 
 	safestrncpy(p->name, tmp_str[0], NAME_LENGTH); //Overflow protection [Skotlex]
 	p->char_id = tmp_int[0];
@@ -814,6 +834,7 @@ int mmo_char_fromstr(char *str, struct mmo_charstatus *p, struct global_reg *reg
 	p->save_point.map = tmp_int[46];
 	p->delete_date = tmp_ulong[0];
 	p->robe = tmp_int[47];
+	p->body = tmp_int[48];
 
 #ifndef TXT_SQL_CONVERT
 	// Some checks
@@ -1389,6 +1410,7 @@ int make_new_char(struct char_session_data* sd, char* name_, int str, int agi, i
 	char_dat[i].status.head_mid = 0;
 	char_dat[i].status.head_bottom = 0;
 	char_dat[i].status.robe = 0;
+	char_dat[i].status.body = 0;
 	memcpy(&char_dat[i].status.last_point, &start_point, sizeof(start_point));
 	memcpy(&char_dat[i].status.save_point, &start_point, sizeof(start_point));
 	char_num++;
@@ -1891,7 +1913,7 @@ int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p)
 	WBUFW(buf,52) = p->class_;
 	WBUFW(buf,54) = p->hair;
 #if PACKETVER >= 20150513
-	WBUFW(buf,56) = 0;// body
+	WBUFW(buf,56) = p->body;// body
 	offset+=2;
 	buf = WBUFP(buffer,offset);
 #endif

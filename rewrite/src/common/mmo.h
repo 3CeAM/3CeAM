@@ -373,7 +373,7 @@ struct mmo_charstatus {
 	unsigned int option;
 	short manner;
 	unsigned char karma;
-	short hair,hair_color,clothes_color;
+	short hair,hair_color,clothes_color,body;
 	int party_id,guild_id,pet_id,hom_id,mer_id,ele_id;
 	int fame;
 

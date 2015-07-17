@@ -1879,6 +1879,7 @@ packet_ver: 31
 0x09ff,-1//ZC_NOTIFY_STANDENTRY11
 
 0x0a02,4//ZC_DRESSROOM_OPEN
+0x0a28,3//ZC_ACK_OPENSTORE2
 
 //Add new packets here.
 //packet_ver: 32
