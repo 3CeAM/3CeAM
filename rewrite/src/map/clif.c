@@ -2218,11 +2218,43 @@ static void clif_addcards(unsigned char* buf, struct item* item)
 		WBUFW(buf,6) = item->card[i];
 }
 
+/// Fills in part of the item buffers that calls for variable bonuses data. [Rytech]
+static void clif_add_random_options(unsigned char* buf, struct item* item)
+{
+	// Dummy data used since this feature isnt supported yet (ITEM_RDM_OPT).
+	// A max of 5 random options can be supported.
+	// ITEM_RDM_OPT_DATA 1
+	WBUFW(buf,0) = 0;// OptIndex
+	WBUFW(buf,2) = 0;// Value
+	WBUFB(buf,4) = 0;// Parm1
+
+	// ITEM_RDM_OPT_DATA 2
+	WBUFW(buf,5) = 0;
+	WBUFW(buf,7) = 0;
+	WBUFB(buf,9) = 0;
+
+	// ITEM_RDM_OPT_DATA 3
+	WBUFW(buf,10) = 0;
+	WBUFW(buf,12) = 0;
+	WBUFB(buf,14) = 0;
+
+	// ITEM_RDM_OPT_DATA 4
+	WBUFW(buf,15) = 0;
+	WBUFW(buf,17) = 0;
+	WBUFB(buf,19) = 0;
+
+	// ITEM_RDM_OPT_DATA 5
+	WBUFW(buf,20) = 0;
+	WBUFW(buf,22) = 0;
+	WBUFB(buf,24) = 0;
+}
+
 /// Notifies the client, about a received inventory item or the result of a pick-up request.
 /// 00a0 <index>.W <amount>.W <name id>.W <identified>.B <damaged>.B <refine>.B <card1>.W <card2>.W <card3>.W <card4>.W <equip location>.W <item type>.B <result>.B (ZC_ITEM_PICKUP_ACK)
 /// 029a <index>.W <amount>.W <name id>.W <identified>.B <damaged>.B <refine>.B <card1>.W <card2>.W <card3>.W <card4>.W <equip location>.W <item type>.B <result>.B <expire time>.L (ZC_ITEM_PICKUP_ACK2)
 /// 02d4 <index>.W <amount>.W <name id>.W <identified>.B <damaged>.B <refine>.B <card1>.W <card2>.W <card3>.W <card4>.W <equip location>.W <item type>.B <result>.B <expire time>.L <bindOnEquipType>.W (ZC_ITEM_PICKUP_ACK3)
-/// 02d4 <index>.W <amount>.W <name id>.W <identified>.B <damaged>.B <refine>.B <card1>.W <card2>.W <card3>.W <card4>.W <equip location>.L <item type>.B <result>.B <expire time>.L <bindOnEquipType>.W (ZC_ITEM_PICKUP_ACK_V5)
+/// 0990 <index>.W <amount>.W <name id>.W <identified>.B <damaged>.B <refine>.B <card1>.W <card2>.W <card3>.W <card4>.W <equip location>.L <item type>.B <result>.B <expire time>.L <bindOnEquipType>.W (ZC_ITEM_PICKUP_ACK_V5)
+/// 0a0c <index>.W <amount>.W <name id>.W <identified>.B <damaged>.B <refine>.B <card1>.W <card2>.W <card3>.W <card4>.W <equip location>.L <item type>.B <result>.B <expire time>.L <bindOnEquipType>.W (ZC_ITEM_PICKUP_ACK_V6)
 int clif_additem(struct map_session_data *sd, int n, int amount, int fail)
 {
 	int fd;
@@ -2231,8 +2263,11 @@ int clif_additem(struct map_session_data *sd, int n, int amount, int fail)
 	const int cmd = 0xa0;
 #elif PACKETVER < 20131223
 	const int cmd = 0x2d4;
-#else
+#elif PACKETVER < 20150513
 	const int cmd = 0x990;
+	offset = 2;
+#else
+	const int cmd = 0xa0c;
 	offset = 2;
 #endif
 	nullpo_ret(sd);
@@ -2265,6 +2300,9 @@ int clif_additem(struct map_session_data *sd, int n, int amount, int fail)
 #if PACKETVER >= 20071002
 		WFIFOL(fd,23+offset)=0;
 		WFIFOW(fd,27+offset)=0;
+#if PACKETVER >= 20150513
+		clif_add_random_options(WFIFOP(fd,31), &sd->status.inventory[n]);
+#endif
 #endif
 	}
 	else
@@ -2293,6 +2331,9 @@ int clif_additem(struct map_session_data *sd, int n, int amount, int fail)
 #if PACKETVER >= 20071002
 		WFIFOL(fd,23+offset)=sd->status.inventory[n].expire_time;
 		WFIFOW(fd,27+offset)=0;
+#endif
+#if PACKETVER >= 20150513
+		clif_add_random_options(WFIFOP(fd,31), &sd->status.inventory[n]);
 #endif
 	}
 
@@ -2525,10 +2566,14 @@ void clif_inventorylist_v5(struct map_session_data *sd)
 	int i,n,ne,arrow=-1;
 	unsigned char *buf;
 	unsigned char *bufe;
+	short offset = 0;
 
 	const int s = 24;// Packet length for stackable items V5.
+#if PACKETVER < 20150513
 	const int se = 31;// Packet length for equippable items V5.
-	//const int se = 57;// Packet length for equippable items V6.
+#else
+	const int se = 57;// Packet length for equippable items V6.
+#endif
 
 	buf = (unsigned char*)aMallocA(MAX_INVENTORY * s + 4);
 	bufe = (unsigned char*)aMallocA(MAX_INVENTORY * se + 4);
@@ -2549,7 +2594,12 @@ void clif_inventorylist_v5(struct map_session_data *sd)
 				WBUFW(bufe,ne*se+32)= sd->inventory_data[i]->look;// wItemSpriteNumber
 			else
 				WBUFW(bufe,ne*se+32)=0;// wItemSpriteNumber
-			clif_item_flag_v5(bufe, ne*se+34, &sd->status.inventory[i], sd->inventory_data[i], pc_equippoint(sd,i));
+#if PACKETVER >= 20150513
+				WBUFB(bufe,ne*se+34)=0;// nRandomOptionCnt
+				clif_add_random_options(WBUFP(bufe, ne*se+35), &sd->status.inventory[i]);// optionData
+				offset = 26;
+#endif
+			clif_item_flag_v5(bufe, ne*se+34+offset, &sd->status.inventory[i], sd->inventory_data[i], pc_equippoint(sd,i));
 			ne++;
 		}
 		else
@@ -2575,7 +2625,11 @@ void clif_inventorylist_v5(struct map_session_data *sd)
 
 	if( ne )
 	{// INVENTORY_ITEMLIST_EQUIP_V5
+#if PACKETVER < 20150513
 		WBUFW(bufe,0)=0x992;
+#else
+		WBUFW(bufe,0)=0xa0d;
+#endif
 		WBUFW(bufe,2)=4+ne*se;
 		clif_send(bufe, WBUFW(bufe,2), &sd->bl, SELF);
 	}
@@ -2642,9 +2696,13 @@ void clif_equiplist_v5(struct map_session_data *sd)
 {
 	int i,n,fd = sd->fd;
 	unsigned char *buf;
+	short offset = 0;
 
+#if PACKETVER < 20150513
 	const int cmd = 31;// Packet length for equippable items V5.
-	//const int cmd = 57;// Packet length for equippable items V6.
+#else
+	const int cmd = 57;// Packet length for equippable items V6.
+#endif
 
 	WFIFOHEAD(fd, MAX_INVENTORY * cmd + 4);
 	buf = WFIFOP(fd,0);
@@ -2665,12 +2723,21 @@ void clif_equiplist_v5(struct map_session_data *sd)
 			WBUFW(buf,n*cmd+32)= sd->inventory_data[i]->look;// wItemSpriteNumber
 		else
 			WBUFW(buf,n*cmd+32)=0;// wItemSpriteNumber
-		clif_item_flag_v5(buf, n*cmd+34, &sd->status.inventory[i], sd->inventory_data[i], pc_equippoint(sd,i));
+#if PACKETVER >= 20150513
+				WBUFB(buf,n*cmd+34)=0;// nRandomOptionCnt
+				clif_add_random_options(WBUFP(buf, n*cmd+35), &sd->status.inventory[i]);// optionData
+				offset = 26;
+#endif
+		clif_item_flag_v5(buf, n*cmd+34+offset, &sd->status.inventory[i], sd->inventory_data[i], pc_equippoint(sd,i));
 		n++;
 	}
 	if (n)
 	{// INVENTORY_ITEMLIST_EQUIP_V5
+#if PACKETVER < 20150513
 		WBUFW(buf,0)=0x992;
+#else
+		WBUFW(buf,0)=0xa0d;
+#endif
 		WBUFW(buf,2)=4+n*cmd;
 		WFIFOSET(fd,WFIFOW(fd,2));
 	}
@@ -2766,10 +2833,14 @@ void clif_storagelist_v5(struct map_session_data* sd, struct item* items, int it
 	int i,n,ne;
 	unsigned char *buf;
 	unsigned char *bufe;
+	short offset = 0;
 
 	const int s = 24;// Packet length for stackable items V5.
+#if PACKETVER < 20150513
 	const int cmd = 31;// Packet length for equippable items V5.
-	//const int cmd = 57;// Packet length for equippable items V6.
+#else
+	const int cmd = 57;// Packet length for equippable items V6.
+#endif
 
 	buf = (unsigned char*)aMallocA(items_length * s + 28);
 	bufe = (unsigned char*)aMallocA(items_length * cmd + 28);
@@ -2787,7 +2858,12 @@ void clif_storagelist_v5(struct map_session_data* sd, struct item* items, int it
 			WBUFL(bufe,ne*cmd+50)=items[i].expire_time;// HireExpireDate
 			WBUFW(bufe,ne*cmd+54)=0;// bindOnEquipType
 			WBUFW(bufe,ne*cmd+56)=0;// wItemSpriteNumber
-			clif_item_flag_v5(bufe, ne*cmd+58, &items[i], id, id->equip);
+#if PACKETVER >= 20150513
+				WBUFB(bufe,ne*cmd+58)=0;// nRandomOptionCnt
+				clif_add_random_options(WBUFP(bufe, ne*cmd+59), &items[i]);// optionData
+				offset = 26;
+#endif
+			clif_item_flag_v5(bufe, ne*cmd+58+offset, &items[i], id, id->equip);
 			ne++;
 		}
 		else
@@ -2809,7 +2885,11 @@ void clif_storagelist_v5(struct map_session_data* sd, struct item* items, int it
 	}
 	if( ne )
 	{// ZC_STORE_ITEMLIST_EQUIP_V5
+#if PACKETVER < 20150513
 		WBUFW(bufe,0)=0x996;
+#else
+		WBUFW(bufe,0)=0xa10;
+#endif
 		WBUFW(bufe,2)=28+ne*cmd;
 		memcpy(WBUFP(bufe,4), "Storage", NAME_LENGTH);// StoreName
 		clif_send(bufe, WBUFW(bufe,2), &sd->bl, SELF);
@@ -2909,10 +2989,14 @@ void clif_cartlist_v5(struct map_session_data *sd)
 	int i,n,ne;
 	unsigned char *buf;
 	unsigned char *bufe;
+	short offset = 0;
 
 	const int s = 24;// Packet length for stackable items V5.
+#if PACKETVER < 20150513
 	const int cmd = 31;// Packet length for equippable items V5.
-	//const int cmd = 57;// Packet length for equippable items V6.
+#else
+	const int cmd = 57;// Packet length for equippable items V6.
+#endif
 
 	buf = (unsigned char*)aMallocA(MAX_CART * s + 4);
 	bufe = (unsigned char*)aMallocA(MAX_CART * cmd + 4);
@@ -2930,7 +3014,12 @@ void clif_cartlist_v5(struct map_session_data *sd)
 			WBUFL(bufe,ne*cmd+26)=sd->status.cart[i].expire_time;// HireExpireDate
 			WBUFW(bufe,ne*cmd+30)=0;// bindOnEquipType
 			WBUFW(bufe,ne*cmd+32)=0;// wItemSpriteNumber
-			clif_item_flag_v5(bufe, ne*cmd+34, &sd->status.cart[i], id, id->equip);
+#if PACKETVER >= 20150513
+				WBUFB(bufe,ne*cmd+34)=0;// nRandomOptionCnt
+				clif_add_random_options(WBUFP(bufe, ne*cmd+35), &sd->status.cart[i]);// optionData
+				offset = 26;
+#endif
+			clif_item_flag_v5(bufe, ne*cmd+34+offset, &sd->status.cart[i], id, id->equip);
 			ne++;
 		}
 		else
@@ -2951,7 +3040,11 @@ void clif_cartlist_v5(struct map_session_data *sd)
 	}
 	if( ne )
 	{// CART_ITEMLIST_EQUIP_V5
+#if PACKETVER < 20150513
 		WBUFW(bufe,0)=0x994;
+#else
+		WBUFW(bufe,0)=0xa0f;
+#endif
 		WBUFW(bufe,2)=4+ne*cmd;
 		clif_send(bufe, WBUFW(bufe,2), &sd->bl, SELF);
 	}
@@ -4341,8 +4434,10 @@ void clif_tradeadditem(struct map_session_data* sd, struct map_session_data* tsd
 	unsigned char *buf;
 #if PACKETVER < 20100223
 	const int cmd = 0xe9;
-#else
+#elif PACKETVER < 20150513
 	const int cmd = 0x80f;
+#else
+	const int cmd = 0xa09;
 #endif
 	nullpo_retv(sd);
 	nullpo_retv(tsd);
@@ -4369,6 +4464,9 @@ void clif_tradeadditem(struct map_session_data* sd, struct map_session_data* tsd
 		WBUFW(buf,13)= 0; //card (4w)
 		WBUFW(buf,15)= 0; //card (4w)
 		WBUFW(buf,17)= 0; //card (4w)
+#if PACKETVER >= 20150513
+		clif_add_random_options(WBUFP(buf, 19), &sd->status.inventory[index]);
+#endif
 	}
 	else
 	{
@@ -4392,6 +4490,9 @@ void clif_tradeadditem(struct map_session_data* sd, struct map_session_data* tsd
 		WBUFB(buf,9) = sd->status.inventory[index].attribute; // attribute
 		WBUFB(buf,10)= sd->status.inventory[index].refine; //refine
 		clif_addcards(WBUFP(buf, 11), &sd->status.inventory[index]);
+#if PACKETVER >= 20150513
+		clif_add_random_options(WBUFP(buf, 19), &sd->status.inventory[index]);
+#endif
 	}
 	WFIFOSET(fd,packet_len(cmd));
 }
@@ -4496,7 +4597,7 @@ void clif_storageitemadded(struct map_session_data* sd, struct item* i, int inde
 	WFIFOB(fd,12) = i->refine; //refine
 	clif_addcards(WFIFOP(fd,13), i);
 	WFIFOSET(fd,packet_len(0xf4));
-#else
+#elif PACKETVER < 20150513
 	WFIFOHEAD(fd,packet_len(0x1c4));
 	WFIFOW(fd, 0) = 0x1c4; // Storage item added
 	WFIFOW(fd, 2) = index+1; // index
@@ -4508,6 +4609,19 @@ void clif_storageitemadded(struct map_session_data* sd, struct item* i, int inde
 	WFIFOB(fd,13) = i->refine; //refine
 	clif_addcards(WFIFOP(fd,14), i);
 	WFIFOSET(fd,packet_len(0x1c4));
+#else
+	WFIFOHEAD(fd,packet_len(0xa0a));
+	WFIFOW(fd, 0) = 0xa0a; // Storage item added
+	WFIFOW(fd, 2) = index+1; // index
+	WFIFOL(fd, 4) = amount; // amount
+	WFIFOW(fd, 8) = ( view > 0 ) ? view : i->nameid; // id
+	WFIFOB(fd,10) = itemdb_type(i->nameid); //type
+	WFIFOB(fd,11) = i->identify; //identify flag
+	WFIFOB(fd,12) = i->attribute; // attribute
+	WFIFOB(fd,13) = i->refine; //refine
+	clif_addcards(WFIFOP(fd,14), i);
+	clif_add_random_options(WFIFOP(fd,22), i);
+	WFIFOSET(fd,packet_len(0xa0a));
 #endif
 }
 
@@ -6790,7 +6904,7 @@ int clif_cart_additem(struct map_session_data *sd,int n,int amount,int fail)
 	WBUFB(buf,12)=sd->status.cart[n].refine;
 	clif_addcards(WBUFP(buf,13), &sd->status.cart[n]);
 	WFIFOSET(fd,packet_len(0x124));
-#else
+#elif PACKETVER < 20150513
 	WFIFOHEAD(fd,packet_len(0x1c5));
 	buf=WFIFOP(fd,0);
 	WBUFW(buf,0)=0x1c5;
@@ -6806,6 +6920,23 @@ int clif_cart_additem(struct map_session_data *sd,int n,int amount,int fail)
 	WBUFB(buf,13)=sd->status.cart[n].refine;
 	clif_addcards(WBUFP(buf,14), &sd->status.cart[n]);
 	WFIFOSET(fd,packet_len(0x1c5));
+#else
+	WFIFOHEAD(fd,packet_len(0xa0b));
+	buf=WFIFOP(fd,0);
+	WBUFW(buf,0)=0xa0b;
+	WBUFW(buf,2)=n+2;
+	WBUFL(buf,4)=amount;
+	if((view = itemdb_viewid(sd->status.cart[n].nameid)) > 0)
+		WBUFW(buf,8)=view;
+	else
+		WBUFW(buf,8)=sd->status.cart[n].nameid;
+	WBUFB(buf,10)=itemdb_type(sd->status.cart[n].nameid);
+	WBUFB(buf,11)=sd->status.cart[n].identify;
+	WBUFB(buf,12)=sd->status.cart[n].attribute;
+	WBUFB(buf,13)=sd->status.cart[n].refine;
+	clif_addcards(WBUFP(buf,14), &sd->status.cart[n]);
+	clif_add_random_options(WBUFP(buf,22), &sd->status.cart[n]);
+	WFIFOSET(fd,packet_len(0xa0b));
 #endif
 
 	return 0;
@@ -6832,11 +6963,10 @@ int clif_cart_delitem(struct map_session_data *sd,int n,int amount)
 	return 0;
 }
 
-/*==========================================
- * Opens the shop creation menu.
- * R 012d <num>.w
- * 'num' is the number of allowed item slots
- *------------------------------------------*/
+/// Opens the shop creation menu (ZC_OPENSTORE).
+/// 012d <num>.W
+/// num:
+///     number of allowed item slots
 void clif_openvendingreq(struct map_session_data* sd, int num)
 {
 	int fd;
@@ -6850,10 +6980,8 @@ void clif_openvendingreq(struct map_session_data* sd, int num)
 	WFIFOSET(fd,packet_len(0x12d));
 }
 
-/*==========================================
- * Displays a vending board to target/area
- * R 0131 <ID>.l <message>.80B
- *------------------------------------------*/
+/// Displays a vending board to target/area (ZC_STORE_ENTRY).
+/// 0131 <owner id>.L <message>.80B
 void clif_showvendingboard(struct block_list* bl, const char* message, int fd)
 {
 	unsigned char buf[128];
@@ -6873,9 +7001,8 @@ void clif_showvendingboard(struct block_list* bl, const char* message, int fd)
 	}
 }
 
-/*==========================================
- * Removes a vending board from screen
- *------------------------------------------*/
+/// Removes a vending board from screen (ZC_DISAPPEAR_ENTRY).
+/// 0132 <owner id>.L
 void clif_closevendingboard(struct block_list* bl, int fd)
 {
 	unsigned char buf[16];
@@ -6893,11 +7020,9 @@ void clif_closevendingboard(struct block_list* bl, int fd)
 	}
 }
 
-/*==========================================
- * Sends a list of items in a shop (ZC_PC_PURCHASE_ITEMLIST_FROMMC/ZC_PC_PURCHASE_ITEMLIST_FROMMC2)
- * R 0133 <len>.w <ID>.l {<value>.l <amount>.w <index>.w <type>.B <item ID>.w <identify flag>.B <attribute?>.B <refine>.B <card>.4w}.22B
- * R 0800 <len>.w <ID>.l <UniqueID>.l {<value>.l  <amount>.w <index>.w <type>.B <item ID>.w <identify flag>.B <attribute?>.B <refine>.B <card>.4w}.22B
- *------------------------------------------*/
+/// Sends a list of items in a shop.
+/// R 0133 <packet len>.W <owner id>.L { <price>.L <amount>.W <index>.W <type>.B <name id>.W <identified>.B <damaged>.B <refine>.B <card1>.W <card2>.W <card3>.W <card4>.W }* (ZC_PC_PURCHASE_ITEMLIST_FROMMC)
+/// R 0800 <packet len>.W <owner id>.L <unique id>.L { <price>.L <amount>.W <index>.W <type>.B <name id>.W <identified>.B <damaged>.B <refine>.B <card1>.W <card2>.W <card3>.W <card4>.W }* (ZC_PC_PURCHASE_ITEMLIST_FROMMC2)
 void clif_vendinglist(struct map_session_data* sd, int id, struct s_vending* vending)
 {
 	int i,fd;
@@ -6911,6 +7036,12 @@ void clif_vendinglist(struct map_session_data* sd, int id, struct s_vending* ven
 	const int offset = 12;
 #endif
 
+#if PACKETVER < 20150513
+	const int item_length = 22;
+#else
+	const int item_length = 47;
+#endif
+
 	nullpo_retv(sd);
 	nullpo_retv(vending);
 	nullpo_retv(vsd=map_id2sd(id));
@@ -6918,9 +7049,9 @@ void clif_vendinglist(struct map_session_data* sd, int id, struct s_vending* ven
 	fd = sd->fd;
 	count = vsd->vend_num;
 
-	WFIFOHEAD(fd, offset+count*22);
+	WFIFOHEAD(fd, offset+count*item_length);
 	WFIFOW(fd,0) = cmd;
-	WFIFOW(fd,2) = offset+count*22;
+	WFIFOW(fd,2) = offset+count*item_length;
 	WFIFOL(fd,4) = id;
 #if PACKETVER >= 20100105
 	WFIFOL(fd,8) = vsd->vender_id;
@@ -6930,29 +7061,32 @@ void clif_vendinglist(struct map_session_data* sd, int id, struct s_vending* ven
 	{
 		int index = vending[i].index;
 		struct item_data* data = itemdb_search(vsd->status.cart[index].nameid);
-		WFIFOL(fd,offset+ 0+i*22) = vending[i].value;
-		WFIFOW(fd,offset+ 4+i*22) = vending[i].amount;
-		WFIFOW(fd,offset+ 6+i*22) = vending[i].index + 2;
-		WFIFOB(fd,offset+ 8+i*22) = itemtype(data->type);
-		WFIFOW(fd,offset+ 9+i*22) = ( data->view_id > 0 ) ? data->view_id : vsd->status.cart[index].nameid;
-		WFIFOB(fd,offset+11+i*22) = vsd->status.cart[index].identify;
-		WFIFOB(fd,offset+12+i*22) = vsd->status.cart[index].attribute;
-		WFIFOB(fd,offset+13+i*22) = vsd->status.cart[index].refine;
-		clif_addcards(WFIFOP(fd,offset+14+i*22), &vsd->status.cart[index]);
+		WFIFOL(fd,offset+ 0+i*item_length) = vending[i].value;
+		WFIFOW(fd,offset+ 4+i*item_length) = vending[i].amount;
+		WFIFOW(fd,offset+ 6+i*item_length) = vending[i].index + 2;
+		WFIFOB(fd,offset+ 8+i*item_length) = itemtype(data->type);
+		WFIFOW(fd,offset+ 9+i*item_length) = ( data->view_id > 0 ) ? data->view_id : vsd->status.cart[index].nameid;
+		WFIFOB(fd,offset+11+i*item_length) = vsd->status.cart[index].identify;
+		WFIFOB(fd,offset+12+i*item_length) = vsd->status.cart[index].attribute;
+		WFIFOB(fd,offset+13+i*item_length) = vsd->status.cart[index].refine;
+		clif_addcards(WFIFOP(fd,offset+14+i*item_length), &vsd->status.cart[index]);
+#if PACKETVER >= 20150513
+		clif_add_random_options(WFIFOP(fd,offset+22+i*item_length), &vsd->status.cart[index]);
+#endif
 	}
 	WFIFOSET(fd,WFIFOW(fd,2));
 }
 
-/*==========================================
- * Shop purchase failure (ZC_PC_PURCHASE_RESULT_FROMMC)
- * R 0135 <index>.w <amount>.w <fail>.B
- * fail=1 - not enough zeny
- * fail=2 - overweight
- * fail=4 - out of stock
- * fail=5 - "cannot use an npc shop while in a trade"
- * fail=6 - Because the store information was incorrect the item was not purchased.
- * fail=7 - No sales information.
- *------------------------------------------*/
+/// Shop purchase failure (ZC_PC_PURCHASE_RESULT_FROMMC).
+/// 0135 <index>.W <amount>.W <result>.B
+/// result:
+///     0 = success
+///     1 = not enough zeny
+///     2 = overweight
+///     4 = out of stock
+///     5 = "cannot use an npc shop while in a trade"
+///     6 = Because the store information was incorrect the item was not purchased.
+///     7 = No sales information.
 void clif_buyvending(struct map_session_data* sd, int index, int amount, int fail)
 {
 	int fd;
@@ -6968,54 +7102,71 @@ void clif_buyvending(struct map_session_data* sd, int index, int amount, int fai
 	WFIFOSET(fd,packet_len(0x135));
 }
 
-/*==========================================
- * Shop creation success
- * R 0136 <len>.w <ID>.l {<value>.l <index>.w <amount>.w <type>.B <item ID>.w <identify flag>.B <attribute?>.B <refine>.B <card>.4w}.22B*
- *------------------------------------------*/
+/// Show's vending player its list of items for sale (ZC_ACK_OPENSTORE2).
+/// 0a28 <Result>.B
+/// result:
+///     0 = Successed
+///     1 = Failed
+void clif_openvending_ack(struct map_session_data* sd)
+{
+	int fd;
+	nullpo_retv(sd);
+	fd = sd->fd;
+
+	WFIFOHEAD(fd, 3);
+	WFIFOW(fd,0) = 0xa28;
+	WFIFOB(fd,2) = 0;
+	WFIFOSET(fd, 3);
+}
+
+/// Shop creation success (ZC_PC_PURCHASE_MYITEMLIST).
+/// 0136 <packet len>.W <owner id>.L { <price>.L <index>.W <amount>.W <type>.B <name id>.W <identified>.B <damaged>.B <refine>.B <card1>.W <card2>.W <card3>.W <card4>.W }*
 void clif_openvending(struct map_session_data* sd, int id, struct s_vending* vending)
 {
 	int i,fd;
 	int count;
+
+#if PACKETVER < 20150513
+	const int item_length = 22;
+#else
+	const int item_length = 47;
+#endif
 
 	nullpo_retv(sd);
 
 	fd = sd->fd;
 	count = sd->vend_num;
 
-	WFIFOHEAD(fd, 8+count*22);
+	WFIFOHEAD(fd, 8+count*item_length);
 	WFIFOW(fd,0) = 0x136;
-	WFIFOW(fd,2) = 8+count*22;
+	WFIFOW(fd,2) = 8+count*item_length;
 	WFIFOL(fd,4) = id;
 	for( i = 0; i < count; i++ )
 	{
 		int index = vending[i].index;
 		struct item_data* data = itemdb_search(sd->status.cart[index].nameid);
-		WFIFOL(fd, 8+i*22) = vending[i].value;
-		WFIFOW(fd,12+i*22) = vending[i].index + 2;
-		WFIFOW(fd,14+i*22) = vending[i].amount;
-		WFIFOB(fd,16+i*22) = itemtype(data->type);
-		WFIFOW(fd,17+i*22) = ( data->view_id > 0 ) ? data->view_id : sd->status.cart[index].nameid;
-		WFIFOB(fd,19+i*22) = sd->status.cart[index].identify;
-		WFIFOB(fd,20+i*22) = sd->status.cart[index].attribute;
-		WFIFOB(fd,21+i*22) = sd->status.cart[index].refine;
-		clif_addcards(WFIFOP(fd,22+i*22), &sd->status.cart[index]);
+		WFIFOL(fd, 8+i*item_length) = vending[i].value;
+		WFIFOW(fd,12+i*item_length) = vending[i].index + 2;
+		WFIFOW(fd,14+i*item_length) = vending[i].amount;
+		WFIFOB(fd,16+i*item_length) = itemtype(data->type);
+		WFIFOW(fd,17+i*item_length) = ( data->view_id > 0 ) ? data->view_id : sd->status.cart[index].nameid;
+		WFIFOB(fd,19+i*item_length) = sd->status.cart[index].identify;
+		WFIFOB(fd,20+i*item_length) = sd->status.cart[index].attribute;
+		WFIFOB(fd,21+i*item_length) = sd->status.cart[index].refine;
+		clif_addcards(WFIFOP(fd,22+i*item_length), &sd->status.cart[index]);
+#if PACKETVER >= 20150513
+		clif_add_random_options(WFIFOP(fd,30+i*item_length), &sd->status.cart[index]);
+#endif
 	}
 	WFIFOSET(fd,WFIFOW(fd,2));
 
-// Borrowed from Hercules - Vending still broken. It wants something else??? [Rytech]
 #if PACKETVER >= 20150513
-	WFIFOHEAD(fd, 3);
-	WFIFOW(fd,0) = 0xa28;
-	WFIFOB(fd,2) = 0;
-	WFIFOSET(fd, 3);
+	clif_openvending_ack(sd);
 #endif
-
 }
 
-/*==========================================
- * Inform merchant that someone has bought an item.
- * R 0137 <index>.w <amount>.w
- *------------------------------------------*/
+/// Inform merchant that someone has bought an item (ZC_DELETEITEM_FROM_MCSTORE).
+/// 0137 <index>.W <amount>.W
 void clif_vendingreport(struct map_session_data* sd, int index, int amount)
 {
 	int fd;
@@ -16983,8 +17134,8 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0, 75,  0,  0,  0,  0,  0, -1, -1, -1,
 	//#0x0A00
-	    0,  0,  4,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  4,  0,  0,  0,  0,  0,  0, 45, 47, 47, 56, -1,  0, -1,
+	   -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  3,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	};
