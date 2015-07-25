@@ -2505,7 +2505,9 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		}
 		else if( sd->inventory_data[index]->type == IT_ARMOR )
 		{
-			refinedef += sd->status.inventory[index].refine * refinebonus[0][0];
+			if (!((battle_config.costume_refine_def != 1 && i >= EQI_COSTUME_HEAD_LOW && i <= EQI_COSTUME_FLOOR) ||
+				(battle_config.shadow_refine_def != 1 && i >= EQI_SHADOW_ARMOR && i <= EQI_SHADOW_ACC_L)))
+				refinedef += sd->status.inventory[index].refine * refinebonus[0][0];
 			if( sd->inventory_data[index]->script )
 			{
 				if( i == EQI_HAND_L ) //Shield
