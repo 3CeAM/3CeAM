@@ -530,6 +530,8 @@ extern struct Battle_Config
 	int min_body_style;
 	int max_body_style;
 	int save_body_style;
+	int costume_refine_def;
+	int shadow_refine_def;
 
 	// Costume Outfits
 	int hanbok_ignorepalette;
