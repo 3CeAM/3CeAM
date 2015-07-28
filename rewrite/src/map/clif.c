@@ -11529,9 +11529,13 @@ void clif_parse_ChangeCart(int fd,struct map_session_data *sd)
 		pc_setcart(sd,type);
 }
 
-/*==========================================
- * ステータスアップ
- *------------------------------------------*/
+/// Request to increase status (CZ_STATUS_CHANGE).
+/// 00bb <status id>.W <amount>.B
+/// status id:
+///     SP_STR ~ SP_LUK
+/// amount:
+///     client sends always 1 for this, even when using /str+ and
+///     the like
 void clif_parse_StatusUp(int fd,struct map_session_data *sd)
 {
 	pc_statusup(sd,RFIFOW(fd,2));
@@ -15092,48 +15096,60 @@ void clif_parse_Auction_buysell(int fd, struct map_session_data* sd)
 
 #endif
 
-/*==========================================
- * CASH/POINT SHOP
- *==========================================*/
+/// CASH/POINT SHOP
+///
+
+/// List of items offered in a cash shop (ZC_PC_CASH_POINT_ITEMLIST).
+/// 0287 <packet len>.W <cash point>.L { <sell price>.L <discount price>.L <item type>.B <name id>.W }*
+/// 0287 <packet len>.W <cash point>.L <kafra point>.L { <sell price>.L <discount price>.L <item type>.B <name id>.W }* (PACKETVER >= 20070711)
 void clif_cashshop_show(struct map_session_data *sd, struct npc_data *nd)
 {
 	int fd,i;
+#if PACKETVER < 20070711
+	const int offset = 8;
+#else
+	const int offset = 12;
+#endif
 
 	nullpo_retv(sd);
 	nullpo_retv(nd);
 
 	fd = sd->fd;
 	sd->npc_shopid = nd->bl.id;
-	WFIFOHEAD(fd, 200 * 11 + 12);
+	WFIFOHEAD(fd,offset+nd->u.shop.count*11);
 	WFIFOW(fd,0) = 0x287;
-	WFIFOW(fd,2) = 12 + nd->u.shop.count*11;
+	WFIFOW(fd,2) = offset+nd->u.shop.count*11;
 	WFIFOL(fd,4) = sd->cashPoints; // Cash Points
+#if PACKETVER >= 20070711
 	WFIFOL(fd,8) = sd->kafraPoints; // Kafra Points
+#endif
 
 	for( i = 0; i < nd->u.shop.count; i++ )
 	{
 		struct item_data* id = itemdb_search(nd->u.shop.shop_item[i].nameid);
-		WFIFOL(fd,12+i*11) = nd->u.shop.shop_item[i].value;
-		WFIFOL(fd,16+i*11) = nd->u.shop.shop_item[i].value; // Discount Price? Maybe a Discount item
-		WFIFOB(fd,20+i*11) = itemtype(id->type);
-		WFIFOW(fd,21+i*11) = ( id->view_id > 0 ) ? id->view_id : id->nameid;
+		WFIFOL(fd,offset+0+i*11) = nd->u.shop.shop_item[i].value;
+		WFIFOL(fd,offset+4+i*11) = pc_modify_cashshop_buy_value(sd,nd->u.shop.shop_item[i].value); // Discount Price
+		WFIFOB(fd,offset+8+i*11) = itemtype(id->type);
+		WFIFOW(fd,offset+9+i*11) = ( id->view_id > 0 ) ? id->view_id : id->nameid;
 	}
 	WFIFOSET(fd,WFIFOW(fd,2));
 }
 
-/// Cashshop Buy Ack (ZC_PC_CASH_POINT_UPDATE)
-/// S 0289 <cash point>.L <kafra point>.L <error>.W
-///
-/// @param error
-/// 0: The deal has successfully completed. (ERROR_TYPE_NONE)
-/// 1: The Purchase has failed because the NPC does not exist. (ERROR_TYPE_NPC)
-/// 2: The Purchase has failed because the Kafra Shop System is not working correctly. (ERROR_TYPE_SYSTEM)
-/// 3: You are over your Weight Limit. (ERROR_TYPE_INVENTORY_WEIGHT)
-/// 4: You cannot purchase items while you are in a trade. (ERROR_TYPE_EXCHANGE)
-/// 5: The Purchase has failed because the Item Information was incorrect. (ERROR_TYPE_ITEM_ID)
-/// 6: You do not have enough Kafra Credit Points. (ERROR_TYPE_MONEY)
-/// 7: You can purchase up to 10 items.
-/// 8: Some items could not be purchased.
+
+/// Cashshop Buy Ack (ZC_PC_CASH_POINT_UPDATE).
+/// 0289 <cash point>.L <error>.W
+/// 0289 <cash point>.L <kafra point>.L <error>.W (PACKETVER >= 20070711)
+/// error:
+///     0 = The deal has successfully completed. (ERROR_TYPE_NONE)
+///     1 = The Purchase has failed because the NPC does not exist. (ERROR_TYPE_NPC)
+///     2 = The Purchase has failed because the Kafra Shop System is not working correctly. (ERROR_TYPE_SYSTEM)
+///     3 = You are over your Weight Limit. (ERROR_TYPE_INVENTORY_WEIGHT)
+///     4 = You cannot purchase items while you are in a trade. (ERROR_TYPE_EXCHANGE)
+///     5 = The Purchase has failed because the Item Information was incorrect. (ERROR_TYPE_ITEM_ID)
+///     6 = You do not have enough Kafra Credit Points. (ERROR_TYPE_MONEY)
+///     7 = You can purchase up to 10 items. (ERROR_TYPE_OVER_PRODUCT_TOTAL_CNT)
+///     8 = Some items could not be purchased. (ERROR_TYPE_SOME_BUY_FAILURE)
+///     9 = Unknwon. (ERROR_TYPE_INVENTORY_ITEMCNT)
 void clif_cashshop_ack(struct map_session_data* sd, int error)
 {
 	int fd = sd->fd;
@@ -15141,20 +15157,30 @@ void clif_cashshop_ack(struct map_session_data* sd, int error)
 	WFIFOHEAD(fd, packet_len(0x289));
 	WFIFOW(fd,0) = 0x289;
 	WFIFOL(fd,2) = sd->cashPoints;
+#if PACKETVER < 20070711
+	WFIFOW(fd,6) = TOW(error);
+#else
 	WFIFOL(fd,6) = sd->kafraPoints;
 	WFIFOW(fd,10) = TOW(error);
+#endif
 	WFIFOSET(fd, packet_len(0x289));
 }
 
+/// Request to buy item(s) from cash shop (CZ_PC_BUY_CASH_POINT_ITEM).
+/// 0288 <name id>.W <amount>.W
+/// 0288 <name id>.W <amount>.W <kafra points>.L (PACKETVER >= 20070711)
+/// 0288 <packet len>.W <kafra points>.L <count>.W { <amount>.W <name id>.W }.4B*count (PACKETVER >= 20100803)
 void clif_parse_cashshop_buy(int fd, struct map_session_data *sd)
 {
-	int fail = 0, amount, points;
+	int fail = 0, amount, points = 0;
 	short nameid;
 	nullpo_retv(sd);
 
 	nameid = RFIFOW(fd,2);
 	amount = RFIFOW(fd,4);
+#if PACKETVER >= 20070711
 	points = RFIFOL(fd,6); // Not Implemented. Should be 0
+#endif
 
 	if( sd->state.trading || !sd->npc_shopid )
 		fail = 1;
@@ -15162,6 +15188,30 @@ void clif_parse_cashshop_buy(int fd, struct map_session_data *sd)
 		fail = npc_cashshop_buy(sd, nameid, amount, points);
 
 	clif_cashshop_ack(sd, fail);
+}
+
+/// Request to buy item(s) from cash shop (CZ_PC_BUY_CASH_POINT_ITEM).
+/// Basicly a overhauled version of this packet that allow buying multiple items.
+/// 0288 <packet len>.W <kafra points>.L <count>.W { <amount>.W <name id>.W }.4B*count (PACKETVER >= 20100803)
+void clif_parse_CashShopListSend(int fd, struct map_session_data *sd)
+{
+	int result = 0, points = 0;
+	short length, count = 0;
+	unsigned short* item_list = (unsigned short*)RFIFOP(fd,10);
+	nullpo_retv(sd);
+
+	length = (RFIFOW(fd,2)-10)/4;
+	points = RFIFOL(fd,4);
+	count = RFIFOW(fd,8);
+
+	if( sd->state.trading || !sd->npc_shopid )
+		result = 1;
+	else if (count > 10)
+		result = 7;// Cant buy more then 10 items at once.
+	else
+		result = npc_cashshop_buylist(sd, length, item_list, points);
+
+	clif_cashshop_ack(sd, result);
 }
 
 /*==========================================
@@ -16970,8 +17020,10 @@ static int packetdb_readdb(void)
 	//#0x0280
 #if PACKETVER < 20070711
 	    0,  0,  0,  6, 14,  0,  0, -1,  6,  8, 18,  0,  0,  0,  0,  0,
-#else
+#elif PACKETVER < 20100803
 	    0,  0,  0,  6, 14,  0,  0, -1, 10, 12, 18,  0,  0,  0,  0,  0, // 0x288, 0x289 increase by 4 (kafra points)
+#else
+	    0,  0,  0,  6, 14,  0,  0, -1, -1, 12, 18,  0,  0,  0,  0,  0, // 0x288 changed to -1
 #endif
 	    0,  4,  0, 70, 10,  0,  0,  0,  8,  6, 27, 80,  0, -1,  0,  0,
 	    0,  0,  8,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -17315,7 +17367,11 @@ static int packetdb_readdb(void)
 		// Quest Log System
 		{clif_parse_questStateAck,"queststate"},
 #endif
+#if PACKETVER < 20100803
 		{clif_parse_cashshop_buy,"cashshopbuy"},
+#else
+		{clif_parse_CashShopListSend,"cashshopbuy"},
+#endif
 		{clif_parse_ViewPlayerEquip,"viewplayerequip"},
 		{clif_parse_EquipTick,"equiptickbox"},
 		{clif_parse_BattleChat,"battlechat"},
