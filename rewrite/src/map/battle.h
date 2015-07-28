@@ -532,6 +532,7 @@ extern struct Battle_Config
 	int save_body_style;
 	int costume_refine_def;
 	int shadow_refine_def;
+	int cashshop_price_rate;
 
 	// Costume Outfits
 	int hanbok_ignorepalette;

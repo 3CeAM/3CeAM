@@ -720,6 +720,7 @@ int pc_steal_item(struct map_session_data *sd,struct block_list *bl, int skilllv
 int pc_steal_coin(struct map_session_data *sd,struct block_list *bl);
 
 int pc_modifybuyvalue(struct map_session_data*,int);
+int pc_modify_cashshop_buy_value(struct map_session_data *sd,int value);// For cash shop items. [Rytech]
 int pc_modifysellvalue(struct map_session_data*,int);
 
 int pc_follow(struct map_session_data*, int); // [MouseJstr]

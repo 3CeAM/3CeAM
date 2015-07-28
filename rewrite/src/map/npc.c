@@ -1253,6 +1253,119 @@ int npc_cashshop_buy(struct map_session_data *sd, int nameid, int amount, int po
 	return 0;
 }
 
+/// Player item purchase from npc cash shop.
+///
+/// @param item_list 'n' pairs <amount,itemid>
+/// @return result code for clif_parse_CashShopListSend
+int npc_cashshop_buylist(struct map_session_data* sd, int n, unsigned short* item_list, int points)
+{
+	struct npc_data* nd;
+	int i,j,p,w,new_;
+
+	nullpo_retr(3, sd);
+	nullpo_retr(3, item_list);
+
+	nd = npc_checknear(sd,map_id2bl(sd->npc_shopid));
+
+	if( points < 0 )
+		return 6;
+
+	if( !nd || nd->subtype != CASHSHOP )
+		return 1;
+
+	if( sd->state.trading )
+		return 4;
+
+	p = 0;
+	w = 0;
+	new_ = 0;
+	// process entries in buy list, one by one
+	for( i = 0; i < n; ++i )
+	{
+		int nameid, amount, value;
+
+		// find this entry in the shop's sell list
+		ARR_FIND( 0, nd->u.shop.count, j, 
+			item_list[i*2+1] == nd->u.shop.shop_item[j].nameid || //Normal items
+			item_list[i*2+1] == itemdb_viewid(nd->u.shop.shop_item[j].nameid) //item_avail replacement
+		);
+
+		if( j == nd->u.shop.count )
+			return 5; // no such item in shop
+
+		amount = item_list[i*2+0];
+		nameid = item_list[i*2+1] = nd->u.shop.shop_item[j].nameid; //item_avail replacement
+		value = nd->u.shop.shop_item[j].value;
+
+		if( !itemdb_exists(nameid) )
+			return 5; // item no longer in itemdb
+
+		if( !itemdb_isstackable(nameid) && amount > 1 )
+		{	//Exploit? You can't buy more than 1 of equipment types o.O
+			ShowWarning("Player %s (%d:%d) sent a hexed packet trying to buy %d of nonstackable item %d!\n",
+				sd->status.name, sd->status.account_id, sd->status.char_id, amount, nameid);
+			amount = item_list[i*2+0] = 1;
+		}
+
+		if( nd->master_nd )
+		{// Script-controlled shops decide by themselves, what can be bought and for what price.
+			continue;
+		}
+
+		switch( pc_checkadditem(sd,nameid,amount) )
+		{
+			case ADDITEM_EXIST:
+				break;
+
+			case ADDITEM_NEW:
+				new_++;
+				break;
+
+			case ADDITEM_OVERAMOUNT:
+				return 9;
+		}
+
+		value = pc_modify_cashshop_buy_value(sd,value);
+
+		p += value * amount;
+		w += itemdb_weight(nameid) * amount;
+	}
+
+	if( nd->master_nd != NULL ) //Script-based shops.
+		return npc_buylist_sub(sd,n,item_list,nd->master_nd);
+
+	if( points > p )
+		points = p;
+
+	if( (sd->kafraPoints < points) || (sd->cashPoints < p - points) )
+		return 6;// Not enough points
+	if( w + sd->weight > sd->max_weight )
+		return 3;	// Too heavy
+	if( pc_inventoryblank(sd) < new_ )
+		return 9;	// Not enough space to store items
+
+	pc_paycash(sd, p, points);
+
+	for( i = 0; i < n; ++i )
+	{
+		int nameid = item_list[i*2+1];
+		int amount = item_list[i*2+0];
+		struct item item_tmp;
+
+		memset(&item_tmp,0,sizeof(item_tmp));
+		item_tmp.nameid = nameid;
+		item_tmp.identify = 1;
+
+		pc_additem(sd,&item_tmp,amount);
+
+		//Log items bought in NPC Cash Shop
+		if( log_config.enable_logs&0x20 )
+			log_pick_pc(sd, "S", item_tmp.nameid, amount, NULL);
+	}
+
+	return 0;
+}
+
 /// Player item purchase from npc shop.
 ///
 /// @param item_list 'n' pairs <amount,itemid>

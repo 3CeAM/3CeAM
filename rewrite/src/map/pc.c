@@ -3603,6 +3603,17 @@ int pc_modifybuyvalue(struct map_session_data *sd,int orig_value)
 	return val;
 }
 
+int pc_modify_cashshop_buy_value(struct map_session_data *sd,int value)
+{
+	int val = value;
+
+	if ( battle_config.cashshop_price_rate != 100 )
+		val = (value * battle_config.cashshop_price_rate / 100);
+	if (val < 1) val = 1;
+
+	return val;
+}
+
 /*==========================================
  * ƒXƒLƒ‹‚É‚æ‚é?‚è’lC³
  *------------------------------------------*/

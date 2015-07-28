@@ -159,6 +159,7 @@ int npc_script_event(struct map_session_data* sd, enum npce_event type);
 
 int npc_duplicate4instance(struct npc_data *snd, int m);
 int npc_cashshop_buy(struct map_session_data *sd, int nameid, int amount, int points);
+int npc_cashshop_buylist(struct map_session_data* sd, int n, unsigned short* item_list, int points);
 
 extern struct npc_data* fake_nd;
 
