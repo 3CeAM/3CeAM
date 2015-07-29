@@ -11535,10 +11535,17 @@ void clif_parse_ChangeCart(int fd,struct map_session_data *sd)
 ///     SP_STR ~ SP_LUK
 /// amount:
 ///     client sends always 1 for this, even when using /str+ and
-///     the like
+///     the like.
+///     Client sends a actural amount instead of spamming the packet
+///     starting somewhere in 2013. [Rytech]
 void clif_parse_StatusUp(int fd,struct map_session_data *sd)
 {
-	pc_statusup(sd,RFIFOW(fd,2));
+#if PACKETVER >= 20131223
+	unsigned char i;
+
+	for( i = 0; i < RFIFOB(fd,4); i++ )
+#endif
+		pc_statusup(sd,RFIFOW(fd,2));
 }
 
 /*==========================================
@@ -15356,32 +15363,47 @@ void clif_parse_EquipTick(int fd, struct map_session_data* sd)
 	clif_equiptickack(sd, flag);
 }
 
-/*==========================================
- * Questlog System [Kevin] [Inkfish]
- *------------------------------------------*/
-//* 02B1 <packet_len>.W <quest_num>.L { <quest_id>.L <state>.B }.5B*
+/// Questlog System [Kevin] [Inkfish]
+///
+
+/// Sends list of all quest states.
+/// 02b1 <packet len>.W <num>.L { <quest id>.L <active>.B }*num (ZC_ALL_QUEST_LIST)
+/// 097a <packet len>.W <num>.L { <quest id>.L <active>.B <start time>.L <expire time>.L <mobs>.W }*num (ZC_ALL_QUEST_LIST2)
+/// 09f8 <packet len>.W <num>.L { <quest id>.L <active>.B <start time>.L <expire time>.L <mobs>.W }*num (ZC_ALL_QUEST_LIST3)
 void clif_quest_send_list(struct map_session_data * sd)
 {
 	int fd = sd->fd;
 	int i;
-	int len = sd->avail_quests*5+8;
+#if PACKETVER < 20150513
+	short packet_num = 0x2b1;
+	short quest_info = 5;
+#else
+	short packet_num = 0x97a;
+	short quest_info = 15;
+#endif
+	int len = sd->avail_quests*quest_info+8;
 
 	WFIFOHEAD(fd,len);
-	WFIFOW(fd, 0) = 0x02B1;
+	WFIFOW(fd, 0) = packet_num;
 	WFIFOW(fd, 2) = len;
 	WFIFOL(fd, 4) = sd->avail_quests;
 
 	for( i = 0; i < sd->avail_quests; i++ )
 	{
-		WFIFOL(fd, i*5+8) = sd->quest_log[i].quest_id;
-		WFIFOB(fd, i*5+12) = sd->quest_log[i].state;
+		WFIFOL(fd, i*quest_info+8) = sd->quest_log[i].quest_id;
+		WFIFOB(fd, i*quest_info+12) = sd->quest_log[i].state;
+#if PACKETVER >= 20150513
+		WFIFOL(fd, i*quest_info+13) = sd->quest_log[i].time - quest_db[sd->quest_index[i]].time;
+		WFIFOL(fd, i*quest_info+17) = sd->quest_log[i].time;
+		WFIFOW(fd, i*quest_info+21) = quest_db[sd->quest_index[i]].num_objectives;
+#endif
 	}
 
 	WFIFOSET(fd, len);
-
 }
 
-//* 02B2 <packet_len>.W <quest_num>.L { <quest_id>.L <start time>.L <expire time>.L <num mobs>.W {<mob id>.L <mob count>.W <Mob Name>.24B}.30B[3] }.104B*
+/// Sends list of all quest missions (ZC_ALL_QUEST_MISSION).
+/// 02b2 <packet len>.W <num>.L { <quest id>.L <start time>.L <expire time>.L <mobs>.W { <mob id>.L <mob count>.W <mob name>.24B }*3 }*num
 void clif_quest_send_mission(struct map_session_data * sd)
 {
 	int fd = sd->fd;
@@ -15390,7 +15412,7 @@ void clif_quest_send_mission(struct map_session_data * sd)
 	struct mob_db *mob;
 
 	WFIFOHEAD(fd, len);
-	WFIFOW(fd, 0) = 0x02B2;
+	WFIFOW(fd, 0) = 0x2b2;
 	WFIFOW(fd, 2) = len;
 	WFIFOL(fd, 4) = sd->avail_quests;
 
@@ -15413,15 +15435,17 @@ void clif_quest_send_mission(struct map_session_data * sd)
 	WFIFOSET(fd, len);
 }
 
-//* 02B3 <quest_id>.L <state>.B <start time>.L <expire time>.L <num mobs>.W {<mob id>.L <mob count>.W <Mob Name>.24B}.30B[3]
+
+/// Notification about a new quest (ZC_ADD_QUEST).
+/// 02b3 <quest id>.L <active>.B <start time>.L <expire time>.L <mobs>.W { <mob id>.L <mob count>.W <mob name>.24B }*3
 void clif_quest_add(struct map_session_data * sd, struct quest * qd, int index)
 {
 	int fd = sd->fd;
 	int i;
 	struct mob_db *mob;
 
-	WFIFOHEAD(fd, packet_len(0x02B3));
-	WFIFOW(fd, 0) = 0x02B3;
+	WFIFOHEAD(fd, packet_len(0x2b3));
+	WFIFOW(fd, 0) = 0x2b3;
 	WFIFOL(fd, 2) = qd->quest_id;
 	WFIFOB(fd, 6) = qd->state;
 	WFIFOB(fd, 7) = qd->time - quest_db[index].time;
@@ -15436,62 +15460,81 @@ void clif_quest_add(struct map_session_data * sd, struct quest * qd, int index)
 		memcpy(WFIFOP(fd, i*30+23), mob?mob->jname:"NULL", NAME_LENGTH);
 	}
 
-	WFIFOSET(fd, packet_len(0x02B3));
+	WFIFOSET(fd, packet_len(0x2b3));
 }
 
-//* 02B4 <quest_id>.L
+
+/// Notification about a quest being removed (ZC_DEL_QUEST).
+/// 02b4 <quest id>.L
 void clif_quest_delete(struct map_session_data * sd, int quest_id)
 {
 	int fd = sd->fd;
 
-	WFIFOHEAD(fd, packet_len(0x02B4));
-	WFIFOW(fd, 0) = 0x02B4;
+	WFIFOHEAD(fd, packet_len(0x2b4));
+	WFIFOW(fd, 0) = 0x2b4;
 	WFIFOL(fd, 2) = quest_id;
-	WFIFOSET(fd, packet_len(0x02B4));
+	WFIFOSET(fd, packet_len(0x2b4));
 }
 
-//* 02b5 <packet_len>.w <mob_num>.w { <quest_id>.d <mob_id>.d <count_total>.w <count_partial>.w }.mob_num
+
+/// Notification of an update to the hunting mission counter (ZC_UPDATE_MISSION_HUNT).
+/// 02b5 <packet len>.W <mobs>.W { <quest id>.L <mob id>.L <total count>.W <current count>.W }*3
 void clif_quest_update_objective(struct map_session_data * sd, struct quest * qd, int index)
 {
-    int fd = sd->fd;
+	int fd = sd->fd;
 	int i;
 	int len = quest_db[index].num_objectives*12+6;
 
 	WFIFOHEAD(fd, len);
-    WFIFOW(fd, 0) = 0x02B5;
-    WFIFOW(fd, 2) = len;
-    WFIFOW(fd, 4) = quest_db[index].num_objectives;
+	WFIFOW(fd, 0) = 0x2b5;
+	WFIFOW(fd, 2) = len;
+	WFIFOW(fd, 4) = quest_db[index].num_objectives;
 
 	for( i = 0; i < quest_db[index].num_objectives; i++ )
-    {
-        WFIFOL(fd, i*12+6) = qd->quest_id;
-        WFIFOL(fd, i*12+10) = quest_db[index].mob[i];
-        WFIFOW(fd, i*12+14) = quest_db[index].count[i];
-        WFIFOW(fd, i*12+16) = qd->count[i];
-    }
+	{
+		WFIFOL(fd, i*12+6) = qd->quest_id;
+		WFIFOL(fd, i*12+10) = quest_db[index].mob[i];
+		WFIFOW(fd, i*12+14) = quest_db[index].count[i];
+		WFIFOW(fd, i*12+16) = qd->count[i];
+	}
 
 	WFIFOSET(fd, len);
 }
 
 
-//* 02B6 <quest_id>.L <state>.B
+/// Request to change the state of a quest (CZ_ACTIVE_QUEST).
+/// 02b6 <quest id>.L <active>.B
 void clif_parse_questStateAck(int fd, struct map_session_data * sd)
 {
 	quest_update_status(sd, RFIFOL(fd,2), RFIFOB(fd,6)?Q_ACTIVE:Q_INACTIVE);
 }
 
-//* 02B7 <quest_id>.L <state_to>.B
+
+/// Notification about the change of a quest state (ZC_ACTIVE_QUEST).
+/// 02b7 <quest id>.L <active>.B
 void clif_quest_update_status(struct map_session_data * sd, int quest_id, bool active)
 {
 	int fd = sd->fd;
 
-	WFIFOHEAD(fd, packet_len(0x02B7));
-	WFIFOW(fd, 0) = 0x02B7;
+	WFIFOHEAD(fd, packet_len(0x2b7));
+	WFIFOW(fd, 0) = 0x2b7;
 	WFIFOL(fd, 2) = quest_id;
 	WFIFOB(fd, 6) = active;
-	WFIFOSET(fd, packet_len(0x02B7));
+	WFIFOSET(fd, packet_len(0x2b7));
 }
 
+
+/// Notification about an NPC's quest state (ZC_QUEST_NOTIFY_EFFECT).
+/// 0446 <npc id>.L <x>.W <y>.W <effect>.W <type>.W
+/// effect:
+///     0 = none
+///     1 = exclamation mark icon
+///     2 = question mark icon
+/// type:
+///     0 = yellow
+///     1 = orange
+///     2 = green
+///     3 = purple
 void clif_quest_show_event(struct map_session_data *sd, struct block_list *bl, short state, short color)
 {
 #if PACKETVER >= 20090218
@@ -17174,7 +17217,7 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0, 14,  6, 50,  0,  0,  4,288, 12,  0,
+	    0,  0,  0,  0,  0,  0,  0, 14,  6, 50, -1,  0,  4,288, 12,  0,
 	//#0x0980
 	    0,  0,  0, 29, 28,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	   31, -1, -1, -1, -1, -1, -1, -1,  8, 11,  9,  8,  0,  0,  0, 22,
@@ -17184,7 +17227,7 @@ static int packetdb_readdb(void)
 	    0, 10,  0,  0,  0,  0,  0,  0,  0,  0, 23,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, -1, -1, -1,  0,  7,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0, 75,  0,  0,  0,  0,  0, -1, -1, -1,
+	    0,  0,  0,  0,  0,  0,  0, 75, -1,  0,  0,  0,  0, -1, -1, -1,
 	//#0x0A00
 	    0,  0,  4,  0,  0,  0,  0,  0,  0, 45, 47, 47, 56, -1,  0, -1,
 	   -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,

@@ -1871,6 +1871,9 @@ packet_ver: 31
 0x0923,36,storagepassword,0
 
 // New Packets
+0x097a,-1//ZC_ALL_QUEST_LIST2
+//0x09f8,-1//ZC_ALL_QUEST_LIST3
+
 0x09e8,12//CZ_OPEN_MAILBOX
 
 0x09f7,75//ZC_PROPERTY_HOMUN_2
@@ -1892,6 +1895,8 @@ packet_ver: 31
 0x0a10,-1//ZC_STORE_ITEMLIST_EQUIP_V6
 
 0x0a28,3//ZC_ACK_OPENSTORE2
+
+0x0a2e,6//Unknown
 
 //Add new packets here.
 //packet_ver: 32
