@@ -545,7 +545,7 @@ enum equip_pos {
 #if PACKETVER < 20110111
 	#define EQP_VISIBLE EQP_HELM
 #else
-	#define EQP_VISIBLE (EQP_HELM|EQP_COSTUME_HELM|EQP_COSTUME_GARMENT)
+	#define EQP_VISIBLE (EQP_HELM|EQP_GARMENT|EQP_COSTUME_HELM|EQP_COSTUME_GARMENT)
 #endif
 
 //Equip indexes constants. (eg: sd->equip_index[EQI_AMMO] returns the index
