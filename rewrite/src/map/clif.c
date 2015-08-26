@@ -7660,7 +7660,8 @@ int clif_produceeffect(struct map_session_data* sd,int flag,int nameid)
 	return 0;
 }
 
-// pet
+/// Initiates the pet taming process (ZC_START_CAPTURE).
+/// 019e
 int clif_catch_process(struct map_session_data *sd)
 {
 	int fd;
@@ -7674,6 +7675,10 @@ int clif_catch_process(struct map_session_data *sd)
 	return 0;
 }
 
+/// Displays the result of a pet taming attempt (ZC_TRYCAPTURE_MONSTER).
+/// 01a0 <result>.B
+///     0 = failure
+///     1 = success
 int clif_pet_roulette(struct map_session_data *sd,int data)
 {
 	int fd;
@@ -7689,9 +7694,8 @@ int clif_pet_roulette(struct map_session_data *sd,int data)
 	return 0;
 }
 
-/*==========================================
- * petóëÉäÉXÉgçÏê¨
- *------------------------------------------*/
+/// Presents a list of pet eggs that can be hatched (ZC_PETEGG_LIST).
+/// 01a6 <packet len>.W { <index>.W }*
 int clif_sendegg(struct map_session_data *sd)
 {
 	//R 01a6 <len>.w <index>.w*
@@ -7705,8 +7709,6 @@ int clif_sendegg(struct map_session_data *sd)
 		clif_displaymessage(fd, "Pets are not allowed in Guild Wars.");
 		return 0;
 	}
-	if( sd->sc.data[SC__GROOMY] )
-		return 0;
 
 	WFIFOHEAD(fd, MAX_INVENTORY * 2 + 4);
 	WFIFOW(fd,0)=0x1a6;
@@ -7726,16 +7728,17 @@ int clif_sendegg(struct map_session_data *sd)
 	return 0;
 }
 
-/*==========================================
- * Sends a specific pet data update.
- * type = 0 -> param = 0 (initial data)
- * type = 1 -> param = intimacy value
- * type = 2 -> param = hungry value
- * type = 3 -> param = accessory id
- * type = 4 -> param = performance number (1-3:normal, 4:special)
- * type = 5 -> param = hairstyle number
- * If sd is null, the update is sent to nearby objects, otherwise it is sent only to that player.
- *------------------------------------------*/
+/// Sends a specific pet data update (ZC_CHANGESTATE_PET).
+/// 01a4 <type>.B <id>.L <data>.L
+/// type:
+///     0 = pre-init (data = 0)
+///     1 = intimacy (data = 0~4)
+///     2 = hunger (data = 0~4)
+///     3 = accessory
+///     4 = performance (data = 1~3: normal, 4: special)
+///     5 = hairstyle
+///
+/// If sd is null, the update is sent to nearby objects, otherwise it is sent only to that player.
 int clif_send_petdata(struct map_session_data* sd, struct pet_data* pd, int type, int param)
 {
 	uint8 buf[16];
@@ -7752,6 +7755,8 @@ int clif_send_petdata(struct map_session_data* sd, struct pet_data* pd, int type
 	return 0;
 }
 
+/// Pet's base data (ZC_PROPERTY_PET).
+/// 01a2 <name>.24B <renamed>.B <level>.W <hunger>.W <intimacy>.W <accessory id>.W <class>.W
 int clif_send_petstatus(struct map_session_data *sd)
 {
 	int fd;
@@ -7778,9 +7783,10 @@ int clif_send_petstatus(struct map_session_data *sd)
 	return 0;
 }
 
-/*==========================================
- *
- *------------------------------------------*/
+/// Notification about a pet's emotion/talk (ZC_PET_ACT).
+/// 01aa <id>.L <data>.L
+/// data:
+///     @see CZ_PET_ACT.
 int clif_pet_emotion(struct pet_data *pd,int param)
 {
 	unsigned char buf[16];
@@ -7806,6 +7812,11 @@ int clif_pet_emotion(struct pet_data *pd,int param)
 	return 0;
 }
 
+/// Result of request to feed a pet (ZC_FEED_PET).
+/// 01a3 <result>.B <name id>.W
+/// result:
+///     0 = failure
+///     1 = success
 int clif_pet_food(struct map_session_data *sd,int foodid,int fail)
 {
 	int fd;
@@ -13072,35 +13083,75 @@ void clif_parse_GuildBreak(int fd, struct map_session_data *sd)
 	guild_break(sd,(char*)RFIFOP(fd,2));
 }
 
-// pet
+/// Pet
+///
+
+/// Request to invoke a pet menu action (CZ_COMMAND_PET).
+/// 01a1 <type>.B
+/// type:
+///     0 = pet information
+///     1 = feed
+///     2 = performance
+///     3 = return to egg
+///     4 = unequip accessory
 void clif_parse_PetMenu(int fd, struct map_session_data *sd)
 {
 	pet_menu(sd,RFIFOB(fd,2));
 }
 
+/// Attempt to tame a monster (CZ_TRYCAPTURE_MONSTER).
+/// 019f <id>.L
 void clif_parse_CatchPet(int fd, struct map_session_data *sd)
 {
 	pet_catch_process2(sd,RFIFOL(fd,2));
 }
 
+/// Answer to pet incubator egg selection dialog (CZ_SELECT_PETEGG).
+/// 01a7 <index>.W
 void clif_parse_SelectEgg(int fd, struct map_session_data *sd)
 {
-	if (sd->menuskill_id != SA_TAMINGMONSTER || sd->menuskill_val != -1)
-	{
-		//Forged packet, disconnect them [Kevin]
-		clif_authfail_fd(fd, 0);
-		return;
-	}
+	//if (sd->menuskill_id != SA_TAMINGMONSTER || sd->menuskill_val != -1)
+	//{
+	//	//Forged packet, disconnect them [Kevin]
+	//	clif_authfail_fd(fd, 0);
+	//	return;
+	//}
 	pet_select_egg(sd,RFIFOW(fd,2)-2);
 	sd->menuskill_val = sd->menuskill_id = 0;
 }
 
+/// Request to display pet's emotion/talk (CZ_PET_ACT).
+/// 01a9 <data>.L
+/// data:
+///     is either emotion (@see enum emotion_type) or a compound value
+///     (((mob id)-100)*100+(act id)*10+(hunger)) that describes an
+///     entry (given in parentheses) in data\pettalktable.xml
+///     act id:
+///         0 = feeding
+///         1 = hunting
+///         2 = danger
+///         3 = dead
+///         4 = normal (stand)
+///         5 = special performance (perfor_s)
+///         6 = level up (levelup)
+///         7 = performance 1 (perfor_1)
+///         8 = performance 2 (perfor_2)
+///         9 = performance 3 (perfor_3)
+///        10 = log-in greeting (connect)
+///     hungry value:
+///         0 = very hungry (hungry)
+///         1 = hungry (bit_hungry)
+///         2 = satisfied (noting)
+///         3 = stuffed (full)
+///         4 = full (so_full)
 void clif_parse_SendEmotion(int fd, struct map_session_data *sd)
 {
 	if(sd->pd)
 		clif_pet_emotion(sd->pd,RFIFOL(fd,2));
 }
 
+/// Request to change pet's name (CZ_RENAME_PET).
+/// 01a5 <name>.24B
 void clif_parse_ChangePetName(int fd, struct map_session_data *sd)
 {
 	pet_change_name(sd,(char*)RFIFOP(fd,2));
@@ -13323,11 +13374,9 @@ void clif_parse_GMRecall2(int fd, struct map_session_data* sd)
 	}
 }
 
-
-/*==========================================
- * /monster /item 
- * R 01F3 <name>.24B
- *------------------------------------------*/
+/// /item /monster (CZ_ITEM_CREATE).
+/// Request to make items or spawn monsters.
+/// 013f <item/mob name>.24B
 void clif_parse_GM_Monster_Item(int fd, struct map_session_data *sd)
 {
 	char *monster_item_name;
@@ -17224,7 +17273,7 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0, 14,  0,  0,  0,  0,  0,  0,  0,  0,
 	//#0x09C0
-	    0, 10,  0,  0,  0,  0,  0,  0,  0,  0, 23,  0,  0,  0,  0,  0,
+	    0, 10,  0,  0,  0,  0,  0,  0,  0,  0, 23,  0,  0,  0,102,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, -1, -1, -1,  0,  7,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0, 75, -1,  0,  0,  0,  0, -1, -1, -1,
