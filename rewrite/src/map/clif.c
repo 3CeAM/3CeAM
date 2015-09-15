@@ -1425,6 +1425,8 @@ int clif_spawn(struct block_list *bl)
 				clif_status_change(&sd->bl,SI_SUMMON5,1,9999,sd->sc.data[SC_SPHERE_5]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_FREEZING] )
 				clif_status_change(&sd->bl,SI_FROSTMISTY,1,9999,sd->sc.data[SC_FREEZING]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_STEALTHFIELD] )
+				clif_status_change(&sd->bl,SI_STEALTHFIELD,1,9999,sd->sc.data[SC_STEALTHFIELD]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_VENOMIMPRESS] )
 				clif_status_change(&sd->bl,SI_VENOMIMPRESS,1,9999,sd->sc.data[SC_VENOMIMPRESS]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_HALLUCINATIONWALK] )
@@ -4773,6 +4775,8 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_SUMMON5,1,9999,tsd->sc.data[SC_SPHERE_5]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_FREEZING] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_FROSTMISTY,1,9999,tsd->sc.data[SC_FREEZING]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_STEALTHFIELD] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_STEALTHFIELD,1,9999,tsd->sc.data[SC_STEALTHFIELD]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_VENOMIMPRESS] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_VENOMIMPRESS,1,9999,tsd->sc.data[SC_VENOMIMPRESS]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_HALLUCINATIONWALK] )

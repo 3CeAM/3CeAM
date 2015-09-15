@@ -10436,11 +10436,8 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case NC_NEUTRALBARRIER:
 	case NC_STEALTHFIELD:
 		skill_clear_unitgroup(src); // To remove previous skills - cannot used combined
-		if( (sg = skill_unitsetting(src,skillid,skilllv,src->x,src->y,0)) != NULL )
-		{
+		if((sg = skill_unitsetting(src,skillid,skilllv,src->x,src->y,0)))
 			sc_start2(src,skillid == NC_NEUTRALBARRIER ? SC_NEUTRALBARRIER_MASTER : SC_STEALTHFIELD_MASTER,100,skilllv,sg->group_id,skill_get_time(skillid,skilllv));
-			if( sd ) pc_overheat(sd,1);
-		}
 		break;
 
 	case NC_SILVERSNIPER:
@@ -11454,6 +11451,8 @@ static int skill_unit_onplace (struct skill_unit *src, struct block_list *bl, un
 	case UNT_VOLCANO:
 	case UNT_DELUGE:
 	case UNT_VIOLENTGALE:
+	case UNT_NEUTRALBARRIER:
+	case UNT_STEALTHFIELD:
 	case UNT_FIRE_INSIGNIA:
 	case UNT_WATER_INSIGNIA:
 	case UNT_WIND_INSIGNIA:
@@ -11461,6 +11460,8 @@ static int skill_unit_onplace (struct skill_unit *src, struct block_list *bl, un
 	case UNT_WATER_BARRIER:
 	case UNT_ZEPHYR:
 	case UNT_POWER_OF_GAIA:
+		if (sg->src_id == bl->id && sg->unit_id == UNT_STEALTHFIELD)
+			return 0;// Can't be affected by your own stealth field.
 		if(!sce)
 			sc_start(bl,type,100,sg->skill_lv,sg->limit);
 		break;
@@ -12057,14 +12058,6 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 				skill_castend_damage_id(&src->bl, bl, sg->skill_id, sg->skill_lv, 0, 0);*/
 			break;
 
-		case UNT_STEALTHFIELD:
-			if( bl->id == sg->src_id )
-			break; // Dont work on Self (video shows that)
-
-		case UNT_NEUTRALBARRIER:
-			sc_start(bl,type,100,sg->skill_lv,sg->interval + 100);
-			break;
-
 		case UNT_DIMENSIONDOOR:
 			if( tsd && !map[bl->m].flag.noteleport )
 				pc_randomwarp(tsd,3);
@@ -12283,8 +12276,6 @@ int skill_unit_onout (struct skill_unit *src, struct block_list *bl, unsigned in
 		break;
 
 	case UNT_EPICLESIS:
-	case UNT_NEUTRALBARRIER:
-	case UNT_STEALTHFIELD:
 	case UNT_WARMER:
 	case UNT_WATER_BARRIER:
 	case UNT_ZEPHYR:
@@ -12362,6 +12353,8 @@ static int skill_unit_onleft (int skill_id, struct block_list *bl, unsigned int 
 		case CG_HERMODE:
 		case HW_GRAVITATION:
 		case NJ_SUITON:
+		case NC_NEUTRALBARRIER:
+		case NC_STEALTHFIELD:
 		case SC_MAELSTROM:
 		case SC_BLOODYLUST:
 		case SO_FIRE_INSIGNIA:
@@ -15433,21 +15426,21 @@ int skill_delunitgroup_(struct skill_unit_group *group, const char* file, int li
 		if( sc && sc->data[SC_NEUTRALBARRIER_MASTER] )
 		{
 			sc->data[SC_NEUTRALBARRIER_MASTER]->val2 = 0;
-			status_change_end(src,SC_NEUTRALBARRIER_MASTER,-1);
+			status_change_end(src,SC_NEUTRALBARRIER_MASTER, INVALID_TIMER);
 		}
 		break;
 	case NC_STEALTHFIELD:
 		if( sc && sc->data[SC_STEALTHFIELD_MASTER] )
 		{
 			sc->data[SC_STEALTHFIELD_MASTER]->val2 = 0;
-			status_change_end(src,SC_STEALTHFIELD_MASTER,-1);
+			status_change_end(src,SC_STEALTHFIELD_MASTER, INVALID_TIMER);
 		}
 		break;
 	case LG_BANDING:
 		if( sc && sc->data[SC_BANDING] )
 		{
 			sc->data[SC_BANDING]->val4 = 0;
-			status_change_end(src,SC_BANDING,-1);
+			status_change_end(src,SC_BANDING, INVALID_TIMER);
 		}
 		break;
 	}
