@@ -1698,6 +1698,24 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 			return 0;
 		if( skill_num == PR_LEXAETERNA && (tsc->data[SC_FREEZE] || (tsc->data[SC_STONE] && tsc->opt1 == OPT1_STONE)) )
 			return 0;
+		if( skill_num && tsc->data[SC_STEALTHFIELD] )
+			return 0;
+	}
+
+	if( tsc && tsc->option )
+	{
+		if (battle_config.mado_cast_skill_on_limit == 0 && tsc->option&OPTION_MADOGEAR)
+			switch (skill_num)
+			{// List of skills not castable on player's mounted on a mado.
+				case AL_HEAL:
+				case AL_INCAGI:
+				case AL_DECAGI:
+				case AB_RENOVATIO:
+				case AB_HIGHNESSHEAL:
+					return 0;
+				default:
+					break;
+			}
 	}
 
 	//If targetting, cloak+hide protect you, otherwise only hiding does.
@@ -1721,8 +1739,6 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 			if( tsc->data[SC_CAMOUFLAGE] && !(status->mode&(MD_BOSS|MD_DETECTOR)) && !skill_num )
 			//Enable the line below once all the missing information for this skill is added. Leaving it enabled will caused overpowering issues. [Rytech]
 			//if( tsc->data[SC_CAMOUFLAGE] && !(status->mode&(MD_BOSS|MD_DETECTOR)) )
-				return 0;
-			if( tsc->data[SC_STEALTHFIELD] )
 				return 0;
 			if( sc && sc->data[SC_CURSEDCIRCLE_TARGET] )
 				return 0;
@@ -1748,8 +1764,6 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 		{
 			if( tsc->option&hide_flag && !(status->mode&(MD_BOSS|MD_DETECTOR)) )
 				return 0;
-			if( tsc->data[SC_STEALTHFIELD] )
-				return 0;
 		}
 	}
 	return 1;
@@ -1773,8 +1787,6 @@ int status_check_visibility(struct block_list *src, struct block_list *target)
 	}
 
 	if (src->m != target->m || !check_distance_bl(src, target, view_range))
-		return 0;
-	if( tsc && tsc->data[SC_STEALTHFIELD] )
 		return 0;
 
 	switch (target->type)
@@ -7862,8 +7874,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			}
 			break;
 		case SC_STEALTHFIELD_MASTER:
-			val3 = 2000 + 1000 * val1;
-			val4 = tick / val3;
+			val4 = tick / (2000 + 1000 * val1);
 			tick = val4;
 			break;
 		case SC_ELECTRICSHOCKER:

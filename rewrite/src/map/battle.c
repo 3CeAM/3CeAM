@@ -5979,6 +5979,7 @@ static const struct _battle_data {
 	{ "renewal_baselvl_skill_effect",       &battle_config.renewal_baselvl_skill_effect,    1,      0,      1,              },
 	{ "mado_skill_limit",                   &battle_config.mado_skill_limit,                0,      0,      1,              },
 	{ "mado_loss_on_death",                 &battle_config.mado_loss_on_death,              1,      0,      1,              },
+	{ "mado_cast_skill_on_limit",           &battle_config.mado_cast_skill_on_limit,        0,      0,      1,              },
 	{ "marionette_renewal_jobs",            &battle_config.marionette_renewal_jobs,         0,      0,      1,              },
 	{ "banana_bomb_sit_duration",           &battle_config.banana_bomb_sit_duration,        1,      0,      1,              },
 	{ "monster_hp_info",                    &battle_config.monster_hp_info,                 1,      0,      1,              },
