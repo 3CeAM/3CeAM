@@ -1376,7 +1376,7 @@ int clif_spawn(struct block_list *bl)
 
 	vd = status_get_viewdata(bl);
 	if( !vd || vd->class_ == INVISIBLE_CLASS ||
-		bl->type == BL_NPC && ((TBL_NPC*)bl)->sc.option&OPTION_INVISIBLE )
+		bl->type == BL_NPC && !((TBL_NPC*)bl)->chat_id && ((TBL_NPC*)bl)->sc.option&OPTION_INVISIBLE )
 		return 0;
 
 	len = clif_set_unit_idle(bl, buf,true);
@@ -1722,7 +1722,7 @@ void clif_move(struct unit_data *ud)
 
 	vd = status_get_viewdata(bl);
 	if (!vd || vd->class_ == INVISIBLE_CLASS ||
-		bl->type == BL_NPC && ((TBL_NPC*)bl)->sc.option&OPTION_INVISIBLE )
+		bl->type == BL_NPC && !((TBL_NPC*)bl)->chat_id && ((TBL_NPC*)bl)->sc.option&OPTION_INVISIBLE )
 		return; //This performance check is needed to keep GM-hidden objects from being notified to bots.
 	
 	if (ud->state.speed_changed) {
@@ -4730,7 +4730,7 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 	
 	vd = status_get_viewdata(bl);
 	if (!vd || vd->class_ == INVISIBLE_CLASS ||
-		bl->type == BL_NPC && ((TBL_NPC*)bl)->sc.option&OPTION_INVISIBLE )
+		bl->type == BL_NPC && !((TBL_NPC*)bl)->chat_id && ((TBL_NPC*)bl)->sc.option&OPTION_INVISIBLE )
 		return;
 
 	ud = unit_bl2ud(bl);
