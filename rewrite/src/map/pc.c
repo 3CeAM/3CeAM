@@ -7604,6 +7604,7 @@ int pc_setcart(struct map_session_data *sd,int type)
 	{
 		if ( sd->sc.data[SC_ON_PUSH_CART] )
 		{	//If player already has a cart, chances are were changing the cart's look.
+			clif_clearcart(sd->fd);// Clear the cart list to later resend it to prevent item count glitch. [Rytech]
 			sd->sc.data[SC_ON_PUSH_CART]->val1 = type;
 			clif_status_change(&sd->bl, SI_ON_PUSH_CART, 1, 9999, sd->sc.data[SC_ON_PUSH_CART]->val1, 0, 0);
 		}
