@@ -7985,6 +7985,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case AB_SILENTIUM:
 		// Should the level of Lex Divina be equivalent to the level of Silentium or should the highest level learned be used? [LimitLine]
 		// The duration of the inflicted silence ailment is relative to the maximum level of Lex Divina learned. Thats from iRO wiki. [Rytech]
+		// FIX ME!!!! Learned level of Lex Divina doesn't affect the duration. [Rytech]
 		map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid, skilllv), BL_CHAR,
 			src, PR_LEXDIVINA, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
 		clif_skill_nodamage(src, bl, skillid, skilllv, 1);
@@ -8394,46 +8395,50 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case LG_SHIELDSPELL:
-		if( flag&1 )
-			//iRO Document says duration is shield MDEF * 30 seconds. Doesent sound right. Must confirm first. [Rytech]
-			sc_start(bl,SC_SILENCE,100,skilllv,sd->shieldmdef * 5000);
-		else if( sd )
-	//	if (sd)
+		if (sd)
 		{
-			int opt = 0;
-			int val = 0;
-			struct item_data *shield_data = sd->inventory_data[sd->equip_index[EQI_HAND_L]];
+			short effect_number = rand()%3 + 1;// Effect Number. Each level has 3 unique effects thats randomly picked from.
+			short shield_bonus = 0;// Shield Stats. DEF/MDEF/Refine is taken from shield and ran through a formula.
+			short splash_range = 0;// Splash AoE. Used for splash AoE ATK/MATK and Lex Divina.
+			struct item_data *shield_data = sd->inventory_data[sd->equip_index[EQI_HAND_L]];// Checks DEF of shield.
+			struct item *shield = &sd->status.inventory[sd->equip_index[EQI_HAND_L]];// Checks refine of shield.
+
+			// Skill will first check if a shield is equipped. If none is found on the caster the skill will fail.
 			if( !shield_data || shield_data->type != IT_ARMOR )
-			{//Skill will first check if a shield is equipped. If none is found on the caster the skill will fail.
+			{
 				clif_skill_fail(sd, skillid, 0, 0, 0);
-				break;}
-			opt = rand()%3 + 1;//Generates a number between 1 - 3. The number generated will determine which effect will be triggered.
+				break;
+			}
+
 			switch( skilllv )
 			{
 				case 1:
 					{
-						int splashrange = 0;
-						if ( shield_data->def >= 0 && shield_data->def <= 4 )
-							splashrange = 1;
-						else if ( shield_data->def >= 5 && shield_data->def <= 9 )
-							splashrange = 2;
-						else
-							splashrange = 3;
-						switch( opt )
+						if ( effect_number == 1 )
+						{// Don't bother setting the splash AoE size unless effect 1 is going to trigger.
+							if ( shield_data->def >= 0 && shield_data->def <= 4 )
+								splash_range = 1;
+							else if ( shield_data->def >= 5 && shield_data->def <= 8 )
+								splash_range = 2;
+							else
+								splash_range = 3;
+						}
+
+						switch( effect_number )
 						{
-							case 1:
-								sc_start(bl,SC_SHIELDSPELL_DEF,100,opt,-1);//Splash AoE ATK
+							case 1://Splash AoE ATK
+								sc_start(bl,SC_SHIELDSPELL_DEF,100,effect_number,-1);
 								clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
-									map_foreachinrange(skill_area_sub,src,splashrange,BL_CHAR,src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
+								map_foreachinrange(skill_area_sub,src,splash_range,BL_CHAR,src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
 								status_change_end(bl,SC_SHIELDSPELL_DEF,-1);
 								break;
-							case 2:
-								val = shield_data->def;//Damage Reflecting Increase.
-								sc_start2(bl,SC_SHIELDSPELL_DEF,100,opt,val,shield_data->def * 10 * 1000);
+							case 2://Damage Reflecting Increase.
+								shield_bonus = shield_data->def;
+								sc_start2(bl,SC_SHIELDSPELL_DEF,100,effect_number,shield_bonus,shield_data->def * 10 * 1000);
 								break;
-							case 3:
-								val = 10 * shield_data->def;//Weapon Attack Increase.
-								sc_start2(bl,SC_SHIELDSPELL_DEF,100,opt,val,shield_data->def * 10 * 3000);
+							case 3://Weapon Attack Increase.
+								shield_bonus = 10 * shield_data->def;
+								sc_start2(bl,SC_SHIELDSPELL_DEF,100,effect_number,shield_bonus,shield_data->def * 10 * 3000);
 								break;
 						}
 					}
@@ -8441,30 +8446,34 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 				case 2:
 					{
-						int splashrange = 0;
-						if ( sd->shieldmdef >= 0 && sd->shieldmdef <= 3 )//Info says between 1 - 3, but ill make it go as low as 0 for now. [Rytech]
-							splashrange = 1;
-						else if ( sd->shieldmdef >= 4 && sd->shieldmdef <= 5 )
-							splashrange = 2;
-						else
-							splashrange = 3;
-						switch( opt )
+						if ( effect_number != 3 )
+						{// Don't bother setting the splash AoE size unless effect 1 or 2 is going to trigger.
+							if ( sd->shieldmdef >= 0 && sd->shieldmdef <= 3 )//Info says between 1 - 3, but ill make it go as low as 0 for now. [Rytech]
+								splash_range = 1;
+							else if ( sd->shieldmdef >= 4 && sd->shieldmdef <= 5 )
+								splash_range = 2;
+							else
+								splash_range = 3;
+						}
+						switch( effect_number )
 						{
-							case 1:
-								sc_start(bl,SC_SHIELDSPELL_MDEF,100,opt,-1);//Splash AoE MATK
+							case 1://Splash AoE MATK
+								sc_start(bl,SC_SHIELDSPELL_MDEF,100,effect_number,-1);
 								clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
-									map_foreachinrange(skill_area_sub,src,splashrange,BL_CHAR,src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
+								map_foreachinrange(skill_area_sub,src,splash_range,BL_CHAR,src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
 								status_change_end(bl,SC_SHIELDSPELL_MDEF,-1);
 								break;
-							case 2:
-								sc_start(bl,SC_SHIELDSPELL_MDEF,100,opt,sd->shieldmdef * 2000);//Splash AoE Lex Divina
-								clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
-									map_foreachinrange(skill_area_sub,src,splashrange,BL_CHAR,src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_nodamage_id);
+							case 2://Splash AoE Lex Divina
+								shield_bonus = sd->shieldmdef;// Shield's MDEF = Level of Lex Divina to cast.
+								if ( shield_bonus > 10 )
+									shield_bonus = 10;// Don't cast any level above 10.
+								sc_start(bl,SC_SHIELDSPELL_MDEF,100,effect_number,-1);
+								map_foreachinrange(skill_area_sub,src,splash_range,BL_CHAR,src,PR_LEXDIVINA,shield_bonus,tick,flag|BCT_ENEMY|1,skill_castend_nodamage_id);
+								status_change_end(bl,SC_SHIELDSPELL_MDEF,-1);
 								break;
 							case 3://Magnificat
-								if( sc_start(bl,SC_SHIELDSPELL_MDEF,100,opt,sd->shieldmdef * 30000) )//Got this duration formula from Frost. Need to confirm still. [Rytech]
-									clif_skill_nodamage(src,bl,PR_MAGNIFICAT,skilllv,
-									sc_start(bl,SC_MAGNIFICAT,100,1,sd->shieldmdef * 30000));
+								if( sc_start(bl,SC_SHIELDSPELL_MDEF,100,effect_number,sd->shieldmdef * 30000) )
+									clif_skill_nodamage(src,bl,PR_MAGNIFICAT,skilllv,sc_start(bl,SC_MAGNIFICAT,100,1,sd->shieldmdef * 30000));
 								break;
 						}
 					}
@@ -8472,34 +8481,33 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 				case 3:
 					{
-						struct item *shield = &sd->status.inventory[sd->equip_index[EQI_HAND_L]];
-						switch( opt )
+						
+						switch( effect_number )
 						{
-							case 1:
-								sc_start(bl,SC_SHIELDSPELL_REF,100,opt,-1);
-								//Status Resistance Increase Needs To Be Coded Here.
-								status_change_end(bl,SC_SHIELDSPELL_REF,-1);
+							case 1://Status Resistance Increase. This is for common status's.
+								shield_bonus = 2 * shield->refine + sstatus->luk / 10;
+								sc_start2(bl,SC_SHIELDSPELL_REF,100,effect_number,shield_bonus,shield->refine * 30000);
 								break;
-							case 2:
-								val = shield->refine;//DEF Increase / Using Converted DEF Increase Formula Here.
-								sc_start2(bl,SC_SHIELDSPELL_REF,100,opt,val,shield->refine * 20000);
+							case 2://DEF Increase / Using Converted DEF Increase Formula For Pre-renewal Mechanics.
+								shield_bonus = shield->refine;
+								sc_start2(bl,SC_SHIELDSPELL_REF,100,effect_number,shield_bonus,shield->refine * 20000);
 								break;
-							case 3:
-								sc_start(bl,SC_SHIELDSPELL_REF,100,opt,-1);//HP Recovery
+							case 3://HP Recovery
+								sc_start(bl,SC_SHIELDSPELL_REF,100,effect_number,-1);
 								if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-									val = sstatus->max_hp * (status_get_lv(src) / 10 + shield->refine) / 100;
+									shield_bonus = sstatus->max_hp * (status_get_lv(src) / 10 + shield->refine) / 100;
 								else
-									val = sstatus->max_hp * (15 + shield->refine) / 100;
-								status_heal(bl, val, 0, 2);
+									shield_bonus = sstatus->max_hp * (15 + shield->refine) / 100;
+								status_heal(bl, shield_bonus, 0, 2);
 								status_change_end(bl,SC_SHIELDSPELL_REF,-1);
 							break;
 						}
 					}
 					break;
-				}
-				clif_skill_nodamage(src,bl,skillid,skilllv,1);
 			}
-			break;
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		}
+		break;
 
 	case LG_PIETY:
 		if( flag&1 )
@@ -13847,8 +13855,12 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 			if( lv <= 5 )	// no gems required at level 1-5
 				continue;
 			break;
-		case NC_SHAPESHIFT://FIX ME
+		case NC_SHAPESHIFT:
 			if( i < 4 )
+				continue;
+			break;
+		case NC_REPAIR:
+			if( i < 5 )
 				continue;
 			break;
 		case GN_FIRE_EXPANSION://CHECK ME
@@ -13881,8 +13893,8 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 		)	// Not consume it
 			req.itemid[i] = req.amount[i] = 0;
 	}
-	if( skill == NC_SHAPESHIFT || skill == GN_FIRE_EXPANSION )
-	{		
+	if( skill == NC_SHAPESHIFT || skill == NC_REPAIR || skill == GN_FIRE_EXPANSION )
+	{
 		req.itemid[lv-1] = skill_db[j].itemid[lv-1];
 		req.amount[lv-1] = skill_db[j].amount[lv-1];
 	}

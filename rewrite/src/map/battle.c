@@ -2419,15 +2419,15 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case LG_OVERBRAND:
 					skillratio = 400 * skill_lv + 50 * pc_checkskill(sd,CR_SPEARQUICKEN);
 					if( re_baselv_bonus == 1 && s_level >= 100 )
-						skillratio = skillratio * s_level / 100;	// Base level bonus.
+						skillratio = skillratio * s_level / 150;	// Base level bonus.
 					break;
 				case LG_OVERBRAND_BRANDISH:
 					skillratio = 300 * skill_lv + sstatus->str + sstatus->dex;
 					if( re_baselv_bonus == 1 && s_level >= 100 )
-						skillratio = skillratio * s_level / 100;	// Base level bonus.
+						skillratio = skillratio * s_level / 150;	// Base level bonus.
 					break;
 				case LG_OVERBRAND_PLUSATK:
-					skillratio = 200 * skill_lv + rnd_value( 10, 100);
+					skillratio = 200 * skill_lv;
 					break;
 				case LG_MOONSLASHER:
 					skillratio = 120 * skill_lv + 80 * pc_checkskill(sd,LG_OVERBRAND);
