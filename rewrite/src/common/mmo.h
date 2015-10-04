@@ -778,6 +778,8 @@ enum {
 
 	JOB_REBELLION = 4215,
 
+	JOB_SUMMONER = 4218,
+
 	JOB_MAX,
 };
 
@@ -785,6 +787,11 @@ enum {
 	SEX_FEMALE = 0,
 	SEX_MALE,
 	SEX_SERVER
+};
+
+enum {
+	RACE_HUMAN = 0,
+	RACE_DORAM
 };
 
 // sanity checks...

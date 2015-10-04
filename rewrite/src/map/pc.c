@@ -5008,6 +5008,7 @@ int pc_jobid2mapid(unsigned short b_class)
 		case JOB_HANBOK:                return MAPID_HANBOK;
 		case JOB_OKTOBERFEST:           return MAPID_OKTOBERFEST;
 		case JOB_SUMMER2:               return MAPID_SUMMER2;
+		case JOB_SUMMONER:              return MAPID_SUMMONER;
 	//2-1 Jobs
 		case JOB_SUPER_NOVICE:          return MAPID_SUPER_NOVICE;
 		case JOB_KNIGHT:                return MAPID_KNIGHT;
@@ -5153,6 +5154,7 @@ int pc_mapid2jobid(unsigned short class_, int sex)
 		case MAPID_HANBOK:                return JOB_HANBOK;
 		case MAPID_OKTOBERFEST:           return JOB_OKTOBERFEST;
 		case MAPID_SUMMER2:               return JOB_SUMMER2;
+		case MAPID_SUMMONER:              return JOB_SUMMONER;
 	//2-1 Jobs
 		case MAPID_SUPER_NOVICE:          return JOB_SUPER_NOVICE;
 		case MAPID_KNIGHT:                return JOB_KNIGHT;
@@ -5498,6 +5500,9 @@ char* job_name(int class_)
 
 	case JOB_REBELLION:
 		return msg_txt(656);
+
+	case JOB_SUMMONER:
+		return msg_txt(658);
 	
 	default:
 		return msg_txt(699);
