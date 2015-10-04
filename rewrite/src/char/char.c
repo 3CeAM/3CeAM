@@ -1551,6 +1551,7 @@ char * job_name(int class_)
 	case JOB_KAGEROU: return "Kagerou";
 	case JOB_OBORO: return "Oboro";
 	case JOB_REBELLION: return "Rebellion";
+	case JOB_SUMMONER: return "Summoner";
 	}
 	return "Unknown Job";
 }
