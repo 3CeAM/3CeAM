@@ -35,6 +35,8 @@
 #define CHAR_CONF_NAME	"conf/char_athena.conf"
 #define LAN_CONF_NAME	"conf/subnet_athena.conf"
 
+#define DUMP_UNKNOWN_CHAR_PACKET
+
 char char_txt[1024] = "save/athena.txt";
 char friends_txt[1024] = "save/friends.txt";
 char hotkeys_txt[1024] = "save/hotkeys.txt";
@@ -1308,7 +1310,11 @@ int check_char_name(char * name)
 // Function to create a new character
 //-----------------------------------
 #if PACKETVER >= 20120307
+#if PACKETVER >= 20151001
+int make_new_char(struct char_session_data* sd, char* name_, int slot, int hair_color, int hair_style, short starting_job) {
+#else
 int make_new_char(struct char_session_data* sd, char* name_, int slot, int hair_color, int hair_style) {
+#endif
 	int str = 1, agi = 1, vit = 1, int_ = 1, dex = 1, luk = 1;
 #else
 int make_new_char(struct char_session_data* sd, char* name_, int str, int agi, int vit, int int_, int dex, int luk, int slot, int hair_color, int hair_style) {
@@ -1368,7 +1374,11 @@ int make_new_char(struct char_session_data* sd, char* name_, int str, int agi, i
 	char_dat[i].status.account_id = sd->account_id;
 	char_dat[i].status.slot = slot;
 	safestrncpy(char_dat[i].status.name,name,NAME_LENGTH);
+#if PACKETVER >= 20151001
+	char_dat[i].status.class_ = starting_job;
+#else
 	char_dat[i].status.class_ = 0;
+#endif
 	char_dat[i].status.base_level = 1;
 	char_dat[i].status.job_level = 1;
 	char_dat[i].status.base_exp = 0;
@@ -3895,7 +3905,11 @@ int parse_char(int fd)
 		}
 		break;
 
-#if PACKETVER >= 20120307
+#if PACKETVER >= 20151001
+		// S 0a39 <name>.24B <slot>.B <hair color>.W <hair style>.W <starting job ID>.W <Unknown>.(W or 2 B's)??? <sex>.B
+		case 0xa39:
+			FIFOSD_CHECK(36);
+#elif PACKETVER >= 20120307
 		// S 0970 <name>.24B <slot>.B <hair color>.W <hair style>.W
 		case 0x970:
 			FIFOSD_CHECK(31);
@@ -3909,7 +3923,9 @@ int parse_char(int fd)
 				i = -2;
 			else
 
-#if PACKETVER >= 20120307
+#if PACKETVER >= 20151001
+				i = make_new_char(sd, (char*)RFIFOP(fd,2),RFIFOB(fd,26),RFIFOW(fd,27),RFIFOW(fd,29),RFIFOW(fd,31));
+#elif PACKETVER >= 20120307
 				i = make_new_char(sd, (char*)RFIFOP(fd,2),RFIFOB(fd,26),RFIFOW(fd,27),RFIFOW(fd,29));
 #else
 				i = make_new_char(sd, (char*)RFIFOP(fd,2),RFIFOB(fd,26),RFIFOB(fd,27),RFIFOB(fd,28),RFIFOB(fd,29),RFIFOB(fd,30),RFIFOB(fd,31),RFIFOB(fd,32),RFIFOW(fd,33),RFIFOW(fd,35));
@@ -3941,7 +3957,9 @@ int parse_char(int fd)
 				if( ch < MAX_CHARS )
 					sd->found_char[ch] = i; // position of the new char in the char_dat[] array
 			}
-#if PACKETVER >= 20120307
+#if PACKETVER >= 20151001
+			RFIFOSKIP(fd,36);
+#elif PACKETVER >= 20120307
 			RFIFOSKIP(fd,31);
 #else
 			RFIFOSKIP(fd,37);
@@ -4180,6 +4198,9 @@ int parse_char(int fd)
 		// unknown packet received
 		default:
 			ShowError("parse_char: Received unknown packet "CL_WHITE"0x%x"CL_RESET" from ip '"CL_WHITE"%s"CL_RESET"'! Disconnecting!\n", RFIFOW(fd,0), ip2str(ipl, NULL));
+#ifdef DUMP_UNKNOWN_CHAR_PACKET
+			ShowDump(RFIFOP(fd,0), RFIFOREST(fd));
+#endif
 			set_eof(fd);
 			return 0;
 		}
