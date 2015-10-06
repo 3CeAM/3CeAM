@@ -9871,6 +9871,10 @@ static bool clif_process_message(struct map_session_data* sd, int format, char**
 		messagelen = textlen - NAME_LENGTH; // this should be the message length (w/ zero byte included)
 	}
 
+#if PACKETVER >= 20151001
+	message[messagelen++] = '\0';
+#endif
+
 	if( messagelen != strnlen(message, messagelen)+1 )
 	{	// the declared length must match real length
 		ShowWarning("clif_process_message: Received malformed packet from player '%s' (length is incorrect)!\n", sd->status.name);
