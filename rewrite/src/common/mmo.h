@@ -105,7 +105,7 @@
 #define MAX_ZENY 1000000000
 #define MAX_FAME 1000000000
 #define MAX_CART 100
-#define MAX_SKILL 5016
+#define MAX_SKILL 5042
 #define GLOBAL_REG_NUM 256
 #define ACCOUNT_REG_NUM 64
 #define ACCOUNT_REG2_NUM 16
@@ -787,11 +787,6 @@ enum {
 	SEX_FEMALE = 0,
 	SEX_MALE,
 	SEX_SERVER
-};
-
-enum {
-	RACE_HUMAN = 0,
-	RACE_DORAM
 };
 
 // sanity checks...

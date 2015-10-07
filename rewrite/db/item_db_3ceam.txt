@@ -502,3 +502,6 @@
 24015,S_Promotion_Shield,Promotion Shadow Shield,5,20,,0,,0,,0,0xFFFFFFFF,7,2,262144,,1,1,0,{ bonus bVit,1; bonus bMaxHP,10*getrefine(); },{},{}
 24016,S_Promotion_Earring,Promotion Shadow Earring,5,20,,0,,0,,0,0xFFFFFFFF,7,2,1048576,,1,1,0,{ bonus bInt,1; bonus bMaxHP,10*getrefine(); },{},{}
 24017,S_Promotion_Pendant,Promotion Shadow Pendant,5,20,,0,,0,,0,0xFFFFFFFF,7,2,2097152,,1,1,0,{ bonus bStr,1; bonus bMaxHP,10*getrefine(); },{},{}
+
+// Summoner Weapons And Equips
+1681,Short_Foxtail_Staff,Short Foxtail Staff,4,20,,0,30,,1,0,0x80000000,7,2,2,1,1,1,10,{},{},{}
