@@ -982,18 +982,13 @@
 
 //2542,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//ALL_TETANY#Tentay#
 //2543,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//ALL_RAY_OF_PROTECTION#Ray of Protection#
-//2544,0,0,40,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//MC_CARTDECORATE#Cart Decorate#
+2544,0,0,40,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//MC_CARTDECORATE#Cart Decorate#
 //2545,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//GM_ITEM_ATKMAX#Maximum Attack#
 //2546,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//GM_ITEM_ATKMIN#Minimal Attack#
 //2547,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//GM_ITEM_MATKMAX#Maximum Magic Attack#
 //2548,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//GM_ITEM_MATKMIN#Minimal Magic Attack#
 //2549,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//ALL_LIGHTGUARD#Light Guard#
 
-
-// Structure of Database:
-// SkillID,HPCost,MaxHPTrigger,SPCost,HPRateCost,SPRateCost,ZenyCost,RequiredWeapons,RequiredAmmoTypes,RequiredAmmoAmount,RequiredState,SpiritSphereCost,
-//RequiredItemID1,RequiredItemAmount1,RequiredItemID2,RequiredItemAmount2,RequiredItemID3,RequiredItemAmount3,RequiredItemID4,RequiredItemAmount4,RequiredItemID5,RequiredItemAmount5,RequiredItemID6,RequiredItemAmount6,RequiredItemID7,RequiredItemAmount7,RequiredItemID8,RequiredItemAmount8,RequiredItemID9,RequiredItemAmount9,RequiredItemID10,RequiredItemAmount10
-//
 // Rebellion
 2551,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RL_GLITTERING_GREED#Flip The Coin Greed#
 2552,0,0,10,0,0,100,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RL_RICHS_COIN#Rich's Coin#
@@ -1071,6 +1066,8 @@
 //3040,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//GM_WIDE_RESURRECTION#Wide Resurrection#
 //3041,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//ALL_NIFLHEIM_RECALL#Return To Niflheim#
 //3042,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//ALL_PRONTERA_RECALL#Return To Prontera#
+//3043,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//ALL_GLASTHEIM_RECALL##
+//3044,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//ALL_THANATOS_RECALL##
 
 // EP 14.3 Part 2 3rd Job Skills
 5001,0,0,22:34:46:58:70,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//GC_DARKCROW#Dark Claw#
@@ -1088,6 +1085,34 @@
 5013,0,0,200:180:160:140:120,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//LG_KINGS_GRACE#King's Grace#
 5014,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//ALL_FULL_THROTTLE#Full Throttle#
 5015,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//NC_MAGMA_ERUPTION_DOTDAMAGE#Magma Eruption Dot Damage#
+
+// Summoner
+5019,0,0,10,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SU_BITE##
+5020,0,0,30,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SU_HIDE##
+5021,0,0,20:25:30,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SU_SCRATCH##
+5022,0,0,10,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SU_STOOP##
+5023,0,0,30:30:30,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SU_LOPE##
+
+5026,0,0,40:40:40:40:40,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SU_SV_STEMSPEAR##
+5027,0,0,40:36:32:28:24,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SU_CN_POWDERING##
+5028,0,0,20:35:50:65:80,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SU_CN_METEOR##
+5029,0,0,10:12:14:16:18,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SU_SV_ROOTTWIST##
+5030,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SU_SV_ROOTTWIST_ATK##
+
+5032,0,0,10:14:18:22:26,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SU_SCAROFTAROU##
+5033,0,0,10:19:28:37:46,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SU_PICKYPECK##
+5034,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SU_PICKYPECK_DOUBLE_ATK##
+5035,0,0,12:20:28:36:44,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SU_ARCLOUSEDASH##
+5036,0,0,15:25:35:45:55,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SU_LUNATICCARROTBEAT##
+
+5038,0,0,20:30:40:50:60,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SU_TUNABELLY##
+5039,0,0,20:30:40:50:60,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SU_TUNAPARTY##
+5040,0,0,44:48:52:56:60,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SU_BUNCHOFSHRIMP##
+5041,0,0,22:24:26:28:30,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SU_FRESHSHRIMP##
+
+// Unknown Summoner Skills
+//5042,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//##
+//5043,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//##
 
 // Homunculus
 8001,0,0,13:16:19:22:25,0,0,0,99,0,0,none,0,545,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//HLIF_HEAL

@@ -276,6 +276,8 @@ static void itemdb_jobid2mapid(unsigned int *bclass, unsigned int jobmask)
 		bclass[1] |= 1<<MAPID_NINJA;
 	if (jobmask & 1<<30) //Rebellion
 		bclass[1] |= 1<<MAPID_GUNSLINGER;
+	if (jobmask & 1<<31) //Summoner
+		bclass[0] |= 1<<MAPID_SUMMONER;
 }
 
 static void create_dummy_data(void)
