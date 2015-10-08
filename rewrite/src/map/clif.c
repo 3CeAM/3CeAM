@@ -10677,7 +10677,7 @@ void clif_parse_Emotion(int fd, struct map_session_data *sd)
 {
 	int emoticon = RFIFOB(fd,packet_db[sd->packet_ver][RFIFOW(fd,0)].pos[0]);
 
-	if (battle_config.basic_skill_check == 0 || pc_checkskill(sd, NV_BASIC) >= 2) {
+	if (battle_config.basic_skill_check == 0 || pc_checkskill(sd, NV_BASIC) >= 2 || pc_checkskill(sd, SU_BASIC_SKILL) >= 1) {
 		if (emoticon == E_MUTE) {// prevent use of the mute emote [Valaris]
 			clif_skill_fail(sd, 1, 0, 1, 0);
 			return;
@@ -10767,7 +10767,7 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 		unit_attack(&sd->bl, target_id, action_type != 0);
 	break;
 	case 0x02: // sitdown
-		if (battle_config.basic_skill_check && pc_checkskill(sd, NV_BASIC) < 3) {
+		if (battle_config.basic_skill_check && pc_checkskill(sd, NV_BASIC) < 3 && pc_checkskill(sd, SU_BASIC_SKILL) < 1) {
 			clif_skill_fail(sd, 1, 0, 2, 0);
 			break;
 		}
@@ -11313,7 +11313,7 @@ void clif_parse_CreateChatRoom(int fd, struct map_session_data* sd)
 
 	if (sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOROOM)
 		return;
-	if(battle_config.basic_skill_check && pc_checkskill(sd,NV_BASIC) < 4) {
+	if(battle_config.basic_skill_check && pc_checkskill(sd,NV_BASIC) < 4 && pc_checkskill(sd, SU_BASIC_SKILL) < 1) {
 		clif_skill_fail(sd,1,0,3,0);
 		return;
 	}
@@ -11420,7 +11420,7 @@ void clif_parse_TradeRequest(int fd,struct map_session_data *sd)
 		return;
 	}
 
-	if( battle_config.basic_skill_check && pc_checkskill(sd,NV_BASIC) < 1)
+	if( battle_config.basic_skill_check && pc_checkskill(sd,NV_BASIC) < 1 && pc_checkskill(sd, SU_BASIC_SKILL) < 1)
 	{
 		clif_skill_fail(sd,1,0,0,0);
 		return;
@@ -12354,7 +12354,7 @@ void clif_parse_CreateParty(int fd, struct map_session_data *sd)
 		clif_displaymessage(fd, msg_txt(227));
 		return;
 	}
-	if( battle_config.basic_skill_check && pc_checkskill(sd,NV_BASIC) < 7 )
+	if( battle_config.basic_skill_check && pc_checkskill(sd,NV_BASIC) < 7 && pc_checkskill(sd, SU_BASIC_SKILL) < 1 )
 	{
 		clif_skill_fail(sd,1,0,4,0);
 		return;
@@ -12375,7 +12375,7 @@ void clif_parse_CreateParty2(int fd, struct map_session_data *sd)
 		clif_displaymessage(fd, msg_txt(227));
 		return;
 	}
-	if( battle_config.basic_skill_check && pc_checkskill(sd,NV_BASIC) < 7 )
+	if( battle_config.basic_skill_check && pc_checkskill(sd,NV_BASIC) < 7 && pc_checkskill(sd, SU_BASIC_SKILL) < 1 )
 	{
 		clif_skill_fail(sd,1,0,4,0);
 		return;

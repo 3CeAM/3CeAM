@@ -120,10 +120,10 @@ Regular Jobs Bitmask Table
 0x00000002 = Swordman
 0x00000004 = Magician
 0x00000008 = Archer
-0x00000010 = Acolyte
+0x00000010 = Acolyte/Gangsi (Bongun/Munak)
 0x00000020 = Merchant
 0x00000040 = Thief
-0x00000080 = Knight
+0x00000080 = Knight/Death Knight
 0x00000100 = Priest
 0x00000200 = Wizard
 0x00000400 = Blacksmith
@@ -132,7 +132,7 @@ Regular Jobs Bitmask Table
 0x00002000 = (Unused)
 0x00004000 = Crusader
 0x00008000 = Monk
-0x00010000 = Sage
+0x00010000 = Sage/Dark Collector
 0x00020000 = Rogue
 0x00040000 = Alchemist
 0x00080000 = Bard/Dancer
@@ -140,13 +140,9 @@ Regular Jobs Bitmask Table
 0x00200000 = Taekwon
 0x00400000 = Star Gladiator
 0x00800000 = Soul Linker
-0x01000000 = Gunslinger (Rebellion inherits this permission)
-0x02000000 = Ninja (Kagerou/Oboro inherits this permission)
-0x04000000 = Bongun/Munak
-0x08000000 = Death Knight
-0x10000000 = Dark Collector
-0x20000000 = Kagerou/Oboro
-0x40000000 = Rebellion
+0x01000000 = Gunslinger/Rebellion
+0x02000000 = Ninja/Kagerou/Oboro
+0x04000000 = Summoner
 --------------------------------
 
 =Upper

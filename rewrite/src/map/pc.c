@@ -1760,7 +1760,7 @@ int pc_calc_skilltree_normalize_job(struct map_session_data *sd)
 	
 	skill_point = pc_calc_skillpoint(sd); // Current Used Points
 
-	if( pc_checkskill(sd, NV_BASIC) < 9 )
+	if( pc_checkskill(sd, NV_BASIC) < 9 && (sd->class_&MAPID_BASEMASK) != MAPID_SUMMONER )
 		c = MAPID_NOVICE; // Consider Novice Tree when you don't have NV_BASIC maxed.
 
 	//Do not send S. Novices to first class (Novice)
