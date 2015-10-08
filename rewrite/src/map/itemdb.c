@@ -207,76 +207,82 @@ const char* itemdb_typename(int type)
  *------------------------------------------*/
 static void itemdb_jobid2mapid(unsigned int *bclass, unsigned int jobmask)
 {
-	int i;
 	bclass[0]= bclass[1]= bclass[2]= 0;
-	//Base classes
-	if (jobmask & 1<<JOB_NOVICE)
-	{	//Both Novice/Super-Novice are counted with the same ID
+
+	// Novice And 1st Jobs
+	if (jobmask & 1<<0)// Novice
+	{// Novice and Super Novice share the same job equip mask.
 		bclass[0] |= 1<<MAPID_NOVICE;
 		bclass[1] |= 1<<MAPID_NOVICE;
 	}
-	for (i = JOB_NOVICE+1; i <= JOB_THIEF; i++)
-	{
-		if (jobmask & 1<<i)
-			bclass[0] |= 1<<(MAPID_NOVICE+i);
+	if (jobmask & 1<<1)// Swordman
+		bclass[0] |= 1<<MAPID_SWORDMAN;
+	if (jobmask & 1<<2)// Magician
+		bclass[0] |= 1<<MAPID_MAGE;
+	if (jobmask & 1<<3)// Archer
+		bclass[0] |= 1<<MAPID_ARCHER;
+	if (jobmask & 1<<4)// Acolyte
+	{// Acolyte and Gangsi share the same job equip mask.
+		bclass[0] |= 1<<MAPID_ACOLYTE;
+		bclass[0] |= 1<<MAPID_GANGSI;
 	}
-	//2-1 classes
-	if (jobmask & 1<<JOB_KNIGHT)
+	if (jobmask & 1<<5)// Merchant
+		bclass[0] |= 1<<MAPID_MERCHANT;
+	if (jobmask & 1<<6)// Thief
+		bclass[0] |= 1<<MAPID_THIEF;
+
+	// 2nd Jobs (Branch 1)
+	if (jobmask & 1<<7)// Knight
+	{// Knight and Death Knight share the same job equip mask.
 		bclass[1] |= 1<<MAPID_SWORDMAN;
-	if (jobmask & 1<<JOB_PRIEST)
+		bclass[1] |= 1<<MAPID_GANGSI;
+	}
+	if (jobmask & 1<<8)// Priest
 		bclass[1] |= 1<<MAPID_ACOLYTE;
-	if (jobmask & 1<<JOB_WIZARD)
+	if (jobmask & 1<<9)// Wizard
 		bclass[1] |= 1<<MAPID_MAGE;
-	if (jobmask & 1<<JOB_BLACKSMITH)
+	if (jobmask & 1<<10)// Blacksmith
 		bclass[1] |= 1<<MAPID_MERCHANT;
-	if (jobmask & 1<<JOB_HUNTER)
+	if (jobmask & 1<<11)// Hunter
 		bclass[1] |= 1<<MAPID_ARCHER;
-	if (jobmask & 1<<JOB_ASSASSIN)
+	if (jobmask & 1<<12)// Assassin
 		bclass[1] |= 1<<MAPID_THIEF;
-	//2-2 classes
-	if (jobmask & 1<<JOB_CRUSADER)
+
+	// 2nd Jobs (Branch 2)
+	if (jobmask & 1<<14)// Crusader
 		bclass[2] |= 1<<MAPID_SWORDMAN;
-	if (jobmask & 1<<JOB_MONK)
+	if (jobmask & 1<<15)// Monk
 		bclass[2] |= 1<<MAPID_ACOLYTE;
-	if (jobmask & 1<<JOB_SAGE)
+	if (jobmask & 1<<16)// Sage
+	{// Sage and Dark Collector share the same job equip mask.
 		bclass[2] |= 1<<MAPID_MAGE;
-	if (jobmask & 1<<JOB_ALCHEMIST)
-		bclass[2] |= 1<<MAPID_MERCHANT;
-	if (jobmask & 1<<JOB_BARD)
-		bclass[2] |= 1<<MAPID_ARCHER;
-//	Bard/Dancer share the same slot now.
-//	if (jobmask & 1<<JOB_DANCER)
-//		bclass[2] |= 1<<MAPID_ARCHER;
-	if (jobmask & 1<<JOB_ROGUE)
+		bclass[2] |= 1<<MAPID_GANGSI;
+	}
+	if (jobmask & 1<<17)// Rogue
 		bclass[2] |= 1<<MAPID_THIEF;
-	//Special classes that don't fit above.
-	if (jobmask & 1<<21) //Taekwon boy
+	if (jobmask & 1<<18)// Alchemist
+		bclass[2] |= 1<<MAPID_MERCHANT;
+	if (jobmask & 1<<19)// Bard/Dancer
+		bclass[2] |= 1<<MAPID_ARCHER;
+
+	// Expanded Jobs
+	if (jobmask & 1<<21)// Taekwon
 		bclass[0] |= 1<<MAPID_TAEKWON;
-	if (jobmask & 1<<22) //Star Gladiator
+	if (jobmask & 1<<22)// Star Gladiator
 		bclass[1] |= 1<<MAPID_TAEKWON;
-	if (jobmask & 1<<23) //Soul Linker
+	if (jobmask & 1<<23)// Soul Linker
 		bclass[2] |= 1<<MAPID_TAEKWON;
-	if (jobmask & 1<<JOB_GUNSLINGER)
-	{//Rebellion job can equip Gunslinger equips. [Rytech]
+	if (jobmask & 1<<24)// Gunslinger
+	{// Gunslinger and Rebellion share the same job equip mask.
 		bclass[0] |= 1<<MAPID_GUNSLINGER;
 		bclass[1] |= 1<<MAPID_GUNSLINGER;
 	}
-	if (jobmask & 1<<JOB_NINJA)
-	{//Kagerou/Oboro jobs can equip Ninja equips. [Rytech]
+	if (jobmask & 1<<25)// Ninja
+	{// Ninja and Kagerou/Oboro share the same job equip mask.
 		bclass[0] |= 1<<MAPID_NINJA;
 		bclass[1] |= 1<<MAPID_NINJA;
 	}
-	if (jobmask & 1<<26) //Bongun/Munak
-		bclass[0] |= 1<<MAPID_GANGSI;
-	if (jobmask & 1<<27) //Death Knight
-		bclass[1] |= 1<<MAPID_GANGSI;
-	if (jobmask & 1<<28) //Dark Collector
-		bclass[2] |= 1<<MAPID_GANGSI;
-	if (jobmask & 1<<29) //Kagerou/Oboro
-		bclass[1] |= 1<<MAPID_NINJA;
-	if (jobmask & 1<<30) //Rebellion
-		bclass[1] |= 1<<MAPID_GUNSLINGER;
-	if (jobmask & 1<<31) //Summoner
+	if (jobmask & 1<<26)// Summoner
 		bclass[0] |= 1<<MAPID_SUMMONER;
 }
 
