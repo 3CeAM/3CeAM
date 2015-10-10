@@ -425,7 +425,7 @@ int can_copy(struct map_session_data *sd, int skillid, struct block_list* bl)
 	if( sd )
 	{
 		// Couldn't preserve 3rd Class skills except only when using Reproduce skill. [Jobbie]
-		if( !(sd->sc.data[SC__REPRODUCE]) && ((skillid >= RK_ENCHANTBLADE && skillid <= LG_OVERBRAND_PLUSATK) || (skillid >= RL_GLITTERING_GREED && skillid <= OB_AKAITSUKI) || (skillid >= GC_DARKCROW && skillid <= NC_MAGMA_ERUPTION_DOTDAMAGE)))
+		if( !(sd->sc.data[SC__REPRODUCE]) && ((skillid >= RK_ENCHANTBLADE && skillid <= LG_OVERBRAND_PLUSATK) || (skillid >= RL_GLITTERING_GREED && skillid <= OB_AKAITSUKI) || (skillid >= GC_DARKCROW && skillid <= SU_FRESHSHRIMP)))
 			return 0;
 		// Reproduce will only copy skills according on the list. [Jobbie]
 		if( sd->sc.data[SC__REPRODUCE] && !id )
@@ -3504,6 +3504,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		break;
 
 	case RL_MASS_SPIRAL:
+	case SU_BITE:
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
@@ -3738,6 +3739,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case KO_MUCHANAGE:
 	case MH_HEILIGE_STANGE:
 	case MH_MAGMA_FLOW:
+	case SU_SCRATCH:
 		if( flag&1 )
 		{	//Recursive invocation
 			// skill_area_temp[0] holds number of targets in area
@@ -3758,7 +3760,8 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		}
 		else
 		{
-			if( skillid == NJ_BAKUENRYU || skillid == LG_EARTHDRIVE || skillid == GN_CARTCANNON )
+			if( skillid == NJ_BAKUENRYU || skillid == LG_EARTHDRIVE || skillid == GN_CARTCANNON ||
+				skillid == SU_SCRATCH )
 				clif_skill_nodamage(src,bl,skillid,skilllv,1);
 			if( skillid == LG_MOONSLASHER )
 				clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
@@ -4335,10 +4338,10 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case NC_INFRAREDSCAN:
 		if( flag&1 )
 		{ //TODO: Need a confirmation if the other type of hidden status is included to be scanned. [Jobbie]
-			sc_start(bl, SC_INFRAREDSCAN, 10000, skilllv, skill_get_time(skillid, skilllv));
 			status_change_end(bl, SC_HIDING, -1);
 			status_change_end(bl, SC_CLOAKING, -1);
 			status_change_end(bl, SC_CLOAKINGEXCEED, -1); // Need confirm it.
+			sc_start(bl, SC_INFRAREDSCAN, 10000, skilllv, skill_get_time(skillid, skilllv));
 		}
 		else
 		{
@@ -5253,6 +5256,14 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case ALL_FULL_THROTTLE:
 		clif_skill_nodamage(src,bl,skillid,skilllv,
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
+		break;
+
+	// Works just like the above list of skills, except animation caused by
+	// status must trigger AFTER the skill cast animation or it will cancel
+	// out the status's animation.
+	case SU_STOOP:
+		clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
 		break;
 
 	case SO_STRIKING:
@@ -6468,6 +6479,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				// Kagerou/Oboro
 				case SC_KAGEHUMI:		case SC_JYUMONJIKIRI:	case SC_MEIKYOUSISUI:
 				case SC_KYOUGAKU:		case SC_IZAYOI:			case SC_ZENKAI:
+				// Summoner
+				case SC_SPRITEMABLE:
 				// Misc Status's
 				case SC_ALL_RIDING:		case SC_MONSTER_TRANSFORM:	case SC_ON_PUSH_CART:
 				case SC_KAHU_ENTEN:		case SC_HYOUHU_HUBUKI:	case SC_KAZEHU_SEIRAN:	
@@ -7957,6 +7970,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				// Kagerou/Oboro
 				case SC_KAGEHUMI:		case SC_JYUMONJIKIRI:	case SC_MEIKYOUSISUI:
 				case SC_KYOUGAKU:		case SC_IZAYOI:			case SC_ZENKAI:
+				// Summer
+				case SC_SPRITEMABLE:
 				// Misc Status's
 				case SC_ALL_RIDING:		case SC_MONSTER_TRANSFORM:	case SC_ON_PUSH_CART:
 				case SC_KAHU_ENTEN:		case SC_HYOUHU_HUBUKI:	case SC_KAZEHU_SEIRAN:	
@@ -9331,6 +9346,18 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, 0, 1, skillid, -2, 6);
 		break;
 
+	case SU_HIDE:
+		if (tsce)
+		{
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+			status_change_end(bl, type, INVALID_TIMER);
+			map_freeblock_unlock();
+			return 0;
+		}
+		clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
+		break;
+
 		case EL_CIRCLE_OF_FIRE:
 		case EL_PYROTECHNIC:
 		case EL_HEATER:
@@ -10199,6 +10226,23 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		}
 		status_change_end(src, SC_HIDING, INVALID_TIMER);
 		break;
+
+	case SU_LOPE:
+		{
+			if( map[src->m].flag.noteleport && !(map[src->m].flag.battleground || map_flag_gvg2(src->m) ))
+			{
+				x = src->x;
+				y = src->y;
+			}
+			clif_skill_nodamage(src,src,SU_LOPE,skilllv,1);
+			if(!map_count_oncell(src->m,x,y,BL_PC|BL_NPC|BL_MOB) && map_getcell(src->m,x,y,CELL_CHKREACH))
+			{
+				clif_slide(src,x,y);
+				unit_movepos(src, x, y, 1, 0);
+			}
+		}
+		break;
+
 	case AM_SPHEREMINE:
 	case AM_CANNIBALIZE:
 		{
@@ -11380,8 +11424,8 @@ static int skill_unit_onplace (struct skill_unit *src, struct block_list *bl, un
 	sc = status_get_sc(bl);
 	ssc = status_get_sc(ss);
 
-	if (sc && sc->option&OPTION_HIDE && sg->skill_id != WZ_HEAVENDRIVE && sg->skill_id != WL_EARTHSTRAIN && sg->skill_id != RA_ARROWSTORM )
-		return 0; //Hidden characters are immune to AoE skills except Heaven's Drive and Earth Strain. [Skotlex], include Arrow Storm. [Jobbie]
+	if (sc && sc->option&OPTION_HIDE && sg->skill_id != WZ_HEAVENDRIVE && sg->skill_id != WL_EARTHSTRAIN)
+		return 0; //Hidden characters are immune to AoE skills except Heaven's Drive and Earth Strain. [Skotlex]
 	
 	type = status_skill2sc(sg->skill_id);
 	sce = (sc && type != -1)?sc->data[type]:NULL;
@@ -12790,7 +12834,7 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 	case BS_MAXIMIZE:		case NV_TRICKDEAD:	case TF_HIDING:			case AS_CLOAKING:		case CR_AUTOGUARD:
 	case ML_AUTOGUARD:		case CR_DEFENDER:	case ML_DEFENDER:		case ST_CHASEWALK:		case PA_GOSPEL:
 	case CR_SHRINK:			case TK_RUN:		case GS_GATLINGFEVER:	case TK_READYCOUNTER:	case TK_READYDOWN:
-	case TK_READYSTORM:		case TK_READYTURN:	case SG_FUSION:		case KO_YAMIKUMO:
+	case TK_READYSTORM:		case TK_READYTURN:	case SG_FUSION:			case KO_YAMIKUMO:		case SU_HIDE:
 		if( sc && sc->data[status_skill2sc(skill)] )
 			return 1;
 	}
@@ -13763,7 +13807,7 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 	case BS_MAXIMIZE:		case NV_TRICKDEAD:	case TF_HIDING:			case AS_CLOAKING:		case CR_AUTOGUARD:
 	case ML_AUTOGUARD:		case CR_DEFENDER:	case ML_DEFENDER:		case ST_CHASEWALK:		case PA_GOSPEL:
 	case CR_SHRINK:			case TK_RUN:		case GS_GATLINGFEVER:	case TK_READYCOUNTER:	case TK_READYDOWN:
-	case TK_READYSTORM:		case TK_READYTURN:	case SG_FUSION:		case KO_YAMIKUMO:
+	case TK_READYSTORM:		case TK_READYTURN:	case SG_FUSION:			case KO_YAMIKUMO:		case SU_HIDE:
 		if( sc && sc->data[status_skill2sc(skill)] )
 			return req;
 	}
@@ -14006,7 +14050,7 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 	// Calculates regular and variable cast time.
 	if( !(skill_get_castnodex(skill_id, skill_lv)&1) )
 	{	//If renewal casting is enabled, all renewal skills will follow the renewal cast formula.
-		if (battle_config.renewal_casting_renewal_skills == 1 && (skill_id >= RK_ENCHANTBLADE && skill_id <= NC_MAGMA_ERUPTION_DOTDAMAGE || skill_id >= MH_SUMMON_LEGION && skill_id <= MH_VOLCANIC_ASH))
+		if (battle_config.renewal_casting_renewal_skills == 1 && (skill_id >= RK_ENCHANTBLADE && skill_id <= SU_FRESHSHRIMP || skill_id >= MH_SUMMON_LEGION && skill_id <= MH_VOLCANIC_ASH))
 		{
 			time -= time * (status_get_dex(bl) * 2 + status_get_int(bl)) / 530;
 			if ( time < 0 ) time = 0;// No return of 0 since were adding the fixed_time later.
@@ -14126,7 +14170,7 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 
 	//Only add variable and fixed times when renewal casting for renewal skills are on. Without this check,
 	//it will add the 2 together during the above phase and then readd the fixed time.
-	if (battle_config.renewal_casting_renewal_skills == 1 && (skill_id >= RK_ENCHANTBLADE && skill_id <= NC_MAGMA_ERUPTION_DOTDAMAGE || skill_id >= MH_SUMMON_LEGION && skill_id <= MH_VOLCANIC_ASH))
+	if (battle_config.renewal_casting_renewal_skills == 1 && (skill_id >= RK_ENCHANTBLADE && skill_id <= SU_FRESHSHRIMP || skill_id >= MH_SUMMON_LEGION && skill_id <= MH_VOLCANIC_ASH))
 	final_time = time + fixed_time;
 	else
 	final_time = time;

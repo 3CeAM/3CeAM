@@ -401,6 +401,7 @@ int map_moveblock(struct block_list *bl, int x1, int y1, unsigned int tick)
 			status_change_end(bl, SC_TATAMIGAESHI, INVALID_TIMER);
 			status_change_end(bl, SC_MAGICROD, INVALID_TIMER);
 			status_change_end(bl, SC_ROLLINGCUTTER, INVALID_TIMER);
+			status_change_end(bl, SC_SU_STOOP, INVALID_TIMER);
 			if (sc->data[SC_PROPERTYWALK] &&
 				sc->data[SC_PROPERTYWALK]->val3 >= skill_get_maxcount(sc->data[SC_PROPERTYWALK]->val1,sc->data[SC_PROPERTYWALK]->val2) )
 				status_change_end(bl,SC_PROPERTYWALK,-1);
@@ -1798,6 +1799,7 @@ int map_quit(struct map_session_data *sd)
 		status_change_end(&sd->bl, SC_KAZEHU_SEIRAN, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_DOHU_KOUKAI, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_KYOUGAKU, INVALID_TIMER);//Not official, but needed since logging back in crashes the client. Will fix later. [Rytech]
+		status_change_end(&sd->bl, SC_SPRITEMABLE, INVALID_TIMER);
 
 		if( battle_config.debuff_on_logout&1 )
 		{
