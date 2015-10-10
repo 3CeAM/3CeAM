@@ -601,6 +601,9 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 				damage -= 50 * damage / 100;//50% reduction to physical ranged attacks
 		}
 
+		if ( sc->data[SC_SU_STOOP] )
+			damage -= damage * 90 / 100;
+
 		// Compressed code, fixed by map.h [Epoque]
 		if( src->type == BL_MOB )
 		{
@@ -2725,6 +2728,12 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case GC_DARKCROW:
 					skillratio = 100 * skill_lv;
+					break;
+				case SU_BITE:
+					skillratio = 200;
+					break;
+				case SU_SCRATCH:
+					skillratio = 50 + 50 * skill_lv;
 					break;
 				case MH_NEEDLE_OF_PARALYZE:
 					skillratio = 700 + 100 * skill_lv;

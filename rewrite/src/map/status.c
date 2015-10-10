@@ -569,7 +569,7 @@ void initChangeTables(void)
 	set_sc( RL_AM_BLAST    , SC_ANTI_M_BLAST , SI_ANTI_M_BLAST , SCB_NONE );
 	set_sc( RL_SLUGSHOT    , SC_SLUGSHOT     , SI_SLUGSHOT     , SCB_NONE );
 
-	set_sc( KO_YAMIKUMO          , SC_HIDING          , SI_HIDING          , SCB_NONE );
+	set_sc( KO_YAMIKUMO          , SC_HIDING          , SI_HIDING          , SCB_SPEED );
 	set_sc( KO_JYUMONJIKIRI      , SC_JYUMONJIKIRI    , SI_KO_JYUMONJIKIRI , SCB_NONE );
 	set_sc( KO_MEIKYOUSISUI      , SC_MEIKYOUSISUI    , SI_MEIKYOUSISUI    , SCB_NONE );
 	set_sc( KO_KYOUGAKU          , SC_KYOUGAKU        , SI_KYOUGAKU        , SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK );
@@ -599,6 +599,10 @@ void initChangeTables(void)
 	set_sc( WL_TELEKINESIS_INTENSE, SC_TELEKINESIS_INTENSE, SI_TELEKINESIS_INTENSE, SCB_NONE );
 	set_sc( LG_KINGS_GRACE        , SC_KINGS_GRACE        , SI_KINGS_GRACE        , SCB_NONE );
 	set_sc( ALL_FULL_THROTTLE     , SC_FULL_THROTTLE      , SI_FULL_THROTTLE      , SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK|SCB_SPEED );
+
+	set_sc( SU_HIDE               , SC_SUHIDE             , SI_SUHIDE             , SCB_SPEED );
+	set_sc( SU_STOOP              , SC_SU_STOOP           , SI_SU_STOOP           , SCB_NONE );
+
 
 	set_sc( HLIF_AVOID           , SC_AVOID           , SI_BLANK           , SCB_SPEED );
 	set_sc( HLIF_CHANGE          , SC_CHANGE          , SI_BLANK           , SCB_VIT|SCB_INT );
@@ -816,6 +820,8 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_DROCERA_HERB_STEAMED] = SI_DROCERA_HERB_STEAMED;
 	StatusIconChangeTable[SC_PUTTI_TAILS_NOODLES] = SI_PUTTI_TAILS_NOODLES;
 	StatusIconChangeTable[SC_BANANA_BOMB] = SI_BANANA_BOMB;
+
+	StatusIconChangeTable[SC_SPRITEMABLE] = SI_SPRITEMABLE;
 
 	// Elemental Spirit's 'side' status change icons.
 	StatusIconChangeTable[SC_CIRCLE_OF_FIRE] = SI_CIRCLE_OF_FIRE;
@@ -1088,9 +1094,10 @@ int status_damage(struct block_list *src,struct block_list *target,int hp, int s
 			status_change_end(target, SC_HIDING, INVALID_TIMER);
 			status_change_end(target, SC_CLOAKING, INVALID_TIMER);
 			status_change_end(target, SC_CHASEWALK, INVALID_TIMER);
-			status_change_end(target, SC_CAMOUFLAGE,-1);
-			status_change_end(target, SC_MEIKYOUSISUI,-1);//I need the success chance of this status being ended by a attack. [Rytech]
+			status_change_end(target, SC_CAMOUFLAGE,INVALID_TIMER);
+			status_change_end(target, SC_MEIKYOUSISUI,INVALID_TIMER);//I need the success chance of this status being ended by a attack. [Rytech]
 			//status_change_end(target,SC_DEEPSLEEP,-1);//May be needed in a future update. [Rytech]
+			status_change_end(target, SC_SUHIDE, INVALID_TIMER);
 			if ((sce=sc->data[SC_ENDURE]) && !sce->val4) {
 				//Endure count is only reduced by non-players on non-gvg maps.
 				//val4 signals infinite endure. [Skotlex]
@@ -1529,6 +1536,7 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 			|| ((sc->data[SC_AUTOCOUNTER] || sc->data[SC_DEATHBOUND]) && !flag)
 			|| (sc->data[SC_GOSPEL] && sc->data[SC_GOSPEL]->val4 == BCT_SELF && skill_num != PA_GOSPEL)
 			|| (sc->data[SC_GRAVITATION] && sc->data[SC_GRAVITATION]->val3 == BCT_SELF && flag != 2)
+			|| (sc->data[SC_SUHIDE] && skill_num != SU_HIDE)
 		)
 			return 0;
 
@@ -2352,7 +2360,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	//Give them all modes except these (useful for clones)
 	status->mode = MD_MASK&~(MD_BOSS|MD_PLANT|MD_DETECTOR|MD_ANGRY|MD_TARGETWEAK);
 
-	status->size = (sd->class_&JOBL_BABY)?0:1;
+	status->size = (sd->class_&JOBL_BABY || (sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER)?0:1;
 	if (battle_config.character_size && (pc_isriding(sd)||pc_isdragon(sd)||pc_iswugrider(sd)||pc_ismadogear(sd))) { //[Lupus]
 		if (sd->class_&JOBL_BABY) {
 			if (battle_config.character_size&2)
@@ -2363,7 +2371,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	}
 	status->aspd_rate = 1000;
 	status->ele_lv = 1;
-	status->race = RC_DEMIHUMAN;
+	status->race = ((sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER)?RC_BRUTE:RC_DEMIHUMAN;
 
 	//zero up structures...
 	memset(&sd->autospell, 0, sizeof(sd->autospell)
@@ -2754,6 +2762,8 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	// Absolute modifiers from passive skills
 	if( (skill = pc_checkskill(sd,CR_TRUST)) > 0 )
 		status->max_hp += skill * 200;
+	if( (skill = pc_checkskill(sd,SU_SPRITEMABLE)) > 0 )
+		status->max_hp += 1000;
 
 	// Apply relative modifiers from equipment
 	if( sd->hprate < 0 )
@@ -2787,6 +2797,8 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		status->max_sp += 200 + 20 * skill;
 	if( (skill = pc_checkskill(sd,WM_LESSON)) > 0 )
 		status->max_sp += 30 * skill;
+	if( (skill = pc_checkskill(sd,SU_SPRITEMABLE)) > 0 )
+		status->max_sp += 100;
 
 	// Apply relative modifiers from equipment
 	if( sd->sprate < 0 )
@@ -3128,6 +3140,12 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		clif_updatestatus(sd,SP_MAXWEIGHT);
 		pc_updateweightstatus(sd);
 	}
+
+	// Spirit Marble status activates automatically for a infinite
+	// amount of time when the skill is learned. Felt this was the
+	// best place to put this. [Rytech]
+	if( (skill = pc_checkskill(sd,SU_SPRITEMABLE)) > 0 )
+		sc_start(&sd->bl,SC_SPRITEMABLE,100,1,-1);
 
 	calculating = 0;
 
@@ -7244,6 +7262,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_READYCOUNTER:
 		case SC_READYTURN:
 		case SC_DODGE:
+		case SC_SPRITEMABLE:
 			tick = -1;
 			break;
 
@@ -8453,6 +8472,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_VOICEOFSIREN:
 		case SC_CLOAKINGEXCEED:
 		case SC_ALL_RIDING:
+		case SC_SUHIDE:
 			unit_stop_attack(bl);
 		break;
 		case SC_SILENCE:
@@ -8776,6 +8796,7 @@ int status_change_clear(struct block_list* bl, int type)
 		case SC_HANBOK:
 		case SC_OKTOBERFEST:
 		case SC_SUMMER2:
+		case SC_SPRITEMABLE:
 			continue;
 		}
 
@@ -10565,6 +10586,7 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC_HYOUHU_HUBUKI:
 			case SC_KAZEHU_SEIRAN:
 			case SC_DOHU_KOUKAI:
+			case SC_SPRITEMABLE:
 				continue;
 
 			//Debuffs that can be removed.

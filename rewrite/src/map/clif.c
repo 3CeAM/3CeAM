@@ -1473,6 +1473,12 @@ int clif_spawn(struct block_list *bl)
 				clif_status_change(&sd->bl,SI_DARKCROW,1,9999,sd->sc.data[SC_DARKCROW]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_UNLIMIT] )
 				clif_status_change(&sd->bl,SI_UNLIMIT,1,9999,sd->sc.data[SC_UNLIMIT]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_SUHIDE] )
+				clif_status_change(&sd->bl,SI_SUHIDE,1,9999,sd->sc.data[SC_SUHIDE]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_SU_STOOP] )
+				clif_status_change(&sd->bl,SI_SU_STOOP,1,9999,sd->sc.data[SC_SU_STOOP]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_SPRITEMABLE] )
+				clif_status_change(&sd->bl,SI_SPRITEMABLE,1,9999,sd->sc.data[SC_SPRITEMABLE]->val1,0,0);
 		}
 		break;
 	case BL_MOB:
@@ -4823,6 +4829,12 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_DARKCROW,1,9999,tsd->sc.data[SC_DARKCROW]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_UNLIMIT] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_UNLIMIT,1,9999,tsd->sc.data[SC_UNLIMIT]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_SUHIDE] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_SUHIDE,1,9999,tsd->sc.data[SC_SUHIDE]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_SU_STOOP] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_SU_STOOP,1,9999,tsd->sc.data[SC_SU_STOOP]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_SPRITEMABLE] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_SPRITEMABLE,1,9999,tsd->sc.data[SC_SPRITEMABLE]->val1,0,0);
 		}
 		break;
 	case BL_MER: // Devotion Effects
@@ -6218,7 +6230,7 @@ int clif_status_change(struct block_list *bl, int type, int flag, unsigned int t
 		type == SI_READYTURN || type == SI_READYCOUNTER || type == SI_DODGE ||
 		type == SI_DEVIL || type == SI_NIGHT || type == SI_INTRAVISION || type == SI_REPRODUCE ||
 		type == SI_BLOODYLUST || type == SI_FORCEOFVANGUARD || type == SI_NEUTRALBARRIER ||
-		type == SI_OVERHEAT || type == SI_BANDING)
+		type == SI_OVERHEAT || type == SI_BANDING || type == SI_SUHIDE || type == SI_SPRITEMABLE)
 		tick=0;
 
 #if PACKETVER >= 20090121
@@ -10502,7 +10514,8 @@ void clif_parse_QuitGame(int fd, struct map_session_data *sd)
 
 	/*	Rovert's prevent logout option fixed [Valaris]	*/
 	if( !sd->sc.data[SC_CLOAKING] && !sd->sc.data[SC_HIDING] &&
-		!sd->sc.data[SC_CHASEWALK] && !sd->sc.data[SC_CLOAKINGEXCEED] && !sd->sc.data[SC__INVISIBILITY] &&
+		!sd->sc.data[SC_CHASEWALK] && !sd->sc.data[SC_CLOAKINGEXCEED] &&
+		!sd->sc.data[SC__INVISIBILITY] && !sd->sc.data[SC_SUHIDE] &&
 		(!battle_config.prevent_logout || DIFF_TICK(gettick(), sd->canlog_tick) > battle_config.prevent_logout) )
 	{
 		set_eof(fd);
@@ -10729,7 +10742,8 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 		sd->sc.data[SC_DEEPSLEEP] ||
 		sd->sc.data[SC__MANHOLE] || 
 		sd->sc.data[SC_CURSEDCIRCLE_ATKER] ||
-		sd->sc.data[SC_CURSEDCIRCLE_TARGET]
+		sd->sc.data[SC_CURSEDCIRCLE_TARGET] ||
+		sd->sc.data[SC_SUHIDE]
 	))
 		return;
 
@@ -10837,7 +10851,7 @@ void clif_parse_Restart(int fd, struct map_session_data *sd)
 	case 0x01:
 		/*	Rovert's Prevent logout option - Fixed [Valaris]	*/
 		if( !sd->sc.data[SC_CLOAKING] && !sd->sc.data[SC_HIDING] && !sd->sc.data[SC_CHASEWALK] &&
-			!sd->sc.data[SC_CLOAKINGEXCEED] && !sd->sc.data[SC__INVISIBILITY] &&
+			!sd->sc.data[SC_CLOAKINGEXCEED] && !sd->sc.data[SC__INVISIBILITY] && !sd->sc.data[SC_SUHIDE] &&
 			(!battle_config.prevent_logout || DIFF_TICK(gettick(), sd->canlog_tick) > battle_config.prevent_logout) )
 		{	//Send to char-server for character selection.
 			chrif_charselectreq(sd, session[fd]->client_addr);
@@ -11056,7 +11070,8 @@ void clif_parse_TakeItem(int fd, struct map_session_data *sd)
 			sd->sc.data[SC_BLADESTOP] ||
 			sd->sc.data[SC_CLOAKINGEXCEED] ||
 			(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOITEM) ||
-			sd->sc.data[SC_CURSEDCIRCLE_TARGET])
+			sd->sc.data[SC_CURSEDCIRCLE_TARGET] ||
+			sd->sc.data[SC_SUHIDE])
 		)
 			break;
 
