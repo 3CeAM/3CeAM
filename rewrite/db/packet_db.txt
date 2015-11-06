@@ -1900,8 +1900,7 @@ packet_ver: 31
 0x0a2e,6//Unknown
 
 //Add new packets here.
-//2015-10-01bRagexeRE
-//Temp Support
+//2015-10-29aRagexeRE
 packet_ver: 32
 0x0369,7,actionrequest,2:6
 0x083c,10,useskilltoid,2:4:6
@@ -1924,14 +1923,14 @@ packet_ver: 32
 0x0817,2,reqclosebuyingstore,0
 0x0815,-1,reqopenbuyingstore,2:4:8:9:89
 0x0365,18,partybookingregisterreq,2:4
-0x0363,8 // cz_join_battle_field
+0x0363,8 // CZ_JOIN_BATTLE_FIELD
 0x0281,-1,itemlistwindowselected,2:4:8
 0x022d,19,wanttoconnection,2:6:10:14:18
 0x0802,26,partyinvite2,2
-0x0436,4 // cz_gangsi_rank
+0x0436,4 // CZ_GANGSI_RANK
 0x023b,26,friendslistadd,2
 0x0361,5,hommenu,4
-0x0960,36,storagepassword,0
+0x0860,36,storagepassword,0
 
 //Add new packets here.
 //packet_ver: 33

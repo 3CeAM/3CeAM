@@ -7970,7 +7970,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				// Kagerou/Oboro
 				case SC_KAGEHUMI:		case SC_JYUMONJIKIRI:	case SC_MEIKYOUSISUI:
 				case SC_KYOUGAKU:		case SC_IZAYOI:			case SC_ZENKAI:
-				// Summer
+				// Summoner
 				case SC_SPRITEMABLE:
 				// Misc Status's
 				case SC_ALL_RIDING:		case SC_MONSTER_TRANSFORM:	case SC_ON_PUSH_CART:

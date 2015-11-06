@@ -9883,7 +9883,7 @@ static bool clif_process_message(struct map_session_data* sd, int format, char**
 		messagelen = textlen - NAME_LENGTH; // this should be the message length (w/ zero byte included)
 	}
 
-#if PACKETVER >= 20151001
+#if PACKETVER >= 20151029
 	message[messagelen++] = '\0';
 #endif
 

@@ -1652,6 +1652,9 @@ enum e_skill {
 	SU_TUNAPARTY,
 	SU_BUNCHOFSHRIMP,
 	SU_FRESHSHRIMP,
+	// Skills Confirmed To Exist, But Names Are Unofficial.
+	SU_CN_METEOR_ATK,
+	SU_LUNATICCARROTBEAT_ATK,
 
 	HLIF_HEAL = 8001,
 	HLIF_AVOID,
