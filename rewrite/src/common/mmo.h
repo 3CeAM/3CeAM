@@ -48,7 +48,7 @@
 
 #ifndef PACKETVER
 	//#define PACKETVER	20081126
-	#define PACKETVER 20150513
+	#define PACKETVER 20151029
 #endif
 // backward compatible PACKETVER 8 and 9
 #if PACKETVER == 8
@@ -105,7 +105,7 @@
 #define MAX_ZENY 1000000000
 #define MAX_FAME 1000000000
 #define MAX_CART 100
-#define MAX_SKILL 5042
+#define MAX_SKILL 5044
 #define GLOBAL_REG_NUM 256
 #define ACCOUNT_REG_NUM 64
 #define ACCOUNT_REG2_NUM 16

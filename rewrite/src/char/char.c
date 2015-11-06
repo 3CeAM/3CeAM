@@ -1310,7 +1310,7 @@ int check_char_name(char * name)
 // Function to create a new character
 //-----------------------------------
 #if PACKETVER >= 20120307
-#if PACKETVER >= 20151001
+#if PACKETVER >= 20151029
 int make_new_char(struct char_session_data* sd, char* name_, int slot, int hair_color, int hair_style, short starting_job) {
 #else
 int make_new_char(struct char_session_data* sd, char* name_, int slot, int hair_color, int hair_style) {
@@ -1374,7 +1374,7 @@ int make_new_char(struct char_session_data* sd, char* name_, int str, int agi, i
 	char_dat[i].status.account_id = sd->account_id;
 	char_dat[i].status.slot = slot;
 	safestrncpy(char_dat[i].status.name,name,NAME_LENGTH);
-#if PACKETVER >= 20151001
+#if PACKETVER >= 20151029
 	char_dat[i].status.class_ = starting_job;
 #else
 	char_dat[i].status.class_ = 0;
@@ -3905,7 +3905,7 @@ int parse_char(int fd)
 		}
 		break;
 
-#if PACKETVER >= 20151001
+#if PACKETVER >= 20151029
 		// S 0a39 <name>.24B <slot>.B <hair color>.W <hair style>.W <starting job ID>.W <Unknown>.(W or 2 B's)??? <sex>.B
 		case 0xa39:
 			FIFOSD_CHECK(36);
@@ -3923,7 +3923,7 @@ int parse_char(int fd)
 				i = -2;
 			else
 
-#if PACKETVER >= 20151001
+#if PACKETVER >= 20151029
 				i = make_new_char(sd, (char*)RFIFOP(fd,2),RFIFOB(fd,26),RFIFOW(fd,27),RFIFOW(fd,29),RFIFOW(fd,31));
 #elif PACKETVER >= 20120307
 				i = make_new_char(sd, (char*)RFIFOP(fd,2),RFIFOB(fd,26),RFIFOW(fd,27),RFIFOW(fd,29));
@@ -3957,7 +3957,7 @@ int parse_char(int fd)
 				if( ch < MAX_CHARS )
 					sd->found_char[ch] = i; // position of the new char in the char_dat[] array
 			}
-#if PACKETVER >= 20151001
+#if PACKETVER >= 20151029
 			RFIFOSKIP(fd,36);
 #elif PACKETVER >= 20120307
 			RFIFOSKIP(fd,31);
