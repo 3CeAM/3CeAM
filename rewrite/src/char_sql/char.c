@@ -1295,7 +1295,11 @@ int check_char_name(char * name, char * esc_name)
 // Function to create a new character
 //-----------------------------------
 #if PACKETVER >= 20120307
+#if PACKETVER >= 20151029
+int make_new_char_sql(struct char_session_data* sd, char* name_, int slot, int hair_color, int hair_style, short starting_job) {
+#else
 int make_new_char_sql(struct char_session_data* sd, char* name_, int slot, int hair_color, int hair_style) {
+#endif
 	int str = 1, agi = 1, vit = 1, int_ = 1, dex = 1, luk = 1;
 #else
 int make_new_char_sql(struct char_session_data* sd, char* name_, int str, int agi, int vit, int int_, int dex, int luk, int slot, int hair_color, int hair_style) {
@@ -1368,6 +1372,13 @@ int make_new_char_sql(struct char_session_data* sd, char* name_, int str, int ag
 	}
 	//Retrieve the newly auto-generated char id
 	char_id = (int)Sql_LastInsertId(sql_handle);
+#if PACKETVER >= 20151029
+	// If race is human, job remains as Novice. If race is doram, starting job is changed to Summoner.
+	if (starting_job == JOB_SUMMONER) {
+		if( SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `%s` (`class`) VALUES ('%d')", char_db, JOB_SUMMONER) )
+			Sql_ShowDebug(sql_handle);
+	}
+#endif
 	//Give the char the default items
 	if (start_weapon > 0) { //add Start Weapon (Knife?)
 		if( SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `%s` (`char_id`,`nameid`, `amount`, `identify`) VALUES ('%d', '%d', '%d', '%d')", inventory_db, char_id, start_weapon, 1, 1) )
@@ -3635,7 +3646,11 @@ int parse_char(int fd)
 		break;
 
 		// create new char
-#if PACKETVER >= 20120307
+#if PACKETVER >= 20151029
+		// S 0a39 <name>.24B <slot>.B <hair color>.W <hair style>.W <starting job ID>.W <Unknown>.(W or 2 B's)??? <sex>.B
+		case 0xa39:
+			FIFOSD_CHECK(36);
+#elif PACKETVER >= 20120307
 		// S 0970 <name>.24B <slot>.B <hair color>.W <hair style>.W
 		case 0x970:
 			FIFOSD_CHECK(31);
@@ -3647,7 +3662,9 @@ int parse_char(int fd)
 			if( !char_new ) //turn character creation on/off [Kevin]
 				i = -2;
 			else
-#if PACKETVER >= 20120307
+#if PACKETVER >= 20151029
+				i = make_new_char_sql(sd, (char*)RFIFOP(fd,2),RFIFOB(fd,26),RFIFOW(fd,27),RFIFOW(fd,29),RFIFOW(fd,31));
+#elif PACKETVER >= 20120307
 				i = make_new_char_sql(sd, (char*)RFIFOP(fd,2),RFIFOB(fd,26),RFIFOW(fd,27),RFIFOW(fd,29));
 #else
 				i = make_new_char_sql(sd, (char*)RFIFOP(fd,2),RFIFOB(fd,26),RFIFOB(fd,27),RFIFOB(fd,28),RFIFOB(fd,29),RFIFOB(fd,30),RFIFOB(fd,31),RFIFOB(fd,32),RFIFOW(fd,33),RFIFOW(fd,35));
@@ -3684,7 +3701,9 @@ int parse_char(int fd)
 					sd->found_char[ch] = i; // the char_id of the new char
 			}
 
-#if PACKETVER >= 20120307
+#if PACKETVER >= 20151029
+			RFIFOSKIP(fd,36);
+#elif PACKETVER >= 20120307
 			RFIFOSKIP(fd,31);
 #else
 			RFIFOSKIP(fd,37);
