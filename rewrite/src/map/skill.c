@@ -1076,12 +1076,14 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		skill_castend_nodamage_id(src,bl,skillid,skilllv,tick,BCT_ENEMY);
 		break;
 	case AB_ADORAMUS:
-		if( tsc && !tsc->data[SC_DECREASEAGI] ) //Prevent duplicate agi-down effect.
-			{if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-			rate = 4*skilllv+sd->status.job_level/2;
+		if( tsc && !tsc->data[SC_DECREASEAGI] )//Prevent duplicate agi-down effect.
+		{
+			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
+				rate = 4 * skilllv + status_get_job_lv(src) / 2;
 			else
-			rate = 4*skilllv+25;
-			sc_start(bl, SC_ADORAMUS, rate, skilllv, skill_get_time(skillid, skilllv));}
+				rate = 4 * skilllv + 25;
+			sc_start(bl, SC_ADORAMUS, rate, skilllv, skill_get_time(skillid, skilllv));
+		}
 		break;
 	case WL_CRIMSONROCK:
 		sc_start(bl, SC_STUN, 40, skilllv, skill_get_time(skillid, skilllv));
@@ -1163,7 +1165,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		break;
 	case LG_SHIELDPRESS:
 		if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-		rate = 30 + 8 * skilllv + sstatus->dex / 10 + sd->status.job_level / 4;
+		rate = 30 + 8 * skilllv + sstatus->dex / 10 + status_get_job_lv(src) / 4;
 		else
 		rate = 30 + 8 * skilllv + sstatus->dex / 10 + 12;
 		sc_start(bl, SC_STUN, rate, skilllv, skill_get_time(skillid,skilllv));
@@ -7772,8 +7774,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case AB_CLEMENTIA:
 	case AB_CANTO:
 		{
-			int bless_lv = pc_checkskill(sd,AL_BLESSING)+sd->status.job_level/10;
-			int agi_lv = pc_checkskill(sd,AL_INCAGI)+sd->status.job_level/10;
+			short bless_lv = pc_checkskill(sd,AL_BLESSING)+status_get_job_lv(src)/10;
+			short agi_lv = pc_checkskill(sd,AL_INCAGI)+status_get_job_lv(src)/10;
 			if( battle_config.renewal_baselvl_skill_effect == 0 )
 			{
 				bless_lv = pc_checkskill(sd,AL_BLESSING)+5;
@@ -8363,7 +8365,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		int joblvbonus = 0;
 		if (is_boss(bl)) break;
 		if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-			joblvbonus = ( sd ? sd->status.job_level : 50 );
+			joblvbonus = status_get_job_lv(src);
 		else
 			joblvbonus = 50;
 		//First we set the success chance based on the caster's build which increases the chance.
@@ -8645,11 +8647,11 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case MI_RUSH_WINDMILL:
 	case MI_ECHOSONG:
 			if( flag&1 )
-				sc_start2(bl,type,100,skilllv,pc_checkskill(sd,WM_LESSON),skill_get_time(skillid,skilllv));
+				sc_start4(bl,type,100,skilllv,pc_checkskill(sd,WM_LESSON),status_get_job_lv(src),0,skill_get_time(skillid,skilllv));
 			else if( sd )
 			{
 				party_foreachsamemap(skill_area_sub,sd,skill_get_splash(skillid,skilllv),src,skillid,skilllv,tick,flag|BCT_PARTY|1,skill_castend_nodamage_id);
-				sc_start2(bl,type,100,skilllv,pc_checkskill(sd,WM_LESSON),skill_get_time(skillid,skilllv));
+				sc_start4(bl,type,100,skilllv,pc_checkskill(sd,WM_LESSON),status_get_job_lv(src),0,skill_get_time(skillid,skilllv));
 				clif_skill_nodamage(src,bl,skillid,skilllv,1);
 			}
 			break;
@@ -8684,7 +8686,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		else if ( sd )
 		{
 			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-				rate = 4 * skilllv + 2 * (sd ? pc_checkskill(sd,WM_LESSON) : 1) + status_get_lv(src) / 15 + sd->status.job_level / 5;
+				rate = 4 * skilllv + 2 * (sd ? pc_checkskill(sd,WM_LESSON) : 1) + status_get_lv(src) / 15 + status_get_job_lv(src) / 5;
 			else
 				rate = 4 * skilllv + 2 * (sd ? pc_checkskill(sd,WM_LESSON) : 1) + 20;
 			if ( rand()%100 < rate )
@@ -8708,13 +8710,22 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 	case WM_VOICEOFSIREN:
 		if( flag&1 )
-			sc_start2(bl,type,100,skilllv,src->id,skill_get_time(skillid,skilllv));
+		{
+			int duration = 0;
+			if( battle_config.renewal_baselvl_skill_effect == 1 )// Job LV part is ignored on monsters.
+				duration = skill_get_time(skillid,skilllv) - 1000 * (status_get_lv(bl) / 10 + (sd?status_get_job_lv(bl):0) / 5);
+			else
+				duration = skill_get_time(skillid,skilllv) - 1000 * (15 + (sd?10:0));
+			if ( duration < 10000 )// Duration can't be reduced below 10 seconds.
+				duration = 10000;
+			sc_start2(bl,type,100,skilllv,src->id,duration);
+		}
 		else if ( sd )
 		{
 			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-				rate = 6 * skilllv + (sd ? pc_checkskill(sd,WM_LESSON) : 1) + sd->status.job_level / 2;
+				rate = 6 * skilllv + 2 * (sd?pc_checkskill(sd,WM_LESSON):10) + status_get_job_lv(src) / 2;
 			else
-				rate = 6 * skilllv + (sd ? pc_checkskill(sd,WM_LESSON) : 1) + 25;
+				rate = 6 * skilllv + 2 * (sd?pc_checkskill(sd,WM_LESSON):10) + 25;
 			if ( rand()%100 < rate )
 			{
 			map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid,skilllv),BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
@@ -8768,7 +8779,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			else if( sd )
 			{
 				if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-					rate = sstatus->int_ / 6 + sd->status.job_level / 5 + skilllv * 4;
+					rate = sstatus->int_ / 6 + status_get_job_lv(src) / 5 + skilllv * 4;
 				else
 					rate = sstatus->int_ / 6 + 10 + skilllv * 4;
 				if ( rand()%100 < rate )
@@ -8846,7 +8857,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 	case SO_ARRULLO:
 			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-			{rate = 15 + 5 * skilllv + sstatus->int_ / 5 + sd->status.job_level / 5 - tstatus->int_ / 6 - tstatus->luk / 10;
+			{rate = 15 + 5 * skilllv + sstatus->int_ / 5 + status_get_job_lv(src) / 5 - tstatus->int_ / 6 - tstatus->luk / 10;
 			tick = status_get_lv(bl) / 20 + tstatus->int_ / 40;}
 			else
 			{rate = 15 + 5 * skilllv + sstatus->int_ / 5 + 10 - tstatus->int_ / 6 - tstatus->luk / 10;
@@ -16212,9 +16223,13 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 	if( skill_id == RK_RUNEMASTERY )
 	{
 		skill_lv = pc_checkskill(sd,skill_id);
-		if( skill_lv == 10 ) temp_qty = 1 + rand()%3;
-		else if( skill_lv >= 5 ) temp_qty = 1 + rand()%2;
-		else temp_qty = 1;
+		if( skill_lv == 10 )
+			temp_qty = 1 + rand()%3;
+		else if( skill_lv >= 5 )
+			temp_qty = 1 + rand()%2;
+		else
+			temp_qty = 1;
+
 		for( i = 0; i < MAX_INVENTORY; i++ )
 		{
 			if( sd->status.inventory[i].nameid == nameid )

@@ -4418,7 +4418,7 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 	if(sc->data[SC_GT_CHANGE])
 		watk += sc->data[SC_GT_CHANGE]->val2;
 	if(sc->data[SC_RUSHWINDMILL])
-		watk += sc->data[SC_RUSHWINDMILL]->val3;
+		watk += sc->data[SC_RUSHWINDMILL]->val4;
 	if(sc->data[SC_SATURDAYNIGHTFEVER])
 		watk += 100 * sc->data[SC_SATURDAYNIGHTFEVER]->val1;
 	if(sc->data[SC_FIRE_INSIGNIA] && sc->data[SC_FIRE_INSIGNIA]->val1 == 2)
@@ -4489,7 +4489,7 @@ static unsigned short status_calc_matk(struct block_list *bl, struct status_chan
 	if(sc->data[SC_MATKFOOD])
 		matk += sc->data[SC_MATKFOOD]->val1;
 	if(sc->data[SC_MOONLITSERENADE])
-		matk += sc->data[SC_MOONLITSERENADE]->val3;
+		matk += sc->data[SC_MOONLITSERENADE]->val4;
 	if(sc->data[SC_MANA_PLUS])
 		matk += sc->data[SC_MANA_PLUS]->val1;
 	if(sc->data[SC_FIRE_INSIGNIA] && sc->data[SC_FIRE_INSIGNIA]->val1 == 3)
@@ -4714,7 +4714,7 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 	if( sc->data[SC_NEUTRALBARRIER] )
 		def += def * ( 10 + 5 * sc->data[SC_NEUTRALBARRIER]->val1 ) / 100;
 	if( sc->data[SC_ECHOSONG] )
-		def += def * sc->data[SC_ECHOSONG]->val3 / 100;
+		def += def * sc->data[SC_ECHOSONG]->val4 / 100;
 	if(sc->data[SC_DOHU_KOUKAI])//Does this also increase DEF gained from refinement bonuses? Also need offical DEF increase value. [Rytech]
 		def += def * (5 * sc->data[SC_DOHU_KOUKAI]->val2) / 100;
 	if(sc->data[SC_ODINS_POWER])
@@ -4830,7 +4830,7 @@ static signed char status_calc_mdef(struct block_list *bl, struct status_change 
 	if( sc->data[SC_NEUTRALBARRIER] )
 		mdef += mdef * ( 10 + 5 * sc->data[SC_NEUTRALBARRIER]->val1 ) / 100;
 	if(sc->data[SC_SYMPHONYOFLOVER])
-		mdef += mdef * sc->data[SC_SYMPHONYOFLOVER]->val3 / 100;
+		mdef += mdef * sc->data[SC_SYMPHONYOFLOVER]->val4 / 100;
 	if(sc->data[SC_GT_CHANGE])
 		{mdef -= sc->data[SC_GT_CHANGE]->val4;
 			if ( mdef < 0 )
@@ -7805,9 +7805,9 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			break;
 		case SC_STONEHARDSKIN:// Final DEF/MDEF increase divided by 10 since were using classic (pre-renewal) mechanics. [Rytech]
 			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(bl) >= 100 )
-			val1 = sd->status.job_level * pc_checkskill(sd, RK_RUNEMASTERY) / 4 / 10; //DEF/MDEF Increase
+				val1 = status_get_job_lv(bl) * pc_checkskill(sd, RK_RUNEMASTERY) / 4 / 10; //DEF/MDEF Increase
 			else
-			val1 = 50 * pc_checkskill(sd, RK_RUNEMASTERY) / 4 / 10;
+				val1 = 50 * pc_checkskill(sd, RK_RUNEMASTERY) / 4 / 10;
 			break;
 		case SC_FIGHTINGSPIRIT:
 			val_flag |= 1|2;
@@ -8014,23 +8014,23 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val3 = 5 * val1 + val2;//ASPD Increase
 			break;
 		case SC_SYMPHONYOFLOVER:
-			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(bl) >= 100 )
-			val3 = 12 * val1 + val2 + sd->status.job_level / 4;//MDEF Increase In %
+			if( battle_config.renewal_baselvl_skill_effect == 1 )
+			val4 = 12 * val1 + val2 + val3 / 4;//MDEF Increase In %
 			else
-			val3 = 12 * val1 + val2 + 12;
+			val4 = 12 * val1 + val2 + 12;
 			break;
 		case SC_MOONLITSERENADE://MATK Increase
 		case SC_RUSHWINDMILL://ATK Increase
-			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(bl) >= 100 )
-			val3 = 6 * val1 + val2 + sd->status.job_level / 5;
+			if( battle_config.renewal_baselvl_skill_effect == 1 )
+			val4 = 6 * val1 + val2 + val3 / 5;
 			else
-			val3 = 6 * val1 + val2 + 10;
+			val4 = 6 * val1 + val2 + 10;
 			break;
 		case SC_ECHOSONG:
-			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(bl) >= 100 )
-			val3 = 6 * val1 + val2 + sd->status.job_level / 4;//DEF Increase In %
+			if( battle_config.renewal_baselvl_skill_effect == 1 )
+			val4 = 6 * val1 + val2 + val3 / 4;//DEF Increase In %
 			else
-			val3 = 6 * val1 + val2 + 12;
+			val4 = 6 * val1 + val2 + 12;
 			break;		
 		case SC_HARMONIZE:
 			val3 = val1 + val2 / 2;
@@ -8160,15 +8160,19 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			if( sd )
 			{
 				if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(bl) >= 100 )
-				{val2 = 40 * val1 + 3 * sd->status.job_level;// ATK bonus
-				val3 = sd->status.base_level / 10 + sd->status.job_level / 5;}// All stat bonus
+				{// val2 = ATK Bonus, val3 = All Stats Bonus
+					val2 = 40 * val1 + 3 * status_get_job_lv(bl);
+					val3 = status_get_lv(bl) / 10 + status_get_job_lv(bl) / 5;
+				}
 				else
-				{val2 = 40 * val1 + 3 * 50;
-				val3 = sd->status.base_level / 10 + 50 / 5;}
+				{
+					val2 = 40 * val1 + 3 * 50;
+					val3 = status_get_lv(bl) / 10 + 50 / 5;
+				}
 			}
 			val4 = tick / 5000;
 			tick = 5000;
-			status_change_clear_buffs(bl,3); //Remove buffs/debuffs
+			status_change_clear_buffs(bl,3);// Remove Buffs/Debuffs
 			break;
 		case SC_SPELLFIST:
 		case SC_CURSEDCIRCLE_ATKER:
@@ -8176,14 +8180,14 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			break;
 		case SC_CRESCENTELBOW:
 			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(bl) >= 100 )
-			val2 = 50 + 5 * val1 + sd->status.job_level / 2;
+			val2 = 50 + 5 * val1 + status_get_job_lv(bl) / 2;
 			else
 			val2 = 50 + 5 * val1 + 25;
 			val_flag |= 1|2;
 			break;
 		case SC_LIGHTNINGWALK:
 			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(bl) >= 100 )
-			val2 = 40 + 5 * val1 + sd->status.job_level / 2;
+			val2 = 40 + 5 * val1 + status_get_job_lv(bl) / 2;
 			else
 			val2 = 40 + 5 * val1 + 25;
 			val_flag |= 1;
