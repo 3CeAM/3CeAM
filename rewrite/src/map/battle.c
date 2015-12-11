@@ -2237,7 +2237,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					if( re_baselv_bonus == 1 && s_level >= 100 )
 						skillratio = skillratio * s_level / 120;
 					if( re_baselv_bonus == 1 && s_level >= 100 )
-					skillratio += sstatus->agi * 2 + sd->status.job_level * 4;
+					skillratio += sstatus->agi * 2 + status_get_job_lv(src) * 4;
 					else
 					skillratio += sstatus->agi * 2 + 200;
 					break;
@@ -2364,7 +2364,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case SC_FEINTBOMB:
 					skillratio = (1 + skill_lv) * sstatus->dex / 2;
 					if( re_baselv_bonus == 1 && s_level >= 100 )
-					skillratio = skillratio * sd->status.job_level / 10;
+					skillratio = skillratio * status_get_job_lv(src) / 10;
 					else
 					skillratio = skillratio * 5;
 					if( re_baselv_bonus == 1 && s_level >= 100 )
@@ -2716,7 +2716,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio = (50 + sstatus->dex / 4) * skill_lv * pc_checkskill(sd, NJ_TOBIDOUGU) * 4 / 10;
 					if( re_baselv_bonus == 1 && s_level >= 100 )
 					{skillratio = skillratio * s_level / 120;	// Base level bonus.
-					skillratio += 10 * sd->status.job_level;}
+					skillratio += 10 * status_get_job_lv(src);}
 					else
 					skillratio += 500;
 					break;
@@ -4044,7 +4044,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							skillratio += 10 + 20 * (skill_lv - 20) + 10 * sstatus->int_;
 						else if ( skill_lv > 10 )// Fire Expansion Level 1
 							if( re_baselv_bonus == 1 && s_level >= 100 )
-							skillratio += 10 + 20 * (skill_lv - 10) + sstatus->int_ + s_job_level;
+							skillratio += 10 + 20 * (skill_lv - 10) + sstatus->int_ + status_get_job_lv(src);
 							else
 							skillratio += 10 + 20 * (skill_lv - 10) + sstatus->int_ + 50;
 						else// Normal Demonic Fire Damage
@@ -4500,9 +4500,9 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		break;
 	case GN_HELLS_PLANT_ATK:
 		if ( re_baselv_bonus == 1 )
-		md.damage = (( skill_lv * status_get_lv(target) * 10 ) + sstatus->int_ * 7 / 2 * ( 18 + sd->status.job_level / 4 )) * 5 / ( 10 - pc_checkskill(sd,AM_CANNIBALIZE) );
+		md.damage = 10 * skill_lv * status_get_lv(target) + 7 * sstatus->int_ / 2 * ( status_get_job_lv(src) / 4 + 18 ) * 5 / ( 10 - pc_checkskill(sd,AM_CANNIBALIZE) );
 		else
-		md.damage = (( skill_lv * status_get_lv(target) * 10 ) + sstatus->int_ * 7 / 2 * ( 18 + 50 / 4 )) * 5 / ( 10 - pc_checkskill(sd,AM_CANNIBALIZE) );
+		md.damage = 10 * skill_lv * status_get_lv(target) + 7 * sstatus->int_ / 2 * 30 * 5 / ( 10 - pc_checkskill(sd,AM_CANNIBALIZE) );
 		break;
 	case KO_MUCHANAGE:
 		md.damage = skill_get_zeny(skill_num ,skill_lv);
