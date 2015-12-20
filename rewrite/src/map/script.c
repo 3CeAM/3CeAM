@@ -15057,6 +15057,21 @@ BUILDIN_FUNC(searchstores)
 	return 0;
 }
 
+BUILDIN_FUNC(opendressroom)
+{
+	int flag = 1;
+	TBL_PC* sd;
+
+	sd = script_rid2sd(st);
+	if( sd == NULL )
+		return 0;// no player attached, report source
+
+	if( script_hasdata(st,2) )
+		flag = script_getnum(st,2);
+	clif_dressing_room(sd,flag);
+
+	return 0;
+}
 
 // declarations that were supposed to be exported from npc_chat.c
 #ifdef PCRE_SUPPORT
@@ -15470,5 +15485,9 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(checkquest, "i?"),
 	BUILDIN_DEF(changequest, "ii"),
 	BUILDIN_DEF(showevent, "ii"),
+
+	// 3CeAM
+	BUILDIN_DEF(opendressroom,"?"),
+
 	{NULL,NULL,NULL},
 };
