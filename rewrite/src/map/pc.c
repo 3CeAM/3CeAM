@@ -7274,6 +7274,11 @@ int pc_jobchange(struct map_session_data *sd,int job, int upper)
 		}
 	}
 
+	// Reset body style to 0 before changing job to avoid
+	// errors since not every job has a alternate outfit.
+	sd->status.body = 0;
+	clif_changelook(&sd->bl,LOOK_BODY2,0);
+
 	sd->status.class_ = job;
 	fame_flag = pc_famerank(sd->status.char_id,sd->class_&MAPID_UPPERMASK);
 	sd->class_ = (unsigned short)b_class;
@@ -7298,8 +7303,8 @@ int pc_jobchange(struct map_session_data *sd,int job, int upper)
 	clif_changelook(&sd->bl,LOOK_BASE,sd->vd.class_); // move sprite update to prevent client crashes with incompatible equipment [Valaris]
 	if(sd->vd.cloth_color)
 		clif_changelook(&sd->bl,LOOK_CLOTHES_COLOR,sd->vd.cloth_color);
-	if(sd->vd.body_style)
-		clif_changelook(&sd->bl,LOOK_BODY2,sd->vd.body_style);
+	//if(sd->vd.body_style)
+	//	clif_changelook(&sd->bl,LOOK_BODY2,sd->vd.body_style);
 
 	//Update skill tree.
 	pc_calc_skilltree(sd);
