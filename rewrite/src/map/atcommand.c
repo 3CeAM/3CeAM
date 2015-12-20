@@ -2198,6 +2198,13 @@ ACMD_FUNC(body_style)
 
 	memset(atcmd_output, '\0', sizeof(atcmd_output));
 
+	// Limit body styles to certain jobs since not all of them are released yet.
+	if (!((sd->class_&MAPID_THIRDMASK) == MAPID_GUILLOTINE_CROSS || (sd->class_&MAPID_THIRDMASK) == MAPID_GENETIC))
+	{
+		clif_displaymessage(fd, "This job has no alternate body styles.");
+		return -1;
+	}
+
 	if (!message || !*message || sscanf(message, "%d", &body_style) < 1) {
 		sprintf(atcmd_output, "Please, enter a body style (usage: @bodystyle <body ID: %d-%d>).", MIN_BODY_STYLE, MAX_BODY_STYLE);
 		clif_displaymessage(fd, atcmd_output);
