@@ -14071,8 +14071,8 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 			if (fixed_time < 0)//Prevents negeative values from affecting the variable below.
 				fixed_time = 0;
 			//Adds variable and fixed cast times together to make a full variable time for renewal skills
-			//if renewal_cast_enable is turned off. Non-renewal skills dont have fixed times, causing a
-			//fixed cast value of 0 to be added and not affect the actural cast time.
+			//if renewal_casting_renewal_skills is turned off. Non-renewal skills dont have fixed times,
+			//causing a fixed cast value of 0 to be added and not affect the actural cast time.
 			time = time + fixed_time;
 			if ( sd && ((sd->class_&MAPID_THIRDMASK) >= MAPID_SUPER_NOVICE_E && (sd->class_&MAPID_THIRDMASK) <= MAPID_SHADOW_CHASER || (sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION))
 			rate = battle_config.castrate_dex_scale_renewal_jobs;

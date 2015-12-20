@@ -6922,6 +6922,17 @@ int pc_readparam(struct map_session_data* sd,int type)
 	case SP_FAME:        val = sd->status.fame; break;
 	case SP_KILLERRID:   val = sd->killerrid; break;
 	case SP_KILLEDRID:   val = sd->killedrid; break;
+
+	// 3CeAM Custom Detections
+	// The pc_readparam function is normally just used
+	// by a NPC to get data about a player's character.
+	// But it can be used for other things too outside
+	// of checking player data. Like making NPC's aware
+	// of certain server config settings.
+	case SP_MAX_HAIR_DYE:   val = MAX_HAIR_COLOR; break;
+	case SP_MAX_HAIR_STYLE: val = MAX_HAIR_STYLE; break;
+	case SP_MAX_BODY_DYE:   val = MAX_CLOTH_COLOR; break;
+	case SP_MAX_BODY_STYLE: val = MAX_BODY_STYLE; break;
 	}
 
 	return val;

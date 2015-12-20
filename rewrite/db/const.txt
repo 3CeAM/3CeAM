@@ -432,6 +432,10 @@ BaseClass	120	1
 killerrid	121 1
 killedrid	122 1
 BaseThird	2103	1
+MaxHairDye	2104	1
+MaxHairStyle	2105	1
+MaxBodyDye	2106	1
+MaxBodyStyle	2107	1
 
 bMaxHP	6
 bMaxSP	8

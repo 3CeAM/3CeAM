@@ -1,0 +1,145 @@
+//===== 3CeAM Script =========================================
+//= 3CeAM Custom Stylist NPC
+//===== By: ==================================================
+//= Rytech
+//===== Current Version: =====================================
+//= 1.0
+//===== Compatible With: =====================================
+//= 3CeAM r791+
+//===== Description: =========================================
+//= A new generation stylist that offers enhanced style
+//= options and dressing room for character dye/style preview.
+//= Stylist also detects the server's max dyes/styles settings
+//= and also auto adjusts maxes between jobs as needed.
+//===== Additional Comments: =================================
+//= 1.0 First release. [Rytech]
+//============================================================
+prontera,162,184,4	script	Super Stylist	509,{
+Lintro:
+	mes "[Super Stylist]";
+	mes "Hey there. Im a super stylist. Want to try out my services?";
+	mes "I can customize your character's appearance in a hand full of ways.";
+	next;
+	menu "Sure.",Laccessroom,"No Thanks.",Lbye,"Super Stylist???",Lwhoareyou;
+
+Laccessroom:
+	// Open the dressing room and sets the dye/style max's depending on the job.
+	opendressroom(0);
+	set @hairdyemax,MaxHairDye;
+	set @bodydyemax,MaxBodyDye;
+
+	// Summoner's only have 6 hair styles.
+	if (BaseClass != Job_Summoner)
+		set @hairstylemax,MaxHairStyle;
+	else
+		set @hairstylemax,6;
+
+	// Only 3rd job's have access to a 2nd body style.
+	// Note: Not all of the new body styles are out. Best to limit only to jobs that do have them.
+	if (
+//	BaseThird == Job_Rune_Knight || 
+//	BaseThird == Job_Warlock || 
+//	BaseThird == Job_Ranger || 
+//	BaseThird == Job_Arch_Bishop || 
+//	BaseThird == Job_Mechanic || 
+	BaseThird == Job_Guillotine_Cross || 
+//	BaseThird == Job_Royal_Guard || 
+//	BaseThird == Job_Sorcerer || 
+//	BaseThird == Job_Minstrel || 
+//	BaseThird == Job_Wanderer || 
+//	BaseThird == Job_Sura || 
+	BaseThird == Job_Genetic
+//	BaseThird == Job_Shadow_Chaser
+	)
+		set @bodystylemax,MaxBodyStyle;
+	else
+		set @bodystylemax,0;
+
+Lmain:
+	mes "[Super Stylist]";
+	mes "Ok step this way. A dressing room window should open. Use this to decide what you want and then select in the menu what your interested in.";
+	next;
+	menu "All Dyes And Styles",Lalldyestyle,"Hair Dye Only",Lhairdye,"Hair Style Only",Lhairstyle,"Body Dye Only",Lbodydye,"Body Style Only",Lbodystyle,"Im done.",Lbye;
+
+Lalldyestyle:
+	mes "[Super Stylist]";
+	mes "Enter the dyes/styles you want in the 4 input boxes in order....";
+	mes "Max Hair Dyes = "+@hairdyemax+"";
+	mes "Max Hair Styles = "+@hairstylemax+"";
+	mes "Max Body Dyes = "+@bodydyemax+"";
+	mes "Max Body Styles = "+@bodystylemax+"";
+	input @hairdye;
+	if (@hairdye < 0 || @hairdye > @hairdyemax) set @hairdye,0;
+	input @hairstyle;
+	if (@hairstyle < 0 || @hairstyle > @hairstylemax) set @hairstyle,0;
+	input @bodydye;
+	if (@bodydye < 0 || @bodydye > @bodydyemax) set @bodydye,0;
+	input @bodystyle;
+	if (@bodystyle < 0 || @bodystyle > @bodystylemax) set @bodystyle,0;
+	setlook 6,@hairdye;
+	setlook 1,@hairstyle;
+	setlook 7,@bodydye;
+	setlook 13,@bodystyle;
+	next;
+	goto Lmain;
+
+Lhairdye:
+	mes "[Super Stylist]";
+	mes "Enter the dye you want.";
+	mes "Max Hair Dyes = "+@hairdyemax+"";
+	input @hairdye;
+	if (@hairdye < 0 || @hairdye > @hairdyemax) set @hairdye,0;
+	setlook 6,@hairdye;
+	next;
+	goto Lmain;
+
+Lhairstyle:
+	mes "[Super Stylist]";
+	mes "Enter the style you want.";
+	mes "Max Hair Styles = "+@hairstylemax+"";
+	input @hairstyle;
+	if (@hairstyle < 0 || @hairstyle > @hairstylemax) set @hairstyle,0;
+	setlook 1,@hairstyle;
+	next;
+	goto Lmain;
+
+Lbodydye:
+	mes "[Super Stylist]";
+	mes "Enter the dye you want.";
+	mes "Max Body Dyes = "+@bodydyemax+"";
+	input @bodydye;
+	if (@bodydye < 0 || @bodydye > @bodydyemax) set @bodydye,0;
+	setlook 7,@bodydye;
+	next;
+	goto Lmain;
+
+Lbodystyle:
+	mes "[Super Stylist]";
+	mes "Enter the style you want.";
+	mes "Max Body Styles = "+@bodystylemax+"";
+	input @bodystyle;
+	if (@bodystyle < 0 || @bodystyle > @bodystylemax) set @bodystyle,0;
+	setlook 13,@bodystyle;
+	next;
+	goto Lmain;
+
+Lbye:
+	mes "[Super Stylist]";
+	mes "Ok then. Ill be here whenever you need to change your look.";
+	close;
+
+Lwhoareyou:
+	mes "[Super Stylist]";
+	mes "Never herd of us?";
+	mes "We super stylist are a new generation of stylist that are able to provide character appearance customization to players.";
+	next;
+	mes "But the difference between us and regular stylist is that we have a dressing room that allows you to try out different styles and dyes freely all together.";
+	mes "This allows you to get a full preview of what your char will look like if you applied all the styles and dyes selected before finalizing what you want.";
+	mes "Better then doing one at a time.";
+	next;
+	mes "Super stylist can also change the appearance of the outfit you wear. We call them body styles. However, only 3rd job characters are offered this service at the moment.";
+	mes "Also we don't have outfits ready for all of these jobs yet since this service is still very new and designs are still being worked on.";
+	mes "Be sure to check back later if a style isnt available for your job as were releasing them one by one.";
+	next;
+	goto Lintro;
+}
