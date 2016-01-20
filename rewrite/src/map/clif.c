@@ -9884,6 +9884,10 @@ static bool clif_process_message(struct map_session_data* sd, int format, char**
 	}
 
 #if PACKETVER >= 20151029
+	// October 2015 and newer clients don't have the zero byte.
+	// But trying to adjust the entire chat system to work without it causes too many problems.
+	// Best to just add it onto the end of the incoming packet and adjust lengths in chat packets
+	// as needed to prevent breaking anything.
 	message[messagelen++] = '\0';
 #endif
 
@@ -10598,7 +10602,11 @@ void clif_parse_GlobalMessage(int fd, struct map_session_data* sd)
 	WFIFOW(fd,0) = 0x8d;
 	WFIFOW(fd,2) = 8 + textlen;
 	WFIFOL(fd,4) = sd->bl.id;
+#if PACKETVER >= 20151029
+	safestrncpy((char*)WFIFOP(fd,8), text, textlen+1);
+#else
 	safestrncpy((char*)WFIFOP(fd,8), text, textlen);
+#endif
 	//FIXME: chat has range of 9 only
 	clif_send(WFIFOP(fd,0), WFIFOW(fd,2), &sd->bl, sd->chatID ? CHAT_WOS : AREA_CHAT_WOC);
 
@@ -12074,10 +12082,8 @@ void clif_parse_NpcNextClicked(int fd,struct map_session_data *sd)
 	npc_scriptcont(sd,RFIFOL(fd,2));
 }
 
-/*==========================================
- * Value entered into a NPC input box.
- * S 0143 <npcID>.l <amount>.l
- *------------------------------------------*/
+/// NPC numeric input dialog value (CZ_INPUT_EDITDLG).
+/// 0143 <npc id>.L <value>.L
 void clif_parse_NpcAmountInput(int fd,struct map_session_data *sd)
 {
 	int npcid = RFIFOL(fd,2);
@@ -12087,10 +12093,8 @@ void clif_parse_NpcAmountInput(int fd,struct map_session_data *sd)
 	npc_scriptcont(sd, npcid);
 }
 
-/*==========================================
- * Text entered into a NPC input box.
- * S 01d5 <len>.w <npcID>.l <input>.?B 00
- *------------------------------------------*/
+/// NPC text input dialog value (CZ_INPUT_EDITDLGSTR).
+/// 01d5 <packet len>.W <npc id>.L <string>.?B
 void clif_parse_NpcStringInput(int fd, struct map_session_data* sd)
 {
 	int message_len = RFIFOW(fd,2)-8;
@@ -12099,6 +12103,11 @@ void clif_parse_NpcStringInput(int fd, struct map_session_data* sd)
 	
 	if( message_len <= 0 )
 		return; // invalid input
+
+#if PACKETVER >= 20151029
+	// October 2015 and newer needs its length adjusted.
+	message_len += 1;
+#endif
 
 	safestrncpy(sd->npc_str, message, min(message_len,CHATBOX_SIZE));
 	npc_scriptcont(sd, npcid);
