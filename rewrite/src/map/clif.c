@@ -1317,6 +1317,18 @@ static void clif_spiritball_attribute_single(int fd, struct map_session_data *sd
 }
 
 /*==========================================
+ * Homunculus Spirit Spheres
+ *------------------------------------------*/
+static void clif_hom_spiritball_single(int fd, struct homun_data *hd)
+{
+	WFIFOHEAD(fd, packet_len(0x1e1));
+	WFIFOW(fd,0)=0x1e1;
+	WFIFOL(fd,2)=hd->bl.id;
+	WFIFOW(fd,6)=hd->hom_spiritball;
+	WFIFOSET(fd, packet_len(0x1e1));
+}
+
+/*==========================================
  *
  *------------------------------------------*/
 static void clif_weather_check(struct map_session_data *sd)
@@ -1502,6 +1514,13 @@ int clif_spawn(struct block_list *bl)
 	case BL_PET:
 		if (vd->head_bottom)
 			clif_pet_equip_area((TBL_PET*)bl); // needed to display pet equip properly
+		break;
+	case BL_HOM:
+		{
+			TBL_HOM *hd = ((TBL_HOM*)bl);
+			if (hd->hom_spiritball > 0)
+				clif_hom_spiritball(hd);
+		}
 		break;
 	}
 	return 0;
@@ -4865,6 +4884,13 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 		if (vd->head_bottom)
 			clif_pet_equip(sd, (TBL_PET*)bl); // needed to display pet equip properly
 		break;
+	case BL_HOM:
+		{
+			TBL_HOM* hd = (TBL_HOM*)bl;
+			if (hd->hom_spiritball > 0)
+				clif_hom_spiritball_single(sd->fd,hd);
+		}
+		break;
 	}
 }
 
@@ -5652,11 +5678,11 @@ int clif_skill_fail(struct map_session_data *sd,int skill_id,int type,int btype,
 
 	WFIFOHEAD(fd,packet_len(0x110));
 	WFIFOW(fd,0) = 0x110;
-	WFIFOW(fd,2) = skill_id;
-	WFIFOW(fd,4) = btype;//btype;
-	WFIFOW(fd,6) = val;//val;
-	WFIFOB(fd,8) = 0;// Success
-	WFIFOB(fd,9) = type;
+	WFIFOW(fd,2) = skill_id;// SKID
+	WFIFOW(fd,4) = btype;// Num (Supposed to be a long value)
+	WFIFOW(fd,6) = val;// ????
+	WFIFOB(fd,8) = 0;// Result
+	WFIFOB(fd,9) = type;// Cause
 	WFIFOSET(fd,packet_len(0x110));
 
 	return 1;
@@ -7991,6 +8017,22 @@ int clif_spiritball_attribute(struct map_session_data *sd)
 	WBUFW(buf,6)=spirittype;
 	WBUFW(buf,8)=sd->spiritballnumber;
 	clif_send(buf,packet_len(0x08cf),&sd->bl,AREA);
+	return 0;
+}
+
+/*==========================================
+ * Homunculus Spirit Spheres
+ *------------------------------------------*/
+int clif_hom_spiritball(struct homun_data *hd)
+{
+	unsigned char buf[16];
+
+	nullpo_ret(hd);
+
+	WBUFW(buf,0)=0x1d0;
+	WBUFL(buf,2)=hd->bl.id;
+	WBUFW(buf,6)=hd->hom_spiritball;
+	clif_send(buf,packet_len(0x1d0),&hd->bl,AREA);
 	return 0;
 }
 

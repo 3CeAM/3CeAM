@@ -2865,8 +2865,9 @@ int skill_guildaura_sub (struct block_list *bl, va_list ap)
 static int skill_check_condition_mercenary(struct block_list *bl, int skill, int lv, int type)
 {
 	struct status_data *status;
+	struct status_change *sc;
 	struct map_session_data *sd = NULL;
-	int i, j, hp, sp, hp_rate, sp_rate, state, mhp;
+	int i, j, hp, sp, hp_rate, sp_rate, state, mhp, spiritball;
 	int itemid[MAX_SKILL_ITEM_REQUIRE],amount[ARRAYLENGTH(itemid)],index[ARRAYLENGTH(itemid)];
 
 	if( lv < 1 || lv > MAX_SKILL_LEVEL )
@@ -2880,6 +2881,11 @@ static int skill_check_condition_mercenary(struct block_list *bl, int skill, int
 	}
 
 	status = status_get_status_data(bl);
+	sc = status_get_sc(bl);
+
+	if( sc && !sc->count )
+		sc = NULL;
+
 	if( (j = skill_get_index(skill)) == 0 )
 		return 0;
 
@@ -2894,6 +2900,7 @@ static int skill_check_condition_mercenary(struct block_list *bl, int skill, int
 	hp_rate = skill_db[j].hp_rate[lv-1];
 	sp_rate = skill_db[j].sp_rate[lv-1];
 	state = skill_db[j].state;
+	spiritball = skill_db[j].spiritball[lv-1];
 	if( (mhp = skill_db[j].mhp[lv-1]) > 0 )
 		hp += (status->max_hp * mhp) / 100;
 	if( hp_rate > 0 )
@@ -2925,6 +2932,51 @@ static int skill_check_condition_mercenary(struct block_list *bl, int skill, int
 				if( hd->homunculus.intimacy <= 91000 )
 					return 0;
 				break;
+			case MH_SONIC_CRAW:
+				// Requires at least 1 spirit sphere even
+				// tho it doesn't take any on skill use.
+				if ( hd->hom_spiritball < 1 )
+				{
+					clif_skill_fail(sd,skill,USESKILL_FAIL_SPIRITS,1,0);
+					return 0;
+				}
+				else
+					hd->hom_spiritball_old = hd->hom_spiritball;
+				break;
+		}
+
+		// Homunculus Status Checks
+		switch ( state )
+		{
+			case ST_FIGHTER:
+				if( !(sc && sc->data[SC_STYLE_CHANGE] && sc->data[SC_STYLE_CHANGE]->val1 == FIGHTER_STYLE) )
+				{
+					clif_skill_fail(sd,skill,USESKILL_FAIL_STYLE_CHANGE_FIGHTER,0,0);
+					return 0;
+				}
+				break;
+			case ST_GRAPPLER:
+				if( !(sc && sc->data[SC_STYLE_CHANGE] && sc->data[SC_STYLE_CHANGE]->val1 == GRAPPLER_STYLE) )
+				{
+					clif_skill_fail(sd,skill,USESKILL_FAIL_STYLE_CHANGE_GRAPPLER,0,0);
+					return 0;
+				}
+				break;
+		}
+
+		// Homunculus Spirit Sphere's Check
+		if ( spiritball > 0 )
+		{
+			if ( hd->hom_spiritball < spiritball )
+			{
+				clif_skill_fail(sd,skill,USESKILL_FAIL_SPIRITS,spiritball,0);
+				return 0;
+			}
+			else
+			{
+				hd->hom_spiritball_old = hd->hom_spiritball;
+				merc_hom_delspiritball(hd,spiritball);
+			}
 		}
 	}
 
@@ -5490,6 +5542,29 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
  			clif_skill_nodamage(src,bl,skillid,skilllv,1);
  		}
  		break;
+
+	case MH_STYLE_CHANGE:
+		if(hd)
+		{// Fighter <---> Grappler style switch.
+			if ( hd->sc.data[SC_STYLE_CHANGE] )
+			{
+				if ( hd->sc.data[SC_STYLE_CHANGE]->val1 == FIGHTER_STYLE )
+				{// Change from fighter to grappler style.
+					status_change_end(bl,type,INVALID_TIMER);
+					sc_start(bl,type,100,GRAPPLER_STYLE,-1);
+				}
+				else if ( hd->sc.data[SC_STYLE_CHANGE]->val1 == GRAPPLER_STYLE )
+				{// Change from grappler to fighter style.
+					status_change_end(bl,type,INVALID_TIMER);
+					sc_start(bl,type,100,FIGHTER_STYLE,-1);
+				}
+			}
+			else// If for some reason no style is active, start in fighter style.
+				sc_start(bl,type,100,FIGHTER_STYLE,-1);
+
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		}
+		break;
 
 	case CH_SOULCOLLECT:
 		if( sd )
@@ -13505,6 +13580,7 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			clif_skill_fail(sd,skill,0x4f,0,0);
 			return 0;
 		}
+		break;
 	}
 
 	if(require.mhp > 0 && get_percentage(status->hp, status->max_hp) > require.mhp) {
@@ -17933,6 +18009,8 @@ static bool skill_parse_row_requiredb(char* split[], int columns, int current)
 	else if( strcmpi(split[10],"ridingwarg")==0 ) skill_db[i].state = ST_WUGRIDER;
 	else if( strcmpi(split[10],"mado")==0 ) skill_db[i].state = ST_MADOGEAR;
 	else if( strcmpi(split[10],"elementalspirit")==0 ) skill_db[i].state = ST_ELEMENTALSPIRIT;
+	else if( strcmpi(split[10],"fighter")==0 ) skill_db[i].state = ST_FIGHTER;
+	else if( strcmpi(split[10],"grappler")==0 ) skill_db[i].state = ST_GRAPPLER;
 	else skill_db[i].state = ST_NONE;
 
 	skill_split_atoi(split[11],skill_db[i].spiritball);

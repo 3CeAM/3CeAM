@@ -7,6 +7,8 @@
 #include "status.h" // struct status_data, struct status_change
 #include "unit.h" // struct unit_data
 
+#define MAX_HOMUN_SPHERES 10
+
 struct h_stats {
 	unsigned int HP, SP;
 	unsigned short str, agi, vit, int_, dex, luk;
@@ -31,6 +33,12 @@ enum {
 	SP_HUNGRY 		= 0x200
 };
 
+// Eleanor's Fighting Styles
+enum {
+	GRAPPLER_STYLE = 0,
+	FIGHTER_STYLE
+};
+
 struct homun_data {
 	struct block_list bl;
 	struct unit_data  ud;
@@ -45,6 +53,7 @@ struct homun_data {
 	int hungry_timer;	//[orn]
 	unsigned int exp_next;
 	char blockskill[MAX_SKILL];	// [orn]
+	short hom_spiritball, hom_spiritball_old;
 };
 
 // HM stands for HoMunculus and MH stands for Mutated Homunculus
@@ -89,5 +98,10 @@ int merc_skill_tree_get_max(int id, int b_class);
 void merc_hom_init_timers(struct homun_data * hd);
 void merc_skill_reload(void);
 void merc_reload(void);
+
+// 3CeAM
+// Homunculus Spirit Spheres
+int merc_hom_addspiritball(struct homun_data *hd, int max);
+int merc_hom_delspiritball(struct homun_data *hd, int count);
 
 #endif /* _HOMUNCULUS_H_ */

@@ -359,6 +359,7 @@ int battle_attr_fix(struct block_list *src, struct block_list *target, int damag
 int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damage *d,int damage,int skill_num,int skill_lv,int element)
 {
 	struct map_session_data *sd = NULL;
+	struct homun_data *hd = NULL;
 	struct status_change *sc, *tsc;
 	struct status_change_entry *sce;
 	int div_ = d->div_, flag = d->flag;
@@ -384,6 +385,8 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 
 		if(!damage) return 0;
 	}
+	else if ( bl->type == BL_HOM )
+		hd=(struct homun_data *)bl;
 
 	sc = status_get_sc(bl);
 	tsc = status_get_sc(src);
@@ -708,20 +711,23 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 
 		if( sd && (sce = sc->data[SC_GT_ENERGYGAIN]) && flag&BF_WEAPON && rand()%100 < sce->val2 )
 		{
-			int spheremax = 0;
-			if ( sd && sc->data[SC_RAISINGDRAGON] )
-			spheremax = 5 + sc->data[SC_RAISINGDRAGON]->val1;
-			else
-			spheremax = 5;
-			if( sd ) pc_addspiritball(sd, skill_get_time2(SR_GENTLETOUCH_ENERGYGAIN,sce->val1), spheremax);
+			short spheremax = 5;
+
+			if ( sc->data[SC_RAISINGDRAGON] )
+				spheremax += sc->data[SC_RAISINGDRAGON]->val1;
+
+			pc_addspiritball(sd, skill_get_time2(SR_GENTLETOUCH_ENERGYGAIN,sce->val1), spheremax);
 		}
 		
 		if( sc->data[SC__DEADLYINFECT] && flag&BF_SHORT && damage > 0 && rand()%100 < 30 + 10 * sc->data[SC__DEADLYINFECT]->val1 )
 			status_change_spread(bl, src); // Deadly infect attacked side
 
+		if ( hd && (sce = sc->data[SC_STYLE_CHANGE]) && sce->val1 == GRAPPLER_STYLE && rand()%100 < sce->val2 )
+			merc_hom_addspiritball(hd,MAX_HOMUN_SPHERES);
+
 		// Magma Flow autotriggers a splash AoE around self by chance when hit.
-		if ( sc->data[SC_MAGMA_FLOW] && rand()%100 < 3 * sc->data[SC_MAGMA_FLOW]->val1)
-			skill_castend_nodamage_id(bl,bl,MH_MAGMA_FLOW,sc->data[SC_MAGMA_FLOW]->val1,0,flag|2);
+		if ( (sce = sc->data[SC_MAGMA_FLOW]) && rand()%100 < 3 * sce->val1)
+			skill_castend_nodamage_id(bl,bl,MH_MAGMA_FLOW,sce->val1,0,flag|2);
 	}
 
 	if( tsc && tsc->count )
@@ -1243,6 +1249,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 	int chorusbonus = 0;//Chorus bonus value for chorus skills. Bonus remains 0 unless 3 or more Minstrel's/Wanderer's are in the party.
 
 	struct map_session_data *sd, *tsd;
+	struct homun_data *hd;
 	struct Damage wd;
 	struct status_change *sc = status_get_sc(src);
 	struct status_change *tsc = status_get_sc(target);
@@ -1308,6 +1315,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 
 	sd = BL_CAST(BL_PC, src);
 	tsd = BL_CAST(BL_PC, target);
+	hd = BL_CAST(BL_HOM, src);
 
 	// Minstrel/Wanderer number check for chorus skills.
 	// Bonus remains 0 unless 3 or more Minstrel's/Wanderer's are in the party.
@@ -1390,6 +1398,13 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 			case LG_HESPERUSLIT:
 				if( sc && sc->data[SC_BANDING] && sc->data[SC_BANDING]->val2 > 3 )
 					wd.div_ = sc->data[SC_BANDING]->val2;
+				break;
+
+			case MH_SONIC_CRAW:
+				if (hd)
+					wd.div_ = hd->hom_spiritball_old;
+				else
+					wd.div_ = 10;
 				break;
 
 			case EL_STONE_RAIN:
@@ -2741,7 +2756,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case MH_SONIC_CRAW:
 					skillratio = 40 * skill_lv;
 					if( re_baselv_bonus == 1 && s_level >= 100 )
-						skillratio = skillratio * s_level / 100;	// Need confirm.
+						skillratio = skillratio * s_level / 150;
 					break;
 				case MH_TINDER_BREAKER:
 					skillratio = 100 * skill_lv + 3 * sstatus->str;
@@ -2751,7 +2766,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case MH_STAHL_HORN:
 					skillratio = 500 + 100 * skill_lv;
 					if( re_baselv_bonus == 1 && s_level >= 100 )
-						skillratio = skillratio * s_level / 100;	// Need confirm.
+						skillratio = skillratio * s_level / 100;
 					break;
 				case MH_MAGMA_FLOW:
 					skillratio = 100 * skill_lv;
@@ -3307,6 +3322,10 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 			ATK_ADD(damagevalue);
 		}
 	} //if (sd)
+	else if (hd)
+	{// Homunculus Spirit Sphere's ATK Bonus
+		ATK_ADD(wd.div_*hd->hom_spiritball*3);
+	}
 
 	//Card Fix, tsd sid
 	if( tsd && !(nk&NK_NO_CARDFIX_DEF) )
@@ -4826,8 +4845,10 @@ int battle_damage_area( struct block_list *bl, va_list ap)
 enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* target, unsigned int tick, int flag)
 {
 	struct map_session_data *sd = NULL, *tsd = NULL;
+	struct homun_data *hd = NULL;
 	struct status_data *sstatus, *tstatus;
 	struct status_change *sc, *tsc;
+	struct status_change_entry *sce;
 	int damage,rdamage=0,rdelay=0;
 	int skillv;
 	struct Damage wd;
@@ -4840,6 +4861,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 
 	sd = BL_CAST(BL_PC, src);
 	tsd = BL_CAST(BL_PC, target);
+	hd = BL_CAST(BL_HOM, src);
 
 	sstatus = status_get_status_data(src);
 	tstatus = status_get_status_data(target);
@@ -4960,15 +4982,14 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			//FIXME: invalid return type!
 			return (damage_lv)skill_attack(BF_MAGIC,src,src,target,NPC_MAGICALATTACK,sc->data[SC_MAGICALATTACK]->val1,tick,0);
 
-		if( sc->data[SC_GT_ENERGYGAIN] )
+		if ( sd && (sce = sc->data[SC_GT_ENERGYGAIN]) && rand()%100 < sce->val2 )
 		{
-			int spheremax = 0;
-			if ( sd && sc->data[SC_RAISINGDRAGON] )
-			spheremax = 5 + sc->data[SC_RAISINGDRAGON]->val1;
-			else
-			spheremax = 5;
-			if( sd && rand()%100 < sc->data[SC_GT_ENERGYGAIN]->val2)
-			pc_addspiritball(sd, skill_get_time2(SR_GENTLETOUCH_ENERGYGAIN,sc->data[SC_GT_ENERGYGAIN]->val1), spheremax);
+			short spheremax = 5;
+
+			if ( sc->data[SC_RAISINGDRAGON] )
+				spheremax += sc->data[SC_RAISINGDRAGON]->val1;
+
+			pc_addspiritball(sd, skill_get_time2(SR_GENTLETOUCH_ENERGYGAIN,sce->val1), spheremax);
 		}
 
 		if ( sc->data[SC_CRUSHSTRIKE] )
@@ -4977,6 +4998,9 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			status_change_end(src, SC_CRUSHSTRIKE, -1);
 			return ATK_MISS;
 		}
+
+		if ( hd && (sce = sc->data[SC_STYLE_CHANGE]) && sce->val1 == FIGHTER_STYLE && rand()%100 < sce->val2 )
+			merc_hom_addspiritball(hd,MAX_HOMUN_SPHERES);
 	}
 
 	if(tsc && tsc->data[SC_KAAHI] && tsc->data[SC_KAAHI]->val4 == INVALID_TIMER && tstatus->hp < tstatus->max_hp)
