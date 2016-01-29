@@ -64,6 +64,57 @@ void merc_damage(struct homun_data *hd,struct block_list *src,int hp,int sp)
 	clif_hominfo(hd->master,hd,0);
 }
 
+int merc_hom_addspiritball(struct homun_data *hd, int max)
+{
+	short old_sphere_count = hd->hom_spiritball;
+	nullpo_ret(hd);
+
+	if ( max > MAX_HOMUN_SPHERES )
+		max = MAX_HOMUN_SPHERES;
+
+	if ( hd->hom_spiritball < 0 )
+		hd->hom_spiritball = 0;
+
+	if ( hd->hom_spiritball > max )
+		hd->hom_spiritball = max;
+
+	if ( hd->hom_spiritball < max )
+		hd->hom_spiritball++;
+
+	if ( old_sphere_count != hd->hom_spiritball )
+		clif_hom_spiritball(hd);
+
+	return 0;
+}
+
+int merc_hom_delspiritball(struct homun_data *hd, int count)
+{
+	short old_sphere_count = hd->hom_spiritball;
+	nullpo_ret(hd);
+
+	if ( hd->hom_spiritball <= 0 )
+	{
+		hd->hom_spiritball = 0;
+		return 0;
+	}
+
+	if ( count <= 0 )
+		return 0;
+
+	if ( count > hd->hom_spiritball )
+		count = hd->hom_spiritball;
+
+	hd->hom_spiritball -= count;
+
+	if ( count > MAX_HOMUN_SPHERES )
+		count = MAX_HOMUN_SPHERES;
+
+	if ( old_sphere_count != hd->hom_spiritball )
+		clif_hom_spiritball(hd);
+
+	return 0;
+}
+
 int merc_hom_dead(struct homun_data *hd, struct block_list *src)
 {
 	//There's no intimacy penalties on death (from Tharis)
@@ -73,6 +124,7 @@ int merc_hom_dead(struct homun_data *hd, struct block_list *src)
 
 	//Delete timers when dead.
 	merc_hom_hungry_timer_delete(hd);
+	merc_hom_delspiritball(hd,hd->hom_spiritball);
 	hd->homunculus.hp = 0;
 
 	if (!sd) //unit remove map will invoke unit free
@@ -103,6 +155,7 @@ int merc_hom_vaporize(struct map_session_data *sd, int flag)
 	hd->regen.state.block = 3; //Block regen while vaporized.
 	//Delete timers when vaporized.
 	merc_hom_hungry_timer_delete(hd);
+	merc_hom_delspiritball(hd,hd->hom_spiritball);
 	hd->homunculus.vaporize = 1;
 	if(battle_config.hom_setting&0x40)
 		memset(hd->blockskill, 0, sizeof(hd->blockskill));
@@ -786,6 +839,10 @@ void merc_hom_init_timers(struct homun_data * hd)
 	if (hd->hungry_timer == INVALID_TIMER)
 		hd->hungry_timer = add_timer(gettick()+hd->homunculusDB->hungryDelay,merc_hom_hungry,hd->master->bl.id,0);
 	hd->regen.state.block = 0; //Restore HP/SP block.
+
+	// Eleanor starts off in fighter style.
+	if ( merc_hom_checkskill(hd,MH_STYLE_CHANGE) > 0 )
+		sc_start(&hd->bl,SC_STYLE_CHANGE,100,FIGHTER_STYLE,-1);
 }
 
 int merc_call_homunculus(struct map_session_data *sd)

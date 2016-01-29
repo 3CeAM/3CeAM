@@ -9136,6 +9136,22 @@ ACMD_FUNC(font)
 }
 
 /*==========================================
+ * USESKILL_FAIL Testing And Debugging [Rytech]
+ *------------------------------------------*/
+ACMD_FUNC(skillfailmsg)
+{
+	int skillid = 0, cause = 0, num = 0, num2 = 0;
+
+	if( sscanf(message, "%d %d %d %d", &skillid, &cause, &num, &num2) < 1 )
+	{
+		clif_displaymessage(fd, "Usage: @skillfailmsg <skill id> <cause> <num> <num2>");
+		return -1;
+	}
+	clif_skill_fail(sd,skillid,cause,num,num2);
+	return 0;
+}
+
+/*==========================================
  * Produce Effect Animation Testing And Debugging [Rytech]
  *------------------------------------------*/
 ACMD_FUNC(produceeffect)
@@ -9150,7 +9166,6 @@ ACMD_FUNC(produceeffect)
 	clif_produceeffect(sd,itid,512);
 	return 0;
 }
-
 
 /*==========================================
  * atcommand_info[] structure definition
@@ -9462,7 +9477,8 @@ AtCommandInfo atcommand_info[] = {
 	{ "hommutate",         60,60,     atcommand_hommutation },
 	{ "hommutation",       60,60,     atcommand_hommutation },
 	{ "hommax",            60,60,     atcommand_hommax },
-	{ "produceeffect",     99,99,     atcommand_produceeffect },
+	{ "skillfailmsg",      99,99,     atcommand_skillfailmsg },
+	{ "produceeffect",     99,99,     atcommand_produceeffect }
 };
 
 

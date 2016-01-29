@@ -8269,6 +8269,14 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val2 = 300 + 40 * val1;//Fixed FLEE
 			val3 = 179 + 2 * val1;//Fixed ASPD //Currently not working. Fixed ASPD function needed. [Rytech]
 			break;
+		case SC_STYLE_CHANGE:
+			if ( val1 == FIGHTER_STYLE )
+				val2 = 20 + hd->homunculus.level / 5;// Sphere gain chance when attacking.
+			else if ( val1 == GRAPPLER_STYLE )
+				val2 = hd->homunculus.level / 2;// Sphere gain chance when getting attacked.
+			else
+				val2 = 0;
+			break;
 		case SC_PYROTECHNIC_OPTION:
 			val2 = 60;	// Watk TODO: Renewal (Atk2)
 			val3 = 11;	// % Increase damage.
