@@ -5439,6 +5439,49 @@ int clif_skillupdateinfo(struct map_session_data *sd,int skillid,int type,int ra
 }
 
 /*==========================================
+ * Updates settings for homunculus skills.
+ * Needed for Midnight Frenzy -> Sonic Claw
+ * combo.
+ *------------------------------------------*/
+int clif_hom_skillupdateinfo(struct map_session_data *sd,int skillid,int type,int range)
+{
+	struct homun_data *hd;
+	int fd, id, skill_num;
+
+	nullpo_ret(sd);
+
+	fd = sd->fd;
+	hd = sd->hd;
+
+	skill_num = skillid - HM_SKILLBASE;
+
+	if( (id=hd->homunculus.hskill[skill_num].id) <= 0 )
+		return 0;
+
+	WFIFOHEAD(fd,packet_len(0x7e1));
+	WFIFOW(fd,0) = 0x7e1;
+	WFIFOW(fd,2) = id;
+	if( type )
+		WFIFOL(fd,4) = type;
+	else
+		WFIFOL(fd,4) = skill_get_inf(id);
+	WFIFOW(fd,8) = hd->homunculus.hskill[skill_num].lv;
+	WFIFOW(fd,10) = skill_get_sp(id,hd->homunculus.hskill[skill_num].lv);
+	if( range )
+		WFIFOW(fd,12) = range;
+	else
+		WFIFOW(fd,12) = skill_get_range2(&hd->bl, id,hd->homunculus.hskill[skill_num].lv);
+
+	if(hd->homunculus.hskill[id-HM_SKILLBASE].flag ==0)
+		WFIFOB(fd,14)= (hd->homunculus.hskill[skill_num].lv < merc_skill_tree_get_max(id, hd->homunculus.class_))? 1:0;
+	else
+		WFIFOB(fd,14) = 0;
+	WFIFOSET(fd,packet_len(0x7e1));
+
+	return 0;
+}
+
+/*==========================================
  * スキルリストを送信する
  *------------------------------------------*/
 int clif_skillinfoblock(struct map_session_data *sd)
@@ -9930,7 +9973,8 @@ static bool clif_process_message(struct map_session_data* sd, int format, char**
 	// But trying to adjust the entire chat system to work without it causes too many problems.
 	// Best to just add it onto the end of the incoming packet and adjust lengths in chat packets
 	// as needed to prevent breaking anything.
-	message[messagelen++] = '\0';
+	if( message[messagelen-1] != '\0' )
+		message[messagelen++] = '\0';
 #endif
 
 	if( messagelen != strnlen(message, messagelen)+1 )

@@ -798,5 +798,6 @@ int clif_set_unit_walking_v10(struct block_list* bl, struct unit_data* ud, unsig
 int clif_dressing_room(struct map_session_data *sd, int view);
 
 int clif_hom_spiritball(struct homun_data *hd);
+int clif_hom_skillupdateinfo(struct map_session_data *sd,int skillid,int type,int range);
 
 #endif /* _CLIF_H_ */

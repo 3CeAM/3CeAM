@@ -16,7 +16,7 @@
 // If set like this, the cast time for level 1 will be 1 second, level 2 will be 3 seconds, and level 3 will be 8 seconds.
 // You can set them to whatever you want.
 //
-// All skills in the 2000 - 5020 ID range will use the renewal cast time system. Anything else outside the range will use the regular cast time system.
+// All skills in the 2000 - 5060 ID range will use the renewal cast time system. Anything else outside the range will use the regular cast time system.
 // Mutated Homunculus skills will also use the renewal system. Their ID's are in the 8017 - 8043 range.
 // Skills in these ID ranges are placed in the skill_renewal_cast_db.
 //==========================================

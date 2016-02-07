@@ -2758,6 +2758,16 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					if( re_baselv_bonus == 1 && s_level >= 100 )
 						skillratio = skillratio * s_level / 150;
 					break;
+				case MH_SILVERVEIN_RUSH:
+					skillratio = 150 * skill_lv;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio = skillratio * s_level / 100;
+					break;
+				case MH_MIDNIGHT_FRENZY:
+					skillratio = 300 * skill_lv;
+					if( re_baselv_bonus == 1 && s_level >= 100 )
+						skillratio = skillratio * s_level / 150;
+					break;
 				case MH_TINDER_BREAKER:
 					skillratio = 100 * skill_lv + 3 * sstatus->str;
 					if( re_baselv_bonus == 1 && s_level >= 100 )

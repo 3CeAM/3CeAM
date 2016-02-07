@@ -1092,6 +1092,11 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 			target = battle_get_master(src);
 			if (!target) return 0;
 			target_id = target->id;
+			break;
+		case MH_SONIC_CRAW:
+			if (sc && sc->data[SC_MIDNIGHT_FRENZY_POSTDELAY])
+				target_id = sc->data[SC_MIDNIGHT_FRENZY_POSTDELAY]->val2;
+			break;
 	}
 
 	if( !target ) // choose default target
@@ -1194,7 +1199,7 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 			return 0; // Arrow-path check failed.
 	}
 
-	if( !temp ) //Stop attack on non-combo skills [Skotlex]
+	if( !temp && skill_num != SR_DRAGONCOMBO ) //Stop attack on non-combo skills [Skotlex]
 		unit_stop_attack(src);
 	else if(ud->attacktimer != INVALID_TIMER) //Elsewise, delay current attack sequence
 		ud->attackabletime = tick + status_get_adelay(src);
