@@ -823,6 +823,12 @@ void initChangeTables(void)
 
 	StatusIconChangeTable[SC_SPRITEMABLE] = SI_SPRITEMABLE;
 
+	StatusIconChangeTable[SC_SONIC_CLAW_POSTDELAY] = SI_SONIC_CLAW_POSTDELAY;
+	StatusIconChangeTable[SC_SILVERVEIN_RUSH_POSTDELAY] = SI_SILVERVEIN_RUSH_POSTDELAY;
+	StatusIconChangeTable[SC_MIDNIGHT_FRENZY_POSTDELAY] = SI_MIDNIGHT_FRENZY_POSTDELAY;
+	StatusIconChangeTable[SC_TINDER_BREAKER_POSTDELAY] = SI_TINDER_BREAKER_POSTDELAY;
+	StatusIconChangeTable[SC_CBC_POSTDELAY] = SI_CBC_POSTDELAY;
+
 	// Elemental Spirit's 'side' status change icons.
 	StatusIconChangeTable[SC_CIRCLE_OF_FIRE] = SI_CIRCLE_OF_FIRE;
 	StatusIconChangeTable[SC_FIRE_CLOAK] = SI_FIRE_CLOAK;
@@ -6794,6 +6800,19 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		status_change_end(bl, SC_KAZEHU_SEIRAN, INVALID_TIMER);
 		status_change_end(bl, SC_DOHU_KOUKAI, INVALID_TIMER);
 		break;
+	case SC_SONIC_CLAW_POSTDELAY:
+	case SC_SILVERVEIN_RUSH_POSTDELAY:
+	case SC_MIDNIGHT_FRENZY_POSTDELAY:
+	case SC_TINDER_BREAKER_POSTDELAY:
+	case SC_CBC_POSTDELAY:
+		if( sc->data[type] )// Don't remove status that was just activated.
+			break;
+		status_change_end(bl, SC_SONIC_CLAW_POSTDELAY, INVALID_TIMER);
+		status_change_end(bl, SC_SILVERVEIN_RUSH_POSTDELAY, INVALID_TIMER);
+		status_change_end(bl, SC_MIDNIGHT_FRENZY_POSTDELAY, INVALID_TIMER);
+		status_change_end(bl, SC_TINDER_BREAKER_POSTDELAY, INVALID_TIMER);
+		status_change_end(bl, SC_CBC_POSTDELAY, INVALID_TIMER);
+		break;
 	}
 
 	//Check for overlapping fails
@@ -8277,6 +8296,9 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			else
 				val2 = 0;
 			break;
+		case SC_MIDNIGHT_FRENZY_POSTDELAY:
+			clif_hom_skillupdateinfo(hd->master, MH_SONIC_CRAW, INF_SELF_SKILL, 1);
+			break;
 		case SC_PYROTECHNIC_OPTION:
 			val2 = 60;	// Watk TODO: Renewal (Atk2)
 			val3 = 11;	// % Increase damage.
@@ -9281,6 +9303,9 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 			break;
 		case SC_FULL_THROTTLE:
 			sc_start(bl,SC_REBOUND,100,sce->val1,skill_get_time2(ALL_FULL_THROTTLE, sce->val1));
+			break;
+		case SC_MIDNIGHT_FRENZY_POSTDELAY:
+			clif_hom_skillupdateinfo(hd->master, MH_SONIC_CRAW, INF_ATTACK_SKILL, 1);
 			break;
 		}
 
