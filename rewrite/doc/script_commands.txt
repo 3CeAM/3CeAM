@@ -5322,6 +5322,26 @@ the homunculus must have above 91000 intimacy with it's owner.
 
 ---------------------------------------
 
+*hommutation <Mutation ID>;
+
+This command will try to mutate the current player's homunculus.
+If it doesn't work, the /swt emotion is shown.
+To mutate a homunculus, the homunculus must be level 99 and evolved.
+The mutation ID sets what homunculus to mutate it into.
+
+Note: This script command does not check the player's job.
+If you want this to be restricted to Genetic's, be sure to add a check
+for that to your NPC script.
+
+Mutation ID List:
+6048 = Eira
+6049 = Bayeri
+6050 = Sera
+6051 = Dieter
+6052 = Eleanor
+
+---------------------------------------
+
 *unitwalk <GID>,<x>,<y>;
 *unitwalk <GID>,<mapid>;
 
