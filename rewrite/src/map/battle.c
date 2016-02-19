@@ -4540,6 +4540,14 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		if (is_boss(target) || (tsd))
 			md.damage = md.damage / 2;
 		break;
+	case MH_EQC:
+		md.damage = tstatus->hp - sstatus->hp;
+		// Officially, if damage comes out <= 0,
+		// the damage will equal to the homunculus MaxHP.
+		// Bug? I think so and im not adding that.
+		if ( md.damage < 0 )
+			md.damage = 1;
+		break;
 	}
 
 	if (nk&NK_SPLASHSPLIT){ // Divide ATK among targets

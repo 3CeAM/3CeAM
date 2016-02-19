@@ -1340,6 +1340,33 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 	case MH_STAHL_HORN:
 		sc_start(bl, SC_STUN, 16 + 4 * skilllv, skilllv, skill_get_time(skillid,skilllv));
 		break;
+	case MH_TINDER_BREAKER:
+		sc_start(bl, SC_TINDER_BREAKER, 100, skilllv, 1000 * (sstatus->str / 7 - tstatus->str / 10));
+		break;
+	case MH_CBC:
+		{
+			int HPdamage = 400 * skilllv + 4 * hd->homunculus.level;
+			int SPdamage = 10 * skilllv + hd->homunculus.level / 5 + hd->homunculus.dex / 10;
+
+			// A bonus is applied to HPdamage using SPdamage
+			// formula x10 if entity is a monster.
+			if ( !(bl->type&BL_CONSUME) )
+			{
+				HPdamage += 10 * SPdamage;
+				SPdamage = 0;// Signals later that entity is a monster.
+			}
+			// Officially the Tinder Breaker status is restarted after CBC's use.
+			// Why? I don't know. Ask Gravity. Im leaving the code disabled since its pointless.
+			//status_change_end(bl, SC_TINDER_BREAKER, -1);
+			//sc_start(bl, SC_TINDER_BREAKER, 100, skilllv, 1000 * (sstatus->str / 7 - tstatus->str / 10));
+			sc_start4(bl, SC_CBC, 100, skilllv, HPdamage, SPdamage, 0, 1000 * (sstatus->str / 7 - tstatus->str / 10));
+		}
+		break;
+	case MH_EQC:
+		sc_start(bl, SC_STUN, 100, skilllv, 1000 * hd->homunculus.level / 50 + 500 * skilllv);
+		sc_start(bl, SC_EQC, 100, skilllv, skill_get_time(skillid,skilllv));
+		status_change_end(bl, SC_TINDER_BREAKER, -1);
+		break;
 	case MH_LAVA_SLIDE:
 		sc_start(bl, SC_BURNING, 10 * skilllv, skilllv, skill_get_time2(skillid,skilllv));
 		break;
@@ -1596,6 +1623,8 @@ int skill_counter_additional_effect (struct block_list* src, struct block_list *
 	int rate;
 	struct map_session_data *sd=NULL;
 	struct map_session_data *dstsd=NULL;
+	struct homun_data *hd=NULL;
+	struct status_data *sstatus, *tstatus;
 	struct status_change *sc, *tsc;
 
 	nullpo_ret(src);
@@ -1610,7 +1639,11 @@ int skill_counter_additional_effect (struct block_list* src, struct block_list *
 		tsc = NULL;
 
 	sd = BL_CAST(BL_PC, src);
+	hd = BL_CAST(BL_HOM, src);
 	dstsd = BL_CAST(BL_PC, bl);
+
+	sstatus = status_get_status_data(src);
+	tstatus = status_get_status_data(bl);
 
 	if(dstsd && attack_type&BF_WEAPON)
 	{	//Counter effects.
@@ -1664,6 +1697,21 @@ int skill_counter_additional_effect (struct block_list* src, struct block_list *
 		break;
 	case MH_MIDNIGHT_FRENZY:
 		sc_start2(src,SC_MIDNIGHT_FRENZY_POSTDELAY,100,skilllv,bl->id,2000);
+		break;
+	case MH_TINDER_BREAKER:
+		sc_start(src,SC_TINDER_BREAKER, 100, skilllv, 1000 * (sstatus->str / 7 - tstatus->str / 10));
+		sc_start(src,SC_TINDER_BREAKER_POSTDELAY,100,skilllv,2000);
+		break;
+	case MH_CBC:
+		// Officially the Tinder Breaker status is restarted after CBC's use.
+		// Why? I don't know. Ask Gravity. Im leaving the code disabled since its pointless.
+		//status_change_end(src, SC_TINDER_BREAKER, -1);
+		//sc_start(src,SC_TINDER_BREAKER, 100, skilllv, 1000 * (sstatus->str / 7 - tstatus->str / 10));
+		sc_start(src,SC_CBC_POSTDELAY,100,skilllv,2000);
+		break;
+	case MH_EQC:
+		status_change_end(src, SC_CBC_POSTDELAY, -1);// End of grappler combo as it doesn't loop.
+		status_change_end(src, SC_TINDER_BREAKER, -1);
 		break;
 	case CR_GRANDCROSS:
 	case NPC_GRANDDARKNESS:
@@ -2974,6 +3022,20 @@ static int skill_check_condition_mercenary(struct block_list *bl, int skill, int
 					return 0;
 				}
 				break;
+			case MH_CBC:
+				if(!(sc && sc->data[SC_TINDER_BREAKER_POSTDELAY]))
+				{
+					clif_skill_fail(sd,skill,USESKILL_FAIL_COMBOSKILL,MH_TINDER_BREAKER,0);
+					return 0;
+				}
+				break;
+			case MH_EQC:
+				if(!(sc && sc->data[SC_CBC_POSTDELAY]))
+				{
+					clif_skill_fail(sd,skill,USESKILL_FAIL_COMBOSKILL,MH_CBC,0);
+					return 0;
+				}
+				break;
 		}
 
 		// Homunculus Status Checks
@@ -3583,8 +3645,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case MH_SONIC_CRAW:
 	case MH_SILVERVEIN_RUSH:
 	case MH_MIDNIGHT_FRENZY:
-	case MH_STAHL_HORN:
-	case MH_TINDER_BREAKER:
+	case MH_CBC:
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
@@ -4615,6 +4676,22 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		status_change_end(src, SC_HYOUHU_HUBUKI, INVALID_TIMER);
 		status_change_end(src, SC_KAZEHU_SEIRAN, INVALID_TIMER);
 		status_change_end(src, SC_DOHU_KOUKAI, INVALID_TIMER);
+		break;
+
+	case MH_STAHL_HORN:
+	case MH_TINDER_BREAKER:
+		if( unit_movepos(src, bl->x, bl->y, 1, 1) )
+		{	// Self knock back 1 cell to make it appear you warped
+			// next to the enemy you targeted from the direction
+			// you attacked from.
+			skill_blown(bl,src,1,unit_getdir(src),0);
+			skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
+		}
+		break;
+
+	case MH_EQC:
+		if (!(tstatus->mode&MD_BOSS))// Not usable on boss monsters.
+			skill_attack(BF_MISC,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
 	case EL_FIRE_BOMB:
