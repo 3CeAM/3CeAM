@@ -1,2 +1,8 @@
 // Internal default is limited to 128 lines.  If you need more, you will need to modify the MOTD_LINE_SIZE definition in pc.c
-Welcome to eAthena SVN Version! Enjoy! Please report any bugs you find.
+Welcome to 3CeAM! Enjoy! Please report any bugs you find.
+3CeAM Centre At Hercules
+http://herc.ws/board/forum/170-3ceam-centre/
+3CeAM Facebook Group
+https://www.facebook.com/groups/3CeAM/
+3CeAM Sourceforge SVN
+https://sourceforge.net/projects/v1-3ceam/

@@ -11212,20 +11212,26 @@ void clif_parse_DropItem(int fd, struct map_session_data *sd)
 	clif_dropitem(sd, item_index,0);
 }
 
-/*==========================================
- *
- *------------------------------------------*/
+/// Request to use an item.
+/// 00a7 <index>.W <account id>.L (CZ_USE_ITEM)
+/// 0439 <index>.W <account id>.L (CZ_USE_ITEM2)
+/// There are various variants of this packet, some of them have padding between fields.
 void clif_parse_UseItem(int fd, struct map_session_data *sd)
 {
 	int n;
+	int index = RFIFOW(fd,2)-2;
 
 	if (pc_isdead(sd)) {
 		clif_clearunit_area(&sd->bl, CLR_DEAD);
 		return;
 	}
 
-	if (sd->sc.opt1 > 0 && sd->sc.opt1 != OPT1_STONEWAIT && sd->sc.opt1 != OPT1_BURNING)
+	if (sd->sc.opt1 > 0 && sd->sc.opt1 != OPT1_STONEWAIT && sd->sc.opt1 != OPT1_BURNING && 
+		sd->status.inventory[index].nameid != ITEMID_NAUTHIZ_RUNE)
+	{
+		clif_useitemack(sd,index,0,0);
 		return;
+	}
 	
 	//This flag enables you to use items while in an NPC. [Skotlex]
 	if (sd->npc_id) {
@@ -11814,7 +11820,7 @@ void clif_parse_UseSkillToId(int fd, struct map_session_data *sd)
 	// Whether skill fails or not is irrelevant, the char ain't idle. [Skotlex]
 	sd->idletime = last_tick;
 
-	if( pc_cant_act(sd) && skillnum != SR_GENTLETOUCH_CURE )
+	if( pc_cant_act(sd) && skillnum != RK_REFRESH && skillnum != SR_GENTLETOUCH_CURE )
 		return;
 	if( pc_issit(sd) )
 		return;
