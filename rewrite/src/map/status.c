@@ -1522,7 +1522,7 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 		return 0;
 
 	//Should fail when used on top of Land Protector [Skotlex]
-	if( src && (skill_num == AL_TELEPORT || skill_num == ALL_ODINS_POWER) && map_getcell(src->m, src->x, src->y, CELL_CHKLANDPROTECTOR)
+	if( src && (skill_num == AL_TELEPORT || skill_num == ALL_ODINS_RECALL) && map_getcell(src->m, src->x, src->y, CELL_CHKLANDPROTECTOR)
 		&& !(status->mode&MD_BOSS) && (src->type != BL_PC || ((TBL_PC*)src)->skillitem != skill_num) )
 		return 0;
 
@@ -2967,7 +2967,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 
 	// Config for setting seprate ASPD cap for 3rd jobs and other jobs released in renewal.
 	if ( sd && ((sd->class_&MAPID_THIRDMASK) >= MAPID_SUPER_NOVICE_E && (sd->class_&MAPID_THIRDMASK) <= MAPID_SHADOW_CHASER ||
-		(sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION))
+		(sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION || (sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER))
 		status->amotion = cap_value(i,battle_config.max_aspd_renewal_jobs,2000);
 	else
 		status->amotion = cap_value(i,battle_config.max_aspd,2000);
@@ -3814,7 +3814,7 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 
 			// Config for setting seprate ASPD cap for 3rd jobs and other jobs released in renewal.
 			if ( sd && ((sd->class_&MAPID_THIRDMASK) >= MAPID_SUPER_NOVICE_E && (sd->class_&MAPID_THIRDMASK) <= MAPID_SHADOW_CHASER ||
-				(sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION))
+				(sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION || (sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER))
 				status->amotion = cap_value(amotion,battle_config.max_aspd_renewal_jobs,2000);
 			else
 				status->amotion = cap_value(amotion,battle_config.max_aspd,2000);
@@ -7417,7 +7417,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val4 = 0;
 			if ( sd && battle_config.marionette_renewal_jobs == 1 &&
 				((sd->class_&MAPID_THIRDMASK) >= MAPID_SUPER_NOVICE_E && (sd->class_&MAPID_THIRDMASK) <= MAPID_SHADOW_CHASER ||
-				(sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION))
+				(sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION || (sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER))
 				max_stat = battle_config.max_parameter_renewal_jobs;//Custom cap for renewal jobs.
 			else
 				max_stat = battle_config.max_parameter; //Cap to 99 (default)

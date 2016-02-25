@@ -168,16 +168,16 @@ orcsdun01
 orcsdun02
 ordeal_1-1
 ordeal_1-2
-ordeal_1-3
-ordeal_1-4
+//ordeal_1-3
+//ordeal_1-4
 ordeal_2-1
 ordeal_2-2
-ordeal_2-3
-ordeal_2-4
+//ordeal_2-3
+//ordeal_2-4
 ordeal_3-1
 ordeal_3-2
-ordeal_3-3
-ordeal_3-4
+//ordeal_3-3
+//ordeal_3-4
 pay_arche
 pay_dun00
 pay_dun01
@@ -906,15 +906,31 @@ teg_dun02
 gl_chyard_
 gl_cas02_
 evt_bomb
+silk_lair
 1@def01
 1@def02
 1@def03
+1@ge_st
 1@gef
+1@gef_in
 1@face
 1@sara
-1@gef_in
+1@tnm1
+1@tnm2
+1@tnm3
 dali
-
+dali02
+1@dth1
+1@dth2
+1@dth3
+1@eom
+1@jtb
+1@rev
+1@xm_d
+moro_cav
+moro_vol
+c_tower2_
+c_tower3_
 // Only add maps under this line if they are not standard maps!
 
 

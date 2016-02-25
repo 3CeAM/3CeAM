@@ -2199,8 +2199,20 @@ ACMD_FUNC(body_style)
 	memset(atcmd_output, '\0', sizeof(atcmd_output));
 
 	// Limit body styles to certain jobs since not all of them are released yet.
-	if (!((sd->class_&MAPID_THIRDMASK) == MAPID_MECHANIC || (sd->class_&MAPID_THIRDMASK) == MAPID_GUILLOTINE_CROSS || 
-		(sd->class_&MAPID_THIRDMASK) == MAPID_GENETIC))
+	if (!(// Allow only certain jobs to have the option to change body styles to prevent errors.
+		//(sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT || 
+		//(sd->class_&MAPID_THIRDMASK) == MAPID_WARLOCK || 
+		//(sd->class_&MAPID_THIRDMASK) == MAPID_RANGER || 
+		//(sd->class_&MAPID_THIRDMASK) == MAPID_ARCH_BISHOP || 
+		(sd->class_&MAPID_THIRDMASK) == MAPID_MECHANIC || 
+		(sd->class_&MAPID_THIRDMASK) == MAPID_GUILLOTINE_CROSS || 
+		(sd->class_&MAPID_THIRDMASK) == MAPID_ROYAL_GUARD || 
+		//(sd->class_&MAPID_THIRDMASK) == MAPID_SORCERER || 
+		//(sd->class_&MAPID_THIRDMASK) == MAPID_MINSTRELWANDERER || 
+		//(sd->class_&MAPID_THIRDMASK) == MAPID_SURA || 
+		(sd->class_&MAPID_THIRDMASK) == MAPID_GENETIC
+		//(sd->class_&MAPID_THIRDMASK) == MAPID_SHADOW_CHASER || 
+		))
 	{
 		clif_displaymessage(fd, "This job has no alternate body styles.");
 		return -1;
