@@ -557,6 +557,7 @@ void initChangeTables(void)
 
 	set_sc( ALL_ODINS_POWER               , SC_ODINS_POWER , SI_ODINS_POWER                , SCB_WATK|SCB_MATK|SCB_DEF|SCB_MDEF );
 
+	add_sc( RL_MASS_SPIRAL , SC_BLEEDING );
 	set_sc( RL_B_TRAP      , SC_B_TRAP       , SI_B_TRAP       , SCB_NONE );
 	set_sc( RL_E_CHAIN     , SC_E_CHAIN      , SI_E_CHAIN      , SCB_NONE );
 	//set_sc( RL_E_CHAIN     , SC_E_QD_SHOT_READY , SI_E_QD_SHOT_READY , SCB_NONE );
