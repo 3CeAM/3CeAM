@@ -1304,6 +1304,9 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 			}
 		}
 		break;
+	case RL_MASS_SPIRAL:
+		sc_start(bl,SC_BLEEDING,50,skilllv,skill_get_time(skillid,skilllv));
+		break;
 	case RL_H_MINE:
 		sc_start(bl,SC_H_MINE,100,skilllv,skill_get_time(skillid,skilllv));
 		break;
@@ -2349,6 +2352,7 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 			dmg.dmotion = clif_skill_damage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, 5); // needs -2(!) as skill level
 		break;
 	case RK_IGNITIONBREAK:
+	case RL_BANISHING_BUSTER:
 		dmg.dmotion = clif_skill_damage(dsrc,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,NV_BASIC,-1,5);
 		break;
 	case WL_HELLINFERNO:
@@ -3633,7 +3637,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case WM_GREAT_ECHO:
 	case GN_CRAZYWEED_ATK:
 	case GN_SLINGITEM_RANGEMELEEATK:
-	//case RL_MASS_SPIRAL://<--Enable once skill effect file is fixed. [Rytech]
 	case RL_H_MINE:
 	case RL_SLUGSHOT:
 	case KO_SETSUDAN:
@@ -3881,6 +3884,8 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case SO_VARETYR_SPEAR:
 	case GN_CART_TORNADO:
 	case GN_CARTCANNON:
+	case RL_BANISHING_BUSTER:
+	case RL_R_TRIP:
 	case KO_HAPPOKUNAI:
 	case KO_MUCHANAGE:
 	case MH_HEILIGE_STANGE:
@@ -3909,7 +3914,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 			if( skillid == NJ_BAKUENRYU || skillid == LG_EARTHDRIVE || skillid == GN_CARTCANNON ||
 				skillid == SU_SCRATCH )
 				clif_skill_nodamage(src,bl,skillid,skilllv,1);
-			if( skillid == LG_MOONSLASHER )
+			if( skillid == LG_MOONSLASHER || skillid == RL_BANISHING_BUSTER )
 				clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
 
 			skill_area_temp[0] = 0;
@@ -5774,6 +5779,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SR_SKYNETBLOW:
 	case SR_RAMPAGEBLASTER:
 	case SR_HOWLINGOFLION:
+	case RL_R_TRIP:
 	case KO_HAPPOKUNAI:
 		skill_area_temp[1] = 0;
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);

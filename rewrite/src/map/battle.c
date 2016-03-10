@@ -1380,6 +1380,10 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				wd.blewcount=0;
 				break;
 
+			case RL_R_TRIP:// Knock's back target out of skill range.
+				wd.blewcount = wd.blewcount - distance_bl(src,target);
+				break;
+
 			case KN_AUTOCOUNTER:
 				wd.flag=(wd.flag&~BF_SKILLMASK)|BF_NORMAL;
 				break;
@@ -2688,12 +2692,19 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case RL_MASS_SPIRAL:
 					//Deals additional damage depending on targets DEF.
 					//Skill desc says 200%*LV + Additional Damage from DEF
-					//The additional damage is likely a added on fixed amount.
+					//The additional damage is confirmed ice pick type.
 					//Need a test and confirm on formula. [Rytech]
 					skillratio = 200 * skill_lv;
+					flag.pdef = flag.pdef2 = 1;
+					break;
+				case RL_BANISHING_BUSTER:
+					skillratio = 1000 + 200 * skill_lv;
 					break;
 				case RL_H_MINE:
 					skillratio = 200 + 200 * skill_lv;
+					break;
+				case RL_R_TRIP:
+					skillratio = (10 + 3 * skill_lv) * sstatus->dex / 2;
 					break;
 				case RL_SLUGSHOT:
 					if (sd)
@@ -2972,7 +2983,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				ATK_ADDRATE(i);
 
 			if( skill_num != PA_SACRIFICE && skill_num != MO_INVESTIGATE && skill_num != CR_GRANDCROSS && skill_num != NPC_GRANDDARKNESS && 
-				skill_num != PA_SHIELDCHAIN && skill_num != NC_SELFDESTRUCTION && skill_num != KO_HAPPOKUNAI && !flag.cri )
+				skill_num != PA_SHIELDCHAIN && skill_num != NC_SELFDESTRUCTION && skill_num != KO_HAPPOKUNAI && skill_num != RL_MASS_SPIRAL && !flag.cri )
 			{ //Elemental/Racial adjustments
 				if( sd->right_weapon.def_ratio_atk_ele & (1<<tstatus->def_ele) ||
 					sd->right_weapon.def_ratio_atk_race & (1<<tstatus->race) ||
@@ -3097,7 +3108,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 		}
 
 		//Refine bonus
-		if( sd && flag.weapon && skill_num != MO_INVESTIGATE && skill_num != MO_EXTREMITYFIST )
+		if( sd && flag.weapon && skill_num != MO_INVESTIGATE && skill_num != MO_EXTREMITYFIST && skill_num != RL_MASS_SPIRAL )
 		{ // Counts refine bonus multiple times
 			if( skill_num == MO_FINGEROFFENSIVE )
 			{
@@ -3114,7 +3125,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 		if (sd && flag.weapon &&
 			skill_num != MO_INVESTIGATE &&
 		  	skill_num != MO_EXTREMITYFIST &&
-		  	skill_num != CR_GRANDCROSS)
+		  	skill_num != CR_GRANDCROSS &&
+			skill_num != RL_MASS_SPIRAL)
 		{	//Add mastery damage
 			if(skill_num != ASC_BREAKER && sd->status.weapon == W_KATAR &&
 				(skill=pc_checkskill(sd,ASC_KATAR)) > 0)
