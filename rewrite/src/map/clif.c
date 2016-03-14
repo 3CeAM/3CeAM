@@ -10860,6 +10860,7 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 
 		// Can't attack
 		if( sd->sc.data[SC_BASILICA] || sd->sc.data[SC__SHADOWFORM] || (tsc && tsc->data[SC__MANHOLE]) ||
+			sd->sc.data[SC_HEAT_BARREL_AFTER] ||
 			(sd->sc.data[SC_VOICEOFSIREN] && sd->sc.data[SC_VOICEOFSIREN]->val2 == target_id) )
 			return;
 

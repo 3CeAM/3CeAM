@@ -1847,7 +1847,7 @@ struct status_data {
 	short 
 		hit, flee, cri, flee2,
 		def2, mdef2,
-		aspd_rate;
+		aspd_rate, aspd_amount;
 	unsigned char
 		def_ele, ele_lv,
 		size, race;

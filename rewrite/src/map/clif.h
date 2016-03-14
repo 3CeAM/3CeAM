@@ -339,6 +339,10 @@ enum ranking_type
 	RANKING_SURA,
 	RANKING_KAGEROU,
 	RANKING_OBORO,
+	// Rebellion isnt confirmed on the ranking list yet,
+	// but if Kagerou and Oboro are on here, Rebellion
+	// should be too.
+	RANKING_REBELLION,
 };
 
 int clif_setip(const char* ip);
