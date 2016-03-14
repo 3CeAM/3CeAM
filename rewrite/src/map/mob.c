@@ -3556,6 +3556,7 @@ static bool mob_parse_dbrow(char** str)
 		status->mode &= ~MD_AGGRESSIVE;
 	
 	status->speed = atoi(str[26]);
+	status->aspd_amount = 0;
 	status->aspd_rate = 1000;
 	status->adelay = atoi(str[27]);
 	status->amotion = atoi(str[28]);

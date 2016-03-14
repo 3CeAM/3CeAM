@@ -5418,6 +5418,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case GN_CARTBOOST:
 	case ALL_ODINS_POWER:
 	case RL_E_CHAIN:
+	case RL_P_ALTER:
+	case RL_HEAT_BARREL:
 	case KO_MEIKYOUSISUI:
 	case RA_UNLIMIT:
 	case ALL_FULL_THROTTLE:
@@ -10929,6 +10931,7 @@ int skill_castend_map (struct map_session_data *sd, short skill_num, const char 
 		sd->sc.data[SC_DEEPSLEEP] ||
 		sd->sc.data[SC_CRYSTALIZE] ||
 		sd->sc.data[SC__MANHOLE] ||
+		sd->sc.data[SC_HEAT_BARREL_AFTER] ||
 		sd->sc.data[SC_ALL_RIDING]
 	 )) {
 		skill_failed(sd);
@@ -13082,6 +13085,14 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 	case GS_FLING:
 	case SR_RAMPAGEBLASTER:
 	case SR_RIDEINLIGHTNING:
+	case RL_P_ALTER:
+		if ( skill == RL_P_ALTER && !itemid_is_holy_bullet(sd->status.inventory[sd->equip_index[EQI_AMMO]].nameid) )
+		{
+			clif_skill_fail(sd,skill,0,0,0);
+			return 0;
+		}
+	case RL_HEAT_BARREL:
+	case RL_HAMMER_OF_GOD:
 		if( sd->spiritball > 0 && sd->spiritball < require.spiritball )
 			sd->spiritball_old = require.spiritball = sd->spiritball;
 		else
@@ -14360,6 +14371,8 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 			fixed_cast_rate = sc->data[SC_DANCEWITHWUG]->val4;
 		if( sc->data[SC_SECRAMENT] && sc->data[SC_SECRAMENT]->val2 > fixed_cast_rate)
 			fixed_cast_rate = sc->data[SC_SECRAMENT]->val2;
+		if( sc->data[SC_HEAT_BARREL] && sc->data[SC_HEAT_BARREL]->val2 > fixed_cast_rate)
+			fixed_cast_rate = sc->data[SC_HEAT_BARREL]->val2;
 		if (sc->data[SC_IZAYOI])
 			fixed_cast_rate = 100;
 	}

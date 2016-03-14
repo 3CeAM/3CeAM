@@ -564,8 +564,8 @@ void initChangeTables(void)
 	set_sc( RL_C_MARKER    , SC_C_MARKER     , SI_C_MARKER     , SCB_FLEE );
 	set_sc( RL_H_MINE      , SC_H_MINE       , SI_H_MINE       , SCB_NONE );
 	//set_sc( RL_H_MINE      , SC_H_MINE_SPLASH , SI_H_MINE_SPLASH , SCB_NONE );
-	set_sc( RL_P_ALTER     , SC_P_ALTER      , SI_P_ALTER      , SCB_NONE );
-	set_sc( RL_HEAT_BARREL , SC_HEAT_BARREL  , SI_HEAT_BARREL  , SCB_NONE );
+	set_sc( RL_P_ALTER     , SC_P_ALTER      , SI_P_ALTER      , SCB_WATK );
+	set_sc( RL_HEAT_BARREL , SC_HEAT_BARREL  , SI_HEAT_BARREL  , SCB_FLEE|SCB_ASPD );
 	//set_sc( RL_HEAT_BARREL , SC_HEAT_BARREL_AFTER , SI_HEAT_BARREL_AFTER , SCB_NONE );
 	set_sc( RL_AM_BLAST    , SC_ANTI_M_BLAST , SI_ANTI_M_BLAST , SCB_NONE );
 	set_sc( RL_SLUGSHOT    , SC_SLUGSHOT     , SI_SLUGSHOT     , SCB_NONE );
@@ -856,6 +856,7 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_ALL_RIDING] = SI_ALL_RIDING;
 	StatusIconChangeTable[SC_ON_PUSH_CART] = SI_ON_PUSH_CART;
 	StatusIconChangeTable[SC_REBOUND] = SI_REBOUND;
+	StatusIconChangeTable[SC_HEAT_BARREL_AFTER] = SI_HEAT_BARREL_AFTER;
 
 	//Other SC which are not necessarily associated to skills.
 	StatusChangeFlagTable[SC_ASPDPOTION0] = SCB_ASPD;
@@ -1609,6 +1610,7 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 				sc->data[SC__IGNORANCE] || 
 				sc->data[SC_CURSEDCIRCLE_TARGET] || 
 				sc->data[SC__SHADOWFORM] || 
+				sc->data[SC_HEAT_BARREL_AFTER] || 
 				(sc->data[SC_KYOMU] && rand()%100 < 5 * sc->data[SC_KYOMU]->val1) ||
 				sc->data[SC_ALL_RIDING]// Added to prevent any possiable skill exploit use on rental mounts. [Rytech]
 			))
@@ -1833,10 +1835,10 @@ int status_base_amotion_pc(struct map_session_data* sd, struct status_data* stat
 	 : (aspd_base[pc_class2idx(sd->status.class_)][sd->weapontype1] + aspd_base[pc_class2idx(sd->status.class_)][sd->weapontype2])*7/10; // dual-wield
 	
 	// percentual delay reduction from stats
-	amotion-= amotion * (4*status->agi + status->dex)/1000;
+	amotion -= amotion * (4*status->agi + status->dex)/1000;
 	
 	// raw delay adjustment from bAspd bonus
-	amotion+= sd->aspd_add;
+	amotion += sd->aspd_add;
 
  	return amotion;
 }
@@ -2377,6 +2379,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		if(battle_config.character_size&1)
 			status->size++;
 	}
+	status->aspd_amount = 0;
 	status->aspd_rate = 1000;
 	status->ele_lv = 1;
 	status->race = ((sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER)?RC_BRUTE:RC_DEMIHUMAN;
@@ -3244,6 +3247,7 @@ int status_calc_homunculus_(struct homun_data *hd, bool first)
 	status->rhw.atk = status->dex;
 	status->rhw.atk2 = status->str + hom->level;
 
+	status->aspd_amount = 0;
 	status->aspd_rate = 1000;
 
 	amotion = (1000 -4*status->agi -status->dex) * hd->homunculusDB->baseASPD/1000;
@@ -3317,6 +3321,7 @@ static signed short status_calc_def2(struct block_list *,struct status_change *,
 static signed char status_calc_mdef(struct block_list *,struct status_change *,int);
 static signed short status_calc_mdef2(struct block_list *,struct status_change *,int);
 static unsigned short status_calc_speed(struct block_list *,struct status_change *,int);
+static short status_calc_aspd_amount(struct block_list *,struct status_change *,int);
 static short status_calc_aspd_rate(struct block_list *,struct status_change *,int);
 static unsigned short status_calc_dmotion(struct block_list *bl, struct status_change *sc, int dmotion);
 static unsigned int status_calc_maxhp(struct block_list *,struct status_change *,unsigned int);
@@ -3788,7 +3793,7 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 				status->matk_min = status->matk_min * sd->matk_rate/100;
 			}
 		}
-			
+
 		status->matk_min = status_calc_matk(bl, sc, status->matk_min);
 		status->matk_max = status_calc_matk(bl, sc, status->matk_max);
 
@@ -3808,8 +3813,12 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 		if( bl->type&BL_PC )
 		{
 			amotion = status_base_amotion_pc(sd,status);
+			status->aspd_amount = status_calc_aspd_amount(bl, sc, b_status->aspd_amount);
 			status->aspd_rate = status_calc_aspd_rate(bl, sc, b_status->aspd_rate);
-			
+
+			if(status->aspd_amount != 0)
+				amotion -= status->aspd_amount;
+
 			if(status->aspd_rate != 1000)
 				amotion = amotion*status->aspd_rate/1000;
 
@@ -3824,26 +3833,34 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 		}
 		else if( bl->type&BL_HOM )
 		{
-			amotion = (1000 -4*status->agi -status->dex) * ((TBL_HOM*)bl)->homunculusDB->baseASPD/1000;			
+			amotion = (1000 -4*status->agi -status->dex) * ((TBL_HOM*)bl)->homunculusDB->baseASPD/1000;
+			status->aspd_amount = status_calc_aspd_amount(bl, sc, b_status->aspd_amount);
 			status->aspd_rate = status_calc_aspd_rate(bl, sc, b_status->aspd_rate);
-			
+
+			if(status->aspd_amount != 0)
+				amotion -= status->aspd_amount;
+
 			if(status->aspd_rate != 1000)
 				amotion = amotion*status->aspd_rate/1000;
-			
+
 			status->amotion = cap_value(amotion,battle_config.max_aspd,2000);
-			
+
 			status->adelay = status->amotion;
 		}
 		else // mercenary, elemental and mobs
 		{
 			amotion = b_status->amotion;
+			status->aspd_amount = status_calc_aspd_amount(bl, sc, b_status->aspd_amount);
 			status->aspd_rate = status_calc_aspd_rate(bl, sc, b_status->aspd_rate);
-			
+
+			if(status->aspd_amount != 0)
+				amotion -= status->aspd_amount;
+
 			if(status->aspd_rate != 1000)
 				amotion = amotion*status->aspd_rate/1000;
-			
+
 			status->amotion = cap_value(amotion, battle_config.monster_max_aspd, 2000);	
-			
+
 			temp = b_status->adelay*status->aspd_rate/1000;
 			status->adelay = cap_value(temp, battle_config.monster_max_aspd*2, 4000);
 		}
@@ -4435,6 +4452,8 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += 50;
 	if(sc->data[SC_ODINS_POWER])
 		watk += 40 + 30 * sc->data[SC_ODINS_POWER]->val1;
+	if(sc->data[SC_P_ALTER])
+		watk += sc->data[SC_P_ALTER]->val2;
 	if(sc->data[SC_FULL_SWING_K])
 		watk += sc->data[SC_FULL_SWING_K]->val1;
 	if(sc->data[SC_INCATKRATE])
@@ -4644,6 +4663,8 @@ static signed short status_calc_flee(struct block_list *bl, struct status_change
 		flee -= sc->data[SC_GLOOMYDAY]->val2;
 	if ( sc->data[SC_C_MARKER] )
 		flee -= 10;
+	if( sc->data[SC_HEAT_BARREL] )
+		flee -= sc->data[SC_HEAT_BARREL]->val4;
 	if(sc->data[SC_SPIDERWEB] && sc->data[SC_SPIDERWEB]->val1)
 		flee -= flee * 50/100;
 	if(sc->data[SC_BERSERK])
@@ -5069,6 +5090,22 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 	return (short)cap_value(speed,10,USHRT_MAX);
 }
 
+/// Calculates an object's ASPD modifier by a fixed amount.
+/// Calculation is done before aspd_rate.
+/// Note that the scale of aspd_amount is 10 = 1 ASPD.
+static short status_calc_aspd_amount(struct block_list *bl, struct status_change *sc, int aspd_amount)
+{
+	if( !sc || !sc->count )
+		return cap_value(aspd_amount,0,SHRT_MAX);
+
+	if( sc->data[SC_FIGHTINGSPIRIT] )
+		aspd_amount += 4 * sc->data[SC_FIGHTINGSPIRIT]->val2;
+	if( sc->data[SC_HEAT_BARREL] )
+		aspd_amount += 10 * sc->data[SC_HEAT_BARREL]->val1;
+
+	return (short)cap_value(aspd_amount,0,SHRT_MAX);
+}
+
 /// Calculates an object's ASPD modifier (alters the base amotion value).
 /// Note that the scale of aspd_rate is 1000 = 100%.
 static short status_calc_aspd_rate(struct block_list *bl, struct status_change *sc, int aspd_rate)
@@ -5149,8 +5186,6 @@ static short status_calc_aspd_rate(struct block_list *bl, struct status_change *
 		sc->data[i=SC_ASPDPOTION1] ||
 		sc->data[i=SC_ASPDPOTION0])
 		aspd_rate -= sc->data[i]->val2;
-	if( sc->data[SC_FIGHTINGSPIRIT] )
-		aspd_rate -= 10 * sc->data[SC_FIGHTINGSPIRIT]->val2;
 	if( sc->data[SC_GT_CHANGE] )
 		aspd_rate -= 10 * sc->data[SC_GT_CHANGE]->val3;
 	if(sc->data[SC_WIND_INSIGNIA] && sc->data[SC_WIND_INSIGNIA]->val1 == 2)
@@ -6689,6 +6724,13 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		break;
 	case SC_MADNESSCANCEL:
 		status_change_end(bl, SC_ADJUSTMENT, INVALID_TIMER);
+	case SC_P_ALTER:
+	case SC_HEAT_BARREL:
+		if ( sc->data[type] )
+			break;
+		status_change_end(bl, SC_MADNESSCANCEL, INVALID_TIMER);
+		status_change_end(bl, SC_P_ALTER, INVALID_TIMER);
+		status_change_end(bl, SC_HEAT_BARREL, INVALID_TIMER);
 		break;
 	//NPC_CHANGEUNDEAD will debuff Blessing and Agi Up
 	case SC_CHANGEUNDEAD:
@@ -8253,6 +8295,20 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val4 = tick / 5000;
 			tick = 5000;
 			break;
+		case SC_P_ALTER:
+			val2 = 10 * val1;// ATK Increase
+			if (sd)
+				val2 += 10 * sd->spiritball_old;
+			else
+				val2 += 100;
+			//val3 = ????// Resistance From Undead. Formula Unknown.
+			break;
+		case SC_HEAT_BARREL:
+			if (sd)
+				val2 = 5 * sd->spiritball_old;// Fixed Cast Reduction
+			val3 = 40 * val1;// ATK Multiplier For Regular Attacks. Temp Formula.
+			val4 = 75 - 5 * val1;// FLEE Reduction
+			break;
 		case SC_MEIKYOUSISUI:
 			val4 = tick / 1000;
 			tick = 1000;
@@ -8529,6 +8585,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_WEIGHT90:
 		case SC_VOICEOFSIREN:
 		case SC_CLOAKINGEXCEED:
+		case SC_HEAT_BARREL_AFTER:
 		case SC_ALL_RIDING:
 		case SC_SUHIDE:
 			unit_stop_attack(bl);
@@ -9330,6 +9387,9 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 			break;
 		case SC_MIDNIGHT_FRENZY_POSTDELAY:
 			clif_hom_skillupdateinfo(hd->master, MH_SONIC_CRAW, INF_ATTACK_SKILL, 1);
+			break;
+		case SC_HEAT_BARREL:
+			sc_start(bl,SC_HEAT_BARREL_AFTER,100,sce->val1,skill_get_time2(RL_HEAT_BARREL, sce->val1));
 			break;
 		}
 

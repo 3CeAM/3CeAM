@@ -4229,6 +4229,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 		// Nauthiz Rune (RK_REFRESH) can be used while in deep sleep and crystalize status.
 		(sd->sc.data[SC_DEEPSLEEP] || sd->sc.data[SC_CRYSTALIZE]) && sd->status.inventory[n].nameid != ITEMID_NAUTHIZ_RUNE ||
 		sd->sc.data[SC_SATURDAYNIGHTFEVER] ||
+		sd->sc.data[SC_HEAT_BARREL_AFTER] ||
 		sd->sc.data[SC_SUHIDE]
 	))
 		return 0;
@@ -4930,7 +4931,14 @@ int pc_checkallowskill(struct map_session_data *sd)
 		SC_ADRENALINE,
 		SC_ADRENALINE2,
 		SC_GATLINGFEVER,
-		SC_EXEEDBREAK
+		SC_EXEEDBREAK,
+		// Platnium Alter and Heat Barrel
+		// should end when switching equips.
+		// This code only does this if switching
+		// to a weapon not set in the skill requirements.
+		// What to do? [Rytech]
+		SC_P_ALTER,
+		SC_HEAT_BARREL
 	};
 	const enum sc_type scs_list[] = {
 		SC_AUTOGUARD,
@@ -4963,6 +4971,15 @@ int pc_checkallowskill(struct map_session_data *sd)
 			if(sd->sc.data[scs_list[i]])
 				status_change_end(&sd->bl, scs_list[i], INVALID_TIMER);
 	}
+
+	// Platinum Alter is forced to end if unequipping or switching to non-holy bullets.
+	// Note: Description says it ends if switching bullets. Does this also mean one holy
+	// bullet to a different holy bullet like Silver to Purification and back? I assumed
+	// that but couldn't get that working. So this is the best I can do for now. [Rytech]
+	if (sd->sc.data[SC_P_ALTER] && 
+		!itemid_is_holy_bullet(sd->status.inventory[sd->equip_index[EQI_AMMO]].nameid))
+		status_change_end(&sd->bl, SC_P_ALTER, INVALID_TIMER);
+
 	return 0;
 }
 

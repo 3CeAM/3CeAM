@@ -450,6 +450,7 @@ static bool read_mercenarydb_sub(char* str[], int columns, int current)
 		status->ele_lv = 1;
 	}
 
+	status->aspd_amount = 0;
 	status->aspd_rate = 1000;
 	status->speed = atoi(str[22]);
 	status->adelay = atoi(str[23]);

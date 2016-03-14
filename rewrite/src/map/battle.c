@@ -2946,6 +2946,10 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				skill_num != GC_DARKCROW)//Unknown if Dark Claw is affected by EDP. Best to make it not until confirm. [Rytech]
 				ATK_ADDRATE(sc->data[SC_EDP]->val3);
 
+			// Heated Barrel increases damage of regular attacks.
+			if(sc->data[SC_HEAT_BARREL] && (wd.flag&(BF_LONG|BF_WEAPON)) == (BF_LONG|BF_WEAPON) && (!skill_num))
+				ATK_ADDRATE(sc->data[SC_HEAT_BARREL]->val3);
+
 			if(sc->data[SC_UNLIMIT] && (wd.flag&(BF_LONG|BF_WEAPON)) == (BF_LONG|BF_WEAPON) &&
 				(!skill_num ||//For regular attacks with bows.
 				skill_num == AC_DOUBLE ||
