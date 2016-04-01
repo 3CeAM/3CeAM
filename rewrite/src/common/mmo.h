@@ -789,6 +789,12 @@ enum {
 	SEX_SERVER
 };
 
+// Race values sent by client for character creation.
+enum {
+	RACE_HUMAN = 0,
+	RACE_DORAM = 4218
+};
+
 // sanity checks...
 #if MAX_ZENY > INT_MAX
 #error MAX_ZENY is too big

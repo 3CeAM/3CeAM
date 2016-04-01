@@ -143,6 +143,8 @@ int autosave_interval = DEFAULT_AUTOSAVE_INTERVAL;
 int start_zeny = 0;
 int start_weapon = 1201;
 int start_armor = 2301;
+int start_weapon_doram = 1681;
+int start_armor_doram = 2301;
 int guild_exp_rate = 100;
 
 //Custom limits for the fame lists. [Skotlex]
@@ -162,6 +164,7 @@ unsigned int save_flag = 0;
 
 // Initial position (it's possible to set it in conf file)
 struct point start_point = { 0, 53, 111 };
+struct point start_point_doram = { 0, 47, 296 };
 
 int console = 0;
 
@@ -1296,7 +1299,12 @@ int check_char_name(char * name, char * esc_name)
 //-----------------------------------
 #if PACKETVER >= 20120307
 #if PACKETVER >= 20151029
-int make_new_char_sql(struct char_session_data* sd, char* name_, int slot, int hair_color, int hair_style, short starting_job) {
+int make_new_char_sql(struct char_session_data* sd, char* name_, int slot, int hair_color, int hair_style, short race) {
+	short starting_job;
+	short starting_hp, starting_sp;
+	short starting_weapon, starting_armor;
+	const char *starting_point_map;
+	short starting_point_x, starting_point_y;
 #else
 int make_new_char_sql(struct char_session_data* sd, char* name_, int slot, int hair_color, int hair_style) {
 #endif
@@ -1315,6 +1323,17 @@ int make_new_char_sql(struct char_session_data* sd, char* name_, int str, int ag
 	flag = check_char_name(name,esc_name);
 	if( flag < 0 )
 		return flag;
+
+#if PACKETVER >= 20151029
+	// Checks race input.
+	// Race values are acturally sent by the client as the job ID the new character would start on.
+	// But to be safe, its best to have the server read what race was selected and then set the
+	// starting job itself rather then setting it to the value the client sent.
+	if ( race != RACE_HUMAN && race != RACE_DORAM ) {
+		ShowWarning("make_new_char: Detected character creation packet with invalid race type on account: %d.\n", sd->account_id);
+		return -2;
+	}
+#endif
 
 	//check other inputs
 #if PACKETVER >= 20120307
@@ -1350,13 +1369,44 @@ int make_new_char_sql(struct char_session_data* sd, char* name_, int str, int ag
 	}
 
 #if PACKETVER >= 20151029
+	if ( race == RACE_HUMAN )
+	{	// Human - Defaults
+		// Job = Novice
+		// Starting HP/SP = 40/11
+		// Weapon/Armor = Knife / Cotton Shirt
+		// Start/Save Point = new_1-1,53,111
+		starting_job = JOB_NOVICE;
+		starting_hp = 40 * (100 + vit) / 100;
+		starting_sp = 11 * (100 + vit) / 100;
+		starting_weapon = start_weapon;
+		starting_armor = start_armor;
+		starting_point_map = mapindex_id2name(start_point.map);
+		starting_point_x = start_point.x;
+		starting_point_y = start_point.y;
+	}
+	else
+	{	// Doram - Defaults
+		// Job = Summoner
+		// Starting HP/SP = 60/8
+		// Weapon/Armor = Short Foxtail Staff / Cotton Shirt
+		// Start/Save Point = lasa_fild01,47,296
+		starting_job = JOB_SUMMONER;
+		starting_hp = 60 * (100 + vit) / 100;
+		starting_sp = 8 * (100 + vit) / 100;
+		starting_weapon = start_weapon_doram;
+		starting_armor = start_armor_doram;
+		starting_point_map = mapindex_id2name(start_point_doram.map);
+		starting_point_x = start_point_doram.x;
+		starting_point_y = start_point_doram.y;
+	}
+
 	//Insert the new char entry to the database
 	if( SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `%s` (`account_id`, `char_num`, `name`, `class`, `zeny`, `status_point`,`str`, `agi`, `vit`, `int`, `dex`, `luk`, `max_hp`, `hp`,"
 		"`max_sp`, `sp`, `hair`, `hair_color`, `last_map`, `last_x`, `last_y`, `save_map`, `save_x`, `save_y`) VALUES ("
 		"'%d', '%d', '%s', '%d', '%d',  '%d','%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d','%d', '%d','%d', '%d', '%s', '%d', '%d', '%s', '%d', '%d')",
 		char_db, sd->account_id , slot, esc_name, starting_job, start_zeny, 48, str, agi, vit, int_, dex, luk,
-		(40 * (100 + vit)/100) , (40 * (100 + vit)/100 ),  (11 * (100 + int_)/100), (11 * (100 + int_)/100), hair_style, hair_color,
-		mapindex_id2name(start_point.map), start_point.x, start_point.y, mapindex_id2name(start_point.map), start_point.x, start_point.y) )
+		starting_hp, starting_hp, starting_sp, starting_sp, hair_style, hair_color,
+		starting_point_map, starting_point_x, starting_point_y, starting_point_map, starting_point_x, starting_point_y) )
 #elif PACKETVER >= 20120307
 	//Insert the new char entry to the database
 	if( SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `%s` (`account_id`, `char_num`, `name`, `zeny`, `status_point`,`str`, `agi`, `vit`, `int`, `dex`, `luk`, `max_hp`, `hp`,"
@@ -1381,6 +1431,16 @@ int make_new_char_sql(struct char_session_data* sd, char* name_, int str, int ag
 	//Retrieve the newly auto-generated char id
 	char_id = (int)Sql_LastInsertId(sql_handle);
 	//Give the char the default items
+#if PACKETVER >= 20151029
+	if (starting_weapon > 0) {
+		if( SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `%s` (`char_id`,`nameid`, `amount`, `identify`) VALUES ('%d', '%d', '%d', '%d')", inventory_db, char_id, starting_weapon, 1, 1) )
+			Sql_ShowDebug(sql_handle);
+	}
+	if (starting_armor > 0) {
+		if( SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `%s` (`char_id`,`nameid`, `amount`, `identify`) VALUES ('%d', '%d', '%d', '%d')", inventory_db, char_id, starting_armor, 1, 1) )
+			Sql_ShowDebug(sql_handle);
+	}
+#else
 	if (start_weapon > 0) { //add Start Weapon (Knife?)
 		if( SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `%s` (`char_id`,`nameid`, `amount`, `identify`) VALUES ('%d', '%d', '%d', '%d')", inventory_db, char_id, start_weapon, 1, 1) )
 			Sql_ShowDebug(sql_handle);
@@ -1389,6 +1449,7 @@ int make_new_char_sql(struct char_session_data* sd, char* name_, int str, int ag
 		if( SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `%s` (`char_id`,`nameid`, `amount`, `identify`) VALUES ('%d', '%d', '%d', '%d')", inventory_db, char_id, start_armor, 1, 1) )
 			Sql_ShowDebug(sql_handle);
 	}
+#endif
 
 	ShowInfo("Created char: account: %d, char: %d, slot: %d, name: %s\n", sd->account_id, char_id, slot, name);
 	return char_id;
@@ -4369,10 +4430,6 @@ int char_config_read(const char* cfgName)
 				ShowError("Specified start_point %s not found in map-index cache.\n", map);
 			start_point.x = x;
 			start_point.y = y;
-		} else if (strcmpi(w1, "start_zeny") == 0) {
-			start_zeny = atoi(w2);
-			if (start_zeny < 0)
-				start_zeny = 0;
 		} else if (strcmpi(w1, "start_weapon") == 0) {
 			start_weapon = atoi(w2);
 			if (start_weapon < 0)
@@ -4381,6 +4438,28 @@ int char_config_read(const char* cfgName)
 			start_armor = atoi(w2);
 			if (start_armor < 0)
 				start_armor = 0;
+		} else if (strcmpi(w1, "start_point_doram") == 0) {
+			char map[MAP_NAME_LENGTH_EXT];
+			int x, y;
+			if (sscanf(w2, "%15[^,],%d,%d", map, &x, &y) < 3)
+				continue;
+			start_point_doram.map = mapindex_name2id(map);
+			if (!start_point_doram.map)
+				ShowError("Specified start_point %s not found in map-index cache.\n", map);
+			start_point_doram.x = x;
+			start_point_doram.y = y;
+		} else if (strcmpi(w1, "start_weapon_doram") == 0) {
+			start_weapon_doram = atoi(w2);
+			if (start_weapon_doram < 0)
+				start_weapon_doram = 0;
+		} else if (strcmpi(w1, "start_armor_doram") == 0) {
+			start_armor_doram = atoi(w2);
+			if (start_armor_doram < 0)
+				start_armor_doram = 0;
+		} else if (strcmpi(w1, "start_zeny") == 0) {
+			start_zeny = atoi(w2);
+			if (start_zeny < 0)
+				start_zeny = 0;
 		} else if(strcmpi(w1,"log_char")==0) {		//log char or not [devil]
 			log_char = atoi(w2);
 		} else if (strcmpi(w1, "unknown_char_name") == 0) {

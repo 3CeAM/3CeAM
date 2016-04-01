@@ -3160,6 +3160,22 @@ int pc_bonus2(struct map_session_data *sd,int type,int type2,int val)
 			sd->fixedskillcast[i].val = val;
 		}
 		break;
+	case SP_SPRATE:
+		if(sd->state.lr_flag == 2)
+			break;
+		ARR_FIND(0, ARRAYLENGTH(sd->skillsprate), i, sd->skillsprate[i].id == 0 || sd->skillsprate[i].id == type2);
+		if (i == ARRAYLENGTH(sd->skillsprate))
+		{	//Better mention this so the array length can be updated. [Skotlex]
+			ShowDebug("run_script: bonus2 bSkillSpRate reached it's limit (%d skills per character), bonus skill %d (+%d%%) lost.\n", ARRAYLENGTH(sd->skillsprate), type2, val);
+			break;
+		}
+		if (sd->skillsprate[i].id == type2)
+			sd->skillsprate[i].val += val;
+		else {
+			sd->skillsprate[i].id = type2;
+			sd->skillsprate[i].val = val;
+		}
+		break;
 
 	case SP_HP_LOSS_RATE:
 		if(sd->state.lr_flag != 2) {
