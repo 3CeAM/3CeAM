@@ -14051,8 +14051,17 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 		req.sp += (status->sp * sp_rate)/100;
 	else
 		req.sp += (status->max_sp * (-sp_rate))/100;
+
 	if( sd->dsprate!=100 )
 		req.sp = req.sp * sd->dsprate / 100;
+	for( i = 0; i < ARRAYLENGTH(sd->skillsprate) && sd->skillsprate[i].id; i++ )
+	{
+		if( sd->skillsprate[i].id == skill )
+		{
+			req.sp -= req.sp * sd->skillsprate[i].val / 100;
+			break;
+		}
+	}
 	
 	if( sc )
 	{

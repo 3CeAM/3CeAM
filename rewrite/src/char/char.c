@@ -122,6 +122,8 @@ int autosave_interval = DEFAULT_AUTOSAVE_INTERVAL;
 int start_zeny = 0;
 int start_weapon = 1201;
 int start_armor = 2301;
+int start_weapon_doram = 1681;
+int start_armor_doram = 2301;
 int guild_exp_rate = 100;
 
 //Custom limits for the fame lists. [Skotlex]
@@ -136,6 +138,7 @@ struct fame_list taekwon_fame_list[MAX_FAME_LIST];
 
 // Initial position (it's possible to set it in conf file)
 struct point start_point = { 0, 53, 111 };
+struct point start_point_doram = { 0, 47, 296 };
 
 // online players by [Yor]
 char online_txt_filename[1024] = "online.txt";
@@ -1311,7 +1314,7 @@ int check_char_name(char * name)
 //-----------------------------------
 #if PACKETVER >= 20120307
 #if PACKETVER >= 20151029
-int make_new_char(struct char_session_data* sd, char* name_, int slot, int hair_color, int hair_style, short starting_job) {
+int make_new_char(struct char_session_data* sd, char* name_, int slot, int hair_color, int hair_style, short race) {
 #else
 int make_new_char(struct char_session_data* sd, char* name_, int slot, int hair_color, int hair_style) {
 #endif
@@ -1328,6 +1331,17 @@ int make_new_char(struct char_session_data* sd, char* name_, int str, int agi, i
 	flag = check_char_name(name);
 	if( flag < 0 )
 		return flag;
+
+#if PACKETVER >= 20151029
+	// Checks race input.
+	// Race values are acturally sent by the client as the job ID the new character would start on.
+	// But to be safe, its best to have the server read what race was selected and then set the
+	// starting job itself rather then setting it to the value the client sent.
+	if ( race != RACE_HUMAN && race != RACE_DORAM ) {
+		ShowWarning("make_new_char: Detected character creation packet with invalid race type on account: %d.\n", sd->account_id);
+		return -2;
+	}
+#endif
 
 	//check other inputs
 #if PACKETVER >= 20120307
@@ -1375,9 +1389,45 @@ int make_new_char(struct char_session_data* sd, char* name_, int str, int agi, i
 	char_dat[i].status.slot = slot;
 	safestrncpy(char_dat[i].status.name,name,NAME_LENGTH);
 #if PACKETVER >= 20151029
-	char_dat[i].status.class_ = starting_job;
+	// Race selection from 0xa39 packet.
+	// 0 = Human
+	// 4218 = Doram
+	if ( race == RACE_HUMAN )
+	{	// Human - Defaults
+		// Job = Novice
+		// Starting HP/SP = 40/11
+		// Weapon/Armor = Knife / Cotton Shirt
+		// Start/Save Point = new_1-1,53,111
+		char_dat[i].status.class_ = JOB_NOVICE;
+		char_dat[i].status.max_hp = 40 * (100 + char_dat[i].status.vit) / 100;
+		char_dat[i].status.max_sp = 11 * (100 + char_dat[i].status.int_) / 100;
+		char_dat[i].status.inventory[0].nameid = start_weapon;
+		char_dat[i].status.inventory[1].nameid = start_armor;
+		memcpy(&char_dat[i].status.last_point, &start_point, sizeof(start_point));
+		memcpy(&char_dat[i].status.save_point, &start_point, sizeof(start_point));
+	}
+	else
+	{	// Doram - Defaults
+		// Job = Summoner
+		// Starting HP/SP = 60/8
+		// Weapon/Armor = Short Foxtail Staff / Cotton Shirt
+		// Start/Save Point = lasa_fild01,47,296
+		char_dat[i].status.class_ = JOB_SUMMONER;
+		char_dat[i].status.max_hp = 60 * (100 + char_dat[i].status.vit) / 100;
+		char_dat[i].status.max_sp = 8 * (100 + char_dat[i].status.int_) / 100;
+		char_dat[i].status.inventory[0].nameid = start_weapon_doram;
+		char_dat[i].status.inventory[1].nameid = start_armor_doram;
+		memcpy(&char_dat[i].status.last_point, &start_point_doram, sizeof(start_point_doram));
+		memcpy(&char_dat[i].status.save_point, &start_point_doram, sizeof(start_point_doram));
+	}
 #else
-	char_dat[i].status.class_ = 0;
+	char_dat[i].status.class_ = JOB_NOVICE;
+	char_dat[i].status.max_hp = 40 * (100 + char_dat[i].status.vit) / 100;
+	char_dat[i].status.max_sp = 11 * (100 + char_dat[i].status.int_) / 100;
+	char_dat[i].status.inventory[0].nameid = start_weapon;
+	char_dat[i].status.inventory[1].nameid = start_armor;
+	memcpy(&char_dat[i].status.last_point, &start_point, sizeof(start_point));
+	memcpy(&char_dat[i].status.save_point, &start_point, sizeof(start_point));
 #endif
 	char_dat[i].status.base_level = 1;
 	char_dat[i].status.job_level = 1;
@@ -1390,8 +1440,6 @@ int make_new_char(struct char_session_data* sd, char* name_, int str, int agi, i
 	char_dat[i].status.int_ = int_;
 	char_dat[i].status.dex = dex;
 	char_dat[i].status.luk = luk;
-	char_dat[i].status.max_hp = 40 * (100 + char_dat[i].status.vit) / 100;
-	char_dat[i].status.max_sp = 11 * (100 + char_dat[i].status.int_) / 100;
 	char_dat[i].status.hp = char_dat[i].status.max_hp;
 	char_dat[i].status.sp = char_dat[i].status.max_sp;
 #if PACKETVER >= 20120307
@@ -1408,10 +1456,8 @@ int make_new_char(struct char_session_data* sd, char* name_, int str, int agi, i
 	char_dat[i].status.hair = hair_style;
 	char_dat[i].status.hair_color = hair_color;
 	char_dat[i].status.clothes_color = 0;
-	char_dat[i].status.inventory[0].nameid = start_weapon; // Knife
 	char_dat[i].status.inventory[0].amount = 1;
 	char_dat[i].status.inventory[0].identify = 1;
-	char_dat[i].status.inventory[1].nameid = start_armor; // Cotton Shirt
 	char_dat[i].status.inventory[1].amount = 1;
 	char_dat[i].status.inventory[1].identify = 1;
 	char_dat[i].status.weapon = 0; // W_FIST
@@ -1421,8 +1467,6 @@ int make_new_char(struct char_session_data* sd, char* name_, int str, int agi, i
 	char_dat[i].status.head_bottom = 0;
 	char_dat[i].status.robe = 0;
 	char_dat[i].status.body = 0;
-	memcpy(&char_dat[i].status.last_point, &start_point, sizeof(start_point));
-	memcpy(&char_dat[i].status.save_point, &start_point, sizeof(start_point));
 	char_num++;
 
 	ShowInfo("Created char: account: %d, char: %d, slot: %d, name: %s\n", sd->account_id, i, slot, name);
@@ -4589,10 +4633,6 @@ int char_config_read(const char *cfgName)
 				ShowError("Specified start_point %s not found in map-index cache.\n", map);
 			start_point.x = x;
 			start_point.y = y;
-		} else if (strcmpi(w1, "start_zeny") == 0) {
-			start_zeny = atoi(w2);
-			if (start_zeny < 0)
-				start_zeny = 0;
 		} else if (strcmpi(w1, "start_weapon") == 0) {
 			start_weapon = atoi(w2);
 			if (start_weapon < 0)
@@ -4601,6 +4641,28 @@ int char_config_read(const char *cfgName)
 			start_armor = atoi(w2);
 			if (start_armor < 0)
 				start_armor = 0;
+		} else if (strcmpi(w1, "start_point_doram") == 0) {
+			char map[MAP_NAME_LENGTH_EXT];
+			int x, y;
+			if (sscanf(w2, "%15[^,],%d,%d", map, &x, &y) < 3)
+				continue;
+			start_point_doram.map = mapindex_name2id(map);
+			if (!start_point_doram.map)
+				ShowError("Specified start_point %s not found in map-index cache.\n", map);
+			start_point_doram.x = x;
+			start_point_doram.y = y;
+		} else if (strcmpi(w1, "start_weapon_doram") == 0) {
+			start_weapon_doram = atoi(w2);
+			if (start_weapon_doram < 0)
+				start_weapon_doram = 0;
+		} else if (strcmpi(w1, "start_armor_doram") == 0) {
+			start_armor_doram = atoi(w2);
+			if (start_armor_doram < 0)
+				start_armor_doram = 0;
+		} else if (strcmpi(w1, "start_zeny") == 0) {
+			start_zeny = atoi(w2);
+			if (start_zeny < 0)
+				start_zeny = 0;
 		} else if(strcmpi(w1,"log_char")==0) {		//log char or not [devil]
 			log_char = atoi(w2);
 		} else if (strcmpi(w1, "unknown_char_name") == 0) {

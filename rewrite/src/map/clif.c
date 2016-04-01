@@ -17038,6 +17038,7 @@ int clif_parse(int fd)
 				*/
 				err == 6 ? ", possibly for having an invalid sex." :
 				". ERROR invalid error code"));
+			ShowInfo("Did you apply the "CL_RED"Disable Packet Encryption"CL_RESET" patch in Nemo?\n");
 			WFIFOHEAD(fd,packet_len(0x6a));
 			WFIFOW(fd,0) = 0x6a;
 			WFIFOB(fd,2) = 3; // Rejected from Server
@@ -17054,6 +17055,7 @@ int clif_parse(int fd)
 	// filter out invalid / unsupported packets
 	if (cmd > MAX_PACKET_DB || packet_db[packet_ver][cmd].len == 0) {
 		ShowWarning("clif_parse: Received unsupported packet (packet 0x%04x, %d bytes received), disconnecting session #%d.\n", cmd, RFIFOREST(fd), fd);
+		ShowInfo("Did you apply the "CL_RED"Disable Packet Encryption"CL_RESET" patch in Nemo?\n");
 #ifdef DUMP_INVALID_PACKET
 		ShowDump(RFIFOP(fd,0), RFIFOREST(fd));
 #endif
@@ -17406,6 +17408,11 @@ static int packetdb_readdb(void)
 	    0,  0,  4,  0,  0,  0,  0,  0,  0, 45, 47, 47, 56, -1,  0, -1,
 	   -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  3,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  3,  0,  0,  0,  0,  0,  0,  0,
+	//#0x0A40
+	    0,  0,  0,  0,  0,  0, 14,  3,  2,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	};
 	struct {
