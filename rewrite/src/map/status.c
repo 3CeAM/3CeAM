@@ -603,7 +603,10 @@ void initChangeTables(void)
 
 	set_sc( SU_HIDE               , SC_SUHIDE             , SI_SUHIDE             , SCB_SPEED );
 	set_sc( SU_STOOP              , SC_SU_STOOP           , SI_SU_STOOP           , SCB_NONE );
-
+	set_sc( SU_ARCLOUSEDASH       , SC_ARCLOUSEDASH       , SI_ARCLOUSEDASH       , SCB_AGI|SCB_SPEED );
+	set_sc( SU_TUNAPARTY          , SC_TUNAPARTY          , SI_TUNAPARTY          , SCB_NONE );
+	set_sc( SU_BUNCHOFSHRIMP      , SC_SHRIMP             , SI_SHRIMP             , SCB_BATK|SCB_WATK|SCB_MATK );
+	set_sc( SU_FRESHSHRIMP        , SC_FRESHSHRIMP        , SI_FRESHSHRIMP        , SCB_NONE );
 
 	set_sc( HLIF_AVOID           , SC_AVOID           , SI_BLANK           , SCB_SPEED );
 	set_sc( HLIF_CHANGE          , SC_CHANGE          , SI_BLANK           , SCB_VIT|SCB_INT );
@@ -1730,6 +1733,10 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 				case AL_DECAGI:
 				case AB_RENOVATIO:
 				case AB_HIGHNESSHEAL:
+				// Not confirmed, but if all heal skills
+				// fail on mado's, these should too right? [Rytech]
+				case SU_TUNABELLY:
+				case SU_FRESHSHRIMP:
 					return 0;
 				default:
 					break;
@@ -4136,6 +4143,8 @@ static unsigned short status_calc_agi(struct block_list *bl, struct status_chang
 		agi += sc->data[SC_DROCERA_HERB_STEAMED]->val1;
 	if(sc->data[SC_INSPIRATION])
 		agi += sc->data[SC_INSPIRATION]->val3;
+	if(sc->data[SC_ARCLOUSEDASH])
+		agi += sc->data[SC_ARCLOUSEDASH]->val2;
 	if(sc->data[SC_MARSHOFABYSS])// Must confirm if stat reductions are done by percentage first. [Rytech]
 		agi -= agi * sc->data[SC_MARSHOFABYSS]->val2 / 100;
 	if(sc->data[SC_DECREASEAGI])
@@ -4401,6 +4410,8 @@ static unsigned short status_calc_batk(struct block_list *bl, struct status_chan
 		(sc->data[SC_WIND_INSIGNIA] && sc->data[SC_WIND_INSIGNIA]->val1 == 2) ||
 		(sc->data[SC_EARTH_INSIGNIA] && sc->data[SC_EARTH_INSIGNIA]->val1 == 2))
 		batk += batk * 10 / 100;
+	if(sc->data[SC_SHRIMP])
+		batk += batk * 10 / 100;
 	if(sc->data[SC_JOINTBEAT] && sc->data[SC_JOINTBEAT]->val2&BREAK_WAIST)
 		batk -= batk * 25/100;
 	if(sc->data[SC_CURSE])
@@ -4488,6 +4499,8 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += watk * 10 / 100;
 	if(sc->data[SC_DOHU_KOUKAI])//Recheck to see if it increases BATK [Rytech]
 		watk += watk * (15 * sc->data[SC_DOHU_KOUKAI]->val2) / 100;
+	if(sc->data[SC_SHRIMP])
+		watk += watk * 10 / 100;
 	if(sc->data[SC_CURSE])
 		watk -= watk * 25/100;
 	if(sc->data[SC_STRIPWEAPON])
@@ -4536,6 +4549,8 @@ static unsigned short status_calc_matk(struct block_list *bl, struct status_chan
 		matk += matk * sc->data[SC_MINDBREAKER]->val2/100;
 	if(sc->data[SC_INCMATKRATE])
 		matk += matk * sc->data[SC_INCMATKRATE]->val1/100;
+	if(sc->data[SC_SHRIMP])
+		matk += matk * 10 / 100;
 	//Not bothering to organize these until I rework the elemental spirits. [Rytech]
 	if(sc->data[SC_AQUAPLAY_OPTION])
 		matk += sc->data[SC_AQUAPLAY_OPTION]->val2;
@@ -5055,6 +5070,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 			//I can only guess Full Throttles placement and speed increase right now. [Rytech]
 			if( sc->data[SC_FULL_THROTTLE] )
 				val = max( val, 100 );
+			if( sc->data[SC_ARCLOUSEDASH] )// Speed increase not confirmed but is likely the same as AGI Up. [Rytech]
+				val = max( val, 25 );
 			//Not bothering to organize these until I rework the elemental spirits. [Rytech]
 			if( sc->data[SC_WIND_STEP_OPTION] )
 				val = max( val, sc->data[SC_WIND_STEP_OPTION]->val2 );
@@ -8341,6 +8358,19 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			tick = 2000;
 			clif_emotion(bl,E_SWT);
 			break;
+		case SC_ARCLOUSEDASH:
+			val2 = 15 + 5 * val1;// AGI Increase.
+			break;
+		case SC_TUNAPARTY:
+			val2 = val2 * (10 * val1) / 100;// Tuna's HP
+			break;
+		case SC_FRESHSHRIMP:
+			val2 = 11000 - 1000 * val1;// Heal interval.
+			if ( val2 < 1000 )
+				val2 = 1000;// Best to not let the heal interval go below 1 second.
+			val3 = tick / val2;
+			tick = val2;
+			break;
 		case SC_LIGHT_OF_REGENE:
 			val2 = 20 * val1;// Percent of HP recovered when resurrected.
 			break;
@@ -10499,6 +10529,15 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		{
 			clif_emotion(bl,E_SWT);
 			sc_timer_next(2000+tick, status_change_timer,bl->id, data);
+			return 0;
+		}
+		break;
+
+	case SC_FRESHSHRIMP:
+		if( --(sce->val3) >= 0 )
+		{
+			status_heal(bl, status->max_hp / 100, 0, 2);
+			sc_timer_next(sce->val2 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}
 		break;

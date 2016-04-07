@@ -1392,13 +1392,13 @@
 5032,9,6,1,-1,0,0,5,1,yes,0,0,0,weapon,0,	SU_SCAROFTAROU,Scar of Tarou
 5033,9,6,1,-1,0,0,5,1,yes,0,0,0,weapon,0,	SU_PICKYPECK,Picky Peck
 5034,0,6,1,-1,0,0,5,1,yes,0,0x4000,0,weapon,0,	SU_PICKYPECK_DOUBLE_ATK,Picky Peck Double Attack
-5035,9,6,16,0,0,0,5,1,yes,0,0,0,none,0,		SU_ARCLOUSEDASH,Arclouse Dash
+5035,9,6,16,0,0x1,0,5,1,yes,0,0,0,none,0,	SU_ARCLOUSEDASH,Arclouse Dash
 5036,9,6,1,-1,0,0,5,1,yes,0,0,0,weapon,0,	SU_LUNATICCARROTBEAT,Lunatic Carrot Beat
 5037,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		SU_POWEROFSEA,Power of Sea
-5038,9,6,16,0,0,0,5,1,yes,0,0,0,none,0,		SU_TUNABELLY,Tuna Belly
-5039,9,6,16,0,0,0,5,1,yes,0,0,0,none,0,		SU_TUNAPARTY,Tuna Party
-5040,0,6,4,0,0,0,5,1,yes,0,0,0,none,0,		SU_BUNCHOFSHRIMP,Bunch of Shrimp
-5041,9,6,16,0,0,0,5,1,yes,0,0,0,none,0,		SU_FRESHSHRIMP,Fresh Shrimp
+5038,9,6,16,0,0x1,0,5,1,yes,0,0,0,none,0,	SU_TUNABELLY,Tuna Belly
+5039,9,6,16,0,0x1,0,5,1,yes,0,0,0,none,0,	SU_TUNAPARTY,Tuna Party
+5040,0,6,4,0,0x3,15,5,1,yes,0,0,0,none,0,	SU_BUNCHOFSHRIMP,Bunch of Shrimp
+5041,9,6,16,0,0x1,0,5,1,yes,0,0,0,none,0,	SU_FRESHSHRIMP,Fresh Shrimp
 5042,0,6,2,0,0,0,5,1,yes,0,0x4000,0,magic,0,	SU_CN_METEOR2,Catnip Meteor 2
 5043,0,6,1,0,0,0,5,1,yes,0,0x4000,0,weapon,0,	SU_LUNATICCARROTBEAT2,Lunatic Carrot Beat 2
 

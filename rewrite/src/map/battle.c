@@ -698,6 +698,25 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			return 0;
 		}
 
+		// Tuna Party protects from damage or at least reduces it if possible.
+		// Kyrie takes priority before Tuna Party.
+		if((sce = sc->data[SC_TUNAPARTY]) && damage > 0)
+		{
+			sce->val2 -= damage;
+
+			// Does it protect from certain attack types or all types? [Rytech]
+			// Does it display any kind of animation at all when hit?
+			// Does the character flinch when hit?
+			//if(flag&BF_WEAPON)
+				if(sce->val2 >= 0)
+					damage = 0;
+				else
+				  	damage =- sce->val2;
+
+			if(sce->val2 <= 0)
+				status_change_end(bl, SC_TUNAPARTY, INVALID_TIMER);
+		}
+
 		if (!damage) return 0;
 
 		//Probably not the most correct place, but it'll do here
@@ -1353,10 +1372,10 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 
 			case CR_SHIELDBOOMERANG:
 			case PA_SHIELDCHAIN:
-			case LG_SHIELDPRESS:
-			case LG_EARTHDRIVE:
 			case RK_DRAGONBREATH:
 			case NC_SELFDESTRUCTION:
+			case LG_SHIELDPRESS:
+			case LG_EARTHDRIVE:
 			case RK_DRAGONBREATH_WATER:
 				flag.weapon = 0;
 				break;
@@ -1762,13 +1781,15 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 		case RK_DRAGONBREATH_WATER:
 			{
 				int damagevalue = 0;
+				wd.damage = 0;
  				if( battle_config.skillsbonus_maxhp_RK && sstatus->hp > battle_config.skillsbonus_maxhp_RK ) // [Pinky]
 					damagevalue = ((battle_config.skillsbonus_maxhp_RK / 50) + (status_get_max_sp(src) / 4)) * skill_lv;
  				else
 					damagevalue = ((sstatus->hp / 50) + (status_get_max_sp(src) / 4)) * skill_lv;
 				if ( re_baselv_bonus == 1 && s_level >= 100 )
 					damagevalue = damagevalue * s_level / 150;// Base level bonus.
-				if (sd) damagevalue = damagevalue * (100 + 5 * (pc_checkskill(sd,RK_DRAGONTRAINING) - 1)) / 100;
+				if (sd)
+					damagevalue = damagevalue * (100 + 5 * (pc_checkskill(sd,RK_DRAGONTRAINING) - 1)) / 100;
 				ATK_ADD(damagevalue);
 			}
 			break;
@@ -1779,7 +1800,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					damagevalue = (1 + skill_lv) * (8 + pc_checkskill(sd,NC_MAINFRAME)) * (status_get_sp(src) + sstatus->vit);
 					if ( re_baselv_bonus == 1 && s_level >= 100 )
 						damagevalue = damagevalue * s_level / 100;// Base level bonus.
-					damagevalue = damagevalue + sstatus->hp;
+					damagevalue += sstatus->hp;
 					ATK_ADD(damagevalue);
 					if (sd) status_set_sp(src, 0, 0);
 				}
@@ -2986,8 +3007,12 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 			if (skill_num && (i = pc_skillatk_bonus(sd, skill_num)))
 				ATK_ADDRATE(i);
 
+			// This is for piercing defense depending on the targets defense element and race.
+			// This does not adjust damage by a percent depending on elements and race.
+			// To make it simple, if a skill is not affected by the ice pick effect, add it here.
 			if( skill_num != PA_SACRIFICE && skill_num != MO_INVESTIGATE && skill_num != CR_GRANDCROSS && skill_num != NPC_GRANDDARKNESS && 
-				skill_num != PA_SHIELDCHAIN && skill_num != NC_SELFDESTRUCTION && skill_num != KO_HAPPOKUNAI && skill_num != RL_MASS_SPIRAL && !flag.cri )
+				skill_num != PA_SHIELDCHAIN && skill_num !=RK_DRAGONBREATH && skill_num != NC_SELFDESTRUCTION && skill_num != KO_HAPPOKUNAI && 
+				skill_num != RL_MASS_SPIRAL && skill_num != RK_DRAGONBREATH_WATER && !flag.cri )
 			{ //Elemental/Racial adjustments
 				if( sd->right_weapon.def_ratio_atk_ele & (1<<tstatus->def_ele) ||
 					sd->right_weapon.def_ratio_atk_race & (1<<tstatus->race) ||
