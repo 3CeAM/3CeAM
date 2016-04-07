@@ -1491,6 +1491,8 @@ int clif_spawn(struct block_list *bl)
 				clif_status_change(&sd->bl,SI_SU_STOOP,1,9999,sd->sc.data[SC_SU_STOOP]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_SPRITEMABLE] )
 				clif_status_change(&sd->bl,SI_SPRITEMABLE,1,9999,sd->sc.data[SC_SPRITEMABLE]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_TUNAPARTY] )
+				clif_status_change(&sd->bl,SI_TUNAPARTY,1,9999,sd->sc.data[SC_TUNAPARTY]->val1,0,0);
 		}
 		break;
 	case BL_MOB:
@@ -4854,6 +4856,8 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_SU_STOOP,1,9999,tsd->sc.data[SC_SU_STOOP]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_SPRITEMABLE] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_SPRITEMABLE,1,9999,tsd->sc.data[SC_SPRITEMABLE]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_TUNAPARTY] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_TUNAPARTY,1,9999,tsd->sc.data[SC_TUNAPARTY]->val1,0,0);
 		}
 		break;
 	case BL_MER: // Devotion Effects
