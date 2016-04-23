@@ -22,6 +22,14 @@ enum item_itemid
 	ITEMID_BLUE_GEMSTONE = 717,
 	ITEMID_TRAP = 1065,
 
+	// Mechanic's Pile Bunker
+	ITEMID_PILE_BUNKER = 1549,
+
+	// Mechanic's Cooling Systems
+	ITEMID_COOLING_DEVICE = 2804,
+	ITEMID_HIGH_QUALITY_COOLER = 2809,
+	ITEMID_SPECIAL_COOLER,
+
 	// Shadow Chaser Paint And Brushes
 	ITEMID_FACE_PAINT = 6120,
 	ITEMID_MAKEOVER_BRUSH,
@@ -126,6 +134,11 @@ enum item_itemid
 	ITEMID_THROW_PUTTI_TAILS_NOODLES,
 	ITEMID_THROW_OVERDONE_FOOD,
 
+	// Mechanic's Pile Bunker Set
+	ITEMID_PILE_BUNKER_S = 16030,
+	ITEMID_PILE_BUNKER_T,
+	ITEMID_PILE_BUNKER_P,
+
 	// Rune Knight Lux Anima Rune
 	ITEMID_LUX_ANIMA_RUNE = 22540,
 };
@@ -136,6 +149,8 @@ enum item_itemid
 //3CeAM
 #define itemid_is_rune(id) ( (id) >= ITEMID_NAUTHIZ_RUNE && (id) <= ITEMID_HAGALAZ_RUNE || (id) == ITEMID_LUX_ANIMA_RUNE )
 #define itemid_is_spell_book(id) ( (id) >= ITEMID_MAGICBOOK_FIREBOLT && (id) <= ITEMID_MAGICBOOK_DRAINLIFE )
+#define itemid_is_pile_bunker(id) ( (id) == ITEMID_PILE_BUNKER || (id) >= ITEMID_PILE_BUNKER_S && (id) <= ITEMID_PILE_BUNKER_P )
+#define itemid_is_cooling_system(id) ( (id) == ITEMID_COOLING_DEVICE || (id) == ITEMID_HIGH_QUALITY_COOLER || (id) == ITEMID_SPECIAL_COOLER )
 #define itemid_is_guillotine_poison(id) ( (id) >= ITEMID_PARALYSIS_POISON && (id) <= ITEMID_FATIGUE_POISON )
 #define itemid_is_sling_atk(id) ( (id) >= ITEMID_APPLE_BOMB && (id) <= ITEMID_VERY_HARD_DARK_LUMP )
 #define itemid_is_sling_buff(id) ( (id) >= ITEMID_MYSTERIOUS_POWDER && (id) <= ITEMID_THROW_OVERDONE_FOOD )
