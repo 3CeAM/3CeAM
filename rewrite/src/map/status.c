@@ -593,7 +593,7 @@ void initChangeTables(void)
 	set_sc( GN_ILLUSIONDOPING     , SC_ILLUSIONDOPING     , SI_ILLUSIONDOPING     , SCB_NONE );
 	add_sc( RK_DRAGONBREATH_WATER , SC_FREEZING           );
 	add_sc( NC_MAGMA_ERUPTION     , SC_BURNING            );
-	set_sc( WM_FRIGG_SONG         , SC_FRIGG_SONG         , SI_FRIGG_SONG         , SCB_NONE );
+	set_sc( WM_FRIGG_SONG         , SC_FRIGG_SONG         , SI_FRIGG_SONG         , SCB_MAXHP );
 	set_sc( SR_FLASHCOMBO         , SC_FLASHCOMBO         , SI_FLASHCOMBO         , SCB_NONE );
 	add_sc( SC_ESCAPE             , SC_ANKLE              );
 	set_sc( AB_OFFERTORIUM        , SC_OFFERTORIUM        , SI_OFFERTORIUM        , SCB_NONE );
@@ -2781,8 +2781,16 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	// Absolute modifiers from passive skills
 	if( (skill = pc_checkskill(sd,CR_TRUST)) > 0 )
 		status->max_hp += skill * 200;
-	if( (skill = pc_checkskill(sd,SU_SPRITEMABLE)) > 0 )
+	if( pc_checkskill(sd,SU_SPRITEMABLE) > 0 )
 		status->max_hp += 1000;
+	if( pc_checkskill(sd,SU_POWEROFSEA) > 0 )
+	{
+		status->max_hp += 1000;
+
+		if ( (pc_checkskill(sd,SU_TUNABELLY) + pc_checkskill(sd,SU_TUNAPARTY) + 
+			pc_checkskill(sd,SU_BUNCHOFSHRIMP) + pc_checkskill(sd,SU_FRESHSHRIMP)) >= 20 )
+			status->max_hp += 3000;
+	}
 
 	// Apply relative modifiers from equipment
 	if( sd->hprate < 0 )
@@ -2816,8 +2824,16 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		status->max_sp += 200 + 20 * skill;
 	if( (skill = pc_checkskill(sd,WM_LESSON)) > 0 )
 		status->max_sp += 30 * skill;
-	if( (skill = pc_checkskill(sd,SU_SPRITEMABLE)) > 0 )
+	if( pc_checkskill(sd,SU_SPRITEMABLE) > 0 )
 		status->max_sp += 100;
+	if( pc_checkskill(sd,SU_POWEROFSEA) > 0 )
+	{
+		status->max_sp += 100;
+
+		if ( (pc_checkskill(sd,SU_TUNABELLY) + pc_checkskill(sd,SU_TUNAPARTY) + 
+			pc_checkskill(sd,SU_BUNCHOFSHRIMP) + pc_checkskill(sd,SU_FRESHSHRIMP)) >= 20 )
+			status->max_sp += 300;
+	}
 
 	// Apply relative modifiers from equipment
 	if( sd->sprate < 0 )
@@ -5299,6 +5315,8 @@ static unsigned int status_calc_maxhp(struct block_list *bl, struct status_chang
 		maxhp += maxhp * (2 + sc->data[SC_RAISINGDRAGON]->val1) / 100;
 	if(sc->data[SC_GT_REVITALIZE])
 		maxhp += maxhp * (2 * sc->data[SC_GT_REVITALIZE]->val1) / 100;
+	if(sc->data[SC_FRIGG_SONG])
+		maxhp += maxhp * sc->data[SC_FRIGG_SONG]->val2 / 100;
 	if(sc->data[SC_MUSTLE_M])
 		maxhp += maxhp * sc->data[SC_MUSTLE_M]->val1 / 100;
 	if(sc->data[SC_INSPIRATION])//Snce it gives a percentage and fixed amount, should be last on percentage calculations list. [Rytech]
@@ -6874,6 +6892,13 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		status_change_end(bl, SC_KAZEHU_SEIRAN, INVALID_TIMER);
 		status_change_end(bl, SC_DOHU_KOUKAI, INVALID_TIMER);
 		break;
+	case SC_OFFERTORIUM:
+	case SC_MAGNIFICAT:
+		if ( sc->data[type] )
+			break;
+		status_change_end(bl, SC_OFFERTORIUM, INVALID_TIMER);
+		status_change_end(bl, SC_MAGNIFICAT, INVALID_TIMER);
+		break;
 	case SC_SONIC_CLAW_POSTDELAY:
 	case SC_SILVERVEIN_RUSH_POSTDELAY:
 	case SC_MIDNIGHT_FRENZY_POSTDELAY:
@@ -8348,6 +8373,15 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			break;
 		case SC_UNLIMIT:
 			val2 = 50 * val1;// Physical Ranged Damage Increase
+			break;
+		case SC_FRIGG_SONG:
+			val2 = 5 * val1;// MaxHP Increase
+			val3 = tick / 1000;
+			tick = 1000;
+			break;
+		case SC_OFFERTORIUM:
+			val2 = 30 * val1;// Heal Power Increase
+			val3 = 100 + 20 * val1;// SP Requirement Increase
 			break;
 		case SC_FULL_THROTTLE:
 			val2 = tick/1000;
@@ -10514,6 +10548,15 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		}
 		break;
 
+	case SC_FRIGG_SONG:
+		if( --(sce->val3) >= 0 )
+		{
+			status_heal(bl, 80 + 20 * sce->val1, 0, 2);
+			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
+
 	case SC_FULL_THROTTLE:
 		if( --(sce->val2) >= 0 )
 		{
@@ -10536,7 +10579,7 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 	case SC_FRESHSHRIMP:
 		if( --(sce->val3) >= 0 )
 		{
-			status_heal(bl, status->max_hp / 100, 0, 2);
+			status_heal(bl, status->max_hp * 4 / 100, 0, 2);
 			sc_timer_next(sce->val2 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}

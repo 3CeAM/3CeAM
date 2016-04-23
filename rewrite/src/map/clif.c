@@ -5912,34 +5912,45 @@ int clif_skill_damage2(struct block_list *src,struct block_list *dst,unsigned in
 }
 */
 
-/*==========================================
- * 支援/回復スキルエフェクト
- *------------------------------------------*/
+/// Non-damaging skill effect.
+/// 011a <skill id>.W <skill lv>.W <dst id>.L <src id>.L <result>.B (ZC_USE_SKILL)
+/// 09cb <skill id>.W <skill lv>.L <dst id>.L <src id>.L <result>.B (ZC_USE_SKILL2)
 int clif_skill_nodamage(struct block_list *src,struct block_list *dst,int skill_id,int heal,int fail)
 {
 	unsigned char buf[32];
+	short offset = 0;
+#if PACKETVER < 20131223
+	short packet_num = 0x11a;
+#else
+	short packet_num = 0x9cb;
+#endif
 
 	nullpo_ret(dst);
 
-	WBUFW(buf,0)=0x11a;
+	WBUFW(buf,0)=packet_num;
 	WBUFW(buf,2)=skill_id;
+#if PACKETVER < 20131223
 	WBUFW(buf,4)=min(heal, SHRT_MAX);
-	WBUFL(buf,6)=dst->id;
-	WBUFL(buf,10)=src?src->id:0;
-	WBUFB(buf,14)=fail;
+#else
+	WBUFL(buf,4)=min(heal, INT_MAX);
+	offset += 2;
+#endif
+	WBUFL(buf,6+offset)=dst->id;
+	WBUFL(buf,10+offset)=src?src->id:0;
+	WBUFB(buf,14+offset)=fail;
 
 	if (disguised(dst)) {
-		clif_send(buf,packet_len(0x11a),dst,AREA_WOS);
-		WBUFL(buf,6)=-dst->id;
-		clif_send(buf,packet_len(0x11a),dst,SELF);
+		clif_send(buf,packet_len(packet_num),dst,AREA_WOS);
+		WBUFL(buf,6+offset)=-dst->id;
+		clif_send(buf,packet_len(packet_num),dst,SELF);
 	} else
-		clif_send(buf,packet_len(0x11a),dst,AREA);
+		clif_send(buf,packet_len(packet_num),dst,AREA);
 
 	if(src && disguised(src)) {
-		WBUFL(buf,10)=-src->id;
+		WBUFL(buf,10+offset)=-src->id;
 		if (disguised(dst))
-			WBUFL(buf,6)=dst->id;
-		clif_send(buf,packet_len(0x11a),src,SELF);
+			WBUFL(buf,6+offset)=dst->id;
+		clif_send(buf,packet_len(packet_num),src,SELF);
 	}
 
 	return fail;
@@ -6498,16 +6509,31 @@ int clif_broadcast2(struct block_list* bl, const char* mes, int len, unsigned lo
 		aFree(buf);
 	return 0;
 }
-/*==========================================
- * HPSP回復エフェクトを送信する
- *------------------------------------------*/
+
+/// Displays heal effect.
+/// 013d <var id>.W <amount>.W (ZC_RECOVERY)
+/// 0a27 <var id>.W <amount>.L (ZC_RECOVERY2)
+/// var id:
+///     5 = HP (SP_HP)
+///     7 = SP (SP_SP)
+///     ? = ignored
 int clif_heal(int fd,int type,int val)
 {
-	WFIFOHEAD(fd,packet_len(0x13d));
-	WFIFOW(fd,0) = 0x13d;
+#if PACKETVER < 20150513
+	short packet_num = 0x13d;
+#else
+	short packet_num = 0xa27;
+#endif
+
+	WFIFOHEAD(fd,packet_len(packet_num));
+	WFIFOW(fd,0) = packet_num;
 	WFIFOW(fd,2) = type;
+#if PACKETVER < 20150513
 	WFIFOW(fd,4) = cap_value(val,0,SHRT_MAX);
-	WFIFOSET(fd,packet_len(0x13d));
+#else
+	WFIFOL(fd,4) = cap_value(val,0,INT_MAX);
+#endif
+	WFIFOSET(fd,packet_len(packet_num));
 
 	return 0;
 }
@@ -6687,9 +6713,9 @@ int clif_wis_message(int fd, const char* nick, const char* mes, int mes_len)
 	return 0;
 }
 
-/// Inform the player about the result of his whisper action (ZC_ACK_WHISPER).
-/// 0098 <result>.B
-/// 09df <result>.B <CCODE>.L <---Unconfirmed.
+/// Inform the player about the result of his whisper action.
+/// 0098 <result>.B (ZC_ACK_WHISPER)
+/// 09df <result>.B <ReceiverGID>.L (ZC_ACK_WHISPER02)
 /// result:
 /// 0 = success to send wisper
 /// 1 = target character is not loged in
@@ -6706,7 +6732,9 @@ int clif_wis_end(int fd, int flag)
 	WFIFOHEAD(fd,packet_len(packet));
 	WFIFOW(fd,0) = packet;
 	WFIFOB(fd,2) = flag;
-	WFIFOL(fd,3) = 0;//Unknown. Likely for the CCODE system. [Rytech]
+#if PACKETVER >= 20131223
+	WFIFOL(fd,3) = 0;// Likely for the CCODE system. [Rytech]
+#endif
 	WFIFOSET(fd,packet_len(packet));
 	return 0;
 }
@@ -17404,14 +17432,14 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0, 14,  0,  0,  0,  0,  0,  0,  0,  0,
 	//#0x09C0
-	    0, 10,  0,  0,  0,  0,  0,  0,  0,  0, 23,  0,  0,  0,102,  0,
+	    0, 10,  0,  0,  0,  0,  0,  0,  0,  0, 23, 17,  0,  0,102,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, -1, -1, -1,  0,  7,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0, 75, -1,  0,  0,  0,  0, -1, -1, -1,
 	//#0x0A00
 	    0,  0,  4,  0,  0,  0,  0,  0,  0, 45, 47, 47, 56, -1,  0, -1,
 	   -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0,  0,  3,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  8,  3,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  3,  0,  0,  0,  0,  0,  0,  0,
 	//#0x0A40
 	    0,  0,  0,  0,  0,  0, 14,  3,  2,  0,  0,  0,  0,  0,  0,  0,
