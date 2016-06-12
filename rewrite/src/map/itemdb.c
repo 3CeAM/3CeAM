@@ -859,7 +859,7 @@ static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scr
  *------------------------------------------*/
 static int itemdb_readdb(void)
 {
-	const char* filename[] = { "item_db.txt", "item_db2.txt", "item_db_3ceam.txt" };
+	const char* filename[] = { "item_db.txt", "item_db_3ceam.txt", "item_db_custom.txt" };
 	int fi;
 
 	for( fi = 0; fi < ARRAYLENGTH(filename); ++fi )
@@ -971,7 +971,7 @@ static int itemdb_readdb(void)
  *======================================*/
 static int itemdb_read_sqldb(void)
 {
-	const char* item_db_name[] = { item_db_db, item_db2_db };
+	const char* item_db_name[] = { item_db_db, item_db_3ceam_db, item_db_custom_db };
 	int fi;
 	
 	for( fi = 0; fi < ARRAYLENGTH(item_db_name); ++fi )
