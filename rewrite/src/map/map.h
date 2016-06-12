@@ -747,9 +747,11 @@ extern Sql* mmysql_handle;
 extern Sql* logmysql_handle;
 
 extern char item_db_db[32];
-extern char item_db2_db[32];
+extern char item_db_3ceam_db[32];
+extern char item_db_custom_db[32];
 extern char mob_db_db[32];
-extern char mob_db2_db[32];
+extern char mob_db_3ceam_db[32];
+extern char mob_db_custom_db[32];
 
 #endif /* not TXT_ONLY */
 
