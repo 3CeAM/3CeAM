@@ -1104,16 +1104,21 @@ int clif_set_unit_idle_v10(struct block_list* bl, unsigned char* buffer, bool sp
 	WBUFW(buf,25) = vd->hair_style;// head
 	WBUFW(buf,27) = vd->weapon;// weapon - Right hand???
 	WBUFW(buf,29) = vd->shield;// weapon - Left hand???
-	WBUFW(buf,31) = vd->head_bottom;// accessory
-	WBUFW(buf,33) = vd->head_top;// accessory2
-	WBUFW(buf,35) = vd->head_mid;// accessory3
 
-	// Dont know if this is needed anymore.
-	//if( bl->type == BL_NPC && vd->class_ == FLAG_CLASS )
-	//{	//The hell, why flags work like this?
-	//	WBUFL(buf,22) = status_get_emblem_id(bl);
-	//	WBUFL(buf,26) = status_get_guild_id(bl);
-	//}
+	// This part of the packet structure changes depending
+	// on if the entity is a guild flag or something else.
+	if( bl->type == BL_NPC && vd->class_ == FLAG_CLASS )
+	{// Send guild emblem data if its a guild flag.
+		WBUFW(buf,31) = status_get_emblem_id(bl);
+		WBUFW(buf,33) = GetWord(status_get_guild_id(bl), 1);
+		WBUFW(buf,35) = GetWord(status_get_guild_id(bl), 0);
+	}
+	else
+	{// Visual headgear data is set for other entities.
+		WBUFW(buf,31) = vd->head_bottom;// accessory
+		WBUFW(buf,33) = vd->head_top;// accessory2
+		WBUFW(buf,35) = vd->head_mid;// accessory3
+	}
 
 	WBUFW(buf,37) = vd->hair_color;// headpalette
 	WBUFW(buf,39) = vd->cloth_color;// bodypalette
