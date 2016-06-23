@@ -2070,6 +2070,7 @@ int unit_remove_map_(struct block_list *bl, clr_type clrtype, const char* file, 
 		status_change_end(bl, SC_CRYSTALIZE, INVALID_TIMER);
 		status_change_end(bl, SC__SHADOWFORM, INVALID_TIMER);
 		status_change_end(bl, SC__MANHOLE, INVALID_TIMER);
+		status_change_end(bl, SC_CURSEDCIRCLE_TARGET, INVALID_TIMER);
 		status_change_end(bl, SC_NETHERWORLD, INVALID_TIMER);
 		status_change_end(bl, SC_VACUUM_EXTREME, INVALID_TIMER);
 		status_change_end(bl, SC_SUHIDE, INVALID_TIMER);

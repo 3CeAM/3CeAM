@@ -4793,25 +4793,6 @@ ACMD_FUNC(mount)
 			return -1;
 		}
 
-	// Checks for Ranger, Trans Ranger, and Baby Ranger
-	else if ((sd->class_&MAPID_THIRDMASK) == MAPID_RANGER)
-		if (!pc_iswugrider(sd))// If not on a Warg, check for required skill and mount if possiable.
-		{
-			if (!pc_checkskill(sd, RA_WUGRIDER))
-			{
-				clif_displaymessage(fd, msg_txt(708));// You must learn the Warg Rider skill to mount with your current job.
-				return -1;
-			}
-
-			pc_setoption(sd, sd->sc.option | OPTION_WUGRIDER);
-			clif_displaymessage(fd, msg_txt(709));// You mounted on a Warg.
-		} 
-		else
-		{
-			clif_displaymessage(fd, msg_txt(710));// Your already mounted on a Warg.
-			return -1;
-		}
-
 	// Checks for Mechanic, Trans Mechanic, and Baby Mechanic
 	else if ((sd->class_&MAPID_THIRDMASK) == MAPID_MECHANIC)
 		if (!pc_ismadogear(sd))// If not on a Mado Gear, check for required skill and mount if possiable.

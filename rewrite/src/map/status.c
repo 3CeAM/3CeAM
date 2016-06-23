@@ -5023,7 +5023,7 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				if( sc->data[SC_FREEZING] )
 					val = max( val, 50 );
 				if( sc->data[SC_PARALYSE] )
-					val = max( val, 10 );
+					val = max( val, 50 );
 				if( sc->data[SC_MARSHOFABYSS] )
 					val = max( val, sc->data[SC_MARSHOFABYSS]->val3 );
 				if( sc->data[SC_CAMOUFLAGE] && sc->data[SC_CAMOUFLAGE]->val1 > 2 )
