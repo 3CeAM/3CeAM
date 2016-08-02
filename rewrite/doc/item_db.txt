@@ -213,7 +213,7 @@ added together. This setting works a little different for cards. When setting fo
 cards, the setting tells which kinds of equips it can be attached to.
 --------------------------------
 Normal Equips
-      1 = Lower Headgear
+      1 = Lower Head
       2 = Right Hand (Weapon)
       4 = Robe
       8 = Accessory (Left)
@@ -221,13 +221,13 @@ Normal Equips
      32 = Left Hand (Shield)
      64 = Shoes
     128 = Accessory (Right)
-    256 = Upper Headgear
-    512 = Middle Headgear
+    256 = Upper Head
+    512 = Middle Head
 
 Costume Equips
-   1024 = Costume Upper Headgear
-   2048 = Costume Middle Headgear
-   4096 = Costume Lower Headgear
+   1024 = Costume Upper Head
+   2048 = Costume Middle Head
+   4096 = Costume Lower Head
    8192 = Costume Robe
   16384 = Costume Floor
 
@@ -246,15 +246,17 @@ Combination Values
 Normal Equips
      34 = 2-Handed Weapons
     136 = Accessory (Left And Right) (Normally Used On All Accessory Items)
-    257 = Upper/Lower Headgear
-    513 = Middle/Lower Headgear
-    769 = Upper/Middle/Lower
+    257 = Upper/Lower Head
+    513 = Middle/Lower Head
+    768 = Upper/Middle Head
+    769 = Upper/Middle/Lower Head
 Costume Equips
-   5120 = Costume Upper/Lower Headgear
-   6144 = Costume Middle/Lower Headgear
-   7168 = Costume Upper/Middle/Lower Headgear
+   3072 = Costume Upper/Middle Head
+   5120 = Costume Upper/Lower Head
+   6144 = Costume Middle/Lower Head
+   7168 = Costume Upper/Middle/Lower Head
 Shadow Equips
-3145728 = Shadow Accessory (Left And Right) (Normally Used On All Shadow Accessory Items)
+3145728 = Shadow Accessory (Left And Right)
 --------------------------------
 
 =wLV
