@@ -3,7 +3,7 @@
 //===== By: ================================================== 
 //= Lupus, kobra_k88
 //===== Current Version: ===================================== 
-//= 2.16
+//= 2.17
 //===== Compatible With: ===================================== 
 //= eAthena 1.0
 //===== Description: ========================================= 
@@ -39,6 +39,7 @@
 //= 2.14 Added old novice variables to F_ClearGarbage. [L0ne_W0lf]
 //= 2.15 Added no unused DTS variables to F_ClearGarbage. [L0ne_W0lf]
 //= 2.16 Added F_GetWeaponType, and F_GetArmorType. [L0ne_W0lf]
+//= 2.17 Updated F_GetWeaponType and F_GetArmorType lists. [Rytech]
 //============================================================ 
 
 
@@ -265,14 +266,14 @@ function	script	F_Load2Skills	{
 function	script	F_GetWeaponType	{
 	switch(getiteminfo(getarg(0),11)) {
 		case 1: return "Dagger"; break;
-		case 2: return "One-handed Sword"; break;
-		case 3: return "Two-handed Sword"; break;
-		case 4: return "One-handed Spear"; break;
-		case 5: return "Two-handed Spear"; break;
-		case 6: return "One-handed Axe"; break;
-		case 7: return "Two-handed Axe"; break;
+		case 2: return "One-Handed Sword"; break;
+		case 3: return "Two-Handed Sword"; break;
+		case 4: return "One-Handed Spear"; break;
+		case 5: return "Two-Handed Spear"; break;
+		case 6: return "One-Handed Axe"; break;
+		case 7: return "Two-Handed Axe"; break;
 		case 8: return "Mace"; break;
-		//case 9: return "Unused"; break;
+		case 9: return "Two-Handed Mace"; break;
 		case 10: return "Staff"; break;
 		case 11: return "Bow"; break;
 		case 12: return "Knuckle"; break;
@@ -282,10 +283,11 @@ function	script	F_GetWeaponType	{
 		case 16: return "Katar"; break;
 		case 17: return "Revolver"; break;
 		case 18: return "Rifle"; break;
-		case 19: return "Gatling gun"; break;
+		case 19: return "Gatling Gun"; break;
 		case 20: return "Shotgun"; break;
 		case 21: return "Grenade Launcher"; break;
-		case 22: return "Shuriken"; break;
+		case 22: return "Huuma Shuriken"; break;
+		case 23: return "Two-Handed Staff"; break;
 		default: return "Unable to Determine Equip Type"; break;
 	}
 	end;
@@ -296,7 +298,7 @@ function	script	F_GetWeaponType	{
 //////////////////////////////////////////////////////////////////////////////////
 function	script	F_GetArmorType	{
 	switch(getiteminfo(getarg(0),5)) {
-		case 001: return "Lower Headgear"; break;
+		case 1: return "Lower Headgear"; break;
 		case 2: return "Weapon"; break;
 		case 4: return "Garment"; break;
 		case 8: return "Accessory"; break;
