@@ -6081,6 +6081,7 @@ static const struct _battle_data {
 	{ "costume_refine_def",                 &battle_config.costume_refine_def,              0,      0,      1,              },
 	{ "shadow_refine_def",                  &battle_config.shadow_refine_def,               0,      0,      1,              },
 	{ "cashshop_price_rate",                &battle_config.cashshop_price_rate,             100,    0,      INT_MAX,        },
+	{ "player_baselv_req_skill",            &battle_config.player_baselv_req_skill,         1,      0,      1,              },
 	{ "hanbok_ignorepalette",               &battle_config.hanbok_ignorepalette,            0,      0,      1,              },
 	{ "oktoberfest_ignorepalette",          &battle_config.oktoberfest_ignorepalette,       0,      0,      1,              },
 	{ "summer2_ignorepalette",              &battle_config.summer2_ignorepalette,           0,      0,      1,              },

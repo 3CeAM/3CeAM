@@ -1,0 +1,237 @@
+//===== eAthena Script ======================================= 
+//= 3CeAM Job Changer
+//===== By: ================================================== 
+//= Rytech
+//===== Current Version: ===================================== 
+//= 1.0
+//===== Compatible With: ===================================== 
+//= 3CeAM
+//===== Description: ========================================= 
+//= Allows changing into jobs introduced in the RE era.
+//===== Additional Comments: ================================= 
+//= 1.0 Release Version.
+//============================================================
+prontera,158,184,4	script	Special Job Changer	485,{
+
+	mes "[Special Job Changer]";
+	mes "Hey there. Are you ready to change into your final job?";
+	next;
+	menu "Yes",Xready,"No",Xnotready;
+
+Xready:
+	set @reg2ndto3rd,0;// Set to 1 to allow regular 2nd jobs to change to 3rd jobs. Does not affect extended and baby jobs.
+	set @reqbaselv,99;// Required base level to change to RE era jobs.
+	set @reqjoblvreg2rd,50;// Required job level to change to regular 3rd job. Applies to 3rd job baby's too.
+	set @reqjoblvtrans2rd,70;// Required job level to change to trans 3rd job.
+	set @reqjoblvsn,99;// Required job level to change to Expanded Super Novice/Expanded Super Baby
+	set @reqjoblvgsnj,70;// Required job level to change to Kagerou/Oboro/Rebellion
+	set @reqjoblvsgsl,50;// Required job level to change to ????/????
+	set @reqjoblv,0;// Variable used to display required job level.
+
+	if (@reg2ndto3rd == 1 && (Class >= Job_Knight && Class <= Job_Assassin || Class >= Job_Crusader && Class <= Job_Dancer))
+		goto Xthirdreg;
+	else if (Class >= Job_Lord_Knight && Class <= Job_Assassin_Cross || Class >= Job_Paladin && Class <= Job_Gypsy)
+		goto Xthirdtrans;
+	else if (Class >= Job_Baby_Knight && Class <= Job_Baby_Assassin || Class >= Job_Baby_Crusader && Class <= Job_Baby_Dancer)
+		goto Xthirdbaby;
+	else if (Class == Job_SuperNovice || Class == Job_Super_Baby)
+		goto Xextendedsn;
+	else if (Class == Job_Gunslinger || Class == Job_Ninja)
+		goto Xextendedgsnj;
+	else if (Class == Job_Star_Gladiator || Class == Job_Soul_Linker)
+		goto Xextendedsgsl;
+	else
+		goto Xcantchange;
+
+Xthirdreg:
+	if (BaseLevel >= @reqbaselv && JobLevel >= @reqjoblvreg2rd)
+	{
+		if (Class == Job_Knight)
+			jobchange Job_Rune_Knight;
+		else if (Class == Job_Wizard)
+			jobchange Job_Warlock;
+		else if (Class == Job_Hunter)
+			jobchange Job_Ranger;
+		else if (Class == Job_Priest)
+			jobchange Job_Arch_Bishop;
+		else if (Class == Job_Blacksmith)
+			jobchange Job_Mechanic;
+		else if (Class == Job_Assassin)
+			jobchange Job_Guillotine_Cross;
+		else if (Class == Job_Crusader)
+			jobchange Job_Royal_Guard;
+		else if (Class == Job_Sage)
+			jobchange Job_Sorcerer;
+		else if (Class == Job_Bard)
+			jobchange Job_Minstrel;
+		else if (Class == Job_Dancer)
+			jobchange Job_Wanderer;
+		else if (Class == Job_Monk)
+			jobchange Job_Sura;
+		else if (Class == Job_Alchemist)
+			jobchange Job_Genetic;
+		else if (Class == Job_Rogue)
+			jobchange Job_Shadow_Chaser;
+
+		goto Xcomplete;
+	}
+	else
+	{
+		set @reqjoblv,@reqjoblvreg2rd;
+		goto Xlowlevel;
+	}
+
+Xthirdtrans:
+	if (BaseLevel >= @reqbaselv && JobLevel >= @reqjoblvtrans2rd)
+	{
+		if (Class == Job_Lord_Knight)
+			jobchange Job_Rune_Knight_T;
+		else if (Class == Job_High_Wizard)
+			jobchange Job_Warlock_T;
+		else if (Class == Job_Sniper)
+			jobchange Job_Ranger_T;
+		else if (Class == Job_High_Priest)
+			jobchange Job_Arch_Bishop_T;
+		else if (Class == Job_Whitesmith)
+			jobchange Job_Mechanic_T;
+		else if (Class == Job_Assassin_Cross)
+			jobchange Job_Guillotine_Cross_T;
+		else if (Class == Job_Paladin)
+			jobchange Job_Royal_Guard_T;
+		else if (Class == Job_Professor)
+			jobchange Job_Sorcerer_T;
+		else if (Class == Job_Clown)
+			jobchange Job_Minstrel_T;
+		else if (Class == Job_Gypsy)
+			jobchange Job_Wanderer_T;
+		else if (Class == Job_Champion)
+			jobchange Job_Sura_T;
+		else if (Class == Job_Creator)
+			jobchange Job_Genetic_T;
+		else if (Class == Job_Stalker)
+			jobchange Job_Shadow_Chaser_T;
+
+		goto Xcomplete;
+	}
+	else
+	{
+		set @reqjoblv,@reqjoblvtrans2rd;
+		goto Xlowlevel;
+	}
+
+Xthirdbaby:
+	if (BaseLevel >= @reqbaselv && JobLevel >= @reqjoblvreg2rd)
+	{
+		if (Class == Job_Baby_Knight)
+			jobchange Job_Baby_Rune;
+		else if (Class == Job_Baby_Wizard)
+			jobchange Job_Baby_Warlock;
+		else if (Class == Job_Baby_Hunter)
+			jobchange Job_Baby_Ranger;
+		else if (Class == Job_Baby_Priest)
+			jobchange Job_Baby_Bishop;
+		else if (Class == Job_Baby_Blacksmith)
+			jobchange Job_Baby_Mechanic;
+		else if (Class == Job_Baby_Assassin)
+			jobchange Job_Baby_Cross;
+		else if (Class == Job_Baby_Crusader)
+			jobchange Job_Baby_Guard;
+		else if (Class == Job_Baby_Sage)
+			jobchange Job_Baby_Sorcerer;
+		else if (Class == Job_Baby_Bard)
+			jobchange Job_Baby_Minstrel;
+		else if (Class == Job_Baby_Dancer)
+			jobchange Job_Baby_Wanderer;
+		else if (Class == Job_Baby_Monk)
+			jobchange Job_Baby_Sura;
+		else if (Class == Job_Baby_Alchemist)
+			jobchange Job_Baby_Genetic;
+		else if (Class == Job_Baby_Rogue)
+			jobchange Job_Baby_Chaser;
+
+		goto Xcomplete;
+	}
+	else
+	{
+		set @reqjoblv,@reqjoblvreg2rd;
+		goto Xlowlevel;
+	}
+
+Xextendedsn:
+	if (BaseLevel >= @reqbaselv && JobLevel >= @reqjoblvsn)
+	{
+		if (Class == Job_SuperNovice)
+			jobchange Job_Super_Novice_E;
+		else if (Class == Job_Super_Baby)
+			jobchange Job_Super_Baby_E;
+
+		goto Xcomplete;
+	}
+	else
+	{
+		set @reqjoblv,@reqjoblvsn;
+		goto Xlowlevel;
+	}
+
+Xextendedgsnj:
+	if (BaseLevel >= @reqbaselv && JobLevel >= @reqjoblvgsnj)
+	{
+		if (Class == Job_Ninja)
+		{
+			if (Sex == Sex_Male)
+				jobchange Job_Kagerou;
+			else if (Sex == Sex_Female)
+				jobchange Job_Oboro;
+		}
+		else if (Class == Job_Gunslinger)
+			jobchange Job_Rebellion;
+
+		goto Xcomplete;
+	}
+	else
+	{
+		set @reqjoblv,@reqjoblvgsnj;
+		goto Xlowlevel;
+	}
+
+Xextendedsgsl:
+	if (BaseLevel >= @reqbaselv && JobLevel >= @reqjoblvsgsl)
+	{
+		//if (Class == Job_Star_Gladiator)
+		//	jobchange ????;
+		//else if (Class == Job_Soul_Linker)
+		//	jobchange ????;
+
+		//goto Xcomplete;
+
+		mes "[Super Job Changer]";
+		mes "Sorry but there's no higher job you can change to....yet.";
+		close;
+	}
+	else
+	{
+		set @reqjoblv,@reqjoblvsgsl;
+		goto Xlowlevel;
+	}
+
+Xnotready:
+	mes "[Special Job Changer]";
+	mes "Ok then. Come back when you feel your ready.";
+	close;
+
+
+Xcantchange:
+	mes "[Special Job Changer]";
+	mes "Sorry but there's no jobs you can change to through me with your current job.";
+	close;
+
+Xcomplete:
+	mes "[Special Job Changer]";
+	mes "Congrats. You have reached your true final job.";
+	close;
+
+Xlowlevel:
+	mes "[Special Job Changer]";
+	mes "Sorry but your base level must be "+@reqbaselv+" and your job level must be "+@reqjoblv+".";
+	close;
+}

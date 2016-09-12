@@ -12,7 +12,7 @@
 //= 1.0 First release. [Rytech]
 //= 1.1 Added missing breaks in the dragon color selection code. [Rytech]
 //============================================================ 
-prontera,160,184,0	script	Rental Npc	50,{
+prontera,160,184,4	script	Rental Npc	50,{
 	mes "[Rental Npc]";
 	mes "Hi, interested in renting something?";
 	next;
