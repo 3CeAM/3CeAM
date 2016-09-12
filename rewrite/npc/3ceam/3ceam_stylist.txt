@@ -39,7 +39,7 @@ Laccessroom:
 	if (
 //	BaseThird == Job_Rune_Knight || 
 //	BaseThird == Job_Warlock || 
-//	BaseThird == Job_Ranger || 
+	BaseThird == Job_Ranger || 
 	BaseThird == Job_Arch_Bishop || 
 	BaseThird == Job_Mechanic || 
 	BaseThird == Job_Guillotine_Cross || 

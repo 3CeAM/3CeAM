@@ -1613,6 +1613,11 @@ int pc_calc_skilltree(struct map_session_data *sd)
 						}
 					}
 				}
+				// Some Summoner skills requires the player to reach a cetain base level to unlock.
+				if( battle_config.player_baselv_req_skill == 1 && sd->status.base_level < 100 && 
+					skill_tree[c][i].id >= SU_POWEROFFLOCK && skill_tree[c][i].id <= SU_SPIRITOFSEA )
+					f = 0;
+				// Some skills require the player to reach a certain job level to unlock.
 				if( sd->status.job_level < skill_tree[c][i].joblv )
 					f = 0; // job level requirement wasn't satisfied
 			}
@@ -1712,6 +1717,9 @@ static void pc_check_skilltree(struct map_session_data *sd, int skill)
 				}
 			}
 			if( !f )
+				continue;
+			if( battle_config.player_baselv_req_skill == 1 && sd->status.base_level < 100 && 
+				skill_tree[c][i].id >= SU_POWEROFFLOCK && skill_tree[c][i].id <= SU_SPIRITOFSEA )
 				continue;
 			if( sd->status.job_level < skill_tree[c][i].joblv )
 				continue;
