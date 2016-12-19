@@ -3581,8 +3581,8 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 
 	struct
 	{
-		unsigned imdef : 1;
-		unsigned infdef : 1;
+		unsigned imdef : 1;		//Ignore magic defense
+		unsigned infdef : 1;	//Infinite defense (plants)
 	}flag;
 
 	memset(&ad,0,sizeof(ad));
@@ -6082,6 +6082,7 @@ static const struct _battle_data {
 	{ "shadow_refine_def",                  &battle_config.shadow_refine_def,               0,      0,      1,              },
 	{ "cashshop_price_rate",                &battle_config.cashshop_price_rate,             100,    0,      INT_MAX,        },
 	{ "player_baselv_req_skill",            &battle_config.player_baselv_req_skill,         1,      0,      1,              },
+	{ "warmer_show_heal",                   &battle_config.warmer_show_heal,                0,      0,      1,              },
 	{ "hanbok_ignorepalette",               &battle_config.hanbok_ignorepalette,            0,      0,      1,              },
 	{ "oktoberfest_ignorepalette",          &battle_config.oktoberfest_ignorepalette,       0,      0,      1,              },
 	{ "summer2_ignorepalette",              &battle_config.summer2_ignorepalette,           0,      0,      1,              },

@@ -535,6 +535,7 @@ extern struct Battle_Config
 	int shadow_refine_def;
 	int cashshop_price_rate;
 	int player_baselv_req_skill;
+	int warmer_show_heal;
 
 	// Costume Outfits
 	int hanbok_ignorepalette;

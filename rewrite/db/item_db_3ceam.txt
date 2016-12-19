@@ -261,7 +261,7 @@
 18004,Iron_Cannon_Ball,Iron Cannon Ball,10,500,,10,250,,,,0x00040400,8,2,32768,,99,,8,{},{},{}
 
 // New Rune Knight Rune Stone
-22540,Runstone_Luxanima,Lux Anima Rune,11,2,,100,,,,,0xFFFFFFFF,7,2,,,,,,{ itemskill "RK_LUXANIMA",1; },{},{}
+22540,Runstone_Lux,Lux Anima Rune,11,2,,100,,,,,0xFFFFFFFF,7,2,,,,,,{ itemskill "RK_LUXANIMA",1; },{},{}
 
 // New Weapons In Work And Testing
 1196,Chrome_Metal_Two-Hand_Sword,Chrome Metal Two-Hand Sword,4,20,10,400,280,,1,0,0x00044582,8,2,34,3,110,1,3,{ bonus bAgi,3; bonus bMaxHPrate,-10; bonus bUnbreakableWeapon,0; },{},{}
@@ -349,7 +349,7 @@
 16682,Boarding_Halter_Box,Boarding Halter Box,18,20,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ rentitem 12622,604800; },{},{}
 
 // Hanbok Outfit
-22538,Hanbok_Pocket,Hanbok Pocket,2,0,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ sc_start SC_HANBOK,600000,0; },{},{}
+22538,Hanbok_Bag,Hanbok Bag,2,0,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ sc_start SC_HANBOK,600000,0; },{},{}
 
 // Oktoberfest Outfit - Enable Only If You Have The Sprite For The Outfit In Your Client
 //22625,Oktoberfest_Bag,Oktoberfest Bag,2,0,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ sc_start SC_OKTOBERFEST,600000,0; },{},{}
@@ -458,39 +458,48 @@
 7664,Throwing_Mine,Throwing Mine,3,450,,3,,,,,,,,,,,,,{},{},{}
 7665,Dragon_Tail_Missile,Dragon Tail Missile,3,1500,,100,,,,,,,,,,,,,{},{},{}
 
+25187,Unknown_Rebel_Item_1,Unknown Rebel Item 1,3,1200,,100,,,,,,,,,,,,,{},{},{}
+
 // Rebellion Slug Ammo
-13210,Slug_Ammo_L,Slug Ammo L,10,250,,250,30,,,,0x01000000,7,2,32768,,99,,3,{},{},{}
-13211,Slug_Ammo_M,Slug Ammo M,10,500,,500,30,,,,0x01000000,7,2,32768,,99,,3,{},{},{}
-13212,Slug_Ammo_H,Slug Ammo H,10,750,,750,30,,,,0x01000000,7,2,32768,,99,,3,{},{},{}
-13213,Slug_Ammo_SH,Slug Ammo SH,10,1000,,1000,30,,,,0x01000000,7,2,32768,,99,,3,{},{},{}
-13214,Slug_Ammo_XH,Slug Ammo XH,10,1200,,1200,30,,,,0x01000000,7,2,32768,,99,,3,{},{},{}
+13210,Slug_Bullet_1,Slug Ammo L,10,250,,250,30,,,,0x01000000,7,2,32768,,99,,3,{},{},{}
+13211,Slug_Bullet_2,Slug Ammo M,10,500,,500,30,,,,0x01000000,7,2,32768,,99,,3,{},{},{}
+13212,Slug_Bullet_3,Slug Ammo H,10,750,,750,30,,,,0x01000000,7,2,32768,,99,,3,{},{},{}
+13213,Slug_Bullet_4,Slug Ammo SH,10,1000,,1000,30,,,,0x01000000,7,2,32768,,99,,3,{},{},{}
+13214,Slug_Bullet_5,Slug Ammo XH,10,1200,,1200,30,,,,0x01000000,7,2,32768,,99,,3,{},{},{}
 
 // Rebellion Ammo
 //Note: 13221 - 13227 are copys of the gunslinger bullets and spheres. Why?
 //The copied bullets were made since prices for bullets were reduced, but didn't want to change them
 //directly on the old bullet ID's to prevent accidently changing bullet prices on other servers outside kRO.
-13215,Armor-Piercing_Bullet,Armor-Piercing Bullet,10,50,,2,50,,,,0x01000000,7,2,32768,,100,,3,{},{},{}
-13216,Scorching_Bullet,Scorching Bullet,10,40,,2,40,,,,0x01000000,7,2,32768,,100,,3,{ bonus bAtkEle,Ele_Fire; },{},{}
+13215,AP_Ammo,Armor-Piercing Bullet,10,50,,2,50,,,,0x01000000,7,2,32768,,100,,3,{},{},{}
+13216,Blaze_Bullet,Blaze Bullet,10,40,,2,40,,,,0x01000000,7,2,32768,,100,,3,{ bonus bAtkEle,Ele_Fire; },{},{}
 13217,Freezing_Bullet,Freezing Bullet,10,40,,2,40,,,,0x01000000,7,2,32768,,100,,3,{ bonus bAtkEle,Ele_Water; },{},{}
-13218,Lightning_Bullet,Lightning Bullet,10,40,,2,40,,,,0x01000000,7,2,32768,,100,,3,{ bonus bAtkEle,Ele_Wind; },{},{}
-13219,Manastone_Bullet,Manastone Bullet,10,40,,2,40,,,,0x01000000,7,2,32768,,100,,3,{ bonus bAtkEle,Ele_Earth; },{},{}
-13220,Purification_Bullet,Purification Bullet,10,40,,2,40,,,,0x01000000,7,2,32768,,100,,3,{ bonus bAtkEle,Ele_Holy; },{},{}
+13218,Electric_Shock_Bullet,Electric Shock Bullet,10,40,,2,40,,,,0x01000000,7,2,32768,,100,,3,{ bonus bAtkEle,Ele_Wind; },{},{}
+13219,Magical_Stone_Bullet,Magical Stone Bullet,10,40,,2,40,,,,0x01000000,7,2,32768,,100,,3,{ bonus bAtkEle,Ele_Earth; },{},{}
+13220,Sanctified_Bullet,Sanctified Bullet,10,40,,2,40,,,,0x01000000,7,2,32768,,100,,3,{ bonus bAtkEle,Ele_Holy; },{},{}
+
+// Universal Ammo??? These replace the sphere's ammo and are usable with all gun types. Prices are correct.
+13228,Unknown_Ammo_1,Unknown Ammo 1,10,50,,2,50,,,,0x01000000,7,2,32768,,100,,3,{},{},{}
+13229,Unknown_Ammo_2,Unknown Ammo 2,10,50,,2,50,,,,0x01000000,7,2,32768,,100,,3,{},{},{}
+13230,Unknown_Ammo_3,Unknown Ammo 3,10,50,,2,50,,,,0x01000000,7,2,32768,,100,,3,{},{},{}
+13231,Unknown_Ammo_4,Unknown Ammo 4,10,50,,2,50,,,,0x01000000,7,2,32768,,100,,3,{},{},{}
+13232,Unknown_Ammo_5,Unknown Ammo 5,10,50,,2,50,,,,0x01000000,7,2,32768,,100,,3,{},{},{}
 
 // Rebellion Bullet Cases
 //Note: 22737 - 22743 are copys of the gunslingers bullet and sphere cases. Why?
 //The copied bullet cases were made since prices for bullets were reduced, but didn't want to change them
 //directly on the old bullet case ID's to prevent accidently changing case prices on other servers outside kRO.
-22744,Bullet_Case_Armor-Piercing,Armor-Piercing Cartridge,2,25000,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13215,500; },{},{}
-22745,Bullet_Case_Scorching,Scorching Cartridge,2,20000,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13216,500; },{},{}
-22746,Bullet_Case_Freezing,Freezing Cartridge,2,20000,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13217,500; },{},{}
-22747,Bullet_Case_Lightning,Lightning Cartridge,2,20000,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13218,500; },{},{}
-22748,Bullet_Case_Manastone,Manastone Cartridge,2,20000,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13219,500; },{},{}
-22749,Bullet_Case_Purification,Purification Cartridge,2,20000,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13220,500; },{},{}
+22744,Bullet_Case_AP,Armor-Piercing Cartridge,2,25000,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13215,500; },{},{}
+22745,Bullet_Case_Blaze,Blaze Cartridge,2,20000,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13216,500; },{},{}
+22746,Bullet_Case_Fleeze,Freezing Cartridge,2,20000,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13217,500; },{},{}
+22747,Bullet_Case_Electric,Electric Cartridge,2,20000,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13218,500; },{},{}
+22748,Bullet_Case_Stone,Stone Cartridge,2,20000,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13219,500; },{},{}
+22749,Sanctified_Bullet_Case,Sanctified Cartridge,2,20000,,250,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 13220,500; },{},{}
 
 // New Mechanic Pile Bunkers
-16030,Pilebuncker_S,Pile Bunker S,4,250000,,3000,400,,1,1,0x00000400,8,2,2,4,130,1,8,{ bonus bAspdRate,getrefine()/2; },{},{}
-16031,Pilebuncker_P,Pile Bunker P,4,250000,,4000,450,,1,0,0x00000400,8,2,2,4,130,1,8,{ bonus bBaseAtk,getrefine()*5; },{},{}
-16032,Pilebuncker_T,Pile Bunker T,4,250000,,3500,400,,1,1,0x00000400,8,2,2,4,130,1,8,{ bonus bUseSPrate,getrefine()*1; },{},{}
+16030,Pilebuncker_S,Pile Bunker S,4,30000,,3000,400,,1,1,0x00000400,8,2,2,4,130,1,8,{ bonus bAspdRate,getrefine()/2; },{},{}
+16031,Pilebuncker_P,Pile Bunker P,4,30000,,4000,450,,1,0,0x00000400,8,2,2,4,130,1,8,{ bonus bBaseAtk,getrefine()*5; },{},{}
+16032,Pilebuncker_T,Pile Bunker T,4,30000,,3500,400,,1,1,0x00000400,8,2,2,4,130,1,8,{ bonus bUseSPrate,getrefine()*1; },{},{}
 
 // Hunter's Falcon Flute
 12848,Falcon_Flute,Falcon Flute,11,10000,,0,,,,,0xFFFFFFFF,7,2,,,,,,{ setfalcon 1; },{},{}
@@ -507,7 +516,7 @@
 6707,Cash_Hair_Coupon,Cash Hairstyle Coupon,3,0,,10,,,,,,,,,,,,,{},{},{}
 
 // Summoner Weapons And Equips
-1681,Short_Foxtail_Staff,Short Foxtail Staff,4,20,,0,30,,1,0,0x04000000,7,2,2,1,1,1,10,{},{},{}
+1681,Short_Foxtail_Staff,Short Foxtail Staff,4,0,,0,30,,1,0,0x04000000,7,2,2,1,1,1,10,{},{},{}
 
 // New 3rd job headgears
 //18971
