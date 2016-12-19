@@ -639,6 +639,9 @@ extern int duel_count;
 ||	( (class_) >= JOB_SUPER_NOVICE_E && (class_) <= JOB_SUPER_BABY_E   ) \
 ||	( (class_) >= JOB_KAGEROU        && (class_) <= JOB_OBORO          ) \
 ||	  (class_) == JOB_REBELLION      || (class_) == JOB_SUMMONER         \
+||    (class_) == JOB_BABY_SUMMONER \
+||	( (class_) >= JOB_BABY_NINJA     && (class_) <= JOB_BABY_REBELLION ) \
+||    (class_) == JOB_BABY_STAR_GLADIATOR2 \
 )
 
 int pc_class2idx(int class_);

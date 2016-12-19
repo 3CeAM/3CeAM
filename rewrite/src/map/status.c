@@ -583,7 +583,7 @@ void initChangeTables(void)
 	set_sc( KG_KAGEHUMI          , SC_KAGEHUMI        , SI_KG_KAGEHUMI     , SCB_NONE );
 	set_sc( KG_KYOMU             , SC_KYOMU           , SI_KYOMU           , SCB_NONE );
 	set_sc( KG_KAGEMUSYA         , SC_KAGEMUSYA       , SI_KAGEMUSYA       , SCB_NONE );
-	set_sc( OB_ZANGETSU          , SC_ZANGETSU        , SI_ZANGETSU        , SCB_NONE );
+	set_sc( OB_ZANGETSU          , SC_ZANGETSU        , SI_ZANGETSU        , SCB_WATK|SCB_MATK );
 	set_sc( OB_OBOROGENSOU       , SC_GENSOU          , SI_GENSOU          , SCB_NONE );
 	set_sc( OB_AKAITSUKI         , SC_AKAITSUKI       , SI_AKAITSUKI       , SCB_NONE );
 
@@ -3499,6 +3499,7 @@ void status_calc_regen_rate(struct block_list *bl, struct regen_data *regen, str
 		|| sc->data[SC_MAGICMUSHROOM]
 		|| sc->data[SC_RAISINGDRAGON]
 		|| sc->data[SC_SATURDAYNIGHTFEVER]
+		|| sc->data[SC_AKAITSUKI]
 		|| sc->data[SC_REBOUND]
 	)	//No regen
 		regen->flag = 0;
@@ -4482,6 +4483,8 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += 40 + 30 * sc->data[SC_ODINS_POWER]->val1;
 	if(sc->data[SC_P_ALTER])
 		watk += sc->data[SC_P_ALTER]->val2;
+	if(sc->data[SC_ZANGETSU] && sc->data[SC_ZANGETSU]->val3 == 1)
+		watk += 20 * sc->data[SC_ZANGETSU]->val1 + sc->data[SC_ZANGETSU]->val2;
 	if(sc->data[SC_FULL_SWING_K])
 		watk += sc->data[SC_FULL_SWING_K]->val1;
 	if(sc->data[SC_INCATKRATE])
@@ -4517,6 +4520,8 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += watk * (15 * sc->data[SC_DOHU_KOUKAI]->val2) / 100;
 	if(sc->data[SC_SHRIMP])
 		watk += watk * 10 / 100;
+	if(sc->data[SC_ZANGETSU] && sc->data[SC_ZANGETSU]->val3 == 2)
+		watk -= 30 * sc->data[SC_ZANGETSU]->val1 + sc->data[SC_ZANGETSU]->val2;
 	if(sc->data[SC_CURSE])
 		watk -= watk * 25/100;
 	if(sc->data[SC_STRIPWEAPON])
@@ -4559,6 +4564,8 @@ static unsigned short status_calc_matk(struct block_list *bl, struct status_chan
 		matk += 40 + 30 * sc->data[SC_ODINS_POWER]->val1;
 	if(sc->data[SC_IZAYOI])//Recheck the MATK increase please. [Rytech]
 		matk += sc->data[SC_IZAYOI]->val2;
+	if(sc->data[SC_ZANGETSU] && sc->data[SC_ZANGETSU]->val4 == 1)
+		matk += 20 * sc->data[SC_ZANGETSU]->val1 + sc->data[SC_ZANGETSU]->val2;
 	if(sc->data[SC_MAGICPOWER])
 		matk += matk * sc->data[SC_MAGICPOWER]->val3/100;
 	if(sc->data[SC_MINDBREAKER])
@@ -4567,6 +4574,8 @@ static unsigned short status_calc_matk(struct block_list *bl, struct status_chan
 		matk += matk * sc->data[SC_INCMATKRATE]->val1/100;
 	if(sc->data[SC_SHRIMP])
 		matk += matk * 10 / 100;
+	if(sc->data[SC_ZANGETSU] && sc->data[SC_ZANGETSU]->val4 == 2)
+		matk -= 30 * sc->data[SC_ZANGETSU]->val1 + sc->data[SC_ZANGETSU]->val2;
 	//Not bothering to organize these until I rework the elemental spirits. [Rytech]
 	if(sc->data[SC_AQUAPLAY_OPTION])
 		matk += sc->data[SC_AQUAPLAY_OPTION]->val2;
@@ -8368,6 +8377,25 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val4 = tick / 1000;
 			tick = 1000;
 			break;
+
+		case SC_ZANGETSU:
+			{	// Target HP Check
+				if (status_get_hp(bl) % 2 == 0)
+					val3 = 1;// Even = Increase Attack
+				else
+					val3 = 2;// Odd = Decrease Attack
+
+				// Target SP Check
+				if (status_get_sp(bl) % 2 == 0)
+					val4 = 1;// Even = Increase Magic Attack
+				else
+					val4 = 2;// Odd = Decrease Magic Attack
+
+				// Bonus From Caster's Base Level
+				val2 = val2 / 3;
+			}
+			break;
+
 		case SC_DARKCROW:
 			val2 = 30 * val1;// Melee Damage Increase
 			break;

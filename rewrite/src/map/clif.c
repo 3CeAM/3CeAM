@@ -552,27 +552,35 @@ int clif_send(const uint8* buf, int len, struct block_list* bl, enum send_target
 	return 0;
 }
 
-//
-// パケット作って送信
-//
-/*==========================================
- *
- *------------------------------------------*/
+/// Notifies the client, that it's connection attempt was accepted.
+/// 0073 <start time>.L <position>.3B <x size>.B <y size>.B (ZC_ACCEPT_ENTER)
+/// 02eb <start time>.L <position>.3B <x size>.B <y size>.B <font>.W (ZC_ACCEPT_ENTER2)
+/// 0a18 <start time>.L <position>.3B <x size>.B <y size>.B <font>.W <sex>.B (ZC_ACCEPT_ENTER3)
 int clif_authok(struct map_session_data *sd)
 {
 	int fd;
+
+#if PACKETVER < 20080102
+	const short cmd = 0x73;
+#else
+	const short cmd = 0x2eb;
+#endif
 
 	if (!sd->fd)
 		return 0;
 	fd = sd->fd;
 
-	WFIFOHEAD(fd, packet_len(0x73));
-	WFIFOW(fd, 0) = 0x73;
+	WFIFOHEAD(fd,packet_len(cmd));
+	WFIFOW(fd, 0) = cmd;
 	WFIFOL(fd, 2) = gettick();
 	WFIFOPOS(fd, 6, sd->bl.x, sd->bl.y, sd->ud.dir);
 	WFIFOB(fd, 9) = 5; // ignored
 	WFIFOB(fd,10) = 5; // ignored
-	WFIFOSET(fd,packet_len(0x73));
+#if PACKETVER >= 20080102
+	WFIFOW(fd,11) = 0;// Font. Default to 0 for now.
+#endif
+	//WFIFOB(fd,13) = 0;// Sex. For packet 0xa18 which is no longer used.
+	WFIFOSET(fd,packet_len(cmd));
 
 	return 0;
 }
@@ -17443,7 +17451,7 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0,  0,  0,  0, 75, -1,  0,  0,  0,  0, -1, -1, -1,
 	//#0x0A00
 	    0,  0,  4,  0,  0,  0,  0,  0,  0, 45, 47, 47, 56, -1,  0, -1,
-	   -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	   -1,  0,  0,  0,  0,  0,  0,  0, 14,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  8,  3,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  3,  0,  0,  0,  0,  0,  0,  0,
 	//#0x0A40

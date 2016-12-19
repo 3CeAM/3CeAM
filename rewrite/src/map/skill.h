@@ -19,7 +19,7 @@ struct status_change_entry;
 #define MAX_ARROW_RESOURCE		5
 #define MAX_SKILL_ABRA_DB		350
 #define MAX_SKILL_SPELLBOOK_DB	17
-#define MAX_SKILL_IMPROVISE_DB 16
+#define MAX_SKILL_IMPROVISE_DB	16
 #define MAX_SKILL_MAGICMUSHROOM_DB 23
 
 #define MAX_SKILL_LEVEL 100
@@ -378,6 +378,7 @@ int skill_spellbook( struct map_session_data *sd, int nameid);	// Warlock Spellb
 int skill_select_menu( struct map_session_data *sd, int flag, int skill_id); // Shadow Cheser Auto Shadow Spell [pakpil]
 int skill_elementalanalysis(struct map_session_data *sd, int n, int type, unsigned short *item_list); // Sorcerer Four Elemental Analisys.
 int skill_changematerial(struct map_session_data *sd, int n, unsigned short *item_list);	// Genetic Change Material.
+int skill_akaitsuki_damage (struct block_list* src, struct block_list *bl, int damage, int skillid, int skilllv, unsigned int tick);
 
 int skill_stasis_check(struct block_list *bl, int skillid);// Stasis skill usage check. [LimitLine]
 int skill_get_elemental_type(int skill_id, int skill_lv);
@@ -1952,6 +1953,7 @@ enum {
 	UNT_FIRE_RAIN,
 	UNT_CN_POWDERING,
 	UNT_NYANGGRASS,
+	UNT_GROUNDDRIFT_NEUTRAL,
 
 	UNT_MAX
 };

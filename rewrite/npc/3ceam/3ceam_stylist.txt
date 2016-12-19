@@ -38,15 +38,15 @@ Laccessroom:
 	// Note: Not all of the new body styles are out. Best to limit only to jobs that do have them.
 	if (
 //	BaseThird == Job_Rune_Knight || 
-//	BaseThird == Job_Warlock || 
+	BaseThird == Job_Warlock || 
 	BaseThird == Job_Ranger || 
 	BaseThird == Job_Arch_Bishop || 
 	BaseThird == Job_Mechanic || 
 	BaseThird == Job_Guillotine_Cross || 
 	BaseThird == Job_Royal_Guard || 
 //	BaseThird == Job_Sorcerer || 
-//	BaseThird == Job_Minstrel || 
-//	BaseThird == Job_Wanderer || 
+	BaseThird == Job_Minstrel || 
+	BaseThird == Job_Wanderer || 
 //	BaseThird == Job_Sura || 
 	BaseThird == Job_Genetic
 //	BaseThird == Job_Shadow_Chaser
