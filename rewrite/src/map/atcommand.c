@@ -1430,10 +1430,10 @@ ACMD_FUNC(jobchange)
 			clif_displaymessage(fd, "4075 Minstrel         4076 Wanderer         4077 Sura             4078 Genetic");
 			clif_displaymessage(fd, "4079 Shadow Chaser");
 			clif_displaymessage(fd, "----- Expanded Class -----");
-			clif_displaymessage(fd, "  23 Super Novice       24 Gunslinger         25 Ninja            4045 Super Baby");
-			clif_displaymessage(fd, "4046 Taekwon          4047 Star Gladiator   4049 Soul Linker      4050 Gangsi");
-			clif_displaymessage(fd, "4051 Death Knight     4052 Dark Collector   4190 Ex. Super Novice 4191 Ex. Super Baby");
-			clif_displaymessage(fd, "4211 Kagerou          4212 Oboro            4215 Rebellion        4218 Summoner");
+			clif_displaymessage(fd, "  23 Super Novice       24 Gunslinger         25 Ninja            4046 Taekwon");
+			clif_displaymessage(fd, "4047 Star Gladiator   4049 Soul Linker      4050 Gangsi           4051 Death Knight");
+			clif_displaymessage(fd, "4052 Dark Collector   4190 Ex. Super Novice 4211 Kagerou          4212 Oboro");
+			clif_displaymessage(fd, "4215 Rebellion        4218 Summoner");
 			clif_displaymessage(fd, "----- Baby Novice And Baby 1st Class -----");
 			clif_displaymessage(fd, "4023 Baby Novice      4024 Baby Swordman    4025 Baby Magician    4026 Baby Archer");
 			clif_displaymessage(fd, "4027 Baby Acolyte     4028 Baby Merchant    4029 Baby Thief");
@@ -1447,6 +1447,10 @@ ACMD_FUNC(jobchange)
 			clif_displaymessage(fd, "4100 Baby Mechanic    4101 Baby Glt. Cross  4102 Baby Royal Guard 4103 Baby Sorcerer");
 			clif_displaymessage(fd, "4104 Baby Minstrel    4105 Baby Wanderer    4106 Baby Sura        4107 Baby Genetic");
 			clif_displaymessage(fd, "4108 Baby Shadow Chaser");
+			clif_displaymessage(fd, "----- Expanded Baby Class -----");
+			clif_displaymessage(fd, "4045 Super Baby       4191 Ex. Super Baby   4220 Baby Summoner    4222 Baby Ninja");
+			clif_displaymessage(fd, "4223 Baby Kagerou     4224 Baby Oboro       4225 Baby Taekwon     4226 Baby Star Glad.");
+			clif_displaymessage(fd, "4227 Baby Soul Linker 4228 Baby Gunslinger  4229 Baby Rebellion");
 			return -1;
 		}
 	}
@@ -1500,10 +1504,10 @@ ACMD_FUNC(jobchange)
 		clif_displaymessage(fd, "4075 Minstrel         4076 Wanderer         4077 Sura             4078 Genetic");
 		clif_displaymessage(fd, "4079 Shadow Chaser");
 		clif_displaymessage(fd, "----- Expanded Class -----");
-		clif_displaymessage(fd, "  23 Super Novice       24 Gunslinger         25 Ninja            4045 Super Baby");
-		clif_displaymessage(fd, "4046 Taekwon          4047 Star Gladiator   4049 Soul Linker      4050 Gangsi");
-		clif_displaymessage(fd, "4051 Death Knight     4052 Dark Collector   4190 Ex. Super Novice 4191 Ex. Super Baby");
-		clif_displaymessage(fd, "4211 Kagerou          4212 Oboro            4215 Rebellion        4218 Summoner");
+		clif_displaymessage(fd, "  23 Super Novice       24 Gunslinger         25 Ninja            4046 Taekwon");
+		clif_displaymessage(fd, "4047 Star Gladiator   4049 Soul Linker      4050 Gangsi           4051 Death Knight");
+		clif_displaymessage(fd, "4052 Dark Collector   4190 Ex. Super Novice 4211 Kagerou          4212 Oboro");
+		clif_displaymessage(fd, "4215 Rebellion        4218 Summoner");
 		clif_displaymessage(fd, "----- Baby Novice And Baby 1st Class -----");
 		clif_displaymessage(fd, "4023 Baby Novice      4024 Baby Swordman    4025 Baby Magician    4026 Baby Archer");
 		clif_displaymessage(fd, "4027 Baby Acolyte     4028 Baby Merchant    4029 Baby Thief");
@@ -1517,6 +1521,10 @@ ACMD_FUNC(jobchange)
 		clif_displaymessage(fd, "4100 Baby Mechanic    4101 Baby Glt. Cross  4102 Baby Royal Guard 4103 Baby Sorcerer");
 		clif_displaymessage(fd, "4104 Baby Minstrel    4105 Baby Wanderer    4106 Baby Sura        4107 Baby Genetic");
 		clif_displaymessage(fd, "4108 Baby Shadow Chaser");
+		clif_displaymessage(fd, "----- Expanded Baby Class -----");
+		clif_displaymessage(fd, "4045 Super Baby       4191 Ex. Super Baby   4220 Baby Summoner    4222 Baby Ninja");
+		clif_displaymessage(fd, "4223 Baby Kagerou     4224 Baby Oboro       4225 Baby Taekwon     4226 Baby Star Glad.");
+		clif_displaymessage(fd, "4227 Baby Soul Linker 4228 Baby Gunslinger  4229 Baby Rebellion");
 		return -1;
 	}
 
