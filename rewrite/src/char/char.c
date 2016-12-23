@@ -1606,6 +1606,16 @@ char * job_name(int class_)
 	case JOB_OBORO: return "Oboro";
 	case JOB_REBELLION: return "Rebellion";
 	case JOB_SUMMONER: return "Summoner";
+	case JOB_BABY_SUMMONER: return "Baby Summoner";
+	case JOB_BABY_NINJA: return "Baby Ninja";
+	case JOB_BABY_KAGEROU: return "Baby Kagerou";
+	case JOB_BABY_OBORO: return "Baby Oboro";
+	case JOB_BABY_TAEKWON: return "Baby Taekwon";
+	case JOB_BABY_STAR_GLADIATOR: return "Baby Star Gladiator";
+	case JOB_BABY_SOUL_LINKER: return "Baby Soul Linker";
+	case JOB_BABY_GUNSLINGER: return "Baby Gunslinger";
+	case JOB_BABY_REBELLION: return "Baby Rebellion";
+	case JOB_BABY_STAR_GLADIATOR2: return "Flying Baby Star Gladiator";
 	}
 	return "Unknown Job";
 }
