@@ -2125,7 +2125,8 @@ int parse_fromlogin(int fd)
 						class_[i] == JOB_MINSTREL || class_[i] == JOB_WANDERER ||
 						class_[i] == JOB_MINSTREL_T || class_[i] == JOB_WANDERER_T ||
 						class_[i] == JOB_BABY_MINSTREL || class_[i] == JOB_BABY_WANDERER ||
-						class_[i] == JOB_KAGEROU || class_[i] == JOB_OBORO )
+						class_[i] == JOB_KAGEROU || class_[i] == JOB_OBORO ||
+						class_[i] == JOB_BABY_KAGEROU || class_[i] == JOB_BABY_OBORO )
 					{
 						// job modification
 						if( class_[i] == JOB_BARD || class_[i] == JOB_DANCER )
@@ -2142,13 +2143,34 @@ int parse_fromlogin(int fd)
 							class_[i] = (sex ? JOB_BABY_MINSTREL : JOB_BABY_WANDERER);
 						else if( class_[i] == JOB_KAGEROU || class_[i] == JOB_OBORO )
 							class_[i] = (sex ? JOB_KAGEROU : JOB_OBORO);
-						// remove specifical skills of classes 19,20 4020,4021 and 4042,4043
+						else if( class_[i] == JOB_BABY_KAGEROU || class_[i] == JOB_BABY_OBORO )
+							class_[i] = (sex ? JOB_BABY_KAGEROU : JOB_BABY_OBORO);
+
+						// Removes Bard/Dancer gender exclusive skills.
 						if( SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `skill_point` = `skill_point` +"
 							" (SELECT SUM(lv) FROM `%s` WHERE `char_id` = '%d' AND `id` >= '315' AND `id` <= '330' AND `lv` > '0')"
 							" WHERE `char_id` = '%d'",
 							char_db, skill_db, char_id[i], char_id[i]) )
 							Sql_ShowDebug(sql_handle);
 						if( SQL_ERROR == Sql_Query(sql_handle, "DELETE FROM `%s` WHERE `char_id` = '%d' AND `id` >= '315' AND `id` <= '330'", skill_db, char_id[i]) )
+							Sql_ShowDebug(sql_handle);
+
+						// Removes Minstrel/Wanderer gender exclusive skills.
+						if( SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `skill_point` = `skill_point` +"
+							" (SELECT SUM(lv) FROM `%s` WHERE `char_id` = '%d' AND `id` >= '2350' AND `id` <= '2383' AND `lv` > '0')"
+							" WHERE `char_id` = '%d'",
+							char_db, skill_db, char_id[i], char_id[i]) )
+							Sql_ShowDebug(sql_handle);
+						if( SQL_ERROR == Sql_Query(sql_handle, "DELETE FROM `%s` WHERE `char_id` = '%d' AND `id` >= '2350' AND `id` <= '2383'", skill_db, char_id[i]) )
+							Sql_ShowDebug(sql_handle);
+
+						// Removes Kagerou/Oboro gender exclusive skills.
+						if( SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `skill_point` = `skill_point` +"
+							" (SELECT SUM(lv) FROM `%s` WHERE `char_id` = '%d' AND `id` >= '3023' AND `id` <= '3029' AND `lv` > '0')"
+							" WHERE `char_id` = '%d'",
+							char_db, skill_db, char_id[i], char_id[i]) )
+							Sql_ShowDebug(sql_handle);
+						if( SQL_ERROR == Sql_Query(sql_handle, "DELETE FROM `%s` WHERE `char_id` = '%d' AND `id` >= '3023' AND `id` <= '3029'", skill_db, char_id[i]) )
 							Sql_ShowDebug(sql_handle);
 					}
 					// to avoid any problem with equipment and invalid sex, equipment is unequiped.
@@ -2352,7 +2374,7 @@ void char_read_fame_list(void)
 		memcpy(chemist_fame_list[i].name, data, min(len, NAME_LENGTH));
 	}
 	// Build Taekwon ranking list
-	if( SQL_ERROR == Sql_Query(sql_handle, "SELECT `char_id`,`fame`,`name` FROM `%s` WHERE `fame`>0 AND (`class`='%d') ORDER BY `fame` DESC LIMIT 0,%d", char_db, JOB_TAEKWON, fame_list_size_taekwon) )
+	if( SQL_ERROR == Sql_Query(sql_handle, "SELECT `char_id`,`fame`,`name` FROM `%s` WHERE `fame`>0 AND (`class`='%d' OR `class`='%d') ORDER BY `fame` DESC LIMIT 0,%d", char_db, JOB_TAEKWON, JOB_BABY_TAEKWON, fame_list_size_taekwon) )
 		Sql_ShowDebug(sql_handle);
 	for( i = 0; i < fame_list_size_taekwon && SQL_SUCCESS == Sql_NextRow(sql_handle); ++i )
 	{

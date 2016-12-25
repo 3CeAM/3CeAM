@@ -2244,7 +2244,7 @@ static unsigned int status_base_pc_maxhp(struct map_session_data* sd, struct sta
 
 	if( sd->class_&JOBL_UPPER )
 		val += val * 25/100; //Trans classes get a 25% hp bonus
-	else if( sd->class_&JOBL_BABY )
+	else if( battle_config.baby_hp_sp_penalty == 1 && sd->class_&JOBL_BABY )
 		val -= val * 30/100; //Baby classes get a 30% hp penalty
 	return val;
 }
@@ -2254,12 +2254,7 @@ static unsigned int status_base_pc_maxsp(struct map_session_data* sd, struct sta
 	unsigned int val;
 
 	val = 10 + sd->status.base_level*sp_coefficient[pc_class2idx(sd->status.class_)]/100;
-	val += val * status->int_/100;
 
-	if (sd->class_&JOBL_UPPER)
-		val += val * 25/100;
-	else if (sd->class_&JOBL_BABY)
-		val -= val * 30/100;
 	if ((sd->class_&MAPID_UPPERMASK) == MAPID_TAEKWON && sd->status.base_level >= 90 && pc_famerank(sd->status.char_id, MAPID_TAEKWON))
 		val *= 3; //Triple max SP for top ranking Taekwons over level 90.
 	if((sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER)
@@ -2267,6 +2262,13 @@ static unsigned int status_base_pc_maxsp(struct map_session_data* sd, struct sta
 		val -= 4;
 		val += (sd->status.base_level-1)/2;
 	}
+
+	val += val * status->int_/100;// +1% per each point of INT
+
+	if ( sd->class_&JOBL_UPPER )
+		val += val * 25/100;// Trans classes get a 25% sp bonus
+	else if ( battle_config.baby_hp_sp_penalty == 1 && sd->class_&JOBL_BABY )
+		val -= val * 30/100;// Baby classes get a 30% sp penalty
 
 	return val;
 }
