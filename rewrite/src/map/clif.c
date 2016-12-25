@@ -14379,7 +14379,7 @@ void clif_ranking(struct map_session_data* sd, int rankingtype)
 	//
 	if ( (sd->class_&MAPID_UPPERMASK) == MAPID_BLACKSMITH && rankingtype == RANKING_BLACKSMITH || 
 		(sd->class_&MAPID_UPPERMASK) == MAPID_ALCHEMIST && rankingtype == RANKING_ALCHEMIST || 
-		(sd->class_&MAPID_BASEMASK) == MAPID_TAEKWON && rankingtype == RANKING_TAEKWON )
+		(sd->class_&MAPID_UPPERMASK) == MAPID_TAEKWON && rankingtype == RANKING_TAEKWON )
 		mypoint = sd->status.fame;
 	else
 		mypoint = 0;

@@ -859,48 +859,24 @@ int chrif_changedsex(int fd)
 		// reset skill of some job
 		if ((sd->class_&MAPID_UPPERMASK) == MAPID_BARDDANCER ||
 			(sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO) {
-			// remove specifical skills of Bard classes 
-			for(i = 315; i <= 322; i++) {
+			// Removes Bard/Dancer gender exclusive skills.
+			for(i = 315; i <= 330; i++) {
 				if (sd->status.skill[i].id > 0 && !sd->status.skill[i].flag) {
 					sd->status.skill_point += sd->status.skill[i].lv;
 					sd->status.skill[i].id = 0;
 					sd->status.skill[i].lv = 0;
 				}
 			}
-			// remove specifical skills of Dancer classes 
-			for(i = 323; i <= 330; i++) {
+			// Removes Minstrel/Wanderer gender exclusive skills.
+			for(i = 2350; i <= 2383; i++) {
 				if (sd->status.skill[i].id > 0 && !sd->status.skill[i].flag) {
 					sd->status.skill_point += sd->status.skill[i].lv;
 					sd->status.skill[i].id = 0;
 					sd->status.skill[i].lv = 0;
 				}
 			}
-			// Removes Minstrel exclusive skills.
-			for(i = 2381; i <= 2383; i++) {
-				if (sd->status.skill[i].id > 0 && !sd->status.skill[i].flag) {
-					sd->status.skill_point += sd->status.skill[i].lv;
-					sd->status.skill[i].id = 0;
-					sd->status.skill[i].lv = 0;
-				}
-			}
-			// Removes Wanderer exclusive skills.
-			for(i = 2350; i <= 2352; i++) {
-				if (sd->status.skill[i].id > 0 && !sd->status.skill[i].flag) {
-					sd->status.skill_point += sd->status.skill[i].lv;
-					sd->status.skill[i].id = 0;
-					sd->status.skill[i].lv = 0;
-				}
-			}
-			// Removes Kagerou exclusive skills.
-			for(i = 3023; i <= 3025; i++) {
-				if (sd->status.skill[i].id > 0 && !sd->status.skill[i].flag) {
-					sd->status.skill_point += sd->status.skill[i].lv;
-					sd->status.skill[i].id = 0;
-					sd->status.skill[i].lv = 0;
-				}
-			}
-			// Removes Oboro exclusive skills.
-			for(i = 3026; i <= 3029; i++) {
+			// Removes Kagerou/Oboro gender exclusive skills.
+			for(i = 3023; i <= 3029; i++) {
 				if (sd->status.skill[i].id > 0 && !sd->status.skill[i].flag) {
 					sd->status.skill_point += sd->status.skill[i].lv;
 					sd->status.skill[i].id = 0;
@@ -909,11 +885,11 @@ int chrif_changedsex(int fd)
 			}
 			clif_updatestatus(sd, SP_SKILLPOINT);
 			// change job if necessary
-			if (sd->status.sex) //Changed from Dancer
+			if (sd->status.sex) //Changed from female
 				sd->status.class_ -= 1;
-			else	//Changed from Bard
+			else	//Changed from male
 				sd->status.class_ += 1;
-			//sd->class_ needs not be updated as both Dancer/Bard are the same.
+			//sd->class_ needs not be updated as both genders are the same for the mapid.
 		}
 		// save character
 		sd->login_id1++; // change identify, because if player come back in char within the 5 seconds, he can change its characters

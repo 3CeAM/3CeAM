@@ -536,6 +536,8 @@ extern struct Battle_Config
 	int cashshop_price_rate;
 	int player_baselv_req_skill;
 	int warmer_show_heal;
+	int baby_hp_sp_penalty;
+	int baby_crafting_penalty;
 
 	// Costume Outfits
 	int hanbok_ignorepalette;

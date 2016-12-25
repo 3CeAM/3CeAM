@@ -1050,7 +1050,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		break;
 
 	case TK_JUMPKICK:
-		if( dstsd && dstsd->class_ != MAPID_SOUL_LINKER && !tsc->data[SC_PRESERVE] )
+		if( dstsd && (dstsd->class_&MAPID_UPPERMASK) != MAPID_SOUL_LINKER && !tsc->data[SC_PRESERVE] )
 		{// debuff the following statuses
 			status_change_end(bl, SC_SPIRIT, INVALID_TIMER);
 			status_change_end(bl, SC_ADRENALINE2, INVALID_TIMER);
@@ -16767,7 +16767,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 			make_per = make_per * battle_config.wp_rate / 100;
 	}
 
-	if( sd->class_&JOBL_BABY ) //if it's a Baby Class
+	if( battle_config.baby_crafting_penalty == 1 && sd->class_&JOBL_BABY ) //if it's a Baby Class
 		make_per = (make_per * 70) / 100; //Baby penalty is 30%
 
 	if( make_per < 1 ) make_per = 1;
