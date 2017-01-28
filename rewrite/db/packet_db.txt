@@ -1970,37 +1970,37 @@ packet_ver: 33
 0x0a47,3//
 0x0a48,2//
 
-//2016-12-07eRagexeRE
+//2016-12-28aRagexeRE
 packet_ver: 34
-0x0886,7,actionrequest,2:6
-0x083C,10,useskilltoid,2:4:6
-0x0437,5,walktoxy,2
-0x035F,6,ticksend,2
-0x08A1,5,changedir,2:4
-0x08A2,6,takeitem,2
-0x08AD,6,dropitem,2:4
-0x0875,8,movetokafra,2:4
-0x091D,8,movefromkafra,2:4
-0x0438,10,useskilltopos,2:4:6:8
-0x0366,90,useskilltoposmoreinfo,2:4:6:8:10
-0x096A,6,getcharnamerequest,2
-0x0368,6,solvecharname,2
-0x0838,12,searchstoreinfolistitemclick,2:6:10
-0x0835,2,searchstoreinfonextpage,0
-0x0819,-1,searchstoreinfo,2:4:5:9:13:14:15
-0x0811,-1,reqtradebuyingstore,2:4:8:12
-0x0360,6,reqclickbuyingstore,2
-0x0817,2,reqclosebuyingstore,0
-0x0815,-1,reqopenbuyingstore,2:4:8:9:89
-0x0918,18,partybookingregisterreq,2:4
-0x0868,8
-0x087E,-1,itemlistwindowselected,2:4:8
-0x0361,19,wanttoconnection,2:6:10:14:18
-0x0965,26,partyinvite2,2
-0x0943,4
-0x0867,26,friendslistadd,2
-0x023B,5,hommenu,4
-0x095D,36,storagepassword,0
+0x093D,7,actionrequest,2:6
+0x08A2,10,useskilltoid,2:4:6
+0x0886,5,walktoxy,2
+0x0944,6,ticksend,2
+0x0871,5,changedir,2:4
+0x086C,6,takeitem,2
+0x0893,6,dropitem,2:4
+0x089F,8,movetokafra,2:4
+0x08AB,8,movefromkafra,2:4
+0x0929,10,useskilltopos,2:4:6:8
+0x0865,90,useskilltoposmoreinfo,2:4:6:8:10
+0x085A,6,getcharnamerequest,2
+0x08AC,6,solvecharname,2
+0x087F,12,searchstoreinfolistitemclick,2:6:10
+0x092C,2,searchstoreinfonextpage,0
+0x0870,-1,searchstoreinfo,2:4:5:9:13:14:15
+0x0362,-1,reqtradebuyingstore,2:4:8:12
+0x08A3,6,reqclickbuyingstore,2
+0x0875,2,reqclosebuyingstore,0
+0x086A,-1,reqopenbuyingstore,2:4:8:9:89
+0x08A5,18,partybookingregisterreq,2:4
+0x0935,8
+0x0889,-1,itemlistwindowselected,2:4:8
+0x086D,19,wanttoconnection,2:6:10:14:18
+0x0934,26,partyinvite2,2
+0x0938,4
+0x091C,26,friendslistadd,2
+0x085E,5,hommenu,4
+0x08AD,36,storagepassword,0
 
 //Add new packets here.
 //packet_ver: 35
