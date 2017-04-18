@@ -1059,6 +1059,16 @@ void login_auth_ok(struct login_session_data* sd)
 	struct auth_node* node;
 	int i;
 
+#if PACKETVER < 20170301
+	const short PacketNum = 0x69;
+	const short Part1 = 47;
+	const short Part2 = 32;
+#else
+	const short PacketNum = 0xac4;
+	const short Part1 = 64;
+	const short Part2 = 160;
+#endif
+
 	if( sd->level < login_config.min_level_to_connect )
 	{
 		ShowStatus("Connection refused: the minimum GM level for connection is %d (account: %s, GM level: %d).\n", login_config.min_level_to_connect, sd->userid, sd->level);
@@ -1122,32 +1132,33 @@ void login_auth_ok(struct login_session_data* sd)
 	else
 		ShowStatus("Connection of the account '%s' accepted.\n", sd->userid);
 
-	WFIFOHEAD(fd,47+32*server_num);
-	WFIFOW(fd,0) = 0x69;
-	WFIFOW(fd,2) = 47+32*server_num;
-	WFIFOL(fd,4) = sd->login_id1;
-	WFIFOL(fd,8) = sd->account_id;
-	WFIFOL(fd,12) = sd->login_id2;
-	WFIFOL(fd,16) = 0; // in old version, that was for ip (not more used)
-	//memcpy(WFIFOP(fd,20), sd->lastlogin, 24); // in old version, that was for name (not more used)
-	memset(WFIFOP(fd,20), 0, 24);
-	WFIFOW(fd,44) = 0; // unknown
-	WFIFOB(fd,46) = sex_str2num(sd->sex);
+	// Packet is sent in 2 parts.
+	// Part1 = ACCEPT_LOGIN - Sends account information and a authorize code for accessing the character server.
+	// Part2 = SERVER_ADDR - Sends a list of accessable servers and the information for each one.
+	WFIFOHEAD(fd,Part1+Part2*server_num);
+	WFIFOW(fd,0) = PacketNum;// PacketType
+	WFIFOW(fd,2) = Part1+Part2*server_num;// PacketLength
+	WFIFOL(fd,4) = sd->login_id1;// AuthCode
+	WFIFOL(fd,8) = sd->account_id;// AID
+	WFIFOL(fd,12) = sd->login_id2;// UserLevel
+	WFIFOL(fd,16) = 0;// LastLoginIP
+	memset(WFIFOP(fd,20), 0, 26);// LastLoginTime
+	WFIFOB(fd,46) = sex_str2num(sd->sex);// Sex
 	for( i = 0, n = 0; i < MAX_SERVERS; ++i )
 	{
 		if( !session_isValid(server[i].fd) )
 			continue;
 
-		subnet_char_ip = lan_subnetcheck(ip); // Advanced subnet check [LuzZza]
-		WFIFOL(fd,47+n*32) = htonl((subnet_char_ip) ? subnet_char_ip : server[i].ip);
-		WFIFOW(fd,47+n*32+4) = ntows(htons(server[i].port)); // [!] LE byte order here [!]
-		memcpy(WFIFOP(fd,47+n*32+6), server[i].name, 20);
-		WFIFOW(fd,47+n*32+26) = server[i].users;
-		WFIFOW(fd,47+n*32+28) = server[i].type;
-		WFIFOW(fd,47+n*32+30) = server[i].new_;
+		subnet_char_ip = lan_subnetcheck(ip);// Advanced subnet check [LuzZza]
+		WFIFOL(fd,Part1+n*Part2) = htonl((subnet_char_ip) ? subnet_char_ip : server[i].ip);// IP
+		WFIFOW(fd,Part1+n*Part2+4) = ntows(htons(server[i].port));// Port // [!] LE byte order here [!]
+		memcpy(WFIFOP(fd,Part1+n*Part2+6), server[i].name, 20);// Name
+		WFIFOW(fd,Part1+n*Part2+26) = server[i].users;// UserCount
+		WFIFOW(fd,Part1+n*Part2+28) = server[i].type;// State
+		WFIFOW(fd,Part1+n*Part2+30) = server[i].new_;// Property
 		n++;
 	}
-	WFIFOSET(fd,47+32*server_num);
+	WFIFOSET(fd,Part1+Part2*server_num);
 
 	// create temporary auth entry
 	CREATE(node, struct auth_node, 1);
