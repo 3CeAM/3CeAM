@@ -9336,6 +9336,8 @@ int clif_refresh(struct map_session_data *sd)
 /// Updates the object's (bl) name on client (ZC_ACK_REQNAME/ZC_ACK_REQNAMEALL)
 /// 0095 <unit id>.L <char name>.24B
 /// 0195 <unit id>.L <char name>.24B <party name>.24B <guild name>.24B <position name>.24B
+/// 0a30 <unit id>.L <char name>.24B <party name>.24B <guild name>.24B <position name>.24B (ZC_ACK_REQNAMEALL2)
+/// Note: Length of a30 is 4 bigger then 195. Was told its for displaying titles.
 int clif_charnameack (int fd, struct block_list *bl)
 {
 	unsigned char buf[103];
