@@ -48,8 +48,8 @@ Laccessroom:
 	BaseThird == Job_Minstrel || 
 	BaseThird == Job_Wanderer || 
 //	BaseThird == Job_Sura || 
-	BaseThird == Job_Genetic
-//	BaseThird == Job_Shadow_Chaser
+	BaseThird == Job_Genetic || 
+	BaseThird == Job_Shadow_Chaser
 	)
 		set @bodystylemax,MaxBodyStyle;
 	else

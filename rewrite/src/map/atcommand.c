@@ -2227,8 +2227,8 @@ ACMD_FUNC(body_style)
 		//(sd->class_&MAPID_THIRDMASK) == MAPID_SORCERER || 
 		(sd->class_&MAPID_THIRDMASK) == MAPID_MINSTRELWANDERER || 
 		//(sd->class_&MAPID_THIRDMASK) == MAPID_SURA || 
-		(sd->class_&MAPID_THIRDMASK) == MAPID_GENETIC
-		//(sd->class_&MAPID_THIRDMASK) == MAPID_SHADOW_CHASER || 
+		(sd->class_&MAPID_THIRDMASK) == MAPID_GENETIC || 
+		(sd->class_&MAPID_THIRDMASK) == MAPID_SHADOW_CHASER
 		))
 	{
 		clif_displaymessage(fd, "This job has no alternate body styles.");
