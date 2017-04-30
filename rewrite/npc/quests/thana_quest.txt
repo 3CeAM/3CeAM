@@ -3,7 +3,7 @@
 //===== By: ==================================================
 //= [Ishizu-chan]
 //===== Current Version: =====================================
-//= 2.2
+//= 2.3
 //===== Compatible With: =====================================
 //= Any eAthena Version i guess?
 //===== Description: =========================================
@@ -24,6 +24,7 @@
 //= 2.0 Cleaned up the trans-only check, and added expanded classes. [L0ne_W0lf]
 //= 2.1 Replaced effect numerics with constants. [Samuray22]
 //= 2.2 3rd jobs, baby 3rd jobs, Kagerou/Oboro,and Rebellion can now enter. [Rytech]
+//= 2.3 Added check for Summoner. [Rytech]
 //============================================================
 
 hu_fild01,140,163,5	script	Tower Keeper	852,3,3,{
@@ -2592,7 +2593,7 @@ OnThanaDead:
 }
 
 tha_t06,119,120,0	script	thana6-7	45,1,1,{
-	if (((Upper == 1) && ((Class > Job_Thief_High) && (Class < Job_Baby))) || (BaseThird >= Job_Super_Novice_E && BaseThird <= Job_Shadow_Chaser) || (((BaseClass == Job_Gunslinger) || (BaseClass == Job_Ninja) || (BaseClass == Job_Taekwon)) && (BaseLevel >= 95))) {
+	if (((Upper == 1) && ((Class > Job_Thief_High) && (Class < Job_Baby))) || (BaseThird >= Job_Super_Novice_E && BaseThird <= Job_Shadow_Chaser) || (((BaseClass == Job_Gunslinger) || (BaseClass == Job_Ninja) || (BaseClass == Job_Taekwon) || (BaseClass == Job_Summoner)) && (BaseLevel >= 95))) {
 		warp "thana_step",69,369;
 		end;
 	}

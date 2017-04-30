@@ -17,3 +17,4 @@
 
 //3CeAM
 12622,3000	//Boarding_Halter
+23277,180000	//Mado_Box
