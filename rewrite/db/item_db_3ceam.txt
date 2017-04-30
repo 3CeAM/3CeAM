@@ -392,7 +392,7 @@
 13313,Huuma_Swirling_Petal,Swirling Petal Huuma Shuriken,4,100000,,1500,150,,1,2,0x02000000,7,2,34,3,110,1,22,{ bonus bAddMatk,50; bonus2 bSkillAtk,"KO_HUUMARANKA",20; },{},{}
 13314,Huuma_Fluttering_Snow,Fluttering Snow Huuma Shuriken,4,100000,,1500,200,,1,0,0x02000000,7,2,34,4,110,1,22,{ bonus bAddMatk,50; bonus bAtkEle,Ele_Water; bonus3 bAutoSpell,"NJ_HYOUSYOURAKU",(getskilllv("NJ_HYOUSYOURAKU")?getskilllv("NJ_HYOUSYOURAKU"):1),100; },{},{}
 13315,Huuma_Thunderstorm,Thunderstorm Huuma Shuriken,4,100000,,1500,200,,1,0,0x02000000,7,2,34,4,110,1,22,{ bonus bAddMatk,50; bonus bAtkEle,Ele_Wind; bonus3 bAutoSpell,"NJ_RAIGEKISAI",(getskilllv("NJ_RAIGEKISAI")?getskilllv("NJ_RAIGEKISAI"):1),100; },{},{}
-13316,Upg_Huuma_Shuriken,Upgraded Huuma Shuriken,4,20,,1500,55,,1,1,0x02000000,7,2,34,3,1,1,22,{ bonus bUnbreakableWeapon,0; bonus bBaseAtk,10*getrefine(); bonus bMatk,5*getrefine(); bonus bLongAtkRate,getrefine(); if(BaseLevel>=70) {bonus bBaseAtk,5*((BaseLevel-60)/10);} },{},{}
+13316,Upg_Huuma_Shuriken,Upgraded Huuma Shuriken,4,20,,1500,55,,1,1,0x02000000,7,2,34,3,1,1,22,{ bonus bUnbreakableWeapon,0; bonus bBaseAtk,10*getrefine(); bonus bAddMatk,5*getrefine(); bonus bLongAtkRate,getrefine(); if(BaseLevel>=70) {bonus bBaseAtk,5*((BaseLevel-60)/10);} },{},{}
 
 // Armors
 15053,Special_Ninja_Suit,Special Ninja Suit,5,10000,,1200,,10,,0,0x02000000,7,2,16,,100,1,0,{ bonus bAgi,1+(getrefine()/3); if(isequipped(2171)) bonus bAgi,2; },{},{}
@@ -519,7 +519,7 @@
 16032,Pilebuncker_T,Pile Bunker T,4,30000,,3500,400,,1,1,0x00000400,8,2,2,4,130,1,8,{ bonus bUseSPrate,getrefine()*1; },{},{}
 
 // Hunter's Falcon Flute
-12848,Falcon_Flute,Falcon Flute,11,10000,,0,,,,,0xFFFFFFFF,7,2,,,,,,{ setfalcon 1; },{},{}
+12848,Falcon_Flute,Falcon Flute,11,10000,,0,,,,,0x00000800,7,2,,,,,,{ setfalcon 1; },{},{}
 
 // Shadow Equips - Promotion Set
 24012,S_Promotion_Weapon,Promotion Shadow Weapon,5,20,,0,,0,,0,0xFFFFFFFF,7,2,131072,,1,1,0,{ bonus bDex,1; bonus bAtk,getrefine(); bonus bAddMatk,getrefine(); },{},{}
@@ -531,6 +531,9 @@
 
 // Coupon For Styling Shop
 6707,Cash_Hair_Coupon,Cash Hairstyle Coupon,3,0,,10,,,,,,,,,,,,,{},{},{}
+
+// Emergency Magic Gear Box - From 2017 Mado Gear Update
+23277,Mado_Box,Emergency Magic Gear,2,10000,,3000,,,,,0x00000400,8,2,,,100,,,{ setmadogear 1; },{},{}
 
 // Summoner Weapons And Equips
 1681,Short_Foxtail_Staff,Short Foxtail Staff,4,0,,0,30,,1,0,0x04000000,7,2,2,1,1,1,10,{},{},{}

@@ -1684,21 +1684,21 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 		if ( battle_config.mado_skill_limit == 0 && sc->option&OPTION_MADOGEAR && ((TBL_PC*)src)->skillitem != skill_num )
 			switch ( skill_num )
 			{//List of skills usable while mounted on a mado.
-				case BS_GREED:			case NC_BOOSTKNUCKLE:
-				case NC_PILEBUNKER:		case NC_VULCANARM:
-				case NC_FLAMELAUNCHER:	case NC_COLDSLOWER:
-				case NC_ARMSCANNON:		case NC_ACCELERATION:
-				case NC_HOVERING:		case NC_F_SIDESLIDE:
-				case NC_B_SIDESLIDE:	case NC_SELFDESTRUCTION:
-				case NC_SHAPESHIFT:		case NC_EMERGENCYCOOL:
-				case NC_INFRAREDSCAN:	case NC_ANALYZE:
-				case NC_MAGNETICFIELD:	case NC_NEUTRALBARRIER:
-				case NC_STEALTHFIELD:	case NC_REPAIR:
-				case NC_AXEBOOMERANG:	case NC_POWERSWING:
-				case NC_AXETORNADO:		case NC_SILVERSNIPER:
-				case NC_MAGICDECOY:		case NC_DISJOINT:
-				case NC_MAGMA_ERUPTION:	case ALL_FULL_THROTTLE:
-				case NC_MAGMA_ERUPTION_DOTDAMAGE:
+				case AL_TELEPORT:		case BS_GREED:
+				case NC_BOOSTKNUCKLE:	case NC_PILEBUNKER:
+				case NC_VULCANARM:		case NC_FLAMELAUNCHER:
+				case NC_COLDSLOWER:		case NC_ARMSCANNON:
+				case NC_ACCELERATION:	case NC_HOVERING:
+				case NC_F_SIDESLIDE:	case NC_B_SIDESLIDE:
+				case NC_SELFDESTRUCTION:case NC_SHAPESHIFT:
+				case NC_EMERGENCYCOOL:	case NC_INFRAREDSCAN:
+				case NC_ANALYZE:		case NC_MAGNETICFIELD:
+				case NC_NEUTRALBARRIER:	case NC_STEALTHFIELD:
+				case NC_REPAIR:			case NC_AXEBOOMERANG:
+				case NC_POWERSWING:		case NC_AXETORNADO:
+				case NC_SILVERSNIPER:	case NC_MAGICDECOY:
+				case NC_DISJOINT:		case NC_MAGMA_ERUPTION:
+				case ALL_FULL_THROTTLE:	case NC_MAGMA_ERUPTION_DOTDAMAGE:
 					break;
 				default:
 					return 0;
@@ -3037,6 +3037,8 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		sd->max_weight += 2000*skill;
 	if(pc_isdragon(sd) && (skill=pc_checkskill(sd,RK_DRAGONTRAINING))>0)
 		sd->max_weight += 5000+2000*skill;
+	if(pc_ismadogear(sd) && pc_checkskill(sd,NC_MADOLICENCE)>0)
+		sd->max_weight += 15000;
 
 	if( pc_checkskill(sd,SM_MOVINGRECOVERY) > 0 )
 		sd->regen.state.walk = 1;
@@ -3385,6 +3387,12 @@ void status_calc_regen(struct block_list *bl, struct status_data *status, struct
 	if( sd )
 	{
 		struct regen_data_sub *sregen;
+		if (pc_ismadogear(sd))
+		{	// Mado's get a increased HP regen but I don't know the official HP regen increase.
+			// Lets just double it for now. Won't hurt anything. [Rytech]
+			val = regen->hp*2;
+			regen->hp = cap_value(val, 1, SHRT_MAX);
+		}
 		if( (skill=pc_checkskill(sd,HP_MEDITATIO)) > 0 )
 		{
 			val = regen->sp*(100+3*skill)/100;
@@ -4974,7 +4982,7 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 			if( sc->data[SC_ALL_RIDING] )//Set to 25 by default in the battle config.
 				val = battle_config.all_riding_speed;
 			else
-			if( sd && (pc_isriding(sd)||pc_isdragon(sd)) )
+			if( sd && (pc_isriding(sd)||pc_isdragon(sd)||pc_ismadogear(sd)) )
 				val = 25;
 			else
 			if( sd && pc_iswugrider(sd) )//Formula confirmed from testing and finalized. Do not touch. [Rytech]
@@ -5120,7 +5128,7 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 	{
 		if( sd && pc_iscarton(sd) )
 			speed += speed * (50 - 5 * pc_checkskill(sd,MC_PUSHCART)) / 100;
-		if( sd && pc_ismadogear(sd) )
+		if( sd && pc_ismadogear(sd) )// Mado's get a base speed increase, but a penalty still applies from not maxing the skill.
 			speed += speed * (50 - 10 * pc_checkskill(sd,NC_MADOLICENCE)) / 100;
 		if( speed_rate != 100 )
 			speed = speed * speed_rate / 100;
