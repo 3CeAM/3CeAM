@@ -2224,7 +2224,7 @@ ACMD_FUNC(body_style)
 		(sd->class_&MAPID_THIRDMASK) == MAPID_MECHANIC || 
 		(sd->class_&MAPID_THIRDMASK) == MAPID_GUILLOTINE_CROSS || 
 		(sd->class_&MAPID_THIRDMASK) == MAPID_ROYAL_GUARD || 
-		//(sd->class_&MAPID_THIRDMASK) == MAPID_SORCERER || 
+		(sd->class_&MAPID_THIRDMASK) == MAPID_SORCERER || 
 		(sd->class_&MAPID_THIRDMASK) == MAPID_MINSTRELWANDERER || 
 		//(sd->class_&MAPID_THIRDMASK) == MAPID_SURA || 
 		(sd->class_&MAPID_THIRDMASK) == MAPID_GENETIC || 
