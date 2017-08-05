@@ -44,7 +44,7 @@ Laccessroom:
 	BaseThird == Job_Mechanic || 
 	BaseThird == Job_Guillotine_Cross || 
 	BaseThird == Job_Royal_Guard || 
-//	BaseThird == Job_Sorcerer || 
+	BaseThird == Job_Sorcerer || 
 	BaseThird == Job_Minstrel || 
 	BaseThird == Job_Wanderer || 
 //	BaseThird == Job_Sura || 
