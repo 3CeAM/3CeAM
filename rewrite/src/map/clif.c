@@ -2296,9 +2296,10 @@ static void clif_add_random_options(unsigned char* buf, struct item* item)
 /// 029a <index>.W <amount>.W <name id>.W <identified>.B <damaged>.B <refine>.B <card1>.W <card2>.W <card3>.W <card4>.W <equip location>.W <item type>.B <result>.B <expire time>.L (ZC_ITEM_PICKUP_ACK2)
 /// 02d4 <index>.W <amount>.W <name id>.W <identified>.B <damaged>.B <refine>.B <card1>.W <card2>.W <card3>.W <card4>.W <equip location>.W <item type>.B <result>.B <expire time>.L <bindOnEquipType>.W (ZC_ITEM_PICKUP_ACK3)
 /// 0990 <index>.W <amount>.W <name id>.W <identified>.B <damaged>.B <refine>.B <card1>.W <card2>.W <card3>.W <card4>.W <equip location>.L <item type>.B <result>.B <expire time>.L <bindOnEquipType>.W (ZC_ITEM_PICKUP_ACK_V5)
-/// 0a0c <index>.W <amount>.W <name id>.W <identified>.B <damaged>.B <refine>.B <card1>.W <card2>.W <card3>.W <card4>.W <equip location>.L <item type>.B <result>.B <expire time>.L <bindOnEquipType>.W (ZC_ITEM_PICKUP_ACK_V6)
-/// 0a37 <index>.W <amount>.W <name id>.W <identified>.B <damaged>.B <refine>.B <card1>.W <card2>.W <card3>.W <card4>.W <equip location>.L <item type>.B <result>.B <expire time>.L <bindOnEquipType>.W (ZC_ITEM_PICKUP_ACK_V7)
-/// Note: Length for a37 is 3 bigger then a0c but I don't know what the added parts are for.
+/// 0a0c <index>.W <amount>.W <name id>.W <identified>.B <damaged>.B <refine>.B <card1>.W <card2>.W <card3>.W <card4>.W <equip location>.L <item type>.B <result>.B <expire time>.L <bindOnEquipType>.W <optionData>.25B (ZC_ITEM_PICKUP_ACK_V6)
+/// 0a37 <index>.W <amount>.W <name id>.W <identified>.B <damaged>.B <refine>.B <card1>.W <card2>.W <card3>.W <card4>.W <equip location>.L <item type>.B <result>.B <expire time>.L <bindOnEquipType>.W <optionData>.25B <favorite>.B <wItemSpriteNumber>.W (ZC_ITEM_PICKUP_ACK_V7)
+/// 
+/// optionData: <OptIndex>.W <Value>.W <Parm1>.B
 int clif_additem(struct map_session_data *sd, int n, int amount, int fail)
 {
 	int fd;
@@ -2310,8 +2311,11 @@ int clif_additem(struct map_session_data *sd, int n, int amount, int fail)
 #elif PACKETVER < 20150513
 	const int cmd = 0x990;
 	offset = 2;
-#else
+#elif PACKETVER < 20161228
 	const int cmd = 0xa0c;
+	offset = 2;
+#else
+	const int cmd = 0xa37;
 	offset = 2;
 #endif
 	nullpo_ret(sd);
@@ -2347,6 +2351,10 @@ int clif_additem(struct map_session_data *sd, int n, int amount, int fail)
 #if PACKETVER >= 20150513
 		clif_add_random_options(WFIFOP(fd,31), &sd->status.inventory[n]);
 #endif
+#if PACKETVER >= 20161228
+		WFIFOB(fd,56)=0;
+		WFIFOW(fd,57)=0;
+#endif
 #endif
 	}
 	else
@@ -2379,8 +2387,16 @@ int clif_additem(struct map_session_data *sd, int n, int amount, int fail)
 #if PACKETVER >= 20150513
 		clif_add_random_options(WFIFOP(fd,31), &sd->status.inventory[n]);
 #endif
+#if PACKETVER >= 20161228
+		WFIFOB(fd,56)=0;
+		// Send look data only if the item is a armor type with view data.
+		// Headgears and garments are the only ones like this at this time.
+		if ( itemtype(sd->inventory_data[n]->type) == 5 && sd->inventory_data[n]->equip&EQP_VISIBLE )
+			WFIFOW(fd,57)=sd->inventory_data[n]->look;
+		else
+			WFIFOW(fd,57)=0;
+#endif
 	}
-
 	WFIFOSET(fd,packet_len(cmd));
 	return 0;
 }
@@ -7208,6 +7224,20 @@ void clif_vendinglist(struct map_session_data* sd, int id, struct s_vending* ven
 #if PACKETVER >= 20150513
 		clif_add_random_options(WFIFOP(fd,offset+22+i*item_length), &vsd->status.cart[index]);
 #endif
+#if PACKETVER >= 20161228
+		// Send look data only if the item is a armor type with view data.
+		// Headgears and garments are the only ones like this at this time.
+		if ( itemtype(data->type) == 5 && data->equip&EQP_VISIBLE )
+		{
+			WFIFOL(fd,offset+ 47+i*item_length) = data->equip;
+			WFIFOW(fd,offset+ 51+i*item_length) = data->look;
+		}
+		else
+		{
+			WFIFOL(fd,offset+ 47+i*item_length) = 0;
+			WFIFOW(fd,offset+ 51+i*item_length) = 0;
+		}
+#endif
 	}
 	WFIFOSET(fd,WFIFOW(fd,2));
 }
@@ -8360,11 +8390,20 @@ int clif_guild_masterormember(struct map_session_data *sd)
 /// Guild basic information (Territories [Valaris])
 /// 0150 <guild id>.L <level>.L <member num>.L <member max>.L <exp>.L <max exp>.L <points>.L <honor>.L <virtue>.L <emblem id>.L <name>.24B <master name>.24B <manage land>.16B (ZC_GUILD_INFO)
 /// 01b6 <guild id>.L <level>.L <member num>.L <member max>.L <exp>.L <max exp>.L <points>.L <honor>.L <virtue>.L <emblem id>.L <name>.24B <master name>.24B <manage land>.16B <zeny>.L (ZC_GUILD_INFO2)
+/// 0a84 <guild id>.L <level>.L <member num>.L <member max>.L <exp>.L <max exp>.L <points>.L <honor>.L <virtue>.L <emblem id>.L <name>.24B <manage land>.16B <zeny>.L <master char id>.L (ZC_GUILD_INFO3)
 int clif_guild_basicinfo(struct map_session_data *sd)
 {
 	int fd,i,t;
 	struct guild *g;
 	struct guild_castle *gc = NULL;
+
+#if PACKETVER < 20161228
+	short packet_num = 0x1b6;
+	short offset = 0;
+#else
+	short packet_num = 0xa84;
+	short offset = 24;// Negeative
+#endif
 
 	nullpo_ret(sd);
 	fd = sd->fd;
@@ -8373,8 +8412,8 @@ int clif_guild_basicinfo(struct map_session_data *sd)
 	if( g == NULL )
 		return 0;
 
-	WFIFOHEAD(fd,packet_len(0x1b6));
-	WFIFOW(fd, 0)=0x1b6;//0x150;
+	WFIFOHEAD(fd,packet_len(packet_num));
+	WFIFOW(fd, 0)=packet_num;
 	WFIFOL(fd, 2)=g->guild_id;
 	WFIFOL(fd, 6)=g->guild_lv;
 	WFIFOL(fd,10)=g->connect_member;
@@ -8387,19 +8426,22 @@ int clif_guild_basicinfo(struct map_session_data *sd)
 	WFIFOL(fd,38)=0;	// Virtue: (down) Wicked [-100,100] Righteous (up)
 	WFIFOL(fd,42)=g->emblem_id;
 	memcpy(WFIFOP(fd,46),g->name, NAME_LENGTH);
+#if PACKETVER < 20161228
 	memcpy(WFIFOP(fd,70),g->master, NAME_LENGTH);
-
+#endif
+	// Calculate the number of castles owned.
 	for(i = 0, t = 0; i < MAX_GUILDCASTLE; i++)
 	{
 		gc = guild_castle_search(i);
 		if(gc && g->guild_id == gc->guild_id)
 			t++;
 	}
-	strncpy((char*)WFIFOP(fd,94),msg_txt(300+t),20); // "'N' castles"
-
-	WFIFOL(fd,110) = 0;  // zeny
-
-	WFIFOSET(fd,packet_len(0x1b6));
+	strncpy((char*)WFIFOP(fd,94-offset),msg_txt(300+t),20); // "'N' castles"
+	WFIFOL(fd,110-offset) = 0;  // zeny
+#if PACKETVER >= 20161228
+	WFIFOL(fd,114-offset) = g->member[0].char_id;
+#endif
+	WFIFOSET(fd,packet_len(packet_num));
 	return 0;
 }
 
@@ -8431,8 +8473,9 @@ int clif_guild_allianceinfo(struct map_session_data *sd)
 	return 0;
 }
 
-/// Guild member manager information (ZC_MEMBERMGR_INFO).
-/// 0154 <packet len>.W { <account>.L <char id>.L <hair style>.W <hair color>.W <gender>.W <class>.W <level>.W <contrib exp>.L <state>.L <position>.L <memo>.50B <name>.24B }*
+/// Guild member manager information.
+/// 0154 <packet len>.W { <account>.L <char id>.L <hair style>.W <hair color>.W <gender>.W <class>.W <level>.W <contrib exp>.L <state>.L <position>.L <memo>.50B <name>.24B }* (ZC_MEMBERMGR_INFO)
+/// 0aa5 <packet len>.W { <account>.L <char id>.L <hair style>.W <hair color>.W <gender>.W <class>.W <level>.W <contrib exp>.L <state>.L <position>.L <last_login_date>.L }* (ZC_MEMBERMGR_INFO2)
 /// state:
 ///     0 = offline
 ///     1 = online
@@ -8443,6 +8486,15 @@ int clif_guild_memberlist(struct map_session_data *sd)
 	int fd;
 	int i,c;
 	struct guild *g;
+
+#if PACKETVER < 20161228
+	short packet_num = 0x154;
+	short size = 104;
+#else
+	short packet_num = 0xaa5;
+	short size = 34;
+#endif
+
 	nullpo_ret(sd);
 
 	if( (fd = sd->fd) == 0 )
@@ -8450,27 +8502,33 @@ int clif_guild_memberlist(struct map_session_data *sd)
 	if( (g = guild_search(sd->status.guild_id)) == NULL )
 		return 0;
 
-	WFIFOHEAD(fd, g->max_member * 104 + 4);
-	WFIFOW(fd, 0)=0x154;
+	WFIFOHEAD(fd, g->max_member * size + 4);
+	WFIFOW(fd, 0)=packet_num;
 	for(i=0,c=0;i<g->max_member;i++){
 		struct guild_member *m=&g->member[i];
 		if(m->account_id==0)
 			continue;
-		WFIFOL(fd,c*104+ 4)=m->account_id;
-		WFIFOL(fd,c*104+ 8)=m->char_id;
-		WFIFOW(fd,c*104+12)=m->hair;
-		WFIFOW(fd,c*104+14)=m->hair_color;
-		WFIFOW(fd,c*104+16)=m->gender;
-		WFIFOW(fd,c*104+18)=m->class_;
-		WFIFOW(fd,c*104+20)=m->lv;
-		WFIFOL(fd,c*104+22)=(int)cap_value(m->exp,0,INT_MAX);
-		WFIFOL(fd,c*104+26)=m->online;
-		WFIFOL(fd,c*104+30)=m->position;
-		memset(WFIFOP(fd,c*104+34),0,50);
-		memcpy(WFIFOP(fd,c*104+84),m->name,NAME_LENGTH);
+		WFIFOL(fd,c*size+ 4)=m->account_id;
+		WFIFOL(fd,c*size+ 8)=m->char_id;
+		WFIFOW(fd,c*size+12)=m->hair;
+		WFIFOW(fd,c*size+14)=m->hair_color;
+		WFIFOW(fd,c*size+16)=m->gender;
+		WFIFOW(fd,c*size+18)=m->class_;
+		WFIFOW(fd,c*size+20)=m->lv;
+		WFIFOL(fd,c*size+22)=(int)cap_value(m->exp,0,INT_MAX);
+		WFIFOL(fd,c*size+26)=m->online;
+		WFIFOL(fd,c*size+30)=m->position;
+#if PACKETVER < 20161228
+		memset(WFIFOP(fd,c*size+34),0,50);
+		memcpy(WFIFOP(fd,c*size+84),m->name,NAME_LENGTH);
+#else
+		//WFIFOL(fd,c*size+34)=time(NULL);
+		WFIFOL(fd,c*size+34)=0;
+		//WFIFOL(fd,c*size+34)=m->last_login;
+#endif
 		c++;
 	}
-	WFIFOW(fd, 2)=c*104+4;
+	WFIFOW(fd, 2)=c*size+4;
 	WFIFOSET(fd,WFIFOW(fd,2));
 	return 0;
 }
@@ -13092,6 +13150,31 @@ void clif_parse_GuildChangeMemberPosition(int fd, struct map_session_data *sd)
 	if(!sd->state.gmaster_flag)
 		return;
 
+	// Guild leadership change.
+	// A sent position change of 0 triggers a change in guild ownership.
+	if ( RFIFOL(fd,12) == 0 )
+		{
+			struct map_session_data *tsd = map_charid2sd(RFIFOL(fd,8));
+
+			if ( agit_flag == 1 || agit2_flag == 1 ){
+				clif_displaymessage(fd, "You can't change guild leaders while War of Emperium is in progress.");
+				return;
+			}
+
+			if ( map[sd->bl.m].flag.guildlock ){
+				clif_displaymessage(fd, "You can't change guild leaders on this map.");
+				return;
+			}
+
+			if ( map_charid2sd(RFIFOL(fd,8)) == NULL || tsd->status.guild_id != sd->status.guild_id){
+				clif_displaymessage(fd, "Targeted character must be a online guildmate.");
+				return;
+			}
+
+			guild_gm_change(sd->status.guild_id, tsd);
+			return;// End it here since position change already happened.
+		}
+
 	for(i=4;i<RFIFOW(fd,2);i+=12){
 		guild_change_memberposition(sd->status.guild_id,
 			RFIFOL(fd,i),RFIFOL(fd,i+4),RFIFOL(fd,i+8));
@@ -17530,16 +17613,16 @@ static int packetdb_readdb(void)
 	    0,  0,  4,  0,  0,  0,  0,  0,  0, 45, 47, 47, 56, -1,  0, -1,
 	   -1,  0,  0,  0,  0,  0,  0,  0, 14,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  8,  3,  0,  0,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0,  0,  3,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0, 59,  3,  0,  0,  0,  0,  0,  0,  0,
 	//#0x0A40
 	    0,  0,  0,  0,  0,  0, 14,  3,  2,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	//#0x0A80
+	    0,  0,  0,  0, 94,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	//#0x0AC0
 	    0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
