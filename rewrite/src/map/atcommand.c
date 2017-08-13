@@ -6430,9 +6430,15 @@ ACMD_FUNC(changegm)
 		return -1;
 	}
 
+	if ( agit_flag == 1 || agit2_flag == 1 )
+	{
+		clif_displaymessage(fd, "You can't change guild leaders while War of Emperium is in progress.");
+		return -1;
+	}
+
 	if( map[sd->bl.m].flag.guildlock )
 	{
-		clif_displaymessage(fd, "You cannot change guild leaders on this map.");
+		clif_displaymessage(fd, "You can't change guild leaders on this map.");
 		return -1;
 	}
 
@@ -6443,7 +6449,7 @@ ACMD_FUNC(changegm)
 	}
 	
 	if((pl_sd=map_nick2sd((char *) message)) == NULL || pl_sd->status.guild_id != sd->status.guild_id) {
-		clif_displaymessage(fd, "Target character must be online and be a guildmate.");
+		clif_displaymessage(fd, "Targeted character must be online guildmate.");
 		return -1;
 	}
 

@@ -2002,6 +2002,10 @@ packet_ver: 34
 0x085E,5,hommenu,4
 0x08AD,36,storagepassword,0
 
+0x0a37,59//ZC_ITEM_PICKUP_ACK_V7
+0x0A84,94//ZC_GUILD_INFO3
+0x0AA5,-1//ZC_MEMBERMGR_INFO2
+
 //2017-03-29dRagexeRE
 packet_ver: 35
 0x0369,7,actionrequest,2:6
