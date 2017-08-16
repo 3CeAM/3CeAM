@@ -8475,7 +8475,7 @@ int clif_guild_allianceinfo(struct map_session_data *sd)
 
 /// Guild member manager information.
 /// 0154 <packet len>.W { <account>.L <char id>.L <hair style>.W <hair color>.W <gender>.W <class>.W <level>.W <contrib exp>.L <state>.L <position>.L <memo>.50B <name>.24B }* (ZC_MEMBERMGR_INFO)
-/// 0aa5 <packet len>.W { <account>.L <char id>.L <hair style>.W <hair color>.W <gender>.W <class>.W <level>.W <contrib exp>.L <state>.L <position>.L <last_login_date>.L }* (ZC_MEMBERMGR_INFO2)
+/// 0aa5 <packet len>.W { <account>.L <char id>.L <hair style>.W <hair color>.W <gender>.W <class>.W <level>.W <contrib exp>.L <state>.L <position>.L <last login>.L }* (ZC_MEMBERMGR_INFO2)
 /// state:
 ///     0 = offline
 ///     1 = online
@@ -8522,9 +8522,7 @@ int clif_guild_memberlist(struct map_session_data *sd)
 		memset(WFIFOP(fd,c*size+34),0,50);
 		memcpy(WFIFOP(fd,c*size+84),m->name,NAME_LENGTH);
 #else
-		//WFIFOL(fd,c*size+34)=time(NULL);
-		WFIFOL(fd,c*size+34)=0;
-		//WFIFOL(fd,c*size+34)=m->last_login;
+		WFIFOL(fd,c*size+34)=m->last_login;
 #endif
 		c++;
 	}

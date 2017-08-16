@@ -72,7 +72,7 @@ int guild_opposition(struct map_session_data *sd,struct map_session_data *tsd);
 int guild_check_alliance(int guild_id1, int guild_id2, int flag);
 
 int guild_send_memberinfoshort(struct map_session_data *sd,int online);
-int guild_recv_memberinfoshort(int guild_id,int account_id,int char_id,int online,int lv,int class_);
+int guild_recv_memberinfoshort(int guild_id,int account_id,int char_id,int online,int lv,int class_,int last_login);
 int guild_change_memberposition(int guild_id,int account_id,int char_id,short idx);
 int guild_memberposition_changed(struct guild *g,int idx,int pos);
 int guild_change_position(int guild_id,int idx,int mode,int exp_mode,const char *name);

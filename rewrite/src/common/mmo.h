@@ -48,7 +48,7 @@
 
 #ifndef PACKETVER
 	//#define PACKETVER	20081126
-	#define PACKETVER 20151029
+	#define PACKETVER 20170329
 #endif
 // backward compatible PACKETVER 8 and 9
 #if PACKETVER == 8
@@ -493,6 +493,7 @@ struct guild_member {
 	uint64 exp;
 	int exp_payper;
 	short online,position;
+	int last_login;
 	char name[NAME_LENGTH];
 	struct map_session_data *sd;
 	unsigned char modified;
@@ -589,6 +590,7 @@ enum {
 	GMI_GENDER,
 	GMI_CLASS,
 	GMI_LEVEL,
+	GMI_LAST_LOGIN,
 };
 
 enum {
