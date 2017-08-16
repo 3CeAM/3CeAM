@@ -112,7 +112,7 @@ int inter_guild_tosql(struct guild *g,int flag)
 	// GS_LEVEL `guild_lv`,`max_member`,`exp`,`next_exp`,`skill_point`
 	// GS_BASIC `name`,`master`,`char_id`
 
-	// GS_MEMBER `guild_member` (`guild_id`,`account_id`,`char_id`,`hair`,`hair_color`,`gender`,`class`,`lv`,`exp`,`exp_payper`,`online`,`position`,`name`)
+	// GS_MEMBER `guild_member` (`guild_id`,`account_id`,`char_id`,`hair`,`hair_color`,`gender`,`class`,`lv`,`exp`,`exp_payper`,`online`,`position`,`last_login`,`name`)
 	// GS_POSITION `guild_position` (`guild_id`,`position`,`name`,`mode`,`exp_mode`)
 	// GS_ALLIANCE `guild_alliance` (`guild_id`,`opposition`,`alliance_id`,`name`)
 	// GS_EXPULSION `guild_expulsion` (`guild_id`,`account_id`,`name`,`mes`)
@@ -264,11 +264,11 @@ int inter_guild_tosql(struct guild *g,int flag)
 			if(m->account_id) {
 				//Since nothing references guild member table as foreign keys, it's safe to use REPLACE INTO
 				Sql_EscapeStringLen(sql_handle, esc_name, m->name, strnlen(m->name, NAME_LENGTH));
-				if( SQL_ERROR == Sql_Query(sql_handle, "REPLACE INTO `%s` (`guild_id`,`account_id`,`char_id`,`hair`,`hair_color`,`gender`,`class`,`lv`,`exp`,`exp_payper`,`online`,`position`,`name`) "
-					"VALUES ('%d','%d','%d','%d','%d','%d','%d','%d','%"PRIu64"','%d','%d','%d','%s')",
+				if( SQL_ERROR == Sql_Query(sql_handle, "REPLACE INTO `%s` (`guild_id`,`account_id`,`char_id`,`hair`,`hair_color`,`gender`,`class`,`lv`,`exp`,`exp_payper`,`online`,`position`,`last_login`,`name`) "
+					"VALUES ('%d','%d','%d','%d','%d','%d','%d','%d','%"PRIu64"','%d','%d','%d','%d','%s')",
 					guild_member_db, g->guild_id, m->account_id, m->char_id,
 					m->hair, m->hair_color, m->gender,
-					m->class_, m->lv, m->exp, m->exp_payper, m->online, m->position, esc_name) )
+					m->class_, m->lv, m->exp, m->exp_payper, m->online, m->position, m->last_login, esc_name) )
 					Sql_ShowDebug(sql_handle);
 				if (m->modified & GS_MEMBER_NEW)
 				{
@@ -437,7 +437,7 @@ struct guild * inter_guild_fromsql(int guild_id)
 	}
 
 	// load guild member info
-	if( SQL_ERROR == Sql_Query(sql_handle, "SELECT `account_id`,`char_id`,`hair`,`hair_color`,`gender`,`class`,`lv`,`exp`,`exp_payper`,`online`,`position`,`name` "
+	if( SQL_ERROR == Sql_Query(sql_handle, "SELECT `account_id`,`char_id`,`hair`,`hair_color`,`gender`,`class`,`lv`,`exp`,`exp_payper`,`online`,`position`,`last_login`,`name` "
 		"FROM `%s` WHERE `guild_id`='%d' ORDER BY `position`", guild_member_db, guild_id) )
 	{
 		Sql_ShowDebug(sql_handle);
@@ -461,7 +461,8 @@ struct guild * inter_guild_fromsql(int guild_id)
 		Sql_GetData(sql_handle, 10, &data, NULL); m->position = atoi(data);
 		if( m->position >= MAX_GUILDPOSITION ) // Fix reduction of MAX_GUILDPOSITION [PoW]
 			m->position = MAX_GUILDPOSITION - 1;
-		Sql_GetData(sql_handle, 11, &data, &len); memcpy(m->name, data, min(len, NAME_LENGTH));
+		Sql_GetData(sql_handle, 11, &data, NULL); m->last_login = atoi(data);
+		Sql_GetData(sql_handle, 12, &data, &len); memcpy(m->name, data, min(len, NAME_LENGTH));
 		m->modified = GS_MEMBER_UNMODIFIED;
 	}
 
@@ -1013,7 +1014,7 @@ int mapif_guild_withdraw(int guild_id,int account_id,int char_id,int flag, const
 // Send short member's info
 int mapif_guild_memberinfoshort(struct guild *g,int idx)
 {
-	unsigned char buf[19];
+	unsigned char buf[23];
 	WBUFW(buf, 0)=0x3835;
 	WBUFL(buf, 2)=g->guild_id;
 	WBUFL(buf, 6)=g->member[idx].account_id;
@@ -1021,7 +1022,8 @@ int mapif_guild_memberinfoshort(struct guild *g,int idx)
 	WBUFB(buf,14)=(unsigned char)g->member[idx].online;
 	WBUFW(buf,15)=g->member[idx].lv;
 	WBUFW(buf,17)=g->member[idx].class_;
-	mapif_sendall(buf,19);
+	WBUFL(buf,19)=g->member[idx].last_login;
+	mapif_sendall(buf,23);
 	return 0;
 }
 
@@ -1440,6 +1442,7 @@ int mapif_parse_GuildChangeMemberInfoShort(int fd,int guild_id,int account_id,in
 		g->member[i].online = online;
 		g->member[i].lv = lv;
 		g->member[i].class_ = class_;
+		g->member[i].last_login = (int)time(NULL);
 		g->member[i].modified = GS_MEMBER_MODIFIED;
 		mapif_guild_memberinfoshort(g,i);
 	}
@@ -1656,6 +1659,14 @@ int mapif_parse_GuildMemberInfoChange(int fd,int guild_id,int account_id,int cha
 		case GMI_LEVEL:
 		{
 			g->member[i].lv=*((short *)data);
+			g->member[i].modified = GS_MEMBER_MODIFIED;
+			mapif_guild_memberinfochanged(guild_id,account_id,char_id,type,data,len);
+			g->save_flag |= GS_MEMBER; //Save new data.
+			break;
+		}
+		case GMI_LAST_LOGIN:
+		{
+			g->member[i].last_login=*((int *)data);
 			g->member[i].modified = GS_MEMBER_MODIFIED;
 			mapif_guild_memberinfochanged(guild_id,account_id,char_id,type,data,len);
 			g->save_flag |= GS_MEMBER; //Save new data.

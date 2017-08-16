@@ -268,6 +268,7 @@ CREATE TABLE IF NOT EXISTS `guild_member` (
   `exp_payper` tinyint(11) unsigned NOT NULL default '0',
   `online` tinyint(4) unsigned NOT NULL default '0',
   `position` tinyint(6) unsigned NOT NULL default '0',
+  `last_login` int(11) unsigned NOT NULL default '0',
   `name` varchar(24) NOT NULL default '',
   PRIMARY KEY  (`guild_id`,`char_id`),
   KEY `char_id` (`char_id`)
