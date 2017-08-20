@@ -1543,7 +1543,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 
 		// Allow use of Quick Draw Shot if Chain Action or Eternal Chain triggered the double attack.
 		if ( pc_checkskill(sd, RL_QD_SHOT) && quick_draw_active == 1 && hitnumber == 2 )
-				sc_start4(src,SC_COMBO,100,RL_QD_SHOT,target->id,1,0,skill_get_time(RL_QD_SHOT,skill_lv));
+				sc_start4(src,SC_COMBO,100,RL_QD_SHOT,target->id,1,0,1000);
 
 		if ( hitnumber > 1 )//Needed to allow critical attacks to hit when not hitting more then once.
 			{wd.div_ = hitnumber;
