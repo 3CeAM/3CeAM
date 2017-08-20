@@ -6624,7 +6624,15 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 			status_change_end(&devsd->bl, SC_DEVOTION, INVALID_TIMER);
 		sd->devotion[k] = 0;
 	}
-	
+
+	for(k = 0; k < MAX_CRIMSON_MARKS; k++)
+	if (sd->crimson_mark[k]){
+		struct map_session_data *cmarksd = map_id2sd(sd->crimson_mark[k]);
+		if (cmarksd)
+			status_change_end(&cmarksd->bl, SC_C_MARKER, INVALID_TIMER);
+		sd->crimson_mark[k] = 0;
+	}
+
 	if( sd->shadowform_id )
 	{
 		struct block_list *s_bl = map_id2bl(sd->shadowform_id);

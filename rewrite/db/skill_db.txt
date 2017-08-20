@@ -1286,7 +1286,7 @@
 2556,0,6,4,0,0x3,-1,1,1,no,0,0,0,none,0,	RL_FLICKER,Flicker
 2557,9,6,1,-1,0x2,2,5,1,yes,0,0,0,weapon,0,	RL_S_STORM,Shatter Storm
 2558,0,6,4,0,0x1,0,10,1,yes,0,0,0,none,0,	RL_E_CHAIN,Eternal Chain
-2559,0,8,4,-1,0,0,1,1,no,0,0x200,0,weapon,0,	RL_QD_SHOT,Quick Draw Shot
+2559,9,8,4,-1,0x2,10,1,1,no,0,0x200,0,weapon,0,	RL_QD_SHOT,Quick Draw Shot// Combo skill but range set above 5 to treat it as range damage. [Rytech]
 2560,11,6,1,0,0x1,0,1,1,no,0,0,0,none,0,	RL_C_MARKER,Crimson Marker
 2561,0,6,4,-1,0x2,3,5,1,no,0,0,0,weapon,0,	RL_FIREDANCE,Fire Dance
 2562,7:8:9:10:11,6,1,-1,0,0,5,1,yes,0,0,0,weapon,0,	RL_H_MINE,Howling Mine

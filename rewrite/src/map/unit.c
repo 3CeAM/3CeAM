@@ -1049,6 +1049,7 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 		case TK_JUMPKICK:
 		case TK_COUNTER:
 		case HT_POWER:
+		case RL_QD_SHOT:
 			if (sc && sc->data[SC_COMBO] && sc->data[SC_COMBO]->val1 == skill_num)
 				target_id = sc->data[SC_COMBO]->val2;
 			break;
@@ -2073,6 +2074,7 @@ int unit_remove_map_(struct block_list *bl, clr_type clrtype, const char* file, 
 		status_change_end(bl, SC_CURSEDCIRCLE_TARGET, INVALID_TIMER);
 		status_change_end(bl, SC_NETHERWORLD, INVALID_TIMER);
 		status_change_end(bl, SC_VACUUM_EXTREME, INVALID_TIMER);
+		status_change_end(bl, SC_C_MARKER, INVALID_TIMER);
 		status_change_end(bl, SC_SUHIDE, INVALID_TIMER);
 		status_change_end(bl, SC_TINDER_BREAKER, INVALID_TIMER);
 	}

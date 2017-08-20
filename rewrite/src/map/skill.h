@@ -21,6 +21,7 @@ struct status_change_entry;
 #define MAX_SKILL_SPELLBOOK_DB	17
 #define MAX_SKILL_IMPROVISE_DB	16
 #define MAX_SKILL_MAGICMUSHROOM_DB 23
+#define MAX_CRIMSON_MARKS 3
 
 #define MAX_SKILL_LEVEL 100
 
