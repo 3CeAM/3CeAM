@@ -1365,6 +1365,11 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						wd.div_ = sd->spiritball_old;
 				}
 				break;
+
+			case RL_QD_SHOT:
+				wd.div_ = 1 + status_get_job_lv(src) / 20;
+				break;
+
 			case HT_PHANTASMIC:
 				//Since these do not consume ammo, they need to be explicitly set as arrow attacks.
 				flag.arrow = 1;
@@ -1488,6 +1493,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 		short hitnumber = 0;//Used for setting how many hits will hit.
 		short gendetect[] = { 12, 12, 21, 27, 30 };//If generated number is outside this value while in fear breeze status, it will check if their's a chance for double attacking.
 		short generate = rand()%100 + 1;//Generates a random number between 1 - 100 which is then used to determine if fear breeze or double attacking will happen.
+		short quick_draw_active = 0;// Flag used to tell if quick draw shot can be comboed. Active if chain combo or eternal chain has the higher double attack chance.
 
 		// First we go through a number of checks to see if their's any chance of double attacking a target. Only the highest success chance is taken.
 
@@ -1505,11 +1511,17 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 
 		// Eternal Chain - Buff Skill
 		if ( sc && sc->data[SC_E_CHAIN] && 5 * sc->data[SC_E_CHAIN]->val1 > dachance && sd->weapontype1 != W_FIST )
+		{
 			dachance = 5 * sc->data[SC_E_CHAIN]->val1;
+			quick_draw_active = 1;
+		}
 
 		// Chain Action - Passive Skill
 		if ( 5 * pc_checkskill(sd,GS_CHAINACTION) > dachance && sd->weapontype1 == W_REVOLVER )
+		{
 			dachance = 5 * pc_checkskill(sd,GS_CHAINACTION);
+			quick_draw_active = 1;
+		}
 
 		// Fear Breeze - Buff Skill
 		// This checks if the generated value is within fear breeze's success chance range for the level used as set by gendetect.
@@ -1528,6 +1540,10 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 		// then allow a double attack to happen.
 		else if ( generate < dachance )
 			hitnumber = 2;
+
+		// Allow use of Quick Draw Shot if Chain Action or Eternal Chain triggered the double attack.
+		if ( pc_checkskill(sd, RL_QD_SHOT) && quick_draw_active == 1 && hitnumber == 2 )
+				sc_start4(src,SC_COMBO,100,RL_QD_SHOT,target->id,1,0,skill_get_time(RL_QD_SHOT,skill_lv));
 
 		if ( hitnumber > 1 )//Needed to allow critical attacks to hit when not hitting more then once.
 			{wd.div_ = hitnumber;
@@ -2968,6 +2984,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				ATK_ADDRATE(sc->data[SC_EDP]->val3);
 
 			// Heated Barrel increases damage of regular attacks.
+			// Note: Its said that damage increase is tacked on after skill calculations. How so???
+			// I must know the official formula before updating the code to avoid skill overpower issues. [Rytech]
 			if(sc->data[SC_HEAT_BARREL] && (wd.flag&(BF_LONG|BF_WEAPON)) == (BF_LONG|BF_WEAPON) && (!skill_num))
 				ATK_ADDRATE(sc->data[SC_HEAT_BARREL]->val3);
 

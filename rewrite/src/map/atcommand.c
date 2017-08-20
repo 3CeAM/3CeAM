@@ -5888,6 +5888,25 @@ ACMD_FUNC(effect)
 }
 
 /*==========================================
+ * @effect2 by Rytech
+ * Works like @effect but with a 2nd value.
+ *------------------------------------------*/
+ACMD_FUNC(effect2)
+{
+	int type = 0, value = 0, flag = 0;
+	nullpo_retr(-1, sd);
+
+	if (!message || !*message || sscanf(message, "%d %d", &type, &value) < 1) {
+		clif_displaymessage(fd, "Please enter an effect number (usage: @effect <effect number> <value>).");
+		return -1;
+	}
+
+	clif_specialeffect_value(&sd->bl, type, value, (send_target)flag);
+	clif_displaymessage(fd, msg_txt(229)); // Your effect has changed.
+	return 0;
+}
+
+/*==========================================
  * @killer by MouseJstr
  * enable killing players even when not in pvp
  *------------------------------------------*/
@@ -9489,12 +9508,13 @@ AtCommandInfo atcommand_info[] = {
 	{ "falcon",            20,20,     atcommand_falcon },
 	{ "cart",              20,20,     atcommand_cart },
 	{ "bodystyle",         40,40,     atcommand_body_style },
+	{ "skillfailmsg",      99,99,     atcommand_skillfailmsg },
+	{ "produceeffect",     99,99,     atcommand_produceeffect },
+	{ "effect2",           40,40,     atcommand_effect2 },
 	//Mutated Homunculus Commands
 	{ "hommutate",         60,60,     atcommand_hommutation },
 	{ "hommutation",       60,60,     atcommand_hommutation },
-	{ "hommax",            60,60,     atcommand_hommax },
-	{ "skillfailmsg",      99,99,     atcommand_skillfailmsg },
-	{ "produceeffect",     99,99,     atcommand_produceeffect }
+	{ "hommax",            60,60,     atcommand_hommax }
 };
 
 

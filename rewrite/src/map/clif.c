@@ -1474,6 +1474,8 @@ int clif_spawn(struct block_list *bl)
 				clif_status_change(&sd->bl,SI_SHADOWFORM,1,9999,sd->sc.data[SC__SHADOWFORM]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC__MANHOLE] )
 				clif_status_change(&sd->bl,SI_MANHOLE,1,9999,sd->sc.data[SC__MANHOLE]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_C_MARKER] )
+				clif_status_change(&sd->bl,SI_C_MARKER,1,9999,sd->sc.data[SC_C_MARKER]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_JYUMONJIKIRI] )
 				clif_status_change(&sd->bl,SI_KO_JYUMONJIKIRI,1,9999,sd->sc.data[SC_JYUMONJIKIRI]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_MEIKYOUSISUI] )
@@ -4069,9 +4071,19 @@ int clif_unequipitemack(struct map_session_data *sd,int n,int pos,int ok)
 	return 0;
 }
 
-/*==========================================
- *
- *------------------------------------------*/
+/// Notifies clients in the area about an special/visual effect (ZC_NOTIFY_EFFECT).
+/// 019b <id>.L <effect id>.L
+/// effect id:
+///     0 = base level up
+///     1 = job level up
+///     2 = refine failure
+///     3 = refine success
+///     4 = game over
+///     5 = pharmacy success
+///     6 = pharmacy failure
+///     7 = base level up (super novice)
+///     8 = job level up (super novice)
+///     9 = base level up (taekwon)
 int clif_misceffect(struct block_list* bl,int type)
 {
 	unsigned char buf[32];
@@ -4858,6 +4870,8 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_SHADOWFORM,1,9999,tsd->sc.data[SC__SHADOWFORM]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC__MANHOLE] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_MANHOLE,1,9999,tsd->sc.data[SC__MANHOLE]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_C_MARKER] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_C_MARKER,1,9999,tsd->sc.data[SC_C_MARKER]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_JYUMONJIKIRI] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_KO_JYUMONJIKIRI,1,9999,tsd->sc.data[SC_JYUMONJIKIRI]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_MEIKYOUSISUI] )
@@ -9326,7 +9340,10 @@ int clif_soundeffectall(struct block_list* bl, const char* name, int type, enum 
 	return 0;
 }
 
-// displaying special effects (npcs, weather, etc) [Valaris]
+/// Displays special effects (npcs, weather, etc) [Valaris] (ZC_NOTIFY_EFFECT2).
+/// 01f3 <id>.L <effect id>.L
+/// effect id:
+///     @see doc/effect_list.txt
 int clif_specialeffect(struct block_list* bl, int type, enum send_target target)
 {
 	unsigned char buf[24];
@@ -9355,6 +9372,33 @@ void clif_specialeffect_single(struct block_list* bl, int type, int fd)
 	WFIFOL(fd,2) = bl->id;
 	WFIFOL(fd,6) = type;
 	WFIFOSET(fd,10);
+}
+
+/// Notifies clients of an special/visual effect that accepts an value (ZC_NOTIFY_EFFECT3).
+/// 0284 <id>.L <effect id>.L <num data>.L
+/// effect id:
+///     @see doc/effect_list.txt
+/// num data:
+///     effect-dependent value
+int clif_specialeffect_value(struct block_list* bl, int effect_id, int num, send_target target)
+{
+	unsigned char buf[14];
+
+	nullpo_ret(bl);
+
+	WBUFW(buf,0) = 0x284;
+	WBUFL(buf,2) = bl->id;
+	WBUFL(buf,6) = effect_id;
+	WBUFL(buf,10) = num;
+
+	clif_send(buf, packet_len(0x284), bl, target);
+
+	if( disguised(bl) )
+	{
+		WBUFL(buf,2) = -bl->id;
+		clif_send(buf, packet_len(0x284), bl, SELF);
+	}
+	return 0;
 }
 
 /******************************************************
@@ -9777,6 +9821,23 @@ int clif_crimson_marker_xy_remove(struct map_session_data *sd)
 	WBUFW(buf,6)=-1;
 	WBUFW(buf,8)=-1;
 	clif_send(buf,packet_len(0x9c1),&sd->bl,PARTY_SAMEMAP_WOS);
+	return 0;
+}
+
+/// Crimson Marker mini map tracking (ZC_C_MARKERINFO).
+/// 09c1 <AID>.L <xPos>.W <yPos>.W
+int clif_crimson_marker_xy_all(struct map_session_data *sd, struct block_list *bl, short mark)
+{
+	unsigned char buf[10];
+
+	nullpo_ret(sd);
+
+	WBUFW(buf,0)=0x9c1;// ZC_C_MARKERINFO
+	WBUFL(buf,2)=sd->status.account_id;// AID
+	WBUFW(buf,6)=sd->bl.x;// xPos
+	WBUFW(buf,8)=sd->bl.y;// yPos
+	clif_send(buf,packet_len(0x9c1),&sd->bl,SELF);
+	
 	return 0;
 }
 
