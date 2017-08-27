@@ -701,6 +701,8 @@ typedef enum sc_type {
 	SC_GROOMING,
 	SC_PROTECTIONOFSHRIMP,
 
+	SC_FALLEN_ANGEL,
+
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
 

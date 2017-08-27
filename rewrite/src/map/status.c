@@ -565,6 +565,7 @@ void initChangeTables(void)
 	set_sc( RL_H_MINE      , SC_H_MINE       , SI_H_MINE       , SCB_NONE );
 	//set_sc( RL_H_MINE      , SC_H_MINE_SPLASH , SI_H_MINE_SPLASH , SCB_NONE );
 	set_sc( RL_P_ALTER     , SC_P_ALTER      , SI_P_ALTER      , SCB_WATK );
+	set_sc( RL_FALLEN_ANGEL, SC_FALLEN_ANGEL , SI_FALLEN_ANGEL , SCB_NONE );
 	set_sc( RL_HEAT_BARREL , SC_HEAT_BARREL  , SI_HEAT_BARREL  , SCB_HIT|SCB_ASPD );
 	//set_sc( RL_HEAT_BARREL , SC_HEAT_BARREL_AFTER , SI_HEAT_BARREL_AFTER , SCB_NONE );
 	set_sc( RL_AM_BLAST    , SC_ANTI_M_BLAST , SI_ANTI_M_BLAST , SCB_NONE );
@@ -7007,6 +7008,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC_ARMOR_ELEMENT:
 			case SC_ARMOR_RESIST:
 			case SC_C_MARKER:
+			case SC_H_MINE:
 				break;
 			case SC_GOSPEL:
 				 //Must not override a casting gospel char.
@@ -9202,6 +9204,17 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 				{
 					if( d_bl->type == BL_PC )
 						((TBL_PC*)d_bl)->crimson_mark[sce->val2] = 0;
+				}
+			}
+			break;
+
+		case SC_H_MINE:
+			{
+				struct block_list *d_bl = map_id2bl(sce->val1);
+				if( d_bl )
+				{
+					if( d_bl->type == BL_PC )
+						((TBL_PC*)d_bl)->howl_mine[sce->val2] = 0;
 				}
 			}
 			break;

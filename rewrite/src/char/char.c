@@ -1392,7 +1392,7 @@ int make_new_char(struct char_session_data* sd, char* name_, int str, int agi, i
 	// Race selection from 0xa39 packet.
 	// 0 = Human
 	// 4218 = Doram
-	if ( race == RACE_HUMAN )
+	if ( race == RACE_HUMAN || ALLOW_OTHER_RACES == 0)
 	{	// Human - Defaults
 		// Job = Novice
 		// Starting HP/SP = 40/11
