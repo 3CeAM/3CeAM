@@ -1404,9 +1404,10 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				wd.blewcount=0;
 				break;
 
-			case RL_R_TRIP:// Knock's back target out of skill range.
-				wd.blewcount = wd.blewcount - distance_bl(src,target);
-				break;
+			// Disabled until I can reconfirm if this is still a thing. [Rytech]
+			//case RL_R_TRIP:// Knock's back target out of skill range.
+			//	wd.blewcount = wd.blewcount - distance_bl(src,target);
+			//	break;
 
 			case KN_AUTOCOUNTER:
 				wd.flag=(wd.flag&~BF_SKILLMASK)|BF_NORMAL;
@@ -1543,7 +1544,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 
 		// Allow use of Quick Draw Shot if Chain Action or Eternal Chain triggered the double attack.
 		if ( pc_checkskill(sd, RL_QD_SHOT) && quick_draw_active == 1 && hitnumber == 2 )
-				sc_start4(src,SC_COMBO,100,RL_QD_SHOT,target->id,1,0,1000);
+				sc_start4(src,SC_COMBO,100,RL_QD_SHOT,target->id,1,0,2000);
 
 		if ( hitnumber > 1 )//Needed to allow critical attacks to hit when not hitting more then once.
 			{wd.div_ = hitnumber;
@@ -2184,6 +2185,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case GS_DESPERADO:
 					skillratio += 50*(skill_lv-1);
+					if ( sc && sc->data[SC_FALLEN_ANGEL] )
+						skillratio *= 2;
 					break;
 				case GS_DUST:
 					skillratio += 50*skill_lv;
@@ -2737,11 +2740,17 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case RL_BANISHING_BUSTER:
 					skillratio = 1000 + 200 * skill_lv;
 					break;
+				case RL_FIREDANCE:
+					skillratio = 200 * skill_lv + 50 * pc_checkskill(sd,GS_DESPERADO);
+					break;
 				case RL_H_MINE:
 					skillratio = 200 + 200 * skill_lv;
 					break;
 				case RL_R_TRIP:
-					skillratio = (10 + 3 * skill_lv) * sstatus->dex / 2;
+					skillratio = 1000 + 300 * skill_lv;
+					break;
+				case RL_D_TAIL:
+					skillratio = 4000 + 1000 * skill_lv;
 					break;
 				case RL_SLUGSHOT:
 					if (sd)
@@ -2751,6 +2760,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_AMMO )
 							skillratio = 10 * sd->inventory_data[index]->weight;
 					}
+					break;
+				case RL_R_TRIP_PLUSATK:// Need to confirm if level 5 is really 2700% and not a typo. [Rytech]
+					skillratio = 500 + 100 * skill_lv;
 					break;
 				case KO_JYUMONJIKIRI:
 					skillratio = 150 * skill_lv;

@@ -1278,7 +1278,7 @@
 //2549,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,	ALL_LIGHTGUARD,Light Guard
 
 // Rebellion
-2551,0,0,0,0,0,0,10,0,no,0,0x4000,0,none,0,	RL_GLITTERING_GREED,Flip The Coin Greed//Not in the skill tree. Why and what does it do? Need real max level.
+2551,0,0,0,0,0,0,5,0,no,0,0x4000,0,none,0,	RL_GLITTERING_GREED,Flip The Coin Greed//Not in the skill tree. Why and what does it do? Need real max level.
 2552,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		RL_RICHS_COIN,Rich's Coin
 2553,15,6,1,0,0x40,0,5,1,yes,0,0,0,weapon,0,	RL_MASS_SPIRAL,Mass Spiral
 2554,9,6,1,-1,0,0,5,1,yes,0,0,0,weapon,0,	RL_BANISHING_BUSTER,Banishing Buster// Dispell code not added.
@@ -1288,20 +1288,20 @@
 2558,0,6,4,0,0x1,0,10,1,yes,0,0,0,none,0,	RL_E_CHAIN,Eternal Chain
 2559,9,8,4,-1,0x2,10,1,1,no,0,0x200,0,weapon,0,	RL_QD_SHOT,Quick Draw Shot// Combo skill but range set above 5 to treat it as range damage. [Rytech]
 2560,11,6,1,0,0x1,0,1,1,no,0,0,0,none,0,	RL_C_MARKER,Crimson Marker
-2561,0,6,4,-1,0x2,3,5,1,no,0,0,0,weapon,0,	RL_FIREDANCE,Fire Dance
+2561,9,6,4,-1,0x2,3,5,1,no,0,0,0,weapon,0,	RL_FIREDANCE,Fire Dance
 2562,7:8:9:10:11,6,1,-1,0,0,5,1,yes,0,0,0,weapon,0,	RL_H_MINE,Howling Mine
 2563,0,6,4,0,0x1,0,5,1,yes,0,0,0,none,0,	RL_P_ALTER,Platinum Alter
-2564,9,6,2,0,0x1,0,1,1,yes,0,0,0,none,0,	RL_FALLEN_ANGEL,Fallen Angel//This skill doesen't deal damage and instead autocasts Desperado.
-2565,0,6,4,-1,0x2,2:3:4:5:6,5,1,no,0,0,0,weapon,3:4:5:6:7,	RL_R_TRIP,Round Trip// Knock back damage not coded.
-2566,0,6,4,0,0x2,-1,5,1,yes,0,0,0,weapon,0,	RL_D_TAIL,Dragon Tail
-2567,3,6,2,-1,0,0,5,1,yes,0,0,0,weapon,0,	RL_FIRE_RAIN,Fire Rain
+2564,9,6,2,0,0x1,0,1,1,no,0,0,0,none,0,	RL_FALLEN_ANGEL,Fallen Angel
+2565,9,6,4,-1,0x2,3:3:4:5:6,5,1,no,0,0,0,weapon,3,	RL_R_TRIP,Round Trip
+2566,9,6,4,0,0x2,-1,5,1,yes,0,0,0,weapon,0,	RL_D_TAIL,Dragon Tail
+2567,3,6,2,-1,0,0,5,1,no,0,0,0,weapon,0,	RL_FIRE_RAIN,Fire Rain
 2568,0,6,4,0,0x1,0,5,1,yes,0,0,0,none,0,	RL_HEAT_BARREL,Heat Barrel
 2569,15,6,1,-1,0,0,5,1,yes,0,0,0,weapon,0,	RL_AM_BLAST,Anti-Material Blast
-2570,9,6,1,0,0,0,5,1,yes,0,0,0,weapon,6,	RL_SLUGSHOT,Slug Shot//Setting to forced neutral element for now due to its high damage.
-2571,7:8:9:10:11,6,1,0,0x2,2,5,1,yes,0,0,0,weapon,0,	RL_HAMMER_OF_GOD,Hammer of God
+2570,9,6,1,0,0,0,5,1,yes,0,0,0,weapon,6,	RL_SLUGSHOT,Slug Shot
+2571,7:8:9:10:11,6,1,0,0x2,2,5,1,no,0,0,0,weapon,0,	RL_HAMMER_OF_GOD,Hammer of God
 2572,0,6,1,-1,0x40,0,5,1,no,0,0x4000,0,weapon,0,RL_R_TRIP_PLUSATK,Round Trip Plus Attack
 2573,0,6,1,-1,0,0,5,1,no,0,0x4000,0,weapon,0,	RL_B_FLICKER_ATK,Bind Flicker Attack//Max level guess based on Bind Trap max level.
-2574,0,6,1,-1,0,0,10,1,no,0,0x4000,0,weapon,0,	RL_GLITTERING_GREED_ATK,Flip The Coin Greed Attack//Guess on max level is from Flip The Coin Greed
+2574,0,6,1,-1,0,0,5,1,no,0,0x4000,0,weapon,0,	RL_GLITTERING_GREED_ATK,Flip The Coin Greed Attack//Guess on max level is from Flip The Coin Greed
 
 // Kagerou / Oboro
 3001,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		KO_YAMIKUMO,Dark Cloud

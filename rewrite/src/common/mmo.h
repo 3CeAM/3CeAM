@@ -97,6 +97,11 @@
 #define MAX_CHARS MAX_CHARS_SLOTS
 #endif
 
+// Allow players to create more then just human characters?
+// Current Races Supported: Human / Doram.
+// Setting is 1 for yes and 0 for no.
+#define ALLOW_OTHER_RACES 1
+
 //Number of slots carded equipment can have. Never set to less than 4 as they are also used to keep the data of forged items/equipment. [Skotlex]
 //Note: The client seems unable to receive data for more than 4 slots due to all related packets having a fixed size.
 #define MAX_SLOTS 4

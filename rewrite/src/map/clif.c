@@ -1476,6 +1476,8 @@ int clif_spawn(struct block_list *bl)
 				clif_status_change(&sd->bl,SI_MANHOLE,1,9999,sd->sc.data[SC__MANHOLE]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_C_MARKER] )
 				clif_status_change(&sd->bl,SI_C_MARKER,1,9999,sd->sc.data[SC_C_MARKER]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_H_MINE] )
+				clif_status_change(&sd->bl,SI_H_MINE,1,9999,sd->sc.data[SC_H_MINE]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_JYUMONJIKIRI] )
 				clif_status_change(&sd->bl,SI_KO_JYUMONJIKIRI,1,9999,sd->sc.data[SC_JYUMONJIKIRI]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_MEIKYOUSISUI] )
@@ -4872,6 +4874,8 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_MANHOLE,1,9999,tsd->sc.data[SC__MANHOLE]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_C_MARKER] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_C_MARKER,1,9999,tsd->sc.data[SC_C_MARKER]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_H_MINE] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_H_MINE,1,9999,tsd->sc.data[SC_H_MINE]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_JYUMONJIKIRI] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_KO_JYUMONJIKIRI,1,9999,tsd->sc.data[SC_JYUMONJIKIRI]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_MEIKYOUSISUI] )
