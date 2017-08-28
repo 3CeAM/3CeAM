@@ -1705,7 +1705,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				break;
 			case RL_SLUGSHOT:
 				if ( distance_bl(src,target) > 3 )
-					hitrate -= (11 - skill_lv) * (distance_bl(src,target) - 3);
+					hitrate -= (distance_bl(src,target) - 3) * (hitrate * (11 - skill_lv) / 100);
 				break;
 		}
 
@@ -2738,7 +2738,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					flag.pdef = flag.pdef2 = 1;
 					break;
 				case RL_BANISHING_BUSTER:
-					skillratio = 1000 + 200 * skill_lv;
+					skillratio = 2000 + 300 * skill_lv;
 					break;
 				case RL_FIREDANCE:
 					skillratio = 200 * skill_lv + 50 * pc_checkskill(sd,GS_DESPERADO);
@@ -2753,13 +2753,12 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio = 4000 + 1000 * skill_lv;
 					break;
 				case RL_SLUGSHOT:
-					if (sd)
-					{
-						//Ratio appears to be 10% for every 0.1 weight. Need more info. [Rytech]
-						short index = sd->equip_index[EQI_AMMO];
-						if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_AMMO )
-							skillratio = 10 * sd->inventory_data[index]->weight;
-					}
+					if ( tsd )// Damage on players.
+						skillratio = 2000 * skill_lv;
+					else// Damage on monsters.
+						skillratio = 1200 * skill_lv;
+					// Damage multiplied depending on size.
+					skillratio *= 2 + tstatus->size;
 					break;
 				case RL_R_TRIP_PLUSATK:// Need to confirm if level 5 is really 2700% and not a typo. [Rytech]
 					skillratio = 500 + 100 * skill_lv;
