@@ -1336,7 +1336,149 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		}
 		break;
 	case RL_MASS_SPIRAL:
-		sc_start(bl,SC_BLEEDING,50,skilllv,skill_get_time(skillid,skilllv));
+		sc_start(bl,SC_BLEEDING,30 + 10 * skilllv,skilllv,skill_get_time(skillid,skilllv));
+		break;
+	case RL_BANISHING_BUSTER:
+		{
+			short i;
+			if((dstsd && (dstsd->class_&MAPID_UPPERMASK) == MAPID_SOUL_LINKER)
+				|| (tsc && tsc->data[SC_SPIRIT] && tsc->data[SC_SPIRIT]->val2 == SL_ROGUE) //Rogue's spirit defends againt dispel.
+				|| rand()%100 >= 50+10*skilllv)
+			{
+				if (sd)
+					clif_skill_fail(sd,skillid,0,0,0);
+				break;
+			}
+			if(status_isimmune(bl) || !tsc || !tsc->count)
+				break;
+			for(i=0;i<SC_MAX;i++)
+			{
+				if (!tsc->data[i])
+					continue;
+				switch (i) {
+				case SC_WEIGHT50:		case SC_WEIGHT90:		case SC_HALLUCINATION:
+				case SC_STRIPWEAPON:	case SC_STRIPSHIELD:	case SC_STRIPARMOR:
+				case SC_STRIPHELM:		case SC_CP_WEAPON:		case SC_CP_SHIELD:
+				case SC_CP_ARMOR:		case SC_CP_HELM:		case SC_COMBO:
+				case SC_STRFOOD:		case SC_AGIFOOD:		case SC_VITFOOD:
+				case SC_INTFOOD:		case SC_DEXFOOD:		case SC_LUKFOOD:
+				case SC_HITFOOD:		case SC_FLEEFOOD:		case SC_BATKFOOD:
+				case SC_WATKFOOD:		case SC_MATKFOOD:		case SC_DANCING:
+				case SC_GUILDAURA:		case SC_EDP:			case SC_AUTOBERSERK:
+				case SC_CARTBOOST:		case SC_MELTDOWN:		case SC_SAFETYWALL:
+				case SC_SMA:			case SC_SPEEDUP0:		case SC_NOCHAT:
+				case SC_ANKLE:			case SC_SPIDERWEB:		case SC_JAILED:
+				case SC_ITEMBOOST:		case SC_EXPBOOST:		case SC_LIFEINSURANCE:
+				case SC_BOSSMAPINFO:	case SC_PNEUMA:			case SC_AUTOSPELL:
+				case SC_INCHITRATE:		case SC_INCATKRATE:		case SC_NEN:
+				case SC_READYSTORM:		case SC_READYDOWN:		case SC_READYTURN:
+				case SC_READYCOUNTER:	case SC_DODGE:			case SC_WARM:
+				case SC_SPEEDUP1:		case SC_AUTOTRADE:		case SC_CRITICALWOUND:
+				case SC_JEXPBOOST:		case SC_INVINCIBLE:		case SC_INVINCIBLEOFF:
+				case SC_HELLPOWER:		case SC_MANU_ATK:		case SC_MANU_DEF:
+				case SC_SPL_ATK:		case SC_SPL_DEF:		case SC_MANU_MATK:
+				case SC_SPL_MATK:		case SC_RICHMANKIM:		case SC_ETERNALCHAOS:
+				case SC_DRUMBATTLE:		case SC_NIBELUNGEN:		case SC_ROKISWEIL:
+				case SC_INTOABYSS:		case SC_SIEGFRIED:		case SC_WHISTLE:
+				case SC_ASSNCROS:		case SC_POEMBRAGI:		case SC_APPLEIDUN:
+				case SC_HUMMING:		case SC_DONTFORGETME:	case SC_FORTUNE:
+				case SC_SERVICE4U:		case SC_FOOD_STR_CASH:	case SC_FOOD_AGI_CASH:
+				case SC_FOOD_VIT_CASH:	case SC_FOOD_DEX_CASH:	case SC_FOOD_INT_CASH:
+				case SC_FOOD_LUK_CASH:
+				// 3CeAM
+				// 3rd Job Status's
+				case SC_DEATHBOUND:		case SC_EPICLESIS:		case SC_CLOAKINGEXCEED:
+				case SC_HALLUCINATIONWALK:	case SC_HALLUCINATIONWALK_POSTDELAY:	case SC_WEAPONBLOCKING:
+				case SC_WEAPONBLOCKING_POSTDELAY:	case SC_ROLLINGCUTTER:	case SC_POISONINGWEAPON:
+				case SC_FEARBREEZE:		case SC_ELECTRICSHOCKER:	case SC_WUGRIDER:
+				case SC_WUGDASH:		case SC_BITE:			case SC_CAMOUFLAGE:
+				case SC_ACCELERATION:	case SC_HOVERING:		case SC_OVERHEAT_LIMITPOINT:
+				case SC_OVERHEAT:		case SC_SHAPESHIFT:		case SC_INFRAREDSCAN:
+				case SC_MAGNETICFIELD:	case SC_NEUTRALBARRIER:	case SC_NEUTRALBARRIER_MASTER:
+				case SC_STEALTHFIELD_MASTER:	case SC_REPRODUCE:	case SC_FORCEOFVANGUARD:
+				case SC_SHADOWFORM:		case SC_EXEEDBREAK:		case SC_INVISIBILITY:
+				case SC_BANDING:		case SC_INSPIRATION:	case SC_RAISINGDRAGON:
+				case SC_LIGHTNINGWALK:	case SC_CURSEDCIRCLE_ATKER:	case SC_CURSEDCIRCLE_TARGET:
+				case SC_CRESCENTELBOW:	case SC_STRIPACCESSARY:	case SC_MANHOLE:
+				case SC_GT_ENERGYGAIN:	case SC_GT_CHANGE:		case SC_GT_REVITALIZE:
+				case SC_SWINGDANCE:		case SC_SYMPHONYOFLOVER:	case SC_RUSHWINDMILL:
+				case SC_ECHOSONG:		case SC_MOONLITSERENADE:	case SC_SITDOWN_FORCE:
+				case SC_ANALYZE:		case SC_LERADSDEW:		case SC_MELODYOFSINK:
+				case SC_BEYONDOFWARCRY:	case SC_UNLIMITEDHUMMINGVOICE:	case SC_STEALTHFIELD:
+				case SC_WARMER:			case SC_READING_SB:		case SC_GN_CARTBOOST:
+				case SC_THORNSTRAP:		case SC_SPORE_EXPLOSION:	case SC_DEMONIC_FIRE:
+				case SC_SMOKEPOWDER:	case SC_TEARGAS:		case SC_VACUUM_EXTREME:
+				case SC_BANDING_DEFENCE:	case SC_REFLECTDAMAGE:
+				// Genetic Potions
+				case SC_SAVAGE_STEAK:	case SC_COCKTAIL_WARG_BLOOD:	case SC_MINOR_BBQ:
+				case SC_SIROMA_ICE_TEA:	case SC_DROCERA_HERB_STEAMED:	case SC_PUTTI_TAILS_NOODLES:
+				case SC_MELON_BOMB:		case SC_BANANA_BOMB_SITDOWN:	case SC_BANANA_BOMB:
+				case SC_PROMOTE_HEALTH_RESERCH:	case SC_ENERGY_DRINK_RESERCH:	case SC_EXTRACT_WHITE_POTION_Z:
+				case SC_VITATA_500:		case SC_EXTRACT_SALAMINE_JUICE:	case SC_BOOST500:
+				case SC_FULL_SWING_K:	case SC_MANA_PLUS:		case SC_MUSTLE_M:
+				case SC_LIFE_FORCE_F:
+				// Elementals and Insignias
+				case SC_WATER_BARRIER:	case SC_ZEPHYR:			case SC_POWER_OF_GAIA:
+				case SC_PYROTECHNIC:	case SC_PYROTECHNIC_OPTION:	case SC_HEATER:
+				case SC_HEATER_OPTION:	case SC_TROPIC:			case SC_TROPIC_OPTION:
+				case SC_AQUAPLAY:		case SC_AQUAPLAY_OPTION:	case SC_COOLER:
+				case SC_COOLER_OPTION:	case SC_CHILLY_AIR_OPTION:	case SC_GUST:
+				case SC_GUST_OPTION:	case SC_BLAST:			case SC_BLAST_OPTION:
+				case SC_WILD_STORM:		case SC_WILD_STORM_OPTION:	case SC_PETROLOGY:
+				case SC_PETROLOGY_OPTION:	case SC_CURSED_SOIL:	case SC_CURSED_SOIL_OPTION:
+				case SC_UPHEAVAL:		case SC_UPHEAVAL_OPTION:	case SC_EL_DEFENSIVE:
+				case SC_CIRCLE_OF_FIRE:	case SC_CIRCLE_OF_FIRE_OPTION:	case SC_FIRE_CLOAK:
+				case SC_FIRE_CLOAK_OPTION:	case SC_WATER_SCREEN:	case SC_WATER_SCREEN_OPTION:
+				case SC_WATER_DROP:		case SC_WATER_DROP_OPTION:	case SC_WIND_STEP:
+				case SC_WIND_STEP_OPTION:	case SC_WIND_CURTAIN:	case SC_WIND_CURTAIN_OPTION:
+				case SC_SOLID_SKIN:		case SC_SOLID_SKIN_OPTION:	case SC_STONE_SHIELD:
+				case SC_STONE_SHIELD_OPTION:	case SC_TIDAL_WEAPON:	case SC_TIDAL_WEAPON_OPTION:
+				case SC_ROCK_CRUSHER:	case SC_ROCK_CRUSHER_ATK:	case SC_FIRE_INSIGNIA:
+				case SC_WATER_INSIGNIA:	case SC_WIND_INSIGNIA:	case SC_EARTH_INSIGNIA:
+				// Mutated Homunculus
+				case SC_NEEDLE_OF_PARALYZE:	case SC_PAIN_KILLER:	case SC_LIGHT_OF_REGENE:
+				case SC_OVERED_BOOST:	case SC_SILENT_BREEZE:	case SC_STYLE_CHANGE:
+				case SC_SONIC_CLAW_POSTDELAY:	case SC_SILVERVEIN_RUSH_POSTDELAY:	case SC_MIDNIGHT_FRENZY_POSTDELAY:
+				case SC_GOLDENE_FERSE:	case SC_ANGRIFFS_MODUS:	case SC_TINDER_BREAKER:
+				case SC_TINDER_BREAKER_POSTDELAY:	case SC_CBC:	case SC_CBC_POSTDELAY:
+				case SC_EQC:			case SC_MAGMA_FLOW:		case SC_GRANITIC_ARMOR:
+				case SC_PYROCLASTIC:	case SC_VOLCANIC_ASH:
+				// Kagerou/Oboro
+				case SC_KAGEHUMI:		case SC_JYUMONJIKIRI:	case SC_MEIKYOUSISUI:
+				case SC_KYOUGAKU:		case SC_IZAYOI:			case SC_ZENKAI:
+				// Rebellion - Need Confirm
+				case SC_B_TRAP:         case SC_E_CHAIN:        case SC_C_MARKER:       
+				case SC_H_MINE:         case SC_P_ALTER:        case SC_HEAT_BARREL:
+				case SC_ANTI_M_BLAST:   case SC_FALLEN_ANGEL:
+				// Summoner
+				case SC_SPRITEMABLE:
+				// Misc Status's
+				case SC_ALL_RIDING:		case SC_MONSTER_TRANSFORM:	case SC_ON_PUSH_CART:
+				case SC_KAHU_ENTEN:		case SC_HYOUHU_HUBUKI:	case SC_KAZEHU_SEIRAN:	
+				case SC_DOHU_KOUKAI:	case SC_FULL_THROTTLE:	case SC_REBOUND:
+				// Only removeable by Clearance
+				case SC_CRUSHSTRIKE:	case SC_REFRESH:		case SC_GIANTGROWTH:
+				case SC_STONEHARDSKIN:	case SC_VITALITYACTIVATION:	case SC_FIGHTINGSPIRIT:
+				case SC_ABUNDANCE:		case SC_ORATIO:			case SC_LAUDAAGNUS:
+				case SC_LAUDARAMUS:		case SC_RENOVATIO:		case SC_EXPIATIO:
+				case SC_TOXIN:			case SC_PARALYSE:		case SC_VENOMBLEED:
+				case SC_MAGICMUSHROOM:	case SC_DEATHHURT:		case SC_PYREXIA:
+				case SC_OBLIVIONCURSE:	case SC_LEECHESEND:		case SC_DUPLELIGHT:
+				case SC_MARSHOFABYSS:	case SC_RECOGNIZEDSPELL:	case SC_BODYPAINT:
+				case SC_DEADLYINFECT:	case SC_EARTHDRIVE:		case SC_VENOMIMPRESS:
+				case SC_FREEZING:		case SC_BLOODSUCKER:	case SC_MANDRAGORA:
+				case SC_STOMACHACHE:	case SC_MYSTERIOUS_POWDER:
+					continue;
+				case SC_ASSUMPTIO:
+					if( bl->type == BL_MOB )
+						continue;
+					break;
+				}
+				if( i == SC_BERSERK ) tsc->data[i]->val2=0; //Mark a dispelled berserk to avoid setting hp to 100 by setting hp penalty to 0.
+				status_change_end(bl, (sc_type)i, INVALID_TIMER);
+			}
+			break;
+		}
 		break;
 	case KO_JYUMONJIKIRI:
 		sc_start(bl,SC_JYUMONJIKIRI,100,skilllv,skill_get_time2(skillid,skilllv));
@@ -2388,7 +2530,6 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 			dmg.dmotion = clif_skill_damage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, 5); // needs -2(!) as skill level
 		break;
 	case RK_IGNITIONBREAK:
-	case RL_BANISHING_BUSTER:
 		dmg.dmotion = clif_skill_damage(dsrc,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,NV_BASIC,-1,5);
 		break;
 	case WL_HELLINFERNO:
@@ -3705,6 +3846,8 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case WM_GREAT_ECHO:
 	case GN_CRAZYWEED_ATK:
 	case GN_SLINGITEM_RANGEMELEEATK:
+	case RL_MASS_SPIRAL:
+	case RL_BANISHING_BUSTER:
 	case RL_SLUGSHOT:
 	case RL_R_TRIP_PLUSATK:
 	case KO_SETSUDAN:
@@ -3720,7 +3863,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
-	case RL_MASS_SPIRAL:
 	case SU_BITE:
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
@@ -4017,7 +4159,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case SO_VARETYR_SPEAR:
 	case GN_CART_TORNADO:
 	case GN_CARTCANNON:
-	case RL_BANISHING_BUSTER:
 	case RL_FIREDANCE:
 	case RL_R_TRIP:
 	case KO_HAPPOKUNAI:
@@ -4048,7 +4189,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 			if( skillid == NJ_BAKUENRYU || skillid == LG_EARTHDRIVE || skillid == GN_CARTCANNON ||
 				skillid == SU_SCRATCH )
 				clif_skill_nodamage(src,bl,skillid,skilllv,1);
-			if( skillid == LG_MOONSLASHER || skillid == RL_BANISHING_BUSTER )
+			if( skillid == LG_MOONSLASHER )
 				clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
 
 			skill_area_temp[0] = 0;
@@ -4093,7 +4234,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		{
 			if ( sd )
 			{// If a player used the skill it will search for targets marked by that player. 
-				if ( tsc && tsc->data[SC_C_MARKER]->val3 == 1 )// Mark placed by a player.
+				if ( tsc && tsc->data[SC_C_MARKER] && tsc->data[SC_C_MARKER]->val3 == 1 )// Mark placed by a player.
 				{
 					short i = 0;
 					ARR_FIND( 0, MAX_CRIMSON_MARKS, i, sd->crimson_mark[i] == bl->id);
@@ -4101,7 +4242,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 						clif_skill_nodamage(src,bl,skillid,skilllv,skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv, tick, flag));
 				}
 			}// If a monster used the skill it will search for targets marked by any monster since they can't track their own targets.
-			else if ( tsc && tsc->data[SC_C_MARKER]->val3 == 2 )// Mark placed by a monster.
+			else if ( tsc && tsc->data[SC_C_MARKER] && tsc->data[SC_C_MARKER]->val3 == 2 )// Mark placed by a monster.
 					clif_skill_nodamage(src,bl,skillid,skilllv,skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv, tick, flag));
 		}
 		else
@@ -4116,7 +4257,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		{
 			if ( sd )
 			{// If a player used the skill it will search for targets marked by that player. 
-				if ( tsc && tsc->data[SC_C_MARKER]->val3 == 1 )// Mark placed by a player.
+				if ( tsc && tsc->data[SC_C_MARKER] && tsc->data[SC_C_MARKER]->val3 == 1 )// Mark placed by a player.
 				{
 					short i = 0;
 					ARR_FIND( 0, MAX_CRIMSON_MARKS, i, sd->crimson_mark[i] == bl->id);
@@ -4124,7 +4265,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 						skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv, tick, flag);
 				}
 			}// If a monster used the skill it will search for targets marked by any monster since they can't track their own targets.
-			else if ( tsc && tsc->data[SC_C_MARKER]->val3 == 2 )// Mark placed by a monster.
+			else if ( tsc && tsc->data[SC_C_MARKER] && tsc->data[SC_C_MARKER]->val3 == 2 )// Mark placed by a monster.
 				skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv, tick, flag);
 		}
 		else
@@ -6919,6 +7060,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				// Kagerou/Oboro
 				case SC_KAGEHUMI:		case SC_JYUMONJIKIRI:	case SC_MEIKYOUSISUI:
 				case SC_KYOUGAKU:		case SC_IZAYOI:			case SC_ZENKAI:
+				// Rebellion - Need Confirm
+				case SC_B_TRAP:         case SC_E_CHAIN:        case SC_C_MARKER:       
+				case SC_H_MINE:         case SC_P_ALTER:        case SC_HEAT_BARREL:
+				case SC_ANTI_M_BLAST:   case SC_FALLEN_ANGEL:
 				// Summoner
 				case SC_SPRITEMABLE:
 				// Misc Status's
@@ -8406,6 +8551,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				// Kagerou/Oboro
 				case SC_KAGEHUMI:		case SC_JYUMONJIKIRI:	case SC_MEIKYOUSISUI:
 				case SC_KYOUGAKU:		case SC_IZAYOI:			case SC_ZENKAI:
+				// Rebellion - Need Confirm
+				case SC_B_TRAP:         case SC_E_CHAIN:        case SC_C_MARKER:       
+				case SC_H_MINE:         case SC_P_ALTER:        case SC_HEAT_BARREL:
+				case SC_ANTI_M_BLAST:   case SC_FALLEN_ANGEL:
 				// Summoner
 				case SC_SPRITEMABLE:
 				// Misc Status's

@@ -466,6 +466,8 @@
 7664,Throwing_Mine,Throwing Mine,3,450,,3,,,,,,,,,,,,,{},{},{}
 7665,Dragon_Tail_Missile,Dragon Tail Missile,3,1500,,100,,,,,,,,,,,,,{},{},{}
 
+// Slug Bullet
+// Note: This replace all the past existing slug ammo and now just acts as a misc item.
 25187,Slug_Bullet,Slug Bullet,3,1200,,1200,,,,,,,,,,,,,{},{},{}
 
 // Rebellion Slug Ammo - No Longer Used
@@ -476,12 +478,12 @@
 13214,Slug_Bullet_5,Slug Ammo XH,10,1200,,1200,30,,,,0x01000000,7,2,32768,,99,,3,{},{},{}
 
 // Rebellion Ammo
-13215,AP_Ammo,Armor-Piercing Bullet			,10,50,,2,50,,,,0x01000000,7,2,32768,,100,,3,{},{},{}
-13216,Blaze_Bullet,Blaze Bullet				,10,40,,2,40,,,,0x01000000,7,2,32768,,100,,3,{ bonus bAtkEle,Ele_Fire; },{},{}
-13217,Freezing_Bullet,Freezing Bullet			,10,40,,2,40,,,,0x01000000,7,2,32768,,100,,3,{ bonus bAtkEle,Ele_Water; },{},{}
-13218,Electric_Shock_Bullet,Electric Shock Bullet	,10,40,,2,40,,,,0x01000000,7,2,32768,,100,,3,{ bonus bAtkEle,Ele_Wind; },{},{}
-13219,Magical_Stone_Bullet,Magical Stone Bullet		,10,40,,2,40,,,,0x01000000,7,2,32768,,100,,3,{ bonus bAtkEle,Ele_Earth; },{},{}
-13220,Sanctified_Bullet,Sanctified Bullet		,10,40,,2,40,,,,0x01000000,7,2,32768,,100,,3,{ bonus bAtkEle,Ele_Holy; },{},{}
+13215,AP_Ammo,Armor-Piercing Bullet,10,50,,2,50,,,,0x01000000,7,2,32768,,100,,3,{},{},{}
+13216,Blaze_Bullet,Blaze Bullet,10,40,,2,40,,,,0x01000000,7,2,32768,,100,,3,{ bonus bAtkEle,Ele_Fire; },{},{}
+13217,Freezing_Bullet,Freezing Bullet,10,40,,2,40,,,,0x01000000,7,2,32768,,100,,3,{ bonus bAtkEle,Ele_Water; },{},{}
+13218,Electric_Shock_Bullet,Electric Shock Bullet,10,40,,2,40,,,,0x01000000,7,2,32768,,100,,3,{ bonus bAtkEle,Ele_Wind; },{},{}
+13219,Magical_Stone_Bullet,Magical Stone Bullet,10,40,,2,40,,,,0x01000000,7,2,32768,,100,,3,{ bonus bAtkEle,Ele_Earth; },{},{}
+13220,Sanctified_Bullet,Sanctified Bullet,10,40,,2,40,,,,0x01000000,7,2,32768,,100,,3,{ bonus bAtkEle,Ele_Holy; },{},{}
 
 //Note: 13221 - 13227 are copys of the gunslinger bullets and spheres. Why?
 //The copied bullets were made since prices for bullets were reduced, but didn't want to change them
