@@ -1430,6 +1430,7 @@ int clif_spawn(struct block_list *bl)
 			if( sd->state.bg_id && map[sd->bl.m].flag.battleground )
 				clif_sendbgemblem_area(sd);
 			// Below SI's must be resent to the client to show animations on players walking onto other player's view range.
+			// Note: This was supposed to be just a temp thing but its getting out of hand. Need to redo this. [Rytech]
 			//if( sd->sc.count && sd->sc.data[SC_] )
 			//	clif_status_change(&sd->bl,SI_,1,9999,sd->sc.data[SC_]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_CAMOUFLAGE] )
@@ -1478,6 +1479,8 @@ int clif_spawn(struct block_list *bl)
 				clif_status_change(&sd->bl,SI_C_MARKER,1,9999,sd->sc.data[SC_C_MARKER]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_H_MINE] )
 				clif_status_change(&sd->bl,SI_H_MINE,1,9999,sd->sc.data[SC_H_MINE]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_ANTI_M_BLAST] )
+				clif_status_change(&sd->bl,SI_ANTI_M_BLAST,1,9999,sd->sc.data[SC_ANTI_M_BLAST]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_JYUMONJIKIRI] )
 				clif_status_change(&sd->bl,SI_KO_JYUMONJIKIRI,1,9999,sd->sc.data[SC_JYUMONJIKIRI]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_MEIKYOUSISUI] )
@@ -1510,6 +1513,8 @@ int clif_spawn(struct block_list *bl)
 				clif_status_change(&sd->bl,SI_SPRITEMABLE,1,9999,sd->sc.data[SC_SPRITEMABLE]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_TUNAPARTY] )
 				clif_status_change(&sd->bl,SI_TUNAPARTY,1,9999,sd->sc.data[SC_TUNAPARTY]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_SOULATTACK] )
+				clif_status_change(&sd->bl,SI_SOULATTACK,1,9999,sd->sc.data[SC_SOULATTACK]->val1,0,0);
 		}
 		break;
 	case BL_MOB:
@@ -4828,6 +4833,7 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 			if( tsd->state.bg_id && map[tsd->bl.m].flag.battleground )
 				clif_sendbgemblem_single(sd->fd,tsd);
 			// Below SI's must be resent to the client to show animations on players walking onto other player's view range.
+			// This was supposed to be just a temp thing but this is getting out of hand. Needs to recode this. [Rytech]
 			//if( tsd->sc.count && tsd->sc.data[SC_] )
 			//	clif_status_change_single(&sd->bl,&tsd->bl,SI_,1,9999,tsd->sc.data[SC_]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_CAMOUFLAGE] )
@@ -4876,6 +4882,8 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_C_MARKER,1,9999,tsd->sc.data[SC_C_MARKER]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_H_MINE] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_H_MINE,1,9999,tsd->sc.data[SC_H_MINE]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_ANTI_M_BLAST] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_ANTI_M_BLAST,1,9999,tsd->sc.data[SC_ANTI_M_BLAST]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_JYUMONJIKIRI] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_KO_JYUMONJIKIRI,1,9999,tsd->sc.data[SC_JYUMONJIKIRI]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_MEIKYOUSISUI] )
@@ -4908,6 +4916,8 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_SPRITEMABLE,1,9999,tsd->sc.data[SC_SPRITEMABLE]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_TUNAPARTY] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_TUNAPARTY,1,9999,tsd->sc.data[SC_TUNAPARTY]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_SOULATTACK] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_SOULATTACK,1,9999,tsd->sc.data[SC_SOULATTACK]->val1,0,0);
 		}
 		break;
 	case BL_MER: // Devotion Effects

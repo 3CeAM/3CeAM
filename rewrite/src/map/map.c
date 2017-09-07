@@ -1802,6 +1802,7 @@ int map_quit(struct map_session_data *sd)
 		status_change_end(&sd->bl, SC_DOHU_KOUKAI, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_KYOUGAKU, INVALID_TIMER);//Not official, but needed since logging back in crashes the client. Will fix later. [Rytech]
 		status_change_end(&sd->bl, SC_SPRITEMABLE, INVALID_TIMER);
+		status_change_end(&sd->bl, SC_SOULATTACK, INVALID_TIMER);
 
 		if( battle_config.debuff_on_logout&1 )
 		{

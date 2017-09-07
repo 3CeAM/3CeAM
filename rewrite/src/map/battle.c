@@ -573,6 +573,9 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 		if ( sc->data[SC_DARKCROW] && (flag&(BF_SHORT|BF_WEAPON)) == (BF_SHORT|BF_WEAPON))
 			damage += damage * sc->data[SC_DARKCROW]->val2 / 100;
 
+		if ( sc->data[SC_ANTI_M_BLAST] && src->type == BL_PC )
+			damage += damage * sc->data[SC_ANTI_M_BLAST]->val2 / 100;
+
 		//Finally damage reductions....
 		if( sc->data[SC_ASSUMPTIO] )
 		{
@@ -2740,10 +2743,14 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case RL_BANISHING_BUSTER:
 					skillratio = 2000 + 300 * skill_lv;
 					break;
+				case RL_S_STORM:
+					skillratio = 1700 + 200 * skill_lv;
+					break;
 				case RL_FIREDANCE:
 					skillratio = 200 * skill_lv + 50 * pc_checkskill(sd,GS_DESPERADO);
 					break;
 				case RL_H_MINE:
+					//skillratio = 500 + 300 * skill_lv;
 					skillratio = 200 + 200 * skill_lv;
 					break;
 				case RL_R_TRIP:
@@ -2751,6 +2758,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case RL_D_TAIL:
 					skillratio = 4000 + 1000 * skill_lv;
+					break;
+				case RL_AM_BLAST:
+					skillratio = 3500 + 300 * skill_lv;
 					break;
 				case RL_SLUGSHOT:
 					if ( tsd )// Damage on players.
@@ -2993,12 +3003,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				skill_num != GC_CROSSRIPPERSLASHER &&
 				skill_num != GC_DARKCROW)//Unknown if Dark Claw is affected by EDP. Best to make it not until confirm. [Rytech]
 				ATK_ADDRATE(sc->data[SC_EDP]->val3);
-
-			// Heated Barrel increases damage of regular attacks.
-			// Note: Its said that damage increase is tacked on after skill calculations. How so???
-			// I must know the official formula before updating the code to avoid skill overpower issues. [Rytech]
-			if(sc->data[SC_HEAT_BARREL] && (wd.flag&(BF_LONG|BF_WEAPON)) == (BF_LONG|BF_WEAPON) && (!skill_num))
-				ATK_ADDRATE(sc->data[SC_HEAT_BARREL]->val3);
 
 			if(sc->data[SC_UNLIMIT] && (wd.flag&(BF_LONG|BF_WEAPON)) == (BF_LONG|BF_WEAPON) &&
 				(!skill_num ||//For regular attacks with bows.
@@ -3260,7 +3264,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 		} else {
 			ATK_ADD(wd.div_*sd->spiritball*3);
 		}
-
+		if (sc && sc->data[SC_HEAT_BARREL])// Gives parcentage of added ATK according to base and weapon ATK. 
+			ATK_ADD(wd.div_*(sstatus->batk + sstatus->rhw.atk) * sc->data[SC_HEAT_BARREL]->val3 / 100);// Need to confirm if its both. [Rytech]
 		//Card Fix, sd side
 		if( (wd.damage || wd.damage2) && !(nk&NK_NO_CARDFIX_ATK) )
 		{

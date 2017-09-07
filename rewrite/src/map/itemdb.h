@@ -244,6 +244,9 @@ struct item_data* itemdb_exists(int nameid);
 #define itemdb_viewid(n) (itemdb_search(n)->view_id)
 #define itemdb_autoequip(n) (itemdb_search(n)->flag.autoequip)
 const char* itemdb_typename(int type);
+const char* itemdb_weapon_typename(int type);
+const char* itemdb_armor_typename(int type);
+const char* itemdb_ammo_typename(int type);
 
 int itemdb_group_bonus(struct map_session_data* sd, int itemid);
 int itemdb_searchrandomid(int flags);

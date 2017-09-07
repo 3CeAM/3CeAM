@@ -426,7 +426,7 @@
 2904,Naqsh,Naqsh,5,20,,0,,0,,0,0xFFFFFFFF,7,2,136,,1,0,0,{ Skill "BS_MAXIMIZE",5; Skill "BS_WEAPONPERFECT",5; Skill "WL_RECOGNIZEDSPELL",5; Skill "ECL_SNOWFLIP",1; Skill "ECL_PEONYMAMY",1; Skill "ECL_SADAGUI",1; Skill "ECL_SEQUOIADUST",1; },{},{}
 
 // Rebellion Weapons
-// Handgun
+// Revolver
 13120,Heavens_Feather_And_Hells_Fire,Heavens Feather & Hells Fire,4,1200000,,800,150,,7,1,0x01000000,7,2,34,3,99,1,17,{},{},{}
 //13121
 13122,Altair_And_Ares,Altair & Ares,4,1450000,,1000,200,,7,0,0x01000000,7,2,34,3,140,1,17,{},{},{}

@@ -828,6 +828,7 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_BANANA_BOMB] = SI_BANANA_BOMB;
 
 	StatusIconChangeTable[SC_SPRITEMABLE] = SI_SPRITEMABLE;
+	StatusIconChangeTable[SC_SOULATTACK] = SI_SOULATTACK;
 
 	StatusIconChangeTable[SC_SONIC_CLAW_POSTDELAY] = SI_SONIC_CLAW_POSTDELAY;
 	StatusIconChangeTable[SC_SILVERVEIN_RUSH_POSTDELAY] = SI_SILVERVEIN_RUSH_POSTDELAY;
@@ -860,6 +861,7 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_ALL_RIDING] = SI_ALL_RIDING;
 	StatusIconChangeTable[SC_ON_PUSH_CART] = SI_ON_PUSH_CART;
 	StatusIconChangeTable[SC_REBOUND] = SI_REBOUND;
+	StatusIconChangeTable[SC_H_MINE_SPLASH] = SI_H_MINE_SPLASH;
 	StatusIconChangeTable[SC_HEAT_BARREL_AFTER] = SI_HEAT_BARREL_AFTER;
 
 	//Other SC which are not necessarily associated to skills.
@@ -2940,6 +2942,11 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 			status->rhw.range += skill;
 		}
 	}
+	if( (pc_checkskill(sd,SU_SOULATTACK)) > 0 )
+	{// Range with rod type weapons increased to a fixed 14.
+		if( sd->status.weapon == W_STAFF )
+			status->rhw.range = 14;
+	}
 	if( (sd->status.weapon == W_1HAXE || sd->status.weapon == W_2HAXE) && (skill = pc_checkskill(sd,NC_TRAININGAXE)) > 0 )
 		status->hit += skill * 3;
 	if( (sd->status.weapon == W_MACE || sd->status.weapon == W_2HMACE) && (skill = pc_checkskill(sd,NC_TRAININGAXE)) > 0 )
@@ -3186,6 +3193,10 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	// best place to put this. [Rytech]
 	if( (skill = pc_checkskill(sd,SU_SPRITEMABLE)) > 0 )
 		sc_start(&sd->bl,SC_SPRITEMABLE,100,1,-1);
+
+	// Same as above, but for Soul Attack.
+	if( (skill = pc_checkskill(sd,SU_SOULATTACK)) > 0 )
+		sc_start(&sd->bl,SC_SOULATTACK,100,1,-1);
 
 	calculating = 0;
 
@@ -7110,15 +7121,20 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val2 = val1*20; //SP gained
 			break;
 		case SC_KYRIE:
-			if ( val4 )
-			{// Formula's for Praefatio
-			val2 = status->max_hp * (val1 * 2 + 16) / 100; //%Max HP to absorb
-			val3 = 6 + val1; //Hits
+			if ( val4 == RL_P_ALTER )
+			{// Platinum Alter's Formula
+				val2 = status->max_hp * (val1 * 5) / 100; //%Max HP to absorb
+				val3 = 3 + val1; //Hits
+			}
+			else if ( val4 == AB_PRAEFATIO )
+			{// Praefatio's Formula
+				val2 = status->max_hp * (val1 * 2 + 16) / 100; //%Max HP to absorb
+				val3 = 6 + val1; //Hits
 			}
 			else
-			{// Formula's for Kyrie Eleison
-			val2 = status->max_hp * (val1 * 2 + 10) / 100; //%Max HP to absorb
-			val3 = (val1 / 2 + 5); //Hits
+			{// Kyrie Eleison's Formula
+				val2 = status->max_hp * (val1 * 2 + 10) / 100; //%Max HP to absorb
+				val3 = (val1 / 2 + 5); //Hits
 			}
 			break;
 		case SC_MAGICPOWER:
@@ -7403,6 +7419,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_READYTURN:
 		case SC_DODGE:
 		case SC_SPRITEMABLE:
+		case SC_SOULATTACK:
 			tick = -1;
 			break;
 
@@ -8370,9 +8387,16 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			break;
 		case SC_HEAT_BARREL:
 			if (sd)
+			{
 				val2 = 5 * sd->spiritball_old;// Fixed Cast Reduction
-			val3 = 40 * val1;// ATK Multiplier For Regular Attacks. Temp Formula.
+				val3 = 20 * sd->spiritball_old;// ATK Increase.
+			}
+			else// If monster has this buff.
+				val3 = 200;
 			val4 = 25 + 5 * val1;// HIT Reduction
+			break;
+		case SC_ANTI_M_BLAST:
+			val2 = 10 * val1;// Player Damage Resistance Reduction.
 			break;
 		case SC_MEIKYOUSISUI:
 			val4 = tick / 1000;
@@ -8886,7 +8910,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	}*/
 
 	if( (vd && (pcdb_checkid(vd->class_))) || bl->type == BL_MER || bl->type == BL_MOB )
-		clif_status_change(bl,StatusIconChangeTable[type],1,duration,(val_flag&1)?val1:1,(val_flag&2)?val2:0,(val_flag&4)?val3:0);
+		clif_status_change(bl,StatusIconChangeTable[type],1,duration,(val1>0)?val1:1,(val2>0)?val2:0,(val3>0)?val3:0);
 	else if( sd ) //Send packet to self otherwise (disguised player?)
 		clif_status_load(bl,StatusIconChangeTable[type],1);
 
@@ -9018,6 +9042,7 @@ int status_change_clear(struct block_list* bl, int type)
 		case SC_OKTOBERFEST:
 		case SC_SUMMER2:
 		case SC_SPRITEMABLE:
+		case SC_SOULATTACK:
 			continue;
 		}
 
@@ -10886,6 +10911,7 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC_KAZEHU_SEIRAN:
 			case SC_DOHU_KOUKAI:
 			case SC_SPRITEMABLE:
+			case SC_SOULATTACK:
 				continue;
 
 			//Debuffs that can be removed.

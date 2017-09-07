@@ -212,6 +212,7 @@ weapons, headgears, and all accessorys require a combination of 2 or more slot b
 added together. This setting works a little different for cards. When setting for
 cards, the setting tells which kinds of equips it can be attached to.
 --------------------------------
+Regular Values
 Normal Equips
       1 = Lower Head
       2 = Right Hand (Weapon)
@@ -316,9 +317,9 @@ Weapons
 16 = Katars
 17 = Revolvers
 18 = Rifles
-19 = Gatling guns
+19 = Gatling Guns
 20 = Shotguns
-21 = Grenade launchers
+21 = Grenade Launchers
 22 = Huuma Shurikens
 23 = Two-Handed Staffs
 

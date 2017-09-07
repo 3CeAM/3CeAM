@@ -7505,6 +7505,8 @@ ACMD_FUNC(mobinfo)
 			else
 				clif_displaymessage(fd, atcmd_output);
 		}
+		// Divider placed at end to help see where info for a item ends in case of multiple items displayed.
+		clif_displaymessage(fd, "================================================================");
 	}
 	return 0;
 }
@@ -7937,8 +7939,9 @@ ACMD_FUNC(hommax)
 }
 
 /*==========================================
- * Show Items DB Info   v 1.0
+ * Show Items DB Info   v 2.0
  * originally by [Lupus] eAthena
+ * Upgraded by [Rytech]
  *------------------------------------------*/
 ACMD_FUNC(iteminfo)
 {
@@ -7964,16 +7967,58 @@ ACMD_FUNC(iteminfo)
 	}
 	for (i = 0; i < count; i++) {
 		item_data = item_array[i];
-		sprintf(atcmd_output, "Item: '%s'/'%s'[%d] (%d) Type: %s | Extra Effect: %s",
-			item_data->name,item_data->jname,item_data->slot,item_data->nameid,
-			itemdb_typename(item_data->type), 
-			(item_data->script==NULL)? "None" : "With script"
+
+		// Line 1 - Name, Slots, Item ID
+		sprintf(atcmd_output, "Item: '%s'/'%s'[%d] (%d)",
+			item_data->name,item_data->jname,item_data->slot,item_data->nameid
 		);
 		clif_displaymessage(fd, atcmd_output);
 
+		// Line 2 - Item Type And Weapon/Armor/Ammo Type
+		if ( item_data->type == IT_WEAPON )
+			sprintf(atcmd_output, "Item Type: %s | Weapon Type: %s",
+				itemdb_typename(item_data->type),itemdb_weapon_typename(item_data->look)
+			);
+		else if ( item_data->type == IT_ARMOR )
+			sprintf(atcmd_output, "Item Type: %s | Armor Type: %s",
+				itemdb_typename(item_data->type),itemdb_armor_typename(item_data->equip)
+			);
+		else if ( item_data->type == IT_AMMO )
+			sprintf(atcmd_output, "Item Type: %s | Ammo Type: %s",
+				itemdb_typename(item_data->type),itemdb_ammo_typename(item_data->look)
+			);
+		else
+			sprintf(atcmd_output, "Item Type: %s",
+				itemdb_typename(item_data->type)
+			);
+		clif_displaymessage(fd, atcmd_output);
+
+		// Line 3 - Extra Info
+		if ( item_data->type == IT_WEAPON )
+			sprintf(atcmd_output, "Attack: %d | Range: %d | Weapon Lv: %d | Equip Lv: %d | Refine: %s",
+				item_data->atk,item_data->range,item_data->wlv,item_data->elv,
+				(item_data->flag.no_refine==1)?"No":"Yes"
+			);
+		else if ( item_data->type == IT_ARMOR )
+			sprintf(atcmd_output, "Defense: %d | Equip Lv: %d | Refine: %s",
+				item_data->def,item_data->elv,
+				(item_data->flag.no_refine==1)?"No":"Yes"
+			);
+		else if ( item_data->type == IT_AMMO )
+			sprintf(atcmd_output, "Attack: %d | Equip Lv: %d",
+				item_data->atk,item_data->elv
+			);
+		else
+			sprintf(atcmd_output, "Equip Lv: %d",
+				item_data->elv
+			);
+			clif_displaymessage(fd, atcmd_output);
+
+		// Line 4 - Buy/Sell Price And Weight
 		sprintf(atcmd_output, "NPC Buy:%dz, Sell:%dz | Weight: %.1f ", item_data->value_buy, item_data->value_sell, item_data->weight/10. );
 		clif_displaymessage(fd, atcmd_output);
 
+		// Line 5 - Where To Get The Item
 		if (item_data->maxchance == -1)
 			strcpy(atcmd_output, " - Available in the shops only.");
 		else if (item_data->maxchance)
@@ -7981,6 +8026,9 @@ ACMD_FUNC(iteminfo)
 		else
 			strcpy(atcmd_output, " - Monsters don't drop this item.");
 		clif_displaymessage(fd, atcmd_output);
+
+		// Divider placed at end to help see where info for a item ends in case of multiple items displayed.
+		clif_displaymessage(fd, "================================================================");
 
 	}
 	return 0;

@@ -1214,7 +1214,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 				sc_start(bl,SC_BLEEDING,rate,skilllv,skill_get_time(skillid,skilllv));
 				break;
 			case 2://Breaks Top Headgear
-				skill_break_equip(bl, EQP_HEAD_TOP, 100*rate, BCT_ENEMY);
+				skill_break_equip(bl, EQP_HELM, 100*rate, BCT_ENEMY);
 				break;
 			case 3://Breaks Shield
 				skill_break_equip(bl, EQP_SHIELD, 100*rate, BCT_ENEMY);
@@ -1447,11 +1447,10 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 				case SC_KAGEHUMI:		case SC_JYUMONJIKIRI:	case SC_MEIKYOUSISUI:
 				case SC_KYOUGAKU:		case SC_IZAYOI:			case SC_ZENKAI:
 				// Rebellion - Need Confirm
-				case SC_B_TRAP:         case SC_E_CHAIN:        case SC_C_MARKER:       
-				case SC_H_MINE:         case SC_P_ALTER:        case SC_HEAT_BARREL:
-				case SC_ANTI_M_BLAST:   case SC_FALLEN_ANGEL:
+				case SC_B_TRAP:			case SC_C_MARKER:		case SC_H_MINE:
+				case SC_ANTI_M_BLAST:	case SC_FALLEN_ANGEL:
 				// Summoner
-				case SC_SPRITEMABLE:
+				case SC_SPRITEMABLE:	case SC_SOULATTACK:
 				// Misc Status's
 				case SC_ALL_RIDING:		case SC_MONSTER_TRANSFORM:	case SC_ON_PUSH_CART:
 				case SC_KAHU_ENTEN:		case SC_HYOUHU_HUBUKI:	case SC_KAZEHU_SEIRAN:	
@@ -1479,6 +1478,15 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 			}
 			break;
 		}
+		break;
+	case RL_S_STORM:
+		// Formula not confirmed but it might be something like this when looking at what affects the success chance. [Rytech]
+		rate = (5 * skilllv + sstatus->dex / 10) - ((tstatus->agi + status_get_lv(bl)) / 10);
+		if ( rate > 0 )
+			skill_break_equip(bl, EQP_HELM, 100*rate, BCT_ENEMY);
+		break;
+	case RL_AM_BLAST:
+		sc_start(bl,SC_ANTI_M_BLAST,20 + 10 * skilllv,skilllv,skill_get_time(skillid,skilllv));
 		break;
 	case KO_JYUMONJIKIRI:
 		sc_start(bl,SC_JYUMONJIKIRI,100,skilllv,skill_get_time2(skillid,skilllv));
@@ -3846,9 +3854,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case WM_GREAT_ECHO:
 	case GN_CRAZYWEED_ATK:
 	case GN_SLINGITEM_RANGEMELEEATK:
-	case RL_MASS_SPIRAL:
-	case RL_BANISHING_BUSTER:
-	case RL_SLUGSHOT:
 	case RL_R_TRIP_PLUSATK:
 	case KO_SETSUDAN:
 	case KO_BAKURETSU:
@@ -3861,6 +3866,15 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case MH_MIDNIGHT_FRENZY:
 	case MH_CBC:
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
+		break;
+
+	// Works just like the above except animations are done through ZC_USE_SKILL.
+	case RL_MASS_SPIRAL:
+	case RL_BANISHING_BUSTER:
+	case RL_AM_BLAST:
+	case RL_SLUGSHOT:
+		clif_skill_nodamage(src,bl,skillid,skilllv,
+			skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag|SD_ANIMATION));
 		break;
 
 	case SU_BITE:
@@ -4159,6 +4173,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case SO_VARETYR_SPEAR:
 	case GN_CART_TORNADO:
 	case GN_CARTCANNON:
+	case RL_S_STORM:
 	case RL_FIREDANCE:
 	case RL_R_TRIP:
 	case KO_HAPPOKUNAI:
@@ -5747,7 +5762,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case GN_CARTBOOST:
 	case ALL_ODINS_POWER:
 	case RL_E_CHAIN:
-	case RL_P_ALTER:
 	case RL_HEAT_BARREL:
 	case KO_MEIKYOUSISUI:
 	case RA_UNLIMIT:
@@ -5757,6 +5771,12 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SU_FRESHSHRIMP:
 		clif_skill_nodamage(src,bl,skillid,skilllv,
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
+		break;
+
+	case RL_P_ALTER:
+		clif_skill_nodamage(src,bl,skillid,skilllv,
+			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
+		sc_start4(bl,SC_KYRIE,100,skilllv,0,0,skillid,skill_get_time(skillid,skilllv));
 		break;
 
 	// Works just like the above list of skills, except animation caused by
@@ -7061,11 +7081,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_KAGEHUMI:		case SC_JYUMONJIKIRI:	case SC_MEIKYOUSISUI:
 				case SC_KYOUGAKU:		case SC_IZAYOI:			case SC_ZENKAI:
 				// Rebellion - Need Confirm
-				case SC_B_TRAP:         case SC_E_CHAIN:        case SC_C_MARKER:       
-				case SC_H_MINE:         case SC_P_ALTER:        case SC_HEAT_BARREL:
-				case SC_ANTI_M_BLAST:   case SC_FALLEN_ANGEL:
+				case SC_B_TRAP:			case SC_C_MARKER:		case SC_H_MINE:
+				case SC_ANTI_M_BLAST:	case SC_FALLEN_ANGEL:
 				// Summoner
-				case SC_SPRITEMABLE:
+				case SC_SPRITEMABLE:	case SC_SOULATTACK:
 				// Misc Status's
 				case SC_ALL_RIDING:		case SC_MONSTER_TRANSFORM:	case SC_ON_PUSH_CART:
 				case SC_KAHU_ENTEN:		case SC_HYOUHU_HUBUKI:	case SC_KAZEHU_SEIRAN:	
@@ -8370,7 +8389,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 	case AB_PRAEFATIO:
 		if( sd == NULL || sd->status.party_id == 0 || flag&1 )
-			clif_skill_nodamage(bl, bl, skillid, skilllv, sc_start4(bl, type, 100, skilllv, 0, 0, 1, skill_get_time(skillid, skilllv)));
+			clif_skill_nodamage(bl, bl, skillid, skilllv, sc_start4(bl, type, 100, skilllv, 0, 0, skillid, skill_get_time(skillid, skilllv)));
 		else if( sd )
 			party_foreachsamemap(skill_area_sub, sd, skill_get_splash(skillid, skilllv), src, skillid, skilllv, tick, flag|BCT_PARTY|1, skill_castend_nodamage_id);
 		break;
@@ -8552,11 +8571,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_KAGEHUMI:		case SC_JYUMONJIKIRI:	case SC_MEIKYOUSISUI:
 				case SC_KYOUGAKU:		case SC_IZAYOI:			case SC_ZENKAI:
 				// Rebellion - Need Confirm
-				case SC_B_TRAP:         case SC_E_CHAIN:        case SC_C_MARKER:       
-				case SC_H_MINE:         case SC_P_ALTER:        case SC_HEAT_BARREL:
-				case SC_ANTI_M_BLAST:   case SC_FALLEN_ANGEL:
+				case SC_B_TRAP:			case SC_C_MARKER:		case SC_H_MINE:
+				case SC_ANTI_M_BLAST:	case SC_FALLEN_ANGEL:
 				// Summoner
-				case SC_SPRITEMABLE:
+				case SC_SPRITEMABLE:	case SC_SOULATTACK:
 				// Misc Status's
 				case SC_ALL_RIDING:		case SC_MONSTER_TRANSFORM:	case SC_ON_PUSH_CART:
 				case SC_KAHU_ENTEN:		case SC_HYOUHU_HUBUKI:	case SC_KAZEHU_SEIRAN:	
