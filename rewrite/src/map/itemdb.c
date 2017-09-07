@@ -198,7 +198,107 @@ const char* itemdb_typename(int type)
 		case IT_DELAYCONSUME:   return "Delay-Consume Usable";
 		case IT_CASH:           return "Cash Usable";
 	}
-	return "Unknown Type";
+	return "Unknown Item Type";
+}
+
+/// Returns human readable name for given weapon type.
+/// @param type Type id to retrieve name for ( W_* ).
+const char* itemdb_weapon_typename(int type)
+{
+	switch(type)
+	{
+		case W_FIST:     return "Bare Fist";
+		case W_DAGGER:   return "Dagger";
+		case W_1HSWORD:  return "One-Handed Sword";
+		case W_2HSWORD:  return "Two-Handed Sword";
+		case W_1HSPEAR:  return "One-Handed Spear";
+		case W_2HSPEAR:  return "Two-Handed Spear";
+		case W_1HAXE:    return "One-Handed Axe";
+		case W_2HAXE:    return "Two-Handed Axe";
+		case W_MACE:     return "Mace";
+		case W_2HMACE:   return "Two-Handed Mace";
+		case W_STAFF:    return "Staff";
+		case W_BOW:      return "Bow";
+		case W_KNUCKLE:  return "Knuckle";
+		case W_MUSICAL:  return "Musical Instrument";
+		case W_WHIP:     return "Whip";
+		case W_BOOK:     return "Book";
+		case W_KATAR:    return "Katar";
+		case W_REVOLVER: return "Revolver";
+		case W_RIFLE:    return "Rifle";
+		case W_GATLING:  return "Gatling Gun";
+		case W_SHOTGUN:  return "Shotgun";
+		case W_GRENADE:  return "Grenade Launcher";
+		case W_HUUMA:    return "Huuma Shuriken";
+		case W_2HSTAFF:  return "Two-Handed Staff";
+	}
+	return "Unknown Weapon Type";
+}
+
+/// Returns human readable name for given armor type.
+/// @param type Type id to retrieve name for ( EQP_* ).
+const char* itemdb_armor_typename(int type)
+{
+	switch(type)
+	{	// Regular Equips
+		case EQP_HEAD_TOP: return "Upper Head";
+		case EQP_HEAD_MID: return "Middle Head";
+		case EQP_HEAD_LOW: return "Lower Head";
+		case EQP_HELM_TM: return "Upper/Middle Head";
+		case EQP_HELM_TL: return "Upper/Lower Head";
+		case EQP_HELM_ML: return "Middle/Lower Head";
+		case EQP_HELM: return "Upper/Middle/Lower Head";
+		case EQP_WEAPON: return "Right Hand/Weapon";
+		case EQP_SHIELD: return "Left Hand/Shield";
+		case EQP_ARMS: return "Left/Right Hand";
+		case EQP_ARMOR: return "Body";
+		case EQP_GARMENT: return "Robe";
+		case EQP_SHOES: return "Shoes";
+		case EQP_ACC_R: return "Right Accessory";
+		case EQP_ACC_L: return "Left Accessory";
+		case EQP_ACC: return "Accessory";
+		case EQP_AMMO: return "Ammo";
+
+		// Costume Equips
+		case EQP_COSTUME_HEAD_TOP: return "Costume Upper Head";
+		case EQP_COSTUME_HEAD_MID: return "Costume Middle Head";
+		case EQP_COSTUME_HEAD_LOW: return "Costume Lower Head";
+		case EQP_COSTUME_HELM_TM: return "Costume Upper/Middle Head";
+		case EQP_COSTUME_HELM_TL: return "Costume Upper/Lower Head";
+		case EQP_COSTUME_HELM_ML: return "Costume Middle/Lower Head";
+		case EQP_COSTUME_HELM: return "Costume Upper/Middle/Lower Head";
+		case EQP_COSTUME_GARMENT: return "Costume Robe";
+		case EQP_COSTUME_FLOOR: return "Costume Floor";
+
+		// Shadow Equips
+		case EQP_SHADOW_ARMOR: return "Shadow Body";
+		case EQP_SHADOW_WEAPON: return "Shadow Weapon";
+		case EQP_SHADOW_SHIELD: return "Shadow Shield";
+		case EQP_SHADOW_SHOES: return "Shadow Shoes";
+		case EQP_SHADOW_ACC_R: return "Shadow Right Accessory";
+		case EQP_SHADOW_ACC_L: return "Shadow Left Accessory";
+		case EQP_SHADOW_ACC: return "Shadow Accessory";
+	}
+	return "Unknown Armor Type";
+}
+
+/// Returns human readable name for given ammo type.
+/// @param type Type id to retrieve name for ( A_* ).
+const char* itemdb_ammo_typename(int type)
+{
+	switch(type)
+	{
+		case A_ARROW:       return "Arrow";
+		case A_DAGGER:      return "Throwing Dagger";
+		case A_BULLET:      return "Bullet";
+		case A_SHELL:       return "Shell";
+		case A_GRENADE:     return "Grenade";
+		case A_SHURIKEN:    return "Shuriken";
+		case A_KUNAI:       return "Kunai";
+		case A_CANNONBALL:  return "Cannon Ball";
+		case A_THROWWEAPON: return "Throwable Item";
+	}
+	return "Unknown Ammo Type";
 }
 
 /*==========================================

@@ -1369,7 +1369,7 @@ int make_new_char_sql(struct char_session_data* sd, char* name_, int str, int ag
 	}
 
 #if PACKETVER >= 20151029
-	if ( race == RACE_HUMAN )
+	if ( race == RACE_HUMAN || ALLOW_OTHER_RACES == 0 )
 	{	// Human - Defaults
 		// Job = Novice
 		// Starting HP/SP = 40/11

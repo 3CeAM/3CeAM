@@ -702,6 +702,7 @@ typedef enum sc_type {
 	SC_PROTECTIONOFSHRIMP,
 
 	SC_FALLEN_ANGEL,
+	SC_SOULATTACK,
 
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
@@ -1568,7 +1569,7 @@ enum si_type {
 //	SI_DRESS_UP = 856,
 //	SI_MAPLE_FALLS = 857,
 //	SI_ALL_NIFLHEIM_RECALL = 858,
-//	SI_ = 859,
+//	SI_ = 859,// Displays red arrow above head pointing down to target below.
 //	SI_MTF_MARIONETTE = 860,
 //	SI_MTF_LUDE = 861,
 //	SI_MTF_CRUISER = 862,
@@ -1691,7 +1692,7 @@ enum si_type {
 //	SI_ = 979,
 //	SI_ = 980,
 //	SI_ = 981,
-//	SI_ = 982,
+	SI_SOULATTACK = 982,
 //	SI_AID_PERIOD_RECEIVEITEM_2ND = 983,
 //	SI_AID_PERIOD_PLUSEXP_2ND = 984,
 //	SI_AID_PERIOD_PLUSJOBEXP_2ND = 985,
