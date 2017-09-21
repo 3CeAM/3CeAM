@@ -406,6 +406,12 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			return 0;
 		}
 
+		if( sc->data[SC_KINGS_GRACE] )
+		{
+			d->dmg_lv = ATK_BLOCK;
+			return 0;
+		}
+
 		if( sc->data[SC_SAFETYWALL] && (flag&(BF_SHORT|BF_MAGIC)) == BF_SHORT )
 		{
 			struct skill_unit_group* group = skill_id2group(sc->data[SC_SAFETYWALL]->val3);
@@ -2531,7 +2537,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						skillratio = skillratio * s_level / 100;	// Base level bonus.
 					break;
 				case SR_SKYNETBLOW:
-					if( sc && sc->data[SC_COMBO] )//This part of the code wont entirely work until I update the combo system. [Rytech]
+					if( sc && sc->data[SC_COMBO] )
 					skillratio = 100 * skill_lv + sstatus->agi + 150;
 					else
 					skillratio = 80 * skill_lv + sstatus->agi;
@@ -2564,7 +2570,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						skillratio = skillratio * s_level / 150;	// Base level bonus.
 					break;
 				case SR_TIGERCANNON:
-					if( sc && sc->data[SC_COMBO] )//This part of the code wont entirely work until I update the combo system. [Rytech]
+					if( sc && sc->data[SC_COMBO] )
 					skillratio = (sstatus->max_hp * ( 10 + 2 * skill_lv ) / 100 + sstatus->max_sp * ( 5 + 1 * skill_lv ) / 100) / 2;
 					else
 					skillratio = (sstatus->max_hp * ( 10 + 2 * skill_lv ) / 100 + sstatus->max_sp * ( 5 + 1 * skill_lv ) / 100) / 4;
@@ -2615,7 +2621,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						skillratio = skillratio * s_level / 100;	// Base level bonus.
 					break;
 				case SR_GATEOFHELL:
-					if( sc && sc->data[SC_COMBO] )//Wont work until the combo system is fixed for this skill.
+					if( sc && sc->data[SC_COMBO] )
 					skillratio = 800 * skill_lv;
 					else
 					skillratio = 500 * skill_lv;
@@ -4265,6 +4271,12 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 				if (skill_num == WZ_FIREPILLAR)
 					MATK_ADD(50);
 			}
+		}
+
+		//The following are applied on top of current damage and are stackable.
+		if (sc) {
+			if (sc->data[SC_TELEKINESIS_INTENSE] && skill_num && skill_get_ele(skill_num,skill_lv) == ELE_GHOST)
+				MATK_ADDRATE(sc->data[SC_TELEKINESIS_INTENSE]->val2);
 		}
 
 		if(sd) {

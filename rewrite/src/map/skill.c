@@ -1449,6 +1449,9 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 				// Rebellion - Need Confirm
 				case SC_B_TRAP:			case SC_C_MARKER:		case SC_H_MINE:
 				case SC_ANTI_M_BLAST:	case SC_FALLEN_ANGEL:
+				// 3rd Job Level Expansion
+				case SC_FRIGG_SONG:		case SC_OFFERTORIUM:	case SC_TELEKINESIS_INTENSE:
+				case SC_KINGS_GRACE:
 				// Summoner
 				case SC_SPRITEMABLE:	case SC_SOULATTACK:
 				// Misc Status's
@@ -5766,11 +5769,27 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case KO_MEIKYOUSISUI:
 	case RA_UNLIMIT:
 	case AB_OFFERTORIUM:
+	case WL_TELEKINESIS_INTENSE:
 	case ALL_FULL_THROTTLE:
 	case SU_ARCLOUSEDASH:
 	case SU_FRESHSHRIMP:
 		clif_skill_nodamage(src,bl,skillid,skilllv,
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
+		break;
+
+	case SC_ESCAPE:
+		skill_castend_pos2(src, src->x, src->y, HT_ANKLESNARE, 5, tick, flag);
+		clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		skill_blown(src,bl,skill_get_blewcount(skillid,skilllv),unit_getdir(bl),0);
+		break;
+
+	case SR_FLASHCOMBO:
+		// Duration of status is set to 4x the amotion to make it last just long enough to apply ATK boost to all 4 skills.
+		clif_skill_nodamage(src,bl,skillid,skilllv,sc_start(src,type,100,skilllv,4 * status_get_amotion(src)));
+		skill_addtimerskill(src, tick, bl->id, 0, 0, SR_DRAGONCOMBO, sd?pc_checkskill(sd,SR_DRAGONCOMBO):10, BF_WEAPON, flag);
+		skill_addtimerskill(src, tick + status_get_amotion(src), bl->id, 0, 0, SR_FALLENEMPIRE, sd?pc_checkskill(sd,SR_FALLENEMPIRE):5, BF_WEAPON, flag);
+		skill_addtimerskill(src, tick + (2 * status_get_amotion(src)), bl->id, 0, 0, SR_TIGERCANNON, sd?pc_checkskill(sd,SR_TIGERCANNON):10, BF_WEAPON, flag);
+		skill_addtimerskill(src, tick + (3 * status_get_amotion(src)), bl->id, 0, 0, SR_SKYNETBLOW, sd?pc_checkskill(sd,SR_SKYNETBLOW):5, BF_WEAPON, flag);
 		break;
 
 	case RL_P_ALTER:
@@ -7083,6 +7102,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				// Rebellion - Need Confirm
 				case SC_B_TRAP:			case SC_C_MARKER:		case SC_H_MINE:
 				case SC_ANTI_M_BLAST:	case SC_FALLEN_ANGEL:
+				// 3rd Job Level Expansion
+				case SC_FRIGG_SONG:		case SC_OFFERTORIUM:	case SC_TELEKINESIS_INTENSE:
+				case SC_KINGS_GRACE:
 				// Summoner
 				case SC_SPRITEMABLE:	case SC_SOULATTACK:
 				// Misc Status's
@@ -8573,6 +8595,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				// Rebellion - Need Confirm
 				case SC_B_TRAP:			case SC_C_MARKER:		case SC_H_MINE:
 				case SC_ANTI_M_BLAST:	case SC_FALLEN_ANGEL:
+				// 3rd Job Level Expansion
+				case SC_FRIGG_SONG:		case SC_OFFERTORIUM:	case SC_TELEKINESIS_INTENSE:
+				case SC_KINGS_GRACE:
 				// Summoner
 				case SC_SPRITEMABLE:	case SC_SOULATTACK:
 				// Misc Status's
@@ -11380,6 +11405,8 @@ int skill_castend_map (struct map_session_data *sd, short skill_num, const char 
 		sd->sc.data[SC_CRYSTALIZE] ||
 		sd->sc.data[SC__MANHOLE] ||
 		sd->sc.data[SC_HEAT_BARREL_AFTER] ||
+		sd->sc.data[SC_FLASHCOMBO] ||
+		sd->sc.data[SC_KINGS_GRACE] ||
 		sd->sc.data[SC_ALL_RIDING]
 	 )) {
 		skill_failed(sd);
@@ -12172,6 +12199,30 @@ static int skill_unit_onplace (struct skill_unit *src, struct block_list *bl, un
 			return 0;// Can't be affected by your own stealth field.
 		if(!sce)
 			sc_start(bl,type,100,sg->skill_lv,sg->limit);
+		break;
+
+	case UNT_KINGS_GRACE:
+		if(!sce)
+			sc_start(bl,type,100,sg->skill_lv,sg->limit);
+
+		// Immunity active. Now to remove status's your immune to.
+		if ( sc )
+		{
+			short i = 0;
+			const enum sc_type scs[] = { SC_MARSHOFABYSS, SC_MANDRAGORA };
+			// Checking for common status's.
+			for (i = SC_COMMON_MIN; i <= SC_COMMON_MAX; i++)
+				if (sc->data[i])
+					status_change_end(bl, (sc_type)i, INVALID_TIMER);
+			// Checking for Guillotine poisons.
+			for (i = SC_NEW_POISON_MIN; i <= SC_NEW_POISON_MAX; i++)
+				if (sc->data[i])
+					status_change_end(bl, (sc_type)i, INVALID_TIMER);
+			// Checking for additional status's.
+			for (i = 0; i < ARRAYLENGTH(scs); i++)
+				if (sc->data[scs[i]])
+					status_change_end(bl, scs[i], INVALID_TIMER);
+		}
 		break;
 
 	case UNT_SUITON:
@@ -14551,6 +14602,8 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 			req.sp += req.sp * sc->data[SC_UNLIMITEDHUMMINGVOICE]->val3 / 100;
 		if( sc->data[SC_OFFERTORIUM] )
 			req.sp += req.sp * sc->data[SC_OFFERTORIUM]->val3 / 100;
+		if( sc->data[SC_TELEKINESIS_INTENSE] && skill_get_ele(skill,lv) == ELE_GHOST )
+			req.sp -= req.sp * sc->data[SC_TELEKINESIS_INTENSE]->val4 / 100;
 	}
 
 	req.zeny = skill_db[j].zeny[lv-1];
@@ -14755,7 +14808,7 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 	// Calculates regular and variable cast time.
 	if( !(skill_get_castnodex(skill_id, skill_lv)&1) )
 	{	//If renewal casting is enabled, all renewal skills will follow the renewal cast formula.
-		if (battle_config.renewal_casting_renewal_skills == 1 && (skill_id >= RK_ENCHANTBLADE && skill_id <= SU_SPIRITOFSEA || skill_id >= MH_SUMMON_LEGION && skill_id <= MH_VOLCANIC_ASH))
+		if (battle_config.renewal_casting_renewal_skills == 1 && (skill_id >= RK_ENCHANTBLADE && skill_id <= WE_CHEERUP || skill_id >= MH_SUMMON_LEGION && skill_id <= MH_VOLCANIC_ASH))
 		{
 			time -= time * (status_get_dex(bl) * 2 + status_get_int(bl)) / 530;
 			if ( time < 0 ) time = 0;// No return of 0 since were adding the fixed_time later.
@@ -14814,6 +14867,8 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 			time -= time * 30 / 100;
 		if (sc->data[SC_IZAYOI])
 			time -= time * 50 / 100;
+		if (sc->data[SC_TELEKINESIS_INTENSE])
+			time -= time * sc->data[SC_TELEKINESIS_INTENSE]->val3 / 100;
 		if (sc->data[SC_SLOWCAST])
 			time += time * sc->data[SC_SLOWCAST]->val2 / 100;
 	}
@@ -14878,7 +14933,7 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 
 	//Only add variable and fixed times when renewal casting for renewal skills are on. Without this check,
 	//it will add the 2 together during the above phase and then readd the fixed time.
-	if (battle_config.renewal_casting_renewal_skills == 1 && (skill_id >= RK_ENCHANTBLADE && skill_id <= SU_SPIRITOFSEA || skill_id >= MH_SUMMON_LEGION && skill_id <= MH_VOLCANIC_ASH))
+	if (battle_config.renewal_casting_renewal_skills == 1 && (skill_id >= RK_ENCHANTBLADE && skill_id <= WE_CHEERUP || skill_id >= MH_SUMMON_LEGION && skill_id <= MH_VOLCANIC_ASH))
 	final_time = time + fixed_time;
 	else
 	final_time = time;
@@ -15626,7 +15681,7 @@ int skill_detonator(struct block_list *bl, va_list ap)
 			else
 				map_foreachinrange(skill_trap_splash,bl,skill_get_splash(unit->group->skill_id,unit->group->skill_lv),unit->group->bl_flag,bl,unit->group->tick);
 
-			clif_changetraplook(bl,unit_id == UNT_FIRINGTRAP ? UNT_DUMMYSKILL : UNT_USED_TRAPS);
+			clif_changetraplook(bl,UNT_USED_TRAPS);
 			unit->group->unit_id = UNT_USED_TRAPS;
 			unit->range = -1;
 			unit->group->limit = DIFF_TICK(gettick(),unit->group->tick) + (unit_id == UNT_TALKIEBOX ? 5000 : 1500);

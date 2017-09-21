@@ -47,7 +47,7 @@ Laccessroom:
 	BaseThird == Job_Sorcerer || 
 	BaseThird == Job_Minstrel || 
 	BaseThird == Job_Wanderer || 
-//	BaseThird == Job_Sura || 
+	BaseThird == Job_Sura || 
 	BaseThird == Job_Genetic || 
 	BaseThird == Job_Shadow_Chaser
 	)

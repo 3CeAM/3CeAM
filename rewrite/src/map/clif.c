@@ -1505,6 +1505,10 @@ int clif_spawn(struct block_list *bl)
 				clif_status_change(&sd->bl,SI_DARKCROW,1,9999,sd->sc.data[SC_DARKCROW]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_UNLIMIT] )
 				clif_status_change(&sd->bl,SI_UNLIMIT,1,9999,sd->sc.data[SC_UNLIMIT]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_OFFERTORIUM] )
+				clif_status_change(&sd->bl,SI_OFFERTORIUM,1,9999,sd->sc.data[SC_OFFERTORIUM]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_TELEKINESIS_INTENSE] )
+				clif_status_change(&sd->bl,SI_TELEKINESIS_INTENSE,1,9999,sd->sc.data[SC_TELEKINESIS_INTENSE]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_SUHIDE] )
 				clif_status_change(&sd->bl,SI_SUHIDE,1,9999,sd->sc.data[SC_SUHIDE]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_SU_STOOP] )
@@ -4908,6 +4912,10 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_DARKCROW,1,9999,tsd->sc.data[SC_DARKCROW]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_UNLIMIT] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_UNLIMIT,1,9999,tsd->sc.data[SC_UNLIMIT]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_OFFERTORIUM] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_OFFERTORIUM,1,9999,tsd->sc.data[SC_OFFERTORIUM]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_TELEKINESIS_INTENSE] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_TELEKINESIS_INTENSE,1,9999,tsd->sc.data[SC_TELEKINESIS_INTENSE]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_SUHIDE] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_SUHIDE,1,9999,tsd->sc.data[SC_SUHIDE]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_SU_STOOP] )
@@ -7374,13 +7382,14 @@ void clif_vendingreport(struct map_session_data* sd, int index, int amount)
 	WFIFOSET(fd,packet_len(0x137));
 }
 
-/// Result of organizing a party.
-/// R 00FA <result>.B
-///
-/// result=0 : opens party window and shows MsgStringTable[77]="party successfully organized"
-/// result=1 : MsgStringTable[78]="party name already exists"
-/// result=2 : MsgStringTable[79]="already in a party"
-/// result=other : nothing
+/// Result of organizing a party (ZC_ACK_MAKE_GROUP).
+/// 00fa <result>.B
+/// result:
+///     0 = opens party window and shows MsgStringTable[77]="party successfully organized"
+///     1 = MsgStringTable[78]="party name already exists"
+///     2 = MsgStringTable[79]="already in a party"
+///     3 = cannot organize parties on this map
+///     ? = nothing
 int clif_party_created(struct map_session_data *sd,int result)
 {
 	int fd;
@@ -7395,9 +7404,31 @@ int clif_party_created(struct map_session_data *sd,int result)
 	return 0;
 }
 
+/// Adds new member to a party.
+/// Other behaviours:
+///     updates item share options without a message
+///     replaces member if the charname matches
+///     ignores position fields // TODO check on different clients [flaviojs]
+/// 0104 <account id>.L <role>.L <x>.W <y>.W <state>.B <party name>.24B <char name>.24B <map name>.16B (ZC_ADD_MEMBER_TO_GROUP)
+/// 01e9 <account id>.L <role>.L <x>.W <y>.W <state>.B <party name>.24B <char name>.24B <map name>.16B <item pickup rule>.B <item share rule>.B (ZC_ADD_MEMBER_TO_GROUP2)
+/// 0a43 <account id>.L <role>.L <job>.W <level>.W <x>.W <y>.W <state>.B <party name>.24B <char name>.24B <map name>.16B <item pickup rule>.B <item share rule>.B (ZC_ADD_MEMBER_TO_GROUP3)
+/// role:
+///     0 = leader
+///     1 = normal
+/// state:
+///     0 = connected
+///     1 = disconnected
 int clif_party_member_info(struct party_data *p, struct map_session_data *sd)
 {
-	unsigned char buf[96];
+#if PACKETVER < 20170906
+	unsigned char buf[81];
+	short packet_num = 0x1e9;
+	unsigned char offset = 0;
+#else
+	unsigned char buf[85];
+	short packet_num = 0xa43;
+	unsigned char offset = 4;
+#endif
 	int i;
 
 	if (!sd) { //Pick any party member (this call is used when changing item share rules)
@@ -7408,35 +7439,54 @@ int clif_party_member_info(struct party_data *p, struct map_session_data *sd)
 	if (i >= MAX_PARTY) return 0; //Should never happen...
 	sd = p->data[i].sd;
 
-	WBUFW(buf, 0) = 0x1e9;
+	WBUFW(buf, 0) = packet_num;
 	WBUFL(buf, 2) = sd->status.account_id;
 	WBUFL(buf, 6) = (p->party.member[i].leader)?0:1;
-	WBUFW(buf,10) = sd->bl.x;
-	WBUFW(buf,12) = sd->bl.y;
-	WBUFB(buf,14) = (p->party.member[i].online)?0:1;
-	memcpy(WBUFP(buf,15), p->party.name, NAME_LENGTH);
-	memcpy(WBUFP(buf,39), sd->status.name, NAME_LENGTH);
-	mapindex_getmapname_ext(mapindex_id2name(sd->mapindex), (char*)WBUFP(buf,63));
-	WBUFB(buf,79) = (p->party.item&1)?1:0;
-	WBUFB(buf,80) = (p->party.item&2)?1:0;
-	clif_send(buf,packet_len(0x1e9),&sd->bl,PARTY);
+#if PACKETVER >= 20170906
+	WBUFW(buf,10) = sd->status.class_;
+	WBUFW(buf,12) = sd->status.base_level;
+#endif
+	WBUFW(buf,10+offset) = sd->bl.x;
+	WBUFW(buf,12+offset) = sd->bl.y;
+	WBUFB(buf,14+offset) = (p->party.member[i].online)?0:1;
+	memcpy(WBUFP(buf,15+offset), p->party.name, NAME_LENGTH);
+	memcpy(WBUFP(buf,39+offset), sd->status.name, NAME_LENGTH);
+	mapindex_getmapname_ext(mapindex_id2name(sd->mapindex), (char*)WBUFP(buf,63+offset));
+	WBUFB(buf,79+offset) = (p->party.item&1)?1:0;
+	WBUFB(buf,80+offset) = (p->party.item&2)?1:0;
+	clif_send(buf,packet_len(packet_num),&sd->bl,PARTY);
 	return 1;
 }
 
-
-/*==========================================
- * Sends party information
- * R 00fb <len>.w <party name>.24B {<ID>.l <nick>.24B <map name>.16B <leader>.B <offline>.B}.46B*
- *------------------------------------------*/
+/// Sends party information.
+/// 00fb <packet len>.W <party name>.24B { <account id>.L <nick>.24B <map name>.16B <role>.B <state>.B }* (ZC_GROUP_LIST)
+/// 0a44 <packet len>.W <party name>.24B { <account id>.L <nick>.24B <map name>.16B <role>.B <state>.B <job>.W <level>.W }* <item pickup rule>.B <item share rule>.B <????>.L (ZC_GROUP_LIST2)
+/// role:
+///     0 = leader
+///     1 = normal
+/// state:
+///     0 = connected
+///     1 = disconnected
 int clif_party_info(struct party_data* p, struct map_session_data *sd)
 {
+	unsigned char party_info = 2+2+NAME_LENGTH;
+#if PACKETVER < 20170906
+	short packet_num = 0xfb;
+	unsigned char member_info = 4+NAME_LENGTH+MAP_NAME_LENGTH_EXT+1+1;
+	unsigned char extra_info = 0;
 	unsigned char buf[2+2+NAME_LENGTH+(4+NAME_LENGTH+MAP_NAME_LENGTH_EXT+1+1)*MAX_PARTY];
+#else
+	short packet_num = 0xa44;
+	unsigned char member_info = 4+NAME_LENGTH+MAP_NAME_LENGTH_EXT+1+1+2+2;
+	unsigned char extra_info = 1+1+4;
+	unsigned char buf[2+2+NAME_LENGTH+(4+NAME_LENGTH+MAP_NAME_LENGTH_EXT+1+1+2+2)*MAX_PARTY+1+1+4];
+#endif
 	struct map_session_data* party_sd = NULL;
 	int i, c;
 
 	nullpo_ret(p);
 
-	WBUFW(buf,0) = 0xfb;
+	WBUFW(buf,0) = packet_num;
 	memcpy(WBUFP(buf,4), p->party.name, NAME_LENGTH);
 	for(i = 0, c = 0; i < MAX_PARTY; i++)
 	{
@@ -7445,14 +7495,23 @@ int clif_party_info(struct party_data* p, struct map_session_data *sd)
 
 		if(party_sd == NULL) party_sd = p->data[i].sd;
 
-		WBUFL(buf,28+c*46) = m->account_id;
-		memcpy(WBUFP(buf,28+c*46+4), m->name, NAME_LENGTH);
-		mapindex_getmapname_ext(mapindex_id2name(m->map), (char*)WBUFP(buf,28+c*46+28));
-		WBUFB(buf,28+c*46+44) = (m->leader) ? 0 : 1;
-		WBUFB(buf,28+c*46+45) = (m->online) ? 0 : 1;
+		WBUFL(buf,party_info+c*member_info) = m->account_id;
+		memcpy(WBUFP(buf,party_info+c*member_info+4), m->name, NAME_LENGTH);
+		mapindex_getmapname_ext(mapindex_id2name(m->map), (char*)WBUFP(buf,party_info+c*member_info+28));
+		WBUFB(buf,party_info+c*member_info+44) = (m->leader) ? 0 : 1;
+		WBUFB(buf,party_info+c*member_info+45) = (m->online) ? 0 : 1;
+#if PACKETVER >= 20170906
+		WBUFW(buf,party_info+c*member_info+46) = m->class_;
+		WBUFW(buf,party_info+c*member_info+48) = m->lv;
+#endif
 		c++;
 	}
-	WBUFW(buf,2) = 28+c*46;
+#if PACKETVER >= 20170906
+	WBUFB(buf,party_info+c*member_info) = (p->party.item&1) ? 1 :0;
+	WBUFB(buf,party_info+c*member_info+1) = (p->party.item&2) ? 1 : 0;
+	WBUFL(buf,party_info+c*member_info+2) = 0;
+#endif
+	WBUFW(buf,2) = party_info+c*member_info+extra_info;
 
 	if(sd) { // send only to self
 		clif_send(buf, WBUFW(buf,2), &sd->bl, SELF);
@@ -7463,10 +7522,11 @@ int clif_party_info(struct party_data* p, struct map_session_data *sd)
 	return 0;
 }
 
-/*==========================================
- * The player's 'party invite' state, sent during login
- * R 02c9 <flag>.B
- *------------------------------------------*/
+/// The player's 'party invite' state, sent during login (ZC_PARTY_CONFIG).
+/// 02c9 <flag>.B
+/// flag:
+///     0 = allow party invites
+///     1 = auto-deny party invites
 void clif_partyinvitationstate(struct map_session_data* sd)
 {
 	int fd;
@@ -7479,11 +7539,9 @@ void clif_partyinvitationstate(struct map_session_data* sd)
 	WFIFOSET(fd, packet_len(0x2c9));
 }
 
-/*==========================================
- * Party invitation request.
- * R 00fe <account_id>.L <party_name>.24S
- * R 02c6 <guild_id>.L <party_name>.24S
- *------------------------------------------*/
+/// Party invitation request.
+/// 00fe <party id>.L <party name>.24B (ZC_REQ_JOIN_GROUP)
+/// 02c6 <party id>.L <party name>.24B (ZC_PARTY_JOIN_REQ)
 int clif_party_invite(struct map_session_data *sd,struct map_session_data *tsd)
 {
 	int fd;
@@ -7505,17 +7563,18 @@ int clif_party_invite(struct map_session_data *sd,struct map_session_data *tsd)
 	return 0;
 }
 
-/*==========================================
- * Party invitation result.
- * R 00fd <nick>.24S <flag>.B
- * R 02c5 <nick>.24S <flag>.L
- * Flag values are:
- * 0 -> char is already in a party
- * 1 -> party invite was rejected
- * 2 -> party invite was accepted
- * 3 -> party is full
- * 4 -> char of the same account already joined the party
- *------------------------------------------*/
+/// Party invite result.
+/// 00fd <nick>.24S <result>.B (ZC_ACK_REQ_JOIN_GROUP)
+/// 02c5 <nick>.24S <result>.L (ZC_PARTY_JOIN_REQ_ACK)
+/// result=0 : char is already in a party -> MsgStringTable[80]
+/// result=1 : party invite was rejected -> MsgStringTable[81]
+/// result=2 : party invite was accepted -> MsgStringTable[82]
+/// result=3 : party is full -> MsgStringTable[83]
+/// result=4 : char of the same account already joined the party -> MsgStringTable[608]
+/// result=5 : char blocked party invite -> MsgStringTable[1324] (since 20070904)
+/// result=7 : char is not online or doesn't exist -> MsgStringTable[71] (since 20070904)
+/// result=8 : (%s) TODO instance related? -> MsgStringTable[1388] (since 20080527)
+/// return=9 : TODO map prohibits party joining? -> MsgStringTable[1871] (since 20110205)
 void clif_party_inviteack(struct map_session_data* sd, const char* nick, int flag)
 {
 	int fd;
@@ -7537,12 +7596,15 @@ void clif_party_inviteack(struct map_session_data* sd, const char* nick, int fla
 #endif
 }
 
-/*==========================================
- * パーティ設定送信
- * flag & 0x001=exp変更ミス
- *        0x010=item変更ミス
- *        0x100=一人にのみ送信
- *------------------------------------------*/
+/// Updates party settings.
+/// Other behaviour:
+///     notifies the user about the current options
+/// 0101 <exp option>.L (ZC_GROUPINFO_CHANGE)
+/// 07d8 <exp option>.L <item pick rule>.B <item share rule>.B (ZC_REQ_GROUPINFO_CHANGE_V2)
+/// exp option:
+///     0 = exp sharing disabled
+///     1 = exp sharing enabled
+///     2 = cannot change exp sharing
 int clif_party_option(struct party_data *p,struct map_session_data *sd,int flag)
 {
 	unsigned char buf[16];
@@ -7575,9 +7637,13 @@ int clif_party_option(struct party_data *p,struct map_session_data *sd,int flag)
 		clif_send(buf,packet_len(cmd),&sd->bl,SELF);
 	return 0;
 }
-/*==========================================
- * パーティ脱退（脱退前に呼ぶこと）
- *------------------------------------------*/
+
+/// 0105 <account id>.L <char name>.24B <result>.B (ZC_DELETE_MEMBER_FROM_GROUP).
+/// result:
+///     0 = leave
+///     1 = expel
+///     2 = cannot leave party on this map
+///     3 = cannot expel from party on this map
 int clif_party_withdraw(struct party_data* p, struct map_session_data* sd, int account_id, const char* name, int flag)
 {
 	unsigned char buf[64];
@@ -7605,9 +7671,9 @@ int clif_party_withdraw(struct party_data* p, struct map_session_data* sd, int a
 		clif_send(buf,packet_len(0x105),&sd->bl,SELF);
 	return 0;
 }
-/*==========================================
- * パーティメッセージ送信
- *------------------------------------------*/
+
+/// Party chat message (ZC_NOTIFY_CHAT_PARTY).
+/// 0109 <packet len>.W <account id>.L <message>.?B
 int clif_party_message(struct party_data* p, int account_id, const char* mes, int len)
 {
 	struct map_session_data *sd;
@@ -7627,9 +7693,9 @@ int clif_party_message(struct party_data* p, int account_id, const char* mes, in
 	}
 	return 0;
 }
-/*==========================================
- * パーティ座標通知
- *------------------------------------------*/
+
+/// Updates the position of a party member on the minimap (ZC_NOTIFY_POSITION_TO_GROUPM).
+/// 0107 <account id>.L <x>.W <y>.W
 int clif_party_xy(struct map_session_data *sd)
 {
 	unsigned char buf[16];
@@ -7659,10 +7725,9 @@ int clif_party_xy_single(int fd, struct map_session_data *sd)
 	return 0;
 }
 
-
-/*==========================================
- * パーティHP通知
- *------------------------------------------*/
+/// Updates HP bar of a party member.
+/// 0106 <account id>.L <hp>.W <max hp>.W (ZC_NOTIFY_HP_TO_GROUPM)
+/// 080e <account id>.L <hp>.L <max hp>.L (ZC_NOTIFY_HP_TO_GROUPM_R2)
 int clif_party_hp(struct map_session_data *sd)
 {
 	unsigned char buf[16];
@@ -7775,6 +7840,22 @@ int clif_hpmeter(struct map_session_data *sd)
 	if( battle_config.disp_hpmeter )
 		map_foreachinarea(clif_hpmeter_sub, sd->bl.m, sd->bl.x-AREA_SIZE, sd->bl.y-AREA_SIZE, sd->bl.x+AREA_SIZE, sd->bl.y+AREA_SIZE, BL_PC, sd);
 
+	return 0;
+}
+
+/// Updates job and level info of a party member.
+/// 0abd <account id>.L <job>.W <level>.W (ZC_)
+int clif_party_job_and_level(struct map_session_data *sd)
+{
+	unsigned char buf[10];
+
+	nullpo_ret(sd);
+
+	WBUFW(buf,0)=0xabd;
+	WBUFL(buf,2)=sd->status.account_id;
+	WBUFW(buf,6)=sd->status.class_;
+	WBUFW(buf,8)=sd->status.base_level;
+	clif_send(buf,packet_len(0xabd),&sd->bl,PARTY_AREA_WOS);
 	return 0;
 }
 
@@ -11087,8 +11168,8 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 	if( sd->sc.count && (
 		sd->sc.data[SC_TRICKDEAD] ||
 	 	sd->sc.data[SC_AUTOCOUNTER] ||
-	 	sd->sc.data[SC_DEATHBOUND] ||
 		sd->sc.data[SC_BLADESTOP] ||
+	 	sd->sc.data[SC_DEATHBOUND] ||
 		sd->sc.data[SC_CRYSTALIZE] ||
 		sd->sc.data[SC_DEEPSLEEP] ||
 		sd->sc.data[SC__MANHOLE] || 
@@ -11116,9 +11197,14 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 			return;
 
 		// Can't attack
-		if( sd->sc.data[SC_BASILICA] || sd->sc.data[SC__SHADOWFORM] || (tsc && tsc->data[SC__MANHOLE]) ||
+		if( sd->sc.data[SC_BASILICA] || 
+			sd->sc.data[SC__SHADOWFORM] || 
 			sd->sc.data[SC_HEAT_BARREL_AFTER] ||
+			sd->sc.data[SC_KINGS_GRACE] ||
 			(sd->sc.data[SC_VOICEOFSIREN] && sd->sc.data[SC_VOICEOFSIREN]->val2 == target_id) )
+			return;
+
+		if ( tsc && (tsc->data[SC__MANHOLE] || tsc->data[SC_KINGS_GRACE]))
 			return;
 
 		if (!battle_config.sdelay_attack_enable && pc_checkskill(sd, SA_FREECAST) <= 0) {
@@ -12712,12 +12798,9 @@ void clif_parse_StoragePassword(int fd, struct map_session_data *sd)
 	//TODO
 }
 
-
-/*==========================================
- * Party creation request
- * S 00f9 <party name>.24S
- * S 01e8 <party name>.24S <share flag>.B <share type>.B
- *------------------------------------------*/
+/// Party creation request
+/// 00f9 <party name>.24B (CZ_MAKE_GROUP)
+/// 01e8 <party name>.24B <item pickup rule>.B <item share rule>.B (CZ_MAKE_GROUP2)
 void clif_parse_CreateParty(int fd, struct map_session_data *sd)
 {
 	char* name = (char*)RFIFOP(fd,2);
@@ -12758,11 +12841,9 @@ void clif_parse_CreateParty2(int fd, struct map_session_data *sd)
 	party_create(sd,name,item1,item2);
 }
 
-/*==========================================
- * Party invitation request
- * S 00fc <account ID>.L
- * S 02c4 <char name>.24S
- *------------------------------------------*/
+/// Party invitation request
+/// 00fc <account id>.L (CZ_REQ_JOIN_GROUP)
+/// 02c4 <char name>.24B (CZ_PARTY_JOIN_REQ)
 void clif_parse_PartyInvite(int fd, struct map_session_data *sd)
 {
 	struct map_session_data *t_sd;
@@ -12807,12 +12888,12 @@ void clif_parse_PartyInvite2(int fd, struct map_session_data *sd)
 	party_invite(sd, t_sd);
 }
 
-/*==========================================
- * Party invitation reply
- * S 00ff <account ID>.L <flag>.L
- * S 02c7 <account ID>.L <flag>.B
- * flag: 0-reject, 1-accept
- *------------------------------------------*/
+/// Party invitation reply
+/// 00ff <party id>.L <flag>.L (CZ_JOIN_GROUP)
+/// 02c7 <party id>.L <flag>.B (CZ_PARTY_JOIN_REQ_ACK)
+/// flag:
+///     0 = reject
+///     1 = accept
 void clif_parse_ReplyPartyInvite(int fd,struct map_session_data *sd)
 {
 	party_reply_invite(sd,RFIFOL(fd,2),RFIFOL(fd,6));
@@ -12823,9 +12904,8 @@ void clif_parse_ReplyPartyInvite2(int fd,struct map_session_data *sd)
 	party_reply_invite(sd,RFIFOL(fd,2),RFIFOB(fd,6));
 }
 
-/*==========================================
- * パーティ脱退要求
- *------------------------------------------*/
+/// Request to leave party (CZ_REQ_LEAVE_GROUP).
+/// 0100
 void clif_parse_LeaveParty(int fd, struct map_session_data *sd)
 {
 	if(map[sd->bl.m].flag.partylock)
@@ -12836,9 +12916,8 @@ void clif_parse_LeaveParty(int fd, struct map_session_data *sd)
 	party_leave(sd);
 }
 
-/*==========================================
- * パーティ除名要求
- *------------------------------------------*/
+/// Request to expel a party member (CZ_REQ_EXPEL_GROUP_MEMBER).
+/// 0103 <account id>.L <char name>.24B
 void clif_parse_RemovePartyMember(int fd, struct map_session_data *sd)
 {
 	if(map[sd->bl.m].flag.partylock)
@@ -12849,9 +12928,9 @@ void clif_parse_RemovePartyMember(int fd, struct map_session_data *sd)
 	party_removemember(sd,RFIFOL(fd,2),(char*)RFIFOP(fd,6));
 }
 
-/*==========================================
- * パーティ設定変更要求
- *------------------------------------------*/
+/// Request to change party options.
+/// 0102 <exp share rule>.L (CZ_CHANGE_GROUPEXPOPTION)
+/// 07d7 <exp share rule>.L <item pickup rule>.B <item share rule>.B (CZ_GROUPINFO_CHANGE_V2)
 void clif_parse_PartyChangeOption(int fd, struct map_session_data *sd)
 {
 	struct party_data *p;
@@ -12879,10 +12958,8 @@ void clif_parse_PartyChangeOption(int fd, struct map_session_data *sd)
 #endif
 }
 
-/*==========================================
- * Validates and processes party messages
- * S 0108 <packet len>.w <text>.?B (<name> : <message>) 00
- *------------------------------------------*/
+/// Validates and processes party messages (CZ_REQUEST_CHAT_PARTY).
+/// 0108 <packet len>.W <text>.?B (<name> : <message>) 00
 void clif_parse_PartyMessage(int fd, struct map_session_data* sd)
 {
 	const char* text = (char*)RFIFOP(fd,4);
@@ -12912,10 +12989,8 @@ void clif_parse_PartyMessage(int fd, struct map_session_data* sd)
 	party_send_message(sd, text, textlen);
 }
 
-/*==========================================
- * Changes Party Leader
- * S 07da <account ID>.L
- *------------------------------------------*/
+/// Changes Party Leader (CZ_CHANGE_GROUP_MASTER).
+/// 07da <account id>.L
 void clif_parse_PartyChangeLeader(int fd, struct map_session_data* sd)
 {
 	party_changeleader(sd, map_id2sd(RFIFOL(fd,2)));
@@ -17688,7 +17763,7 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0,  0,  0,  0,  8,  3,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0, 59,  3,  0,  0,  0,  0,  0,  0,  0,
 	//#0x0A40
-	    0,  0,  0,  0,  0,  0, 14,  3,  2,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0, 85, -1,  0, 14,  3,  2,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -17696,9 +17771,9 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0, 94,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 10,  0,  0,
 	//#0x0AC0
-	    0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0, 12, 18,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,

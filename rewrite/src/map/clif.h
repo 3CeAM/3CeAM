@@ -29,7 +29,7 @@ struct party_booking_ad_info;
 #include <stdarg.h>
 // packet DB
 #define MAX_PACKET_DB		0xf00
-#define MAX_PACKET_VER		35
+#define MAX_PACKET_VER		36
 #define	MAX_PACKET_POS		20
 
 struct s_packet_db {
@@ -559,6 +559,7 @@ int clif_party_hp(struct map_session_data *sd);
 void clif_hpmeter_single(int fd, int id, unsigned int hp, unsigned int maxhp);
 int clif_hpmeter(struct map_session_data *sd);
 int clif_hpmeter_sub(struct block_list *bl, va_list ap);
+int clif_party_job_and_level(struct map_session_data *sd);
 
 // guild
 int clif_guild_created(struct map_session_data *sd,int flag);

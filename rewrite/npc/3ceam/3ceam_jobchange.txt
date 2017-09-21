@@ -3,13 +3,14 @@
 //===== By: ================================================== 
 //= Rytech
 //===== Current Version: ===================================== 
-//= 1.0
+//= 1.1
 //===== Compatible With: ===================================== 
 //= 3CeAM
 //===== Description: ========================================= 
 //= Allows changing into jobs introduced in the RE era.
 //===== Additional Comments: ================================= 
 //= 1.0 Release Version.
+//= 1.1 Added support for baby versions of Kagerou/Oboro/Rebellion
 //============================================================
 prontera,158,184,4	script	Special Job Changer	485,{
 
@@ -36,9 +37,9 @@ Xready:
 		goto Xthirdbaby;
 	else if (Class == Job_SuperNovice || Class == Job_Super_Baby)
 		goto Xextendedsn;
-	else if (Class == Job_Gunslinger || Class == Job_Ninja)
+	else if (Class == Job_Gunslinger || Class == Job_Ninja || Class == Job_Baby_Gunslinger || Class == Job_Baby_Ninja)
 		goto Xextendedgsnj;
-	else if (Class == Job_Star_Gladiator || Class == Job_Soul_Linker)
+	else if (Class == Job_Star_Gladiator || Class == Job_Soul_Linker || Class == Job_Baby_Star_Gladiator || Class == Job_Baby_Soul_Linker)
 		goto Xextendedsgsl;
 	else
 		goto Xcantchange;
@@ -185,6 +186,15 @@ Xextendedgsnj:
 		}
 		else if (Class == Job_Gunslinger)
 			jobchange Job_Rebellion;
+		else if (Class == Job_Baby_Ninja)
+		{
+			if (Sex == Sex_Male)
+				jobchange Job_Baby_Kagerou;
+			else if (Sex == Sex_Female)
+				jobchange Job_Baby_Oboro;
+		}
+		else if (Class == Job_Baby_Gunslinger)
+			jobchange Job_Baby_Rebellion;
 
 		goto Xcomplete;
 	}
@@ -200,6 +210,10 @@ Xextendedsgsl:
 		//if (Class == Job_Star_Gladiator)
 		//	jobchange ????;
 		//else if (Class == Job_Soul_Linker)
+		//	jobchange ????;
+		//if (Class == Job_Baby_Star_Gladiator)
+		//	jobchange ????;
+		//else if (Class == Job_Baby_Soul_Linker)
 		//	jobchange ????;
 
 		//goto Xcomplete;

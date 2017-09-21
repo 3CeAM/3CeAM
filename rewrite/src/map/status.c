@@ -495,7 +495,7 @@ void initChangeTables(void)
 	set_sc( SC_BLOODYLUST        , SC__BLOODYLUST     , SI_BLOODYLUST      , SCB_DEF|SCB_DEF2|SCB_BATK|SCB_WATK );
 
 	set_sc( LG_REFLECTDAMAGE     , SC_REFLECTDAMAGE   , SI_LG_REFLECTDAMAGE, SCB_NONE );
-	set_sc( LG_FORCEOFVANGUARD   , SC_FORCEOFVANGUARD , SI_FORCEOFVANGUARD , SCB_MAXHP);
+	set_sc( LG_FORCEOFVANGUARD   , SC_FORCEOFVANGUARD , SI_FORCEOFVANGUARD , SCB_MAXHP|SCB_DEF);
 	set_sc( LG_EXEEDBREAK        , SC_EXEEDBREAK      , SI_EXEEDBREAK      , SCB_NONE );
 	set_sc( LG_PRESTIGE          , SC_PRESTIGE        , SI_PRESTIGE        , SCB_DEF );
 	set_sc( LG_BANDING           , SC_BANDING         , SI_BANDING         , SCB_WATK|SCB_DEF );
@@ -595,7 +595,7 @@ void initChangeTables(void)
 	add_sc( RK_DRAGONBREATH_WATER , SC_FREEZING           );
 	add_sc( NC_MAGMA_ERUPTION     , SC_BURNING            );
 	set_sc( WM_FRIGG_SONG         , SC_FRIGG_SONG         , SI_FRIGG_SONG         , SCB_MAXHP );
-	set_sc( SR_FLASHCOMBO         , SC_FLASHCOMBO         , SI_FLASHCOMBO         , SCB_NONE );
+	set_sc( SR_FLASHCOMBO         , SC_FLASHCOMBO         , SI_FLASHCOMBO         , SCB_WATK );
 	add_sc( SC_ESCAPE             , SC_ANKLE              );
 	set_sc( AB_OFFERTORIUM        , SC_OFFERTORIUM        , SI_OFFERTORIUM        , SCB_NONE );
 	set_sc( WL_TELEKINESIS_INTENSE, SC_TELEKINESIS_INTENSE, SI_TELEKINESIS_INTENSE, SCB_NONE );
@@ -1618,6 +1618,8 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 				sc->data[SC__SHADOWFORM] || 
 				sc->data[SC_HEAT_BARREL_AFTER] || 
 				(sc->data[SC_KYOMU] && rand()%100 < 5 * sc->data[SC_KYOMU]->val1) ||
+				sc->data[SC_FLASHCOMBO] || 
+				sc->data[SC_KINGS_GRACE] || 
 				sc->data[SC_ALL_RIDING]// Added to prevent any possiable skill exploit use on rental mounts. [Rytech]
 			))
 				return 0;
@@ -4507,6 +4509,8 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += sc->data[SC_P_ALTER]->val2;
 	if(sc->data[SC_ZANGETSU] && sc->data[SC_ZANGETSU]->val3 == 1)
 		watk += 20 * sc->data[SC_ZANGETSU]->val1 + sc->data[SC_ZANGETSU]->val2;
+	if(sc->data[SC_FLASHCOMBO])
+		watk += sc->data[SC_FLASHCOMBO]->val2;
 	if(sc->data[SC_FULL_SWING_K])
 		watk += sc->data[SC_FULL_SWING_K]->val1;
 	if(sc->data[SC_INCATKRATE])
@@ -4811,6 +4815,8 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 		def += def * sc->data[SC_INCDEFRATE]->val1/100;
 	if( sc->data[SC_NEUTRALBARRIER] )
 		def += def * ( 10 + 5 * sc->data[SC_NEUTRALBARRIER]->val1 ) / 100;
+	if( sc->data[SC_FORCEOFVANGUARD] )
+		def += def * ( 2 * sc->data[SC_FORCEOFVANGUARD]->val1 ) / 100;
 	if( sc->data[SC_ECHOSONG] )
 		def += def * sc->data[SC_ECHOSONG]->val4 / 100;
 	if(sc->data[SC_DOHU_KOUKAI])//Does this also increase DEF gained from refinement bonuses? Also need offical DEF increase value. [Rytech]
@@ -8444,9 +8450,21 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val3 = tick / 1000;
 			tick = 1000;
 			break;
+		case SC_FLASHCOMBO:
+			val2 = 20 + 20 * val1;// ATK Increase
+			break;
 		case SC_OFFERTORIUM:
 			val2 = 30 * val1;// Heal Power Increase
 			val3 = 100 + 20 * val1;// SP Requirement Increase
+			break;
+		case SC_TELEKINESIS_INTENSE:
+			val2 = 40 * val1;// Damage Increase To Ghost Element Skills
+			val3 = 10 * val1;// Variable Cast Time Reduction
+			val4 = 10 * val1;// SP Cost Reduction
+			break;
+		case SC_KINGS_GRACE:
+			val2 = tick / 1000;
+			tick = 1000;
 			break;
 		case SC_FULL_THROTTLE:
 			val2 = tick/1000;
@@ -8723,6 +8741,12 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_SILENCE:
 			if (battle_config.sc_castcancel&bl->type)
 				unit_skillcastcancel(bl, 0);
+		break;
+		// Stops everything your doing.
+		case SC_KINGS_GRACE:
+			unit_stop_walking(bl,1);
+			unit_stop_attack(bl);
+			unit_skillcastcancel(bl, 0);
 		break;
 	}
 
@@ -10651,6 +10675,15 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		if( --(sce->val3) >= 0 )
 		{
 			status_heal(bl, 80 + 20 * sce->val1, 0, 2);
+			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
+
+	case SC_KINGS_GRACE:
+		if( --(sce->val2) >= 0 )
+		{
+			status_heal(bl, status->max_hp * (3 + sce->val1) / 100, 0, 2);
 			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}
