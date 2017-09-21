@@ -3,7 +3,7 @@
 //===== By: ==================================================
 //= eAthena Dev Team [Ori:LunatikBunnie] [Cur:Lance]
 //===== Current Version: =====================================
-//= 1.5a
+//= 1.6
 //===== Compatible With: =====================================
 //= eAthena SVN Trunk 6674
 //===== Description: =========================================
@@ -16,6 +16,8 @@
 //=    All credits go to pxxx [Skotlex]
 //= 1.5 Rewrite everything from scratch. [Lance]
 //= 1.5a fixed Baby -> Super Baby change. Switched to JobName() [Lupus]
+//= 1.6 Added support for baby versions of Taekwon/Star Gladiator/
+//=     Soul Linker/Gunslinger/Ninja [Rytech]
 //============================================================
 prontera,153,193,6	script	Job Master	123,{
 	mes "^ff0000[Job Master]^000000";
@@ -74,13 +76,24 @@ prontera,153,193,6	script	Job Master	123,{
 							break;
 						case 8:
 							if(Class == Job_Novice_High) goto L_noReq;
-							if(Upper == 2) goto L_noReq;
-							set @target_job, Job_Taekwon;
+							if(Upper == 2)
+								set @target_job, Job_Baby_Taekwon;
+							else
+								set @target_job, Job_Taekwon;
 							break;
 						case 9:
+							if(Class == Job_Novice_High) goto L_noReq;
+							if(Upper == 2)
+								set @target_job, Job_Baby_Gunslinger;
+							else
+								set @target_job, Job_Gunslinger;
+							break;
 						case 10:
-							if(Class == Job_Novice_High || Upper == 2) goto L_noReq;
-							set @target_job, @menu + 15;
+							if(Class == Job_Novice_High) goto L_noReq;
+							if(Upper == 2)
+								set @target_job, Job_Baby_Ninja;
+							else
+								set @target_job, Job_Ninja;
 							break;
 						default:
 							set @target_job, @menu;
@@ -91,7 +104,8 @@ prontera,153,193,6	script	Job Master	123,{
 			mes "Are you sure you want to change to " + JobName(@target_job) + "?";
 			if(select("No","Yes") == 2){
 				callfunc "Job_Change", @target_job;
-				if(@target_job == Job_Gunslinger || @target_job == Job_Ninja || @target_job == Job_Taekwon) {
+				if(@target_job == Job_Gunslinger || @target_job == Job_Ninja || @target_job == Job_Taekwon || 
+				@target_job == Job_Baby_Gunslinger || @target_job == Job_Baby_Ninja || @target_job == Job_Baby_Taekwon) {
 					callfunc "F_ClearJobVar";
 				} else {
 					if($@JC_Plat) goto L_GivePlat;
@@ -102,7 +116,7 @@ prontera,153,193,6	script	Job Master	123,{
 		default:
 			if(JobLevel < $@JC_MinimumJB) goto L_LvError;
 			deletearray @job_opt, getarraysize(@job_opt);
-			if(Class < Job_Knight || Class == Job_Taekwon || (Class > Job_Baby && Class < Job_Baby_Knight) || (Class > Job_Novice_High && Class < Job_Lord_Knight)){
+			if(Class < Job_Knight || Class == Job_Taekwon || Class == Job_Baby_Taekwon || (Class > Job_Baby && Class < Job_Baby_Knight) || (Class > Job_Novice_High && Class < Job_Lord_Knight)){
 				if(lastJob != 0){
 					set @target_job, lastJob + 4001;
 				} else {
@@ -158,7 +172,7 @@ prontera,153,193,6	script	Job Master	123,{
 				mes "Are you sure you want to change to " + JobName(@target_job) + "?";
 				if(select("No","Yes")==2){
 					callfunc "Job_Change", @target_job;
-					if(@target_job == Job_Star_Gladiator || @target_job == Job_Soul_Linker) {
+					if(@target_job == Job_Star_Gladiator || @target_job == Job_Soul_Linker || @target_job == Job_Baby_Star_Gladiator || @target_job == Job_Baby_Soul_Linker) {
 						callfunc "F_ClearJobVar";
 					} else {
 						if($@JC_Plat) goto L_GivePlat;

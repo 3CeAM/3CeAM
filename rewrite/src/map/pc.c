@@ -4254,6 +4254,8 @@ int pc_useitem(struct map_session_data *sd,int n)
 		(sd->sc.data[SC_DEEPSLEEP] || sd->sc.data[SC_CRYSTALIZE]) && sd->status.inventory[n].nameid != ITEMID_NAUTHIZ_RUNE ||
 		sd->sc.data[SC_SATURDAYNIGHTFEVER] ||
 		sd->sc.data[SC_HEAT_BARREL_AFTER] ||
+		sd->sc.data[SC_FLASHCOMBO] ||
+		sd->sc.data[SC_KINGS_GRACE] ||
 		sd->sc.data[SC_SUHIDE]
 	))
 		return 0;
