@@ -2964,7 +2964,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					if ( tsd )
 					{ATK_ADD(((tstatus->size + 1) * 2 + (skill_lv - 1)) * sstatus->str + tsd->weight / 10 * sstatus->dex / 120);}//For Player's
 					else
-					{ATK_ADD(((tstatus->size + 1) * 2 + (skill_lv - 1)) * sstatus->str + 50 * status_get_lv(target));}//For Monster's
+					{ATK_ADD(((tstatus->size + 1) * 2 + (skill_lv - 1)) * sstatus->str + 50 * status_get_lv(target) * sstatus->dex / 120);}//For Monster's
 					break;
 				case SR_TIGERCANNON:
 					if( sc && sc->data[SC_COMBO] )

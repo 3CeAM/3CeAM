@@ -703,6 +703,7 @@ typedef enum sc_type {
 
 	SC_FALLEN_ANGEL,
 	SC_SOULATTACK,
+	SC_CHEERUP,
 
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
@@ -1702,7 +1703,7 @@ enum si_type {
 //	SI_PHARAOH_CARD = 989,
 //	SI_KIEL_CARD = 990,
 //	SI_ = 991,
-//	SI_CHEERUP = 992,
+	SI_CHEERUP = 992,
 //	SI_ = 993,
 //	SI_ = 994,
 //	SI_S_MANAPOTION = 995,
