@@ -544,3 +544,7 @@
 //18971
 
 //18984
+
+// Updated Wedding Rings - Supports New 2016 Wedding Skills
+2634,Bridegroom_Ring,Wedding Ring,5,0,,0,,0,,0,0xFFFFFFFF,7,1,136,,0,0,0,{ skill "WE_MALE",1; skill "WE_FEMALE",1; skill "WE_CALLPARTNER",1; skill "WE_CALLALLFAMILY",1; skill "WE_ONEFOREVER",1; },{},{}
+2635,Bride_Ring,Wedding Ring,5,0,,0,,0,,0,0xFFFFFFFF,7,0,136,,0,0,0,{ skill "WE_MALE",1; skill "WE_FEMALE",1; skill "WE_CALLPARTNER",1; skill "WE_CALLALLFAMILY",1; skill "WE_ONEFOREVER",1; },{},{}
