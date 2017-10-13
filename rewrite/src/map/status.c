@@ -492,7 +492,9 @@ void initChangeTables(void)
 	set_sc( SC_STRIPACCESSARY    , SC__STRIPACCESSORY , SI_STRIPACCESSARY  , SCB_INT|SCB_DEX|SCB_LUK );
 	set_sc( SC_MANHOLE           , SC__MANHOLE        , SI_MANHOLE         , SCB_NONE );
 	add_sc( SC_CHAOSPANIC        , SC_CHAOS );
-	set_sc( SC_BLOODYLUST        , SC__BLOODYLUST     , SI_BLOODYLUST      , SCB_DEF|SCB_DEF2|SCB_BATK|SCB_WATK );
+	// Old Bloody Lust data is left here in case old behavior is wanted.
+	//set_sc( SC_BLOODYLUST        , SC__BLOODYLUST     , SI_BLOODYLUST      , SCB_DEF|SCB_DEF2|SCB_BATK|SCB_WATK );
+	set_sc( SC_BLOODYLUST        , SC__BLOODYLUST_BK  , SI_BLOODYLUST      , SCB_NONE );
 
 	set_sc( LG_REFLECTDAMAGE     , SC_REFLECTDAMAGE   , SI_LG_REFLECTDAMAGE, SCB_NONE );
 	set_sc( LG_FORCEOFVANGUARD   , SC_FORCEOFVANGUARD , SI_FORCEOFVANGUARD , SCB_MAXHP|SCB_DEF);
@@ -6682,15 +6684,17 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	}
 
 	//Check for BOSS resistances
-	if(status->mode&MD_BOSS && !(flag&1)) {
-		 if( type >= SC_COMMON_MIN && type <= SC_COMMON_MAX || 
-			 type >= SC_NEW_POISON_MIN && type <= SC_NEW_POISON_MAX )
-			 return 0;
-		 switch( type )
-		 {
+	if(status->mode&MD_BOSS && !(flag&1))
+	{
+		if( type >= SC_COMMON_MIN && type <= SC_COMMON_MAX || 
+			type >= SC_NEW_POISON_MIN && type <= SC_NEW_POISON_MAX )
+			return 0;
+
+		switch( type )
+		{
 			case SC_BLESSING:
-			  if (!undead_flag && status->race!=RC_DEMON)
-				  break;
+				if (!undead_flag && status->race!=RC_DEMON)
+					break;
 			case SC_DECREASEAGI:
 			case SC_PROVOKE:
 			case SC_COMA:
@@ -6701,18 +6705,20 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC_FOGWALL:
 			case SC_MARSHOFABYSS:
 			case SC_ADORAMUS:
-
-			// Ranger Effects
 			case SC_BITE:
 			case SC_ELECTRICSHOCKER:
 			case SC_MAGNETICFIELD:
-
-			// Other Effects
 			case SC_VACUUM_EXTREME:
 			case SC_SILENT_BREEZE:
 			case SC_NETHERWORLD:
+			case SC_BANDING_DEFENCE:
+			case SC_SV_ROOTTWIST:
+			case SC_BITESCAR:
 				return 0;
 		}
+
+		if ( type == SC__BLOODYLUST_BK && battle_config.allow_bloody_lust_on_boss == 0 )
+			return 0;
 	}
 
 	//Before overlapping fail, one must check for status cured.
@@ -8103,6 +8109,16 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val4 = tick / 1000;
 			tick = 1000;
 			break;
+		case SC__AUTOSHADOWSPELL:
+			//Val1: Auto Shadow Spell LV
+			//Val2: Skill ID To Autocast
+			//Val3: Skill LV To Autocast
+			//Val4: Autocast Chance
+			if ( val1 >= 10 )
+				val4 = 15;// Autocast fixed to 15 if LV is 10 or higher.
+			else
+				val4 = 30 - 2 * val1;
+			break;
 		case SC__SHADOWFORM:
 			{
 				struct map_session_data * s_sd = map_id2sd(val2);
@@ -8161,6 +8177,9 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			break;
 		case SC__BLOODYLUST:
 			val_flag |= 1|2;
+			break;
+		case SC__BLOODYLUST_BK:// 200ms added to berserk so the HP penalty can be disabled before berserk ends.
+			sc_start4(bl, SC_BERSERK, 100, 1, 0, 0, tick+200, tick+200);
 			break;
 		case SC_GN_CARTBOOST:
 			if( val1 < 3 )
@@ -8293,18 +8312,18 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val_flag |= 1|2|4;
 			break;
 		case SC_EXEEDBREAK:
-			val1 = 100 * val1; // 100 * SkillLv
+			val1 = 150 * val1; // 100 * SkillLv
 			if( sd )
 			{	// Players
 				short index = sd->equip_index[EQI_HAND_R];
 				if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_WEAPON )
 					if( battle_config.renewal_baselvl_skill_ratio == 1 && status_get_lv(bl) >= 100 )
-						val1 += 10 * status_get_job_lv(bl) + sd->inventory_data[index]->weight / 10 * sd->inventory_data[index]->wlv * status_get_lv(bl) / 100;
+						val1 += 15 * status_get_job_lv(bl) + sd->inventory_data[index]->weight / 10 * sd->inventory_data[index]->wlv * status_get_lv(bl) / 100;
 						else
-						val1 += 500 + sd->inventory_data[index]->weight / 10 * sd->inventory_data[index]->wlv;
+						val1 += 750 + sd->inventory_data[index]->weight / 10 * sd->inventory_data[index]->wlv;
 			}
 			else	// Monster Use
-				val1 += 500;
+				val1 += 750;
 			break;
 			
 		case SC_PRESTIGE:
@@ -9520,6 +9539,13 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 				if( !s_sd )
 					break;
 				s_sd->shadowform_id = 0;
+			}
+			break;
+		case SC__BLOODYLUST_BK:
+			if ( sc->data[SC_BERSERK] )
+			{// Remove HP penalty before ending the status.
+				sc->data[SC_BERSERK]->val2 = 0;
+				status_change_end(bl, SC_BERSERK, INVALID_TIMER);
 			}
 			break;
 		case SC_BANDING:

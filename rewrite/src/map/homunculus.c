@@ -440,7 +440,7 @@ int merc_hom_mutation(struct homun_data *hd, int class_)
 	struct s_homunculus *hom;
 	struct h_stats *base;
 	struct map_session_data *sd;
-	//int i;
+	int i;
 	nullpo_ret(hd);
 
 	//Only allows mutating level 99 evolved homunculus and also prevents mutating already mutated homunculus.
@@ -506,11 +506,11 @@ int merc_hom_mutation(struct homun_data *hd, int class_)
 
 	hom->intimacy = 500;
 
+	// Homunculus takes the name of its new mutation form.
 	// The player can rename the homunculus again after mutation.
-	// Doesn't it take the name of its new form as well?
-	//i = search_homunculusDB_index(class_,HOMUNCULUS_CLASS);
-	//if(i < 0) return 0;
-	//strncpy(hom->name, homunculus_db[i].name, NAME_LENGTH-1);
+	i = search_homunculusDB_index(class_,HOMUNCULUS_CLASS);
+	if(i < 0) return 0;
+	strncpy(hom->name, homunculus_db[i].name, NAME_LENGTH-1);
 	hd->homunculus.rename_flag = 0;
 
 	unit_remove_map(&hd->bl, CLR_OUTSIGHT);

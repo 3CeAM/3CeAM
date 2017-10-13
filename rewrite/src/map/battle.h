@@ -538,6 +538,10 @@ extern struct Battle_Config
 	int warmer_show_heal;
 	int baby_hp_sp_penalty;
 	int baby_crafting_penalty;
+	int plag_renewal_expanded_skills;
+	int plag_doram_skills;
+	int allow_bloody_lust_on_boss;
+	int allow_bloody_lust_on_warp;
 
 	// Costume Outfits
 	int hanbok_ignorepalette;

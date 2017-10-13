@@ -7353,12 +7353,13 @@ int pc_jobchange(struct map_session_data *sd,int job, int upper)
 		pc_setglobalreg(sd, "CLONE_SKILL", 0);
 		pc_setglobalreg(sd, "CLONE_SKILL_LV", 0);
 	}
-	if(sd->reproduceskill_id)
-	{//Check
+
+	if(sd->reproduceskill_id) {
 		sd->reproduceskill_id = 0;
 		pc_setglobalreg(sd, "REPRODUCE_SKILL",0);
 		pc_setglobalreg(sd, "REPRODUCE_SKILL_LV",0);
 	}
+
 	if ((b_class&&MAPID_UPPERMASK) != (sd->class_&MAPID_UPPERMASK))
 	{ //Things to remove when changing class tree.
 		const int class_ = pc_class2idx(sd->status.class_);

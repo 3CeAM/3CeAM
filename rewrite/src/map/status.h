@@ -704,6 +704,7 @@ typedef enum sc_type {
 	SC_FALLEN_ANGEL,
 	SC_SOULATTACK,
 	SC_CHEERUP,
+	SC__BLOODYLUST_BK,
 
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;

@@ -5255,41 +5255,83 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		}
 		if (sd) sd->state.autocast = 0;
 	}
-	if( sd && wd.flag&BF_SHORT && sc && sc->data[SC__AUTOSHADOWSPELL] && rand()%100 < sc->data[SC__AUTOSHADOWSPELL]->val3 &&
-		sd->status.skill[sc->data[SC__AUTOSHADOWSPELL]->val1].id != 0 && sd->status.skill[sc->data[SC__AUTOSHADOWSPELL]->val1].flag == 13 )
-	{
-		int r_skill = sd->status.skill[sc->data[SC__AUTOSHADOWSPELL]->val1].id,
-			r_lv = sc->data[SC__AUTOSHADOWSPELL]->val2;
 
-			skill_consume_requirement(sd,r_skill,r_lv,3);
-			switch( skill_get_casttype(r_skill) )
+	if( wd.flag&BF_WEAPON && sc && sc->data[SC__AUTOSHADOWSPELL] && rand()%100 < sc->data[SC__AUTOSHADOWSPELL]->val4 )
+	{
+		struct unit_data *ud;
+		short skillid = sc->data[SC__AUTOSHADOWSPELL]->val2;
+		short skilllv = sc->data[SC__AUTOSHADOWSPELL]->val3;
+		int delay;
+
+		if (sd) sd->state.autocast = 1;
+		if (status_charge(src, 0, skill_get_sp(skillid,skilllv)))
+		{
+			switch (skill_get_casttype(skillid))
 			{
-			case CAST_GROUND:
-				skill_castend_pos2(src, target->x, target->y, r_skill, r_lv, tick, flag);
-				break;
-			case CAST_DAMAGE:
-				skill_castend_damage_id(src, target, r_skill, r_lv, tick, flag);
-				break;
-			case CAST_NODAMAGE:
-				skill_castend_nodamage_id(src, target, r_skill, r_lv, tick, flag);
-				break;
+				case CAST_GROUND:
+					skill_castend_pos2(src, target->x, target->y, skillid, skilllv, tick, flag);
+					break;
+				case CAST_NODAMAGE:
+					skill_castend_nodamage_id(src, target, skillid, skilllv, tick, flag);
+					break;
+				case CAST_DAMAGE:
+					skill_castend_damage_id(src, target, skillid, skilllv, tick, flag);
+					break;
 			}
 
-			sd->ud.canact_tick = tick + skill_delayfix(src, r_skill, r_lv);
-			clif_status_change(src, SI_ACTIONDELAY, 1, skill_delayfix(src, r_skill, r_lv), 0, 0, 1);
+			ud = unit_bl2ud(src);
+			if (ud)
+			{
+				delay = skill_delayfix(src, skillid, skilllv);
+				if( DIFF_TICK(ud->canact_tick, tick + delay) < 0 )
+				{
+					ud->canact_tick = tick+delay;
+					if( sd && skill_get_cooldown(skillid,skilllv) > 0 )
+						skill_blockpc_start(sd, skillid, skill_get_cooldown(skillid, skilllv));
+					if ( battle_config.display_status_timers && sd && skill_get_delay(skillid, skilllv))
+						clif_status_change(src, SI_ACTIONDELAY, 1, delay, 0, 0, 1);
+				}
+			}
+		}
+		if (sd) sd->state.autocast = 0;
 	}
-	if( sd && sc && (sc->data[SC_TROPIC_OPTION] || sc->data[SC_CHILLY_AIR_OPTION] || sc->data[SC_WILD_STORM_OPTION] || sc->data[SC_UPHEAVAL_OPTION]) )
-	{	// Autocast one Bolt depending on status change.
-		int skillid = 0;
-		if( sc->data[SC_TROPIC_OPTION] ) skillid = sc->data[SC_TROPIC_OPTION]->val3;
-		else if( sc->data[SC_CHILLY_AIR_OPTION] ) skillid = sc->data[SC_CHILLY_AIR_OPTION]->val3;
-		else if( sc->data[SC_WILD_STORM_OPTION] ) skillid = sc->data[SC_WILD_STORM_OPTION]->val2;
-		else if( sc->data[SC_UPHEAVAL_OPTION] ) skillid = sc->data[SC_UPHEAVAL_OPTION]->val2;
 
-		sd->state.autocast = 1;
-		if( skillid && rand()%100 < 5 )
-			skill_castend_damage_id(src, target, skillid, pc_checkskill(sd,skillid), tick, flag);
-		sd->state.autocast = 0;
+	if( sc && (sc->data[SC_TROPIC_OPTION] || sc->data[SC_CHILLY_AIR_OPTION] || sc->data[SC_WILD_STORM_OPTION] || sc->data[SC_UPHEAVAL_OPTION]) && rand()%100 < 25 )
+	{// Autocast one Bolt depending on status change.
+		struct unit_data *ud;
+		short skillid = 0;
+		int delay;
+
+		if( sc->data[SC_TROPIC_OPTION] )
+			skillid = sc->data[SC_TROPIC_OPTION]->val3;
+		else if( sc->data[SC_CHILLY_AIR_OPTION] )
+			skillid = sc->data[SC_CHILLY_AIR_OPTION]->val3;
+		else if( sc->data[SC_WILD_STORM_OPTION] )
+			skillid = sc->data[SC_WILD_STORM_OPTION]->val2;
+		else if( sc->data[SC_UPHEAVAL_OPTION] )
+			skillid = sc->data[SC_UPHEAVAL_OPTION]->val2;
+
+		// Chance should be JobLV / 2 and level casted be JobLV / 10;
+		if (sd) sd->state.autocast = 1;
+		if (status_charge(src, 0, skill_get_sp(skillid,5)))
+		{
+			skill_castend_damage_id(src, target, skillid, 5, tick, flag);
+
+			ud = unit_bl2ud(src);
+			if (ud)
+			{
+				delay = skill_delayfix(src, skillid, 5);
+				if( DIFF_TICK(ud->canact_tick, tick + delay) < 0 )
+				{
+					ud->canact_tick = tick+delay;
+					if( sd && skill_get_cooldown(skillid,5) > 0 )
+						skill_blockpc_start(sd, skillid, skill_get_cooldown(skillid, 5));
+					if ( battle_config.display_status_timers && sd && skill_get_delay(skillid, 5))
+						clif_status_change(src, SI_ACTIONDELAY, 1, delay, 0, 0, 1);
+				}
+			}
+		}
+		if (sd) sd->state.autocast = 0;
 	}
 
 	if (sd) {
@@ -6131,6 +6173,10 @@ static const struct _battle_data {
 	{ "warmer_show_heal",                   &battle_config.warmer_show_heal,                0,      0,      1,              },
 	{ "baby_hp_sp_penalty",                 &battle_config.baby_hp_sp_penalty,              1,      0,      1,              },
 	{ "baby_crafting_penalty",              &battle_config.baby_crafting_penalty,           1,      0,      1,              },
+	{ "plag_renewal_expanded_skills",       &battle_config.plag_renewal_expanded_skills,    1,      0,      1,              },
+	{ "plag_doram_skills",                  &battle_config.plag_doram_skills,               1,      0,      1,              },
+	{ "allow_bloody_lust_on_boss",          &battle_config.allow_bloody_lust_on_boss,       1,      0,      1,              },
+	{ "allow_bloody_lust_on_warp",          &battle_config.allow_bloody_lust_on_warp,       1,      0,      1,              },
 	{ "hanbok_ignorepalette",               &battle_config.hanbok_ignorepalette,            0,      0,      1,              },
 	{ "oktoberfest_ignorepalette",          &battle_config.oktoberfest_ignorepalette,       0,      0,      1,              },
 	{ "summer2_ignorepalette",              &battle_config.summer2_ignorepalette,           0,      0,      1,              },
