@@ -156,7 +156,7 @@
 5006,0x101,   ,  0, 1,1000,all,   0x018	//NC_MAGMA_ERUPTION//Need Information.
 5013,0x102,   ,  3, 0,200,friend,   0x1018	//LG_KINGS_GRACE
 8020,0xf5,    ,  3, 0,   0,enemy, 0x018	//MH_POISON_MIST // Inverval is set in source since its variable with this skill.
-8033,0x7e,    ,  0, 0,  -1,all,   0x003	//MH_STEINWAND - CHECK Is the use of safety wall's unit ID correct for this skills? [Rytech]
+8033,0x7e,    ,  0, 0,  -1,all,   0x003	//MH_STEINWAND
 8025,0x86,    ,  0, 2:2:3:3:4,1000,enemy, 0x018	//MH_XENO_SLASHER
 8041,0xf6,    ,  1:1:2:2:3, 0,2000,enemy, 0x018	//MH_LAVA_SLIDE CHECK - How often does this skill hit? iRO Wiki says 2 seconds. [Rytech]
 8043,0xf7,    ,  0, 1,1000,enemy, 0x018	//MH_VOLCANIC_ASH
