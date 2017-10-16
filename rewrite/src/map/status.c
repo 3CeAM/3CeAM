@@ -637,8 +637,9 @@ void initChangeTables(void)
 	set_sc( MH_EQC               , SC_EQC               , SI_EQC               , SCB_MAXHP|SCB_BATK|SCB_WATK|SCB_DEF|SCB_DEF2 );
 
 	add_sc( MH_STAHL_HORN        , SC_STUN );
-	set_sc( MH_GOLDENE_FERSE     , SC_GOLDENE_FERSE     , SI_GOLDENE_FERSE     , SCB_NONE );
-	set_sc( MH_ANGRIFFS_MODUS    , SC_ANGRIFFS_MODUS    , SI_ANGRIFFS_MODUS    , SCB_NONE );
+	set_sc( MH_GOLDENE_FERSE     , SC_GOLDENE_FERSE     , SI_GOLDENE_FERSE     , SCB_FLEE|SCB_ASPD );
+	add_sc( MH_STEINWAND         , SC_SAFETYWALL );
+	set_sc( MH_ANGRIFFS_MODUS    , SC_ANGRIFFS_MODUS    , SI_ANGRIFFS_MODUS    , SCB_MAXHP|SCB_BATK|SCB_WATK|SCB_FLEE|SCB_DEF );
 
 	set_sc( MH_MAGMA_FLOW        , SC_MAGMA_FLOW        , SI_MAGMA_FLOW        , SCB_NONE );
 	set_sc( MH_GRANITIC_ARMOR    , SC_GRANITIC_ARMOR    , SI_GRANITIC_ARMOR    , SCB_NONE );
@@ -4527,6 +4528,8 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += 20 * sc->data[SC_ZANGETSU]->val1 + sc->data[SC_ZANGETSU]->val2;
 	if(sc->data[SC_FLASHCOMBO])
 		watk += sc->data[SC_FLASHCOMBO]->val2;
+	if(sc->data[SC_ANGRIFFS_MODUS])
+		watk += 50 + 20 * sc->data[SC_ANGRIFFS_MODUS]->val1;
 	if(sc->data[SC_FULL_SWING_K])
 		watk += sc->data[SC_FULL_SWING_K]->val1;
 	if(sc->data[SC_INCATKRATE])
@@ -4738,6 +4741,8 @@ static signed short status_calc_flee(struct block_list *bl, struct status_change
 		flee += sc->data[SC_MERC_FLEEUP]->val2;
 	if( sc->data[SC_HALLUCINATIONWALK] )
 		flee += sc->data[SC_HALLUCINATIONWALK]->val2;
+	if(sc->data[SC_GOLDENE_FERSE])
+		flee += sc->data[SC_GOLDENE_FERSE]->val2;
 	if(sc->data[SC_INCFLEERATE])
 		flee += flee * sc->data[SC_INCFLEERATE]->val1/100;
 	if ( sc->data[SC_SMOKEPOWDER] )
@@ -4748,6 +4753,8 @@ static signed short status_calc_flee(struct block_list *bl, struct status_change
 		flee -= sc->data[SC_GLOOMYDAY]->val2;
 	if ( sc->data[SC_C_MARKER] )
 		flee -= 10;
+	if( sc->data[SC_ANGRIFFS_MODUS] )
+		flee -= 40 + 20 * sc->data[SC_ANGRIFFS_MODUS]->val1;
 	if(sc->data[SC_SPIDERWEB] && sc->data[SC_SPIDERWEB]->val1)
 		flee -= flee * 50/100;
 	if(sc->data[SC_BERSERK])
@@ -4837,6 +4844,8 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 		def += def * sc->data[SC_ECHOSONG]->val4 / 100;
 	if(sc->data[SC_DOHU_KOUKAI])//Does this also increase DEF gained from refinement bonuses? Also need offical DEF increase value. [Rytech]
 		def += def * (5 * sc->data[SC_DOHU_KOUKAI]->val2) / 100;
+	if(sc->data[SC_ANGRIFFS_MODUS])// Fixed decrease. Divided by 10 to keep it balanced for classic mechanics.
+		def -= (30 + 20 * sc->data[SC_ANGRIFFS_MODUS]->val1) / 10;
 	if(sc->data[SC_ODINS_POWER])
 		def -= 2 * sc->data[SC_ODINS_POWER]->val1;
 	if(sc->data[SC_STONE] && sc->opt1 == OPT1_STONE)
@@ -5277,6 +5286,8 @@ static short status_calc_aspd_rate(struct block_list *bl, struct status_change *
 		aspd_rate -= 10 * sc->data[SC_GT_CHANGE]->val3;
 	if(sc->data[SC_WIND_INSIGNIA] && sc->data[SC_WIND_INSIGNIA]->val1 == 2)
 		aspd_rate -= 100;
+	if( sc->data[SC_GOLDENE_FERSE] )
+		aspd_rate -= sc->data[SC_GOLDENE_FERSE]->val3;
 	if( sc->data[SC_BOOST500] )
 		aspd_rate -= 10 * sc->data[SC_BOOST500]->val1;
 	if(sc->data[SC_EXTRACT_SALAMINE_JUICE])
@@ -5372,6 +5383,8 @@ static unsigned int status_calc_maxhp(struct block_list *bl, struct status_chang
 		maxhp += maxhp * sc->data[SC_FRIGG_SONG]->val2 / 100;
 	if(sc->data[SC_MUSTLE_M])
 		maxhp += maxhp * sc->data[SC_MUSTLE_M]->val1 / 100;
+	if(sc->data[SC_ANGRIFFS_MODUS])
+		maxhp += maxhp * (5 * sc->data[SC_ANGRIFFS_MODUS]->val1) / 100;
 	if(sc->data[SC_INSPIRATION])//Snce it gives a percentage and fixed amount, should be last on percentage calculations list. [Rytech]
 		maxhp += maxhp * 5 * sc->data[SC_INSPIRATION]->val1 / 100 + 600 * sc->data[SC_INSPIRATION]->val1;
 	if(sc->data[SC_MARIONETTE])
@@ -6969,6 +6982,13 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		status_change_end(bl, SC_TINDER_BREAKER_POSTDELAY, INVALID_TIMER);
 		status_change_end(bl, SC_CBC_POSTDELAY, INVALID_TIMER);
 		break;
+	case SC_GOLDENE_FERSE:
+	case SC_ANGRIFFS_MODUS:
+		if ( sc->data[type] )
+			break;
+		status_change_end(bl, SC_GOLDENE_FERSE, INVALID_TIMER);
+		status_change_end(bl, SC_ANGRIFFS_MODUS, INVALID_TIMER);
+		break;
 	}
 
 	//Check for overlapping fails
@@ -8549,6 +8569,15 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			break;
 		case SC_MIDNIGHT_FRENZY_POSTDELAY:// Allows Sonic Claw to auto target in the combo.
 			clif_hom_skillupdateinfo(hd->master, MH_SONIC_CRAW, INF_SELF_SKILL, 1);
+			break;
+		case SC_GOLDENE_FERSE:
+			val2 = 10 + 10 * val1;// FLEE Increase
+			val3 = 60 + 40 * val1;// ASPD Increase In Percent
+			val4 = 2 + 2 * val1;// Chance of Holy Property For Regular Attack
+			break;
+		case SC_ANGRIFFS_MODUS:
+			val2 = tick/1000;
+			tick = 1000;
 			break;
 		case SC_CBC:
 			val1 = 0;// Prepares for tracking seconds in timer script.
@@ -10753,6 +10782,20 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		{
 			status_heal(bl, status->max_hp * 4 / 100, 0, 2);
 			sc_timer_next(sce->val2 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
+
+	case SC_ANGRIFFS_MODUS:
+		if( --(sce->val2) >= 0 )
+		{// Homunculus can die from this status. Let it drain HP until it does.
+			status_charge(bl, 100, 0);
+
+			// The status does end if the homunculus runs out of SP.
+			if( !status_charge(bl, 0, 20))
+				break;
+
+			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}
 		break;

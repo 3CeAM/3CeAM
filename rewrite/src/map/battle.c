@@ -1476,13 +1476,29 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 		s_ele = s_ele_ = status_get_attack_sc_element(src,sc);
 	else if( s_ele == -3 ) //Use random element
 		s_ele = s_ele_ = rand()%ELE_MAX;
+
+	if ( sc )
+	{// Chance of doing a holy element attack when doing regular attacks.
+		if ( sc->data[SC_GOLDENE_FERSE] && !skill_num && rand()%100 < sc->data[SC_GOLDENE_FERSE]->val4 )
+		{
+			s_ele = s_ele_ = ELE_HOLY;
+			n_ele = false;// Allows the homunculus to have a weapon element for the attack.
+		}
+	}
+
 	switch( skill_num )
 	{
 		case GS_GROUNDDRIFT:
 			s_ele = s_ele_ = wflag; //element comes in flag.
 			break;
+
 		case LK_SPIRALPIERCE:
 			if (!sd) n_ele = false; //forced neutral for monsters
+			break;
+
+		case MH_STAHL_HORN:
+			if ( sc && sc->data[SC_GOLDENE_FERSE] )
+				s_ele = s_ele_ = ELE_HOLY;
 			break;
 	}
 
@@ -1828,7 +1844,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						damagevalue = damagevalue * s_level / 100;// Base level bonus.
 					damagevalue += sstatus->hp;
 					ATK_ADD(damagevalue);
-					if (sd) status_set_sp(src, 0, 0);
 				}
 				break;
 			case KO_HAPPOKUNAI:
@@ -3649,66 +3664,66 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 
 	//Initial Values
 	ad.damage = 1;
+	ad.div_=skill_get_num(skill_num,skill_lv);
 	ad.amotion=skill_get_inf(skill_num)&INF_GROUND_SKILL?0:sstatus->amotion; //Amotion should be 0 for ground skills.
 	ad.dmotion=tstatus->dmotion;
+	ad.blewcount = skill_get_blewcount(skill_num,skill_lv);
 	ad.flag=BF_MAGIC|BF_SKILL;
 	ad.dmg_lv=ATK_DEF;
 	nk = skill_get_nk(skill_num);
 	flag.imdef = nk&NK_IGNORE_DEF?1:0;
 
-	// Skill Element Definition// I dont understand why were checking for skill level here. [Rytech]
-	if( skill_num == WL_HELLINFERNO )
-	{
-		if( skill_lv >= 0 )
-			s_ele = ELE_FIRE;
-		else
-		{
-			s_ele = ELE_DARK;
-			skill_lv = -skill_lv;
-		}
-	}
-	else if ( skill_num == LG_HESPERUSLIT && sc && sc->data[SC_BANDING] && sc->data[SC_BANDING]->val2 > 4 )
-	{
-			s_ele = ELE_HOLY;
-	}
-	else if( sc && (sc->data[SC_HEATER_OPTION] || sc->data[SC_COOLER_OPTION] ||
-		sc->data[SC_BLAST_OPTION] || sc->data[SC_CURSED_SOIL_OPTION]) && skill_num == SO_PSYCHIC_WAVE )
-	{	// Status change from Elemental Spirits that change Psychic Wave damage element.
-		if( sc->data[SC_HEATER_OPTION] )
-			s_ele = sc->data[SC_HEATER_OPTION]->val4;
-		else if( sc->data[SC_COOLER_OPTION] )
-			s_ele = sc->data[SC_COOLER_OPTION]->val4;
-		else if( sc->data[SC_BLAST_OPTION] )
-			s_ele = sc->data[SC_BLAST_OPTION]->val3;
-		else if( sc->data[SC_CURSED_SOIL_OPTION] )
-			s_ele = sc->data[SC_CURSED_SOIL_OPTION]->val4;
-	}
-	else if ( skill_num == KO_KAIHOU )
-	{
-		if ( sc->data[SC_KAHU_ENTEN] )
-			s_ele = ELE_FIRE;
-		else if ( sc->data[SC_HYOUHU_HUBUKI] )
-			s_ele = ELE_WATER;
-		else if ( sc->data[SC_KAZEHU_SEIRAN] )
-			s_ele = ELE_WIND;
-		else if ( sc->data[SC_DOHU_KOUKAI] )
-			s_ele = ELE_EARTH;
-		else//If a GM character trys to use the skill with no sphere's, one of the four status will likely not be active.
-			s_ele = ELE_NEUTRAL;//If so, then use neutral element. [Rytech]
-	}
-	else
-	{
-		s_ele = skill_get_ele(skill_num, skill_lv);
-		if( s_ele == -1 )
-			s_ele = sstatus->rhw.ele;
-		else if( s_ele == -2 )
-			s_ele = status_get_attack_sc_element(src,sc);
-		else if( s_ele == -3 ) //Use random element
-			s_ele = rand()%ELE_MAX;
-	}
+	//Initialize variables that will be used afterwards
+	s_ele = skill_get_ele(skill_num, skill_lv);
 
-	ad.div_=skill_get_num(skill_num,skill_lv);
-	ad.blewcount = skill_get_blewcount(skill_num,skill_lv);
+	if (s_ele == -1) // pl=-1 : the skill takes the weapon's element
+		s_ele = sstatus->rhw.ele;
+	else if (s_ele == -2) //Use status element
+		s_ele = status_get_attack_sc_element(src,status_get_sc(src));
+	else if( s_ele == -3 ) //Use random element
+		s_ele = rand()%ELE_MAX;
+
+	switch (skill_num)
+	{// I dont understand why were checking for skill level here. [Rytech]
+		case WL_HELLINFERNO:
+			if( skill_lv >= 0 )
+				s_ele = ELE_FIRE;
+			else
+			{
+				s_ele = ELE_DARK;
+				skill_lv = -skill_lv;
+			}
+			break;
+
+		case LG_HESPERUSLIT:
+			if ( sc && sc->data[SC_BANDING] && sc->data[SC_BANDING]->val2 > 4 )
+				s_ele = ELE_HOLY;
+			break;
+
+		case SO_PSYCHIC_WAVE:
+			if ( sc )
+				if ( SC_HEATER_OPTION )
+					s_ele = ELE_FIRE;
+				else if ( SC_COOLER_OPTION )
+					s_ele = ELE_WATER;
+				else if ( SC_BLAST_OPTION )
+					s_ele = ELE_WIND;
+				else if ( SC_CURSED_SOIL_OPTION )
+					s_ele = ELE_EARTH;
+			break;
+
+		case KO_KAIHOU:
+			if ( sc )
+				if ( sc->data[SC_KAHU_ENTEN] )
+					s_ele = ELE_FIRE;
+				else if ( sc->data[SC_HYOUHU_HUBUKI] )
+					s_ele = ELE_WATER;
+				else if ( sc->data[SC_KAZEHU_SEIRAN] )
+					s_ele = ELE_WIND;
+				else if ( sc->data[SC_DOHU_KOUKAI] )
+					s_ele = ELE_EARTH;
+			break;
+	}
 
 	//Set miscellaneous data that needs be filled
 	if(sd) {
@@ -4624,6 +4639,8 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		md.damage = skill_get_zeny(skill_num ,skill_lv);
 		if (!md.damage) md.damage = 10;
 		md.damage =  md.damage * rnd_value( 50, 100) / 100;
+		if ( pc_checkskill(sd, NJ_TOBIDOUGU) < 10 )
+			md.damage = md.damage / 2;// Damage halved if Throwing Mastery is not mastered.
 		if (is_boss(target) || (tsd))
 			md.damage = md.damage / 2;
 		break;
