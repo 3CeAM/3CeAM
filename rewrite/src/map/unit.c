@@ -1093,6 +1093,8 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 		case MH_LIGHT_OF_REGENE:
 		case MH_OVERED_BOOST:
 		case MH_STEINWAND:
+		case MH_GRANITIC_ARMOR:
+		case MH_PYROCLASTIC:
 			target = battle_get_master(src);
 			if (!target) return 0;
 			target_id = target->id;

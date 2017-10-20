@@ -8368,6 +8368,18 @@ int pc_equipitem(struct map_session_data *sd,int n,int req_pos)
 		return 0;
 	}
 
+	if ( sd->sc.data[SC_PYROCLASTIC] )
+	{// Can't equip/swap weapons. If a 2 handed weapon is equipped, don't allow equipping a shield or anything else in the left hand.
+		if ( pos&EQP_HAND_R || (pos&EQP_HAND_L && (sd->status.weapon==W_2HSWORD || sd->status.weapon==W_2HSPEAR || 
+			sd->status.weapon==W_2HAXE || sd->status.weapon==W_2HMACE || sd->status.weapon==W_BOW || sd->status.weapon==W_KATAR || 
+			sd->status.weapon==W_REVOLVER || sd->status.weapon==W_RIFLE || sd->status.weapon==W_GATLING || sd->status.weapon==W_SHOTGUN || 
+			sd->status.weapon==W_GRENADE || sd->status.weapon==W_HUUMA || sd->status.weapon==W_2HSTAFF)))
+		{
+			clif_equipitemack(sd,n,0,0);
+			return 0;
+		}
+	}
+
 	if(pos == EQP_ACC) { //Accesories should only go in one of the two,
 		pos = req_pos&EQP_ACC;
 		if (pos == EQP_ACC) //User specified both slots.. 
@@ -8557,8 +8569,9 @@ int pc_unequipitem(struct map_session_data *sd,int n,int flag)
 		return 0;
 	}
 
-	// if player is berserk then cannot unequip
-	if( !(flag&2) && sd->sc.count && (sd->sc.data[SC_BERSERK]) )
+	if( !(flag&2) && sd->sc.count && 
+		(sd->sc.data[SC_BERSERK] || // Prevents unequipping anything.
+		(sd->sc.data[SC_PYROCLASTIC] && sd->status.inventory[n].equip & EQP_HAND_R)) )// Can't unequip weapon.
 	{
 		clif_unequipitemack(sd,n,0,0);
 		return 0;

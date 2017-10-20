@@ -542,6 +542,8 @@ extern struct Battle_Config
 	int plag_doram_skills;
 	int allow_bloody_lust_on_boss;
 	int allow_bloody_lust_on_warp;
+	int homunculus_pyroclastic_autocast;
+	int pyroclastic_breaks_weapon;
 
 	// Costume Outfits
 	int hanbok_ignorepalette;

@@ -1519,6 +1519,8 @@ int clif_spawn(struct block_list *bl)
 				clif_status_change(&sd->bl,SI_TUNAPARTY,1,9999,sd->sc.data[SC_TUNAPARTY]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_SOULATTACK] )
 				clif_status_change(&sd->bl,SI_SOULATTACK,1,9999,sd->sc.data[SC_SOULATTACK]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_VOLCANIC_ASH] )
+				clif_status_change(&sd->bl,SI_VOLCANIC_ASH,1,9999,sd->sc.data[SC_VOLCANIC_ASH]->val1,0,0);
 		}
 		break;
 	case BL_MOB:
@@ -4040,9 +4042,10 @@ int clif_equipitemack(struct map_session_data *sd,int n,int pos,int ok)
 	return 0;
 }
 
-/// Notifies the client about the result of a request to take off an item (ZC_REQ_TAKEOFF_EQUIP_ACK).
-/// 00ac <index>.W <equip location>.W <result>.B
-/// 099a <index>.W <equip location>.L <result>.B
+/// Notifies the client about the result of a request to take off an item.
+/// 00ac <index>.W <equip location>.W <result>.B (ZC_REQ_TAKEOFF_EQUIP_ACK)
+/// 08d1 <index>.W <equip location>.W <result>.B (ZC_REQ_TAKEOFF_EQUIP_ACK2)
+/// 099a <index>.W <equip location>.L <result>.B (ZC_ACK_TAKEOFF_EQUIP_V5)
 /// 0xac Result Table:
 ///     0 = failure
 ///     1 = success
@@ -4066,7 +4069,7 @@ int clif_unequipitemack(struct map_session_data *sd,int n,int pos,int ok)
 #else
 	packet_num = 0x99a;
 	if (ok == 0)
-		ok = 2;
+		ok = 1;
 	else if (ok == 1)
 		ok = 0;
 #endif
@@ -4930,6 +4933,8 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_TUNAPARTY,1,9999,tsd->sc.data[SC_TUNAPARTY]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_SOULATTACK] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_SOULATTACK,1,9999,tsd->sc.data[SC_SOULATTACK]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_VOLCANIC_ASH] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_VOLCANIC_ASH,1,9999,tsd->sc.data[SC_VOLCANIC_ASH]->val1,0,0);
 		}
 		break;
 	case BL_MER: // Devotion Effects

@@ -1604,11 +1604,11 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 			rate = battle_config.equip_natural_break_rate;
 			if( sc )
 			{
-				if(sc->data[SC_GIANTGROWTH])
-					rate += 10;
 				if(sc->data[SC_OVERTHRUST])
 					rate += 10;
 				if(sc->data[SC_MAXOVERTHRUST])
+					rate += 10;
+				if(sc->data[SC_GIANTGROWTH])
 					rate += 10;
 			}
 			if( rate )
@@ -8219,6 +8219,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case HLIF_AVOID:
 	case HAMI_DEFENCE:
 	case MH_OVERED_BOOST:
+	case MH_GRANITIC_ARMOR:
 		i = skill_get_time(skillid,skilllv);
 		clif_skill_nodamage(bl,bl,skillid,skilllv,sc_start(bl,type,100,skilllv,i)); // Master
 		clif_skill_nodamage(src,src,skillid,skilllv,sc_start(src,type,100,skilllv,i)); // Homunc
@@ -8281,6 +8282,12 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				clif_skill_nodamage(src,bl,skillid,skilllv,sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
 			}
 		}
+		break;
+
+	case MH_PYROCLASTIC:
+		i = skill_get_time(skillid,skilllv);
+		clif_skill_nodamage(bl,bl,skillid,skilllv,sc_start2(bl,type,100,skilllv,status_get_lv(src),i)); // Master
+		clif_skill_nodamage(src,src,skillid,skilllv,sc_start2(src,type,100,skilllv,status_get_lv(src),i)); // Homunc
 		break;
 
 	case NPC_DRAGONFEAR:
@@ -10428,12 +10435,28 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 			else if( ud->skillid != SC_SHADOWFORM && inf && battle_check_target(src, target, inf) <= 0 )
 				break;
 
-			if(inf&BCT_ENEMY && (sc = status_get_sc(target)) &&
-				sc->data[SC_FOGWALL] &&
-				rand()%100 < 75)
-		  	{	//Fogwall makes all offensive-type targetted skills fail at 75%
-				if (sd) clif_skill_fail(sd,ud->skillid,0,0,0);
-				break;
+			if (sc = status_get_sc(src))
+			{
+				if(sc && sc->data[SC_KYOMU] && rand()%100 < sc->data[SC_KYOMU]->val2)
+		  		{// Shadow Void makes all skills fail by 5 * SkillLV % Chance.
+					if (sd) clif_skill_fail(sd,ud->skillid,0,0,0);
+					break;
+				}
+
+				if(sc && sc->data[SC_VOLCANIC_ASH] && rand()%100 < 50)
+		  		{// Volcanic Ash makes all skills fail at 50%
+					if (sd) clif_skill_fail(sd,ud->skillid,0,0,0);
+					break;
+				}
+			}
+
+			if (sc = status_get_sc(target))
+			{
+				if(inf&BCT_ENEMY && sc->data[SC_FOGWALL] && rand()%100 < 75)
+		  		{	//Fogwall makes all offensive-type targetted skills fail at 75%
+					if (sd) clif_skill_fail(sd,ud->skillid,0,0,0);
+					break;
+				}
 			}
 		}
 
@@ -10604,11 +10627,12 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 int skill_castend_pos(int tid, unsigned int tick, int id, intptr data)
 {
 	struct block_list* src = map_id2bl(id);
-	int maxcount;
 	struct map_session_data *sd;
-	struct unit_data *ud = unit_bl2ud(src);
 	struct mob_data *md;
 	struct homun_data *hd;
+	struct unit_data *ud = unit_bl2ud(src);
+	struct status_change *sc = NULL;
+	int maxcount;
 
 	nullpo_ret(ud);
 
@@ -10665,6 +10689,21 @@ int skill_castend_pos(int tid, unsigned int tick, int id, intptr data)
 			}
 			if( maxcount <= 0 )
 			{
+				if (sd) clif_skill_fail(sd,ud->skillid,0,0,0);
+				break;
+			}
+		}
+
+		if (sc = status_get_sc(src))
+		{
+			if(sc && sc->data[SC_KYOMU] && rand()%100 < sc->data[SC_KYOMU]->val2)
+		  	{// Shadow Void makes all skills fail by 5 * SkillLV % Chance.
+				if (sd) clif_skill_fail(sd,ud->skillid,0,0,0);
+				break;
+			}
+
+			if(sc && sc->data[SC_VOLCANIC_ASH] && rand()%100 < 50)
+		  	{// Volcanic Ash makes all skills fail at 50%
 				if (sd) clif_skill_fail(sd,ud->skillid,0,0,0);
 				break;
 			}
@@ -10963,6 +11002,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case MH_XENO_SLASHER:
 	case MH_STEINWAND:
 	case MH_LAVA_SLIDE:
+	case MH_VOLCANIC_ASH:
 		flag|=1;//Set flag to 1 to prevent deleting ammo (it will be deleted on group-delete).
 	case GS_GROUNDDRIFT: //Ammo should be deleted right away.
 		skill_unitsetting(src,skillid,skilllv,x,y,0);
@@ -12394,6 +12434,7 @@ static int skill_unit_onplace (struct skill_unit *src, struct block_list *bl, un
 		break;
 
 	case UNT_CHAOSPANIC:
+	case UNT_VOLCANIC_ASH:
 		if (!sce)
 			sc_start(bl,type,100,sg->skill_lv,skill_get_time2(sg->skill_id,sg->skill_lv));
 		break;
