@@ -297,16 +297,16 @@ int battle_attr_fix(struct block_list *src, struct block_list *target, int damag
 		if(sc->data[SC_FIRE_CLOAK_OPTION] && atk_elem == ELE_FIRE)
 			damage += damage * sc->data[SC_FIRE_CLOAK_OPTION]->val2 / 100;
 	}
-	if( atk_elem == ELE_FIRE && tsc && tsc->count && tsc->data[SC_SPIDERWEB] )
-	{
-		tsc->data[SC_SPIDERWEB]->val1 = 0; // free to move now
-		if( tsc->data[SC_SPIDERWEB]->val2-- > 0 )
-			damage <<= 1; // double damage
-		if( tsc->data[SC_SPIDERWEB]->val2 == 0 )
-			status_change_end(target, SC_SPIDERWEB, INVALID_TIMER);
-	}
 	if( tsc && tsc->count )
 	{
+		if ( tsc->data[SC_SPIDERWEB] && atk_elem == ELE_FIRE)
+		{
+			tsc->data[SC_SPIDERWEB]->val1 = 0; // free to move now
+			if( tsc->data[SC_SPIDERWEB]->val2-- > 0 )
+				damage <<= 1; // double damage
+			if( tsc->data[SC_SPIDERWEB]->val2 == 0 )
+				status_change_end(target, SC_SPIDERWEB, INVALID_TIMER);
+		}
 		if(tsc->data[SC_VENOMIMPRESS] && atk_elem == ELE_POISON)
 			ratio += tsc->data[SC_VENOMIMPRESS]->val2;
 		if(tsc->data[SC_ORATIO] && atk_elem == ELE_HOLY )
@@ -318,6 +318,8 @@ int battle_attr_fix(struct block_list *src, struct block_list *target, int damag
 			ratio += 50;
 		if(tsc->data[SC_THORNSTRAP] && atk_elem == ELE_FIRE)
 			status_change_end(target, SC_THORNSTRAP, -1);
+		if (tsc->data[SC_VOLCANIC_ASH] && atk_elem == ELE_FIRE)
+			damage += damage * 50 / 100;
 		if(tsc->data[SC_FIRE_CLOAK_OPTION] && atk_elem == ELE_FIRE)
 			damage -= damage * tsc->data[SC_FIRE_CLOAK_OPTION]->val2 / 100;
 	}
@@ -615,6 +617,9 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 
 		if ( sc->data[SC_SU_STOOP] )
 			damage -= damage * 90 / 100;
+
+		if ( sc->data[SC_GRANITIC_ARMOR] )
+			damage -= damage * sc->data[SC_GRANITIC_ARMOR]->val2 / 100;
 
 		// Compressed code, fixed by map.h [Epoque]
 		if( src->type == BL_MOB )
@@ -1482,8 +1487,11 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 		if ( sc->data[SC_GOLDENE_FERSE] && !skill_num && rand()%100 < sc->data[SC_GOLDENE_FERSE]->val4 )
 		{
 			s_ele = s_ele_ = ELE_HOLY;
-			n_ele = false;// Allows the homunculus to have a weapon element for the attack.
+			if (hd) n_ele = false;// Allows the homunculus to have a weapon element for the attack.
 		}
+
+		if ( hd && sc->data[SC_PYROCLASTIC] && !skill_num )
+			n_ele = false;// Lets the homunculus attack element get endowed with fire.
 	}
 
 	switch( skill_num )
@@ -4818,6 +4826,10 @@ int battle_calc_return_damage(struct block_list *src, struct block_list *bl, int
 
 	sd = BL_CAST(BL_PC, bl);
 
+	// Shadow Void stops all damage reflections.
+	if ( sc && sc->data[SC_KYOMU] )
+		return 0;
+
 	//Bounces back part of the damage.
 	if( (flag&(BF_SHORT|BF_MAGIC)) == BF_SHORT )
 	{
@@ -4881,8 +4893,7 @@ int battle_calc_return_damage(struct block_list *src, struct block_list *bl, int
 			if( rdamage < 1 ) rdamage = 1;
 		}
 	}
-	if ( sc && sc->data[SC_KYOMU] )//If under shadow void status, damage will not be reflected.
-		rdamage = 0;
+
 	return rdamage;
 }
 
@@ -5303,8 +5314,36 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 				if( DIFF_TICK(ud->canact_tick, tick + delay) < 0 )
 				{
 					ud->canact_tick = tick+delay;
-					if( sd && skill_get_cooldown(skillid,skilllv) > 0 )
-						skill_blockpc_start(sd, skillid, skill_get_cooldown(skillid, skilllv));
+					// Enable the cooldown code below if you add any skills that have a cooldown.
+					//if( sd && skill_get_cooldown(skillid,skilllv) > 0 )
+					//	skill_blockpc_start(sd, skillid, skill_get_cooldown(skillid, skilllv));
+					if ( battle_config.display_status_timers && sd && skill_get_delay(skillid, skilllv))
+						clif_status_change(src, SI_ACTIONDELAY, 1, delay, 0, 0, 1);
+				}
+			}
+		}
+		if (sd) sd->state.autocast = 0;
+	}
+
+	if ((sd || hd && battle_config.homunculus_pyroclastic_autocast == 1) && wd.flag&BF_SHORT && sc && sc->data[SC_PYROCLASTIC] && rand()%100 < sc->data[SC_PYROCLASTIC]->val3)
+	{
+		struct unit_data *ud;
+		short skillid = BS_HAMMERFALL;
+		short skilllv = sc->data[SC_PYROCLASTIC]->val1;
+		int delay;
+
+		if (sd) sd->state.autocast = 1;
+		if (status_charge(src, 0, skill_get_sp(skillid,skilllv)))
+		{
+			skill_castend_pos2(src, target->x, target->y, skillid, skilllv, tick, flag);
+
+			ud = unit_bl2ud(src);
+			if (ud)
+			{
+				delay = skill_delayfix(src, skillid, skilllv);
+				if( DIFF_TICK(ud->canact_tick, tick + delay) < 0 )
+				{
+					ud->canact_tick = tick+delay;
 					if ( battle_config.display_status_timers && sd && skill_get_delay(skillid, skilllv))
 						clif_status_change(src, SI_ACTIONDELAY, 1, delay, 0, 0, 1);
 				}
@@ -5341,8 +5380,6 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 				if( DIFF_TICK(ud->canact_tick, tick + delay) < 0 )
 				{
 					ud->canact_tick = tick+delay;
-					if( sd && skill_get_cooldown(skillid,5) > 0 )
-						skill_blockpc_start(sd, skillid, skill_get_cooldown(skillid, 5));
 					if ( battle_config.display_status_timers && sd && skill_get_delay(skillid, 5))
 						clif_status_change(src, SI_ACTIONDELAY, 1, delay, 0, 0, 1);
 				}
@@ -6194,6 +6231,8 @@ static const struct _battle_data {
 	{ "plag_doram_skills",                  &battle_config.plag_doram_skills,               1,      0,      1,              },
 	{ "allow_bloody_lust_on_boss",          &battle_config.allow_bloody_lust_on_boss,       1,      0,      1,              },
 	{ "allow_bloody_lust_on_warp",          &battle_config.allow_bloody_lust_on_warp,       1,      0,      1,              },
+	{ "homunculus_pyroclastic_autocast",    &battle_config.homunculus_pyroclastic_autocast, 0,      0,      1,              },
+	{ "pyroclastic_breaks_weapon",          &battle_config.pyroclastic_breaks_weapon,       1,      0,      1,              },
 	{ "hanbok_ignorepalette",               &battle_config.hanbok_ignorepalette,            0,      0,      1,              },
 	{ "oktoberfest_ignorepalette",          &battle_config.oktoberfest_ignorepalette,       0,      0,      1,              },
 	{ "summer2_ignorepalette",              &battle_config.summer2_ignorepalette,           0,      0,      1,              },
