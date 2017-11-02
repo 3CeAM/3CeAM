@@ -22,7 +22,7 @@
 #define MAX_PC_SKILL_REQUIRE 5
 #define MAX_PC_FEELHATE 3
 
-#define MAX_RUNE 20
+#define MAX_RUNE 60
 #define MAX_RAGE 15
 #define MAX_SPELLBOOK 7
 

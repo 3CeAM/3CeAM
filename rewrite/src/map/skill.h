@@ -1969,6 +1969,15 @@ enum gx_poison {
 	PO_VENOMBLEED
 };
 
+enum lux_pass {
+	LUX_REFRESH				= 0x10,
+	LUX_GIANTGROWTH			= 0x20,
+	LUX_STONEHARDSKIN		= 0x40,
+	LUX_VITALITYACTIVATION	= 0x80,
+	LUX_ABUNDANCE			= 0x100,
+	LUX_MILLENNIUMSHIELD	= 0x200
+};
+
 // msgstringtable
 // To use with clif_skill_msg();
 enum skill_msg {
