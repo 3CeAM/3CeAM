@@ -657,12 +657,15 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			damage -= damage * 6 * (1+per) / 100;
 		}
 
-		if( (sce = sc->data[SC_STONEHARDSKIN]) && flag&BF_WEAPON && damage > 0 )
+		if((sce=sc->data[SC_STONEHARDSKIN]) && damage > 0 )
 		{
-			sce->val2 -= damage;
-			skill_break_equip(src,EQP_WEAPON,3000,BCT_SELF);// Need to code something that will lower a monster's attack by 25%. [Rytech]
+			if ((flag&(BF_SHORT|BF_WEAPON)) == (BF_SHORT|BF_WEAPON))
+				skill_break_equip(src,EQP_WEAPON,3000,BCT_SELF);// Need to code something that will lower a monster's attack by 25%. [Rytech]
 
-			if( sce->val2 <= 0 ) status_change_end(bl, SC_STONEHARDSKIN, -1);
+			sce->val3 -= damage;
+
+			if( sce->val3 <= 0 )
+				status_change_end(bl, SC_STONEHARDSKIN, INVALID_TIMER);
 		}
 
 		// FIXME:
@@ -2307,11 +2310,11 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					{
 						short index = sd->equip_index[EQI_HAND_R];
 						if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_WEAPON )
-							skillratio = sd->inventory_data[index]->wlv * (sd->status.inventory[index].refine + 6) * 100 + sd->inventory_data[index]->atk + sd->inventory_data[index]->weight / 10;
+							skillratio = sd->inventory_data[index]->wlv * (sd->status.inventory[index].refine + 6) * 100 + sd->inventory_data[index]->atk - 100 + sd->inventory_data[index]->weight / 10;
 					}
 					break;
 				case RK_STORMBLAST:
-					skillratio = 100 * sstatus->int_ / 8 + 100 * (sd ? pc_checkskill(sd,RK_RUNEMASTERY) : 10);
+					skillratio = 100 * sstatus->str / 8 + 100 * (sd ? pc_checkskill(sd,RK_RUNEMASTERY) : 10);
 					break;
 				case RK_PHANTOMTHRUST:
 					skillratio = 50 * skill_lv + 10 * pc_checkskill(sd,KN_SPEARMASTERY);
@@ -3032,6 +3035,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				skill_num != GC_CROSSRIPPERSLASHER &&
 				skill_num != GC_DARKCROW)//Unknown if Dark Claw is affected by EDP. Best to make it not until confirm. [Rytech]
 				ATK_ADDRATE(sc->data[SC_EDP]->val3);
+
+			if ( battle_config.giant_growth_behavior == 1 && sc->data[SC_GIANTGROWTH] && (sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT && wd.flag&BF_WEAPON && skill_num != RK_CRUSHSTRIKE )
+				ATK_ADDRATE(map_flag_vs(src->m)?125:250);// Increase is 125% in PvP/GvG, 250% otherwise. Only applies to Rune Knights.
 
 			if(sc->data[SC_UNLIMIT] && (wd.flag&(BF_LONG|BF_WEAPON)) == (BF_LONG|BF_WEAPON) &&
 				(!skill_num ||//For regular attacks with bows.
@@ -5158,7 +5164,12 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 	}
 
 	if( sd && sc && sc->data[SC_GIANTGROWTH] && (wd.flag&BF_SHORT) && rand()%100 < sc->data[SC_GIANTGROWTH]->val2 )
-		wd.damage *= 3; // Triple Damage
+	{
+		if ( battle_config.giant_growth_behavior == 1 )
+			wd.damage *= 2;// Double Damage - 2017 Behavior
+		else
+			wd.damage *= 3;// Triple Damage - Pre 2017 Behavior
+	}
 
 	if (sd && sd->state.arrow_atk) //Consume arrow.
 		battle_consume_ammo(sd, 0, 0);
@@ -6233,6 +6244,7 @@ static const struct _battle_data {
 	{ "allow_bloody_lust_on_warp",          &battle_config.allow_bloody_lust_on_warp,       1,      0,      1,              },
 	{ "homunculus_pyroclastic_autocast",    &battle_config.homunculus_pyroclastic_autocast, 0,      0,      1,              },
 	{ "pyroclastic_breaks_weapon",          &battle_config.pyroclastic_breaks_weapon,       1,      0,      1,              },
+	{ "giant_growth_behavior",              &battle_config.giant_growth_behavior,           1,      0,      1,              },
 	{ "hanbok_ignorepalette",               &battle_config.hanbok_ignorepalette,            0,      0,      1,              },
 	{ "oktoberfest_ignorepalette",          &battle_config.oktoberfest_ignorepalette,       0,      0,      1,              },
 	{ "summer2_ignorepalette",              &battle_config.summer2_ignorepalette,           0,      0,      1,              },

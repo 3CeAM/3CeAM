@@ -4204,6 +4204,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 			case ITEMID_HAGALAZ_RUNE:
 				if( skill_blockpc_get(sd,RK_STONEHARDSKIN) != -1 )
 					return 0;
+				break;
 			case ITEMID_LUX_ANIMA_RUNE:
 				if( skill_blockpc_get(sd,RK_LUXANIMA) != -1 )
 					return 0;
@@ -4960,6 +4961,7 @@ int pc_checkallowskill(struct map_session_data *sd)
 		SC_ADRENALINE2,
 		SC_GATLINGFEVER,
 		SC_EXEEDBREAK,
+		SC_CRUSHSTRIKE,
 		// Platnium Alter and Heat Barrel
 		// should end when switching equips.
 		// This code only does this if switching

@@ -5224,7 +5224,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	struct mercenary_data *mer;
 	struct elemental_data *ele;
 	struct status_data *sstatus, *tstatus;
-	struct status_change *tsc;
+	struct status_change *sc, *tsc;
 	struct status_change_entry *tsce;
 
 	int i, s_job_level = 50;
@@ -5304,6 +5304,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	}
 
 	type = status_skill2sc(skillid);
+	sc = status_get_sc(src);
 	tsc = status_get_sc(bl);
 	tsce = (tsc && type != -1)?tsc->data[type]:NULL;
 
@@ -8381,102 +8382,139 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		map_foreachinrange(skill_area_sub, bl,skill_get_splash(skillid,skilllv),BL_CHAR,
 			src,skillid,skilllv,tick,flag|BCT_ENEMY|1,skill_castend_damage_id);
 		break;
-	case RK_STONEHARDSKIN:
-		if( sd && pc_checkskill(sd,RK_RUNEMASTERY) >= 4 )
-		{
-			int heal = sstatus->hp / 5; // 20% HP
-			if( status_charge(bl,heal,0) )
-				clif_skill_nodamage(src,bl,skillid,skilllv,sc_start2(bl,type,100,skilllv,heal,skill_get_time(skillid,skilllv)));
-			else
-				clif_skill_fail(sd,skillid,0,0,0);
-		}
-		break;
-	case RK_REFRESH:
-		if( sd && pc_checkskill(sd,RK_RUNEMASTERY) >= 8 )
-		{// First give immunity to all status's before removing.
-			clif_skill_nodamage(src,bl,skillid,skilllv,
-				sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
-
-			// Immunity active. Now to remove status's your immune to.
-			if ( tsc )
-			{
-				const enum sc_type scs[] = { SC_MARSHOFABYSS, SC_MANDRAGORA };
-				// Checking for common status's.
-				for (i = SC_COMMON_MIN; i <= SC_COMMON_MAX; i++)
-					if (tsc->data[i])
-						status_change_end(bl, (sc_type)i, INVALID_TIMER);
-				// Checking for Guillotine poisons.
-				for (i = SC_NEW_POISON_MIN; i <= SC_NEW_POISON_MAX; i++)
-					if (tsc->data[i])
-						status_change_end(bl, (sc_type)i, INVALID_TIMER);
-				// Checking for additional status's.
-				for (i = 0; i < ARRAYLENGTH(scs); i++)
-					if (tsc->data[scs[i]])
-						status_change_end(bl, scs[i], INVALID_TIMER);
-			}
-
-			// Finally, give a 25% MaxHP Heal.
-			status_heal(bl,status_get_max_hp(bl) * 25 / 100,0,1);
-		}
-		break;
 
 	case RK_MILLENNIUMSHIELD:
-		if( sd && pc_checkskill(sd,RK_RUNEMASTERY) >= 9 )
-		{
-			short generate = 0;
-			short shieldnumber = 0;
-			generate = rand()%100 + 1;//Generates a random number between 1 - 100 which is then used to determine how many shields will generate.
-			if ( generate >= 1 && generate <= 20 )//20% chance for 4 shields.
-				shieldnumber = 4;
-			else if ( generate >= 21 && generate <= 50 )//30% chance for 3 shields.
-				shieldnumber = 3;
-			else if ( generate >= 51 && generate <= 100 )//50% chance for 2 shields.
-				shieldnumber = 2;
-			sc_start4(bl,type,100,skilllv,shieldnumber,1000,0,skill_get_time(skillid,skilllv));
-			clif_millenniumshield(sd,shieldnumber);
-			clif_skill_nodamage(src,bl,skillid,1,1);
-		}
-		break;
-
 	case RK_CRUSHSTRIKE:
+	case RK_REFRESH:
 	case RK_GIANTGROWTH:
+	case RK_STONEHARDSKIN:
 	case RK_VITALITYACTIVATION:
 	case RK_ABUNDANCE:
 		if( sd )
 		{
-			int lv = 1; // RK_GIANTGROWTH
+			unsigned char lv = 1;// RK_GIANTGROWTH
 			if( skillid == RK_VITALITYACTIVATION )
 				lv = 2;
+			else if( skillid == RK_STONEHARDSKIN )
+				lv = 4;
 			else if( skillid == RK_ABUNDANCE )
 				lv = 6;
 			else if ( skillid == RK_CRUSHSTRIKE )
 				lv = 7;
+			else if ( skillid == RK_REFRESH )
+				lv = 8;
+			else if ( skillid == RK_MILLENNIUMSHIELD )
+				lv = 9;
 			if( pc_checkskill(sd,RK_RUNEMASTERY) >= lv )
-				clif_skill_nodamage(src,bl,skillid,skilllv,sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
+				if ( skillid == RK_STONEHARDSKIN )
+					clif_skill_nodamage(src,bl,skillid,skilllv,sc_start2(bl,type,100,skilllv,status_get_job_lv(src)*(sd?pc_checkskill(sd,RK_RUNEMASTERY):10),skill_get_time(skillid,skilllv)));
+				else
+					clif_skill_nodamage(src,bl,skillid,skilllv,sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
 		}
 		break;
 
 	case RK_FIGHTINGSPIRIT:
 		{
-			int atkbonus = 7 * party_foreachsamemap(skill_area_sub,sd,skill_get_splash(skillid,skilllv),src,skillid,skilllv,tick,BCT_PARTY,skill_area_sub_count);
-			if( flag&1 )
+			unsigned char atk_bonus = 7 * party_foreachsamemap(party_sub_count, sd, skill_get_splash(skillid, skilllv));
+
+			if( sd == NULL || sd->status.party_id == 0 || (flag&1) )
 			{
-				if( src == bl )
-					sc_start2(bl,type,100,atkbonus,sd?pc_checkskill(sd,RK_RUNEMASTERY):10,skill_get_time(skillid,skilllv));
+				if ( src == bl )
+					clif_skill_nodamage(src, bl, skillid, skilllv, sc_start2(bl,type,100,atk_bonus,sd?pc_checkskill(sd,RK_RUNEMASTERY):10,skill_get_time(skillid,skilllv)));
 				else
-					sc_start(bl,type,100,atkbonus / 4,skill_get_time(skillid,skilllv));
+					clif_skill_nodamage(bl, bl, skillid, skilllv, sc_start(bl,type,100,atk_bonus/2,skill_get_time(skillid,skilllv)));
 			}
 			else if( sd && pc_checkskill(sd,RK_RUNEMASTERY) >= 5 )
-			{
-				if( sd->status.party_id )
-					party_foreachsamemap(skill_area_sub,sd,skill_get_splash(skillid,skilllv),src,skillid,skilllv,tick,flag|BCT_PARTY|1,skill_castend_nodamage_id);
+				party_foreachsamemap(skill_area_sub, sd, skill_get_splash(skillid, skilllv), src, skillid, skilllv, tick, flag|BCT_PARTY|1, skill_castend_nodamage_id);
+			}
+		break;
+
+	case RK_LUXANIMA:
+		{
+			const enum sc_type scs[] = { SC_REFRESH, SC_GIANTGROWTH, SC_STONEHARDSKIN, SC_VITALITYACTIVATION, SC_ABUNDANCE, SC_MILLENNIUMSHIELD };
+			short rune_effect[] = { RK_REFRESH, RK_GIANTGROWTH, RK_STONEHARDSKIN, RK_VITALITYACTIVATION, RK_ABUNDANCE, RK_MILLENNIUMSHIELD };
+			unsigned char buff_attempt = 100;// Safety to prevent infinite looping in the randomizer.
+			short rune_buff = 0;
+			bool rune_active = false;
+
+			i = 0;
+
+			if( sd == NULL || sd->status.party_id == 0 || (flag&1) )
+			{// Remove the BCT_PARTY and 1 flags so only the flag for the rune_buff is left. 
+				i = flag - 262145;
+
+				// Convert from flag to array number.
+				if ( i == LUX_REFRESH )
+					rune_buff = 0;
+				else if ( i == LUX_GIANTGROWTH )
+					rune_buff = 1;
+				else if ( i == LUX_STONEHARDSKIN )
+					rune_buff = 2;
+				else if ( i == LUX_VITALITYACTIVATION )
+					rune_buff = 3;
+				else if ( i == LUX_ABUNDANCE )
+					rune_buff = 4;
+				else if ( i == LUX_MILLENNIUMSHIELD )
+					rune_buff = 5;
+
+				if ( src == bl )// Sacrificed your rune buff.
+					status_change_end(bl, scs[rune_buff], INVALID_TIMER);
 				else
-					sc_start2(bl,type,100,7,sd?pc_checkskill(sd,RK_RUNEMASTERY):10,skill_get_time(skillid,skilllv));
+				{// Buff surrounding party members with sacrificed rune buff.
+					if ( i == LUX_STONEHARDSKIN )
+						clif_skill_nodamage(bl, bl, rune_effect[rune_buff], skilllv, sc_start2(bl,scs[rune_buff],100,skilllv,status_get_job_lv(src)*(sd?pc_checkskill(sd,RK_RUNEMASTERY):10),skill_get_time(skillid,skilllv)));
+					else
+						clif_skill_nodamage(bl, bl, rune_effect[rune_buff], skilllv, sc_start(bl,scs[rune_buff],100,skilllv,skill_get_time(skillid,skilllv)));
+				}
+			}
+			else if( sd && pc_checkskill(sd,RK_RUNEMASTERY) >= 10 )
+			{
+				if (sc)
+				{// Check if any of the listed passable rune buffs are active.
+					for (i = 0; i < ARRAYLENGTH(scs); i++)
+					{
+						if (sc->data[scs[i]])
+						{// If a rune buff is found, mark true.
+							rune_active = true;
+							break;// End the check.
+						}
+					}
+
+					// Rune buff found? 1 or more of them are likely active.
+					if ( rune_active )
+						while ( rune_buff == 0 && buff_attempt > 0 )
+						{// Randomly select a possible buff and see if its active.
+							i = rand()%6;
+
+							// Selected rune buff active? If yes then prepare it to give to surrounding players.
+							if (sc->data[scs[i]])
+							{// Convert to a flag to pass on to the script under flag&1.
+								if ( i == 0 )
+									rune_buff = LUX_REFRESH;
+								else if ( i == 1 )
+									rune_buff = LUX_GIANTGROWTH;
+								else if ( i == 2 )
+									rune_buff = LUX_STONEHARDSKIN;
+								else if ( i == 3 )
+									rune_buff = LUX_VITALITYACTIVATION;
+								else if ( i == 4 )
+									rune_buff = LUX_ABUNDANCE;
+								else if ( i == 5 )
+									rune_buff = LUX_MILLENNIUMSHIELD;
+							}
+							else
+								--buff_attempt;
+						}
+				}
+
+				if ( rune_buff > 0 )
+					party_foreachsamemap(skill_area_sub, sd, skill_get_splash(skillid, skilllv), src, skillid, skilllv, tick, flag|BCT_PARTY|rune_buff|1, skill_castend_nodamage_id);
+
 				clif_skill_nodamage(src,bl,skillid,1,1);
 			}
 		}
 		break;
-		
+
 	case GC_ROLLINGCUTTER:
 		{
 			short count = 1;
@@ -17340,21 +17378,22 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 				+ sd->menuskill_itemused * 100;// Quality of the rune ore used. Values are 2, 5, 8, 11, and 14.
 				switch ( nameid )// Success reduction from rune stone rank. Each rune has a different rank. Values are 5, 10, 15, and 20.
 				{
-					case 12727:// Berkana / RK_MILLENNIUMSHIELD
+					case ITEMID_BERKANA_RUNE:// Berkana / RK_MILLENNIUMSHIELD
+					case ITEMID_LUX_ANIMA_RUNE:// Lux Anima / RK_LUXANIMA
 						make_per -= 20 * 100;//S-Rank Reduction
 						break;
-					case 12725:// Nauthiz / RK_REFRESH
-					case 12730:// Uruz / RK_ABUNDANCE
+					case ITEMID_NAUTHIZ_RUNE:// Nauthiz / RK_REFRESH
+					case ITEMID_URUZ_RUNE:// Uruz / RK_ABUNDANCE
 						make_per -= 15 * 100;//A-Rank Reduction
 						break;
-					case 12728:// Isa / RK_VITALITYACTIVATION
-					case 12732:// Perthro / RK_STORMBLAST
+					case ITEMID_ISA_RUNE:// Isa / RK_VITALITYACTIVATION
+					case ITEMID_PERTHRO_RUNE:// Perthro / RK_STORMBLAST
 						make_per -= 10 * 100;//B-Rank Reduction
 						break;
-					case 12726:// Raido / RK_CRUSHSTRIKE
-					case 12729:// Eihwaz / RK_FIGHTINGSPIRIT
-					case 12731:// Thurisaz / RK_GIANTGROWTH
-					case 12733:// Hagalaz / RK_STONEHARDSKIN
+					case ITEMID_RAIDO_RUNE:// Raido / RK_CRUSHSTRIKE
+					case ITEMID_EIHWAZ_RUNE:// Eihwaz / RK_FIGHTINGSPIRIT
+					case ITEMID_THURISAZ_RUNE:// Thurisaz / RK_GIANTGROWTH
+					case ITEMID_HAGALAZ_RUNE:// Hagalaz / RK_STONEHARDSKIN
 						make_per -= 5 * 100;//C-Rank Reduction
 						break;
 				}
