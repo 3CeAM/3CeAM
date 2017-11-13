@@ -908,26 +908,27 @@ int unit_can_move(struct block_list *bl)
 			|| sc->data[SC_CLOSECONFINE2]
 			|| (sc->data[SC_CLOAKING] && //Need wall at level 1-2
 				sc->data[SC_CLOAKING]->val1 < 3 && !(sc->data[SC_CLOAKING]->val4&1))
-			|| (sc->data[SC_CAMOUFLAGE] && //Must be against a wall on level 1. Cant move on level 1 and 2.
-				sc->data[SC_CAMOUFLAGE]->val1 < 3 && !(sc->data[SC_CAMOUFLAGE]->val3&1))
 			|| sc->data[SC_MADNESSCANCEL]
 			|| (sc->data[SC_GRAVITATION] && sc->data[SC_GRAVITATION]->val3 == BCT_SELF)
-			|| (sc->data[SC_FEAR] && sc->data[SC_FEAR]->val2 > 0)
 			|| sc->data[SC_DEEPSLEEP]
 			|| sc->data[SC_CRYSTALIZE]
 			|| sc->data[SC_ELECTRICSHOCKER]
 			|| sc->data[SC_BITE]
+			|| (sc->data[SC_CAMOUFLAGE] && //Must be against a wall on level 1. Cant move on level 1 and 2.
+				sc->data[SC_CAMOUFLAGE]->val1 < 3 && !(sc->data[SC_CAMOUFLAGE]->val3&1))
 			|| sc->data[SC_MAGNETICFIELD]
-			|| sc->data[SC_THORNSTRAP]
 			|| sc->data[SC__MANHOLE]
-			|| sc->data[SC_VACUUM_EXTREME]
+			|| sc->data[SC_FALLENEMPIRE]
 			|| sc->data[SC_CURSEDCIRCLE_ATKER]
 			|| sc->data[SC_CURSEDCIRCLE_TARGET]
 			|| sc->data[SC_NETHERWORLD]
+			|| sc->data[SC_VACUUM_EXTREME]
+			|| sc->data[SC_THORNSTRAP]
 			|| sc->data[SC_MEIKYOUSISUI]
 			|| sc->data[SC_KAGEHUMI]
 			|| sc->data[SC_KINGS_GRACE]
 			|| sc->data[SC_SUHIDE]
+			|| sc->data[SC_NEEDLE_OF_PARALYZE]
 			|| sc->data[SC_TINDER_BREAKER]
 		))
 			return 0;
@@ -2054,7 +2055,6 @@ int unit_remove_map_(struct block_list *bl, clr_type clrtype, const char* file, 
 		status_change_end(bl, SC_MARIONETTE2, INVALID_TIMER);
 		status_change_end(bl, SC_CLOSECONFINE, INVALID_TIMER);
 		status_change_end(bl, SC_CLOSECONFINE2, INVALID_TIMER);
-		status_change_end(bl, SC_ROLLINGCUTTER, INVALID_TIMER);
 		status_change_end(bl, SC_HIDING, INVALID_TIMER);
 		status_change_end(bl, SC_CLOAKING, INVALID_TIMER);
 		status_change_end(bl, SC_CHASEWALK, INVALID_TIMER);
@@ -2063,6 +2063,7 @@ int unit_remove_map_(struct block_list *bl, clr_type clrtype, const char* file, 
 		status_change_end(bl, SC_CHANGE, INVALID_TIMER);
 		status_change_end(bl, SC_STOP, INVALID_TIMER);
 		status_change_end(bl, SC_CLOAKINGEXCEED, INVALID_TIMER);
+		status_change_end(bl, SC_ROLLINGCUTTER, INVALID_TIMER);
 		status_change_end(bl, SC_ELECTRICSHOCKER, INVALID_TIMER);
 		status_change_end(bl, SC_BITE, INVALID_TIMER);
 		status_change_end(bl, SC_WUGDASH, INVALID_TIMER);
@@ -2072,7 +2073,6 @@ int unit_remove_map_(struct block_list *bl, clr_type clrtype, const char* file, 
 		status_change_end(bl, SC_NEUTRALBARRIER, INVALID_TIMER);
 		status_change_end(bl, SC_STEALTHFIELD_MASTER, INVALID_TIMER);
 		status_change_end(bl, SC_STEALTHFIELD, INVALID_TIMER);
-		status_change_end(bl, SC_CRYSTALIZE, INVALID_TIMER);
 		status_change_end(bl, SC__SHADOWFORM, INVALID_TIMER);
 		status_change_end(bl, SC__MANHOLE, INVALID_TIMER);
 		status_change_end(bl, SC_CURSEDCIRCLE_TARGET, INVALID_TIMER);

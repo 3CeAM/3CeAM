@@ -59,6 +59,14 @@
 //	silence		condition of being in silenced state
 //	confusion	condition of being in confusion state
 //	blind		condition of being in blind state
+//	bleeding	condition of being in bleeding state
+//	dpoison		condition of being in deadly poison state
+//	fear		condition of being in fear state
+//	burning		condition of being in burning state
+//	imprison	condition of being in imprison state
+//	deepsleep	condition of being in deep sleep state
+//	frost		condition of being in frost state
+//	crystalize	condition of being in crystalize state
 //	hiding		condition of being in hidden state
 //	sight		condition of being in unhidden state
 
