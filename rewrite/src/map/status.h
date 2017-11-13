@@ -34,11 +34,11 @@ typedef enum sc_type {
 	SC_BLIND,
 	SC_BLEEDING,
 	SC_DPOISON, //10
-	SC_BURNING,
-	SC_WHITEIMPRISON,//IMPRISON, White Imprison. Not really common, but aegis treats it as one.
 	SC_FEAR,
+	SC_BURNING,
+	SC_IMPRISON,// White Imprison. Not really common, but aegis treats it as one.
 	SC_DEEPSLEEP,
-	SC_FREEZING,//FROSTMISTY
+	SC_FROST,//FROSTMISTY
 	SC_CRYSTALIZE,//COLD, Crystalize. Another not so common status, but officially treated as one.
 	SC_NORECOVER,
 	//SC_ICEEXPLO,//ICEEXPLO and NEW_POISON are also listed as common treated,

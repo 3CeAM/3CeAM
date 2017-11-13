@@ -4253,8 +4253,9 @@ int pc_useitem(struct map_session_data *sd,int n)
 		(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOITEM) ||
 		sd->sc.data[SC__SHADOWFORM] ||
 		sd->sc.data[SC__INVISIBILITY] ||
-		// Nauthiz Rune (RK_REFRESH) can be used while in deep sleep and crystalize status.
-		(sd->sc.data[SC_DEEPSLEEP] || sd->sc.data[SC_CRYSTALIZE]) && sd->status.inventory[n].nameid != ITEMID_NAUTHIZ_RUNE ||
+		sd->sc.data[SC__MANHOLE] ||
+		// Nauthiz Rune (RK_REFRESH) can be used while in crystalize status.
+		(sd->sc.data[SC_CRYSTALIZE] && sd->status.inventory[n].nameid != ITEMID_NAUTHIZ_RUNE) ||
 		sd->sc.data[SC_SATURDAYNIGHTFEVER] ||
 		sd->sc.data[SC_HEAT_BARREL_AFTER] ||
 		sd->sc.data[SC_FLASHCOMBO] ||

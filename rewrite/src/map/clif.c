@@ -1451,8 +1451,8 @@ int clif_spawn(struct block_list *bl)
 				clif_status_change(&sd->bl,SI_SUMMON4,1,9999,sd->sc.data[SC_SPHERE_4]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_SPHERE_5] )
 				clif_status_change(&sd->bl,SI_SUMMON5,1,9999,sd->sc.data[SC_SPHERE_5]->val1,0,0);
-			if( sd->sc.count && sd->sc.data[SC_FREEZING] )
-				clif_status_change(&sd->bl,SI_FROSTMISTY,1,9999,sd->sc.data[SC_FREEZING]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_FROST] )
+				clif_status_change(&sd->bl,SI_FROSTMISTY,1,9999,sd->sc.data[SC_FROST]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_STEALTHFIELD] )
 				clif_status_change(&sd->bl,SI_STEALTHFIELD,1,9999,sd->sc.data[SC_STEALTHFIELD]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_VENOMIMPRESS] )
@@ -4867,8 +4867,8 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_SUMMON4,1,9999,tsd->sc.data[SC_SPHERE_4]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_SPHERE_5] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_SUMMON5,1,9999,tsd->sc.data[SC_SPHERE_5]->val1,0,0);
-			if( tsd->sc.count && tsd->sc.data[SC_FREEZING] )
-				clif_status_change_single(&sd->bl,&tsd->bl,SI_FROSTMISTY,1,9999,tsd->sc.data[SC_FREEZING]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_FROST] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_FROSTMISTY,1,9999,tsd->sc.data[SC_FROST]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_STEALTHFIELD] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_STEALTHFIELD,1,9999,tsd->sc.data[SC_STEALTHFIELD]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_VENOMIMPRESS] )
@@ -11027,8 +11027,8 @@ void clif_parse_GlobalMessage(int fd, struct map_session_data* sd)
 	if( is_atcommand(fd, sd, message, 1)  )
 		return;
 
-	if( sd->sc.data[SC_BERSERK] || (sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOCHAT) ||
-		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2) )
+	if( sd->sc.data[SC_BERSERK] || sd->sc.data[SC_DEEPSLEEP] ||
+		(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOCHAT) )
 		return;
 
 	if( battle_config.min_chat_delay )
@@ -11186,10 +11186,11 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 		sd->sc.data[SC_TRICKDEAD] ||
 	 	sd->sc.data[SC_AUTOCOUNTER] ||
 		sd->sc.data[SC_BLADESTOP] ||
-	 	sd->sc.data[SC_DEATHBOUND] ||
-		sd->sc.data[SC_CRYSTALIZE] ||
 		sd->sc.data[SC_DEEPSLEEP] ||
+		sd->sc.data[SC_CRYSTALIZE] ||
+	 	sd->sc.data[SC_DEATHBOUND] ||
 		sd->sc.data[SC__MANHOLE] || 
+		sd->sc.data[SC_FALLENEMPIRE] || 
 		sd->sc.data[SC_CURSEDCIRCLE_ATKER] ||
 		sd->sc.data[SC_CURSEDCIRCLE_TARGET] ||
 		sd->sc.data[SC_SUHIDE]
@@ -11218,7 +11219,8 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 			sd->sc.data[SC__SHADOWFORM] || 
 			sd->sc.data[SC_HEAT_BARREL_AFTER] ||
 			sd->sc.data[SC_KINGS_GRACE] ||
-			(sd->sc.data[SC_VOICEOFSIREN] && sd->sc.data[SC_VOICEOFSIREN]->val2 == target_id) )
+			(sd->sc.data[SC_VOICEOFSIREN] && sd->sc.data[SC_VOICEOFSIREN]->val2 == target_id) ||
+			sd->sc.data[SC_ALL_RIDING])
 			return;
 
 		if ( tsc && (tsc->data[SC__MANHOLE] || tsc->data[SC_KINGS_GRACE]))
@@ -11340,8 +11342,8 @@ void clif_parse_WisMessage(int fd, struct map_session_data* sd)
 	if (is_atcommand(fd, sd, message, 1)  )
 		return;
 
-	if (sd->sc.data[SC_BERSERK] || (sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOCHAT) ||
-		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2) )
+	if (sd->sc.data[SC_BERSERK] ||  sd->sc.data[SC_DEEPSLEEP] ||
+		(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOCHAT))
 		return;
 
 	if (battle_config.min_chat_delay)
@@ -12992,8 +12994,8 @@ void clif_parse_PartyMessage(int fd, struct map_session_data* sd)
 	if( is_atcommand(fd, sd, message, 1)  )
 		return;
 
-	if( sd->sc.data[SC_BERSERK] || (sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOCHAT) ||
-		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2) )
+	if( sd->sc.data[SC_BERSERK] ||  sd->sc.data[SC_DEEPSLEEP] ||
+		(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOCHAT) )
 		return;
 
 	if( battle_config.min_chat_delay )
@@ -13466,8 +13468,8 @@ void clif_parse_GuildMessage(int fd, struct map_session_data* sd)
 	if( is_atcommand(fd, sd, message, 1) )
 		return;
 
-	if( sd->sc.data[SC_BERSERK] || (sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOCHAT) ||
-		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2) )
+	if( sd->sc.data[SC_BERSERK] ||  sd->sc.data[SC_DEEPSLEEP] ||
+		(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOCHAT) )
 		return;
 
 	if( battle_config.min_chat_delay )
@@ -16389,8 +16391,8 @@ void clif_parse_BattleChat(int fd, struct map_session_data* sd)
 	if( is_atcommand(fd, sd, message, 1) )
 		return;
 
-	if( sd->sc.data[SC_BERSERK] || (sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOCHAT) ||
-		(sd->sc.data[SC_DEEPSLEEP] && sd->sc.data[SC_DEEPSLEEP]->val2) )
+	if( sd->sc.data[SC_BERSERK] ||  sd->sc.data[SC_DEEPSLEEP] ||
+		(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOCHAT) )
 		return;
 
 	if( battle_config.min_chat_delay )

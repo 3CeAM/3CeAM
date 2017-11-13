@@ -1134,7 +1134,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl, SC_STUN, 40, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case WL_COMET:
-		sc_start4(bl,SC_BURNING,100,skilllv,1000,src->id,0,skill_get_time2(skillid,skilllv));
+		sc_start(bl,SC_BURNING,100,skilllv,skill_get_time2(skillid,skilllv));
 		break;
 	case WL_EARTHSTRAIN:
 		{
@@ -1148,10 +1148,9 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		}
 		break;
 	case WL_FROSTMISTY:
-		sc_start(bl,SC_FREEZING, 25 + 5 * skilllv,skilllv,skill_get_time(skillid,skilllv));
+		sc_start(bl,SC_FROST, 25 + 5 * skilllv,skilllv,skill_get_time(skillid,skilllv));
 		break;
 	case WL_JACKFROST:
-		//Note: Official data shows its applied as 200%. Dont know if sc_start can handle that much. Should I apply this? Recheck soon.
 		sc_start(bl,SC_FREEZE,100,skilllv,skill_get_time(skillid,skilllv));
 		break;
 	case RA_WUGBITE:
@@ -1173,7 +1172,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		break;
 	case RA_FIRINGTRAP:
 	case RA_ICEBOUNDTRAP:
-		sc_start(bl, (skillid == RA_FIRINGTRAP) ? SC_BURNING:SC_FREEZING, 50 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
+		sc_start(bl, (skillid == RA_FIRINGTRAP) ? SC_BURNING:SC_FROST, 50 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
 		break;
 	case NC_PILEBUNKER:
 		if( rand()%100 < 25 + 15*skilllv )
@@ -1201,7 +1200,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl, SC_FREEZE, 10 * skilllv, skilllv, skill_get_time(skillid, skilllv));
 		//If it fails to give the frozen status, it will attempt to give the freezing status.
 		if ( tsc && !tsc->data[SC_FREEZE] )
-			sc_start(bl, SC_FREEZING, 20 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
+			sc_start(bl, SC_FROST, 20 + 10 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
 		break;
 	case NC_POWERSWING:
 		sc_start(bl, SC_STUN, 10, skilllv, skill_get_time(skillid, skilllv));
@@ -1263,7 +1262,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 	case SR_DRAGONCOMBO:
 		sc_start(bl, SC_STUN, 2 * skilllv, skilllv, skill_get_time(skillid, skilllv));
 		break;
-	case SR_FALLENEMPIRE:
+	case SR_FALLENEMPIRE:// Switch this to SC_FALLENEMPIRE soon.
 		sc_start(bl, SC_STOP, 100, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case SR_WINDMILL:
@@ -1280,7 +1279,26 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl, SC_SILENCE, rate, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case SR_HOWLINGOFLION:
-		sc_start(bl, SC_FEAR, 5 + 5 * skilllv, skilllv, skill_get_time(skillid, skilllv));
+		status_change_end(bl, SC_SWINGDANCE, -1);
+		status_change_end(bl, SC_SYMPHONYOFLOVER, -1);
+		status_change_end(bl, SC_MOONLITSERENADE, -1);
+		status_change_end(bl, SC_RUSHWINDMILL, -1);
+		status_change_end(bl, SC_ECHOSONG, -1);
+		status_change_end(bl, SC_HARMONIZE, -1);
+		status_change_end(bl, SC_NETHERWORLD, -1);
+		status_change_end(bl, SC_VOICEOFSIREN, -1);
+		status_change_end(bl, SC_DEEPSLEEP, -1);
+		status_change_end(bl, SC_SIRCLEOFNATURE, -1);
+		status_change_end(bl, SC_GLOOMYDAY, -1);
+		status_change_end(bl, SC_GLOOMYDAY_SK, -1);
+		status_change_end(bl, SC_SONGOFMANA, -1);
+		status_change_end(bl, SC_DANCEWITHWUG, -1);
+		status_change_end(bl, SC_SATURDAYNIGHTFEVER, -1);
+		status_change_end(bl, SC_LERADSDEW, -1);
+		status_change_end(bl, SC_MELODYOFSINK, -1);
+		status_change_end(bl, SC_BEYONDOFWARCRY, -1);
+		status_change_end(bl, SC_UNLIMITEDHUMMINGVOICE, -1);
+		sc_start(bl, SC_FEAR, 5 + 5 * skilllv, skilllv, skill_get_time(skillid, skilllv));// Aegis says this applies even if not hit. Keep this here since it might be a bug.
 		break;
 	case SO_EARTHGRAVE:
 		sc_start(bl, SC_BLEEDING, 5 * skilllv, skilllv, skill_get_time2(skillid, skilllv));
@@ -1290,7 +1308,6 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		if( sc && sc->data[SC_COOLER_OPTION] )
 			rate += rate * sc->data[SC_COOLER_OPTION]->val2 / 100;
 		sc_start(bl, SC_CRYSTALIZE, rate, skilllv, skill_get_time2(skillid, skilllv));
-		//sc_start(bl, SC_CRYSTALIZE, rate, skilllv, skill_get_time2(skillid, skilllv) - 1000 * tstatus->vit / 10);
 		break;
 	case SO_VARETYR_SPEAR:
 		sc_start(bl, SC_STUN, 5 + 5 * skilllv, skilllv, skill_get_time(skillid, skilllv));
@@ -1480,7 +1497,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 				case SC_OBLIVIONCURSE:	case SC_LEECHESEND:		case SC_DUPLELIGHT:
 				case SC_MARSHOFABYSS:	case SC_RECOGNIZEDSPELL:	case SC_BODYPAINT:
 				case SC_DEADLYINFECT:	case SC_EARTHDRIVE:		case SC_VENOMIMPRESS:
-				case SC_FREEZING:		case SC_BLOODSUCKER:	case SC_MANDRAGORA:
+				case SC_FROST:		case SC_BLOODSUCKER:	case SC_MANDRAGORA:
 				case SC_STOMACHACHE:	case SC_MYSTERIOUS_POWDER:
 					continue;
 				case SC_ASSUMPTIO:
@@ -1515,8 +1532,14 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 	case GC_DARKCROW:
 		sc_start(bl,SC_DARKCROW,100,skilllv,skill_get_time(skillid,skilllv));
 		break;
+	case NC_MAGMA_ERUPTION:
+		sc_start(bl,SC_STUN,90,skilllv,skill_get_time2(skillid,skilllv));
+		break;
+	case NC_MAGMA_ERUPTION_DOTDAMAGE:
+		sc_start(bl,SC_BURNING,10*skilllv,skilllv,skill_get_time(skillid,skilllv));
+		break;
 	case RK_DRAGONBREATH_WATER://jRO says success chance is 15%. [Rytech]
-		sc_start(bl,SC_FREEZING,15,skilllv,skill_get_time(skillid,skilllv));
+		sc_start(bl,SC_FROST,15,skilllv,skill_get_time(skillid,skilllv));
 		break;
 	case MH_NEEDLE_OF_PARALYZE:
 		sc_start(bl, SC_NEEDLE_OF_PARALYZE, 100, skilllv, skill_get_time(skillid,skilllv));
@@ -1607,8 +1630,6 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 				if(sc->data[SC_OVERTHRUST])
 					rate += 10;
 				if(sc->data[SC_MAXOVERTHRUST])
-					rate += 10;
-				if(sc->data[SC_GIANTGROWTH])
 					rate += 10;
 			}
 			if( rate )
@@ -2805,7 +2826,7 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 
 	// Hell Inferno burning status only starts if Fire part hits.
 	if( skillid == WL_HELLINFERNO && dmg.damage > 0 )
-		sc_start4(bl,SC_BURNING,55+5*skilllv,skilllv,1000,src->id,0,skill_get_time(skillid,skilllv));
+		sc_start(bl,SC_BURNING,55+5*skilllv,skilllv,skill_get_time(skillid,skilllv));
 
 	// Apply knock back chance in SC_TRIANGLESHOT skill.
 	if( skillid == SC_TRIANGLESHOT && rand()%100 > (1 + skilllv) )
@@ -3521,7 +3542,7 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 						status_change_end(src,SC_MAGICPOWER,-1); // Removes Magic Power
 						if( !status_isdead(target) )
 						{ // Final Status Effect
-							int effects[4] = { SC_BURNING, SC_FREEZING, SC_BLEEDING, SC_STUN },
+							int effects[4] = { SC_BURNING, SC_FROST, SC_BLEEDING, SC_STUN },
 								applyeffects[4] = { 0, 0, 0, 0 },
 								i, j = 0, k = 0;
 							for( i = 1; i <= 8; i = i + i )
@@ -3912,6 +3933,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case SR_CRESCENTELBOW_AUTOSPELL:
 	case SR_GATEOFHELL:
 	case SR_GENTLETOUCH_QUIET:
+	case SR_HOWLINGOFLION:
 	case WM_SEVERE_RAINSTORM_MELEE:
 	case WM_GREAT_ECHO:
 	case GN_CRAZYWEED_ATK:
@@ -3928,6 +3950,10 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case MH_MIDNIGHT_FRENZY:
 	case MH_CBC:
 		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
+		break;
+
+	case NC_MAGMA_ERUPTION:
+		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag|SD_ANIMATION);
 		break;
 
 	// Works just like the above except animations are done through ZC_USE_SKILL.
@@ -4957,29 +4983,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 			else
 				skill_addtimerskill(src, tick + 300, bl->id, 0, 0, skillid, skilllv, BF_WEAPON, flag|SD_LEVEL|2);
 		}
-		break;
-
-	case SR_HOWLINGOFLION:
-		status_change_end(bl, SC_SWINGDANCE, -1);
-		status_change_end(bl, SC_SYMPHONYOFLOVER, -1);
-		status_change_end(bl, SC_MOONLITSERENADE, -1);
-		status_change_end(bl, SC_RUSHWINDMILL, -1);
-		status_change_end(bl, SC_ECHOSONG, -1);
-		status_change_end(bl, SC_HARMONIZE, -1);
-		status_change_end(bl, SC_NETHERWORLD, -1);
-		status_change_end(bl, SC_VOICEOFSIREN, -1);
-		status_change_end(bl, SC_DEEPSLEEP, -1);
-		status_change_end(bl, SC_SIRCLEOFNATURE, -1);
-		status_change_end(bl, SC_GLOOMYDAY, -1);
-		status_change_end(bl, SC_GLOOMYDAY_SK, -1);
-		status_change_end(bl, SC_SONGOFMANA, -1);
-		status_change_end(bl, SC_DANCEWITHWUG, -1);
-		status_change_end(bl, SC_SATURDAYNIGHTFEVER, -1);
-		status_change_end(bl, SC_LERADSDEW, -1);
-		status_change_end(bl, SC_MELODYOFSINK, -1);
-		status_change_end(bl, SC_BEYONDOFWARCRY, -1);
-		status_change_end(bl, SC_UNLIMITEDHUMMINGVOICE, -1);
-		skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv, tick, flag);
 		break;
 
 	case SR_EARTHSHAKER:
@@ -6649,7 +6652,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			status_change_end(bl, SC_STONE, INVALID_TIMER);
 			status_change_end(bl, SC_SLEEP, INVALID_TIMER);
 			status_change_end(bl, SC_STUN, INVALID_TIMER);
-			status_change_end(bl, SC_WHITEIMPRISON, INVALID_TIMER);
+			status_change_end(bl, SC_IMPRISON, INVALID_TIMER);
 			//Burning is also removed too right? All the other BODYSTATE stuff is removed by this skill. Need confirm. [Rytech]
 			//status_change_end(bl, SC_BURNING, INVALID_TIMER);
 		}
@@ -7181,7 +7184,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_OBLIVIONCURSE:	case SC_LEECHESEND:		case SC_DUPLELIGHT:
 				case SC_MARSHOFABYSS:	case SC_RECOGNIZEDSPELL:	case SC_BODYPAINT:
 				case SC_DEADLYINFECT:	case SC_EARTHDRIVE:		case SC_VENOMIMPRESS:
-				case SC_FREEZING:		case SC_BLOODSUCKER:	case SC_MANDRAGORA:
+				case SC_FROST:		case SC_BLOODSUCKER:	case SC_MANDRAGORA:
 				case SC_STOMACHACHE:	case SC_MYSTERIOUS_POWDER:
 					continue;
 				case SC_ASSUMPTIO:
@@ -8415,7 +8418,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 	case RK_FIGHTINGSPIRIT:
 		{
-			unsigned char atk_bonus = 7 * party_foreachsamemap(party_sub_count, sd, skill_get_splash(skillid, skilllv));
+			unsigned char atk_bonus = 70 + 7 * party_foreachsamemap(party_sub_count, sd, skill_get_splash(skillid, skilllv));
 
 			if( sd == NULL || sd->status.party_id == 0 || (flag&1) )
 			{
@@ -8657,13 +8660,13 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		{
 			if( (tsc && (tsc->data[SC_STONE] || tsc->data[SC_FREEZE] || 
 				tsc->data[SC_BLIND] || tsc->data[SC_BURNING] || 
-				tsc->data[SC_FREEZING] || tsc->data[SC_CRYSTALIZE])) && (rand()%100 < 40+10*skilllv) )
+				tsc->data[SC_FROST] || tsc->data[SC_CRYSTALIZE])) && (rand()%100 < 40+10*skilllv) )
 			{
 				status_change_end(bl, SC_STONE, -1);
 				status_change_end(bl, SC_FREEZE, -1);
 				status_change_end(bl, SC_BLIND, -1);
 				status_change_end(bl, SC_BURNING, -1);
-				status_change_end(bl, SC_FREEZING, -1);
+				status_change_end(bl, SC_FROST, -1);
 				status_change_end(bl, SC_CRYSTALIZE, -1);
 			}
 			// Success rate only applies to the curing effect and not stat bonus.
@@ -8853,7 +8856,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			short status_flag = 0;
 
 			// Target check. Can only be casted on monsters, enemy players, or yourself. Also fails if target is already imprisoned.
-			if ( !(bl->type == BL_MOB || bl->type == BL_PC && battle_check_target(src,bl,BCT_ENEMY) > 0 || src == bl) || ( tsc && tsc->data[SC_WHITEIMPRISON] ))
+			if ( !(bl->type == BL_MOB || bl->type == BL_PC && battle_check_target(src,bl,BCT_ENEMY) > 0 || src == bl) || tstatus->mode&MD_BOSS || ( tsc && tsc->data[SC_IMPRISON] ))
 			{
 				clif_skill_fail(sd,skillid,USESKILL_FAIL_TOTARGET,0,0);
 				break;
@@ -8866,8 +8869,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 					rate = 50 + 3 * skilllv + status_get_job_lv(src) / 4;
 				else
 					rate = 50 + 3 * skilllv + 50 / 4;
-				// Enemy targets have natural immunity through STR, but it does not affect duration.
-				status_flag = 2;
+
+				// Duration is not reduced the same way on monsters like it is on players.
+				if ( bl->type == BL_MOB )
+					status_flag = 2;
 			}
 			else
 			{
@@ -9533,13 +9538,13 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		else if ( sd )
 		{
 			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-				rate = 4 * skilllv + 2 * (sd ? pc_checkskill(sd,WM_LESSON) : 1) + status_get_lv(src) / 15 + status_get_job_lv(src) / 5;
+				rate = 4 * skilllv + 2 * (sd ? pc_checkskill(sd,WM_LESSON) : 10) + status_get_lv(src) / 15 + status_get_job_lv(src) / 5;
 			else
-				rate = 4 * skilllv + 2 * (sd ? pc_checkskill(sd,WM_LESSON) : 1) + 20;
+				rate = 4 * skilllv + 2 * (sd ? pc_checkskill(sd,WM_LESSON) : 10) + 20;
 			if ( rand()%100 < rate )
 			{
-			map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid, skilllv),BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
-			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+				map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid, skilllv),BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
+				clif_skill_nodamage(src,bl,skillid,skilllv,1);
 			}
 		}
 		break;
@@ -9704,13 +9709,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 	case SO_ARRULLO:
 			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-			{rate = 15 + 5 * skilllv + sstatus->int_ / 5 + status_get_job_lv(src) / 5 - tstatus->int_ / 6 - tstatus->luk / 10;
-			tick = status_get_lv(bl) / 20 + tstatus->int_ / 40;}
+				rate = 15 + 5 * skilllv + sstatus->int_ / 5 + status_get_job_lv(src) / 5 - tstatus->int_ / 6 - tstatus->luk / 10;
 			else
-			{rate = 15 + 5 * skilllv + sstatus->int_ / 5 + 10 - tstatus->int_ / 6 - tstatus->luk / 10;
-			tick = 7 + tstatus->int_ / 40;}
-			clif_skill_nodamage(src, bl, skillid, 0, 1);
-			sc_start(bl, type, rate, skilllv, skill_get_time(skillid, skilllv) - 1000 * tick);
+				rate = 15 + 5 * skilllv + sstatus->int_ / 5 + 10 - tstatus->int_ / 6 - tstatus->luk / 10;
+			clif_skill_nodamage(src, bl, skillid, skilllv, sc_start(bl, type, rate, skilllv, skill_get_time(skillid, skilllv)));
 		break;
 
 	case SO_SUMMON_AGNI:
@@ -10186,7 +10188,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		else if ( skillid == ECL_PEONYMAMY )
 		{
 			status_change_end(bl, SC_FREEZE, -1);
-			status_change_end(bl, SC_FREEZING, -1);
+			status_change_end(bl, SC_FROST, -1);
 			status_change_end(bl, SC_CRYSTALIZE, -1);
 		}
 		else if ( skillid == ECL_SADAGUI )
@@ -10899,11 +10901,18 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		break;
 
 	case BS_HAMMERFALL:
-	case SO_ARRULLO:
 		i = skill_get_splash(skillid, skilllv);
 		map_foreachinarea (skill_area_sub,
 			src->m, x-i, y-i, x+i, y+i, BL_CHAR,
 			src, skillid, skilllv, tick, flag|BCT_ENEMY|2,
+			skill_castend_nodamage_id);
+		break;
+
+	case SO_ARRULLO:
+		i = skill_get_splash(skillid, skilllv);
+		map_foreachinarea (skill_area_sub,
+			src->m, x-i, y-i, x+i, y+i, BL_CHAR,
+			src, skillid, skilllv, tick, flag|BCT_ENEMY|1,
 			skill_castend_nodamage_id);
 		break;
 
@@ -11043,6 +11052,12 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case MH_VOLCANIC_ASH:
 		flag|=1;//Set flag to 1 to prevent deleting ammo (it will be deleted on group-delete).
 	case GS_GROUNDDRIFT: //Ammo should be deleted right away.
+		skill_unitsetting(src,skillid,skilllv,x,y,0);
+		break;
+
+	case NC_MAGMA_ERUPTION:
+		i = skill_get_splash(skillid, skilllv);
+		map_foreachinarea (skill_area_sub, src->m, x-i, y-i, x+i, y+i, BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_damage_id);
 		skill_unitsetting(src,skillid,skilllv,x,y,0);
 		break;
 
@@ -13232,7 +13247,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 						switch ( rand()%3+1 )
 						{
 						case 1: sc_start(bl, SC_FREEZE, 25, sg->skill_lv, 10000); break;
-						case 2: sc_start(bl, SC_FREEZING, 25, sg->skill_lv, 10000); break;
+						case 2: sc_start(bl, SC_FROST, 25, sg->skill_lv, 10000); break;
 						case 3: sc_start(bl, SC_CRYSTALIZE, 25, sg->skill_lv, 10000); break;
 						}
 						break;
@@ -13258,6 +13273,10 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			}
 			else
 				sc_start(bl, type, 100, sg->skill_lv, 1000);
+			break;
+
+		case UNT_MAGMA_ERUPTION:
+			skill_attack(skill_get_type(NC_MAGMA_ERUPTION_DOTDAMAGE),ss,&src->bl,bl,NC_MAGMA_ERUPTION_DOTDAMAGE,sg->skill_lv,tick,0);
 			break;
 
 		case UNT_POISON_MIST:
@@ -13552,7 +13571,7 @@ static int skill_check_condition_char_sub (struct block_list *bl, va_list ap)
 	if(pc_isdead(tsd))
 		return 0;
 
-	if (tsd->sc.data[SC_SILENCE] || (tsd->sc.opt1 && tsd->sc.opt1 != OPT1_BURNING) )
+	if (tsd->sc.data[SC_SILENCE] || tsd->sc.data[SC_DEEPSLEEP] || tsd->sc.data[SC_CRYSTALIZE] || (tsd->sc.opt1 && tsd->sc.opt1 != OPT1_BURNING) )
 		return 0;
 
 	if( skill_get_inf2(skillid)&INF2_CHORUS_SKILL )
@@ -15136,6 +15155,8 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 			time -= time * sc->data[SC_TELEKINESIS_INTENSE]->val3 / 100;
 		if (sc->data[SC_SLOWCAST])
 			time += time * sc->data[SC_SLOWCAST]->val2 / 100;
+		if (sc->data[SC_FROST])
+			time += time * 50 / 100;
 	}
 
 	//These status's adjust the fixed cast time by a fixed amount. Fixed adjustments stack and can increase or decrease the time.
@@ -15192,9 +15213,10 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 
 	//Check prevents variable and fixed times from going below to a negeative value.
 	if (time < 0)
-	time = 0;
+		time = 0;
+
 	if (fixed_time < 0)
-	fixed_time = 0;
+		fixed_time = 0;
 
 	//Only add variable and fixed times when renewal casting for renewal skills are on. Without this check,
 	//it will add the 2 together during the above phase and then readd the fixed time.
