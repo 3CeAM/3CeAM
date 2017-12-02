@@ -1655,6 +1655,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 			switch(skill_num)
 			{
 				case AS_SPLASHER:
+				case GN_SPORE_EXPLOSION:
 					if( !wflag ) // Always hits the one exploding.
 						flag.hit = 1;
 					break;
@@ -2726,6 +2727,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio = 60 * skill_lv + 50 * pc_checkskill(sd, GN_REMODELING_CART) * sstatus->int_ / 40;
 					break;
 				case GN_SPORE_EXPLOSION:
+					// Hint shows that damage on surrounding enemys might be 75% of the full damage. Need a confirm on this. [Rytech]
 						skillratio = 100 * skill_lv;
 					if( re_baselv_bonus == 1 && s_level >= 100 )
 						skillratio += ( 200 + sstatus->int_ ) * s_level / 100;	// Base level bonus.
@@ -3703,15 +3705,10 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 		s_ele = rand()%ELE_MAX;
 
 	switch (skill_num)
-	{// I dont understand why were checking for skill level here. [Rytech]
+	{
 		case WL_HELLINFERNO:
-			if( skill_lv >= 0 )
-				s_ele = ELE_FIRE;
-			else
-			{
+			if ( mflag&8 )// 2nd Hit - The shadow damage.
 				s_ele = ELE_DARK;
-				skill_lv = -skill_lv;
-			}
 			break;
 
 		case LG_HESPERUSLIT:
@@ -4043,10 +4040,10 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							skillratio = skillratio * s_level / 100;	// Base level bonus.
 						break;
 					case WL_HELLINFERNO:
-						if( s_ele == ELE_FIRE )
-							skillratio = 60 * skill_lv;
-						else
+						if ( s_ele == ELE_DARK )
 							skillratio = 240 * skill_lv;
+						else
+							skillratio = 60 * skill_lv;
 						if( re_baselv_bonus == 1 && s_level >= 100 )
 							skillratio = skillratio * s_level / 100;	// Base level bonus.
 						break;
@@ -4459,12 +4456,6 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 		ad.damage = battle_calc_gvg_damage(src,target,ad.damage,ad.div_,skill_num,skill_lv,ad.flag);
 	else if( map[target->m].flag.battleground )
 		ad.damage = battle_calc_bg_damage(src,target,ad.damage,ad.div_,skill_num,skill_lv,ad.flag);
-
-	if( skill_num == WL_HELLINFERNO && s_ele == ELE_FIRE )
-	{ // Calculates Shadow Element Extra
-		struct Damage md = battle_calc_magic_attack(src,target,skill_num,-skill_lv,mflag);
-		ad.damage += md.damage;
-	}
 
 	if( skill_num == SO_VARETYR_SPEAR )
 	{ // Physical damage.

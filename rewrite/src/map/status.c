@@ -516,7 +516,7 @@ void initChangeTables(void)
 
 	add_sc( SR_DRAGONCOMBO           , SC_STUN            );
 	add_sc( SR_EARTHSHAKER           , SC_STUN            );
-	set_sc( SR_FALLENEMPIRE          , SC_STOP               , SI_FALLENEMPIRE          , SCB_NONE );
+	set_sc( SR_FALLENEMPIRE          , SC_FALLENEMPIRE       , SI_FALLENEMPIRE          , SCB_NONE );
 	set_sc( SR_CRESCENTELBOW         , SC_CRESCENTELBOW      , SI_CRESCENTELBOW         , SCB_NONE );
 	set_sc( SR_CURSEDCIRCLE          , SC_CURSEDCIRCLE_TARGET, SI_CURSEDCIRCLE_TARGET   , SCB_NONE );
 	set_sc( SR_LIGHTNINGWALK         , SC_LIGHTNINGWALK      , SI_LIGHTNINGWALK         , SCB_NONE );
@@ -559,13 +559,14 @@ void initChangeTables(void)
 	set_sc( SO_WIND_INSIGNIA     , SC_WIND_INSIGNIA   , SI_WIND_INSIGNIA   , SCB_BATK|SCB_WATK|SCB_ASPD|SCB_ATK_ELE );
 	set_sc( SO_EARTH_INSIGNIA    , SC_EARTH_INSIGNIA  , SI_EARTH_INSIGNIA  , SCB_MAXHP|SCB_MAXSP|SCB_BATK|SCB_WATK|SCB_DEF|SCB_MDEF|SCB_ATK_ELE );
 
-	set_sc( GN_CARTBOOST                  , SC_GN_CARTBOOST, SI_GN_CARTBOOST               , SCB_SPEED );
-	set_sc( GN_THORNS_TRAP                , SC_THORNSTRAP  , SI_THORNS_TRAP                 , SCB_NONE );
-	set_sc( GN_BLOOD_SUCKER               , SC_BLOODSUCKER , SI_BLOOD_SUCKER               , SCB_NONE );
-	set_sc( GN_WALLOFTHORN                , SC_STOP        , SI_BLANK                      , SCB_NONE );
-	set_sc( GN_FIRE_EXPANSION_SMOKE_POWDER, SC_SMOKEPOWDER , SI_FIRE_EXPANSION_SMOKE_POWDER, SCB_FLEE );
-	set_sc( GN_FIRE_EXPANSION_TEAR_GAS    , SC_TEARGAS     , SI_FIRE_EXPANSION_TEAR_GAS    , SCB_HIT|SCB_FLEE );
-	set_sc( GN_MANDRAGORA                 , SC_MANDRAGORA  , SI_MANDRAGORA                 , SCB_INT );
+	set_sc( GN_CARTBOOST                  , SC_GN_CARTBOOST   , SI_GN_CARTBOOST               , SCB_SPEED );
+	set_sc( GN_THORNS_TRAP                , SC_THORNSTRAP     , SI_THORNS_TRAP                , SCB_NONE );
+	set_sc( GN_BLOOD_SUCKER               , SC_BLOODSUCKER    , SI_BLOOD_SUCKER               , SCB_NONE );
+	set_sc( GN_SPORE_EXPLOSION            , SC_SPORE_EXPLOSION, SI_SPORE_EXPLOSION, SCB_NONE  );
+	set_sc( GN_WALLOFTHORN                , SC_STOP           , SI_BLANK                      , SCB_NONE );
+	set_sc( GN_FIRE_EXPANSION_SMOKE_POWDER, SC_SMOKEPOWDER    , SI_FIRE_EXPANSION_SMOKE_POWDER, SCB_FLEE );
+	set_sc( GN_FIRE_EXPANSION_TEAR_GAS    , SC_TEARGAS        , SI_FIRE_EXPANSION_TEAR_GAS    , SCB_HIT|SCB_FLEE );
+	set_sc( GN_MANDRAGORA                 , SC_MANDRAGORA     , SI_MANDRAGORA                 , SCB_INT );
 
 	set_sc( ALL_ODINS_POWER               , SC_ODINS_POWER , SI_ODINS_POWER                , SCB_WATK|SCB_MATK|SCB_DEF|SCB_MDEF );
 
@@ -1531,8 +1532,6 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 		//Dead state is not checked for skills as some skills can be used 
 		//on dead characters, said checks are left to skill.c [Skotlex]
 		if (target && status_isdead(target))
-			return 0;
-		if( (sc = status_get_sc(src)) && sc->data[SC_CRYSTALIZE] )
 			return 0;
 	}
 
@@ -4501,6 +4500,8 @@ static unsigned short status_calc_batk(struct block_list *bl, struct status_chan
 
 static unsigned short status_calc_watk(struct block_list *bl, struct status_change *sc, int watk)
 {
+	TBL_PC *sd = BL_CAST(BL_PC,bl);
+
 	if(!sc || !sc->count)
 		return cap_value(watk,0,USHRT_MAX);
 
@@ -4530,6 +4531,9 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += sc->data[SC_GT_CHANGE]->val2;
 	if(sc->data[SC_RUSHWINDMILL])
 		watk += sc->data[SC_RUSHWINDMILL]->val4;
+	if (sc->data[SC_DANCEWITHWUG] && sd && // Attack increase only applies to Ranger/Minstrel/Wanderer type jobs.
+		((sd->class_&MAPID_THIRDMASK) == MAPID_RANGER || (sd->class_&MAPID_THIRDMASK) == MAPID_MINSTRELWANDERER))
+		watk += 2 * sc->data[SC_DANCEWITHWUG]->val1 * sc->data[SC_DANCEWITHWUG]->val2;// 2 * Skill Lv * Performer Count.
 	if(sc->data[SC_SATURDAYNIGHTFEVER])
 		watk += 100 * sc->data[SC_SATURDAYNIGHTFEVER]->val1;
 	if(sc->data[SC_FIRE_INSIGNIA] && sc->data[SC_FIRE_INSIGNIA]->val1 == 2)
@@ -6173,6 +6177,16 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 	case SC_STONE:
 	case SC_QUAGMIRE:
 	case SC_SUITON:
+	case SC_ADORAMUS:
+	case SC_IMPRISON:
+	case SC__MANHOLE:
+	case SC_CHAOS:
+	case SC__BLOODYLUST:
+	case SC_FIRE_INSIGNIA:
+	case SC_WATER_INSIGNIA:
+	case SC_WIND_INSIGNIA:
+	case SC_EARTH_INSIGNIA:
+	case SC_BLOODSUCKER:
 		return 0;
 	}
 	
@@ -6235,6 +6249,8 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 	case SC_FROST:
 	case SC_CRYSTALIZE:
 	case SC_NORECOVER:
+	case SC_ELECTRICSHOCKER:
+	case SC_VACUUM_EXTREME:
 		natural_def = false;
 		break;
 
@@ -6344,6 +6360,16 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 
 	case SC_NORECOVER:// This is the correct formula but there appears to be a min duration. What is it?
 		tick -= 100 * status->luk;
+		break;
+
+	case SC_ELECTRICSHOCKER:
+		tick -= 700 * ((status->agi + status->vit) / 10);
+		break;
+
+	case SC_VACUUM_EXTREME:
+		tick -= 1000 * status->str / 20;
+		if ( tick <= 0 )
+			return 0;// Don't bother trying to start the status.
 		break;
 
 	default:
@@ -7113,6 +7139,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC_OBLIVIONCURSE:
 			case SC_LEECHESEND:
 			case SC_BITE:
+			case SC_VACUUM_EXTREME:
 			//case SC__INVISIBILITY:
 			case SC__ENERVATION:
 			case SC__GROOMY:
@@ -9519,7 +9546,8 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 				clif_updatestatus(sd,SP_MANNER);
 			}
 			break;
-		case SC_SPLASHER:	
+		case SC_SPLASHER:
+		case SC_SPORE_EXPLOSION:
 			{
 				struct block_list *src=map_id2bl(sce->val3);
 				if(src && tid != INVALID_TIMER)
@@ -10304,6 +10332,7 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		break;
 
 	case SC_SPLASHER:
+	case SC_SPORE_EXPLOSION:
 		// custom Venom Splasher countdown timer
 		//if (sce->val4 % 1000 == 0) {
 		//	char timer[10];
@@ -11177,7 +11206,6 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC_STRIPHELM:
 			case SC_BITE:
 			case SC_ADORAMUS:
-			case SC_VACUUM_EXTREME:
 			case SC_MAGNETICFIELD:
 				if (!(type&2))
 					continue;
