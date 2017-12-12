@@ -213,7 +213,7 @@ struct map_session_data {
 	short cook_mastery; // range: [0,1999] [Inkfish]
 	struct skill_cooldown_entry *scd[MAX_SKILLCOOLDOWN]; // Skill Cooldown
 	int cloneskill_id, reproduceskill_id;
-	int menuskill_id, menuskill_val, menuskill_itemused;
+	int menuskill_id, menuskill_val, menuskill_val2, menuskill_itemused;
 
 	int invincible_timer;
 	unsigned int canlog_tick;

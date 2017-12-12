@@ -3731,9 +3731,8 @@ int clif_arrow_fail(struct map_session_data *sd,int type)
 	return 0;
 }
 
-/*==========================================
- * 作成可能 矢リスト送信
- *------------------------------------------*/
+/// Presents a list of items, that can be processed by Arrow Crafting (ZC_MAKINGARROW_LIST).
+/// 01ad <packet len>.W { <name id>.W }*
 int clif_arrow_create_list(struct map_session_data *sd)
 {
 	int i, c, j;
@@ -3817,10 +3816,10 @@ int clif_magicdecoy_list(struct map_session_data *sd, int skill_lv, short x, sho
 	nullpo_ret(sd);
 
 	fd = sd->fd;
-	WFIFOHEAD(fd, 8 * 8 + 8);
-	WFIFOW(fd,0) = 0x1ad; // This is the official packet. [pakpil]
+	WFIFOHEAD(fd, 4*2+4);// Were only listing the 4 elemental points.
+	WFIFOW(fd,0) = 0x1ad;
 
-	for( i = 0, c = 0; i < MAX_INVENTORY; i ++ )
+	for (i = 0, c = 0; i < MAX_INVENTORY; i++)
 	{
 		if( itemid_is_element_point(sd->status.inventory[i].nameid) )
 		{ 
@@ -3828,13 +3827,14 @@ int clif_magicdecoy_list(struct map_session_data *sd, int skill_lv, short x, sho
 			c ++;
 		}
 	}
-	if( c > 0 )
+
+	if (c > 0)
 	{
+		WFIFOW(fd,2) = c*2+4;
+		WFIFOSET(fd, WFIFOW(fd,2));
 		sd->menuskill_id = NC_MAGICDECOY;
 		sd->menuskill_val = skill_lv;
-		sd->menuskill_itemused = (x<<16)|y;
-		WFIFOW(fd,2) = c * 2 + 4;
-		WFIFOSET(fd, WFIFOW(fd, 2));
+		sd->menuskill_val2 = (x<<16)|y;
 	}
 	else
 	{
@@ -3842,7 +3842,7 @@ int clif_magicdecoy_list(struct map_session_data *sd, int skill_lv, short x, sho
 		return 0;
 	}
 
-	return 1;
+	return 0;
 }
 
 /*==========================================
@@ -12595,20 +12595,21 @@ void clif_parse_ItemIdentify(int fd,struct map_session_data *sd)
 	skill_identify(sd,idx-2);
 	sd->menuskill_val = sd->menuskill_id = 0;
 }
-/*==========================================
- * 矢作成
- *------------------------------------------*/
+
+/// Answer to arrow crafting item selection dialog (CZ_REQ_MAKINGARROW).
+/// 01ae <name id>.W
 void clif_parse_SelectArrow(int fd,struct map_session_data *sd)
 {
 	switch( sd->menuskill_id )
 	{
-	case AC_MAKINGARROW:
-	case WL_READING_SB:
-	case GC_POISONINGWEAPON:
-	case NC_MAGICDECOY:
-		break;
-	default:
-		return;
+		case AC_MAKINGARROW:
+		case GC_POISONINGWEAPON:
+		case WL_READING_SB:
+		case NC_MAGICDECOY:
+			break;
+
+		default:
+			return;
 	}
 
 	if( pc_istrading(sd) )
@@ -12620,18 +12621,18 @@ void clif_parse_SelectArrow(int fd,struct map_session_data *sd)
 
 	switch( sd->menuskill_id )
 	{
-	case AC_MAKINGARROW:
-		skill_arrow_create(sd,RFIFOW(fd,2));
-		break;
-	case WL_READING_SB:
-		skill_spellbook(sd,RFIFOW(fd,2));
-		break;
-	case GC_POISONINGWEAPON:
-		skill_poisoningweapon(sd,RFIFOW(fd,2));
-		break;
-	case NC_MAGICDECOY:
-		skill_magicdecoy(sd,RFIFOW(fd,2));
-		break;
+		case AC_MAKINGARROW:
+			skill_arrow_create(sd,RFIFOW(fd,2));
+			break;
+		case GC_POISONINGWEAPON:
+			skill_poisoningweapon(sd,RFIFOW(fd,2));
+			break;
+		case WL_READING_SB:
+			skill_spellbook(sd,RFIFOW(fd,2));
+			break;
+		case NC_MAGICDECOY:
+			skill_magicdecoy(sd,RFIFOW(fd,2));
+			break;
 	}
 
 	sd->menuskill_val = sd->menuskill_id = 0;

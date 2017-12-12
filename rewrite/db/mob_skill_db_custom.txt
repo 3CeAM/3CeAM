@@ -1,36 +1,42 @@
 // Custom mob skills
-//MOB_ID, a unused dummy character sequence (for information only), STATE, SKILL_ID, SKILL_LV,
-// rate (10000 = 100%), casttime, delay, cancelable, a target, a condition type, a condition value,
-// a value 1, a value 2, a value 3, a value 4, a value 5, emotion, chat
+//
+//MOB_ID,dummy value (info only),STATE,SKILL_ID,SKILL_LV,rate (10000 = 100%),casttime,delay,cancelable,target,condition type,condition value,val1,val2,val3,val4,val5,emotion,chat
 //Example
-//1001,Poring@TF_POISON,attack,52,3,100,1500,10000,no,target,always,0,,,,,7
+//1001,Poring@TF_POISON,attack,52,3,100,1500,10000,no,target,always,0,,,,,7,
 //
 //rate refers to the chance of the skill being casted when the condition is fulfilled.
 //delay is the time in milliseconds that has to be pass before recasting the same skill.
 //
 //STATE:
-// any / idle (in standby) / walk (in movement) / dead (on killed) / loot /
-// attack / angry (like attack, except player has not attacked mob yet) /
+// any (except dead) / idle (in standby) / walk (in movement) / dead (on killed) /
+// loot /attack / angry (like attack, except player has not attacked mob yet) /
 // chase (following target, after being attacked) / follow (following
 // target, without being attacked)
+// anytarget (attack+angry+chase+follow)
 //
-//target: The target of the skill can be: target (when a PC is targetted) / self / friend / master
+//target: The target of the skill can be: target (current target) / self / friend / 
+// master / randomtarget (any enemy within skill's range)
 // (the following are for ground-skills, a random target tile is selected from
 // the specified area):
 // around1 (3x3 area around self) / around2 (5x5 area around self) /
 // around3 (7x7 area around self) / around4 (9x9 area around self) /
 // around5 (3x3 area around target) / around6 (5x5 area around target) /
 // around7 (7x7 area around target) / around8 (9x9 area around target) /
-// around (11x11 area around self)
+// around = around4
 //
 //conditions: (condition type) (value which specifies a condition value)
-//	always			uncondtional
+//	always			unconditional
+//	onspawn			when the mob spawns/respawns.
 //	myhpltmaxrate		when the mob's hp drops to a certain %
-//	mystatuson		If the mob has any abnormalities in status (condition value),
-//	mystatusoff		If the mob has ended any abnormalities in status (condition value),
-//	friendhpltmaxrate	when the mobs' friend's hp drops to a certain %
-//	friendstatuson		If the friend has any abnormalities in status (condition value),
-//	friendstatusoff		If the friend has ended any abnormalities in status (condition value),
+//	myhpinrate		when the mob's hp is in a certain % range ('a condition value'
+//                is the lower cap, while 'a value 1' is the upper cap).
+//	mystatuson		If the mob has any abnormalities in status (condition value)
+//	mystatusoff		If the mob has ended any abnormalities in status (condition value)
+//	friendhpltmaxrate	when the mob's friend's hp drops to a certain %
+//	friendhpinrate		when the mob's friend's hp is in a certain % range (range
+//                   defined the same way as in myhpinrate)
+//	friendstatuson		If the friend has any abnormalities in status (condition value)
+//	friendstatusoff		If the friend has ended any abnormalities in status (condition value)
 //	attackpcgt		Attack PC becomes more than the  number of specification
 //	attackpcge		Attack PC becomes equal or more than the number of specification.
 //	slavelt			when the number of slaves is lower than the original number of specification.
@@ -41,6 +47,9 @@
 //	afterskill		after the mob used certain skill.
 //	casttargeted		when a target is in cast range.
 //	rudeattacked		when a target is rude attacked
+//	masterhpltmaxrate	when the mob's master's hp drops to a certain %
+//	masterattacked		when the mob's master's is attacked
+//	alchemist		unknown
 //
 // The character's state which can be specified to be a condition value by the statuson/statusoff system
 //	anybad		any type of state change
