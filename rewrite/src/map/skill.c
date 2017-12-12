@@ -1541,8 +1541,16 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 	case RK_DRAGONBREATH_WATER://jRO says success chance is 15%. [Rytech]
 		sc_start(bl,SC_FROST,15,skilllv,skill_get_time(skillid,skilllv));
 		break;
+	case GN_ILLUSIONDOPING:
+		sc_start(bl,SC_ILLUSIONDOPING,100-10*skilllv,skilllv,skill_get_time(skillid,skilllv));
+		break;
 	case MH_NEEDLE_OF_PARALYZE:
-		sc_start(bl, SC_NEEDLE_OF_PARALYZE, 100, skilllv, skill_get_time(skillid,skilllv));
+		{
+			int duration = skill_get_time(skillid,skilllv) - 1000 * tstatus->vit / 10;
+			if ( duration < 5000 )
+				duration = 5000;
+			sc_start(bl, SC_NEEDLE_OF_PARALYZE, 40+5*skilllv-(tstatus->vit+tstatus->luk)/20, skilllv, duration);
+		}
 		break;
 	case MH_POISON_MIST:
 		sc_start(bl, SC_BLIND, 10 + 10 * skilllv, skilllv, skill_get_time2(skillid,skilllv));
@@ -3229,6 +3237,26 @@ int skill_guildaura_sub (struct block_list *bl, va_list ap)
 	return 1;
 }
 
+static int skill_check_condition_mob_master_mer_sub (struct block_list *bl, va_list ap)
+{
+	int *c,src_id,mob_class,skill;
+	struct mob_data *md;
+
+	md=(struct mob_data*)bl;
+	src_id=va_arg(ap,int);
+	mob_class=va_arg(ap,int);
+	skill=va_arg(ap,int);
+	c=va_arg(ap,int *);
+
+	if( md->master_id != src_id || md->special_state.ai != 3)
+		return 0;
+
+	if( md->class_ == mob_class )
+		(*c)++;
+
+	return 1;
+}
+
 /*==========================================
  * Checks that you have the requirements for casting a skill for homunculus/mercenary.
  * Flag:
@@ -3298,6 +3326,23 @@ static int skill_check_condition_mercenary(struct block_list *bl, int skill, int
 				if( hd->homunculus.intimacy < (unsigned int)battle_config.hvan_explosion_intimate )
 					return 0;
 				break;
+			case MH_SUMMON_LEGION:
+				{
+					unsigned char count = 0;
+					short mobid = 0;
+
+					// Check to see if any Hornet's, Giant Hornet's, or Luciola Vespa's are currently summoned.
+					for ( mobid=MOBID_S_HORNET; mobid<=MOBID_S_LUCIOLA_VESPA; mobid++ )
+						map_foreachinmap(skill_check_condition_mob_master_mer_sub ,hd->bl.m, BL_MOB, hd->bl.id, mobid, skill, &count);
+
+					// If any of the above 3 summons are found, fail the skill.
+					if (count > 0)
+					{
+						clif_skill_fail(sd,skill,0,0,0);
+						return 0;
+					}
+					break;
+				}
 			case MH_LIGHT_OF_REGENE:
 				// Zone data shows it needs a intimacy 901.
 				// But description says it needs to be loyal, which would requie 911.
@@ -4280,6 +4325,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case RL_R_TRIP:
 	case KO_HAPPOKUNAI:
 	case KO_MUCHANAGE:
+	case GN_ILLUSIONDOPING:
 	case MH_HEILIGE_STANGE:
 	case MH_MAGMA_FLOW:
 	case SU_SCRATCH:
@@ -8259,6 +8305,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		clif_skill_nodamage(src,src,skillid,skilllv,sc_start(src,type,100,skilllv,i)); // Homunc
 		break;
 
+	case MH_PAIN_KILLER:
+		clif_skill_nodamage(src,bl,skillid,skilllv,sc_start2(bl,type,100,skilllv,status_get_lv(src),skill_get_time(skillid,skilllv)));
+		break;
+
 	//Homunculus buffs that affects only its master.
 	case MH_LIGHT_OF_REGENE:
 		if (hd)
@@ -10032,12 +10082,12 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case KO_ZANZOU:
 		{
 			struct mob_data *md;
-			md = mob_once_spawn_sub(src, src->m, src->x, src->y, status_get_name(src), 2308, "");
+
+			md = mob_once_spawn_sub(src, src->m, src->x, src->y, status_get_name(src), MOBID_KO_ZANZOU, "");
 			if( md )
 			{
 				md->master_id = src->id;
-				md->special_state.ai = 6;
-				md->status.max_hp = 3000 + 3000 * skilllv + sstatus->max_sp;
+				md->special_state.ai = 3;
 				if( md->deletetimer != INVALID_TIMER )
 					delete_timer(md->deletetimer, mob_timer_delete);
 				md->deletetimer = add_timer (gettick() + skill_get_time(skillid, skilllv), mob_timer_delete, md->bl.id, 0);
@@ -10440,6 +10490,7 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 				return skill_castend_pos(tid,tick,id,data);
 
 			case GN_WALLOFTHORN:
+			case MH_SUMMON_LEGION:
 			case MH_STEINWAND:// FIX ME - I need to spawn 2 AoE's. One on the master and the homunculus.
 				ud->skillx = target->x;
 				ud->skilly = target->y;
@@ -11493,18 +11544,17 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 
 	case NC_SILVERSNIPER:
 		{
-			int class_ = 2042;
 			struct mob_data *md;
 
-			md = mob_once_spawn_sub(src, src->m, x, y, status_get_name(src), class_, "");
-			if( md )
+			md = mob_once_spawn_sub(src, src->m, x, y, status_get_name(src),MOBID_SILVERSNIPER,"");
+			if (md)
 			{
 				md->master_id = src->id;
 				md->special_state.ai = 3;
 				if( md->deletetimer != INVALID_TIMER )
 					delete_timer(md->deletetimer, mob_timer_delete);
-				md->deletetimer = add_timer (gettick() + skill_get_time(skillid, skilllv), mob_timer_delete, md->bl.id, 0);
-				mob_spawn( md );
+				md->deletetimer = add_timer (gettick() + skill_get_time(skillid,skilllv), mob_timer_delete, md->bl.id, 0);
+				mob_spawn (md);
 			}
 		}
 		break;
@@ -11668,6 +11718,29 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		status_change_end(src, SC_HYOUHU_HUBUKI, INVALID_TIMER);
 		status_change_end(src, SC_KAZEHU_SEIRAN, INVALID_TIMER);
 		status_change_end(src, SC_DOHU_KOUKAI, INVALID_TIMER);
+		break;
+
+	case MH_SUMMON_LEGION:
+		{
+			short summons[5] = { MOBID_S_HORNET, MOBID_S_GIANT_HORNET, MOBID_S_GIANT_HORNET, MOBID_S_LUCIOLA_VESPA, MOBID_S_LUCIOLA_VESPA };
+			short class_ = (skilllv>5)?MOBID_S_LUCIOLA_VESPA:summons[skilllv-1];
+			unsigned char summon_count = (5+skilllv)/2;
+			struct mob_data *md;
+
+			for (i=0; i<summon_count; i++)
+			{
+				md = mob_once_spawn_sub(src, src->m, x, y, status_get_name(src),class_,"");
+				if (md)
+				{
+					md->master_id = src->id;
+					md->special_state.ai = 3;
+					if( md->deletetimer != INVALID_TIMER )
+						delete_timer(md->deletetimer, mob_timer_delete);
+					md->deletetimer = add_timer (gettick() + skill_get_time(skillid,skilllv), mob_timer_delete, md->bl.id, 0);
+					mob_spawn (md);
+				}
+			}
+		}
 		break;
 
 	default:
@@ -12251,6 +12324,8 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 
 	case MH_POISON_MIST:
 		interval = 2500 - 200 * skilllv;
+		if ( interval < 100 )
+			interval = 100;
 		break;
 
 	case MH_STEINWAND:
@@ -14707,29 +14782,45 @@ int skill_check_condition_castend(struct map_session_data* sd, short skill, shor
 	case NC_SILVERSNIPER:
 	case NC_MAGICDECOY:
 		{
-			int c = 0, j;
-			int maxcount = skill_get_maxcount(skill,lv);
-			int mob_class = 2042;
-			if( skill == NC_MAGICDECOY )
-				mob_class = 2043;
+			unsigned char maxcount = skill_get_maxcount(skill,lv);
+			unsigned char count = 0;
+			short mobid = 0;
 
-			if( battle_config.land_skill_limit && maxcount > 0 && ( battle_config.land_skill_limit&BL_PC ) )
+			if (battle_config.land_skill_limit && maxcount>0 && (battle_config.land_skill_limit&BL_PC))
 			{
-				if( skill == NC_MAGICDECOY )
-				{
-					for( j = mob_class; j <= 2046; j++ )
-						i = map_foreachinmap(skill_check_condition_mob_master_sub, sd->bl.m, BL_MOB, sd->bl.id, j, skill, &c);
-				}
+				if (skill == NC_SILVERSNIPER)// Check for Silver Sniper's.
+					map_foreachinmap(skill_check_condition_mob_master_sub ,sd->bl.m, BL_MOB, sd->bl.id, MOBID_SILVERSNIPER, skill, &count);
 				else
-					i = map_foreachinmap(skill_check_condition_mob_master_sub, sd->bl.m, BL_MOB, sd->bl.id, mob_class, skill, &c);
-				if( c >= maxcount )
+				{// Check for Magic Decoy Fire/Water/Earth/Wind types.
+					for ( mobid=MOBID_MAGICDECOY_FIRE; mobid<=MOBID_MAGICDECOY_WIND; mobid++ )
+						map_foreachinmap(skill_check_condition_mob_master_sub ,sd->bl.m, BL_MOB, sd->bl.id, mobid, skill, &count);
+				}
+
+				if (count >= maxcount)
 				{
-					clif_skill_fail(sd , skill, 0, 0, 0);
+					clif_skill_fail(sd,skill,0,0,0);
 					return 0;
 				}
 			}
+			break;
 		}
-		break;
+	case MH_SUMMON_LEGION:
+		{
+			unsigned char count = 0;
+			short mobid = 0;
+
+			// Check to see if any Hornet's, Giant Hornet's, or Luciola Vespa's are currently summoned.
+			for ( mobid=MOBID_S_HORNET; mobid<=MOBID_S_LUCIOLA_VESPA; mobid++ )
+				map_foreachinmap(skill_check_condition_mob_master_sub ,sd->bl.m, BL_MOB, sd->bl.id, mobid, skill, &count);
+
+			// If any of the above 3 summons are found, fail the skill.
+			if (count > 0)
+			{
+				clif_skill_fail(sd,skill,0,0,0);
+				return 0;
+			}
+			break;
+		}
 	}
 
 	status = &sd->battle_status;
@@ -15273,6 +15364,10 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 	//Entire cast time is increased if caster has the Laziness status.
 	if (sc && sc->data[SC__LAZINESS])
 		final_time += final_time * sc->data[SC__LAZINESS]->val3 / 100;
+
+	// Need a confirm on how it increases cast time and by how much. Can't find info anywhere.
+	if (sc && sc->data[SC_NEEDLE_OF_PARALYZE])
+		final_time += final_time * sc->data[SC_NEEDLE_OF_PARALYZE]->val3 / 100;
 
 	// Config cast time multiplier.
 	if (battle_config.cast_rate != 100)
@@ -17861,37 +17956,52 @@ int skill_poisoningweapon( struct map_session_data *sd, int nameid)
 
 int skill_magicdecoy(struct map_session_data *sd, int nameid)
 {
-	int x, y, i, class_, skill;
+	short item = 0;
+	short mobid = 0;
+	short skilllv = sd->menuskill_val;
+	int x = sd->menuskill_val2>>16;
+	int y = sd->menuskill_val2&0xffff;
 	struct mob_data *md;
-	nullpo_ret(sd);
-	skill = sd->menuskill_val;
 
-	if( nameid <= 0 || !itemid_is_element_point(nameid) || (i = pc_search_inventory(sd,nameid)) < 0 || !skill )
+	nullpo_ret(sd);
+
+	if(nameid <= 0 || !itemid_is_element_point(nameid) || (item = pc_search_inventory(sd,nameid)) < 0)
+		return 1;
+
+	pc_delitem(sd,item,1,0,0);
+
+	switch (nameid)
 	{
-		clif_skill_fail(sd,NC_MAGICDECOY,0,0,0);
-		return 0;
+		case ITEMID_SCARLETT_POINT:
+			mobid = MOBID_MAGICDECOY_FIRE;
+			break;
+		case ITEMID_INDIGO_POINT:
+			mobid = MOBID_MAGICDECOY_WATER;
+			break;
+		case ITEMID_LIME_GREEN_POINT:
+			mobid = MOBID_MAGICDECOY_EARTH;
+			break;
+		case ITEMID_YELLOW_WISH_POINT:
+			mobid = MOBID_MAGICDECOY_WIND;
+			break;
 	}
 
-	// Spawn Position
-	pc_delitem(sd,i,1,0,0);
-	x = sd->menuskill_itemused>>16;
-	y = sd->menuskill_itemused&0xffff;
-	sd->menuskill_itemused = sd->menuskill_val = 0;
-
-	class_ = (nameid == 6360 || nameid == 6361) ? 2043 + nameid - 6360 : (nameid == 6362) ? 2046 : 2045;
-
-
-	md =  mob_once_spawn_sub(&sd->bl, sd->bl.m, x, y, sd->status.name, class_, "");
-	if( md )
+	md = mob_once_spawn_sub(&sd->bl, sd->bl.m, x, y, status_get_name(&sd->bl),mobid,"");
+	if (md)
 	{
 		md->master_id = sd->bl.id;
 		md->special_state.ai = 3;
 		if( md->deletetimer != INVALID_TIMER )
 			delete_timer(md->deletetimer, mob_timer_delete);
-		md->deletetimer = add_timer (gettick() + skill_get_time(NC_MAGICDECOY,skill), mob_timer_delete, md->bl.id, 0);
-		mob_spawn(md);
-		md->status.matk_min = md->status.matk_max = 250 + (50 * skill);
+		md->deletetimer = add_timer (gettick() + skill_get_time(NC_MAGICDECOY,skilllv), mob_timer_delete, md->bl.id, 0);
+		mob_spawn (md);
+
+		// Set MATK and MaxHP
+		md->status.matk_min = md->status.matk_max = 250 + 50 * skilllv;
+		md->status.hp = md->status.max_hp = 1000 * skilllv + 12 * status_get_lv(&sd->bl) + 4 * status_get_max_sp(&sd->bl);
 	}
+
+	sd->menuskill_val = sd->menuskill_val2 = 0;
 
 	return 0;
 }

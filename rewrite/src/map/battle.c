@@ -591,6 +591,14 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			damage += damage * sc->data[SC_ANTI_M_BLAST]->val2 / 100;
 
 		//Finally damage reductions....
+		if( sc->data[SC_PAIN_KILLER] )
+		{
+			damage -= sc->data[SC_PAIN_KILLER]->val4;
+
+			if ( damage < 1 )
+				damage = 1;
+		}
+
 		if( sc->data[SC_ASSUMPTIO] )
 		{
 			if( map_flag_vs(bl->m) )

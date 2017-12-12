@@ -13,8 +13,7 @@
 
 #define MAX_SEARCH	5  //Designed for search functions, species max number of matches to display.
 
-enum item_itemid
-{
+enum item_itemid {
 	ITEMID_HOLY_WATER = 523,
 	ITEMID_EMPERIUM = 714,
 	ITEMID_YELLOW_GEMSTONE = 715,

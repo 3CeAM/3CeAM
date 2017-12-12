@@ -2116,7 +2116,7 @@ int unit_remove_map_(struct block_list *bl, clr_type clrtype, const char* file, 
 		if(sd->guild_alliance>0)
 			guild_reply_reqalliance(sd,sd->guild_alliance_account,0);
 		if(sd->menuskill_id)
-			sd->menuskill_id = sd->menuskill_val = 0;
+			sd->menuskill_id = sd->menuskill_val = sd->menuskill_val2 = sd->menuskill_itemused = 0;
 		if( sd->touching_id )
 			npc_touchnext_areanpc(sd,true);
 

@@ -52,6 +52,20 @@ struct item_data;
 #define MOBID_GUARIDAN_STONE1 1907
 #define MOBID_GUARIDAN_STONE2 1908
 
+enum monster_mobid {
+	MOBID_SILVERSNIPER = 2042,
+	MOBID_MAGICDECOY_FIRE,
+	MOBID_MAGICDECOY_WATER,
+	MOBID_MAGICDECOY_EARTH,
+	MOBID_MAGICDECOY_WIND,
+
+	MOBID_S_HORNET = 2158,
+	MOBID_S_GIANT_HORNET,
+	MOBID_S_LUCIOLA_VESPA,
+
+	MOBID_KO_ZANZOU = 2308,
+};
+
 //The following system marks a different job ID system used by the map server,
 //which makes a lot more sense than the normal one. [Skotlex]
 //

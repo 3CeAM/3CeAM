@@ -6715,7 +6715,7 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 	if (sd->skillitem)
 		sd->skillitem = sd->skillitemlv = 0;
 	if (sd->menuskill_id)
-		sd->menuskill_id = sd->menuskill_val = 0;
+		sd->menuskill_id = sd->menuskill_val = sd->menuskill_val2 = sd->menuskill_itemused = 0;
 	//Reset ticks.
 	sd->hp_loss.tick = sd->sp_loss.tick = sd->hp_regen.tick = sd->sp_regen.tick = 0;
 

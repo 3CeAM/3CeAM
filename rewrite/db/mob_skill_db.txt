@@ -47,6 +47,9 @@
 //	afterskill		after the mob used certain skill.
 //	casttargeted		when a target is in cast range.
 //	rudeattacked		when a target is rude attacked
+//	masterhpltmaxrate	when the mob's master's hp drops to a certain %
+//	masterattacked		when the mob's master's is attacked
+//	alchemist		unknown
 //
 // The character's state which can be specified to be a condition value by the statuson/statusoff system
 //	anybad		any type of state change

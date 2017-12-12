@@ -1,36 +1,42 @@
-// Custom mob skills
-//MOB_ID, a unused dummy character sequence (for information only), STATE, SKILL_ID, SKILL_LV,
-// rate (10000 = 100%), casttime, delay, cancelable, a target, a condition type, a condition value,
-// a value 1, a value 2, a value 3, a value 4, a value 5, emotion, chat
+// Custom mob skills for 3CeAM
+//
+//MOB_ID,dummy value (info only),STATE,SKILL_ID,SKILL_LV,rate (10000 = 100%),casttime,delay,cancelable,target,condition type,condition value,val1,val2,val3,val4,val5,emotion,chat
 //Example
-//1001,Poring@TF_POISON,attack,52,3,100,1500,10000,no,target,always,0,,,,,7
+//1001,Poring@TF_POISON,attack,52,3,100,1500,10000,no,target,always,0,,,,,7,
 //
 //rate refers to the chance of the skill being casted when the condition is fulfilled.
 //delay is the time in milliseconds that has to be pass before recasting the same skill.
 //
 //STATE:
-// any / idle (in standby) / walk (in movement) / dead (on killed) / loot /
-// attack / angry (like attack, except player has not attacked mob yet) /
+// any (except dead) / idle (in standby) / walk (in movement) / dead (on killed) /
+// loot /attack / angry (like attack, except player has not attacked mob yet) /
 // chase (following target, after being attacked) / follow (following
 // target, without being attacked)
+// anytarget (attack+angry+chase+follow)
 //
-//target: The target of the skill can be: target (when a PC is targetted) / self / friend / master
+//target: The target of the skill can be: target (current target) / self / friend / 
+// master / randomtarget (any enemy within skill's range)
 // (the following are for ground-skills, a random target tile is selected from
 // the specified area):
 // around1 (3x3 area around self) / around2 (5x5 area around self) /
 // around3 (7x7 area around self) / around4 (9x9 area around self) /
 // around5 (3x3 area around target) / around6 (5x5 area around target) /
 // around7 (7x7 area around target) / around8 (9x9 area around target) /
-// around (11x11 area around self)
+// around = around4
 //
 //conditions: (condition type) (value which specifies a condition value)
-//	always			uncondtional
+//	always			unconditional
+//	onspawn			when the mob spawns/respawns.
 //	myhpltmaxrate		when the mob's hp drops to a certain %
-//	mystatuson		If the mob has any abnormalities in status (condition value),
-//	mystatusoff		If the mob has ended any abnormalities in status (condition value),
-//	friendhpltmaxrate	when the mobs' friend's hp drops to a certain %
-//	friendstatuson		If the friend has any abnormalities in status (condition value),
-//	friendstatusoff		If the friend has ended any abnormalities in status (condition value),
+//	myhpinrate		when the mob's hp is in a certain % range ('a condition value'
+//                is the lower cap, while 'a value 1' is the upper cap).
+//	mystatuson		If the mob has any abnormalities in status (condition value)
+//	mystatusoff		If the mob has ended any abnormalities in status (condition value)
+//	friendhpltmaxrate	when the mob's friend's hp drops to a certain %
+//	friendhpinrate		when the mob's friend's hp is in a certain % range (range
+//                   defined the same way as in myhpinrate)
+//	friendstatuson		If the friend has any abnormalities in status (condition value)
+//	friendstatusoff		If the friend has ended any abnormalities in status (condition value)
 //	attackpcgt		Attack PC becomes more than the  number of specification
 //	attackpcge		Attack PC becomes equal or more than the number of specification.
 //	slavelt			when the number of slaves is lower than the original number of specification.
@@ -41,6 +47,9 @@
 //	afterskill		after the mob used certain skill.
 //	casttargeted		when a target is in cast range.
 //	rudeattacked		when a target is rude attacked
+//	masterhpltmaxrate	when the mob's master's hp drops to a certain %
+//	masterattacked		when the mob's master's is attacked
+//	alchemist		unknown
 //
 // The character's state which can be specified to be a condition value by the statuson/statusoff system
 //	anybad		any type of state change
@@ -64,27 +73,25 @@
 //	hiding		condition of being in hidden state
 //	sight		condition of being in unhidden state
 
-// Mechanic Fixed Autonomous Weapon Platforms
-2042,Silver Sniper@AL_HEAL,chase,28,10,10000,0,1000,no,self,myhpltmaxrate,99,,,,,,,
-2042,Silver Sniper@AL_HEAL,idle,28,10,10000,0,1000,no,self,myhpltmaxrate,99,,,,,,,
-2042,Silver Sniper@AL_HEAL,attack,28,10,10000,0,1000,no,self,myhpltmaxrate,99,,,,,,,
-2043,Magic Decoy Fire@MG_FIREBOLT,attack,19,10,10000,800,3500,no,target,always,0,,,,,,,
-2043,Magic Decoy Fire@MG_FIREBOLT,chase,19,10,10000,800,3500,no,target,always,0,,,,,,,
-2043,Magic Decoy Fire@AL_HEAL,chase,28,10,10000,0,1000,no,self,myhpltmaxrate,99,,,,,,,
-2043,Magic Decoy Fire@AL_HEAL,idle,28,10,10000,0,1000,no,self,myhpltmaxrate,99,,,,,,,
-2043,Magic Decoy Fire@AL_HEAL,attack,28,10,10000,0,1000,no,self,myhpltmaxrate,99,,,,,,,
-2044,Magic Decoy Water@MG_COLDBOLT,attack,14,10,10000,800,3500,no,target,always,0,,,,,,,
-2044,Magic Decoy Water@MG_COLDBOLT,chase,14,10,10000,800,3500,no,target,always,0,,,,,,,
-2044,Magic Decoy Water@AL_HEAL,chase,28,10,10000,0,1000,no,self,myhpltmaxrate,99,,,,,,,
-2044,Magic Decoy Water@AL_HEAL,idle,28,10,10000,0,1000,no,self,myhpltmaxrate,99,,,,,,,
-2044,Magic Decoy Water@AL_HEAL,attack,28,10,10000,0,1000,no,self,myhpltmaxrate,99,,,,,,,
-2045,Magic Decoy Earth@WZ_EARTHSPIKE,attack,90,10,10000,800,3500,no,target,always,0,,,,,,,
-2045,Magic Decoy Earth@WZ_EARTHSPIKE,chase,90,10,10000,800,3500,no,target,always,0,,,,,,,
-2045,Magic Decoy Earth@AL_HEAL,chase,28,10,10000,0,1000,no,self,myhpltmaxrate,99,,,,,,,
-2045,Magic Decoy Earth@AL_HEAL,idle,28,10,10000,0,1000,no,self,myhpltmaxrate,99,,,,,,,
-2045,Magic Decoy Earth@AL_HEAL,attack,28,10,10000,0,1000,no,self,myhpltmaxrate,99,,,,,,,
-2046,Magic Decoy Wind@MG_LIGHTNINGBOLT,attack,20,10,10000,800,3500,no,target,always,0,,,,,,,
-2046,Magic Decoy Wind@MG_LIGHTNINGBOLT,chase,20,10,10000,800,3500,no,target,always,0,,,,,,,
-2046,Magic Decoy Wind@AL_HEAL,chase,28,10,10000,0,1000,no,self,myhpltmaxrate,99,,,,,,,
-2046,Magic Decoy Wind@AL_HEAL,idle,28,10,10000,0,1000,no,self,myhpltmaxrate,99,,,,,,,
-2046,Magic Decoy Wind@AL_HEAL,attack,28,10,10000,0,1000,no,self,myhpltmaxrate,99,,,,,,,
+// Mechanic Fixed Automatic Weapon Platforms
+2042,Silver Sniper@NPC_REVENGE,idle,333,1,10000,0,0,yes,target,masterattacked,,,,,,,,
+2043,Magic Decoy Fire@MG_FIREBOLT,attack,19,10,10000,500,5000,yes,target,always,0,,,,,,,
+2044,Magic Decoy Water@MG_COLDBOLT,attack,14,10,10000,500,5000,yes,target,always,0,,,,,,,
+2045,Magic Decoy Earth@WZ_EARTHSPIKE,attack,90,10,10000,500,5000,yes,target,always,0,,,,,,,
+2046,Magic Decoy Wind@MG_LIGHTNINGBOLT,attack,20,10,10000,500,5000,yes,target,always,0,,,,,,,
+
+// Sera's Legion Insects
+2158,Hornet@NPC_PIERCINGATT,attack,158,3,500,0,5000,yes,target,always,0,,,,,,6,
+2158,Hornet@NPC_POISONATTACK,attack,188,1,2000,500,5000,no,target,always,0,,,,,,,
+2158,Hornet@NPC_WINDATTACK,attack,187,1,2000,0,5000,yes,target,always,0,,,,,,,
+2159,Giant Hornet@NPC_PIERCINGATT,attack,158,4,500,0,5000,yes,target,always,0,,,,,,6,
+2159,Giant Hornet@NPC_POISONATTACK,attack,188,2,2000,500,5000,no,target,always,0,,,,,,,
+2159,Giant Hornet@NPC_SILENCEATTACK,chase,178,3,500,700,5000,no,target,always,0,,,,,,,
+2159,Giant Hornet@NPC_STUNATTACK,attack,179,3,500,1500,5000,no,target,always,0,,,,,,6,
+2159,Giant Hornet@NPC_WINDATTACK,attack,187,2,500,500,5000,no,target,always,0,,,,,,6,
+2159,Giant Hornet@NPC_BLEEDING,attack,660,2,200,0,3000,yes,target,always,0,,,,,,32,
+2160,Luciola Vespa@NPC_PIERCINGATT,attack,158,5,500,0,5000,yes,target,always,0,,,,,,6,
+2160,Luciola Vespa@NPC_POISONATTACK,attack,188,3,2000,500,5000,no,target,always,0,,,,,,,
+2160,Luciola Vespa@NPC_PULSESTRIKE,attack,661,1,1000,0,30000,yes,self,always,0,,,,,,32,
+2160,Luciola Vespa@NPC_COMBOATTACK,attack,171,1,3000,0,5000,yes,target,always,0,,,,,,,
+2160,Luciola Vespa@NPC_BLEEDING,attack,660,3,200,0,3000,yes,target,always,0,,,,,,32,
