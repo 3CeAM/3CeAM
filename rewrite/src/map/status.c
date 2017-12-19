@@ -570,19 +570,20 @@ void initChangeTables(void)
 
 	set_sc( ALL_ODINS_POWER               , SC_ODINS_POWER , SI_ODINS_POWER                , SCB_WATK|SCB_MATK|SCB_DEF|SCB_MDEF );
 
-	add_sc( RL_MASS_SPIRAL , SC_BLEEDING );
-	set_sc( RL_B_TRAP      , SC_B_TRAP       , SI_B_TRAP       , SCB_NONE );
-	set_sc( RL_E_CHAIN     , SC_E_CHAIN      , SI_E_CHAIN      , SCB_NONE );
-	//set_sc( RL_E_CHAIN     , SC_E_QD_SHOT_READY , SI_E_QD_SHOT_READY , SCB_NONE );
-	set_sc( RL_C_MARKER    , SC_C_MARKER     , SI_C_MARKER     , SCB_FLEE );
-	set_sc( RL_H_MINE      , SC_H_MINE       , SI_H_MINE       , SCB_NONE );
-	//set_sc( RL_H_MINE      , SC_H_MINE_SPLASH , SI_H_MINE_SPLASH , SCB_NONE );
-	set_sc( RL_P_ALTER     , SC_P_ALTER      , SI_P_ALTER      , SCB_WATK );
-	set_sc( RL_FALLEN_ANGEL, SC_FALLEN_ANGEL , SI_FALLEN_ANGEL , SCB_NONE );
-	set_sc( RL_HEAT_BARREL , SC_HEAT_BARREL  , SI_HEAT_BARREL  , SCB_HIT|SCB_ASPD );
-	//set_sc( RL_HEAT_BARREL , SC_HEAT_BARREL_AFTER , SI_HEAT_BARREL_AFTER , SCB_NONE );
-	set_sc( RL_AM_BLAST    , SC_ANTI_M_BLAST , SI_ANTI_M_BLAST , SCB_NONE );
-	set_sc( RL_SLUGSHOT    , SC_SLUGSHOT     , SI_SLUGSHOT     , SCB_NONE );
+	add_sc( RL_MASS_SPIRAL  , SC_BLEEDING );
+	set_sc( RL_B_TRAP       , SC_B_TRAP       , SI_B_TRAP       , SCB_NONE );
+	set_sc( RL_E_CHAIN      , SC_E_CHAIN      , SI_E_CHAIN      , SCB_NONE );
+	//set_sc( RL_E_CHAIN      , SC_E_QD_SHOT_READY , SI_E_QD_SHOT_READY , SCB_NONE );
+	set_sc( RL_C_MARKER     , SC_C_MARKER     , SI_C_MARKER     , SCB_FLEE );
+	set_sc( RL_H_MINE       , SC_H_MINE       , SI_H_MINE       , SCB_NONE );
+	//set_sc( RL_H_MINE       , SC_H_MINE_SPLASH , SI_H_MINE_SPLASH , SCB_NONE );
+	set_sc( RL_P_ALTER      , SC_P_ALTER      , SI_P_ALTER      , SCB_WATK );
+	set_sc( RL_FALLEN_ANGEL , SC_FALLEN_ANGEL , SI_FALLEN_ANGEL , SCB_NONE );
+	set_sc( RL_HEAT_BARREL  , SC_HEAT_BARREL  , SI_HEAT_BARREL  , SCB_HIT|SCB_ASPD );
+	//set_sc( RL_HEAT_BARREL  , SC_HEAT_BARREL_AFTER , SI_HEAT_BARREL_AFTER , SCB_NONE );
+	set_sc( RL_AM_BLAST     , SC_ANTI_M_BLAST , SI_ANTI_M_BLAST , SCB_NONE );
+	set_sc( RL_SLUGSHOT     , SC_SLUGSHOT     , SI_SLUGSHOT     , SCB_NONE );
+	add_sc( RL_HAMMER_OF_GOD, SC_STUN );
 
 	set_sc( KO_YAMIKUMO          , SC_HIDING          , SI_HIDING          , SCB_SPEED );
 	set_sc( KO_JYUMONJIKIRI      , SC_JYUMONJIKIRI    , SI_KO_JYUMONJIKIRI , SCB_NONE );
