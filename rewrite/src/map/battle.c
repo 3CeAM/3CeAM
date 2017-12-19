@@ -2807,6 +2807,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case RL_D_TAIL:
 					skillratio = 4000 + 1000 * skill_lv;
 					break;
+				case RL_FIRE_RAIN:
+					skillratio = 3500 + 300 * skill_lv;
+					break;
 				case RL_AM_BLAST:
 					skillratio = 3500 + 300 * skill_lv;
 					break;
@@ -2817,6 +2820,13 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						skillratio = 1200 * skill_lv;
 					// Damage multiplied depending on size.
 					skillratio *= 2 + tstatus->size;
+					break;
+				case RL_HAMMER_OF_GOD:
+					skillratio = 2800 + 1400 * skill_lv;
+					if ( tsc && tsc->data[SC_C_MARKER] )
+						skillratio += 100 * sd->spiritball_old;
+					else
+						skillratio += 10 * sd->spiritball_old;
 					break;
 				case RL_R_TRIP_PLUSATK:// Need to confirm if level 5 is really 2700% and not a typo. [Rytech]
 					skillratio = 500 + 100 * skill_lv;

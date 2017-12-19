@@ -82,6 +82,7 @@ struct s_skill_unit_layout skill_unit_layout[MAX_SKILL_UNIT_LAYOUT];
 int firewall_unit_pos;
 int icewall_unit_pos;
 int earthstrain_unit_pos;
+int fire_rain_unit_pos;
 
 struct s_skill_nounit_layout skill_nounit_layout[MAX_SKILL_UNIT_LAYOUT];
 int windcutter_nounit_pos;
@@ -626,6 +627,8 @@ struct s_skill_unit_layout* skill_get_unit_layout (int skillid, int skilllv, str
 		return &skill_unit_layout [icewall_unit_pos + dir];
 	else if( skillid == WL_EARTHSTRAIN )
 		return &skill_unit_layout [earthstrain_unit_pos + dir];
+	else if( skillid == RL_FIRE_RAIN )
+		return &skill_unit_layout [fire_rain_unit_pos + dir];
 
 	ShowError("skill_get_unit_layout: unknown unit layout for skill %d (level %d)\n", skillid, skilllv);
 	return &skill_unit_layout[0]; // default 1x1 layout
@@ -1519,6 +1522,9 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		break;
 	case RL_AM_BLAST:
 		sc_start(bl,SC_ANTI_M_BLAST,20 + 10 * skilllv,skilllv,skill_get_time(skillid,skilllv));
+		break;
+	case RL_HAMMER_OF_GOD:
+		sc_start(bl,SC_STUN,100,skilllv,skill_get_time2(skillid,skilllv));
 		break;
 	case KO_JYUMONJIKIRI:
 		sc_start(bl,SC_JYUMONJIKIRI,100,skilllv,skill_get_time2(skillid,skilllv));
@@ -2624,6 +2630,9 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 	case GN_SLINGITEM_RANGEMELEEATK://Server sends a skill level of 65534 and type 6. Interesting.
 		dmg.dmotion = clif_skill_damage(dsrc,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,skillid,65534,6);
 		break;
+	case RL_QD_SHOT:
+		dmg.dmotion = clif_skill_damage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, 6);
+		break;
 	case KO_HUUMARANKA:
 		dmg.dmotion = clif_skill_damage(src,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, 8);
 		break;
@@ -3680,6 +3689,7 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 						skill_unitsetting(src,skl->skill_id,skl->skill_lv,skl->x,skl->y,skl->flag);
 					break;
 				case WL_EARTHSTRAIN:
+				case RL_FIRE_RAIN:
 					// skl->type = original direction, to avoid change it if caster walks in the waves progress.
 					skill_unitsetting(src,skl->skill_id,skl->skill_lv,skl->x,skl->y,(skl->type<<16)|skl->flag);
 					break;
@@ -10496,6 +10506,29 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 				ud->skilly = target->y;
 				ud->skilltimer = tid;
 				return skill_castend_pos(tid,tick,id,data);
+
+			case RL_HAMMER_OF_GOD:
+				{
+					short drop_zone = skill_get_splash(ud->skillid,ud->skilllv);
+
+					sc = status_get_sc(target);
+
+					if ( sc && sc->data[SC_C_MARKER] )
+					{// Strike directly where the target stands if it has a crimson mark on it.
+						ud->skillx = target->x;
+						ud->skilly = target->y;
+					}
+					else
+					{// Strike a random spot in a 9x9 area around the target if it doesn't have a crimson mark.
+						// Need a confirm on the size of the random strike zone.
+						// Using the same size as Crazy Weed for now. [Rytech]
+						ud->skillx = target->x - drop_zone + rand()%(drop_zone * 2 + 1);
+						ud->skilly = target->y - drop_zone + rand()%(drop_zone * 2 + 1);
+					}
+
+					ud->skilltimer = tid;
+					return skill_castend_pos(tid,tick,id,data);
+				}
 		}
 
 		if( ud->skillid == RG_BACKSTAP )
@@ -10961,6 +10994,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		case SC_MAELSTROM:
 		case SC_BLOODYLUST:
 		case LG_EARTHDRIVE:
+		case RL_FIRE_RAIN:
 			break; //Effect is displayed on respective switch case.
 		default:
 			if(skill_get_inf(skillid)&INF_SELF_SKILL)
@@ -11127,6 +11161,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case SO_WIND_INSIGNIA:
 	case SO_EARTH_INSIGNIA:
 	case RL_B_TRAP:
+	case RL_HAMMER_OF_GOD:
 	case KO_MAKIBISHI:
 	case LG_KINGS_GRACE:
 	case MH_POISON_MIST:
@@ -11526,6 +11561,37 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 				skill_addtimerskill(src,gettick() + (200 * i),0,sx,sy,skillid,skilllv,dir,flag&2); // Temp code until animation is replaced. [Rytech]
 				//skill_addtimerskill(src,gettick() + (140 * i),0,sx,sy,skillid,skilllv,dir,flag&2); // Official steping timer, but disabled due to too much noise.
 			}
+		}
+		break;
+
+	case RL_FIRE_RAIN:
+		{
+			signed char wave = 10;
+			short cell_break_chance = 15 + 5 * skilllv;
+			int i, dir = map_calc_dir(src,x,y);
+			int sx = x, sy = y;
+
+			if ( rand()%100 < cell_break_chance )
+				flag = flag|8;
+
+			for( i = 0; i < wave; i++ )
+			{
+				switch( dir )
+				{
+					case 0: case 1: case 7: sy = src->y + i; break;// North
+					case 3: case 4: case 5: sy = src->y - i; break;// South
+					case 2: sx = src->x - i; break;// West
+					case 6: sx = src->x + i; break;// East
+				}
+
+				// Need info on the official stepping speed. [Rytech]
+				skill_addtimerskill(src,gettick() + (100 * i),0,sx,sy,skillid,skilllv,dir,flag);
+			}
+
+			// For some reason the sound effect only plays on the damage packet.
+			// Only the nodamage packet should trigger the amotion.
+			clif_skill_damage(src, src, tick, 0, 0, -30000, 1, skillid, skilllv, 5);
+			clif_skill_nodamage(src,src,skillid,skilllv,1);
 		}
 		break;
 
@@ -12024,7 +12090,7 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 	interval = skill_get_unit_interval(skillid);
 	target = skill_get_unit_target(skillid);
 	unit_flag = skill_get_unit_flag(skillid);
-	if( skillid == WL_EARTHSTRAIN )
+	if( skillid == WL_EARTHSTRAIN || skillid == RL_FIRE_RAIN )
 	{ // flag is the original skill direction
 		dir = flag>>16;
 		flag = flag&0xFFFF;
@@ -12445,7 +12511,7 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 			val2 |= UF_SINGLEANIMATION;
 
 		if( range <= 0 )
-			map_foreachincell(skill_cell_overlap,src->m,ux,uy,BL_SKILL,skillid,&alive, src);
+			map_foreachincell(skill_cell_overlap,src->m,ux,uy,BL_SKILL,skillid,&alive, src, flag);
 		if( !alive )
 			continue;
 
@@ -13164,6 +13230,7 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 		case UNT_FIREWALK:
 		case UNT_ELECTRICWALK:
 		case UNT_PSYCHIC_WAVE:
+		case UNT_FIRE_RAIN:
 			skill_attack(skill_get_type(sg->skill_id),ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
 			break;
 
@@ -16125,12 +16192,14 @@ static int skill_cell_overlap(struct block_list *bl, va_list ap)
 {
 	int skillid;
 	int *alive;
+	int flag;
 	struct skill_unit *unit;
 	struct block_list *src;
 
 	skillid = va_arg(ap,int);
 	alive = va_arg(ap,int *);
 	src = va_arg(ap,struct block_list *);
+	flag = va_arg(ap,int);
 	unit = (struct skill_unit *)bl;
 
 	if (unit == NULL || unit->group == NULL || (*alive) == 0)
@@ -16202,6 +16271,14 @@ static int skill_cell_overlap(struct block_list *bl, va_list ap)
 				(*alive) = 0;
 				return 1;
 			}
+			break;
+		case RL_FIRE_RAIN:
+			if ( flag&8 )// Destroy skill units only if success chance passes.
+				if( !(unit->group->state.song_dance&0x1) )
+				{// Don't touch song/dance.
+					skill_delunit(unit);
+					return 1;
+				}
 			break;
 	}
 
@@ -18492,6 +18569,7 @@ void skill_init_unit_layout (void)
 			case MG_FIREWALL:
 			case WZ_ICEWALL:
 			case WL_EARTHSTRAIN:
+			case RL_FIRE_RAIN:
 				// these will be handled later
 				break;
 			case PR_SANCTUARY:
@@ -18686,6 +18764,7 @@ void skill_init_unit_layout (void)
 		}
 		pos++;
 	}
+
 	icewall_unit_pos = pos;
 	for (i=0;i<8;i++) {
 		skill_unit_layout[pos].count = 5;
@@ -18716,6 +18795,7 @@ void skill_init_unit_layout (void)
 		}
 		pos++;
 	}
+
 	earthstrain_unit_pos = pos;
 	for( i = 0; i < 8; i++ )
 	{ // For each Direction
@@ -18747,6 +18827,35 @@ void skill_init_unit_layout (void)
 		}
 		pos++;
 	}
+
+	fire_rain_unit_pos = pos;
+	for( i = 0; i < 8; i++ )
+	{// Set for each direction.
+		skill_unit_layout[pos].count = 3;
+		switch( i )
+		{
+		case 0: case 1: case 3: case 4: case 5: case 7:// North / South
+			{
+				int dx[] = {-1, 0, 1};
+				int dy[] = { 0, 0, 0};
+				memcpy(skill_unit_layout[pos].dx,dx,sizeof(dx));
+				memcpy(skill_unit_layout[pos].dy,dy,sizeof(dy));
+			}
+			break;
+		case 2: case 6:// West / East
+			{
+				int dx[] = { 0, 0, 0};
+				int dy[] = {-1, 0, 1};
+				memcpy(skill_unit_layout[pos].dx,dx,sizeof(dx));
+				memcpy(skill_unit_layout[pos].dy,dy,sizeof(dy));
+			}
+			break;
+		}
+		pos++;
+	}
+
+	if ( pos >= MAX_SKILL_UNIT_LAYOUT )
+		ShowError("skill_init_unit_layout: Max number of unit layouts reached. Set above %d.\n" , pos);
 }
 
 
@@ -18983,6 +19092,9 @@ void skill_init_nounit_layout (void)
 		}
 		pos++;
 	}
+
+	if ( pos >= MAX_SKILL_UNIT_LAYOUT )
+		ShowError("skill_init_nounit_layout: Max number of unit layouts reached. Set above %d.\n" , pos);
 }
 
 // Stasis skill usage check. [LimitLine]
