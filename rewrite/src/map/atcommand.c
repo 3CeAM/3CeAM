@@ -2217,7 +2217,7 @@ ACMD_FUNC(body_style)
 
 	// Limit body styles to certain jobs since not all of them are released yet.
 	if (!(// Allow only certain jobs to have the option to change body styles to prevent errors.
-		//(sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT || 
+		(sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT || 
 		(sd->class_&MAPID_THIRDMASK) == MAPID_WARLOCK || 
 		(sd->class_&MAPID_THIRDMASK) == MAPID_RANGER || 
 		(sd->class_&MAPID_THIRDMASK) == MAPID_ARCH_BISHOP || 
