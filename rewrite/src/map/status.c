@@ -571,7 +571,7 @@ void initChangeTables(void)
 	set_sc( ALL_ODINS_POWER               , SC_ODINS_POWER , SI_ODINS_POWER                , SCB_WATK|SCB_MATK|SCB_DEF|SCB_MDEF );
 
 	add_sc( RL_MASS_SPIRAL  , SC_BLEEDING );
-	set_sc( RL_B_TRAP       , SC_B_TRAP       , SI_B_TRAP       , SCB_NONE );
+	set_sc( RL_B_TRAP       , SC_B_TRAP       , SI_B_TRAP       , SCB_SPEED );
 	set_sc( RL_E_CHAIN      , SC_E_CHAIN      , SI_E_CHAIN      , SCB_NONE );
 	//set_sc( RL_E_CHAIN      , SC_E_QD_SHOT_READY , SI_E_QD_SHOT_READY , SCB_NONE );
 	set_sc( RL_C_MARKER     , SC_C_MARKER     , SI_C_MARKER     , SCB_FLEE );
@@ -5167,6 +5167,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 					val = max( val, 25);
 				if( sc->data[SC_BANDING_DEFENCE] )
 					val = max( val, sc->data[SC_BANDING_DEFENCE]->val1 );//+90% walking speed.
+				if( sc->data[SC_B_TRAP] )
+					val = max( val, 90 );
 				//Not bothering to organize these until I rework the elemental spirits. [Rytech]
 				if( sc->data[SC_ROCK_CRUSHER_ATK] )
 					val = max( val, sc->data[SC_ROCK_CRUSHER_ATK]->val2 );
@@ -7194,6 +7196,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC__UNLUCKY:
 			case SC__MANHOLE:
 			case SC_CHAOS:
+			case SC_B_TRAP:
 				return 0;
 			case SC_COMBO: 
 			case SC_DANCING:

@@ -219,6 +219,7 @@ struct skill_unit_group *skill_locate_element_field(struct block_list *bl); // [
 int skill_graffitiremover(struct block_list *bl, va_list ap); // [Valaris]
 int skill_greed(struct block_list *bl, va_list ap);
 int skill_detonator(struct block_list *bl, va_list ap); // [Jobbie]
+int skill_flicker_bind_trap(struct block_list *bl, va_list ap);
 static int skill_cell_overlap(struct block_list *bl, va_list ap);
 static int skill_trap_splash(struct block_list *bl, va_list ap);
 struct skill_unit_group_tickset *skill_unitgrouptickset_search(struct block_list *bl,struct skill_unit_group *sg,int tick);
@@ -2633,6 +2634,12 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 	case RL_QD_SHOT:
 		dmg.dmotion = clif_skill_damage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, 6);
 		break;
+	case RL_H_MINE:
+		if ( flag&8 )// Client has a glitch where the status animation appears on hit targets, even by exploaded mines. We need this for now to fix it. [Rytech]
+			dmg.dmotion = clif_skill_damage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, 0, -2, 5);
+		else
+			dmg.dmotion = clif_skill_damage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, skilllv, type);
+		break;
 	case KO_HUUMARANKA:
 		dmg.dmotion = clif_skill_damage(src,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, 8);
 		break;
@@ -2738,10 +2745,6 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 			case RL_R_TRIP_PLUSATK:
 				copy_skillid = RL_R_TRIP;
 				break;
-			// Find out if this is needed for anything.
-			//case RL_B_FLICKER_ATK:
-			//	copy_skillid = ;
-			//	break;
 			case OB_OBOROGENSOU_TRANSITION_ATK:
 				copy_skillid = OB_OBOROGENSOU;
 				break;
@@ -4043,62 +4046,78 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 			short count = MAX_HOWL_MINES;
 			int i = 0, hm_damage = 0;
 
-			// Only players and monsters can be tagged....I think??? [Rytech]
-			// Lets only allow players and monsters to use this skill for safety reasons.
-			if( (!tsd && !tmd) || !sd && !md )
-			{
-				if( sd )
-					clif_skill_fail(sd, skillid, 0, 0, 0);
-				break;
-			}
+			if ( flag&1 )
+			{// Splash damage from explosion.
+				skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag|8);
 
-			// Check if the target is already tagged by another source.
-			if( (tsd && tsd->sc.data[SC_H_MINE] && tsd->sc.data[SC_H_MINE]->val1 != src->id) || // Cant tag a player that was already tagged from another source.
-				(tmd && tmd->sc.data[SC_H_MINE] && tmd->sc.data[SC_H_MINE]->val1 != src->id) )// Same as the above check, but for monsters.
-			{
-				if( sd )
-					clif_skill_fail(sd,skillid,0,0,0);
-				map_freeblock_unlock();
-				return 1;
+				if( (tsd && tsd->sc.data[SC_H_MINE] && tsd->sc.data[SC_H_MINE]->val1 == src->id) || 
+					(tmd && tmd->sc.data[SC_H_MINE] && tmd->sc.data[SC_H_MINE]->val1 == src->id) )
+						status_change_end(bl, SC_H_MINE, INVALID_TIMER);
 			}
-
-			if( sd )
-			{// Tagging the target.
-				ARR_FIND(0, count, i, sd->howl_mine[i] == bl->id );
-				if( i == count )
+			else if ( flag&4 )
+			{// Triggered by Flicker.
+				flag = 0;// Reset flag.
+				map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), splash_target(src), src, skillid, skilllv, tick, flag|BCT_ENEMY|SD_SPLASH|1, skill_castend_damage_id);
+			}
+			else
+			{
+				// Only players and monsters can be tagged....I think??? [Rytech]
+				// Lets only allow players and monsters to use this skill for safety reasons.
+				if( (!tsd && !tmd) || !sd && !md )
 				{
-					ARR_FIND(0, count, i, sd->howl_mine[i] == 0 );
-					if( i == count )
-					{// Max number of targets tagged. Fail the skill.
+					if( sd )
 						clif_skill_fail(sd, skillid, 0, 0, 0);
-						map_freeblock_unlock();
-						return 1;
+					break;
+				}
+
+				// Check if the target is already tagged by another source.
+				if( (tsd && tsd->sc.data[SC_H_MINE] && tsd->sc.data[SC_H_MINE]->val1 != src->id) || // Cant tag a player that was already tagged from another source.
+					(tmd && tmd->sc.data[SC_H_MINE] && tmd->sc.data[SC_H_MINE]->val1 != src->id) )// Same as the above check, but for monsters.
+				{
+					if( sd )
+						clif_skill_fail(sd,skillid,0,0,0);
+					map_freeblock_unlock();
+					return 1;
+				}
+
+				if( sd )
+				{// Tagging the target.
+					ARR_FIND(0, count, i, sd->howl_mine[i] == bl->id );
+					if( i == count )
+					{
+						ARR_FIND(0, count, i, sd->howl_mine[i] == 0 );
+						if( i == count )
+						{// Max number of targets tagged. Fail the skill.
+							clif_skill_fail(sd, skillid, 0, 0, 0);
+							map_freeblock_unlock();
+							return 1;
+						}
+					}
+					// Attack the target and return the damage result for the upcoming check.
+					hm_damage = skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
+
+					// Tag the target only if damage was done. If it deals no damage, it counts as a miss and won't tag.
+					// Note: Not sure if it works like this in official but you can't stick a explosive on something you can't
+					// hit, right? For now well just use this logic until we can get a confirm on if it does this or not. [Rytech]
+					if ( hm_damage > 0 )
+					{// Add the ID of the tagged target to the player's tag list and start the status on the target.
+						sd->howl_mine[i] = bl->id;
+
+						// Val4 flags if the status was applied by a player or a monster.
+						// This will be important for other skills that work together with this one.
+						// 1 = Player, 2 = Monster.
+						// Note: Because the attacker's ID and the slot number is handled here, we have to
+						// apply the status here. We can't pass this data to skill_additional_effect.
+						sc_start4(bl, SC_H_MINE, 100, src->id, i, skilllv, 1, skill_get_time(skillid, skilllv));
 					}
 				}
-				// Attack the target and return the damage result for the upcoming check.
-				hm_damage = skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
+				else if ( md )// Monster's cant track with this skill. Just give the status.
+				{
+					hm_damage = skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 
-				// Tag the target only if damage was done. If it deals no damage, it counts as a miss and won't tag.
-				// Note: Not sure if it works like this in official but you can't stick a explosive on something you can't
-				// hit, right? For now well just use this logic until we can get a confirm on if it does this or not. [Rytech]
-				if ( hm_damage > 0 )
-				{// Add the ID of the tagged target to the player's tag list and start the status on the target.
-					sd->howl_mine[i] = bl->id;
-
-					// Val3 flags if the status was applied by a player or a monster.
-					// This will be important for other skills that work together with this one.
-					// 1 = Player, 2 = Monster.
-					// Note: Because the attacker's ID and the slot number is handled here, we have to
-					// apply the status here. We can't pass this data to skill_additional_effect.
-					sc_start4(bl, SC_H_MINE, 100, src->id, i, 1, 0, skill_get_time(skillid, skilllv));
+					if ( hm_damage > 0 )
+						sc_start4(bl, SC_H_MINE, 100, 0, 0, skilllv, 2, skill_get_time(skillid, skilllv));
 				}
-			}
-			else if ( md )// Monster's cant track with this skill. Just give the status.
-			{
-				hm_damage = skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
-
-				if ( hm_damage > 0 )
-					sc_start4(bl, SC_H_MINE, 100, 0, 0, 2, 0, skill_get_time(skillid, skilllv));
 			}
 		}
 		break;
@@ -5527,6 +5546,32 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid, skilllv), BL_CHAR,
 				src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
 			clif_skill_nodamage(src, bl, skillid, skilllv, 1);
+		}
+		break;
+
+	case RL_FLICKER:
+		{
+			short x = bl->x, y = bl->y;
+
+			i = skill_get_splash(skillid, skilllv);
+
+			if (flag&1)
+			{// Only detonate the mines you stuck on others. Not by other player's / monster's.
+				if( (dstsd && dstsd->sc.data[SC_H_MINE] && dstsd->sc.data[SC_H_MINE]->val1 == src->id) || 
+					(dstmd && dstmd->sc.data[SC_H_MINE] && dstmd->sc.data[SC_H_MINE]->val1 == src->id) )
+				{
+					flag = 0;// Flag reset.
+					sc_start(bl, SC_H_MINE_SPLASH, 100, skilllv, 100);// Explosion animation.
+
+					skill_castend_damage_id(src, bl, RL_H_MINE, tsc->data[SC_H_MINE]->val3, tick, flag|4);
+				}
+			}
+			else
+			{// Search for active howl mines and binding traps.
+				map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid, skilllv), splash_target(src), src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
+				map_foreachinarea(skill_flicker_bind_trap,src->m,x-i,y-i,x+i,y+i,BL_SKILL,src,tick);
+				clif_skill_nodamage(src, bl, skillid, skilllv, 1);
+			}
 		}
 		break;
 
@@ -10500,6 +10545,7 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 				return skill_castend_pos(tid,tick,id,data);
 
 			case GN_WALLOFTHORN:
+			case RL_B_TRAP:
 			case MH_SUMMON_LEGION:
 			case MH_STEINWAND:// FIX ME - I need to spawn 2 AoE's. One on the master and the homunculus.
 				ud->skillx = target->x;
@@ -13418,6 +13464,10 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 				skill_attack(BF_MAGIC,ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
 			break;
 
+		case UNT_B_TRAP:
+			sc_start(bl, SC_B_TRAP, 100, sg->skill_lv, skill_get_time2(sg->skill_id,sg->skill_lv));
+			break;
+
 		case UNT_MAKIBISHI:
 			skill_attack(BF_WEAPON,ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
 			break;
@@ -16185,6 +16235,38 @@ int skill_detonator(struct block_list *bl, va_list ap)
 	return 0;
 }
 
+int skill_flicker_bind_trap (struct block_list *bl, va_list ap)
+{
+	struct skill_unit *unit=NULL;
+	struct block_list *src;
+	int tick;
+
+	src = va_arg(ap, struct block_list *);
+	tick = va_arg(ap, int);
+
+	nullpo_ret(src);
+	nullpo_ret(bl);
+	nullpo_ret(ap);
+
+	if(bl->type!=BL_SKILL || (unit=(struct skill_unit *)bl) == NULL)
+		return 0;
+
+	// Can only detonate your own binding traps.
+	if ( unit->group->src_id != src->id )
+		return 0;
+
+	if((unit->group) && (unit->group->unit_id == UNT_B_TRAP))
+	{
+		clif_skill_nodamage(bl, bl, RL_B_FLICKER_ATK, 1, 1);// Explosion animation.
+		map_foreachinrange(skill_trap_splash, bl, skill_get_splash(unit->group->skill_id, unit->group->skill_lv), unit->group->bl_flag, bl, tick);
+		clif_changetraplook(bl, UNT_USED_TRAPS);
+		unit->range = -1;
+		unit->group->limit = DIFF_TICK(tick,unit->group->tick);
+	}
+
+	return 0;
+}
+
 /*==========================================
  *
  *------------------------------------------*/
@@ -16382,6 +16464,10 @@ static int skill_trap_splash (struct block_list *bl, va_list ap)
 				skill_addtimerskill(ss, tick+status_get_amotion(ss), bl->id, 0, 0, WM_REVERBERATION_MELEE, sg->skill_lv, BF_WEAPON, enemy_count);
 				skill_addtimerskill(ss, tick+2*status_get_amotion(ss), bl->id, 0, 0, WM_REVERBERATION_MAGIC, sg->skill_lv, BF_MAGIC, enemy_count);
 			}
+			break;
+		case UNT_B_TRAP:
+			skill_attack(skill_get_type(sg->skill_id),ss,src,bl,sg->skill_id,sg->skill_lv,tick,0);
+			status_change_end(bl, SC_B_TRAP, INVALID_TIMER);
 			break;
 		default:// ss = Caster / src = Skill Unit / bl = Enemy/Target
 			skill_attack(skill_get_type(sg->skill_id),ss,src,bl,sg->skill_id,sg->skill_lv,tick,0);
@@ -16944,6 +17030,7 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 			case UNT_VERDURETRAP:
 			case UNT_FIRINGTRAP:
 			case UNT_ICEBOUNDTRAP:
+			//case UNT_B_TRAP:// Does binding traps give back the used alloy trap?
 			{
 				struct block_list* src;
 				if( unit->val1 > 0 && (src = map_id2bl(group->src_id)) != NULL && src->type == BL_PC )
@@ -17051,6 +17138,7 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 			case UNT_ELECTRICSHOCKER:
 			case UNT_CLUSTERBOMB:// This shouldnt be here. It doesn't inflect any status's. [Rytech]
 			case UNT_POEMOFNETHERWORLD:
+			case UNT_B_TRAP:
 				if( unit->val1 <= 0 ) {
 					if( (group->unit_id == UNT_ANKLESNARE || group->unit_id == UNT_ELECTRICSHOCKER) && group->val2 > 0 )
 						skill_delunit(unit);

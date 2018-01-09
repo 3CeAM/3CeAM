@@ -1649,7 +1649,7 @@ int count_users(void)
 // Writes char data to the buffer in the format used by the client.
 // Used in packets 0x6b (chars info) and 0x6d (new char info)
 // Returns the size
-#define MAX_CHAR_BUF 147 //Max size (for WFIFOHEAD calls)
+#define MAX_CHAR_BUF 155 //Max size (for WFIFOHEAD calls)
 int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p)
 {
 	unsigned short offset = 0;
@@ -1660,9 +1660,21 @@ int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p)
 
 	buf = WBUFP(buffer,0);
 	WBUFL(buf,0) = p->char_id;
+#if PACKETVER < 20170906
 	WBUFL(buf,4) = min(p->base_exp, LONG_MAX);
+#else
+	WBUFQ(buf,4) = min(p->base_exp, LONG_MAX);
+	offset+=4;
+	buf = WBUFP(buffer,offset);
+#endif
 	WBUFL(buf,8) = p->zeny;
+#if PACKETVER < 20170906
 	WBUFL(buf,12) = min(p->job_exp, LONG_MAX);
+#else
+	WBUFL(buf,12) = min(p->job_exp, LONG_MAX);
+	offset+=4;
+	buf = WBUFP(buffer,offset);
+#endif
 	WBUFL(buf,16) = p->job_level;
 	WBUFL(buf,20) = 0; // probably opt1
 	WBUFL(buf,24) = 0; // probably opt2

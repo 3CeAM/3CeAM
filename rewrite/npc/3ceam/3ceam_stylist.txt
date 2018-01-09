@@ -37,7 +37,7 @@ Laccessroom:
 	// Only 3rd job's have access to a 2nd body style.
 	// Note: Not all of the new body styles are out. Best to limit only to jobs that do have them.
 	if (
-//	BaseThird == Job_Rune_Knight || 
+	BaseThird == Job_Rune_Knight || 
 	BaseThird == Job_Warlock || 
 	BaseThird == Job_Ranger || 
 	BaseThird == Job_Arch_Bishop || 

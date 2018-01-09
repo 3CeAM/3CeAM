@@ -1412,6 +1412,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 			case NC_SELFDESTRUCTION:
 			case LG_SHIELDPRESS:
 			case LG_EARTHDRIVE:
+			case RL_B_TRAP:
 			case RK_DRAGONBREATH_WATER:
 				flag.weapon = 0;
 				break;
@@ -1519,6 +1520,11 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 
 		case LK_SPIRALPIERCE:
 			if (!sd) n_ele = false; //forced neutral for monsters
+			break;
+
+		case RL_H_MINE:
+			if ( wflag&8 )// Explosion damage deals fire damage according to description.
+				s_ele = s_ele_ = ELE_FIRE;
 			break;
 
 		case MH_STAHL_HORN:
@@ -1872,6 +1878,17 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					ATK_ADD(damagevalue);
 				}
 				break;
+		case RL_B_TRAP:
+			{
+				int damagevalue = 0;
+				wd.damage = 0;
+				damagevalue = 3 * skill_lv * tstatus->hp / 100;
+				if (tstatus->mode&MD_BOSS)// HP damage dealt is 1/10 the amount on boss monsters.
+					damagevalue = damagevalue / 10;
+				damagevalue += 10 * sstatus->dex;
+				ATK_ADD(damagevalue);
+			}
+			break;
 			case KO_HAPPOKUNAI:
 				if( sd )
 				{
@@ -2798,8 +2815,10 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio = 200 * skill_lv + 50 * pc_checkskill(sd,GS_DESPERADO);
 					break;
 				case RL_H_MINE:
-					//skillratio = 500 + 300 * skill_lv;
-					skillratio = 200 + 200 * skill_lv;
+					if ( wflag&8 )
+						skillratio = 500 + 300 * skill_lv;
+					else
+						skillratio = 200 + 200 * skill_lv;
 					break;
 				case RL_R_TRIP:
 					skillratio = 1000 + 300 * skill_lv;
@@ -3105,7 +3124,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 			// To make it simple, if a skill is not affected by the ice pick effect, add it here.
 			if( skill_num != PA_SACRIFICE && skill_num != MO_INVESTIGATE && skill_num != CR_GRANDCROSS && skill_num != NPC_GRANDDARKNESS && 
 				skill_num != PA_SHIELDCHAIN && skill_num !=RK_DRAGONBREATH && skill_num != NC_SELFDESTRUCTION && skill_num != KO_HAPPOKUNAI && 
-				skill_num != RL_MASS_SPIRAL && skill_num != RK_DRAGONBREATH_WATER && !flag.cri )
+				skill_num != RL_MASS_SPIRAL && skill_num != RL_B_TRAP && skill_num != RK_DRAGONBREATH_WATER && !flag.cri )
 			{ //Elemental/Racial adjustments
 				if( sd->right_weapon.def_ratio_atk_ele & (1<<tstatus->def_ele) ||
 					sd->right_weapon.def_ratio_atk_race & (1<<tstatus->race) ||
