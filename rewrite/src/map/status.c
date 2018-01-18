@@ -5667,6 +5667,77 @@ int status_get_job_lv(struct block_list *bl)
 	return 1;
 }
 
+// Special base level check for use with skill related stuff.
+// This sets a limit on the highest a base level will affect the skill.
+int status_get_base_lv_effect(struct block_list *bl)
+{
+	short base_lv = 1;
+
+	nullpo_ret(bl);
+	switch (bl->type)
+	{
+		case BL_PC:
+			base_lv = ((TBL_PC*)bl)->status.base_level;
+			break;
+		case BL_MOB:
+			base_lv = ((TBL_MOB*)bl)->level;
+			break;
+		case BL_PET:
+			base_lv = ((TBL_PET*)bl)->pet.level;
+			break;
+		case BL_HOM:
+			base_lv = ((TBL_HOM*)bl)->homunculus.level;
+			break;
+		case BL_MER:
+			base_lv = ((TBL_MER*)bl)->db->lv;
+			break;
+		case BL_ELEM:
+			base_lv = ((TBL_ELEM*)bl)->db->lv;
+			break;
+	}
+
+	// Base level limiter. Config setting limits how high
+	// of a base level is allowed. Anything higher is set
+	// to the max allowed.
+	if ( base_lv > battle_config.base_lv_skill_effect_limit )
+		base_lv = battle_config.base_lv_skill_effect_limit;
+
+	return base_lv;
+}
+
+// Special job level check for use with skill related stuff.
+// This sets a limit on the highest a job level will affect the skill.
+int status_get_job_lv_effect(struct block_list *bl)
+{
+	short job_lv = 1;
+
+	nullpo_ret(bl);
+	switch (bl->type)
+	{
+		case BL_PC:
+			job_lv = ((TBL_PC*)bl)->status.job_level;
+			break;
+		//Non-Player characters don't have job levels. Well just send the most common max job level.
+		//This will allow skills and status's that take job levels into formula's to have max effectiveness
+		//for non-player characters using them. [Rytech]
+		case BL_MOB:
+		case BL_PET:
+		case BL_HOM:
+		case BL_MER:
+		case BL_ELEM:
+			job_lv = 50;
+			break;
+	}
+
+	// Job level limiter. Config setting limits how high
+	// of a job level is allowed. Anything higher is set
+	// to the max allowed.
+	if ( job_lv > battle_config.job_lv_skill_effect_limit )
+		job_lv = battle_config.job_lv_skill_effect_limit;
+
+	return job_lv;
+}
+
 struct regen_data *status_get_regen_data(struct block_list *bl)
 {
 	nullpo_retr(NULL, bl);
@@ -8419,23 +8490,14 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val3 = 5 * val1 + val2;//ASPD Increase
 			break;
 		case SC_SYMPHONYOFLOVER:
-			if( battle_config.renewal_baselvl_skill_effect == 1 )
 			val4 = 12 * val1 + val2 + val3 / 4;//MDEF Increase In %
-			else
-			val4 = 12 * val1 + val2 + 12;
 			break;
 		case SC_MOONLITSERENADE://MATK Increase
 		case SC_RUSHWINDMILL://ATK Increase
-			if( battle_config.renewal_baselvl_skill_effect == 1 )
 			val4 = 6 * val1 + val2 + val3 / 5;
-			else
-			val4 = 6 * val1 + val2 + 10;
 			break;
 		case SC_ECHOSONG:
-			if( battle_config.renewal_baselvl_skill_effect == 1 )
 			val4 = 6 * val1 + val2 + val3 / 4;//DEF Increase In %
-			else
-			val4 = 6 * val1 + val2 + 12;
 			break;		
 		case SC_HARMONIZE:
 			val3 = val1 + val2 / 2;
@@ -8522,22 +8584,19 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			{	// Players
 				short index = sd->equip_index[EQI_HAND_R];
 				if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_WEAPON )
-					if( battle_config.renewal_baselvl_skill_ratio == 1 && status_get_lv(bl) >= 100 )
-						val1 += 15 * status_get_job_lv(bl) + sd->inventory_data[index]->weight / 10 * sd->inventory_data[index]->wlv * status_get_lv(bl) / 100;
-							else
-						val1 += 750 + sd->inventory_data[index]->weight / 10 * sd->inventory_data[index]->wlv;
+				{
+					if( battle_config.renewal_level_effect_skills == 1 )
+						val1 += 15 * status_get_job_lv_effect(bl) + sd->inventory_data[index]->weight / 10 * sd->inventory_data[index]->wlv * status_get_base_lv_effect(bl) / 100;
+					else
+						val1 += 15 * status_get_job_lv_effect(bl) + sd->inventory_data[index]->weight / 10 * sd->inventory_data[index]->wlv;
+				}
 			}
 			else	// Monster Use
 				val1 += 750;
 			break;
 			
 		case SC_PRESTIGE:
-			val2 = (status->int_ + status->luk) * val1 / 20;// Chance to evade magic damage.
-			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(bl) >= 100 )
-				val2 = val2 * status_get_lv(bl) / 200;
-				else
-				val2 = val2 * 150 / 200;
-			val2 += val1;
+			val2 = ((status->int_ + status->luk) * val1 / 20) * status_get_base_lv_effect(bl) / 200 + val1;// Chance to evade magic damage.
 			val1 = 15 * val1 + 10 * pc_checkskill(sd,CR_DEFENDER);// Defence added
 			//if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(bl) >= 100 )//No way of making this work out. Hard to explain on balance terms.
 			//	val1 = val1 * status_get_lv(bl) / 100;//This is for use in renewal mechanic's only.
@@ -8558,19 +8617,8 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			tick = 1000;
 			break;
 		case SC_INSPIRATION:
-			if( sd )
-			{
-				if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(bl) >= 100 )
-				{// val2 = ATK Bonus, val3 = All Stats Bonus
-					val2 = 40 * val1 + 3 * status_get_job_lv(bl);
-					val3 = status_get_lv(bl) / 10 + status_get_job_lv(bl) / 5;
-				}
-				else
-				{
-					val2 = 40 * val1 + 3 * 50;
-					val3 = status_get_lv(bl) / 10 + 50 / 5;
-				}
-			}
+			val2 = 40 * val1 + 3 * status_get_job_lv_effect(bl);// ATK Bonus
+			val3 = status_get_base_lv_effect(bl) / 10 + status_get_job_lv_effect(bl) / 5;// All Stats Bonus
 			val4 = tick / 5000;
 			tick = 5000;
 			status_change_clear_buffs(bl,3);// Remove Buffs/Debuffs
@@ -8580,17 +8628,11 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val_flag |= 1|2|4;
 			break;
 		case SC_CRESCENTELBOW:
-			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(bl) >= 100 )
-			val2 = 50 + 5 * val1 + status_get_job_lv(bl) / 2;
-			else
-			val2 = 50 + 5 * val1 + 25;
+			val2 = 50 + 5 * val1 + status_get_job_lv_effect(bl) / 2;
 			val_flag |= 1|2;
 			break;
 		case SC_LIGHTNINGWALK:
-			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(bl) >= 100 )
-			val2 = 40 + 5 * val1 + status_get_job_lv(bl) / 2;
-			else
-			val2 = 40 + 5 * val1 + 25;
+			val2 = 40 + 5 * val1 + status_get_job_lv_effect(bl) / 2;
 			val_flag |= 1;
 			break;
 		case SC_RAISINGDRAGON:
@@ -8905,7 +8947,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			//Val3: BaseLV of Thrower For Thrown Potions
 			//Val4: MaxHP Increase By Fixed Amount
 			if (val1 == 1)// If potion was normally used, take the user's BaseLv.
-				val4 = (1000 * val2 - 500) + (status_get_lv(bl) * 10 / 3);
+				val4 = (1000 * val2 - 500) + (status_get_base_lv_effect(bl) * 10 / 3);
 			else if (val1 == 2)// If potion was thrown at someone, take the thrower's BaseLv.
 				val4 = (1000 * val2 - 500) + (val3 * 10 / 3);
 			if (val4 <= 0)//Prevents a negeative value from happening.
@@ -8917,7 +8959,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			//Val3: BaseLV of Thrower For Thrown Potions
 			//Val4: MaxSP Increase By Percentage Amount
 			if (val1 == 1)// If potion was normally used, take the user's BaseLv.
-				val4 = status_get_lv(bl) / 10 + (5 * val2 - 10);
+				val4 = status_get_base_lv_effect(bl) / 10 + (5 * val2 - 10);
 			else if (val1 == 2)// If potion was thrown at someone, take the thrower's BaseLv.
 				val4 = val3 / 10 + (5 * val2 - 10);
 			if (val4 <= 0)//Prevents a negeative value from happening.

@@ -2038,6 +2038,8 @@ const char * status_get_name(struct block_list *bl);
 int status_get_class(struct block_list *bl);
 int status_get_lv(struct block_list *bl);
 int status_get_job_lv(struct block_list *bl);
+int status_get_base_lv_effect(struct block_list *bl);
+int status_get_job_lv_effect(struct block_list *bl);
 #define status_get_range(bl) status_get_status_data(bl)->rhw.range
 #define status_get_hp(bl) status_get_status_data(bl)->hp
 #define status_get_max_hp(bl) status_get_status_data(bl)->max_hp
