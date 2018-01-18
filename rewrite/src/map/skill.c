@@ -311,7 +311,7 @@ int skill_get_range2(struct block_list *bl, int id, int lv)
 		case WL_EARTHSTRAIN:
 		case WL_TETRAVORTEX:
 		case WL_RELEASE:
-		//case WL_READING_SP:// Code shows this in here. Why when its self casted?
+		//case WL_READING_SB:// Code shows this in here. Why when its self casted?
 			if( bl->type == BL_PC )
 				range += pc_checkskill((TBL_PC*)bl, WL_RADIUS);
 			break;
@@ -1126,13 +1126,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		break;
 	case AB_ADORAMUS:
 		if( tsc && !tsc->data[SC_DECREASEAGI] )//Prevent duplicate agi-down effect.
-		{
-			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-				rate = 4 * skilllv + status_get_job_lv(src) / 2;
-			else
-				rate = 4 * skilllv + 25;
-			sc_start(bl, SC_ADORAMUS, rate, skilllv, skill_get_time(skillid, skilllv));
-		}
+			sc_start(bl, SC_ADORAMUS, 4*skilllv+status_get_job_lv_effect(src)/2, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case WL_CRIMSONROCK:
 		sc_start(bl, SC_STUN, 40, skilllv, skill_get_time(skillid, skilllv));
@@ -1212,17 +1206,11 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 			skill_castend_damage_id(src, bl, NC_AXEBOOMERANG, pc_checkskill(sd, NC_AXEBOOMERANG), tick, 1);
 		break;
 	case LG_SHIELDPRESS:
-		if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-		rate = 30 + 8 * skilllv + sstatus->dex / 10 + status_get_job_lv(src) / 4;
-		else
-		rate = 30 + 8 * skilllv + sstatus->dex / 10 + 12;
-		sc_start(bl, SC_STUN, rate, skilllv, skill_get_time(skillid,skilllv));
+		sc_start(bl, SC_STUN, 30+8*skilllv+sstatus->dex/10+status_get_job_lv_effect(src)/4, skilllv, skill_get_time(skillid,skilllv));
 		break;
 	case LG_PINPOINTATTACK:
-		if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-		rate = 5 * (sd ? pc_checkskill(sd,LG_PINPOINTATTACK) : 5) + (sstatus->agi + status_get_lv(src)) / 10;
-		else
-		rate = 5 * (sd ? pc_checkskill(sd,LG_PINPOINTATTACK) : 5) + (sstatus->agi + 150) / 10;
+		rate = 5 * (sd ? pc_checkskill(sd,LG_PINPOINTATTACK) : 5) + (sstatus->agi + status_get_base_lv_effect(src)) / 10;
+
 		switch( skilllv )
 		{
 			case 1://Gives Bleeding Status
@@ -1276,11 +1264,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 			sc_start(bl, SC_STUN, 100, skilllv, 1000 * rand()%4);
 		break;
 	case SR_GENTLETOUCH_QUIET:
-		if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-		rate = 5 * skilllv + ( sstatus->dex + status_get_lv(src) ) / 10;
-		else
-		rate = 5 * skilllv + ( sstatus->dex + 150 ) / 10;
-		sc_start(bl, SC_SILENCE, rate, skilllv, skill_get_time(skillid, skilllv));
+		sc_start(bl, SC_SILENCE, 5*skilllv+(sstatus->dex+status_get_base_lv_effect(src))/10, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case SR_HOWLINGOFLION:
 		status_change_end(bl, SC_SWINGDANCE, -1);
@@ -1318,7 +1302,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		break;
 	case WM_POEMOFNETHERWORLD:
 		{
-			int duration = skill_get_time2(skillid,skilllv) - ( 1000 * status_get_lv(bl) / 50 + 1000 * status_get_job_lv(bl) / 10);
+			int duration = skill_get_time2(skillid,skilllv) - ( 1000 * status_get_base_lv_effect(bl) / 50 + 1000 * status_get_job_lv_effect(bl) / 10);
 			if ( duration < 4000 )
 				duration = 4000;// Duration can't be reduced below 4 seconds.
 			sc_start(bl, SC_NETHERWORLD, 100, skilllv, duration);
@@ -1331,19 +1315,10 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 	case GN_SLINGITEM_RANGEMELEEATK:
 		if( sd )
 		{
-			short baselv, joblv, tbaselv;
-			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-			{
-				baselv = status_get_lv(src);
-				joblv = status_get_job_lv(src);
-				tbaselv = status_get_lv(bl);
-			}
-			else
-			{//If config setting is off, well set base and job parts of the formula to a fixed value.
-				baselv = 150;
-				joblv = 50;
-				tbaselv = 150;
-			}
+			short baselv = status_get_base_lv_effect(src);
+			short joblv = status_get_job_lv_effect(src);
+			short tbaselv = status_get_base_lv_effect(bl);
+
 			switch( sd->itemid )
 			{
 				case ITEMID_COCONUT_BOMB://Causes stun and bleeding.
@@ -1517,7 +1492,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		break;
 	case RL_S_STORM:
 		// Formula not confirmed but it might be something like this when looking at what affects the success chance. [Rytech]
-		rate = (5 * skilllv + sstatus->dex / 10) - ((tstatus->agi + status_get_lv(bl)) / 10);
+		rate = (5 * skilllv + sstatus->dex / 10) - ((tstatus->agi + status_get_base_lv_effect(bl)) / 10);
 		if ( rate > 0 )
 			skill_break_equip(bl, EQP_HELM, 100*rate, BCT_ENEMY);
 		break;
@@ -3836,7 +3811,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	struct mob_data *md = NULL, *tmd = NULL;
 	struct status_data *tstatus;
 	struct status_change *sc, *tsc;
-	int s_job_level = 50;
 	int chorusbonus = 0;//Chorus bonus value for chorus skills. Bonus remains 0 unless 3 or more Minstrel's/Wanderer's are in the party.
 
 	if( skillid > 0 && skilllv <= 0 ) return 0;	// Wrong skill level.
@@ -3865,13 +3839,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 
 	if( status_isdead(bl) )
 		return 1;
-
-	// Max Job Level bonus that skills should receive. Acording to battle_config.max_joblvl_nerf [Pinky]
-	if( sd && battle_config.max_joblvl_nerf)
-		s_job_level = min(sd->status.job_level,battle_config.max_joblvl_nerf);
-	else if ( sd )
-		s_job_level = sd->status.job_level;
-
 
 	if( skillid && skill_get_type(skillid) == BF_MAGIC && status_isimmune(bl) == 100 )
 	{	//GTB makes all targetted magic display miss with a single bolt.
@@ -5314,7 +5281,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	struct status_change *sc, *tsc;
 	struct status_change_entry *tsce;
 
-	int i, s_job_level = 50;
+	int i;
 	int rate = 0;
 	int chorusbonus = 0;//Chorus bonus value for chorus skills. Bonus remains 0 unless 3 or more Minstrel's/Wanderer's are in the party.
 	enum sc_type type;
@@ -5347,12 +5314,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		chorusbonus = 5;//Maximum effect possiable from 7 or more Minstrel's/Wanderer's
 	else if( sd && sd->status.party_id && party_foreachsamemap(party_sub_count_chorus, sd, 0) > 2)
 		chorusbonus = party_foreachsamemap(party_sub_count_chorus, sd, 0) - 2;//Effect bonus from additional Minstrel's/Wanderer's if not above the max possiable.
-
-	// Max Job Level bonus that skills should receive. Acording to battle_config.max_joblvl_nerf [Pinky]
-	if( sd && battle_config.max_joblvl_nerf)
-		s_job_level = min(sd->status.job_level,battle_config.max_joblvl_nerf);
-	else if ( sd )
-		s_job_level = sd->status.job_level;
 
 	if( src != bl && status_isdead(bl) && skillid != ALL_RESURRECTION && skillid != PR_REDEMPTIO && skillid != NPC_WIDESOULDRAIN && skillid != WM_DEADHILLHERE && skillid != WE_ONEFOREVER)
 		return 1;
@@ -8361,7 +8322,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case MH_PAIN_KILLER:
-		clif_skill_nodamage(src,bl,skillid,skilllv,sc_start2(bl,type,100,skilllv,status_get_lv(src),skill_get_time(skillid,skilllv)));
+		clif_skill_nodamage(src,bl,skillid,skilllv,sc_start2(bl,type,100,skilllv,status_get_base_lv_effect(src),skill_get_time(skillid,skilllv)));
 		break;
 
 	//Homunculus buffs that affects only its master.
@@ -8389,7 +8350,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 						status_change_end(bl, scs[i], INVALID_TIMER);
 			}
 			sc_start(bl,SC_SILENCE,100,skilllv,skill_get_time(skillid,skilllv));
-			status_heal(bl,5 * (hunger + status_get_lv(src)),0,2);
+			status_heal(bl,5 * (hunger + status_get_base_lv_effect(src)),0,2);
 			//Its said that the homunculus is silenced too, but I need a confirm on that first.
 			//clif_skill_nodamage(src,src,skillid,skilllv,sc_start(src,type,100,skilllv,skill_get_time(skillid,skilllv)));
 		}
@@ -8425,8 +8386,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 	case MH_PYROCLASTIC:
 		i = skill_get_time(skillid,skilllv);
-		clif_skill_nodamage(bl,bl,skillid,skilllv,sc_start2(bl,type,100,skilllv,status_get_lv(src),i)); // Master
-		clif_skill_nodamage(src,src,skillid,skilllv,sc_start2(src,type,100,skilllv,status_get_lv(src),i)); // Homunc
+		clif_skill_nodamage(bl,bl,skillid,skilllv,sc_start2(bl,type,100,skilllv,status_get_base_lv_effect(src),i)); // Master
+		clif_skill_nodamage(src,src,skillid,skilllv,sc_start2(src,type,100,skilllv,status_get_base_lv_effect(src),i)); // Homunc
 		break;
 
 	case NPC_DRAGONFEAR:
@@ -8489,12 +8450,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 	case RK_ENCHANTBLADE:
-		{int rate = 0;
-		if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-		rate = (100+20*skilllv)*status_get_lv(src)/150+sstatus->int_;
-		else
-		rate = (100+20*skilllv)+sstatus->int_;
-		clif_skill_nodamage(src,bl,skillid,skilllv,sc_start2(bl,type,100,skilllv,rate,skill_get_time(skillid,skilllv)));}
+		clif_skill_nodamage(src,bl,skillid,skilllv,sc_start2(bl,type,100,skilllv,(100+20*skilllv)*status_get_base_lv_effect(src)/150+sstatus->int_,skill_get_time(skillid,skilllv)));
 		break;
 	case RK_DRAGONHOWLING:
 		if( flag&1)
@@ -8545,7 +8501,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				lv = 9;
 			if( pc_checkskill(sd,RK_RUNEMASTERY) >= lv )
 				if ( skillid == RK_STONEHARDSKIN )
-					clif_skill_nodamage(src,bl,skillid,skilllv,sc_start2(bl,type,100,skilllv,status_get_job_lv(src)*(sd?pc_checkskill(sd,RK_RUNEMASTERY):10),skill_get_time(skillid,skilllv)));
+					clif_skill_nodamage(src,bl,skillid,skilllv,sc_start2(bl,type,100,skilllv,status_get_job_lv_effect(src)*(sd?pc_checkskill(sd,RK_RUNEMASTERY):10),skill_get_time(skillid,skilllv)));
 				else
 					clif_skill_nodamage(src,bl,skillid,skilllv,sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
 		}
@@ -8600,7 +8556,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				else
 				{// Buff surrounding party members with sacrificed rune buff.
 					if ( i == LUX_STONEHARDSKIN )
-						clif_skill_nodamage(bl, bl, rune_effect[rune_buff], skilllv, sc_start2(bl,scs[rune_buff],100,skilllv,status_get_job_lv(src)*(sd?pc_checkskill(sd,RK_RUNEMASTERY):10),skill_get_time(skillid,skilllv)));
+						clif_skill_nodamage(bl, bl, rune_effect[rune_buff], skilllv, sc_start2(bl,scs[rune_buff],100,skilllv,status_get_job_lv_effect(src)*(sd?pc_checkskill(sd,RK_RUNEMASTERY):10),skill_get_time(skillid,skilllv)));
 					else
 						clif_skill_nodamage(bl, bl, rune_effect[rune_buff], skilllv, sc_start(bl,scs[rune_buff],100,skilllv,skill_get_time(skillid,skilllv)));
 				}
@@ -8744,13 +8700,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case AB_CLEMENTIA:
 	case AB_CANTO:
 		{
-			short bless_lv = pc_checkskill(sd,AL_BLESSING)+status_get_job_lv(src)/10;
-			short agi_lv = pc_checkskill(sd,AL_INCAGI)+status_get_job_lv(src)/10;
-			if( battle_config.renewal_baselvl_skill_effect == 0 )
-			{
-				bless_lv = pc_checkskill(sd,AL_BLESSING)+5;
-				agi_lv = pc_checkskill(sd,AL_INCAGI)+5;
-			}
+			short bless_lv = pc_checkskill(sd,AL_BLESSING)+status_get_job_lv_effect(src)/10;
+			short agi_lv = pc_checkskill(sd,AL_INCAGI)+status_get_job_lv_effect(src)/10;
+
 			if( sd == NULL || sd->status.party_id == 0 || flag&1 )
 				clif_skill_nodamage(bl, bl, skillid, skilllv, sc_start(bl,type,100,
 					(skillid == AB_CLEMENTIA)? bless_lv : (skillid == AB_CANTO)? agi_lv : skilllv, skill_get_time(skillid,skilllv)));
@@ -9000,10 +8952,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			// Success chance.
 			if ( bl->type == BL_MOB || bl->type == BL_PC && battle_check_target(src,bl,BCT_ENEMY) > 0 )
 			{	// Success chance for monsters and enemy players.
-				if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-					rate = 50 + 3 * skilllv + status_get_job_lv(src) / 4;
-				else
-					rate = 50 + 3 * skilllv + 50 / 4;
+					rate = 50 + 3 * skilllv + status_get_job_lv_effect(src) / 4;
 
 				// Duration is not reduced the same way on monsters like it is on players.
 				if ( bl->type == BL_MOB )
@@ -9058,7 +9007,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		else
 		{
-			int rate = 40 + 8 * skilllv + s_job_level / 4;
+			int rate = 40 + 8 * skilllv + status_get_job_lv_effect(src) / 4;
 			// IroWiki says Rate should be reduced by target stats, but currently unknown
 			if( rand()%100 < rate )
 			{ // Success on First Target
@@ -9139,8 +9088,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case WL_READING_SB:
 		if( sd )
 		{
-			int i, preserved = 0, max_preserve = 4 * pc_checkskill(sd,WL_FREEZE_SP) + sstatus->int_ / 10 + sd->status.base_level / 10;
-			if (battle_config.renewal_baselvl_skill_ratio == 0) max_preserve = 4 * pc_checkskill(sd,WL_FREEZE_SP) + sstatus->int_ / 10 + 15;
+			int i, preserved = 0;
+			short max_preserve = 4 * pc_checkskill(sd,WL_FREEZE_SP) + sstatus->int_ / 10 + status_get_base_lv_effect(src) / 10;
+
 			ARR_FIND(0, MAX_SPELLBOOK, i, sd->rsb[i].skillid == 0); // Search for a Free Slot
 			if( i == MAX_SPELLBOOK )
 			{
@@ -9338,36 +9288,36 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SC_WEAKNESS:
 		if( !(tsc && tsc->data[type]) )
 		{
-		int joblvbonus = 0;
-		if (is_boss(bl)) break;
-		if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-			joblvbonus = status_get_job_lv(src);
-		else
-			joblvbonus = 50;
-		//First we set the success chance based on the caster's build which increases the chance.
-		rate = 10 * skilllv + rnd_value( sstatus->dex / 12, sstatus->dex / 4 ) + joblvbonus + status_get_lv(src) / 10 - 
-		//We then reduce the success chance based on the target's build.
-		rnd_value( tstatus->agi / 6, tstatus->agi / 3 ) - tstatus->luk / 10 - ( dstsd ? (dstsd->max_weight / 10 - dstsd->weight / 10 ) / 100 : 0 ) - status_get_lv(bl) / 10;
-		//Finally we set the minimum success chance cap based on the caster's skill level and DEX.
-		rate = cap_value( rate, skilllv + sstatus->dex / 20, 100);
-			clif_skill_nodamage(src,bl,skillid,0,sc_start(bl,type,rate,skilllv,skill_get_time(skillid,skilllv)));
-		if ( tsc && tsc->data[SC__IGNORANCE] && skillid == SC_IGNORANCE)//If the target was successfully inflected with the Ignorance status, drain some of the targets SP.
+			if (is_boss(bl))
+				break;
+
+			//First we set the success chance based on the caster's build which increases the chance.
+			rate = 10 * skilllv + rnd_value( sstatus->dex / 12, sstatus->dex / 4 ) + status_get_job_lv_effect(src) + status_get_base_lv_effect(src) / 10 - 
+			//We then reduce the success chance based on the target's build.
+			rnd_value( tstatus->agi / 6, tstatus->agi / 3 ) - tstatus->luk / 10 - ( dstsd ? (dstsd->max_weight / 10 - dstsd->weight / 10 ) / 100 : 0 ) - status_get_base_lv_effect(bl) / 10;
+			//Finally we set the minimum success chance cap based on the caster's skill level and DEX.
+			rate = cap_value( rate, skilllv + sstatus->dex / 20, 100);
+				clif_skill_nodamage(src,bl,skillid,0,sc_start(bl,type,rate,skilllv,skill_get_time(skillid,skilllv)));
+
+			if ( tsc && tsc->data[SC__IGNORANCE] && skillid == SC_IGNORANCE)//If the target was successfully inflected with the Ignorance status, drain some of the targets SP.
 			{
 				int sp = 100 * skilllv;
 				if( dstmd ) sp = dstmd->level * 2;
 				if( status_zap(bl,0,sp) )
 					status_heal(src,0,sp/2,3);//What does flag 3 do? [Rytech]
 			}
-		if ( tsc && tsc->data[SC__UNLUCKY] && skillid == SC_UNLUCKY)//If the target was successfully inflected with the Unlucky status, give 1 of 3 random status's.
-			switch(rand()%3) {//Targets in the Unlucky status will be affected by one of the 3 random status's reguardless of resistance.
-				case 0:
-					status_change_start(bl,SC_POISON,10000,skilllv,0,0,0,skill_get_time(skillid,skilllv),10);
-					break;
-				case 1:
-					status_change_start(bl,SC_SILENCE,10000,skilllv,0,0,0,skill_get_time(skillid,skilllv),10);
-					break;
-				case 2:
-					status_change_start(bl,SC_BLIND,10000,skilllv,0,0,0,skill_get_time(skillid,skilllv),10);
+
+			if ( tsc && tsc->data[SC__UNLUCKY] && skillid == SC_UNLUCKY)//If the target was successfully inflected with the Unlucky status, give 1 of 3 random status's.
+				switch(rand()%3)
+				{//Targets in the Unlucky status will be affected by one of the 3 random status's reguardless of resistance.
+					case 0:
+						status_change_start(bl,SC_POISON,10000,skilllv,0,0,0,skill_get_time(skillid,skilllv),10);
+						break;
+					case 1:
+						status_change_start(bl,SC_SILENCE,10000,skilllv,0,0,0,skill_get_time(skillid,skilllv),10);
+						break;
+					case 2:
+						status_change_start(bl,SC_BLIND,10000,skilllv,0,0,0,skill_get_time(skillid,skilllv),10);
 				}
 		}
 		else if( sd )
@@ -9488,10 +9438,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 								break;
 							case 3://HP Recovery
 								sc_start(bl,SC_SHIELDSPELL_REF,100,effect_number,-1);
-								if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-									shield_bonus = sstatus->max_hp * (status_get_lv(src) / 10 + shield->refine) / 100;
-								else
-									shield_bonus = sstatus->max_hp * (15 + shield->refine) / 100;
+								shield_bonus = sstatus->max_hp * (status_get_base_lv_effect(src) / 10 + shield->refine) / 100;
 								status_heal(bl, shield_bonus, 0, 2);
 								status_change_end(bl,SC_SHIELDSPELL_REF,-1);
 							break;
@@ -9600,10 +9547,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 	case SR_GENTLETOUCH_CURE:
 		status_heal(bl, tstatus->max_hp * skilllv / 100 + 120 * skilllv, 0, 0);//It heals the target, but shows no heal animation or numbers.
-		if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-		rate = (5 * skilllv + (sstatus->dex + status_get_lv(src)) / 4) - rnd_value( 1, 10 );
-		else
-		rate = (5 * skilllv + (sstatus->dex + 150) / 4) - rnd_value( 1, 10 );
+		rate = (5 * skilllv + (sstatus->dex + status_get_base_lv_effect(src)) / 4) - rnd_value( 1, 10 );
 		if(rand()%100 < rate)
 		{
 			status_change_end(bl, SC_STONE, -1 );
@@ -9623,11 +9567,11 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case MI_RUSH_WINDMILL:
 	case MI_ECHOSONG:
 		if( flag&1 )
-			sc_start4(bl,type,100,skilllv,pc_checkskill(sd,WM_LESSON),status_get_job_lv(src),0,skill_get_time(skillid,skilllv));
+			sc_start4(bl,type,100,skilllv,pc_checkskill(sd,WM_LESSON),status_get_job_lv_effect(src),0,skill_get_time(skillid,skilllv));
 		else if( sd )
 		{
 			party_foreachsamemap(skill_area_sub,sd,skill_get_splash(skillid,skilllv),src,skillid,skilllv,tick,flag|BCT_PARTY|1,skill_castend_nodamage_id);
-			sc_start4(bl,type,100,skilllv,pc_checkskill(sd,WM_LESSON),status_get_job_lv(src),0,skill_get_time(skillid,skilllv));
+			sc_start4(bl,type,100,skilllv,pc_checkskill(sd,WM_LESSON),status_get_job_lv_effect(src),0,skill_get_time(skillid,skilllv));
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
 		break;
@@ -9672,10 +9616,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv));
 		else if ( sd )
 		{
-			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-				rate = 4 * skilllv + 2 * (sd ? pc_checkskill(sd,WM_LESSON) : 10) + status_get_lv(src) / 15 + status_get_job_lv(src) / 5;
-			else
-				rate = 4 * skilllv + 2 * (sd ? pc_checkskill(sd,WM_LESSON) : 10) + 20;
+			rate = 4 * skilllv + 2 * (sd ? pc_checkskill(sd,WM_LESSON) : 10) + status_get_base_lv_effect(src) / 15 + status_get_job_lv_effect(src) / 5;
+
 			if ( rand()%100 < rate )
 			{
 				map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid, skilllv),BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
@@ -9699,24 +9641,21 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		if( flag&1 )
 		{
 			int duration = 0;
-			if( battle_config.renewal_baselvl_skill_effect == 1 )// Job LV part is ignored on monsters.
-				duration = skill_get_time(skillid,skilllv) - 1000 * (status_get_lv(bl) / 10 + (sd?status_get_job_lv(bl):0) / 5);
-			else
-				duration = skill_get_time(skillid,skilllv) - 1000 * (15 + (sd?10:0));
+			// Job LV part is ignored on monsters.
+			duration = skill_get_time(skillid,skilllv) - 1000 * (status_get_base_lv_effect(bl) / 10 + (sd?status_get_job_lv_effect(bl):0) / 5);
+
 			if ( duration < 10000 )// Duration can't be reduced below 10 seconds.
 				duration = 10000;
 			sc_start2(bl,type,100,skilllv,src->id,duration);
 		}
 		else if ( sd )
 		{
-			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-				rate = 6 * skilllv + 2 * (sd?pc_checkskill(sd,WM_LESSON):10) + status_get_job_lv(src) / 2;
-			else
-				rate = 6 * skilllv + 2 * (sd?pc_checkskill(sd,WM_LESSON):10) + 25;
+			rate = 6 * skilllv + 2 * (sd?pc_checkskill(sd,WM_LESSON):10) + status_get_job_lv_effect(src) / 2;
+
 			if ( rand()%100 < rate )
 			{
-			map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid,skilllv),BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
-			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+				map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid,skilllv),BL_CHAR, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
+				clif_skill_nodamage(src,bl,skillid,skilllv,1);
 			}
 		}
 		break;
@@ -9765,10 +9704,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			}
 			else if( sd )
 			{
-				if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-					rate = sstatus->int_ / 6 + status_get_job_lv(src) / 5 + skilllv * 4;
-				else
-					rate = sstatus->int_ / 6 + 10 + skilllv * 4;
+				rate = sstatus->int_ / 6 + status_get_job_lv_effect(src) / 5 + skilllv * 4;
+
 				if ( rand()%100 < rate )
 				{
 					map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid,skilllv),BL_PC, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
@@ -9843,10 +9780,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case SO_ARRULLO:
-			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-				rate = 15 + 5 * skilllv + sstatus->int_ / 5 + status_get_job_lv(src) / 5 - tstatus->int_ / 6 - tstatus->luk / 10;
-			else
-				rate = 15 + 5 * skilllv + sstatus->int_ / 5 + 10 - tstatus->int_ / 6 - tstatus->luk / 10;
+			rate = 15 + 5 * skilllv + sstatus->int_ / 5 + status_get_job_lv_effect(src) / 5 - tstatus->int_ / 6 - tstatus->luk / 10;
 			clif_skill_nodamage(src, bl, skillid, skilllv, sc_start(bl, type, rate, skilllv, skill_get_time(skillid, skilllv)));
 		break;
 
@@ -9997,10 +9931,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			sd->itemid = ammo_id;
 
 			//Thrower's BaseLv affects HP and SP increase potions when thrown.
-			if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(src) >= 100 )
-				baselv = status_get_lv(src);
-			else
-				baselv = 150;
+			baselv = status_get_base_lv_effect(src);
 
 			// If thrown item is a bomb or a lump, then its a attack type ammo.
 			if( itemid_is_sling_atk(ammo_id) )
@@ -10263,7 +10194,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case OB_ZANGETSU:
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, 0, 1, skillid, -2, 6);
-		sc_start2(bl,type,100,skilllv,status_get_lv(src),skill_get_time(skillid,skilllv));
+		sc_start2(bl,type,100,skilllv,status_get_base_lv_effect(src),skill_get_time(skillid,skilllv));
 		break;
 
 	case RL_RICHS_COIN:
@@ -13450,13 +13381,15 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			break;
 
 		case UNT_BANDING:
-			{int rate = 0;
-			if( battle_check_target(ss,bl,BCT_ENEMY) > 0 && !(status_get_mode(bl)&MD_BOSS) && !(tsc && tsc->data[SC_BANDING_DEFENCE]) )
-				{if( battle_config.renewal_baselvl_skill_effect == 1 && status_get_lv(bl) >= 100 )
-				rate = status_get_lv(bl) / 5 + 5 * sg->skill_lv - tstatus->agi / 10;
-				else
-				rate = 30 + 5 * sg->skill_lv - tstatus->agi / 10;
-			sc_start(bl,SC_BANDING_DEFENCE,rate,90,skill_get_time2(sg->skill_id,sg->skill_lv));}}
+			{
+				int rate = 0;
+
+				if( battle_check_target(ss,bl,BCT_ENEMY) > 0 && !(status_get_mode(bl)&MD_BOSS) && !(tsc && tsc->data[SC_BANDING_DEFENCE]) )
+				{
+					rate = status_get_base_lv_effect(bl) / 5 + 5 * sg->skill_lv - tstatus->agi / 10;
+					sc_start(bl,SC_BANDING_DEFENCE,rate,90,skill_get_time2(sg->skill_id,sg->skill_lv));
+				}
+			}
 			break;
 
 		case UNT_FIRE_MANTLE:
@@ -15790,16 +15723,8 @@ void skill_weaponrefine (struct map_session_data *sd, int idx)
 	int i = 0, ep = 0, per;
 	int material[5] = { 0, 1010, 1011, 984, 984 };
 	struct item *item;
-	int s_job_level = 50;
 
 	nullpo_retv(sd);
-
-	// Max Job Level bonus that skills should receive. Acording to battle_config.max_joblvl_nerf_misc [Pinky]
-	if( sd && battle_config.max_joblvl_nerf_misc )
-		s_job_level = min(sd->status.job_level,battle_config.max_joblvl_nerf_misc);
-	else if( sd )
-		s_job_level = sd->status.job_level;
-
 
 	if (idx >= 0 && idx < MAX_INVENTORY)
 	{
@@ -15818,7 +15743,7 @@ void skill_weaponrefine (struct map_session_data *sd, int idx)
 			}
 
 			per = percentrefinery [ditem->wlv][(int)item->refine];
-			per += (((signed int)s_job_level)-50)/2; //Updated per the new kro descriptions. [Skotlex]
+			per += (((signed int)sd->status.job_level)-50)/2; //Updated per the new kro descriptions. [Skotlex]
 
 			pc_delitem(sd, i, 1, 0, 0);
 			if (per > rand() % 100) {
@@ -17513,17 +17438,9 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 	int i,sc,ele,idx,equip,wlv = 0,make_per,flag = 0,skill_lv = 0,temp_qty;
 	int num = -1; // exclude the recipe
 	struct status_data *status;
-	int s_job_level = 50;
 
 	nullpo_ret(sd);
 	status = status_get_status_data(&sd->bl);
-
-	// Max Job Level bonus that skills should receive. Acording to battle_config.max_joblvl_nerf_misc [Pinky]
-	if( sd && battle_config.max_joblvl_nerf_misc )
-		s_job_level = min(sd->status.job_level,battle_config.max_joblvl_nerf_misc);
-	else if( sd )
-		s_job_level = sd->status.job_level;
-
 
 	if( !(idx=skill_can_produce_mix(sd,nameid,-1, qty)) )
 		return 0;
@@ -17625,7 +17542,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 			case BS_ENCHANTEDSTONE:
 				// Ores & Metals Refining - skill bonuses are straight from kRO website [DracoRPG]
 				i = pc_checkskill(sd,skill_id);
-				make_per = s_job_level*20 + status->dex*10 + status->luk*10; //Base chance
+				make_per = sd->status.job_level*20 + status->dex*10 + status->luk*10; //Base chance
 				switch( nameid )
 				{
 					case 998: // Iron
@@ -17654,7 +17571,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 			case AM_TWILIGHT2:
 			case AM_TWILIGHT3:
 				make_per = pc_checkskill(sd,AM_LEARNINGPOTION) * 50
-					+ pc_checkskill(sd,AM_PHARMACY) * 300 + s_job_level * 20
+					+ pc_checkskill(sd,AM_PHARMACY) * 300 + sd->status.job_level * 20
 					+ (status->int_/2) * 10 + status->dex * 10 + status->luk * 10;
 				if( merc_is_hom_active(sd->hd) )
 				{	//Player got a homun
@@ -17701,7 +17618,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 				break;
 			case RK_RUNEMASTERY://Note: The success rate works on a 100.00 scale. A value of 10000 would equal 100% Remember this. [Rytech]
 				make_per = (50 + 2 * pc_checkskill(sd,skill_id)) * 100 // Base success rate and success rate increase from learned Rune Mastery level.
-				+ status->dex / 3 * 10 + status->luk * 10 + s_job_level * 10 // Success increase from DEX, LUK, and job level.
+				+ status->dex / 3 * 10 + status->luk * 10 + sd->status.job_level * 10 // Success increase from DEX, LUK, and job level.
 				+ sd->menuskill_itemused * 100;// Quality of the rune ore used. Values are 2, 5, 8, 11, and 14.
 				switch ( nameid )// Success reduction from rune stone rank. Each rune has a different rank. Values are 5, 10, 15, and 20.
 				{
@@ -17728,7 +17645,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 				break;
 			case GC_CREATENEWPOISON:
 				make_per = 3000 + 500 * pc_checkskill(sd,GC_RESEARCHNEWPOISON) // Base success rate and success rate increase from learned Research New Poison level.
-				+ status->dex / 3 * 10 + status->luk * 10 + s_job_level * 10;// Success increase from DEX, LUK, and job level.
+				+ status->dex / 3 * 10 + status->luk * 10 + sd->status.job_level * 10;// Success increase from DEX, LUK, and job level.
 				qty = rnd_value( (3 + pc_checkskill(sd,GC_RESEARCHNEWPOISON)) / 2, (8 + pc_checkskill(sd,GC_RESEARCHNEWPOISON)) / 2 );
 				break;
 			case GN_MIX_COOKING:
@@ -17787,7 +17704,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 	}
 	else
 	{ // Weapon Forging - skill bonuses are straight from kRO website, other things from a jRO calculator [DracoRPG]
-		make_per = 5000 + s_job_level*20 + status->dex*10 + status->luk*10; // Base
+		make_per = 5000 + sd->status.job_level*20 + status->dex*10 + status->luk*10; // Base
 		make_per += pc_checkskill(sd,skill_id)*500; // Smithing skills bonus: +5/+10/+15
 		make_per += pc_checkskill(sd,BS_WEAPONRESEARCH)*100 +((wlv >= 3)? pc_checkskill(sd,BS_ORIDEOCON)*100:0); // Weaponry Research bonus: +1/+2/+3/+4/+5/+6/+7/+8/+9/+10, Oridecon Research bonus (custom): +1/+2/+3/+4/+5
 		make_per -= (ele?2000:0) + sc*1500 + (wlv>1?wlv*1000:0); // Element Stone: -20%, Star Crumb: -15% each, Weapon level malus: -0/-20/-30
@@ -18210,8 +18127,8 @@ int skill_spellbook (struct map_session_data *sd, int nameid)
 		return 0;
 	}
 
-	max_preserve = 4 * pc_checkskill(sd,WL_FREEZE_SP) + status_get_int(&sd->bl) / 10 + sd->status.base_level / 10;
-	if (battle_config.renewal_baselvl_skill_ratio == 0) max_preserve = 4 * pc_checkskill(sd,WL_FREEZE_SP) + status_get_int(&sd->bl) / 10 + 15;
+	max_preserve = 4 * pc_checkskill(sd,WL_FREEZE_SP) + status_get_int(&sd->bl) / 10 + status_get_base_lv_effect(&sd->bl) / 10;
+
 	for( i = 0; i < MAX_SPELLBOOK && sd->rsb[i].skillid; i++ )
 		preserved += sd->rsb[i].points;
 
