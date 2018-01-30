@@ -1491,10 +1491,24 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		}
 		break;
 	case RL_S_STORM:
-		// Formula not confirmed but it might be something like this when looking at what affects the success chance. [Rytech]
-		rate = (5 * skilllv + sstatus->dex / 10) - ((tstatus->agi + status_get_base_lv_effect(bl)) / 10);
-		if ( rate > 0 )
-			skill_break_equip(bl, EQP_HELM, 100*rate, BCT_ENEMY);
+		{
+			short dex_effect = (sstatus->dex - 100) / 4;
+			short agi_effect = (tstatus->agi - 100) / 4;
+			short added_chance = 0;
+
+			if ( dex_effect < 0 )
+				dex_effect = 0;
+
+			if ( agi_effect < 0 )
+				agi_effect = 0;
+
+			added_chance = dex_effect - (agi_effect + status_get_lv(bl) / 10);
+
+			if ( added_chance < 0 )
+				added_chance = 0;
+
+			skill_break_equip(bl, EQP_HELM, 100*(5*skilllv+added_chance), BCT_ENEMY);
+		}
 		break;
 	case RL_AM_BLAST:
 		sc_start(bl,SC_ANTI_M_BLAST,20 + 10 * skilllv,skilllv,skill_get_time(skillid,skilllv));
@@ -3811,7 +3825,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	struct mob_data *md = NULL, *tmd = NULL;
 	struct status_data *tstatus;
 	struct status_change *sc, *tsc;
-	int chorusbonus = 0;//Chorus bonus value for chorus skills. Bonus remains 0 unless 3 or more Minstrel's/Wanderer's are in the party.
 
 	if( skillid > 0 && skilllv <= 0 ) return 0;	// Wrong skill level.
 
@@ -3829,13 +3842,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 
 	tsd = BL_CAST(BL_PC, bl);
 	tmd = BL_CAST(BL_MOB, bl);
-
-	// Minstrel/Wanderer number check for chorus skills.
-	// Bonus remains 0 unless 3 or more Minstrel's/Wanderer's are in the party.
-	if( sd && sd->status.party_id && party_foreachsamemap(party_sub_count_chorus, sd, 0) > 7)
-		chorusbonus = 5;//Maximum effect possiable from 7 or more Minstrel's/Wanderer's
-	else if( sd && sd->status.party_id && party_foreachsamemap(party_sub_count_chorus, sd, 0) > 2)
-		chorusbonus = party_foreachsamemap(party_sub_count_chorus, sd, 0) - 2;//Effect bonus from additional Minstrel's/Wanderer's if not above the max possiable.
 
 	if( status_isdead(bl) )
 		return 1;
@@ -5084,7 +5090,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		tsc->data[SC_GLOOMYDAY] || tsc->data[SC_GLOOMYDAY_SK] || tsc->data[SC_SONGOFMANA] || 
 		tsc->data[SC_DANCEWITHWUG] || tsc->data[SC_SATURDAYNIGHTFEVER] || tsc->data[SC_LERADSDEW] || 
 		tsc->data[SC_MELODYOFSINK] || tsc->data[SC_BEYONDOFWARCRY] || tsc->data[SC_UNLIMITEDHUMMINGVOICE] || tsc->data[SC_FRIGG_SONG] ) && 
-		rand()%100 < 4 * skilllv + 2 * pc_checkskill(sd,WM_LESSON) + 10 * chorusbonus)
+		rand()%100 < 4 * skilllv + 2 * pc_checkskill(sd,WM_LESSON) + 10 * skill_chorus_count(sd))
 		{
 			skill_attack(BF_MISC,src,src,bl,skillid,skilllv,tick,flag);
 			status_change_start(bl,SC_STUN,10000,skilllv,0,0,0,skill_get_time(skillid,skilllv),8);
@@ -5283,7 +5289,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 	int i;
 	int rate = 0;
-	int chorusbonus = 0;//Chorus bonus value for chorus skills. Bonus remains 0 unless 3 or more Minstrel's/Wanderer's are in the party.
 	enum sc_type type;
 
 	if(skillid > 0 && skilllv <= 0) return 0;	// celest
@@ -5307,13 +5312,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		return 1;
 	if(status_isdead(src))
 		return 1;
-
-	// Minstrel/Wanderer number check for chorus skills.
-	// Bonus remains 0 unless 3 or more Minstrel's/Wanderer's are in the party.
-	if( sd && sd->status.party_id && party_foreachsamemap(party_sub_count_chorus, sd, 0) > 7)
-		chorusbonus = 5;//Maximum effect possiable from 7 or more Minstrel's/Wanderer's
-	else if( sd && sd->status.party_id && party_foreachsamemap(party_sub_count_chorus, sd, 0) > 2)
-		chorusbonus = party_foreachsamemap(party_sub_count_chorus, sd, 0) - 2;//Effect bonus from additional Minstrel's/Wanderer's if not above the max possiable.
 
 	if( src != bl && status_isdead(bl) && skillid != ALL_RESURRECTION && skillid != PR_REDEMPTIO && skillid != NPC_WIDESOULDRAIN && skillid != WM_DEADHILLHERE && skillid != WE_ONEFOREVER)
 		return 1;
@@ -9681,11 +9679,11 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case WM_LERADS_DEW:
 	case WM_UNLIMITED_HUMMING_VOICE:
 			if( flag&1 )
-				sc_start2(bl,type,100,skilllv,chorusbonus,skill_get_time(skillid,skilllv));
+				sc_start2(bl,type,100,skilllv,skill_chorus_count(sd),skill_get_time(skillid,skilllv));
 			else if( sd )
 			{
 				party_foreachsamemap(skill_area_sub,sd,skill_get_splash(skillid,skilllv),src,skillid,skilllv,tick,flag|BCT_PARTY|1,skill_castend_nodamage_id);
-				sc_start2(bl,type,100,skilllv,chorusbonus,skill_get_time(skillid,skilllv));
+				sc_start2(bl,type,100,skilllv,skill_chorus_count(sd),skill_get_time(skillid,skilllv));
 				clif_skill_nodamage(src,bl,skillid,skilllv,1);
 			}
 			break;
@@ -9718,10 +9716,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case WM_MELODYOFSINK:
 	case WM_BEYOND_OF_WARCRY:
 		if( flag&1 )
-			sc_start2(bl,type,100,skilllv,chorusbonus,skill_get_time(skillid,skilllv));
+			sc_start2(bl,type,100,skilllv,skill_chorus_count(sd),skill_get_time(skillid,skilllv));
 		else if( sd )
 		{
-			if ( rand()%100 < 15 + 5 * skilllv + 5 * chorusbonus )
+			if ( rand()%100 < 15 + 5 * skilllv + 5 * skill_chorus_count(sd) )
 			{
 				map_foreachinrange(skill_area_sub, src, skill_get_splash(skillid,skilllv),BL_PC, src, skillid, skilllv, tick, flag|BCT_ENEMY|1, skill_castend_nodamage_id);
 				clif_skill_nodamage(src,bl,skillid,skilllv,1);
@@ -11561,8 +11559,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 					case 6: sx = src->x + i; break;// East
 				}
 
-				// Need info on the official stepping speed. [Rytech]
-				skill_addtimerskill(src,gettick() + (100 * i),0,sx,sy,skillid,skilllv,dir,flag);
+				skill_addtimerskill(src,gettick() + (140 * i),0,sx,sy,skillid,skilllv,dir,flag);
 			}
 
 			// For some reason the sound effect only plays on the damage packet.
@@ -18313,8 +18310,29 @@ int skill_changematerial(struct map_session_data *sd, int n, unsigned short *ite
 	return 0;
 }
 
+int skill_chorus_count (struct map_session_data *sd)
+{
+	nullpo_ret(sd);
+
+	// Minstrel/Wanderer count check for chorus skills.
+	// Bonus remains 0 unless 3 or more Minstrel's/Wanderer's are in the party.
+	if ( sd && sd->status.party_id )
+	{
+		if( party_foreachsamemap(party_sub_count_chorus, sd, 0) > 7)
+			return 5;//Maximum effect possiable from 7 or more Minstrel's/Wanderer's
+		else if( party_foreachsamemap(party_sub_count_chorus, sd, 0) > 2)
+			return (party_foreachsamemap(party_sub_count_chorus, sd, 0) - 2);//Effect bonus from additional Minstrel's/Wanderer's if not above the max possiable.
+	}
+
+	return 0;
+}
+
 int skill_akaitsuki_damage (struct block_list* src, struct block_list *bl, int damage, int skillid, int skilllv, unsigned int tick)
-{	// Deals damage to the affected target if healed from one of the following skills....
+{
+	nullpo_ret(src);
+	nullpo_ret(bl);
+
+	// Deals damage to the affected target if healed from one of the following skills....
 	// AL_HEAL, PR_SANCTUARY, BA_APPLEIDUN, AB_RENOVATIO, AB_HIGHNESSHEAL, SO_WARMER
 	damage = damage / 2;// Damage is half of the heal amount.
 	clif_skill_damage(src, bl, tick, status_get_amotion(src), status_get_dmotion(bl), damage, 1, skillid == AB_HIGHNESSHEAL ? AL_HEAL : skillid, skilllv, 6);
