@@ -541,6 +541,8 @@ extern struct Battle_Config
 	int homunculus_pyroclastic_autocast;
 	int pyroclastic_breaks_weapon;
 	int giant_growth_behavior;
+	int mass_spiral_max_def;
+	int rebel_base_lv_skill_effect;
 
 	// Costume Outfits
 	int hanbok_ignorepalette;

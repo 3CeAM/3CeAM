@@ -1023,7 +1023,7 @@ int party_sub_count(struct block_list *bl, va_list ap)
 	return 1;
 }
 
-// Speial check for Royal Guard's Banding skill and other skills that work together with it.
+// Special check for Royal Guard's Banding skill and other skills that work together with it.
 // NOTE: This system is currently not in use and will be disabled until all required skills
 // are updated to support its function. [Rytech]
 /*int party_sub_count_banding(struct block_list *bl, va_list ap)
@@ -1042,7 +1042,7 @@ int party_sub_count(struct block_list *bl, va_list ap)
 	return 1;
 }*/
 
-// Speial check for Minstrel's and Wanderer's chorus skills.
+// Special check for Minstrel / Wanderer chorus skills.
 int party_sub_count_chorus(struct block_list *bl, va_list ap)
 {
 	struct map_session_data *sd = (TBL_PC *)bl;
