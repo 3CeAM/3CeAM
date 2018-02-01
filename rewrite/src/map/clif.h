@@ -774,7 +774,6 @@ void clif_open_search_store_info(struct map_session_data* sd);
 void clif_search_store_info_click_ack(struct map_session_data* sd, short x, short y);
 
 void clif_equip_damaged(struct map_session_data *sd, int equip_index);
-void clif_millenniumshield(struct map_session_data *sd, short shields );
 
 // Displays 3rd job and other newer status's.
 void clif_status_change_single(struct block_list *dst, struct block_list *bl, int type, int flag, unsigned int tick, int val1, int val2, int val3);
@@ -785,6 +784,7 @@ void clif_elemental_updatestatus(struct map_session_data *sd, int type);
 
 void clif_monster_hp_bar( struct mob_data* md, int fd );
 void clif_fast_movement(struct block_list *bl, short x, short y);
+int clif_millenniumshield(struct map_session_data *sd, short shield_count);
 int clif_spiritball_attribute(struct map_session_data *sd);
 void clif_map_type2(struct block_list *bl,enum send_target target);
 int clif_crimson_marker_xy(struct map_session_data *sd);
