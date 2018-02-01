@@ -4023,6 +4023,29 @@ ACMD_FUNC(spiritball)
 	return 0;
 }
 
+ACMD_FUNC(rageball)
+{
+	int max_rageballs = min(ARRAYLENGTH(sd->rage_timer), 0x7FFF);
+	int number;
+	nullpo_retr(-1, sd);
+
+	if( !message || !*message || (number = atoi(message)) < 0 || number > max_rageballs )
+	{
+		char msg[CHAT_SIZE_MAX];
+		safesnprintf(msg, sizeof(msg), "Usage: @rageball <number: 0-%d>", max_rageballs);
+		clif_displaymessage(fd, msg);
+		return -1;
+	}
+
+	if( sd->rageball > 0 )
+		pc_delrageball(sd, sd->rageball, 1);
+	sd->rageball = number;
+	clif_millenniumshield(sd, sd->rageball);
+	// no message, player can look the difference
+
+	return 0;
+}
+
 /*==========================================
  *
  *------------------------------------------*/
@@ -9555,6 +9578,7 @@ AtCommandInfo atcommand_info[] = {
 	{ "skillfailmsg",      99,99,     atcommand_skillfailmsg },
 	{ "produceeffect",     99,99,     atcommand_produceeffect },
 	{ "effect2",           40,40,     atcommand_effect2 },
+	{ "rageball",          40,40,     atcommand_rageball },
 	//Mutated Homunculus Commands
 	{ "hommutate",         60,60,     atcommand_hommutation },
 	{ "hommutation",       60,60,     atcommand_hommutation },

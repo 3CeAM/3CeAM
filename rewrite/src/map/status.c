@@ -8669,7 +8669,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 				val2 += 10 * sd->spiritball_old;
 			else
 				val2 += 100;
-			//val3 = ????// Resistance From Undead. Formula Unknown.
 			break;
 		case SC_HEAT_BARREL:
 			if (sd)
