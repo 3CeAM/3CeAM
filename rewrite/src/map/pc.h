@@ -342,8 +342,8 @@ struct map_session_data {
 	short rageball, rageball_old;
 	int rage_timer[MAX_SKILL_LEVEL];
 
-	short spiritballnumber, spiritballnumber_old;//Sets the sphere number for sphere's with attributes.
-	int spirit_attribute_timer[MAX_SKILL_LEVEL];//Thought about using spirit_timer for attribute type sphere's too, but decided to use a dedicated system insteaed. [Rytech]
+	short charmball, charmball_old, charmball_type;
+	int charm_timer[MAX_SKILL_LEVEL];
 
 	unsigned char potion_success_counter; //Potion successes in row counter
 	unsigned char mission_count; //Stores the bounty kill count for TK_MISSION
@@ -865,8 +865,8 @@ int pc_addspiritball(struct map_session_data *sd,int interval,int max);
 int pc_delspiritball(struct map_session_data *sd,int count,int type);
 int pc_addrageball(struct map_session_data *sd,int interval,int max);
 int pc_delrageball(struct map_session_data *sd,int count,int type);
-int pc_addspiritball_attribute(struct map_session_data *sd,int interval,int max);
-int pc_delspiritball_attribute(struct map_session_data *sd,int count,int type);
+int pc_addcharmball(struct map_session_data *sd,int interval,int max, short charm_type);
+int pc_delcharmball(struct map_session_data *sd,int count,int type);
 void pc_addfame(struct map_session_data *sd,int count);
 unsigned char pc_famerank(int char_id, int job);
 int pc_set_hate_mob(struct map_session_data *sd, int pos, struct block_list *bl);

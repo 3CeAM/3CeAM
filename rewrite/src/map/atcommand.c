@@ -4046,6 +4046,32 @@ ACMD_FUNC(rageball)
 	return 0;
 }
 
+ACMD_FUNC(charmball)
+{
+	int max_charmballs = min(ARRAYLENGTH(sd->charm_timer), 0x7FFF);
+	int number, type;
+	nullpo_retr(-1, sd);
+
+	if( !message || !*message || sscanf(message, "%d %d", &number, &type) < 1 || number > max_charmballs || type < 1 || type > 4 )
+	{
+		char msg[CHAT_SIZE_MAX];
+		safesnprintf(msg, sizeof(msg), "Usage: @charmball <number: 0-%d> <charm type>", max_charmballs);
+		clif_displaymessage(fd, msg);
+		clif_displaymessage(fd, "Charm Types: 1: Water, 2: Earth, 3: Fire, 4: Wind");
+		return -1;
+	}
+
+	if( sd->charmball > 0 )
+		pc_delcharmball(sd, sd->charmball, 3);
+	sd->charmball = number;
+	sd->charmball_type = type;
+	status_calc_bl(&sd->bl, SCB_WATK|SCB_DEF);// For earth charm bonus.
+	clif_spiritball_attribute(sd);
+	// no message, player can look the difference
+
+	return 0;
+}
+
 /*==========================================
  *
  *------------------------------------------*/
@@ -9579,6 +9605,7 @@ AtCommandInfo atcommand_info[] = {
 	{ "produceeffect",     99,99,     atcommand_produceeffect },
 	{ "effect2",           40,40,     atcommand_effect2 },
 	{ "rageball",          40,40,     atcommand_rageball },
+	{ "charmball",         40,40,     atcommand_charmball },
 	//Mutated Homunculus Commands
 	{ "hommutate",         60,60,     atcommand_hommutation },
 	{ "hommutation",       60,60,     atcommand_hommutation },

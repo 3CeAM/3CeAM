@@ -330,7 +330,7 @@ int pc_delrageball(struct map_session_data *sd,int count,int type)
 	return 0;
 }
 
-static int pc_spiritball_attribute_timer(int tid, unsigned int tick, int id, intptr data)
+static int pc_charmball_timer(int tid, unsigned int tick, int id, intptr data)
 {
 	struct map_session_data *sd;
 	int i;
@@ -338,31 +338,31 @@ static int pc_spiritball_attribute_timer(int tid, unsigned int tick, int id, int
 	if( (sd=(struct map_session_data *)map_id2sd(id)) == NULL || sd->bl.type!=BL_PC )
 		return 1;
 
-	if( sd->spiritballnumber <= 0 )
+	if( sd->charmball <= 0 )
 	{
-		ShowError("pc_spiritball_attribute_timer: %d spiritball's available. (aid=%d cid=%d tid=%d)\n", sd->spiritballnumber, sd->status.account_id, sd->status.char_id, tid);
-		sd->spiritballnumber = 0;
+		ShowError("pc_charmball_timer: %d charmball's available. (aid=%d cid=%d tid=%d)\n", sd->charmball, sd->status.account_id, sd->status.char_id, tid);
+		sd->charmball = 0;
 		return 0;
 	}
 
-	ARR_FIND(0, sd->spiritballnumber, i, sd->spirit_attribute_timer[i] == tid);
-	if( i == sd->spiritballnumber )
+	ARR_FIND(0, sd->charmball, i, sd->charm_timer[i] == tid);
+	if( i == sd->charmball )
 	{
-		ShowError("pc_spiritball_attribute_timer: timer not found (aid=%d cid=%d tid=%d)\n", sd->status.account_id, sd->status.char_id, tid);
+		ShowError("pc_charmball_timer: timer not found (aid=%d cid=%d tid=%d)\n", sd->status.account_id, sd->status.char_id, tid);
 		return 0;
 	}
 
-	sd->spiritballnumber--;
-	if( i != sd->spiritballnumber )
-		memmove(sd->spirit_attribute_timer+i, sd->spirit_attribute_timer+i+1, (sd->spiritballnumber-i)*sizeof(int));
-	sd->spirit_attribute_timer[sd->spiritballnumber] = INVALID_TIMER;
+	sd->charmball--;
+	if( i != sd->charmball )
+		memmove(sd->charm_timer+i, sd->charm_timer+i+1, (sd->charmball-i)*sizeof(int));
+	sd->charm_timer[sd->charmball] = INVALID_TIMER;
 
 	clif_spiritball_attribute(sd);
 
 	return 0;
 }
 
-int pc_addspiritball_attribute(struct map_session_data *sd,int interval,int max)
+int pc_addcharmball(struct map_session_data *sd,int interval,int max, short charm_type)
 {
 	int tid, i;
 
@@ -370,61 +370,75 @@ int pc_addspiritball_attribute(struct map_session_data *sd,int interval,int max)
 
 	if(max > MAX_SKILL_LEVEL)
 		max = MAX_SKILL_LEVEL;
-	if(sd->spiritballnumber < 0)
-		sd->spiritballnumber = 0;
+	if(sd->charmball < 0)
+		sd->charmball = 0;
 
-	if( sd->spiritballnumber && sd->spiritballnumber >= max )
+	// If player has charm balls but its not the same type as the request type, delete them.
+	if ( sd->charmball > 0 && sd->charmball_type != charm_type )
+		pc_delcharmball(sd, sd->charmball, 1);
+
+	// Give the charms a element if none exists.
+	// Also update the element if a different one is requested.
+	if ( sd->charmball_type != charm_type )
+		sd->charmball_type = charm_type;
+
+	if( sd->charmball && sd->charmball >= max )
 	{
-		if(sd->spirit_attribute_timer[0] != INVALID_TIMER)
-			delete_timer(sd->spirit_attribute_timer[0],pc_spiritball_attribute_timer);
-		sd->spiritballnumber--;
-		if( sd->spiritballnumber != 0 )
-			memmove(sd->spirit_attribute_timer+0, sd->spirit_attribute_timer+1, (sd->spiritballnumber)*sizeof(int));
-		sd->spirit_attribute_timer[sd->spiritballnumber] = INVALID_TIMER;
+		if(sd->charm_timer[0] != INVALID_TIMER)
+			delete_timer(sd->charm_timer[0],pc_charmball_timer);
+		sd->charmball--;
+		if( sd->charmball != 0 )
+			memmove(sd->charm_timer+0, sd->charm_timer+1, (sd->charmball)*sizeof(int));
+		sd->charm_timer[sd->charmball] = INVALID_TIMER;
 	}
 
-	tid = add_timer(gettick()+interval, pc_spiritball_attribute_timer, sd->bl.id, 0);
-	ARR_FIND(0, sd->spiritballnumber, i, sd->spirit_attribute_timer[i] == INVALID_TIMER || DIFF_TICK(get_timer(tid)->tick, get_timer(sd->spirit_attribute_timer[i])->tick) < 0);
-	if( i != sd->spiritballnumber )
-		memmove(sd->spirit_attribute_timer+i+1, sd->spirit_attribute_timer+i, (sd->spiritballnumber-i)*sizeof(int));
-	sd->spirit_attribute_timer[i] = tid;
-	sd->spiritballnumber++;
+	tid = add_timer(gettick()+interval, pc_charmball_timer, sd->bl.id, 0);
+	ARR_FIND(0, sd->charmball, i, sd->charm_timer[i] == INVALID_TIMER || DIFF_TICK(get_timer(tid)->tick, get_timer(sd->charm_timer[i])->tick) < 0);
+	if( i != sd->charmball )
+		memmove(sd->charm_timer+i+1, sd->charm_timer+i, (sd->charmball-i)*sizeof(int));
+	sd->charm_timer[i] = tid;
+	sd->charmball++;
+	if ( sd->charmball_type == CHARM_EARTH )
+		status_calc_bl(&sd->bl, SCB_WATK|SCB_DEF);
 	clif_spiritball_attribute(sd);
 
 	return 0;
 }
 
-int pc_delspiritball_attribute(struct map_session_data *sd,int count,int type)
+// Type: 0x1 = Don't update sphere visual display, 0x2 = Dont recalculate WATK/DEF
+int pc_delcharmball(struct map_session_data *sd,int count,int type)
 {
 	int i;
 
 	nullpo_ret(sd);
 
-	if(sd->spiritballnumber <= 0) {
-		sd->spiritballnumber = 0;
+	if(sd->charmball <= 0) {
+		sd->charmball = 0;
 		return 0;
 	}
 
 	if(count <= 0)
 		return 0;
-	if(count > sd->spiritballnumber)
-		count = sd->spiritballnumber;
-	sd->spiritballnumber -= count;
+	if(count > sd->charmball)
+		count = sd->charmball;
+	sd->charmball -= count;
+	if ( !(type&2) && sd->charmball_type == CHARM_EARTH )
+		status_calc_bl(&sd->bl, SCB_WATK|SCB_DEF);
 	if(count > MAX_SKILL_LEVEL)
 		count = MAX_SKILL_LEVEL;
 
 	for(i=0;i<count;i++) {
-		if(sd->spirit_attribute_timer[i] != INVALID_TIMER) {
-			delete_timer(sd->spirit_attribute_timer[i],pc_spiritball_attribute_timer);
-			sd->spirit_attribute_timer[i] = INVALID_TIMER;
+		if(sd->charm_timer[i] != INVALID_TIMER) {
+			delete_timer(sd->charm_timer[i],pc_charmball_timer);
+			sd->charm_timer[i] = INVALID_TIMER;
 		}
 	}
 	for(i=count;i<MAX_SKILL_LEVEL;i++) {
-		sd->spirit_attribute_timer[i-count] = sd->spirit_attribute_timer[i];
-		sd->spirit_attribute_timer[i] = INVALID_TIMER;
+		sd->charm_timer[i-count] = sd->charm_timer[i];
+		sd->charm_timer[i] = INVALID_TIMER;
 	}
 
-	if(!type)
+	if(!(type&1))
 		clif_spiritball_attribute(sd);
 
 	return 0;
@@ -1241,7 +1255,7 @@ bool pc_authok(struct map_session_data *sd, int login_id2, time_t expiration_tim
 	for(i = 0; i < MAX_SKILL_LEVEL; i++)
 		sd->rage_timer[i] = INVALID_TIMER;
 	for(i = 0; i < MAX_SKILL_LEVEL; i++)
-		sd->spirit_attribute_timer[i] = INVALID_TIMER;
+		sd->charm_timer[i] = INVALID_TIMER;
 	for(i = 0; i < ARRAYLENGTH(sd->autobonus); i++)
 		sd->autobonus[i].active = INVALID_TIMER;
 	for(i = 0; i < ARRAYLENGTH(sd->autobonus2); i++)
@@ -6733,8 +6747,8 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 	if ( sd && sd->rageball )
 		pc_delrageball(sd,sd->rageball,0);
 
-	if ( sd && sd->spiritballnumber )
-		pc_delspiritball_attribute(sd,sd->spiritballnumber,0);
+	if ( sd && sd->charmball )
+		pc_delcharmball(sd,sd->charmball,0);
 
 	if (src)
 	switch (src->type) {
@@ -9676,7 +9690,7 @@ int do_init_pc(void)
 	add_timer_func_list(pc_autosave, "pc_autosave");
 	add_timer_func_list(pc_spiritball_timer, "pc_spiritball_timer");
 	add_timer_func_list(pc_rageball_timer, "pc_rageball_timer");
-	add_timer_func_list(pc_spiritball_attribute_timer, "pc_spiritball_attribute_timer");
+	add_timer_func_list(pc_charmball_timer, "pc_charmball_timer");
 	add_timer_func_list(pc_follow_timer, "pc_follow_timer");
 	add_timer_func_list(pc_endautobonus, "pc_endautobonus");
 

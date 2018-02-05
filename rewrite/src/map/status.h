@@ -672,13 +672,10 @@ typedef enum sc_type {
 	SC_MILLENNIUMSHIELD,
 	SC_GLOOMYDAY_SK,
 	SC_CHAOS,
-	SC_KAHU_ENTEN,
-	SC_HYOUHU_HUBUKI,
-	SC_KAZEHU_SEIRAN,
-	SC_DOHU_KOUKAI,
+	// ID's 595 - 598 is open.
 
 	//More Status
-	SC_SUMMER2,
+	SC_SUMMER2 = 599,
 
 	//Summoner
 	SC_SUHIDE,
@@ -1932,7 +1929,7 @@ struct status_data {
 	unsigned char
 		def_ele, ele_lv,
 		size, race;
-	signed char
+	signed short
 		def, mdef;
 	int mado_heat;	// Overheat status. [LimitLine]
 	struct weapon_atk rhw, lhw; //Right Hand/Left Hand Weapon.
