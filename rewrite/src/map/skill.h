@@ -1980,6 +1980,13 @@ enum lux_pass {
 	LUX_MILLENNIUMSHIELD	= 0x200
 };
 
+enum charm_element {
+	CHARM_WATER	= 1,
+	CHARM_EARTH,
+	CHARM_FIRE,
+	CHARM_WIND
+};
+
 // msgstringtable
 // To use with clif_skill_msg();
 enum skill_msg {

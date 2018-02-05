@@ -270,9 +270,13 @@ int battle_attr_ratio(int atk_elem,int def_type, int def_lv)
  *------------------------------------------*/
 int battle_attr_fix(struct block_list *src, struct block_list *target, int damage,int atk_elem,int def_type, int def_lv)
 {
+	struct map_session_data *sd, *tsd;
 	struct status_change *sc=NULL, *tsc=NULL;
 	int ratio;
-	
+
+	sd = BL_CAST(BL_PC, src);
+	tsd = BL_CAST(BL_PC, target);
+
 	if (src) sc = status_get_sc(src);
 	if (target) tsc = status_get_sc(target);
 	
@@ -297,7 +301,11 @@ int battle_attr_fix(struct block_list *src, struct block_list *target, int damag
 		if(sc->data[SC_FIRE_CLOAK_OPTION] && atk_elem == ELE_FIRE)
 			damage += damage * sc->data[SC_FIRE_CLOAK_OPTION]->val2 / 100;
 	}
-	if( tsc && tsc->count )
+
+	if ( tsd && tsd->charmball > 0 && atk_elem == tsd->charmball_type )
+		ratio -= 2 * tsd->charmball;
+
+	if ( tsc && tsc->count )
 	{
 		if ( tsc->data[SC_CRYSTALIZE] )
 		{
@@ -1483,9 +1491,14 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 	t_class = status_get_class(target);
 	s_ele = s_ele_ = skill_get_ele(skill_num, skill_lv);
 	if( !skill_num || s_ele == -1 )
-	{ //Take weapon's element
-		s_ele = sstatus->rhw.ele;
-		s_ele_ = sstatus->lhw.ele;
+	{// Weapons takes the element of the charm spheres summoned if you have 10 or more.
+		if( sd && sd->charmball >= 10 )
+			s_ele = s_ele_ = sd->charmball_type;
+		else
+		{// Take weapon's element
+			s_ele = sstatus->rhw.ele;
+			s_ele_ = sstatus->lhw.ele;
+		}
 		if( flag.arrow && sd && sd->arrow_ele )
 			s_ele = sd->arrow_ele;
 		if( battle_config.attack_attr_none&src->type )
@@ -3501,13 +3514,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 		
 		if( skill_num == CR_SHIELDBOOMERANG || skill_num == PA_SHIELDCHAIN )
 		{ //Refine bonus applies after cards and elements.
-			int damagevalue = 0;
 			short index= sd->equip_index[EQI_HAND_L];
 			if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_ARMOR )
-				damagevalue = 10 * sd->status.inventory[index].refine;
-			if( sc && sc->data[SC_GLOOMYDAY_SK] )//????
-				damagevalue += damagevalue * (15 + rand()%sc->data[SC_GLOOMYDAY_SK]->val3) / 100;
-			ATK_ADD(damagevalue);
+				ATK_ADD(10*sd->status.inventory[index].refine);
 		}
 	} //if (sd)
 	else if (hd)
@@ -3779,15 +3788,8 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 			break;
 
 		case KO_KAIHOU:
-			if ( sc )
-				if ( sc->data[SC_KAHU_ENTEN] )
-					s_ele = ELE_FIRE;
-				else if ( sc->data[SC_HYOUHU_HUBUKI] )
-					s_ele = ELE_WATER;
-				else if ( sc->data[SC_KAZEHU_SEIRAN] )
-					s_ele = ELE_WIND;
-				else if ( sc->data[SC_DOHU_KOUKAI] )
-					s_ele = ELE_EARTH;
+			if ( sd )// Take the element of the charms.
+				s_ele = sd->charmball_type;
 			break;
 	}
 
@@ -3998,43 +4000,43 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					case SL_SMA:
 						skillratio += -60 + status_get_base_lv_effect(src); //Base damage is 40% + lv%
 						break;
-					case NJ_KOUENKA:
+					case NJ_KOUENKA:// Crimson Fire Petal
 						skillratio -= 10;
-						if( sc && sc->data[SC_KAHU_ENTEN] )
-							skillratio += 20 * sc->data[SC_KAHU_ENTEN]->val2;
+						if( sd && sd->charmball > 0 && sd->charmball_type == CHARM_FIRE )
+							skillratio += 20 * sd->charmball;
 						break;
-					case NJ_KAENSIN:
+					case NJ_KAENSIN:// Crimson Fire Formation
 						skillratio -= 50;
-						if( sc && sc->data[SC_KAHU_ENTEN] )
-							skillratio += 5 * sc->data[SC_KAHU_ENTEN]->val2;
+						if( sd && sd->charmball > 0 && sd->charmball_type == CHARM_FIRE )
+							skillratio += 10 * sd->charmball;
 						break;
-					case NJ_BAKUENRYU:
+					case NJ_BAKUENRYU:// Raging Fire Dragon
 						skillratio += 50*(skill_lv-1);
-						if( sc && sc->data[SC_KAHU_ENTEN] )
-							skillratio += 15 * sc->data[SC_KAHU_ENTEN]->val2;
+						if( sd && sd->charmball > 0 && sd->charmball_type == CHARM_FIRE )
+							skillratio += 15 * sd->charmball;
 						break;
-					case NJ_HYOUSENSOU:
-						if( sc && sc->data[SC_HYOUHU_HUBUKI] )
-							skillratio += 5 * sc->data[SC_HYOUHU_HUBUKI]->val2;
+					case NJ_HYOUSENSOU:// Spear of Ice
+						if( sd && sd->charmball > 0 && sd->charmball_type == CHARM_WATER )
+							skillratio += 5 * sd->charmball;
 						break;
-					case NJ_HYOUSYOURAKU:
+					case NJ_HYOUSYOURAKU:// Ice Meteor
 						skillratio += 50*skill_lv;
-						if( sc && sc->data[SC_HYOUHU_HUBUKI] )
-							skillratio += 25 * sc->data[SC_HYOUHU_HUBUKI]->val2;
+						if( sd && sd->charmball > 0 && sd->charmball_type == CHARM_WATER )
+							skillratio += 25 * sd->charmball;
 						break;
-					case NJ_HUUJIN:
-						if( sc && sc->data[SC_KAZEHU_SEIRAN] )
-							skillratio += 20 * sc->data[SC_KAZEHU_SEIRAN]->val2;
+					case NJ_HUUJIN:// Wind Blade
+						if( sd && sd->charmball > 0 && sd->charmball_type == CHARM_WIND )
+							skillratio += 20 * sd->charmball;
 						break;
-					case NJ_RAIGEKISAI:
+					case NJ_RAIGEKISAI:// Lightning Strike of Destruction
 						skillratio += 60 + 40*skill_lv;
-						if( sc && sc->data[SC_KAZEHU_SEIRAN] )
-							skillratio += 15 * sc->data[SC_KAZEHU_SEIRAN]->val2;
+						if( sd && sd->charmball > 0 && sd->charmball_type == CHARM_WIND )
+							skillratio += 15 * sd->charmball;
 						break;
-					case NJ_KAMAITACHI:
+					case NJ_KAMAITACHI:// Kamaitachi
 						skillratio += 100*skill_lv;
-						if( sc && sc->data[SC_KAZEHU_SEIRAN] )
-							skillratio += 10 * sc->data[SC_KAZEHU_SEIRAN]->val2;
+						if( sd && sd->charmball > 0 && sd->charmball_type == CHARM_WIND )
+							skillratio += 10 * sd->charmball;
 						break;
 					case NPC_ENERGYDRAIN:
 						skillratio += 100*skill_lv;
@@ -4233,7 +4235,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							skillratio += 10 + 20 * skill_lv;
 						break;
 					case KO_KAIHOU:
-						skillratio = 200 * sd->spiritballnumber;
+						skillratio = 200 * (sd?sd->charmball_old:10);
 						if( level_effect_bonus == 1 )
 							skillratio = skillratio * status_get_base_lv_effect(src) / 100;
 						break;
@@ -4366,7 +4368,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 		}
 
 		if(!flag.imdef){
-			char mdef = tstatus->mdef;
+			short mdef = tstatus->mdef;
 			int mdef2= tstatus->mdef2;
 			if(sd) {
 				i = sd->ignore_mdef[is_boss(target)?RC_BOSS:RC_NONBOSS];
@@ -5979,7 +5981,7 @@ static const struct _battle_data {
 	{ "max_cart_weight",                    &battle_config.max_cart_weight,                 8000,   100,    1000000,        },
 	{ "max_parameter",                      &battle_config.max_parameter,                   99,     10,     10000,          },
 	{ "max_baby_parameter",                 &battle_config.max_baby_parameter,              80,     10,     10000,          },
-	{ "max_def",                            &battle_config.max_def,                         99,     0,      INT_MAX,        },
+	{ "max_def",                            &battle_config.max_def,                         99,     0,      SHRT_MAX,       },
 	{ "over_def_bonus",                     &battle_config.over_def_bonus,                  0,      0,      1000,           },
 	{ "skill_log",                          &battle_config.skill_log,                       BL_NUL, BL_NUL, BL_ALL,         },
 	{ "battle_log",                         &battle_config.battle_log,                      0,      0,      1,              },

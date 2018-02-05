@@ -589,11 +589,7 @@ void initChangeTables(void)
 	set_sc( KO_JYUMONJIKIRI      , SC_JYUMONJIKIRI    , SI_KO_JYUMONJIKIRI , SCB_NONE );
 	set_sc( KO_MEIKYOUSISUI      , SC_MEIKYOUSISUI    , SI_MEIKYOUSISUI    , SCB_NONE );
 	set_sc( KO_KYOUGAKU          , SC_KYOUGAKU        , SI_KYOUGAKU        , SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK );
-	set_sc( KO_KAHU_ENTEN        , SC_KAHU_ENTEN      , SI_BLANK           , SCB_ATK_ELE );
-	set_sc( KO_HYOUHU_HUBUKI     , SC_HYOUHU_HUBUKI   , SI_BLANK           , SCB_ATK_ELE );
-	set_sc( KO_KAZEHU_SEIRAN     , SC_KAZEHU_SEIRAN   , SI_BLANK           , SCB_ATK_ELE );
-	set_sc( KO_DOHU_KOUKAI       , SC_DOHU_KOUKAI     , SI_BLANK           , SCB_WATK|SCB_DEF|SCB_ATK_ELE );
-	set_sc( KO_ZENKAI            , SC_ZENKAI          , SI_ZENKAI          , SCB_NONE );
+	set_sc( KO_ZENKAI            , SC_ZENKAI          , SI_ZENKAI          , SCB_NONE );// Where's my WATK Increase??? [Rytech]
 	set_sc( KO_IZAYOI            , SC_IZAYOI          , SI_IZAYOI          , SCB_MATK );
 	set_sc( KG_KAGEHUMI          , SC_KAGEHUMI        , SI_KG_KAGEHUMI     , SCB_NONE );
 	set_sc( KG_KYOMU             , SC_KYOMU           , SI_KYOMU           , SCB_NONE );
@@ -4615,8 +4611,8 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		(sc->data[SC_WIND_INSIGNIA] && sc->data[SC_WIND_INSIGNIA]->val1 == 2) ||
 		(sc->data[SC_EARTH_INSIGNIA] && sc->data[SC_EARTH_INSIGNIA]->val1 == 2))
 		watk += watk * 10 / 100;
-	if(sc->data[SC_DOHU_KOUKAI])//Recheck to see if it increases BATK [Rytech]
-		watk += watk * (15 * sc->data[SC_DOHU_KOUKAI]->val2) / 100;
+	if ( sd && sd->charmball > 0 && sd->charmball_type == CHARM_EARTH )
+		watk += watk * (10 * sd->charmball) / 100;
 	if(sc->data[SC_SHRIMP])
 		watk += watk * 10 / 100;
 	if(sc->data[SC_ZANGETSU] && sc->data[SC_ZANGETSU]->val3 == 2)
@@ -4865,8 +4861,10 @@ static signed short status_calc_flee2(struct block_list *bl, struct status_chang
 
 static signed char status_calc_def(struct block_list *bl, struct status_change *sc, int def)
 {
+	TBL_PC *sd = BL_CAST(BL_PC,bl);
+
 	if( !sc || !sc->count )
-		return (signed char)cap_value(def,CHAR_MIN,CHAR_MAX);
+		return (signed char)cap_value(def,CHAR_MIN,battle_config.max_def);
 
 	if(sc->data[SC_BERSERK])
 		return 0;
@@ -4904,8 +4902,9 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 		def += def * ( 2 * sc->data[SC_FORCEOFVANGUARD]->val1 ) / 100;
 	if( sc->data[SC_ECHOSONG] )
 		def += def * sc->data[SC_ECHOSONG]->val4 / 100;
-	if(sc->data[SC_DOHU_KOUKAI])//Does this also increase DEF gained from refinement bonuses? Also need offical DEF increase value. [Rytech]
-		def += def * (5 * sc->data[SC_DOHU_KOUKAI]->val2) / 100;
+	// Official increase is 10% per charm for a max of 100%, but is clearly overpowered for pre-re. Setting to 5% per charm to keep it balanced. [Rytech]
+	if ( sd && sd->charmball > 0 && sd->charmball_type == CHARM_EARTH )
+		def += def * (5 * sd->charmball) / 100;
 	if(sc->data[SC_ANGRIFFS_MODUS])// Fixed decrease. Divided by 10 to keep it balanced for classic mechanics.
 		def -= (30 + 20 * sc->data[SC_ANGRIFFS_MODUS]->val1) / 10;
 	if(sc->data[SC_ODINS_POWER])
@@ -4955,7 +4954,7 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 	if( sc->data[SC_POWER_OF_GAIA] )
 		def += def * sc->data[SC_POWER_OF_GAIA]->val2 / 100;
 
-	return (signed char)cap_value(def,CHAR_MIN,CHAR_MAX);
+	return (signed char)cap_value(def,CHAR_MIN,battle_config.max_def);
 }
 
 static signed short status_calc_def2(struct block_list *bl, struct status_change *sc, int def2)
@@ -5001,7 +5000,7 @@ static signed short status_calc_def2(struct block_list *bl, struct status_change
 static signed char status_calc_mdef(struct block_list *bl, struct status_change *sc, int mdef)
 {
 	if(!sc || !sc->count)
-		return (signed char)cap_value(mdef,CHAR_MIN,CHAR_MAX);
+		return (signed char)cap_value(mdef,CHAR_MIN,battle_config.max_def);
 
 	if(sc->data[SC_BERSERK])
 		return 0;
@@ -5047,7 +5046,7 @@ static signed char status_calc_mdef(struct block_list *bl, struct status_change 
 	if(sc->data[SC_WATER_BARRIER])
 		mdef += sc->data[SC_WATER_BARRIER]->val2;
 
-	return (signed char)cap_value(mdef,CHAR_MIN,CHAR_MAX);
+	return (signed char)cap_value(mdef,CHAR_MIN,battle_config.max_def);
 }
 
 static signed short status_calc_mdef2(struct block_list *bl, struct status_change *sc, int mdef2)
@@ -5558,17 +5557,13 @@ unsigned char status_calc_attack_element(struct block_list *bl, struct status_ch
 		return element;
 	if(sc->data[SC_ENCHANTARMS])
 		return sc->data[SC_ENCHANTARMS]->val2;
-	if(sc->data[SC_WATERWEAPON] || (sc->data[SC_WATER_INSIGNIA] && sc->data[SC_WATER_INSIGNIA]->val1 == 2) ||
-		(sc->data[SC_HYOUHU_HUBUKI] && sc->data[SC_HYOUHU_HUBUKI]->val2 == 10))
+	if(sc->data[SC_WATERWEAPON] || (sc->data[SC_WATER_INSIGNIA] && sc->data[SC_WATER_INSIGNIA]->val1 == 2))
 		return ELE_WATER;
-	if(sc->data[SC_EARTHWEAPON] || (sc->data[SC_EARTH_INSIGNIA] && sc->data[SC_EARTH_INSIGNIA]->val1 == 2) ||
-		(sc->data[SC_DOHU_KOUKAI] && sc->data[SC_DOHU_KOUKAI]->val2 == 10))
+	if(sc->data[SC_EARTHWEAPON] || (sc->data[SC_EARTH_INSIGNIA] && sc->data[SC_EARTH_INSIGNIA]->val1 == 2))
 		return ELE_EARTH;
-	if(sc->data[SC_FIREWEAPON] || (sc->data[SC_FIRE_INSIGNIA] && sc->data[SC_FIRE_INSIGNIA]->val1 == 2) ||
-		(sc->data[SC_KAHU_ENTEN] && sc->data[SC_KAHU_ENTEN]->val2 == 10) || sc->data[SC_PYROCLASTIC])
+	if(sc->data[SC_FIREWEAPON] || (sc->data[SC_FIRE_INSIGNIA] && sc->data[SC_FIRE_INSIGNIA]->val1 == 2) || sc->data[SC_PYROCLASTIC])
 		return ELE_FIRE;
-	if(sc->data[SC_WINDWEAPON] || (sc->data[SC_WIND_INSIGNIA] && sc->data[SC_WIND_INSIGNIA]->val1 == 2) ||
-		(sc->data[SC_KAZEHU_SEIRAN] && sc->data[SC_KAZEHU_SEIRAN]->val2 == 10))
+	if(sc->data[SC_WINDWEAPON] || (sc->data[SC_WIND_INSIGNIA] && sc->data[SC_WIND_INSIGNIA]->val1 == 2))
 		return ELE_WIND;
 	if(sc->data[SC_ENCPOISON])
 		return ELE_POISON;
@@ -7163,17 +7158,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		status_change_end(bl, SC_GT_ENERGYGAIN, INVALID_TIMER);
 		status_change_end(bl, SC_GT_CHANGE, INVALID_TIMER);
 		status_change_end(bl, SC_GT_REVITALIZE, INVALID_TIMER);
-		break;
-	case SC_KAHU_ENTEN:
-	case SC_HYOUHU_HUBUKI:
-	case SC_KAZEHU_SEIRAN:
-	case SC_DOHU_KOUKAI:
-		if( sc->data[type] ) // Don't remove same sc.
-			break;
-		status_change_end(bl, SC_KAHU_ENTEN, INVALID_TIMER);
-		status_change_end(bl, SC_HYOUHU_HUBUKI, INVALID_TIMER);
-		status_change_end(bl, SC_KAZEHU_SEIRAN, INVALID_TIMER);
-		status_change_end(bl, SC_DOHU_KOUKAI, INVALID_TIMER);
 		break;
 	case SC_OFFERTORIUM:
 	case SC_MAGNIFICAT:
@@ -11284,10 +11268,6 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC_CURSEDCIRCLE_TARGET:
 			case SC_ALL_RIDING:
 			case SC_ON_PUSH_CART:
-			case SC_KAHU_ENTEN:
-			case SC_HYOUHU_HUBUKI:
-			case SC_KAZEHU_SEIRAN:
-			case SC_DOHU_KOUKAI:
 			case SC_SPRITEMABLE:
 			case SC_SOULATTACK:
 				continue;
