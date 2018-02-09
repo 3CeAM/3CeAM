@@ -230,6 +230,120 @@ int pc_delspiritball(struct map_session_data *sd,int count,int type)
 	return 0;
 }
 
+static int pc_shieldball_timer(int tid, unsigned int tick, int id, intptr data)
+{
+	struct map_session_data *sd;
+	int i;
+
+	if( (sd=(struct map_session_data *)map_id2sd(id)) == NULL || sd->bl.type!=BL_PC )
+		return 1;
+
+	if( sd->shieldball <= 0 )
+	{
+		ShowError("pc_shieldball_timer: %d shieldball's available. (aid=%d cid=%d tid=%d)\n", sd->shieldball, sd->status.account_id, sd->status.char_id, tid);
+		sd->shieldball = 0;
+		return 0;
+	}
+
+	ARR_FIND(0, sd->shieldball, i, sd->shield_timer[i] == tid);
+	if( i == sd->shieldball )
+	{
+		ShowError("pc_shieldball_timer: timer not found (aid=%d cid=%d tid=%d)\n", sd->status.account_id, sd->status.char_id, tid);
+		return 0;
+	}
+
+	sd->shieldball--;
+	if ( sd->shieldball < 1 )
+		status_change_end(&sd->bl, SC_MILLENNIUMSHIELD, INVALID_TIMER);
+	if( i != sd->shieldball )
+		memmove(sd->shield_timer+i, sd->shield_timer+i+1, (sd->shieldball-i)*sizeof(int));
+	sd->shield_timer[sd->shieldball] = INVALID_TIMER;
+
+	clif_millenniumshield(sd, sd->shieldball);
+
+	return 0;
+}
+
+int pc_addshieldball(struct map_session_data *sd,int interval,int max, int shield_health)
+{
+	int tid, i;
+
+	nullpo_ret(sd);
+
+	if(max > MAX_SKILL_LEVEL)
+		max = MAX_SKILL_LEVEL;
+	if(sd->shieldball < 0)
+		sd->shieldball = 0;
+
+	if ( sd->shieldball_set_health != shield_health && shield_health > 0 )
+		sd->shieldball_set_health = shield_health;
+
+	if( sd->shieldball && sd->shieldball >= max )
+	{
+		if(sd->shield_timer[0] != INVALID_TIMER)
+			delete_timer(sd->shield_timer[0],pc_shieldball_timer);
+		sd->shieldball--;
+		if( sd->shieldball != 0 )
+			memmove(sd->shield_timer+0, sd->shield_timer+1, (sd->shieldball)*sizeof(int));
+		sd->shield_timer[sd->shieldball] = INVALID_TIMER;
+	}
+
+	tid = add_timer(gettick()+interval, pc_shieldball_timer, sd->bl.id, 0);
+	ARR_FIND(0, sd->shieldball, i, sd->shield_timer[i] == INVALID_TIMER || DIFF_TICK(get_timer(tid)->tick, get_timer(sd->shield_timer[i])->tick) < 0);
+	if( i != sd->shieldball )
+		memmove(sd->shield_timer+i+1, sd->shield_timer+i, (sd->shieldball-i)*sizeof(int));
+	sd->shield_timer[i] = tid;
+	sd->shieldball++;
+	sd->shieldball_health = sd->shieldball_set_health;
+	sc_start(&sd->bl, SC_MILLENNIUMSHIELD, 100, 0, 0);
+	clif_millenniumshield(sd, sd->shieldball);
+
+	return 0;
+}
+
+int pc_delshieldball(struct map_session_data *sd,int count,int type)
+{
+	int i;
+
+	nullpo_ret(sd);
+
+	if(sd->shieldball <= 0) {
+		sd->shieldball = 0;
+		return 0;
+	}
+
+	if(count <= 0)
+		return 0;
+	if(count > sd->shieldball)
+		count = sd->shieldball;
+	sd->shieldball -= count;
+
+	if ( sd->shieldball < 1 )
+		status_change_end(&sd->bl, SC_MILLENNIUMSHIELD, INVALID_TIMER);
+
+	if ( sd->shieldball > 0 )
+		sd->shieldball_health = sd->shieldball_set_health;
+
+	if(count > MAX_SKILL_LEVEL)
+		count = MAX_SKILL_LEVEL;
+
+	for(i=0;i<count;i++) {
+		if(sd->shield_timer[i] != INVALID_TIMER) {
+			delete_timer(sd->shield_timer[i],pc_shieldball_timer);
+			sd->shield_timer[i] = INVALID_TIMER;
+		}
+	}
+	for(i=count;i<MAX_SKILL_LEVEL;i++) {
+		sd->shield_timer[i-count] = sd->shield_timer[i];
+		sd->shield_timer[i] = INVALID_TIMER;
+	}
+
+	if(!type)
+		clif_millenniumshield(sd, sd->shieldball);
+
+	return 0;
+}
+
 static int pc_rageball_timer(int tid, unsigned int tick, int id, intptr data)
 {
 	struct map_session_data *sd;
@@ -1252,6 +1366,8 @@ bool pc_authok(struct map_session_data *sd, int login_id2, time_t expiration_tim
 
 	for(i = 0; i < MAX_SKILL_LEVEL; i++)
 		sd->spirit_timer[i] = INVALID_TIMER;
+	for(i = 0; i < MAX_SKILL_LEVEL; i++)
+		sd->shield_timer[i] = INVALID_TIMER;
 	for(i = 0; i < MAX_SKILL_LEVEL; i++)
 		sd->rage_timer[i] = INVALID_TIMER;
 	for(i = 0; i < MAX_SKILL_LEVEL; i++)
@@ -6743,10 +6859,10 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 
 	if ( sd && sd->spiritball )
 		pc_delspiritball(sd,sd->spiritball,0);
-
+	if ( sd && sd->shieldball )
+		pc_delshieldball(sd,sd->shieldball,0);
 	if ( sd && sd->rageball )
 		pc_delrageball(sd,sd->rageball,0);
-
 	if ( sd && sd->charmball )
 		pc_delcharmball(sd,sd->charmball,0);
 
@@ -9689,6 +9805,7 @@ int do_init_pc(void)
 	add_timer_func_list(pc_calc_pvprank_timer, "pc_calc_pvprank_timer");
 	add_timer_func_list(pc_autosave, "pc_autosave");
 	add_timer_func_list(pc_spiritball_timer, "pc_spiritball_timer");
+	add_timer_func_list(pc_shieldball_timer, "pc_shieldball_timer");
 	add_timer_func_list(pc_rageball_timer, "pc_rageball_timer");
 	add_timer_func_list(pc_charmball_timer, "pc_charmball_timer");
 	add_timer_func_list(pc_follow_timer, "pc_follow_timer");
