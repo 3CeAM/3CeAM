@@ -1430,6 +1430,8 @@ int clif_spawn(struct block_list *bl)
 			TBL_PC *sd = ((TBL_PC*)bl);
 			if (sd->spiritball > 0)
 				clif_spiritball(sd);
+			if (sd->shieldball > 0)
+				clif_millenniumshield(sd, sd->shieldball);
 			if (sd->rageball > 0)
 				clif_millenniumshield(sd, sd->rageball);
 			if (sd->charmball > 0)
@@ -1440,8 +1442,6 @@ int clif_spawn(struct block_list *bl)
 				clif_specialeffect(bl,421,AREA);
 			if( sd->state.bg_id && map[sd->bl.m].flag.battleground )
 				clif_sendbgemblem_area(sd);
-			if( sd->sc.count && sd->sc.data[SC_MILLENNIUMSHIELD] )
-				clif_millenniumshield(sd,sd->sc.data[SC_MILLENNIUMSHIELD]->val2);
 			// Below SI's must be resent to the client to show animations on players walking onto other player's view range.
 			// Note: This was supposed to be just a temp thing but its getting out of hand. Need to redo this. [Rytech]
 			//if( sd->sc.count && sd->sc.data[SC_] )
@@ -4804,6 +4804,9 @@ static void clif_getareachar_pc(struct map_session_data* sd,struct map_session_d
 	if(dstsd->spiritball > 0)
 		clif_spiritball_single(sd->fd, dstsd);
 
+	if(dstsd->shieldball > 0)
+		clif_millenniumshield_single(sd->fd, dstsd, dstsd->shieldball);
+
 	if(dstsd->rageball > 0)
 		clif_millenniumshield_single(sd->fd, dstsd, dstsd->rageball);
 
@@ -4859,8 +4862,6 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 				clif_specialeffect_single(bl,421,sd->fd);
 			if( tsd->state.bg_id && map[tsd->bl.m].flag.battleground )
 				clif_sendbgemblem_single(sd->fd,tsd);
-			if( tsd->sc.count && tsd->sc.data[SC_MILLENNIUMSHIELD] )
-				clif_millenniumshield_single(sd->fd,tsd,tsd->sc.data[SC_MILLENNIUMSHIELD]->val2);
 			// Below SI's must be resent to the client to show animations on players walking onto other player's view range.
 			// This was supposed to be just a temp thing but this is getting out of hand. Needs to recode this. [Rytech]
 			//if( tsd->sc.count && tsd->sc.data[SC_] )
@@ -9611,15 +9612,12 @@ int clif_refresh(struct map_session_data *sd)
 
 	if (sd->spiritball)
 		clif_spiritball_single(sd->fd, sd);
-
+	if (sd->shieldball)
+		clif_millenniumshield_single(sd->fd, sd, sd->shieldball);
 	if (sd->rageball)
 		clif_millenniumshield_single(sd->fd, sd, sd->rageball);
-
 	if (sd->charmball)
 		clif_spiritball_attribute_single(sd->fd, sd);
-
-	if( sd->sc.count && sd->sc.data[SC_MILLENNIUMSHIELD] )
-		clif_millenniumshield_single(sd->fd,sd,sd->sc.data[SC_MILLENNIUMSHIELD]->val2);
 
 	if (sd->vd.cloth_color)
 		clif_refreshlook(&sd->bl,sd->bl.id,LOOK_CLOTHES_COLOR,sd->vd.cloth_color,SELF);

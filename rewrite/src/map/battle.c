@@ -480,25 +480,6 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			return 0;
 		}
 
-		if( sd && (sce = sc->data[SC_MILLENNIUMSHIELD]) && sce->val2 > 0 && damage > 0 )
-		{
-			sce->val3 -= damage; // absorb damage
-			d->dmg_lv = ATK_BLOCK;
-			if( sce->val3 <= 0 ) // Shield Down
-			{
-				sce->val2--;
-				if( sce->val2 > 0 )
-				{
-					clif_millenniumshield(sd,sce->val2);
-					sce->val3 = 1000; // Next Shield
-				}
-				else
-					status_change_end(bl,SC_MILLENNIUMSHIELD,-1); // All shields down
-				status_change_start(bl, SC_STUN, 10000, 0, 0, 0, 0, 1000, 2);
-			}
-			return 0;
-		}
-
 		if( (sce=sc->data[SC_PARRYING]) && flag&BF_WEAPON && skill_num != WS_CARTTERMINATION && rand()%100 < sce->val2 )
 		{ // attack blocked by Parrying
 			clif_skill_nodamage(bl, bl, LK_PARRYING, sce->val1,1);
@@ -727,6 +708,19 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			}
 			if((--sce->val3)<=0 || (sce->val2<=0) || skill_num == AL_HOLYLIGHT)
 				status_change_end(bl, SC_KYRIE, INVALID_TIMER);
+		}
+
+		// Millennium Shield
+		if ( sd && sd->shieldball > 0 && damage > 0 )
+		{
+			sd->shieldball_health -= damage;
+			damage = 0;
+
+			if ( sd->shieldball_health < 1 )
+			{
+				pc_delshieldball(sd, 1, 0);
+				status_change_start(bl, SC_STUN, 10000, 0, 0, 0, 0, 1000, 2);
+			}
 		}
 
 		if( (sce = sc->data[SC_LIGHTNINGWALK]) && flag&BF_LONG && damage > 0 && rand()%100 < sce->val2 )
@@ -1825,8 +1819,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						sd->inventory_data[index] &&
 						sd->inventory_data[index]->type == IT_WEAPON)
 						wd.damage = sd->inventory_data[index]->weight*8/100; //80% of weight
-					if( sc && sc->data[SC_GLOOMYDAY_SK] )
-						wd.damage += wd.damage * (15 + rand()%sc->data[SC_GLOOMYDAY_SK]->val3) / 100;
 				} else
 					wd.damage = sstatus->rhw.atk2*8/10; //Else use Atk2
 
@@ -1847,17 +1839,15 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 			case CR_SHIELDBOOMERANG:
 			case PA_SHIELDCHAIN:
 				wd.damage = sstatus->batk;
-				if( sd )
-				{
-					int damagevalue = 0;
+				if (sd) {
 					short index = sd->equip_index[EQI_HAND_L];
-					if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_ARMOR )
-						damagevalue = sd->inventory_data[index]->weight/10;
-					if( sc && sc->data[SC_GLOOMYDAY_SK] )
-						damagevalue += damagevalue * (15 + rand()%sc->data[SC_GLOOMYDAY_SK]->val3) / 100;
-					ATK_ADD(damagevalue);
-				}
-				else
+
+					if (index >= 0 &&
+						sd->inventory_data[index] &&
+						sd->inventory_data[index]->type == IT_ARMOR)
+						ATK_ADD(sd->inventory_data[index]->weight/10);
+					break;
+				} else
 					ATK_ADD(sstatus->rhw.atk2); //Else use Atk2
 				break;
 		case RK_DRAGONBREATH:
@@ -2052,8 +2042,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					if(skill_lv>6 && wflag==2) skillratio += ratio/2;
 					if(skill_lv>9 && wflag==2) skillratio += ratio/4;
 					if(skill_lv>9 && wflag==3) skillratio += ratio/2;
-					if( sc && sc->data[SC_GLOOMYDAY_SK] )
-						skillratio += skillratio * (15 + rand()%sc->data[SC_GLOOMYDAY_SK]->val3) / 100;
 					break;
 				}
 				case KN_BOWLINGBASH:
@@ -2115,13 +2103,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case CR_SHIELDCHARGE:
 					skillratio += 20*skill_lv;
-					if( sc && sc->data[SC_GLOOMYDAY_SK] )
-						skillratio += skillratio * (15 + rand()%sc->data[SC_GLOOMYDAY_SK]->val3) / 100;
 					break;
 				case CR_SHIELDBOOMERANG:
 					skillratio += 30*skill_lv;
-					if( sc && sc->data[SC_GLOOMYDAY_SK] )
-						skillratio += skillratio * (15 + rand()%sc->data[SC_GLOOMYDAY_SK]->val3) / 100;
 					break;
 				case NPC_DARKCROSS:
 				case CR_HOLYCROSS:
@@ -2203,8 +2187,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case PA_SHIELDCHAIN:
 					skillratio += 30*skill_lv;
-					if( sc && sc->data[SC_GLOOMYDAY_SK] )
-						skillratio += skillratio * (15 + rand()%sc->data[SC_GLOOMYDAY_SK]->val3) / 100;
 					break;
 				case WS_CARTTERMINATION:
 					i = 10 * (16 - skill_lv);
@@ -2326,8 +2308,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						skillratio += 1000;
 					if( level_effect_bonus == 1 )
 						skillratio += skillratio * (status_get_base_lv_effect(src) - 100) / 200;
-					if( sc && sc->data[SC_GLOOMYDAY_SK] )
-						skillratio += skillratio * (15 + rand()%sc->data[SC_GLOOMYDAY_SK]->val3) / 100;
 					break;
 				case RK_WINDCUTTER:
 					skillratio += 50 * skill_lv;
@@ -2530,8 +2510,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						skillratio += 250;
 					if( level_effect_bonus == 1 )
 						skillratio = skillratio * status_get_base_lv_effect(src) / 100;
-					if( sc && sc->data[SC_GLOOMYDAY_SK] )
-						skillratio += skillratio * (15 + rand()%sc->data[SC_GLOOMYDAY_SK]->val3) / 100;
 					break;
 				case LG_PINPOINTATTACK:
 					skillratio = 100 * skill_lv + 5 * sstatus->agi;
@@ -3052,13 +3030,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case LG_SHIELDPRESS:
 					if( sd )
 					{
-						int damagevalue = 0;
 						short index = sd->equip_index[EQI_HAND_L];
 						if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_ARMOR )
-							damagevalue = sstatus->vit * sd->status.inventory[index].refine;
-						if( sc && sc->data[SC_GLOOMYDAY_SK] )
-							damagevalue += damagevalue * (15 + rand()%sc->data[SC_GLOOMYDAY_SK]->val3) / 100;
-						ATK_ADD(damagevalue);
+							ATK_ADD(sstatus->vit * sd->status.inventory[index].refine);
 					}
 					break;
 				//case LG_RAYOFGENESIS:
@@ -3120,6 +3094,16 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 
 			if ( battle_config.giant_growth_behavior == 1 && sc->data[SC_GIANTGROWTH] && (sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT && wd.flag&BF_WEAPON && skill_num != RK_CRUSHSTRIKE )
 				ATK_ADDRATE(map_flag_vs(src->m)?125:250);// Increase is 125% in PvP/GvG, 250% otherwise. Only applies to Rune Knights.
+
+			if (sc->data[SC_GLOOMYDAY] && skill_num && (
+				skill_num == KN_BRANDISHSPEAR ||
+				skill_num == CR_SHIELDCHARGE ||
+				skill_num == CR_SHIELDBOOMERANG ||
+				skill_num == LK_SPIRALPIERCE ||
+				skill_num == PA_SHIELDCHAIN ||
+				skill_num == RK_HUNDREDSPEAR ||
+				skill_num == LG_SHIELDPRESS))
+				ATK_ADDRATE(sc->data[SC_GLOOMYDAY]->val4);
 
 			if(sc->data[SC_UNLIMIT] && (wd.flag&(BF_LONG|BF_WEAPON)) == (BF_LONG|BF_WEAPON) &&
 				(!skill_num ||//For regular attacks with bows.
@@ -6270,6 +6254,7 @@ static const struct _battle_data {
 	{ "allow_bloody_lust_on_warp",          &battle_config.allow_bloody_lust_on_warp,       1,      0,      1,              },
 	{ "homunculus_pyroclastic_autocast",    &battle_config.homunculus_pyroclastic_autocast, 0,      0,      1,              },
 	{ "pyroclastic_breaks_weapon",          &battle_config.pyroclastic_breaks_weapon,       1,      0,      1,              },
+	{ "millennium_shield_health",           &battle_config.millennium_shield_health,        1000,   1,      INT_MAX,        },
 	{ "giant_growth_behavior",              &battle_config.giant_growth_behavior,           1,      0,      1,              },
 	{ "mass_spiral_max_def",                &battle_config.mass_spiral_max_def,             50,     0,      SHRT_MAX,       },
 	{ "rebel_base_lv_skill_effect",         &battle_config.rebel_base_lv_skill_effect,      1,      0,      1,              },

@@ -4023,6 +4023,32 @@ ACMD_FUNC(spiritball)
 	return 0;
 }
 
+ACMD_FUNC(shieldball)
+{
+	int max_shieldballs = min(ARRAYLENGTH(sd->shield_timer), 0x7FFF);
+	int number, health;
+	nullpo_retr(-1, sd);
+
+	if( !message || !*message || sscanf(message, "%d %d", &number, &health) < 1 || number > max_shieldballs || health < 1 || health > 1000000000 )
+	{
+		char msg[CHAT_SIZE_MAX];
+		safesnprintf(msg, sizeof(msg), "Usage: @shieldball <number: 0-%d> <health: 1-1000000000>", max_shieldballs);
+		clif_displaymessage(fd, msg);
+		return -1;
+	}
+
+	if( sd->shieldball > 0 )
+		pc_delshieldball(sd, sd->shieldball, 1);
+	sd->shieldball = number;
+	sd->shieldball_health = sd->shieldball_set_health = health;
+	if ( sd->shieldball > 0 )
+		sc_start(&sd->bl, SC_MILLENNIUMSHIELD, 100, 0, 0);
+	clif_millenniumshield(sd, sd->shieldball);
+	// no message, player can look the difference
+
+	return 0;
+}
+
 ACMD_FUNC(rageball)
 {
 	int max_rageballs = min(ARRAYLENGTH(sd->rage_timer), 0x7FFF);
@@ -9604,6 +9630,7 @@ AtCommandInfo atcommand_info[] = {
 	{ "skillfailmsg",      99,99,     atcommand_skillfailmsg },
 	{ "produceeffect",     99,99,     atcommand_produceeffect },
 	{ "effect2",           40,40,     atcommand_effect2 },
+	{ "shieldball",        40,40,     atcommand_shieldball },
 	{ "rageball",          40,40,     atcommand_rageball },
 	{ "charmball",         40,40,     atcommand_charmball },
 	//Mutated Homunculus Commands

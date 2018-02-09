@@ -670,8 +670,8 @@ typedef enum sc_type {
 
 	//Status For Functions
 	SC_MILLENNIUMSHIELD,
-	SC_GLOOMYDAY_SK,
-	SC_CHAOS,
+	// ID 593 is open.
+	SC_CHAOS = 594,
 	// ID's 595 - 598 is open.
 
 	//More Status

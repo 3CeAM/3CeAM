@@ -339,6 +339,10 @@ struct map_session_data {
 	short spiritball, spiritball_old;
 	int spirit_timer[MAX_SKILL_LEVEL];
 
+	short shieldball, shieldball_old;
+	int shield_timer[MAX_SKILL_LEVEL];
+	int shieldball_health, shieldball_set_health;
+
 	short rageball, rageball_old;
 	int rage_timer[MAX_SKILL_LEVEL];
 
@@ -863,6 +867,8 @@ void pc_delinvincibletimer(struct map_session_data* sd);
 int pc_overheat(struct map_session_data *sd, int val);
 int pc_addspiritball(struct map_session_data *sd,int interval,int max);
 int pc_delspiritball(struct map_session_data *sd,int count,int type);
+int pc_addshieldball(struct map_session_data *sd,int interval,int max, int shield_health);
+int pc_delshieldball(struct map_session_data *sd,int count,int type);
 int pc_addrageball(struct map_session_data *sd,int interval,int max);
 int pc_delrageball(struct map_session_data *sd,int count,int type);
 int pc_addcharmball(struct map_session_data *sd,int interval,int max, short charm_type);

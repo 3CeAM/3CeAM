@@ -423,7 +423,6 @@ void initChangeTables(void)
 	add_sc( RK_WINDCUTTER        , SC_FEAR              );
 	add_sc( RK_DRAGONBREATH      , SC_BURNING           );
 	add_sc( RK_DRAGONHOWLING     , SC_FEAR              );
-	set_sc( RK_MILLENNIUMSHIELD  , SC_MILLENNIUMSHIELD  , SI_BLANK             , SCB_NONE );
 	set_sc( RK_CRUSHSTRIKE       , SC_CRUSHSTRIKE       , SI_CRUSHSTRIKE       , SCB_NONE );
 	set_sc( RK_REFRESH           , SC_REFRESH           , SI_REFRESH           , SCB_NONE );
 	set_sc( RK_GIANTGROWTH       , SC_GIANTGROWTH       , SI_GIANTGROWTH       , SCB_STR );
@@ -536,7 +535,7 @@ void initChangeTables(void)
 	set_sc( WM_VOICEOFSIREN           , SC_VOICEOFSIREN         , SI_SIREN                  , SCB_NONE );
 	add_sc( WM_LULLABY_DEEPSLEEP      , SC_DEEPSLEEP            );
 	set_sc( WM_SIRCLEOFNATURE         , SC_SIRCLEOFNATURE       , SI_SIRCLEOFNATURE         , SCB_NONE );
-	set_sc( WM_GLOOMYDAY              , SC_GLOOMYDAY            , SI_GLOOMYDAY              , SCB_FLEE|SCB_ASPD );
+	set_sc( WM_GLOOMYDAY              , SC_GLOOMYDAY            , SI_GLOOMYDAY              , SCB_FLEE|SCB_SPEED|SCB_ASPD );
 	set_sc( WM_SONG_OF_MANA           , SC_SONGOFMANA           , SI_SONG_OF_MANA           , SCB_NONE );
 	set_sc( WM_DANCE_WITH_WUG         , SC_DANCEWITHWUG         , SI_DANCE_WITH_WUG         , SCB_WATK|SCB_ASPD );
 	set_sc( WM_SATURDAY_NIGHT_FEVER   , SC_SATURDAYNIGHTFEVER   , SI_SATURDAY_NIGHT_FEVER   , SCB_WATK|SCB_FLEE|SCB_DEF|SCB_REGEN );
@@ -813,8 +812,6 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_SHIELDSPELL_MDEF] = SI_SHIELDSPELL_MDEF;
 	StatusIconChangeTable[SC_SHIELDSPELL_REF] = SI_SHIELDSPELL_REF;
 	StatusIconChangeTable[SC_BANDING_DEFENCE] = SI_BANDING_DEFENCE;
-
-	StatusIconChangeTable[SC_GLOOMYDAY_SK] = SI_GLOOMYDAY;
 
 	StatusIconChangeTable[SC_CURSEDCIRCLE_ATKER] = SI_CURSEDCIRCLE_ATKER;
 
@@ -5166,6 +5163,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 					val = max( val, 25);
 				if( sc->data[SC_BANDING_DEFENCE] )
 					val = max( val, sc->data[SC_BANDING_DEFENCE]->val1 );//+90% walking speed.
+				if( sc->data[SC_GLOOMYDAY] && sc->data[SC_GLOOMYDAY]->val1 == 2 )
+					val = max( val, 50 );
 				if( sc->data[SC_B_TRAP] )
 					val = max( val, 90 );
 				//Not bothering to organize these until I rework the elemental spirits. [Rytech]
@@ -7111,7 +7110,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	case SC_DEEPSLEEP:
 	case SC_SIRCLEOFNATURE:
 	case SC_GLOOMYDAY:
-	case SC_GLOOMYDAY_SK:
 	case SC_SONGOFMANA:
 	case SC_DANCEWITHWUG:
 	case SC_LERADSDEW:
@@ -7124,7 +7122,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		status_change_end(bl, SC_DEEPSLEEP, INVALID_TIMER);
 		status_change_end(bl, SC_SIRCLEOFNATURE, INVALID_TIMER);
 		status_change_end(bl, SC_GLOOMYDAY, INVALID_TIMER);
-		status_change_end(bl, SC_GLOOMYDAY_SK, INVALID_TIMER);
 		status_change_end(bl, SC_SONGOFMANA, INVALID_TIMER);
 		status_change_end(bl, SC_DANCEWITHWUG, INVALID_TIMER);
 		status_change_end(bl, SC_LERADSDEW, INVALID_TIMER);
@@ -7665,6 +7662,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_READYCOUNTER:
 		case SC_READYTURN:
 		case SC_DODGE:
+		case SC_MILLENNIUMSHIELD:
 		case SC_SPRITEMABLE:
 		case SC_SOULATTACK:
 			tick = -1;
@@ -8210,23 +8208,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_DEATHBOUND:
 			val2 = 500 + 100 * val1;
 			break;
-		case SC_MILLENNIUMSHIELD:
-			{
-				unsigned char generate = rand()%100 + 1;//Generates a number between 1 - 100 which is used to determine how many shields it will generate.
-				unsigned char shieldnumber = 1;
-
-				if ( generate >= 1 && generate <= 50 )//50% chance for 2 shields.
-					shieldnumber = 2;
-				else if ( generate >= 51 && generate <= 80 )//30% chance for 3 shields.
-					shieldnumber = 3;
-				else if ( generate >= 81 && generate <= 100 )//20% chance for 4 shields.
-					shieldnumber = 4;
-
-				val2 = shieldnumber;// Number of Shields
-				val3 = 1000;// Shield HP
-				clif_millenniumshield(sd,shieldnumber);
-			}
-			break;
 		case SC_REFRESH:
 			{
 				short i = 0;
@@ -8499,13 +8480,20 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_GLOOMYDAY:
 			val2 = 20 + 5 * val1;//Flee reduction
 			val3 = 15 + 5 * val1;//ASPD reduction
-			break;
-		case SC_GLOOMYDAY_SK:
+			val4 = rnd_value(15, 10 * val1 + 5 * val4);// Damage Increase
+			if (rand()%100 < val1)// Chance of super gloomy effect.
 			{
-			int gloomyamprate = 10 * val1 + 5 * val2 - 15;//val1 = WM_GLOOMYDAY Lv used and val2 = WM_LESSON Lv learned
-			if (gloomyamprate < 0) gloomyamprate = 0;//Prevents a negeative value from happening
-				val3 = gloomyamprate;//val3 is used in battle.c as a randomizer value to boost certain skills damage on each skill cast. [Rytech]
+				if ( sd )
+				{// If successful, dismount the player. Only applies to Peco/Gryphin and Dragon.
+					if ( pc_isriding(sd) )
+						pc_setoption(sd, sd->sc.option&~OPTION_RIDING);
+					if ( pc_isdragon(sd) )
+						pc_setoption(sd, sd->sc.option&~OPTION_DRAGON);
+				}
+				val1 = 2;// Use to signal if speed reduction applies.
 			}
+			else// Signal no speed reduction but still give a value.
+				val1 = 1;
 			break;
 		case SC_SONGOFMANA:
 			val3 = 10 + 5 * val2;
@@ -9768,9 +9756,6 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 				if( tbl && (sc = status_get_sc(tbl)) && sc->data[SC_STOP] && sc->data[SC_STOP]->val2 == bl->id )
 					status_change_end(tbl, SC_STOP, INVALID_TIMER);
 			}
-			break;
-		case SC_MILLENNIUMSHIELD:
-			clif_millenniumshield(sd,0);
 			break;
 		case SC_HALLUCINATIONWALK:
 			sc_start(bl,SC_HALLUCINATIONWALK_POSTDELAY,100,sce->val1,skill_get_time2(GC_HALLUCINATIONWALK,sce->val1));
