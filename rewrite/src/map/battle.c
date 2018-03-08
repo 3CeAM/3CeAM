@@ -1525,6 +1525,11 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 			if (!sd) n_ele = false; //forced neutral for monsters
 			break;
 
+		case LG_HESPERUSLIT:
+			if ( sc && sc->data[SC_BANDING] && (battle_config.hesperuslit_bonus_stack == 1 && sc->data[SC_BANDING]->val2 >= 5 || sc->data[SC_BANDING]->val2 == 5) )
+				s_ele = s_ele_ = ELE_HOLY;
+				break;
+
 		case RL_H_MINE:
 			if ( wflag&8 )// Explosion damage deals fire damage according to description.
 				s_ele = s_ele_ = ELE_FIRE;
@@ -2569,9 +2574,11 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case LG_HESPERUSLIT:
 					skillratio = 120 * skill_lv;
 					if( sc && sc->data[SC_BANDING] )
+					{
 						skillratio += 200 * sc->data[SC_BANDING]->val2;
-					if( sc && sc->data[SC_BANDING] && sc->data[SC_BANDING]->val2 > 5 )
-						skillratio = skillratio * 150 / 100;
+						if ( (battle_config.hesperuslit_bonus_stack == 1 && sc->data[SC_BANDING]->val2 >= 6 || sc->data[SC_BANDING]->val2 == 6) )
+							skillratio = skillratio * 150 / 100;
+					}
 					if( sc && sc->data[SC_INSPIRATION] )
 						skillratio += 600;
 					if( level_effect_bonus == 1 )
@@ -3752,11 +3759,6 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 		case WL_HELLINFERNO:
 			if ( mflag&8 )// 2nd Hit - The shadow damage.
 				s_ele = ELE_DARK;
-			break;
-
-		case LG_HESPERUSLIT:
-			if ( sc && sc->data[SC_BANDING] && sc->data[SC_BANDING]->val2 > 4 )
-				s_ele = ELE_HOLY;
 			break;
 
 		case SO_PSYCHIC_WAVE:
@@ -6258,6 +6260,7 @@ static const struct _battle_data {
 	{ "giant_growth_behavior",              &battle_config.giant_growth_behavior,           1,      0,      1,              },
 	{ "mass_spiral_max_def",                &battle_config.mass_spiral_max_def,             50,     0,      SHRT_MAX,       },
 	{ "rebel_base_lv_skill_effect",         &battle_config.rebel_base_lv_skill_effect,      1,      0,      1,              },
+	{ "hesperuslit_bonus_stack",            &battle_config.hesperuslit_bonus_stack,         0,      0,      1,              },
 	{ "hanbok_ignorepalette",               &battle_config.hanbok_ignorepalette,            0,      0,      1,              },
 	{ "oktoberfest_ignorepalette",          &battle_config.oktoberfest_ignorepalette,       0,      0,      1,              },
 	{ "summer2_ignorepalette",              &battle_config.summer2_ignorepalette,           0,      0,      1,              },

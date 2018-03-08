@@ -544,6 +544,7 @@ extern struct Battle_Config
 	int giant_growth_behavior;
 	int mass_spiral_max_def;
 	int rebel_base_lv_skill_effect;
+	int hesperuslit_bonus_stack;
 
 	// Costume Outfits
 	int hanbok_ignorepalette;

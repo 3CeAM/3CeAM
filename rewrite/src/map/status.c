@@ -508,7 +508,7 @@ void initChangeTables(void)
 	set_sc( LG_FORCEOFVANGUARD   , SC_FORCEOFVANGUARD , SI_FORCEOFVANGUARD , SCB_MAXHP|SCB_DEF);
 	set_sc( LG_EXEEDBREAK        , SC_EXEEDBREAK      , SI_EXEEDBREAK      , SCB_NONE );
 	set_sc( LG_PRESTIGE          , SC_PRESTIGE        , SI_PRESTIGE        , SCB_DEF );
-	set_sc( LG_BANDING           , SC_BANDING         , SI_BANDING         , SCB_WATK|SCB_DEF );
+	set_sc( LG_BANDING           , SC_BANDING_DEFENCE , SI_BANDING_DEFENCE , SCB_SPEED );
 	set_sc( LG_PIETY             , SC_BENEDICTIO      , SI_BENEDICTIO      , SCB_DEF_ELE );
 	set_sc( LG_EARTHDRIVE        , SC_EARTHDRIVE      , SI_EARTHDRIVE      , SCB_DEF|SCB_ASPD );
 	set_sc( LG_INSPIRATION       , SC_INSPIRATION     , SI_INSPIRATION     , SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK|SCB_WATK|SCB_HIT|SCB_MAXHP);
@@ -811,7 +811,7 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_SHIELDSPELL_DEF] = SI_SHIELDSPELL_DEF;
 	StatusIconChangeTable[SC_SHIELDSPELL_MDEF] = SI_SHIELDSPELL_MDEF;
 	StatusIconChangeTable[SC_SHIELDSPELL_REF] = SI_SHIELDSPELL_REF;
-	StatusIconChangeTable[SC_BANDING_DEFENCE] = SI_BANDING_DEFENCE;
+	StatusIconChangeTable[SC_BANDING] = SI_BANDING;
 
 	StatusIconChangeTable[SC_CURSEDCIRCLE_ATKER] = SI_CURSEDCIRCLE_ATKER;
 
@@ -945,7 +945,7 @@ void initChangeTables(void)
 
 	StatusChangeFlagTable[SC_SHIELDSPELL_DEF] |= SCB_WATK;
 	StatusChangeFlagTable[SC_SHIELDSPELL_REF] |= SCB_DEF;
-	StatusChangeFlagTable[SC_BANDING_DEFENCE] |= SCB_SPEED;
+	StatusChangeFlagTable[SC_BANDING] |= SCB_WATK|SCB_DEF|SCB_REGEN;
 
 	StatusChangeFlagTable[SC_STOMACHACHE] |= SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK;
 	StatusChangeFlagTable[SC_MYSTERIOUS_POWDER] |= SCB_MAXHP;
@@ -3592,6 +3592,10 @@ void status_calc_regen_rate(struct block_list *bl, struct regen_data *regen, str
 		regen->rate.hp += 1;
 		regen->rate.sp += 1;
 	}
+
+	if( sc->data[SC_BANDING] )
+		regen->rate.hp += 1;// Should be 50% increase, not 100%. How do I do that??? [Rytech]
+
 	if( sc->data[SC_REGENERATION] )
 	{
 		const struct status_change_entry *sce = sc->data[SC_REGENERATION];
@@ -5162,7 +5166,7 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				if( sc->data[SC__LAZINESS] )
 					val = max( val, 25);
 				if( sc->data[SC_BANDING_DEFENCE] )
-					val = max( val, sc->data[SC_BANDING_DEFENCE]->val1 );//+90% walking speed.
+					val = max( val, 90);
 				if( sc->data[SC_GLOOMYDAY] && sc->data[SC_GLOOMYDAY]->val1 == 2 )
 					val = max( val, 50 );
 				if( sc->data[SC_B_TRAP] )
@@ -7239,6 +7243,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC_LEECHESEND:
 			case SC_BITE:
 			case SC_VACUUM_EXTREME:
+			case SC_BANDING_DEFENCE:
 			//case SC__INVISIBILITY:
 			case SC__ENERVATION:
 			case SC__GROOMY:
@@ -8575,9 +8580,10 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val1 = val1 / 10;//DEF divided to make skill balanced for pre-renewal mechanics.
 			val_flag |= 1|2;
 			break;
-		case SC_BANDING:
+		case SC_BANDING:// val1 = Skill LV, val4 = Skill Group AoE ID.
+			val2 = skill_banding_count(sd);// Royal Guard's In Banding Count
+			val3 = tick/5000;
 			tick = 5000;
-			val_flag |= 1;
 			break;
 		case SC_SHIELDSPELL_DEF:
 		case SC_SHIELDSPELL_MDEF:
@@ -8960,13 +8966,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			break;	
 		case SC_KAAHI:
 			val4 = INVALID_TIMER;
-			break;
-		case SC_BANDING:
-			{
-				struct skill_unit_group *sg;
-				if( (sg = skill_unitsetting(bl,LG_BANDING,val1,bl->x,bl->y,0)) != NULL )
-					val4 = sg->group_id;
-			}
 			break;
 	}
 
@@ -9708,6 +9707,7 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 			if (vd) vd->dead_sit = 0;
 			break;
 		case SC_WARM:
+		case SC_BANDING:
 		case SC__MANHOLE:
 			if( sce->val4 )
 			{ //Clear the group.
@@ -9801,17 +9801,6 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 			{// Remove HP penalty before ending the status.
 				sc->data[SC_BERSERK]->val2 = 0;
 				status_change_end(bl, SC_BERSERK, INVALID_TIMER);
-			}
-			break;
-		case SC_BANDING:
-			{
-				struct skill_unit_group *group;
-				if(sce->val4)
-				{
-					group = skill_id2group(sce->val4);
-					sce->val4 = 0;
-					skill_delunitgroup(group);
-				}
 			}
 			break;
 		case SC_CURSEDCIRCLE_ATKER:
@@ -10815,16 +10804,22 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 			break;
 		sc_timer_next(10000 + tick, status_change_timer, bl->id, data);
 		return 0;
+		break;
 
 	case SC_BANDING:
-		if( status_charge(bl, 0, 7 - sce->val1) )
-		{
-			if( sd ) pc_banding(sd, sce->val1);
-			sc_timer_next(5000 + tick, status_change_timer, bl->id, data);
+		if(--(sce->val3)>0){
+
+			if(!status_charge(bl, 0, 7 - sce->val1))
+				break;
+
+			sce->val2 = skill_banding_count(sd);// Recheck around you to update the banding count.
+			status_calc_bl(bl, SCB_WATK|SCB_DEF);// Update ATK/DEF bonuses after updating the banding count.
+
+			sc_timer_next(5000+tick, status_change_timer,bl->id, data);
 			return 0;
 		}
 		break;
-		
+
 	case SC_REFLECTDAMAGE:
 		if( --(sce->val4) >= 0 ) {
 			if( !status_charge(bl,0,20 + 10 * sce->val1) )
@@ -11243,6 +11238,11 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC_VITALITYACTIVATION:
 			case SC_FIGHTINGSPIRIT:
 			case SC_ABUNDANCE:
+			case SC_NEUTRALBARRIER_MASTER:
+			case SC_NEUTRALBARRIER:
+			case SC_STEALTHFIELD_MASTER:
+			case SC_STEALTHFIELD:
+			case SC_BANDING:
 			case SC_SAVAGE_STEAK:
 			case SC_COCKTAIL_WARG_BLOOD:
 			case SC_MINOR_BBQ:
