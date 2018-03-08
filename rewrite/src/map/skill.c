@@ -1246,9 +1246,9 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 		sc_start(bl, SC_EARTHDRIVE, 100, skilllv, skill_get_time(skillid, skilllv));
 		break;
 	case LG_HESPERUSLIT:
-		if( sc && sc->data[SC_BANDING] && sc->data[SC_BANDING]->val2 > 3 )
+		if( sc && sc->data[SC_BANDING] && (battle_config.hesperuslit_bonus_stack == 1 && sc->data[SC_BANDING]->val2 >= 4 || sc->data[SC_BANDING]->val2 == 4) )
 			status_change_start(bl, SC_STUN, 10000, skilllv, 0, 0, 0, rnd_value( 4000, 8000), 2);
-		if( (sd?pc_checkskill(sd,LG_PINPOINTATTACK):5) > 0 && sc && sc->data[SC_BANDING] && sc->data[SC_BANDING]->val2 > 5 )
+		if( (sd?pc_checkskill(sd,LG_PINPOINTATTACK):5) > 0 && sc && sc->data[SC_BANDING] && (battle_config.hesperuslit_bonus_stack == 1 && sc->data[SC_BANDING]->val2 >= 6 || sc->data[SC_BANDING]->val2 == 6) )
 			skill_castend_damage_id(src,bl,LG_PINPOINTATTACK,rnd_value( 1, (sd?pc_checkskill(sd,LG_PINPOINTATTACK):5)),tick,0);
 		break;
 	case SR_DRAGONCOMBO:
@@ -1936,16 +1936,10 @@ int skill_counter_additional_effect (struct block_list* src, struct block_list *
 	case NPC_GRANDDARKNESS:
 		attack_type |= BF_WEAPON;
 		break;
-
-	case LG_HESPERUSLIT:
-		if ( sc && sc->data[SC_FORCEOFVANGUARD] && sc->data[SC_BANDING] && sc->data[SC_BANDING]->val2 > 6 )
-		{
-			char i;
-			for( i = 0; i < sc->data[SC_FORCEOFVANGUARD]->val3; i++ )
-				pc_addrageball(sd, skill_get_time(LG_FORCEOFVANGUARD,1),sc->data[SC_FORCEOFVANGUARD]->val3);
-		}
+	case LG_HESPERUSLIT:// Generates rage spheres for all Royal Guards in banding that has Force of Vanguard active.
+		if ( sc && sc->data[SC_BANDING] && (battle_config.hesperuslit_bonus_stack == 1 &&  sc->data[SC_BANDING]->val2 >= 7 || sc->data[SC_BANDING]->val2 == 7) )
+			party_foreachsamemap(party_sub_count_banding, sd, 3, 2);
 		break;
-
 	}
 
 	if(sd && (sd->class_&MAPID_UPPERMASK) == MAPID_STAR_GLADIATOR &&
@@ -11466,6 +11460,13 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		flag|=1;
 		break;
 
+	case LG_BANDING:
+		if ( sc && sc->data[SC_BANDING] )
+			skill_clear_unitgroup(src);
+		else if ((sg = skill_unitsetting(src,skillid,skilllv,src->x,src->y,0)))
+			sc_start4(src,SC_BANDING,100,skilllv,0,0,sg->group_id,skill_get_time(skillid,skilllv));
+		break;
+
 	case PA_GOSPEL:
 		if (sce && sce->val4 == BCT_SELF)
 		{
@@ -11661,17 +11662,6 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 			for( i = 0; i < layout->count; i++ )
 				map_foreachincell(skill_area_sub, src->m, x+layout->dx[i], y+layout->dy[i], BL_CHAR, src, LG_OVERBRAND_BRANDISH, skilllv, tick, flag|BCT_ENEMY,skill_castend_damage_id);
 		}
-		break;
-
-	case LG_BANDING:
-		if( sc && sc->data[SC_BANDING] )
-			status_change_end(src,SC_BANDING,-1);
-		else if( (sg = skill_unitsetting(src,skillid,skilllv,src->x,src->y,0)) != NULL )
-		{
-			sc_start4(src,SC_BANDING,100,skilllv,0,0,sg->group_id,skill_get_time(skillid,skilllv));
-			if( sd ) pc_banding(sd,skilllv);
-		}
-		clif_skill_nodamage(src,src,skillid,skilllv,1);
 		break;
 
 	case LG_RAYOFGENESIS:
@@ -12330,10 +12320,6 @@ struct skill_unit_group* skill_unitsetting (struct block_list *src, short skilli
 		limit = skill_get_time(skillid,skilllv);
 		break;
 
-	case LG_BANDING:
-		limit = -1;
-		break;
-
 	case SO_CLOUD_KILL:
 		skill_clear_group(src, 4);
 		break;
@@ -12646,9 +12632,14 @@ static int skill_unit_onplace (struct skill_unit *src, struct block_list *bl, un
 	case UNT_ZEPHYR:
 	case UNT_POWER_OF_GAIA:
 		if (sg->src_id == bl->id && (sg->unit_id == UNT_STEALTHFIELD || sg->unit_id == UNT_BLOODYLUST))
-			return 0;// Can't be affected by your own stealth field.
+			return 0;// Can't be affected by your own AoE.
 		if(!sce)
 			sc_start(bl,type,100,sg->skill_lv,sg->limit);
+		break;
+
+	case UNT_BANDING:
+		if(!sce)
+			sc_start(bl,type,5*sg->skill_lv+status_get_base_lv_effect(ss)/5-status_get_agi(bl)/10,sg->skill_lv,skill_get_time2(sg->skill_id,sg->skill_lv));
 		break;
 
 	case UNT_CHAOSPANIC:
@@ -13393,18 +13384,6 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			}
 			break;
 
-		case UNT_BANDING:
-			{
-				int rate = 0;
-
-				if( battle_check_target(ss,bl,BCT_ENEMY) > 0 && !(status_get_mode(bl)&MD_BOSS) && !(tsc && tsc->data[SC_BANDING_DEFENCE]) )
-				{
-					rate = status_get_base_lv_effect(bl) / 5 + 5 * sg->skill_lv - tstatus->agi / 10;
-					sc_start(bl,SC_BANDING_DEFENCE,rate,90,skill_get_time2(sg->skill_id,sg->skill_lv));
-				}
-			}
-			break;
-
 		case UNT_FIRE_MANTLE:
 			if( battle_check_target(&src->bl, bl, BCT_ENEMY) )
 				skill_attack(BF_MAGIC,ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
@@ -13591,6 +13570,7 @@ static int skill_unit_onleft (int skill_id, struct block_list *bl, unsigned int 
 		case NC_STEALTHFIELD:
 		case SC_MAELSTROM:
 		case SC_BLOODYLUST:
+		case LG_BANDING:
 		case SO_FIRE_INSIGNIA:
 		case SO_WATER_INSIGNIA:
 		case SO_WIND_INSIGNIA:
@@ -13789,7 +13769,7 @@ static int skill_check_condition_char_sub (struct block_list *bl, va_list ap)
 		}
 		case LG_RAYOFGENESIS:
 		{
-			if( tsd->status.party_id == sd->status.party_id && (tsd->class_&MAPID_THIRDMASK) == MAPID_ROYAL_GUARD &&
+			if( sd->status.party_id == tsd->status.party_id && (tsd->class_&MAPID_THIRDMASK) == MAPID_ROYAL_GUARD &&
 				tsd->sc.data[SC_BANDING] )
 				p_sd[(*c)++] = tsd->bl.id;
 			return 1;
@@ -16821,36 +16801,36 @@ int skill_delunitgroup_(struct skill_unit_group *group, const char* file, int li
 
 	switch( group->skill_id )
 	{
-	case SG_SUN_WARM:
-	case SG_MOON_WARM:
-	case SG_STAR_WARM:
-		if( sc && sc->data[SC_WARM] )
-		{
-			sc->data[SC_WARM]->val4 = 0;
-			status_change_end(src, SC_WARM, INVALID_TIMER);
-		}
-		break;
-	case NC_NEUTRALBARRIER:
-		if( sc && sc->data[SC_NEUTRALBARRIER_MASTER] )
-		{
-			sc->data[SC_NEUTRALBARRIER_MASTER]->val2 = 0;
-			status_change_end(src,SC_NEUTRALBARRIER_MASTER, INVALID_TIMER);
-		}
-		break;
-	case NC_STEALTHFIELD:
-		if( sc && sc->data[SC_STEALTHFIELD_MASTER] )
-		{
-			sc->data[SC_STEALTHFIELD_MASTER]->val2 = 0;
-			status_change_end(src,SC_STEALTHFIELD_MASTER, INVALID_TIMER);
-		}
-		break;
-	case LG_BANDING:
-		if( sc && sc->data[SC_BANDING] )
-		{
-			sc->data[SC_BANDING]->val4 = 0;
-			status_change_end(src,SC_BANDING, INVALID_TIMER);
-		}
-		break;
+		case SG_SUN_WARM:
+		case SG_MOON_WARM:
+		case SG_STAR_WARM:
+			if( sc && sc->data[SC_WARM] )
+			{
+				sc->data[SC_WARM]->val4 = 0;
+				status_change_end(src, SC_WARM, INVALID_TIMER);
+			}
+			break;
+		case NC_NEUTRALBARRIER:
+			if( sc && sc->data[SC_NEUTRALBARRIER_MASTER] )
+			{
+				sc->data[SC_NEUTRALBARRIER_MASTER]->val2 = 0;
+				status_change_end(src, SC_NEUTRALBARRIER_MASTER, INVALID_TIMER);
+			}
+			break;
+		case NC_STEALTHFIELD:
+			if( sc && sc->data[SC_STEALTHFIELD_MASTER] )
+			{
+				sc->data[SC_STEALTHFIELD_MASTER]->val2 = 0;
+				status_change_end(src, SC_STEALTHFIELD_MASTER, INVALID_TIMER);
+			}
+			break;
+		case LG_BANDING:
+			if( sc && sc->data[SC_BANDING] )
+			{
+				sc->data[SC_BANDING]->val4 = 0;
+				status_change_end(src, SC_BANDING, INVALID_TIMER);
+			}
+			break;
 	}
 
 	if (src->type==BL_PC && group->state.ammo_consume)
@@ -17092,21 +17072,6 @@ static int skill_unit_timer_sub (DBKey key, void* data, va_list ap)
 				if( src )
 					map_foreachinrange(skill_area_sub, &group->unit->bl, unit->range, splash_target(src), src, SC_FEINTBOMB, group->skill_lv, tick, BCT_ENEMY|1, skill_castend_damage_id);
 				skill_delunit(unit);
-			}
-			break;
-
-			case UNT_BANDING:
-			{
-				struct block_list *src = map_id2bl(group->src_id);
-				struct status_change *sc;
-				if( !src || (sc = status_get_sc(src)) == NULL || !sc->data[SC_BANDING] )
-				{
-					skill_delunit(unit);
-					break;
-				}
-				// This unit isn't removed while SC_BANDING is active.
-				group->limit = DIFF_TICK(tick+group->interval,group->tick);
-				unit->limit = DIFF_TICK(tick+group->interval,group->tick);
 			}
 			break;
 
@@ -18385,18 +18350,43 @@ int skill_changematerial(struct map_session_data *sd, int n, unsigned short *ite
 	return 0;
 }
 
+int skill_banding_count (struct map_session_data *sd)
+{
+	unsigned char count = party_foreachsamemap(party_sub_count_banding, sd, 3, 0);
+	unsigned int group_hp = party_foreachsamemap(party_sub_count_banding, sd, 3, 1);
+
+	nullpo_ret(sd);
+
+	// HP is set to the average HP of the banding group.
+	if ( count > 1 )
+		status_set_hp(&sd->bl, group_hp/count, 0);
+
+	// Royal Guard count check for banding.
+	if ( sd && sd->status.party_id )
+	{// There's no official max count but its best to limit it to the official max party size.
+		if( count > 12)
+			return 12;
+		else if( count > 1)
+			return count;//Effect bonus from additional Royal Guards if not above the max possiable.
+	}
+
+	return 0;
+}
+
 int skill_chorus_count (struct map_session_data *sd)
 {
+	unsigned char count = party_foreachsamemap(party_sub_count_chorus, sd, 15);
+
 	nullpo_ret(sd);
 
 	// Minstrel/Wanderer count check for chorus skills.
 	// Bonus remains 0 unless 3 or more Minstrel's/Wanderer's are in the party.
 	if ( sd && sd->status.party_id )
 	{
-		if( party_foreachsamemap(party_sub_count_chorus, sd, 0) > 7)
+		if( count > 7)
 			return 5;//Maximum effect possiable from 7 or more Minstrel's/Wanderer's
-		else if( party_foreachsamemap(party_sub_count_chorus, sd, 0) > 2)
-			return (party_foreachsamemap(party_sub_count_chorus, sd, 0) - 2);//Effect bonus from additional Minstrel's/Wanderer's if not above the max possiable.
+		else if( count > 2)
+			return (count - 2);//Effect bonus from additional Minstrel's/Wanderer's if not above the max possiable.
 	}
 
 	return 0;

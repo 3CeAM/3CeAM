@@ -348,8 +348,8 @@
 2317,500,0,2000,0,0,0,0
 //-- LG_PRESTIGE
 2318,1000,2000,0,60000,0,30000:45000:60000:75000:90000,0
-//-- LG_BANDING
-2319,0,0,0,0,0,-1,2000:4000:6000:8000:10000
+//-- LG_BANDING // Can't do a infinite duration for this skill due to how it works. A hour duration should be enough.
+2319,0,0,0,0,0,3600000,2000:4000:6000:8000:10000
 //-- LG_MOONSLASHER
 2320,1000,0,1000,6000:5000:4000:3000:2000,0,0,0
 //-- LG_RAYOFGENESIS //CHECK Duration 1 is for blind on undead and demon right?

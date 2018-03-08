@@ -1023,24 +1023,37 @@ int party_sub_count(struct block_list *bl, va_list ap)
 	return 1;
 }
 
-// Special check for Royal Guard's Banding skill and other skills that work together with it.
-// NOTE: This system is currently not in use and will be disabled until all required skills
-// are updated to support its function. [Rytech]
-/*int party_sub_count_banding(struct block_list *bl, va_list ap)
+// Special check for Royal Guard's Banding skill.
+int party_sub_count_banding(struct block_list *bl, va_list ap)
 {
 	struct map_session_data *sd = (TBL_PC *)bl;
+	unsigned char check_type = va_arg(ap,unsigned char);// 0 = Banding Count, 1 = HP Check, 2 = Max Rage Spheres On All
 
 	if (sd->state.autotrade)
 		return 0;
-	
+
 	if (battle_config.idle_no_share && pc_isidle(sd))
 		return 0;
 
-	if ( (sd->class_&MAPID_UPPERMASK_THIRD) != MAPID_ROYAL_GUARD )
+	if ( (sd->class_&MAPID_THIRDMASK) != MAPID_ROYAL_GUARD )
 		return 0;
 
+	if ( !(sd->sc.data[SC_BANDING]) )
+		return 0;
+
+	if ( check_type == 1 )
+		return status_get_hp(bl);
+
+	if ( check_type == 2 && sd->sc.data[SC_FORCEOFVANGUARD] )
+	{// Max out the rage sphere's for all Royal Guard's in banding if the banding count is 7 or more when Hesperuslit is used.
+		unsigned char i;
+		for( i = 0; i < sd->sc.data[SC_FORCEOFVANGUARD]->val3; i++ )
+			pc_addrageball(sd, skill_get_time(LG_FORCEOFVANGUARD,1),sd->sc.data[SC_FORCEOFVANGUARD]->val3);
+		return 0;
+	}
+
 	return 1;
-}*/
+}
 
 // Special check for Minstrel / Wanderer chorus skills.
 int party_sub_count_chorus(struct block_list *bl, va_list ap)
@@ -1049,7 +1062,7 @@ int party_sub_count_chorus(struct block_list *bl, va_list ap)
 
 	if (sd->state.autotrade)
 		return 0;
-	
+
 	if (battle_config.idle_no_share && pc_isidle(sd))
 		return 0;
 
