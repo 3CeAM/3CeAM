@@ -5995,23 +5995,6 @@ static int pc_setstat(struct map_session_data* sd, int type, int val)
 /*======================================================
  * Returns the number of stat points needed to raise
  * the specified stat by 1.
- * Old formula : (1 + (pc_getstat(sd,type) + 9) / 10)
- * Renewal formula : (2 + (stat - 1) / 10)
- * Stat required list:
- *	  1 ~  10 ->  2
- *	 11 ~  20 ->  3
- *	 21 ~  30 ->  4
- *	 31 ~  40 ->  5
- *	 41 ~  50 ->  6
- *	 51 ~  60 ->  7
- *	 61 ~  70 ->  8
- *	 71 ~  80 ->  9
- *	 81 ~  90 -> 10
- *	 91 ~  99 -> 11
- *	100 ~ 104 -> 16
- *	105 ~ 109 -> 20
- *	110 ~ 114 -> 24
- *	115 ~ 119 -> 28 
 ------------------------------------------------------*/
 int pc_need_status_point(struct map_session_data* sd, int type)
 {
@@ -6020,10 +6003,10 @@ int pc_need_status_point(struct map_session_data* sd, int type)
 	if( stat >= pc_maxparameter(sd) )
 		return 0;
 
-	if( battle_config.use_renewal_statpoints )
-		return (stat < 100) ? (2 + (stat - 1) / 10) : (16 + 4 * ((stat - 100) / 5)); // Renewal machanic.
+	if ( battle_config.renewal_stats_handling && stat >= 100)
+		return (16 + 4 * ((stat - 100) / 5));// Renewal formula for stats above 99.
 	else
-		return (1 + (stat + 9) / 10); // Old mechanic
+		return (2 + (stat - 1) / 10);// Original formula.
 }
 
 /// Raises a stat by 1.
@@ -9373,7 +9356,10 @@ int pc_split_atoui(char* str, unsigned int* val, char sep, int max)
 			val[i] = UINT_MAX;
 			if (!warning) {
 				warning = 1;
-				ShowWarning("pc_readdb (exp.txt): Required exp per level is capped to %u\n", UINT_MAX);
+				if ( battle_config.load_custom_exp_tables )
+					ShowWarning("pc_readdb (exp2.txt): Required exp per level is capped to %u\n", UINT_MAX);
+				else
+					ShowWarning("pc_readdb (exp.txt): Required exp per level is capped to %u\n", UINT_MAX);
 			}
 		} else
 			val[i] = (unsigned int)f;
@@ -9451,7 +9437,10 @@ int pc_readdb(void)
 	// 必要??値?み?み
 	memset(exp_table,0,sizeof(exp_table));
 	memset(max_level,0,sizeof(max_level));
-	sprintf(line, "%s/exp.txt", db_path);
+	if ( battle_config.load_custom_exp_tables )
+		sprintf(line, "%s/exp2.txt", db_path);
+	else
+		sprintf(line, "%s/exp.txt", db_path);
 	fp=fopen(line, "r");
 	if(fp==NULL){
 		ShowError("can't read %s\n", line);
@@ -9529,7 +9518,10 @@ int pc_readdb(void)
 		if (!max_level[j][1])
 			ShowWarning("Class %s (%d) does not have a job exp table.\n", job_name(i), i);
 	}
-	ShowStatus("Done reading '"CL_WHITE"%s"CL_RESET"'.\n","exp.txt");
+	if ( battle_config.load_custom_exp_tables )
+		ShowStatus("Done reading '"CL_WHITE"%s"CL_RESET"'.\n","exp2.txt");
+	else
+		ShowStatus("Done reading '"CL_WHITE"%s"CL_RESET"'.\n","exp.txt");
 
 	// スキルツリ?
 	memset(skill_tree,0,sizeof(skill_tree));
@@ -9589,10 +9581,10 @@ int pc_readdb(void)
 	// スキルツリ?
 	memset(statp,0,sizeof(statp));
 	i=1;
-	if( battle_config.use_renewal_statpoints )
-		sprintf(line, "%s/statpoint_renewal.txt", db_path); // Renewal mechanic
+	if( battle_config.renewal_stats_handling )
+		sprintf(line, "%s/statpoint_renewal.txt", db_path);
 	else
-		sprintf(line, "%s/statpoint.txt", db_path); // Old mechanic.
+		sprintf(line, "%s/statpoint.txt", db_path);
 	fp=fopen(line,"r");
 	if(fp == NULL){
 		ShowStatus("Can't read '"CL_WHITE"%s"CL_RESET"'... Generating DB.\n",line);
@@ -9611,7 +9603,7 @@ int pc_readdb(void)
 			i++;
 		}
 		fclose(fp);
-		if( battle_config.use_renewal_statpoints )
+		if( battle_config.renewal_stats_handling )
 			ShowStatus("Done reading '"CL_WHITE"%s"CL_RESET"'.\n","statpoint_renewal.txt");
 		else
 			ShowStatus("Done reading '"CL_WHITE"%s"CL_RESET"'.\n","statpoint.txt");

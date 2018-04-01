@@ -504,6 +504,7 @@ extern struct Battle_Config
 	int bg_flee_penalty;
 
 	// 3CeAM Added
+	int load_custom_exp_tables;
 	int base_lv_skill_effect_limit;
 	int job_lv_skill_effect_limit;
 	int renewal_casting_renewal_skills;
@@ -511,12 +512,12 @@ extern struct Battle_Config
 	int castrate_dex_scale_renewal_jobs;
 	int max_parameter_renewal_jobs;
 	int max_baby_parameter_renewal_jobs;
+	int renewal_stats_handling;
 	int max_aspd_renewal_jobs;
 	int all_riding_speed;
 	int rune_produce_rate;
 	int pc_camouflage_check_type;
 	int falcon_and_wug;
-	int use_renewal_statpoints;
 	int metallicsound_spburn_rate;
 	int mado_skill_limit;
 	int mado_loss_on_death;

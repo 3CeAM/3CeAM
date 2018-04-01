@@ -303,15 +303,15 @@ int merc_hom_levelup(struct homun_data *hd)
 	hom = &hd->homunculus;
 	hom->level++ ;
 
-	if ( hom->level > 99 )
-	{
-		if (!(hom->level % 2))
-			hom->skillpts++ ;	//1 skill point for each 2 levels for mutated homunculus.
+	if ( hom->level >= 100 )
+	{// 1 skill point for each 2 levels for mutated homunculus.
+		if (hom->level % 2 == 1)
+			hom->skillpts++ ;
 	}
 	else
-	{
+	{// 1 skill point each 3 levels when below 100.
 		if (!(hom->level % 3))
-			hom->skillpts++ ;	//1 skill point each 3 levels when below 100.
+			hom->skillpts++ ;
 	}
 
 	hom->exp -= hd->exp_next ;
