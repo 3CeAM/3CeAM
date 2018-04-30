@@ -513,6 +513,12 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			return 0;
 		}
 
+		if((sce=sc->data[SC_MEIKYOUSISUI]) && rand()%100 < sce->val2)
+		{// Animation is unofficial, but it allows players to know when the nullify chance was successful. [Rytech]
+			clif_specialeffect(bl, 462, AREA);
+			return 0;
+		}
+
 		if( flag&BF_MAGIC && (sce=sc->data[SC_PRESTIGE]) && rand()%100 < sce->val2)
 		{
 			clif_specialeffect(bl, 462, AREA); // Still need confirm it.
@@ -920,7 +926,7 @@ int battle_calc_bg_damage(struct block_list *src, struct block_list *bl, int dam
 		case NJ_ZENYNAGE:
 		//case RK_DRAGONBREATH:
 		//case GN_HELLS_PLANT_ATK:
-		//case KO_MUCHANAGE:
+		case KO_MUCHANAGE:
 			break;
 		default:
 			if( flag&BF_SKILL )
@@ -984,7 +990,7 @@ int battle_calc_gvg_damage(struct block_list *src,struct block_list *bl,int dama
 	case NJ_ZENYNAGE:
 	//case RK_DRAGONBREATH:
 	//case GN_HELLS_PLANT_ATK:
-	//case KO_MUCHANAGE:
+	case KO_MUCHANAGE:
 		break;
 	default:
 		/* Uncomment if you want god-mode Emperiums at 100 defense. [Kisuka]
@@ -1855,11 +1861,11 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				} else
 					ATK_ADD(sstatus->rhw.atk2); //Else use Atk2
 				break;
-		case RK_DRAGONBREATH:
-		case RK_DRAGONBREATH_WATER:
+			case RK_DRAGONBREATH:
+			case RK_DRAGONBREATH_WATER:
 			{
 				int damagevalue = 0;
-				wd.damage = 0;
+				wd.damage = wd.damage2 = 0;
 				damagevalue = ((sstatus->hp / 50) + (status_get_max_sp(src) / 4)) * skill_lv;
 				if ( level_effect_bonus == 1 )
 					damagevalue = damagevalue * status_get_base_lv_effect(src) / 150;
@@ -1871,7 +1877,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 			case NC_SELFDESTRUCTION:
 				{
 					int damagevalue = 0;
-					wd.damage = 0;
+					wd.damage = wd.damage2 = 0;
 					damagevalue = (1 + skill_lv) * (8 + (sd?pc_checkskill(sd,NC_MAINFRAME):4)) * (status_get_sp(src) + sstatus->vit);
 					if ( level_effect_bonus == 1 )
 						damagevalue = damagevalue * status_get_base_lv_effect(src) / 100;
@@ -1879,10 +1885,10 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					ATK_ADD(damagevalue);
 				}
 				break;
-		case RL_B_TRAP:
+			case RL_B_TRAP:
 			{
 				int damagevalue = 0;
-				wd.damage = 0;
+				wd.damage = wd.damage2 = 0;
 				damagevalue = 3 * skill_lv * tstatus->hp / 100;
 				if (tstatus->mode&MD_BOSS)// HP damage dealt is 1/10 the amount on boss monsters.
 					damagevalue = damagevalue / 10;
@@ -1890,20 +1896,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				ATK_ADD(damagevalue);
 			}
 			break;
-			case KO_HAPPOKUNAI:
-				if( sd )
-				{
-					short index = sd->equip_index[EQI_AMMO];
-					wd.damage = 0;
-					if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_AMMO )
-						ATK_ADD((3 * (2 * sstatus->batk + sstatus->rhw.atk + sd->inventory_data[index]->atk)) * (skill_lv + 5) / 5);
-				}
-				else
-					ATK_ADD(5000);
-				break;
 			case HFLI_SBR44:	//[orn]
 				if(src->type == BL_HOM) {
-					wd.damage = ((TBL_HOM*)src)->homunculus.intimacy ;
+					wd.damage = ((TBL_HOM*)src)->homunculus.intimacy;
 					break;
 				}
 			default:
@@ -2877,24 +2872,18 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					skillratio = 150 * skill_lv;
 					if( level_effect_bonus == 1 )
 						skillratio = skillratio * status_get_base_lv_effect(src) / 120;
-					{
-						struct status_change *tsc = status_get_sc(target);
-						if( tsc && tsc->data[SC_JYUMONJIKIRI] )// Bonus damage added when attacking target with Cross Wound status. [Rytech]
-							if( level_effect_bonus == 1 )
-								skillratio += skill_lv * status_get_base_lv_effect(src);
-							else
-								skillratio += 150 * skill_lv;
-					}
+					if( tsc && tsc->data[SC_JYUMONJIKIRI] )// Bonus damage added when attacking target with Cross Wound status. [Rytech]
+						if( level_effect_bonus == 1 )
+							skillratio += skill_lv * status_get_base_lv_effect(src);
+						else
+							skillratio += 150 * skill_lv;
 					break;
 				case KO_SETSUDAN:
 					skillratio = 100 * skill_lv;
 					if( level_effect_bonus == 1 )
 						skillratio = skillratio * status_get_base_lv_effect(src) / 100;
-					{
-						struct status_change *tsc = status_get_sc(target);
-						if( tsc && tsc->data[SC_SPIRIT] )// Bonus damage added when target is soul linked. [Rytech]
-							skillratio += 200 * tsc->data[SC_SPIRIT]->val1;// Deals higher damage depending on level of soul link.
-					}
+					if( tsc && tsc->data[SC_SPIRIT] )// Bonus damage added when target is soul linked. [Rytech]
+						skillratio += 200 * tsc->data[SC_SPIRIT]->val1;// Deals higher damage depending on level of soul link.
 					break;
 				case KO_BAKURETSU:
 					skillratio = (50 + sstatus->dex / 4) * skill_lv * (sd?pc_checkskill(sd, NJ_TOBIDOUGU):10) * 4 / 10;
@@ -2905,6 +2894,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					}
 					else
 						skillratio += 500;
+					break;
+				case KO_HAPPOKUNAI:
+					skillratio = 300 * (skill_lv + 5) / 5;
 					break;
 				case KO_HUUMARANKA:
 					skillratio = 150 * skill_lv + sstatus->agi + sstatus->dex + 100 * (sd?pc_checkskill(sd, NJ_HUUMA):5);
@@ -3152,8 +3144,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 			// This does not adjust damage by a percent depending on elements and race.
 			// To make it simple, if a skill is not affected by the ice pick effect, add it here.
 			if( skill_num != PA_SACRIFICE && skill_num != MO_INVESTIGATE && skill_num != CR_GRANDCROSS && skill_num != NPC_GRANDDARKNESS && 
-				skill_num != PA_SHIELDCHAIN && skill_num !=RK_DRAGONBREATH && skill_num != NC_SELFDESTRUCTION && skill_num != KO_HAPPOKUNAI && 
-				skill_num != RL_B_TRAP && skill_num != RK_DRAGONBREATH_WATER && !flag.cri )
+				skill_num != PA_SHIELDCHAIN && skill_num != RK_DRAGONBREATH && skill_num != NC_SELFDESTRUCTION && skill_num != RL_B_TRAP && 
+				skill_num != RK_DRAGONBREATH_WATER && !flag.cri )
 			{ //Elemental/Racial adjustments
 				if( sd->right_weapon.def_ratio_atk_ele & (1<<tstatus->def_ele) ||
 					sd->right_weapon.def_ratio_atk_race & (1<<tstatus->race) ||
@@ -4665,10 +4657,10 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 	case KO_MUCHANAGE:
 		md.damage = skill_get_zeny(skill_num ,skill_lv);
 		if (!md.damage) md.damage = 10;
-			md.damage =  md.damage * rnd_value( 50, 100) / 100;
-		if ( (sd?pc_checkskill(sd, NJ_TOBIDOUGU):10) < 10 )
+		md.damage =  md.damage * rnd_value( 50, 100) / 100;// Random damage should be calculated on skill use and then sent here. But can't do so through the flag due to the split damage flag.
+		if ( (sd?pc_checkskill(sd, NJ_TOBIDOUGU):10) < 10 )// Best to just do all the damage calculations here for now and figure it out later. [Rytech]
 			md.damage = md.damage / 2;// Damage halved if Throwing Mastery is not mastered.
-		if (is_boss(target) || (tsd))
+		if (is_boss(target))// Data shows damage is halved on boss monsters but not on players.
 			md.damage = md.damage / 2;
 		break;
 	case NC_MAGMA_ERUPTION_DOTDAMAGE:

@@ -7,7 +7,7 @@
 // 05 element (0 - neutral, 1 - water, 2 - earth, 3 - fire, 4 - wind, 5 - poison,
 //             6 - holy, 7 - dark, 8 - ghost, 9 - undead, -1 - use weapon element
 //             -2 - use endowed element, -3 - use random element.)
-// 06 nk (skill damage properties, only works if inf is not set to "2 - place"):
+// 06 nk (skill damage properties):
 //    0x001 - No damage skill
 //    0x002 - Has splash area
 //    0x004 - Damage should be split among targets
@@ -1113,7 +1113,7 @@
 2301,7,6,2,0,0x1,2,3,1,yes,0,0,0,magic,0,	SC_CHAOSPANIC,Chaos Panic
 2302,7,6,2,0,0x1,2,3,1,yes,0,0,1,magic,0,	SC_MAELSTROM,Maelstrom
 2303,7,6,2,0,0x1,3,3,1,yes,0,0,1,magic,0,	SC_BLOODYLUST,Bloody Lust
-2304,0,6,4,-1,0,0,3,1,no,0,0,0,weapon,0,	SC_FEINTBOMB,Feint Bomb
+2304,0,6,4,-1,0,0,3,1,no,0,0,0,weapon,0,	SC_FEINTBOMB,Feint Bomb// Is self targeted ground skill. Fix me.
 
 // Royal Guard
 2307,11,8,1,-1,0,2,5,1,no,0,0,10,weapon,0,	LG_CANNONSPEAR,Cannon Spear//Recheck corridor settings.
@@ -1305,39 +1305,39 @@
 2574,0,6,1,-1,0,0,5,1,no,0,0x4000,0,weapon,0,	RL_GLITTERING_GREED_ATK,Flip The Coin Greed Attack//Guess on max level is from Flip The Coin Greed
 
 // Kagerou / Oboro
-3001,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		KO_YAMIKUMO,Dark Cloud
+3001,0,6,4,0,0x1,0,1,1,yes,0,0,0,none,0,	KO_YAMIKUMO,Dark Cloud
 3002,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		KO_RIGHT,Right-Hand Training
 3003,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		KO_LEFT,Left-Hand Training
-3004,3:4:5:6:7,8,1,-1,0,0,5,-2,no,0,0,0,weapon,0,	KO_JYUMONJIKIRI,Cross Slasher
-3005,2,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	KO_SETSUDAN,Spirit Breaker
-3006,7:8:9:10:11,6,2,0,0x42,1,5,1,no,0,0,0,weapon,0,	KO_BAKURETSU,Exploding Kunai//Does this ignore flee?
-3007,5,6,4,-1,0x42,4:4:4:4:5,5,1,no,0,0,0,weapon,0,		KO_HAPPOKUNAI,Spray Kunai
-3008,11,8,2,0,0x56,1:1:1:1:1:1:1:1:1:2,10,-10,no,0,0,0,misc,0,	KO_MUCHANAGE,Over Throw//Should split damage between targets.
-3009,9:10:11:12:13,8,2,-1,0x6,3,5,-5,no,0,0,0,weapon,0,		KO_HUUMARANKA,Launch Huuma Shuriken//Does this skill divide damage between targets like the weaker version?
-3010,0,6,4,0,0x50,0,5,1,no,0,0,0,weapon,0,	KO_MAKIBISHI,Makibishi//Im sure it ignores elemental adjustments and flee due to the purpose of the skill.
-3011,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		KO_MEIKYOUSISUI,Clear Meditation
-3012,0,6,4,0,0x1,0,5,1,no,0,0,0,none,3:4:5:6:7,	KO_ZANZOU,Illusion - After Image// Creates a clone of yourself....kinda. Uses monster ID 2308
-3013,5,6,1,0,0x1,0,5,1,no,0,0,0,none,0,		KO_KYOUGAKU,Illusion - Shock
-3014,5,6,1,0,0x1,0,5,1,no,0,0,0,none,0,		KO_JYUSATSU,Illusion - Killing Curse
-3015,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		KO_KAHU_ENTEN,Fire Seal - Scorching Fire
-3016,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		KO_HYOUHU_HUBUKI,Water Seal - Snow Storm
-3017,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		KO_KAZEHU_SEIRAN,Wind Seal - Turbulent Wind
-3018,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		KO_DOHU_KOUKAI,Earth Seal - Steel
-3019,11,6,1,0,0,0,1,1,no,0,0,0,magic,0,		KO_KAIHOU,Release Seals
-3020,7,6,2,0,0x1,0,1,1,no,0,0,0,none,0,		KO_ZENKAI,Spread Seals
-3021,5:6:7:8:9,6,1,0,0x1,0,5,1,no,0,0,0,none,0,	KO_GENWAKU,Illusion - Attraction
-3022,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		KO_IZAYOI,16th Night
+3004,3:4:5:6:7,8,1,-1,0,0,5,-2,yes,0,0,0,weapon,0,	KO_JYUMONJIKIRI,Cross Slasher
+3005,2,6,1,-1,0,0,5,1,yes,0,0,0,weapon,0,	KO_SETSUDAN,Spirit Breaker
+3006,7:8:9:10:11,6,2,0,0x42,1,5,1,yes,0,0,0,weapon,0,	KO_BAKURETSU,Exploding Kunai
+3007,0,6,4,-1,0x142,4:4:4:4:5,5,1,yes,0,0,0,weapon,0,	KO_HAPPOKUNAI,Spray Kunai
+3008,11,8,2,0,0x56,1:1:1:1:1:1:1:1:1:2,10,-10,yes,0,0,0,misc,0,	KO_MUCHANAGE,Over Throw
+3009,9:10:11:12:13,8,2,-1,0x2,3,5,-5,yes,0,0,0,weapon,0,KO_HUUMARANKA,Launch Huuma Shuriken
+3010,0,6,4,0,0x40,1,5,1,yes,0,0,0,weapon,0,	KO_MAKIBISHI,Makibishi// Should not stop movement at all when casted. How to do this???
+3011,0,6,4,0,0x1,0,5,1,yes,0,0,0,none,0,	KO_MEIKYOUSISUI,Clear Meditation
+3012,0,6,4,0,0x1,0,5,1,yes,0,0,0,none,3:4:5:6:7,KO_ZANZOU,Illusion - After Image// Need to code the target shift part.
+3013,5,6,1,0,0x1,0,5,1,yes,0,0,0,none,0,	KO_KYOUGAKU,Illusion - Shock
+3014,5,6,1,0,0x1,0,5,1,yes,0,0,0,none,0,	KO_JYUSATSU,Illusion - Killing Curse
+3015,0,6,4,0,0x1,0,1,1,yes,0,0,0,none,0,	KO_KAHU_ENTEN,Fire Seal - Scorching Fire
+3016,0,6,4,0,0x1,0,1,1,yes,0,0,0,none,0,	KO_HYOUHU_HUBUKI,Water Seal - Snow Storm
+3017,0,6,4,0,0x1,0,1,1,yes,0,0,0,none,0,	KO_KAZEHU_SEIRAN,Wind Seal - Turbulent Wind
+3018,0,6,4,0,0x1,0,1,1,yes,0,0,0,none,0,	KO_DOHU_KOUKAI,Earth Seal - Steel
+3019,11,6,1,0,0,0,1,1,yes,0,0,0,magic,0,	KO_KAIHOU,Release Seals
+3020,7,6,2,0,0x1,0,1,1,yes,0,0,0,none,0,	KO_ZENKAI,Spread Seals
+3021,5:6:7:8:9,6,1,0,0x1,0,5,1,yes,0,0,0,none,0,KO_GENWAKU,Illusion - Attraction
+3022,0,6,4,0,0x1,0,5,1,yes,0,0,0,none,0,	KO_IZAYOI,16th Night
 
 // Kagerou
-3023,0,6,4,0,0x3,2:3:4:5:6,5,1,no,0,0,0,none,0,	KG_KAGEHUMI,Shadow Hold
-3024,1,6,1,0,0x1,0,5,1,no,0,0,0,none,0,		KG_KYOMU,Shadow Void
-3025,1,6,16,0,0x1,0,5,1,no,0,0,0,none,0,	KG_KAGEMUSYA,Shadow Warrior//Range is 1 or 0?
+3023,0,6,4,0,0x3,2:3:4:5:6,5,1,yes,0,0,0,none,0,KG_KAGEHUMI,Shadow Hold
+3024,1,6,1,0,0x1,0,5,1,yes,0,0,0,none,0,	KG_KYOMU,Shadow Void
+3025,1,6,16,0,0x1,0,5,1,yes,0,0,0,none,0,	KG_KAGEMUSYA,Shadow Warrior
 
 // Oboro
-3026,7,6,16,0,0x1,0,5,1,no,0,0,0,none,0,	OB_ZANGETSU,Distorted Crescent Moon
-3027,7,6,16,0,0x1,0,5,1,no,0,0,0,none,0,	OB_OBOROGENSOU,Hazy Moonlight Illusion
-3028,0,6,4,0,0x2,2,5,1,no,0,0x4000,0,misc,0,	OB_OBOROGENSOU_TRANSITION_ATK,Hazy Moonlight Illusion Transition Attack//Deflected damage means reflected damage. Cant be reduced or reflected again.
-3029,7,6,1,0,0x1,0,5,1,no,0,0,0,none,0,		OB_AKAITSUKI,Ominous Crimson Moonlight
+3026,7,6,16,0,0x1,0,5,1,yes,0,0,0,none,0,	OB_ZANGETSU,Distorted Crescent Moon
+3027,7,6,16,0,0x1,0,5,1,yes,0,0,0,none,0,	OB_OBOROGENSOU,Hazy Moonlight Illusion
+3028,0,6,4,0,0x2,2,5,1,yes,0,0x4000,0,misc,0,	OB_OBOROGENSOU_TRANSITION_ATK,Hazy Moonlight Illusion Transition Attack//Deflected damage means reflected damage. Cant be reduced or reflected again.
+3029,7,6,1,0,0x1,0,5,1,yes,0,0,0,none,0,	OB_AKAITSUKI,Ominous Crimson Moonlight
 
 // Eclage Skills
 3031,7,6,16,0,0x1,0,1,1,no,0,0,0,none,0,	ECL_SNOWFLIP,Snow Flip
@@ -1372,7 +1372,7 @@
 5010,0,6,4,0,0x1,0,5,1,yes,0,0,0,none,5:6:7:8:9,SC_ESCAPE,Emergency Escape
 5011,0,6,4,0,0x1,0,5,1,yes,0,0,0,none,0,	AB_OFFERTORIUM,Offertorium
 5012,0,6,4,0,0x1,0,5,1,yes,0,0,0,none,0,	WL_TELEKINESIS_INTENSE,Intense Telekinesis
-5013,0,6,4,0,0x1,0,5,1,yes,0,0,0,none,0,	LG_KINGS_GRACE,King's Grace
+5013,0,6,4,0,0x1,0,5,1,yes,0,0,0,none,0,	LG_KINGS_GRACE,King's Grace// Self casted ground skill. Fix me.
 5014,0,6,4,0,0x1,0,5,1,yes,0,0,0,none,0,	ALL_FULL_THROTTLE,Full Throttle
 5015,0,6,1,0,0,0,5,1,no,0,0x4000,0,misc,0,	NC_MAGMA_ERUPTION_DOTDAMAGE,Magma Eruption Dot Damage
 
@@ -1404,17 +1404,17 @@
 5042,0,6,2,0,0,0,5,1,yes,0,0x4000,0,magic,0,	SU_CN_METEOR2,Catnip Meteor 2
 5043,0,6,1,0,0,0,5,1,yes,0,0x4000,0,weapon,0,	SU_LUNATICCARROTBEAT2,Lunatic Carrot Beat 2
 5044,14,0,0,0,0,0,1,0,no,0,0,0,none,0,		SU_SOULATTACK,Soul Attack// Confirmed damage is still affected by STR. Is it still melee damage???
-5045,0,0,4,0,0,0,5,0,no,0,0,0,none,0,		SU_POWEROFFLOCK,Power of Flock
-5046,9,0,1,0,0,0,5,0,no,0,0,0,none,0,		SU_SVG_SPIRIT,Savage Spirit
-5047,0,0,4,0,0,0,5,0,no,0,0,0,none,0,		SU_HISS,Hiss
-5048,9,0,2,0,0,0,5,0,no,0,0,0,none,0,		SU_NYANGGRASS,Nyang Grass
-5049,0,0,4,0,0,0,5,0,no,0,0,0,none,0,		SU_GROOMING,Grooming
-5050,0,0,4,0,0,0,5,0,no,0,0,0,none,0,		SU_PURRING,Purring
-5051,0,0,4,0,0,0,5,0,no,0,0,0,none,0,		SU_SHRIMPARTY,Shrimp Party
+5045,0,0,4,0,0,0,5,0,yes,0,0,0,none,0,		SU_POWEROFFLOCK,Power of Flock
+5046,9,0,1,0,0,0,5,0,yes,0,0,0,none,0,		SU_SVG_SPIRIT,Savage Spirit
+5047,0,0,4,0,0,0,5,0,yes,0,0,0,none,0,		SU_HISS,Hiss
+5048,9,0,2,0,0,0,5,0,yes,0,0,0,none,0,		SU_NYANGGRASS,Nyang Grass
+5049,0,0,4,0,0,0,5,0,yes,0,0,0,none,0,		SU_GROOMING,Grooming
+5050,0,0,4,0,0,0,5,0,yes,0,0,0,none,0,		SU_PURRING,Purring
+5051,0,0,4,0,0,0,5,0,yes,0,0,0,none,0,		SU_SHRIMPARTY,Shrimp Party
 5052,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		SU_SPIRITOFLIFE,Spirit of Life
-5053,0,0,4,0,0,0,5,0,no,0,0,0,none,0,		SU_MEOWMEOW,Meow Meow
+5053,0,0,4,0,0,0,5,0,yes,0,0,0,none,0,		SU_MEOWMEOW,Meow Meow
 5054,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		SU_SPIRITOFLAND,Spirit of Land
-5055,0,0,4,0,0,0,5,0,no,0,0,0,none,0,		SU_CHATTERING,Chattering
+5055,0,0,4,0,0,0,5,0,yes,0,0,0,none,0,		SU_CHATTERING,Chattering
 5056,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		SU_SPIRITOFSEA,Spirit of Sea
 
 // Wedding Skills 3

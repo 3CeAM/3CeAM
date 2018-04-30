@@ -922,7 +922,6 @@ int unit_can_move(struct block_list *bl)
 			|| sc->data[SC_NETHERWORLD]
 			|| sc->data[SC_VACUUM_EXTREME]
 			|| sc->data[SC_THORNSTRAP]
-			|| sc->data[SC_MEIKYOUSISUI]
 			|| sc->data[SC_KAGEHUMI]
 			|| sc->data[SC_KINGS_GRACE]
 			|| sc->data[SC_SUHIDE]

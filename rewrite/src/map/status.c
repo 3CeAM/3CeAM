@@ -584,11 +584,11 @@ void initChangeTables(void)
 	set_sc( RL_SLUGSHOT     , SC_SLUGSHOT     , SI_SLUGSHOT     , SCB_NONE );
 	add_sc( RL_HAMMER_OF_GOD, SC_STUN );
 
-	set_sc( KO_YAMIKUMO          , SC_HIDING          , SI_HIDING          , SCB_SPEED );
+	add_sc( KO_YAMIKUMO          , SC_HIDING );
 	set_sc( KO_JYUMONJIKIRI      , SC_JYUMONJIKIRI    , SI_KO_JYUMONJIKIRI , SCB_NONE );
 	set_sc( KO_MEIKYOUSISUI      , SC_MEIKYOUSISUI    , SI_MEIKYOUSISUI    , SCB_NONE );
 	set_sc( KO_KYOUGAKU          , SC_KYOUGAKU        , SI_KYOUGAKU        , SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK );
-	set_sc( KO_ZENKAI            , SC_ZENKAI          , SI_ZENKAI          , SCB_NONE );// Where's my WATK Increase??? [Rytech]
+	set_sc( KO_ZENKAI            , SC_ZENKAI          , SI_ZENKAI          , SCB_WATK );
 	set_sc( KO_IZAYOI            , SC_IZAYOI          , SI_IZAYOI          , SCB_MATK );
 	set_sc( KG_KAGEHUMI          , SC_KAGEHUMI        , SI_KG_KAGEHUMI     , SCB_NONE );
 	set_sc( KG_KYOMU             , SC_KYOMU           , SI_KYOMU           , SCB_NONE );
@@ -1124,7 +1124,6 @@ int status_damage(struct block_list *src,struct block_list *target,int hp, int s
 			status_change_end(target, SC_CAMOUFLAGE,INVALID_TIMER);
 			status_change_end(target, SC_VOICEOFSIREN,INVALID_TIMER);
 			//status_change_end(target, SC_MAGNETICFIELD,INVALID_TIMER);// Skill description says it ends of you take damage.
-			status_change_end(target, SC_MEIKYOUSISUI,INVALID_TIMER);//I need the success chance of this status being ended by a attack. [Rytech]
 			status_change_end(target, SC_SUHIDE, INVALID_TIMER);
 			if ((sce=sc->data[SC_ENDURE]) && !sce->val4) {
 				//Endure count is only reduced by non-players on non-gvg maps.
@@ -1564,6 +1563,13 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 			|| (sc->data[SC_GRAVITATION] && sc->data[SC_GRAVITATION]->val3 == BCT_SELF && flag != 2)
 			|| (sc->data[SC_SUHIDE] && skill_num != SU_HIDE)
 		)
+			return 0;
+
+		// Shadow Hold prevent's use of skills that hides the player. This doesn't apply to Chase Walk due to its immunity to detection.
+		// Also prevent's the use of fly wings and butterfly wings (teleporting).
+		if ( sc->data[SC_KAGEHUMI] && (skill_num == AL_TELEPORT || 
+			skill_num == TF_HIDING || skill_num == AS_CLOAKING || skill_num == GC_CLOAKINGEXCEED || 
+			skill_num == RA_CAMOUFLAGE || skill_num == SC_SHADOWFORM || skill_num == KO_YAMIKUMO) )
 			return 0;
 
 		if (sc->data[SC_WINKCHARM] && target && !flag)
@@ -4573,6 +4579,8 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += 40 + 30 * sc->data[SC_ODINS_POWER]->val1;
 	if(sc->data[SC_P_ALTER])
 		watk += sc->data[SC_P_ALTER]->val2;
+	if(sc->data[SC_ZENKAI])
+		watk += sc->data[SC_ZENKAI]->val2;
 	if(sc->data[SC_ZANGETSU] && sc->data[SC_ZANGETSU]->val3 == 1)
 		watk += 20 * sc->data[SC_ZANGETSU]->val1 + sc->data[SC_ZANGETSU]->val2;
 	if(sc->data[SC_FLASHCOMBO])
@@ -4660,7 +4668,7 @@ static unsigned short status_calc_matk(struct block_list *bl, struct status_chan
 		matk += 50;
 	if(sc->data[SC_ODINS_POWER])
 		matk += 40 + 30 * sc->data[SC_ODINS_POWER]->val1;
-	if(sc->data[SC_IZAYOI])//Recheck the MATK increase please. [Rytech]
+	if(sc->data[SC_IZAYOI])
 		matk += sc->data[SC_IZAYOI]->val2;
 	if(sc->data[SC_ZANGETSU] && sc->data[SC_ZANGETSU]->val4 == 1)
 		matk += 20 * sc->data[SC_ZANGETSU]->val1 + sc->data[SC_ZANGETSU]->val2;
@@ -8662,16 +8670,34 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val2 = 10 * val1;// Player Damage Resistance Reduction.
 			break;
 		case SC_MEIKYOUSISUI:
+			if (sd) {
+				pc_setsit(sd);
+				clif_sitting(&sd->bl,true);
+				clif_status_load(&sd->bl, SI_SIT, 1);
+			}
+			val2 = 10 * val1;// Chance of nulling the attack.
 			val4 = tick / 1000;
 			tick = 1000;
 			break;
 		case SC_KYOUGAKU:
-			val2 = rnd_value( 2 * val1, 3 * val1);
+			val2 = rnd_value( 2 * val1, 3 * val1);// Stats decrease.
 			val1 = 1002;
-			val_flag |= 1;
+			break;
+		case SC_ZENKAI:
+			if ( sd )
+			{
+				struct status_data *sstatus = status_get_status_data(bl);
+
+				if ( sstatus->rhw.ele == val2 )
+					val2 = status_get_base_lv_effect(bl) + status_get_job_lv_effect(bl);
+				else
+					val2 = 0;
+			}
+			else// Monsters
+				val2 = 0;
 			break;
 		case SC_IZAYOI:
-			val2 = 25 * val1;// MATK Increase.
+			val2 = val1 * (status_get_job_lv_effect(bl) / 2);// MATK Increase.
 			break;
 		case SC_KYOMU:
 			val2 = 5 * val1;// Skill Fail Chance
@@ -9005,7 +9031,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_NETHERWORLD:
 		case SC_VACUUM_EXTREME:
 		case SC_THORNSTRAP:
-		case SC_MEIKYOUSISUI:
+		case SC_KAGEHUMI:
 		case SC_NEEDLE_OF_PARALYZE:
 		case SC_TINDER_BREAKER:
 			unit_stop_walking(bl,1);
