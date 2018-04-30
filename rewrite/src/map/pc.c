@@ -8389,7 +8389,7 @@ int pc_equipitem(struct map_session_data *sd,int n,int req_pos)
 		return 0;
 	}
 
-	if( sd->sc.data[SC_BERSERK] )
+	if( sd->sc.data[SC_BERSERK] || sd->sc.data[SC_KYOUGAKU] )
 	{
 		clif_equipitemack(sd,n,0,0);	// fail
 		return 0;
@@ -8597,7 +8597,7 @@ int pc_unequipitem(struct map_session_data *sd,int n,int flag)
 	}
 
 	if( !(flag&2) && sd->sc.count && 
-		(sd->sc.data[SC_BERSERK] || // Prevents unequipping anything.
+		(sd->sc.data[SC_BERSERK] || sd->sc.data[SC_KYOUGAKU] ||// Prevents unequipping anything.
 		(sd->sc.data[SC_PYROCLASTIC] && sd->status.inventory[n].equip & EQP_HAND_R)) )// Can't unequip weapon.
 	{
 		clif_unequipitemack(sd,n,0,0);
@@ -9145,6 +9145,7 @@ void pc_setstand(struct map_session_data *sd){
 	nullpo_retv(sd);
 
 	status_change_end(&sd->bl, SC_TENSIONRELAX, INVALID_TIMER);
+	status_change_end(&sd->bl, SC_MEIKYOUSISUI, INVALID_TIMER);
 
 	//Reset sitting tick.
 	sd->ssregen.tick.hp = sd->ssregen.tick.sp = 0;

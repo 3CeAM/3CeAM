@@ -153,8 +153,8 @@
 2555,0x104,   ,  0, 1:2:2:3:3,500,enemy,0x002	//RL_B_TRAP
 2567,0x105,   , -1, 0,1000,enemy, 0x018	//RL_FIRE_RAIN
 2571,0x86,    ,  0, 2,1000,enemy, 0x018	//RL_HAMMER_OF_GOD
-3010,0xfc,    , -1, 0,5000,enemy, 0x018	//KO_MAKIBISHI
-3020,0xf8,    ,  0, 2, 500,all,   0x018	//KO_ZENKAI
+3010,0xfc,    ,  0, 0,2000,enemy, 0x01A	//KO_MAKIBISHI - Need to know how often these things hit.
+3020,0xf8,    ,  2, 0,1000,all,   0x101A	//KO_ZENKAI
 5006,0x101,   ,  0, 3,500,enemy,   0x018	//NC_MAGMA_ERUPTION
 5013,0x102,   ,  3, 0,200,friend,   0x1018	//LG_KINGS_GRACE
 8020,0xf5,    ,  3, 0,   0,enemy, 0x018	//MH_POISON_MIST // Inverval is set in source since its variable with this skill.
