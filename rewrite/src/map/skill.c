@@ -1538,6 +1538,12 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 	case GN_ILLUSIONDOPING:
 		sc_start(bl,SC_ILLUSIONDOPING,100-10*skilllv,skilllv,skill_get_time(skillid,skilllv));
 		break;
+	case SU_SCRATCH:// kRO says there's a chance of bleeding. jRO says its 5 + 5 * SkillLV. [Rytech]
+		sc_start(bl,SC_BLEEDING,5+5*skilllv,skilllv,skill_get_time(skillid,skilllv));
+		break;
+	case SU_SV_STEMSPEAR:
+		sc_start(bl,SC_BLEEDING,10,skilllv,skill_get_time(skillid,skilllv));
+		break;
 	case MH_NEEDLE_OF_PARALYZE:
 		{
 			int duration = skill_get_time(skillid,skilllv) - 1000 * tstatus->vit / 10;
@@ -2624,6 +2630,13 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 	case KO_HUUMARANKA:
 		dmg.dmotion = clif_skill_damage(src,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, 8);
 		break;
+	case SU_BITE:
+	case SU_SCRATCH:
+	case SU_SV_STEMSPEAR:
+	case SU_PICKYPECK:
+		clif_skill_nodamage(dsrc, bl, skillid, skilllv, damage);// Display skill animation only if damage is dealt.
+		dmg.dmotion = clif_skill_damage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, type);
+		break;
 	case LG_OVERBRAND_BRANDISH:
 	case LG_OVERBRAND_PLUSATK:
 	case EL_FIRE_BOMB:
@@ -3010,16 +3023,20 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 		}			
 	}
 
-	if (!(flag&2) &&
-		(
-			skillid == MG_COLDBOLT || skillid == MG_FIREBOLT || skillid == MG_LIGHTNINGBOLT
-		) &&
-		(sc = status_get_sc(src)) &&
-		sc->data[SC_DOUBLECAST] &&
-		rand() % 100 < sc->data[SC_DOUBLECAST]->val2)
+	if (!(flag&2))
 	{
-//		skill_addtimerskill(src, tick + dmg.div_*dmg.amotion, bl->id, 0, 0, skillid, skilllv, BF_MAGIC, flag|2);
-		skill_addtimerskill(src, tick + dmg.amotion, bl->id, 0, 0, skillid, skilllv, BF_MAGIC, flag|2);
+		if ((skillid == MG_COLDBOLT || skillid == MG_FIREBOLT || skillid == MG_LIGHTNINGBOLT) &&
+			(sc = status_get_sc(src)) && sc->data[SC_DOUBLECAST] && rand()%100 < sc->data[SC_DOUBLECAST]->val2)
+		{
+			//skill_addtimerskill(src, tick + dmg.div_*dmg.amotion, bl->id, 0, 0, skillid, skilllv, BF_MAGIC, flag|2);
+			skill_addtimerskill(src, tick + dmg.amotion, bl->id, 0, 0, skillid, skilllv, BF_MAGIC, flag|2);
+		}
+
+		if ((skillid == SU_BITE || skillid == SU_SCRATCH || skillid == SU_SV_STEMSPEAR || skillid == SU_PICKYPECK || skillid == SU_SCAROFTAROU) && 
+			rand()%100 < 10 * (status_get_base_lv_effect(src) / 30))
+		{// There's a 1000ms + amotion delay after the skill does its thing before the double cast effect happens.
+			skill_addtimerskill(src, tick + dmg.amotion + 1000, bl->id, 0, 0, skillid, skilllv, skill_get_type(skillid), flag|2);
+		}
 	}
 
 	map_freeblock_unlock();
@@ -3981,6 +3998,8 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case KO_HUUMARANKA:
 	case GC_DARKCROW:
 	case RK_DRAGONBREATH_WATER:
+	case SU_BITE:
+	case SU_PICKYPECK:
 	case MH_NEEDLE_OF_PARALYZE:
 	case MH_SONIC_CRAW:
 	case MH_SILVERVEIN_RUSH:
@@ -4000,11 +4019,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case RL_SLUGSHOT:
 		clif_skill_nodamage(src,bl,skillid,skilllv,
 			skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag|SD_ANIMATION));
-		break;
-
-	case SU_BITE:
-		clif_skill_nodamage(src,bl,skillid,skilllv,1);
-		skill_attack(BF_WEAPON,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
 	case RL_H_MINE:
@@ -4320,9 +4334,9 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case RL_R_TRIP:
 	case KO_HAPPOKUNAI:
 	case GN_ILLUSIONDOPING:
+	case SU_SCRATCH:
 	case MH_HEILIGE_STANGE:
 	case MH_MAGMA_FLOW:
-	case SU_SCRATCH:
 		if( flag&1 )
 		{	//Recursive invocation
 			// skill_area_temp[0] holds number of targets in area
@@ -4343,8 +4357,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		}
 		else
 		{
-			if( skillid == NJ_BAKUENRYU || skillid == LG_EARTHDRIVE || skillid == GN_CARTCANNON ||
-				skillid == SU_SCRATCH )
+			if( skillid == NJ_BAKUENRYU || skillid == LG_EARTHDRIVE || skillid == GN_CARTCANNON )
 				clif_skill_nodamage(src,bl,skillid,skilllv,1);
 			if( skillid == LG_MOONSLASHER )
 				clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
@@ -4544,6 +4557,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case WL_TETRAVORTEX_GROUND:
 	case WM_METALICSOUND:
 	case KO_KAIHOU:
+	case SU_SV_STEMSPEAR:
 	case MH_ERASER_CUTTER:
 		skill_attack(BF_MAGIC,src,src,bl,skillid,skilllv,tick,flag);
 		break;

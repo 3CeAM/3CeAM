@@ -2912,9 +2912,18 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case SU_BITE:
 					skillratio = 200;
+					// kRO says "When the enemy is weak, there is a bigger attack.
+					// jRO says if the target's HP is below 70% it deals 50% more damage. Does that make it 250% or 300%??? [Rytech]
+					if (tstatus->hp < 70 * tstatus->max_hp / 100)
+						skillratio += 100;// Going with added 100% for now.
 					break;
 				case SU_SCRATCH:
 					skillratio = 50 + 50 * skill_lv;
+					break;
+				case SU_PICKYPECK:
+					skillratio = 200 + 100 * skill_lv;
+					if (tstatus->hp < 50 * tstatus->max_hp / 100)
+						skillratio *= 2;// Double damage if enemy HP is below 50%.
 					break;
 				case MH_NEEDLE_OF_PARALYZE:
 					skillratio = 700 + 100 * skill_lv;
@@ -4216,6 +4225,9 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						skillratio = 200 * (sd?sd->charmball_old:10);
 						if( level_effect_bonus == 1 )
 							skillratio = skillratio * status_get_base_lv_effect(src) / 100;
+						break;
+					case SU_SV_STEMSPEAR:
+						skillratio = 700;
 						break;
 					case MH_POISON_MIST:
 						skillratio = 40 * skill_lv;
