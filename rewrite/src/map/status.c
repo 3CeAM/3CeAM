@@ -613,7 +613,9 @@ void initChangeTables(void)
 	add_sc( NC_MAGMA_ERUPTION_DOTDAMAGE, SC_BURNING );
 
 	set_sc( SU_HIDE               , SC_SUHIDE             , SI_SUHIDE             , SCB_SPEED );
+	add_sc( SU_SCRATCH            , SC_BLEEDING );
 	set_sc( SU_STOOP              , SC_SU_STOOP           , SI_SU_STOOP           , SCB_NONE );
+	add_sc( SU_SV_STEMSPEAR       , SC_BLEEDING );
 	set_sc( SU_ARCLOUSEDASH       , SC_ARCLOUSEDASH       , SI_ARCLOUSEDASH       , SCB_AGI|SCB_SPEED );
 	set_sc( SU_TUNAPARTY          , SC_TUNAPARTY          , SI_TUNAPARTY          , SCB_NONE );
 	set_sc( SU_BUNCHOFSHRIMP      , SC_SHRIMP             , SI_SHRIMP             , SCB_BATK|SCB_WATK|SCB_MATK );
@@ -2286,13 +2288,7 @@ static unsigned int status_base_pc_maxhp(struct map_session_data* sd, struct sta
 	if((sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE && sd->status.base_level >= 99)
 		val += 2000; //Supernovice lvl99 hp bonus.
 	if((sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER)
-	{// Summoner starts with 60 HP and gains HP in according to hp_coefficient 1 and 2.
-		val += 18;// Also gains additional HP by base level calculations.
-		if (sd->status.base_level > 2)
-			val += sd->status.base_level-2;
-		if (sd->status.base_level > 14)
-			val += (sd->status.base_level-13)/2;
-	}
+		val += 15;// Summoner starts with 60 HP.
 
 	val += val * status->vit/100; // +1% per each point of VIT
 
@@ -8579,7 +8575,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			else	// Monster Use
 				val1 += 750;
 			break;
-			
 		case SC_PRESTIGE:
 			val2 = ((status->int_ + status->luk) * val1 / 20) * status_get_base_lv_effect(bl) / 200 + val1;// Chance to evade magic damage.
 			val1 = 15 * val1 + 10 * pc_checkskill(sd,CR_DEFENDER);// Defence added
