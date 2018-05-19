@@ -616,10 +616,15 @@ void initChangeTables(void)
 	add_sc( SU_SCRATCH            , SC_BLEEDING );
 	set_sc( SU_STOOP              , SC_SU_STOOP           , SI_SU_STOOP           , SCB_NONE );
 	add_sc( SU_SV_STEMSPEAR       , SC_BLEEDING );
+	set_sc( SU_CN_POWDERING       , SC_CATNIPPOWDER       , SI_CATNIPPOWDER       , SCB_BATK|SCB_WATK|SCB_MATK|SCB_REGEN );
+	set_sc( SU_SCAROFTAROU        , SC_BITESCAR           , SI_BITESCAR           , SCB_NONE );
 	set_sc( SU_ARCLOUSEDASH       , SC_ARCLOUSEDASH       , SI_ARCLOUSEDASH       , SCB_AGI|SCB_SPEED );
 	set_sc( SU_TUNAPARTY          , SC_TUNAPARTY          , SI_TUNAPARTY          , SCB_NONE );
 	set_sc( SU_BUNCHOFSHRIMP      , SC_SHRIMP             , SI_SHRIMP             , SCB_BATK|SCB_WATK|SCB_MATK );
 	set_sc( SU_FRESHSHRIMP        , SC_FRESHSHRIMP        , SI_FRESHSHRIMP        , SCB_NONE );
+	add_sc( SU_CN_METEOR2         , SC_CURSE );
+	add_sc( SU_LUNATICCARROTBEAT2 , SC_STUN );
+	set_sc( SU_NYANGGRASS         , SC_NYANGGRASS         , SI_NYANGGRASS         , SCB_DEF|SCB_MDEF );
 
 	set_sc( WE_CHEERUP            , SC_CHEERUP            , SI_CHEERUP            , SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK );
 
@@ -2839,8 +2844,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	{
 		status->max_hp += 1000;
 
-		if ( (pc_checkskill(sd,SU_TUNABELLY) + pc_checkskill(sd,SU_TUNAPARTY) + 
-			pc_checkskill(sd,SU_BUNCHOFSHRIMP) + pc_checkskill(sd,SU_FRESHSHRIMP)) >= 20 )
+		if ( skill_summoner_power(sd, POWER_OF_SEA) == 1 )
 			status->max_hp += 3000;
 	}
 
@@ -2882,8 +2886,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	{
 		status->max_sp += 100;
 
-		if ( (pc_checkskill(sd,SU_TUNABELLY) + pc_checkskill(sd,SU_TUNAPARTY) + 
-			pc_checkskill(sd,SU_BUNCHOFSHRIMP) + pc_checkskill(sd,SU_FRESHSHRIMP)) >= 20 )
+		if ( skill_summoner_power(sd, POWER_OF_SEA) == 1 )
 			status->max_sp += 300;
 	}
 
@@ -3591,6 +3594,12 @@ void status_calc_regen_rate(struct block_list *bl, struct regen_data *regen, str
 	}
 	if( sc->data[SC_MAGNIFICAT] )
 	{
+		regen->rate.hp += 1;
+		regen->rate.sp += 1;
+	}
+
+	if( sc->data[SC_CATNIPPOWDER] )
+	{// Rate increase is unknown. Also not sure if this stacks with other increases. [Rytech]
 		regen->rate.hp += 1;
 		regen->rate.sp += 1;
 	}
@@ -4523,6 +4532,8 @@ static unsigned short status_calc_batk(struct block_list *bl, struct status_chan
 //		batk -= batk * 25/100;
 	if(sc->data[SC__ENERVATION])
 		batk -= batk * sc->data[SC__ENERVATION]->val2 / 100;
+	if(sc->data[SC_CATNIPPOWDER])
+		batk -= batk * 50 / 100;
 	if(sc->data[SC_EQC])
 		batk -= batk * sc->data[SC_EQC]->val3 / 100;
 	if(sc->data[SC_VOLCANIC_ASH] && bl->type == BL_MOB && status_get_element(bl) == ELE_WATER)
@@ -4628,6 +4639,8 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk -= watk * sc->data[SC_STRIPWEAPON]->val2/100;
 	if(sc->data[SC__ENERVATION])
 		watk -= watk * sc->data[SC__ENERVATION]->val2 / 100;
+	if(sc->data[SC_CATNIPPOWDER])
+		watk -= watk * 50 / 100;
 	if(sc->data[SC_EQC])
 		watk -= watk * sc->data[SC_EQC]->val3 / 100;
 	if(sc->data[SC_VOLCANIC_ASH] && bl->type == BL_MOB && status_get_element(bl) == ELE_WATER)
@@ -4678,6 +4691,8 @@ static unsigned short status_calc_matk(struct block_list *bl, struct status_chan
 		matk += matk * 10 / 100;
 	if(sc->data[SC_ZANGETSU] && sc->data[SC_ZANGETSU]->val4 == 2)
 		matk -= 30 * sc->data[SC_ZANGETSU]->val1 + sc->data[SC_ZANGETSU]->val2;
+	if(sc->data[SC_CATNIPPOWDER])
+		matk -= matk * 50 / 100;
 	//Not bothering to organize these until I rework the elemental spirits. [Rytech]
 	if(sc->data[SC_AQUAPLAY_OPTION])
 		matk += sc->data[SC_AQUAPLAY_OPTION]->val2;
@@ -4883,6 +4898,8 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 		return 90;
 	if(sc->data[SC_UNLIMIT])
 		return 1;
+	if(sc->data[SC_NYANGGRASS] && sc->data[SC_NYANGGRASS]->val2 == 1)
+		return 0;
 	if(sc->data[SC_ARMORCHANGE])
 		def += sc->data[SC_ARMORCHANGE]->val2;
 	if(sc->data[SC_DRUMBATTLE])
@@ -4945,6 +4962,8 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 		def -= def * (10 + 10 * sc->data[SC_SATURDAYNIGHTFEVER]->val1) / 100;
 	if(sc->data[SC_EARTHDRIVE])
 		def -= def * 25 / 100;
+	if(sc->data[SC_NYANGGRASS] && sc->data[SC_NYANGGRASS]->val2 == 2)
+		def -= def * 50 / 100;
 	if(sc->data[SC_NEEDLE_OF_PARALYZE])
 		def -= def * sc->data[SC_NEEDLE_OF_PARALYZE]->val2 / 100;
 	if(sc->data[SC_OVERED_BOOST])
@@ -5017,6 +5036,8 @@ static signed char status_calc_mdef(struct block_list *bl, struct status_change 
 		return 90;
 	if(sc->data[SC_UNLIMIT])
 		return 1;
+	if(sc->data[SC_NYANGGRASS] && sc->data[SC_NYANGGRASS]->val2 == 1)
+		return 0;
 	if(sc->data[SC_ENDURE] && sc->data[SC_ENDURE]->val4 == 0)
 		mdef += sc->data[SC_ENDURE]->val1;
 	if(sc->data[SC_CONCENTRATION])
@@ -5045,6 +5066,8 @@ static signed char status_calc_mdef(struct block_list *bl, struct status_change 
 	//	mdef -= mdef * 25 / 100;
 	if(sc->data[SC_ANALYZE])
 		mdef -= mdef * ( 14 * sc->data[SC_ANALYZE]->val1 ) / 100;
+	if(sc->data[SC_NYANGGRASS] && sc->data[SC_NYANGGRASS]->val2 == 2)
+		mdef -= mdef * 50 / 100;
 	if(sc->data[SC_NEEDLE_OF_PARALYZE])
 		mdef -= mdef * sc->data[SC_NEEDLE_OF_PARALYZE]->val2 / 100;
 	//Not bothering to organize these until I rework the elemental spirits. [Rytech]
@@ -8769,6 +8792,12 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 				val2 = 1000;// Best to not let the heal interval go below 1 second.
 			val3 = tick / val2;
 			tick = val2;
+			break;
+		case SC_NYANGGRASS:
+			if (sd)
+				val2 = 1;// Reduce DEF/MDEF to 0 for players.
+			else
+				val2 = 2;// Reduce DEF/MDEF by 50% on non-players.
 			break;
 		case SC_NEEDLE_OF_PARALYZE:
 			val2 = 5 * val1;// DEF/MDEF  Reduction
