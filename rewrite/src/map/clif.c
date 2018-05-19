@@ -1528,6 +1528,10 @@ int clif_spawn(struct block_list *bl)
 				clif_status_change(&sd->bl,SI_SU_STOOP,1,9999,sd->sc.data[SC_SU_STOOP]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_SPRITEMABLE] )
 				clif_status_change(&sd->bl,SI_SPRITEMABLE,1,9999,sd->sc.data[SC_SPRITEMABLE]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_SV_ROOTTWIST] )
+				clif_status_change(&sd->bl,SI_SV_ROOTTWIST,1,9999,sd->sc.data[SC_SV_ROOTTWIST]->val1,0,0);
+			if( sd->sc.count && sd->sc.data[SC_BITESCAR] )
+				clif_status_change(&sd->bl,SI_BITESCAR,1,9999,sd->sc.data[SC_BITESCAR]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_TUNAPARTY] )
 				clif_status_change(&sd->bl,SI_TUNAPARTY,1,9999,sd->sc.data[SC_TUNAPARTY]->val1,0,0);
 			if( sd->sc.count && sd->sc.data[SC_SOULATTACK] )
@@ -4948,6 +4952,10 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_SU_STOOP,1,9999,tsd->sc.data[SC_SU_STOOP]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_SPRITEMABLE] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_SPRITEMABLE,1,9999,tsd->sc.data[SC_SPRITEMABLE]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_SV_ROOTTWIST] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_SV_ROOTTWIST,1,9999,tsd->sc.data[SC_SV_ROOTTWIST]->val1,0,0);
+			if( tsd->sc.count && tsd->sc.data[SC_BITESCAR] )
+				clif_status_change_single(&sd->bl,&tsd->bl,SI_BITESCAR,1,9999,tsd->sc.data[SC_BITESCAR]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_TUNAPARTY] )
 				clif_status_change_single(&sd->bl,&tsd->bl,SI_TUNAPARTY,1,9999,tsd->sc.data[SC_TUNAPARTY]->val1,0,0);
 			if( tsd->sc.count && tsd->sc.data[SC_SOULATTACK] )
@@ -6052,9 +6060,8 @@ int clif_skill_nodamage(struct block_list *src,struct block_list *dst,int skill_
 	return fail;
 }
 
-/*==========================================
- * 場所スキルエフェクト
- *------------------------------------------*/
+/// Non-damaging ground skill effect (ZC_NOTIFY_GROUNDSKILL).
+/// 0117 <skill id>.W <src id>.L <level>.W <x>.W <y>.W <tick>.L
 int clif_skill_poseffect(struct block_list *src,int skill_id,int val,int x,int y,int tick)
 {
 	unsigned char buf[32];

@@ -2920,10 +2920,22 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case SU_SCRATCH:
 					skillratio = 50 + 50 * skill_lv;
 					break;
+				case SU_SCAROFTAROU:
+					skillratio = 100 * skill_lv;
+					if ( tsc && tsc->data[SC_BITESCAR] || (tstatus->mode&MD_BOSS))
+						skillratio *= 2;// Double damage on enemy's with the status or is a boss.
+					break;
 				case SU_PICKYPECK:
 					skillratio = 200 + 100 * skill_lv;
 					if (tstatus->hp < 50 * tstatus->max_hp / 100)
 						skillratio *= 2;// Double damage if enemy HP is below 50%.
+					break;
+				case SU_LUNATICCARROTBEAT:
+				case SU_LUNATICCARROTBEAT2:
+					skillratio = 200 + 100 * skill_lv;
+					break;
+				case SU_SVG_SPIRIT:
+					skillratio = 250 + 150 * skill_lv;
 					break;
 				case MH_NEEDLE_OF_PARALYZE:
 					skillratio = 700 + 100 * skill_lv;
@@ -4228,6 +4240,10 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						break;
 					case SU_SV_STEMSPEAR:
 						skillratio = 700;
+						break;
+					case SU_CN_METEOR:
+					case SU_CN_METEOR2:
+						skillratio = 200 + 100 * skill_lv;
 						break;
 					case MH_POISON_MIST:
 						skillratio = 40 * skill_lv;

@@ -375,10 +375,9 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, int skill
 				hp += hp * skill * 2 / 100;
 			else if( sd && (pc_checkskill(sd, SU_POWEROFSEA) > 0) )
 			{
-				short sea_heal = 10;
+				unsigned char sea_heal = 10;
 
-				if ( (pc_checkskill(sd,SU_TUNABELLY) + pc_checkskill(sd,SU_TUNAPARTY) + 
-					pc_checkskill(sd,SU_BUNCHOFSHRIMP) + pc_checkskill(sd,SU_FRESHSHRIMP)) >= 20 )
+				if ( skill_summoner_power(sd, POWER_OF_SEA) == 1 )
 					sea_heal += 20;
 
 				hp += hp * sea_heal / 100;
@@ -1460,7 +1459,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 				case SC_FRIGG_SONG:		case SC_OFFERTORIUM:	case SC_TELEKINESIS_INTENSE:
 				case SC_KINGS_GRACE:
 				// Summoner
-				case SC_SPRITEMABLE:	case SC_SOULATTACK:
+				case SC_SPRITEMABLE:	case SC_BITESCAR:		case SC_SOULATTACK:
 				// Misc Status's
 				case SC_ALL_RIDING:		case SC_MONSTER_TRANSFORM:	case SC_ON_PUSH_CART:
 				case SC_FULL_THROTTLE:	case SC_REBOUND:
@@ -1538,11 +1537,22 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 	case GN_ILLUSIONDOPING:
 		sc_start(bl,SC_ILLUSIONDOPING,100-10*skilllv,skilllv,skill_get_time(skillid,skilllv));
 		break;
-	case SU_SCRATCH:// kRO says there's a chance of bleeding. jRO says its 5 + 5 * SkillLV. [Rytech]
+	// A number of Summoner skills has a chance of giving a status. kRO doesn't say what the chance is for
+	// most of them but jRO does. However, jRO's version is heavly modified. Need to confirm on kRO. [Rytech]
+	case SU_SCRATCH:// kRO says there's a chance of bleeding. jRO says its 5 + 5 * SkillLV.
 		sc_start(bl,SC_BLEEDING,5+5*skilllv,skilllv,skill_get_time(skillid,skilllv));
 		break;
 	case SU_SV_STEMSPEAR:
 		sc_start(bl,SC_BLEEDING,10,skilllv,skill_get_time(skillid,skilllv));
+		break;
+	case SU_SCAROFTAROU:// Success chance??? No clue for this or the stun chance. Don't even know the HP damage formula.
+		sc_start(bl,SC_BITESCAR,100,skilllv,skill_get_time(skillid,skilllv));
+		break;
+	case SU_CN_METEOR2:// kRO says there's a chance of curse. jRO says the chance is 20%.
+		sc_start(bl,SC_CURSE,20,skilllv,skill_get_time2(skillid,skilllv));
+		break;
+	case SU_LUNATICCARROTBEAT2:// kRO says there's a chance of stun. jRO says the chance is 50%.
+		sc_start(bl,SC_STUN,50,skilllv,skill_get_time(skillid,skilllv));
 		break;
 	case MH_NEEDLE_OF_PARALYZE:
 		{
@@ -2630,11 +2640,22 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 	case KO_HUUMARANKA:
 		dmg.dmotion = clif_skill_damage(src,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, 8);
 		break;
+	// Skills listed here use type 5 for displaying single hit damage even if its not a splash skill unless its multi-hit.
+	// This is because the skill animation is handled by the ZC_USE_SKILL instead, but only if damage is dealt.
 	case SU_BITE:
 	case SU_SCRATCH:
 	case SU_SV_STEMSPEAR:
+	case SU_SCAROFTAROU:
 	case SU_PICKYPECK:
-		clif_skill_nodamage(dsrc, bl, skillid, skilllv, damage);// Display skill animation only if damage is dealt.
+	case SU_LUNATICCARROTBEAT:
+	case SU_LUNATICCARROTBEAT2:
+	//case SU_SVG_SPIRIT:// Animation acturally works through damage packet.
+		if( dmg.div_ < 2 )
+			type = 5;// Multi-hit skills in database are usually set to 8 which is fine. If hit count is just 1, set to type 5.
+		if ( !(flag&SD_ANIMATION) )// Make sure to display the animation only on what you targeted when dealing damage, including splash attacks.
+			clif_skill_nodamage(dsrc, bl, skillid, skilllv, damage);
+		// Since animations arn't handled by the damage packet, we can set the level to -2 to get rid of the flash effect
+		// even tho its not official. It just looks and feels much better.
 		dmg.dmotion = clif_skill_damage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, type);
 		break;
 	case LG_OVERBRAND_BRANDISH:
@@ -3032,7 +3053,7 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 			skill_addtimerskill(src, tick + dmg.amotion, bl->id, 0, 0, skillid, skilllv, BF_MAGIC, flag|2);
 		}
 
-		if ((skillid == SU_BITE || skillid == SU_SCRATCH || skillid == SU_SV_STEMSPEAR || skillid == SU_PICKYPECK || skillid == SU_SCAROFTAROU) && 
+		if ((skillid == SU_BITE || skillid == SU_SCRATCH || skillid == SU_SV_STEMSPEAR || skillid == SU_SCAROFTAROU || skillid == SU_PICKYPECK) && 
 			rand()%100 < 10 * (status_get_base_lv_effect(src) / 30))
 		{// There's a 1000ms + amotion delay after the skill does its thing before the double cast effect happens.
 			skill_addtimerskill(src, tick + dmg.amotion + 1000, bl->id, 0, 0, skillid, skilllv, skill_get_type(skillid), flag|2);
@@ -3678,6 +3699,8 @@ static int skill_timerskill(int tid, unsigned int tick, int id, intptr data)
 			switch( skl->skill_id )
 			{
 				case WZ_METEOR:
+				case SU_CN_METEOR:
+				case SU_CN_METEOR2:
 					if( skl->type >= 0 )
 					{
 						int x = skl->type>>16, y = skl->type&0xFFFF;
@@ -3999,6 +4022,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case GC_DARKCROW:
 	case RK_DRAGONBREATH_WATER:
 	case SU_BITE:
+	case SU_SCAROFTAROU:
 	case SU_PICKYPECK:
 	case MH_NEEDLE_OF_PARALYZE:
 	case MH_SONIC_CRAW:
@@ -4180,6 +4204,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case MA_SHARPSHOOTING:
 	case NJ_KAMAITACHI:
 	case LG_CANNONSPEAR:
+	case SU_SVG_SPIRIT:
 		//It won't shoot through walls since on castend there has to be a direct
 		//line of sight between caster and target.
 		skill_area_temp[1] = bl->id;
@@ -4335,6 +4360,8 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case KO_HAPPOKUNAI:
 	case GN_ILLUSIONDOPING:
 	case SU_SCRATCH:
+	case SU_LUNATICCARROTBEAT:
+	case SU_LUNATICCARROTBEAT2:
 	case MH_HEILIGE_STANGE:
 	case MH_MAGMA_FLOW:
 		if( flag&1 )
@@ -4357,6 +4384,13 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		}
 		else
 		{
+			int n;
+			if( sd && skillid == SU_LUNATICCARROTBEAT && (n = pc_search_inventory(sd,ITEMID_CARROT)) >= 0 )
+			{// If carrot is in the caster's inventory, switch to alternate skill ID to give a chance to stun.
+				pc_delitem(sd,n,1,0,1);
+				skillid = SU_LUNATICCARROTBEAT2;
+			}
+
 			if( skillid == NJ_BAKUENRYU || skillid == LG_EARTHDRIVE || skillid == GN_CARTCANNON )
 				clif_skill_nodamage(src,bl,skillid,skilllv,1);
 			if( skillid == LG_MOONSLASHER )
@@ -4396,6 +4430,10 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 				if( bl->type == BL_MER )
 					skill_blockmerc_start((TBL_MER*)bl, skillid, skill_get_time(skillid, skilllv));
 			}
+
+			// Switch back to original skill ID in case there's more to be done beyond here.
+			if ( skillid == SU_LUNATICCARROTBEAT2 )
+				skillid = SU_LUNATICCARROTBEAT;
 		}
 		break;
 
@@ -5386,6 +5424,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 			if( dstsd && dstsd->sc.option&OPTION_MADOGEAR )
 				heal = 0;//Mado's cant be healed. Only Repair can heal them.
+
+			if ( skillid == AL_HEAL || skillid == AB_HIGHNESSHEAL )
+				status_change_end(bl, SC_BITESCAR, INVALID_TIMER);
 
 			if( tsc && tsc->count )
 			{
@@ -6767,6 +6808,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		status_change_end(bl, SC_SILENCE, INVALID_TIMER);
 		status_change_end(bl, SC_BLIND, INVALID_TIMER);
 		status_change_end(bl, SC_CONFUSION, INVALID_TIMER);
+		status_change_end(bl, SC_BITESCAR, INVALID_TIMER);
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		break;
 
@@ -7303,7 +7345,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_FRIGG_SONG:		case SC_OFFERTORIUM:	case SC_TELEKINESIS_INTENSE:
 				case SC_KINGS_GRACE:
 				// Summoner
-				case SC_SPRITEMABLE:	case SC_SOULATTACK:
+				case SC_SPRITEMABLE:	case SC_BITESCAR:		case SC_SOULATTACK:
 				// Misc Status's
 				case SC_ALL_RIDING:		case SC_MONSTER_TRANSFORM:	case SC_ON_PUSH_CART:
 				case SC_FULL_THROTTLE:	case SC_REBOUND:
@@ -8819,6 +8861,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		{
 			if( sd && tstatus && !battle_check_undead(tstatus->race, tstatus->def_ele) )
 			{
+				status_change_end(bl, SC_BITESCAR, INVALID_TIMER);
 				i = skill_calc_heal(src, bl, AL_HEAL, (sd?pc_checkskill(sd, AL_HEAL):10), true);
 				clif_skill_nodamage(bl, bl, skillid, status_heal(bl, i, 0, 1), 1);
 			}
@@ -10596,8 +10639,9 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 				return skill_castend_pos(tid,tick,id,data);
 
 			case GN_WALLOFTHORN:
-			case KO_MAKIBISHI:
 			case RL_B_TRAP:
+			case KO_MAKIBISHI:
+			case SU_CN_POWDERING:
 			case MH_SUMMON_LEGION:
 			case MH_STEINWAND:// FIX ME - I need to spawn 2 AoE's. One on the master and the homunculus.
 				ud->skillx = target->x;
@@ -11094,6 +11138,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		case LG_EARTHDRIVE:
 		case RL_FIRE_RAIN:
 		//case KO_MAKIBISHI:// Enable once I figure out how to prevent movement stopping. [Rytech]
+		case SU_CN_METEOR:
 			break; //Effect is displayed on respective switch case.
 		default:
 			if(skill_get_inf(skillid)&INF_SELF_SKILL)
@@ -11257,6 +11302,8 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case RL_HAMMER_OF_GOD:
 	case LG_KINGS_GRACE:
 	case KO_ZENKAI:
+	case SU_CN_POWDERING:
+	case SU_NYANGGRASS:
 	case MH_POISON_MIST:
 	case MH_XENO_SLASHER:
 	case MH_STEINWAND:
@@ -11358,14 +11405,32 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 		break;
 
 	case WZ_METEOR:
+	case SU_CN_METEOR:
 		{
-			int flag = 0, area = skill_get_splash(skillid, skilllv);
-			short tmpx = 0, tmpy = 0, x1 = 0, y1 = 0;
+			int flag = 0, area = skill_get_splash(skillid, skilllv), n;
+			short tmpx = 0, tmpy = 0, x1 = 0, y1 = 0, drop_timer = 0;
+			signed char drop_count = 0;
+
+			if ( skillid == WZ_METEOR )
+			{
+				drop_count = 2 + (skilllv>>1);
+				drop_timer = 1000;
+			}
+			else
+			{// SU_CN_METEOR
+				drop_count = 2 + skilllv;
+				drop_timer = 700;
+				if( sd && (n = pc_search_inventory(sd,ITEMID_CATNIP_FRUIT)) >= 0 )
+				{// If catnip is in the caster's inventory, switch to alternate skill ID to give a chance to curse.
+					pc_delitem(sd,n,1,0,1);
+					skillid = SU_CN_METEOR2;
+				}
+			}
 
 			if( sc && sc->data[SC_MAGICPOWER] )
 				flag = flag|2; //Store the magic power flag for future use. [Skotlex]
 
-			for( i = 0; i < 2 + (skilllv>>1); i++ )
+			for( i = 0; i < drop_count; i++ )
 			{
 				// Creates a random Cell in the Splash Area
 				tmpx = x - area + rand()%(area * 2 + 1);
@@ -11375,13 +11440,17 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 					clif_skill_poseffect(src,skillid,skilllv,tmpx,tmpy,tick);
 
 				if( i > 0 )
-					skill_addtimerskill(src,tick+i*1000,0,tmpx,tmpy,skillid,skilllv,(x1<<16)|y1,flag&2); //Only pass the Magic Power flag
+					skill_addtimerskill(src,tick+i*drop_timer,0,tmpx,tmpy,skillid,skilllv,(x1<<16)|y1,flag&2); //Only pass the Magic Power flag
 
 				x1 = tmpx;
 				y1 = tmpy;
 			}
 
-			skill_addtimerskill(src,tick+i*1000,0,tmpx,tmpy,skillid,skilllv,-1,flag&2);
+			skill_addtimerskill(src,tick+i*drop_timer,0,tmpx,tmpy,skillid,skilllv,-1,flag&2);
+
+			// Switch back to original skill ID in case there's more to be done beyond here.
+			if ( skillid == SU_CN_METEOR2 )
+				skillid = SU_CN_METEOR;
 		}
 		break;
 
@@ -12734,6 +12803,8 @@ static int skill_unit_onplace (struct skill_unit *src, struct block_list *bl, un
 	case UNT_WATER_INSIGNIA:
 	case UNT_WIND_INSIGNIA:
 	case UNT_EARTH_INSIGNIA:
+	case UNT_CN_POWDERING:
+	case UNT_NYANGGRASS:
 	case UNT_WATER_BARRIER:
 	case UNT_ZEPHYR:
 	case UNT_POWER_OF_GAIA:
@@ -13701,6 +13772,8 @@ static int skill_unit_onleft (int skill_id, struct block_list *bl, unsigned int 
 		case SO_WATER_INSIGNIA:
 		case SO_WIND_INSIGNIA:
 		case SO_EARTH_INSIGNIA:
+		case SU_CN_POWDERING:
+		case SU_NYANGGRASS:
 		case MH_STEINWAND:
 		case EL_WATER_BARRIER:
 		case EL_ZEPHYR:
@@ -15339,6 +15412,7 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 					req.amount[i] = 1; // Hocus Pocus allways use at least 1 gem
 			}
 		}
+
 		if( sc && (((skill == SA_FLAMELAUNCHER || skill == SA_VOLCANO) && sc->data[SC_TROPIC_OPTION]) ||
 			((skill == SA_FROSTWEAPON || skill == SA_DELUGE) && sc->data[SC_CHILLY_AIR_OPTION]) ||
 			((skill == SA_LIGHTNINGLOADER || skill == SA_VIOLENTGALE) && sc->data[SC_WILD_STORM_OPTION]) ||
@@ -15347,6 +15421,7 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 		)	// Not consume it
 			req.itemid[i] = req.amount[i] = 0;
 	}
+
 	if( skill == NC_SHAPESHIFT || skill == NC_REPAIR || skill == GN_FIRE_EXPANSION )
 	{
 		req.itemid[lv-1] = skill_db[j].itemid[lv-1];
@@ -18528,6 +18603,39 @@ int skill_akaitsuki_damage (struct block_list* src, struct block_list *bl, int d
 	damage = damage / 2;// Damage is half of the heal amount.
 	clif_skill_damage(src, bl, tick, status_get_amotion(src), status_get_dmotion(bl), damage, 1, skillid == AB_HIGHNESSHEAL ? AL_HEAL : skillid, skilllv, 6);
 	status_zap(bl,damage,0);
+	return 0;
+}
+
+// Power Types
+// 1 = Power of Life
+// 2 = Power of Land
+// 3 = Power of Sea
+int skill_summoner_power (struct map_session_data *sd, unsigned char power_type)
+{
+	nullpo_ret(sd);
+
+	if ( power_type == POWER_OF_LIFE && pc_checkskill(sd,SU_POWEROFLIFE) > 0 )
+	{// 20 or more points invested in life skills?
+		if ((pc_checkskill(sd,SU_PICKYPECK) + pc_checkskill(sd,SU_ARCLOUSEDASH) + pc_checkskill(sd,SU_SCAROFTAROU) + 
+			pc_checkskill(sd,SU_LUNATICCARROTBEAT) + pc_checkskill(sd,SU_HISS) + pc_checkskill(sd,SU_POWEROFFLOCK) + 
+			pc_checkskill(sd,SU_SVG_SPIRIT)) >= 20)
+			return 1;
+	}
+	else if ( power_type == POWER_OF_LAND && pc_checkskill(sd,SU_POWEROFLAND) > 0 )
+	{// 20 or more points invested in land skills?
+		if ((pc_checkskill(sd,SU_SV_STEMSPEAR) + pc_checkskill(sd,SU_SV_ROOTTWIST) + pc_checkskill(sd,SU_CN_METEOR) + 
+			pc_checkskill(sd,SU_CN_POWDERING) + pc_checkskill(sd,SU_CHATTERING) + pc_checkskill(sd,SU_MEOWMEOW) + 
+			pc_checkskill(sd,SU_NYANGGRASS)) >= 20)
+			return 1;
+	}
+	else if ( power_type == POWER_OF_SEA && pc_checkskill(sd,SU_POWEROFSEA) > 0 )
+	{// 20 or more points invested in sea skills?
+		if ((pc_checkskill(sd,SU_FRESHSHRIMP) + pc_checkskill(sd,SU_BUNCHOFSHRIMP) + pc_checkskill(sd,SU_TUNABELLY) + 
+			pc_checkskill(sd,SU_TUNAPARTY) + pc_checkskill(sd,SU_GROOMING) + pc_checkskill(sd,SU_PURRING) + 
+			pc_checkskill(sd,SU_SHRIMPARTY)) >= 20)
+			return 1;
+	}
+
 	return 0;
 }
 

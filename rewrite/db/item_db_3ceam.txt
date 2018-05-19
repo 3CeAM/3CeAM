@@ -540,6 +540,11 @@
 // Summoner Weapons And Equips
 1681,Short_Foxtail_Staff,Short Foxtail Staff,4,0,,0,30,,1,0,0x04000000,7,2,2,1,1,1,10,{},{},{}
 
+// Summoner Item Required Items
+//515,Carrot,Carrot,0,15,,20,,,,,0xFFFFFFFF,7,2,,,,,,{ itemheal rand(18,20),0; },{},{}
+//567,Prawn,Shrimp,0,500,,40,,,,,0xFFFFFFFF,7,2,,,,,,{ itemheal rand(117,192),0; },{},{}
+11602,Catnip_Fruit,Catnip Fruit,0,15,,1,,,,,0xFFFFFFFF,7,2,,,,,,{ itemheal rand(36,40),0; },{},{}
+
 // New 3rd job headgears
 //18971
 
