@@ -68,6 +68,7 @@ struct status_change_entry;
 #define INF2_NO_ENEMY 0x1000
 #define INF2_CHORUS_SKILL 0x2000
 #define INF2_SUB_SKILL 0x4000
+#define INF2_BOOST_PASSIVE 0x8000
 
 //Walk intervals at which chase-skills are attempted to be triggered.
 #define WALK_SKILL_INTERVAL 5

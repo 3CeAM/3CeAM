@@ -508,6 +508,8 @@ extern struct Battle_Config
 	int base_lv_skill_effect_limit;
 	int job_lv_skill_effect_limit;
 	int renewal_casting_renewal_skills;
+	int renewal_casting_square_calc;
+	int renewal_casting_square_debug;
 	int renewal_level_effect_skills;
 	int castrate_dex_scale_renewal_jobs;
 	int max_parameter_renewal_jobs;
