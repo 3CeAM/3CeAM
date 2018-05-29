@@ -3112,7 +3112,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				skill_num != GC_DARKCROW)//Unknown if Dark Claw is affected by EDP. Best to make it not until confirm. [Rytech]
 				ATK_ADDRATE(sc->data[SC_EDP]->val3);
 
-			if ( battle_config.giant_growth_behavior == 1 && sc->data[SC_GIANTGROWTH] && (sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT && wd.flag&BF_WEAPON && skill_num != RK_CRUSHSTRIKE )
+			if ( battle_config.giant_growth_behavior == 1 && sc->data[SC_GIANTGROWTH] && sd && (sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT && skill_num != RK_CRUSHSTRIKE )
 				ATK_ADDRATE(map_flag_vs(src->m)?125:250);// Increase is 125% in PvP/GvG, 250% otherwise. Only applies to Rune Knights.
 
 			if (sc->data[SC_GLOOMYDAY] && skill_num && (
@@ -3125,7 +3125,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				skill_num == LG_SHIELDPRESS))
 				ATK_ADDRATE(sc->data[SC_GLOOMYDAY]->val4);
 
-			if(sc->data[SC_UNLIMIT] && (wd.flag&(BF_LONG|BF_WEAPON)) == (BF_LONG|BF_WEAPON) &&
+			if(sc->data[SC_UNLIMIT] && wd.flag&BF_LONG &&
 				(!skill_num ||//For regular attacks with bows.
 				skill_num == AC_DOUBLE ||
 				skill_num == AC_SHOWER ||
@@ -3140,19 +3140,37 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				ATK_ADDRATE(sc->data[SC_UNLIMIT]->val2);
 		}
 
-		switch (skill_num) {
+		switch (skill_num)
+		{
 			case AS_SONICBLOW:
-				if (sc && sc->data[SC_SPIRIT] &&
-					sc->data[SC_SPIRIT]->val2 == SL_ASSASIN)
+				if (sc && sc->data[SC_SPIRIT] && sc->data[SC_SPIRIT]->val2 == SL_ASSASIN)
 					ATK_ADDRATE(map_flag_gvg(src->m)?25:100); //+25% dmg on woe/+100% dmg on nonwoe
 
 				if(sd && pc_checkskill(sd,AS_SONICACCEL)>0)
 					ATK_ADDRATE(10);
-			break;
+				break;
+
 			case CR_SHIELDBOOMERANG:
-				if(sc && sc->data[SC_SPIRIT] &&
-					sc->data[SC_SPIRIT]->val2 == SL_CRUSADER)
+				if(sc && sc->data[SC_SPIRIT] && sc->data[SC_SPIRIT]->val2 == SL_CRUSADER)
 					ATK_ADDRATE(100);
+				break;
+
+			case SU_SCAROFTAROU:
+			case SU_PICKYPECK:
+			case SU_LUNATICCARROTBEAT:
+			case SU_LUNATICCARROTBEAT2:
+			case SU_SVG_SPIRIT:
+				if ( sd && pc_checkskill(sd, SU_SPIRITOFLIFE) > 0 )
+				{// Damage increase depending on the caster's current HP.
+					if ( sstatus->hp == sstatus->max_hp )
+						{ATK_ADDRATE(100);}// 100% increase if HP is 100% MaxHP.
+					else if ( sstatus->hp > 81 * sstatus->max_hp / 100 )
+						{ATK_ADDRATE(50);}// 50% increase if HP is between 81% to 99% MaxHP.
+					else if ( sstatus->hp > 51 * sstatus->max_hp / 100 )
+						{ATK_ADDRATE(30);}// 30% increase if HP is between 51% to 80% MaxHP.
+					else if ( sstatus->hp > 10 * sstatus->max_hp / 100 )
+						{ATK_ADDRATE(10);}// 10% increase if HP is between 10% to 50% MaxHP.
+				}
 				break;
 		}
 		
@@ -3389,6 +3407,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 		//Card Fix, sd side
 		if( (wd.damage || wd.damage2) && !(nk&NK_NO_CARDFIX_ATK) )
 		{
+			short passive_long_atk_rate = 0;
 			int cardfix = 1000, cardfix_ = 1000;
 			int t_race2 = status_get_race2(target);
 			if(sd->state.arrow_atk)
@@ -3509,8 +3528,14 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				}
 			}
 
+			// Passive skills that increase ranged physical damage.
+			if( sc && sc->data[SC_ARCLOUSEDASH] && (sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER )
+				passive_long_atk_rate += 10;
+			if(skill_summoner_power(sd, POWER_OF_LIFE) == 1)
+				passive_long_atk_rate += 20;
+
 			if( wd.flag&BF_LONG )
-				cardfix=cardfix*(100+sd->long_attack_atk_rate)/100;
+				cardfix=cardfix*(100+sd->long_attack_atk_rate+passive_long_atk_rate)/100;
 
 			if( cardfix != 1000 || cardfix_ != 1000 )
 				ATK_RATE2(cardfix/10, cardfix_/10);	//What happens if you use right-to-left and there's no right weapon, only left?
@@ -5449,7 +5474,8 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		battle_delay_damage(tick, wd.amotion, target, src, 0, 0, 0, rdamage, ATK_DEF, rdelay);
 	}
 
-	if (tsc) {
+	if (tsc)
+	{
 		if (tsc->data[SC_POISONREACT] && 
 			(rand()%100 < tsc->data[SC_POISONREACT]->val3
 			|| sstatus->def_ele == ELE_POISON) &&
@@ -5467,6 +5493,10 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			if (sce->val2 <= 0)
 				status_change_end(target, SC_POISONREACT, INVALID_TIMER);
 		}
+
+		// Working only for regular ranged physical attacks. Need to fix this code later. [Rytech]
+		if ((wd.flag&BF_WEAPON && wd.flag&BF_LONG || wd.flag&BF_MAGIC) && tsc->data[SC_SPIRITOFLAND_AUTOCAST] && rand()%100 < 20 && status_check_skilluse(target, src, SU_SV_STEMSPEAR, 1, 0))
+			skill_attack(BF_MAGIC,target,target,src,SU_SV_STEMSPEAR, rand()%5+1, tick, 2);// What level does it officially autocast??? [Rytech]
 	}
 	map_freeblock_unlock();
 	return wd.dmg_lv;
@@ -6244,6 +6274,8 @@ static const struct _battle_data {
 	{ "base_lv_skill_effect_limit",         &battle_config.base_lv_skill_effect_limit,      175,    1,      SHRT_MAX,       },
 	{ "job_lv_skill_effect_limit",          &battle_config.job_lv_skill_effect_limit,       60,     1,      SHRT_MAX,       },
 	{ "renewal_casting_renewal_skills",     &battle_config.renewal_casting_renewal_skills,  1,      0,      1,              },
+	{ "renewal_casting_square_calc",        &battle_config.renewal_casting_square_calc,     1,      0,      1,              },
+	{ "renewal_casting_square_debug",       &battle_config.renewal_casting_square_debug,    0,      0,      1,              },
 	{ "renewal_level_effect_skills",        &battle_config.renewal_level_effect_skills,     1,      0,      1,              },
 	{ "castrate_dex_scale_renewal_jobs",    &battle_config.castrate_dex_scale_renewal_jobs, 150,    1,      INT_MAX,        },
 	{ "max_parameter_renewal_jobs",         &battle_config.max_parameter_renewal_jobs,      130,    10,     10000,          },

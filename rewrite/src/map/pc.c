@@ -3560,7 +3560,8 @@ int pc_skill(TBL_PC* sd, int id, int level, int flag)
 		}
 		else
 			clif_addskill(sd,id);
-		if( !skill_get_inf(id) ) //Only recalculate for passive skills.
+		// Only recalculate for passive skills and active skills that boost the effects of passive skills.
+		if( !skill_get_inf(id) || skill_get_inf2(id)&INF2_BOOST_PASSIVE && (pc_checkskill(sd, SU_POWEROFLAND) > 0 || pc_checkskill(sd, SU_POWEROFSEA) > 0) )
 			status_calc_pc(sd, 0);
 	break;
 	case 1: //Item bonus skill.
@@ -6168,7 +6169,7 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 		}//May need to update in the future to include new 3rd job skills from the 5000 range. [Rytech]
 		if( sd->class_&JOBL_THIRD && (skill_num >= RK_ENCHANTBLADE && skill_num <= LG_OVERBRAND_PLUSATK || skill_num >= GC_DARKCROW && skill_num <= NC_MAGMA_ERUPTION_DOTDAMAGE) &&
 			skill_point < (sd->change_level[1] > 0 ? sd->change_level[0] + sd->change_level[1] + 7 : (sd->class_&JOBL_UPPER) ? 127 : 107) )
-		{	// 2nd job skill not usd.
+		{	// 2nd job skill not used.
 			i = (sd->change_level[1] > 0 ? sd->change_level[0] + sd->change_level[1] + 7 : (sd->class_&JOBL_UPPER) ? 127 : 107) - skill_point;
 			clif_msgtable_num(sd->fd,MSG_UPGRADESKER_SECONDJOB, i);
 			return 0;
@@ -6182,8 +6183,8 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 	{
 		sd->status.skill[skill_num].lv++;
 		sd->status.skill_point--;
-		if( !skill_get_inf(skill_num) || pc_checkskill(sd,SU_POWEROFSEA) > 0 && (skill_num >= SU_TUNABELLY && skill_num <= SU_FRESHSHRIMP || skill_num >= SU_GROOMING && skill_num <= SU_SHRIMPARTY) ) 
-			status_calc_pc(sd,0); // Only recalculate for passive skills. Must also recalculate on Summoner's Sea skills for SU_POWEROFSEA's bonuses.
+		if( !skill_get_inf(skill_num) || skill_get_inf2(skill_num)&INF2_BOOST_PASSIVE && (pc_checkskill(sd, SU_POWEROFLAND) > 0 || pc_checkskill(sd, SU_POWEROFSEA) > 0) )
+			status_calc_pc(sd,0); // Only recalculate for passive skills and active skills that boost the effects of passive skills.
 		else if( sd->status.skill_point == 0 && (sd->class_&MAPID_UPPERMASK) == MAPID_TAEKWON && sd->status.base_level >= 90 && pc_famerank(sd->status.char_id, MAPID_TAEKWON) )
 			pc_calc_skilltree(sd); // Required to grant all TK Ranger skills.
 		else

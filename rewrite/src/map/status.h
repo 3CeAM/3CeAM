@@ -703,6 +703,12 @@ typedef enum sc_type {
 	SC_CHEERUP,
 	SC__BLOODYLUST_BK,
 
+	// Spirit of Land Buffs
+	SC_SPIRITOFLAND_SPEED,
+	SC_SPIRITOFLAND_MATK,
+	SC_SPIRITOFLAND_AUTOCAST,
+	SC_SPIRITOFLAND_PERFECTDODGE,
+
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
 
@@ -2126,7 +2132,7 @@ void status_calc_regen(struct block_list *bl, struct status_data *status, struct
 void status_calc_regen_rate(struct block_list *bl, struct regen_data *regen, struct status_change *sc);
 
 int status_getrefinebonus(int lv,int type);
-int status_check_skilluse(struct block_list *src, struct block_list *target, int skill_lv, int skill_num, int flag); // [Skotlex]
+int status_check_skilluse(struct block_list *src, struct block_list *target, int skill_num, int skill_lv, int flag); // [Skotlex]
 int status_check_visibility(struct block_list *src, struct block_list *target); //[Skotlex]
 
 int status_readdb(void);

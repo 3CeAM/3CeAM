@@ -954,6 +954,10 @@ void initChangeTables(void)
 	StatusChangeFlagTable[SC_SHIELDSPELL_REF] |= SCB_DEF;
 	StatusChangeFlagTable[SC_BANDING] |= SCB_WATK|SCB_DEF|SCB_REGEN;
 
+	StatusChangeFlagTable[SC_SPIRITOFLAND_SPEED] = SCB_SPEED;
+	StatusChangeFlagTable[SC_SPIRITOFLAND_MATK] = SCB_MATK;
+	StatusChangeFlagTable[SC_SPIRITOFLAND_PERFECTDODGE] = SCB_FLEE2;
+
 	StatusChangeFlagTable[SC_STOMACHACHE] |= SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK;
 	StatusChangeFlagTable[SC_MYSTERIOUS_POWDER] |= SCB_MAXHP;
 	StatusChangeFlagTable[SC_MELON_BOMB] |= SCB_SPEED|SCB_ASPD;
@@ -2340,6 +2344,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	int b_weight, b_max_weight; // previous weight
 	int i,index;
 	int skill, refinedef = 0;
+	short passive_matk_rate = 0;
 
 	if( ++calculating > 10 ) //Too many recursive calls!
 		return -1;
@@ -2801,6 +2806,8 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		status->dex += skill;
 	if( (skill = pc_checkskill(sd,RA_RESEARCHTRAP)) > 0 )
 		status->int_ += skill;
+	if( pc_checkskill(sd,SU_POWEROFLAND) > 0 )
+		status->int_ += 20;
 
 	// Bonuses from cards and equipment as well as base stat, remember to avoid overflows.
 	i = status->str + sd->status.str + sd->param_bonus[0] + sd->param_equip[0];
@@ -2935,10 +2942,13 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 
 	if( sd->matk_rate < 0 )
 		sd->matk_rate = 0;
-	if( sd->matk_rate != 100 )
+	// Passive skills that increase matk rate.
+	if ( skill_summoner_power(sd, POWER_OF_LAND) == 1 )
+		passive_matk_rate += 20;
+	if( (sd->matk_rate+passive_matk_rate) != 100 )
 	{
-		status->matk_max = status->matk_max * sd->matk_rate / 100;
-		status->matk_min = status->matk_min * sd->matk_rate / 100;
+		status->matk_max = status->matk_max * (sd->matk_rate+passive_matk_rate) / 100;
+		status->matk_min = status->matk_min * (sd->matk_rate+passive_matk_rate) / 100;
 	}
 
 	if( sd->hit_rate < 0 )
@@ -2992,15 +3002,20 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 			status->rhw.range += skill;
 		}
 	}
+	if( (skill = pc_checkskill(sd,NC_TRAININGAXE)) > 0 )
+	{
+		if ( sd->status.weapon == W_1HAXE || sd->status.weapon == W_2HAXE )
+			status->hit += skill * 3;
+		else if ( sd->status.weapon == W_MACE || sd->status.weapon == W_2HMACE )
+			status->hit += skill * 2;
+	}
+	if( pc_checkskill(sd,SU_POWEROFLIFE) > 0 )
+		status->hit += 20;
 	if( (pc_checkskill(sd,SU_SOULATTACK)) > 0 )
 	{// Range with rod type weapons increased to a fixed 14.
 		if( sd->status.weapon == W_STAFF )
 			status->rhw.range = 14;
 	}
-	if( (sd->status.weapon == W_1HAXE || sd->status.weapon == W_2HAXE) && (skill = pc_checkskill(sd,NC_TRAININGAXE)) > 0 )
-		status->hit += skill * 3;
-	if( (sd->status.weapon == W_MACE || sd->status.weapon == W_2HMACE) && (skill = pc_checkskill(sd,NC_TRAININGAXE)) > 0 )
-		status->hit += skill * 2;
 
 // ----- FLEE CALCULATION -----
 
@@ -3009,6 +3024,15 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		status->flee += skill * (sd->class_&JOBL_2 && (sd->class_&MAPID_BASEMASK) == MAPID_THIEF ? 4 : 3);
 	if( (skill=pc_checkskill(sd,MO_DODGE))>0)
 		status->flee += (skill * 3) >> 1;
+	if( pc_checkskill(sd,SU_POWEROFLIFE)>0)
+		status->flee += 20;
+
+// ----- CRIT CALCULATION -----
+
+	// Absolute modifiers from passive skills
+	// 10 = 1 crit or 1.0 crit.
+	if(pc_checkskill(sd,SU_POWEROFLIFE)>0)
+		status->cri += 200;
 
 // ----- EQUIPMENT-DEF CALCULATION -----
 
@@ -3888,16 +3912,22 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 
 		if( bl->type&BL_PC )
 		{
+			short passive_matk_rate = 0;
+
 			if ( sd->add_matk > 0 )
 			{	//Increases MATK by a fixed amount. [Rytech]
 				status->matk_min += sd->add_matk;
 				status->matk_max += sd->add_matk;
 			}
-			if ( sd->matk_rate != 100 )
+
+			if ( skill_summoner_power(sd, POWER_OF_LAND) == 1 )
+				passive_matk_rate += 20;
+
+			if ( (sd->matk_rate+passive_matk_rate) != 100 )
 			{
 				//Bonuses from previous matk
-				status->matk_max = status->matk_max * sd->matk_rate/100;
-				status->matk_min = status->matk_min * sd->matk_rate/100;
+				status->matk_max = status->matk_max * (sd->matk_rate+passive_matk_rate)/100;
+				status->matk_min = status->matk_min * (sd->matk_rate+passive_matk_rate)/100;
 			}
 		}
 
@@ -4681,6 +4711,8 @@ static unsigned short status_calc_matk(struct block_list *bl, struct status_chan
 		matk += sc->data[SC_IZAYOI]->val2;
 	if(sc->data[SC_ZANGETSU] && sc->data[SC_ZANGETSU]->val4 == 1)
 		matk += 20 * sc->data[SC_ZANGETSU]->val1 + sc->data[SC_ZANGETSU]->val2;
+	if(sc->data[SC_SPIRITOFLAND_MATK])
+		matk += sc->data[SC_SPIRITOFLAND_MATK]->val2;
 	if(sc->data[SC_MAGICPOWER])
 		matk += matk * sc->data[SC_MAGICPOWER]->val3/100;
 	if(sc->data[SC_MINDBREAKER])
@@ -4873,6 +4905,8 @@ static signed short status_calc_flee2(struct block_list *bl, struct status_chang
 		flee2 += sc->data[SC_INCFLEE2]->val2;
 	if(sc->data[SC_WHISTLE])
 		flee2 += sc->data[SC_WHISTLE]->val3*10;
+	if(sc->data[SC_SPIRITOFLAND_PERFECTDODGE])
+		flee2 += sc->data[SC_SPIRITOFLAND_PERFECTDODGE]->val2;
 	if(sc->data[SC__UNLUCKY])
 		flee2 -= flee2 * sc->data[SC__UNLUCKY]->val2 / 100;
 
@@ -5252,6 +5286,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				val = max( val, 100 );
 			if( sc->data[SC_ARCLOUSEDASH] )// Speed increase not confirmed but is likely the same as AGI Up. [Rytech]
 				val = max( val, 25 );
+			if( sc->data[SC_SPIRITOFLAND_SPEED] )
+				val = max( val, 60 );
 			//Not bothering to organize these until I rework the elemental spirits. [Rytech]
 			if( sc->data[SC_WIND_STEP_OPTION] )
 				val = max( val, sc->data[SC_WIND_STEP_OPTION]->val2 );
@@ -8798,6 +8834,12 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 				val2 = 1;// Reduce DEF/MDEF to 0 for players.
 			else
 				val2 = 2;// Reduce DEF/MDEF by 50% on non-players.
+			break;
+		case SC_SPIRITOFLAND_MATK:
+			val2 = status_get_base_lv_effect(bl);// MATK Increase
+			break;
+		case SC_SPIRITOFLAND_PERFECTDODGE:
+			val2 = 10 * status_get_base_lv_effect(bl) / 12;// Perfect Dodge Increase. 10 = 1.
 			break;
 		case SC_NEEDLE_OF_PARALYZE:
 			val2 = 5 * val1;// DEF/MDEF  Reduction
