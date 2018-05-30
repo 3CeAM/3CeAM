@@ -1390,6 +1390,10 @@ ACMD_FUNC(jobchange)
 			{ "baby soul linker",	4227 },
 			{ "baby gunslinger",	4228 },
 			{ "baby rebellion",		4229 },
+			{ "star emperor",		4239 },
+			{ "soul reaper",		4240 },
+			{ "baby star emperor",	4241 },
+			{ "baby soul reaper",	4242 },
 		};
 
 		for (i=0; i < ARRAYLENGTH(jobs); i++) {
@@ -1433,7 +1437,7 @@ ACMD_FUNC(jobchange)
 			clif_displaymessage(fd, "  23 Super Novice       24 Gunslinger         25 Ninja            4046 Taekwon");
 			clif_displaymessage(fd, "4047 Star Gladiator   4049 Soul Linker      4050 Gangsi           4051 Death Knight");
 			clif_displaymessage(fd, "4052 Dark Collector   4190 Ex. Super Novice 4211 Kagerou          4212 Oboro");
-			clif_displaymessage(fd, "4215 Rebellion        4218 Summoner");
+			clif_displaymessage(fd, "4215 Rebellion        4218 Summoner         4239 Star Emperor     4240 Soul Reaper");
 			clif_displaymessage(fd, "----- Baby Novice And Baby 1st Class -----");
 			clif_displaymessage(fd, "4023 Baby Novice      4024 Baby Swordman    4025 Baby Magician    4026 Baby Archer");
 			clif_displaymessage(fd, "4027 Baby Acolyte     4028 Baby Merchant    4029 Baby Thief");
@@ -1450,7 +1454,8 @@ ACMD_FUNC(jobchange)
 			clif_displaymessage(fd, "----- Expanded Baby Class -----");
 			clif_displaymessage(fd, "4045 Super Baby       4191 Ex. Super Baby   4220 Baby Summoner    4222 Baby Ninja");
 			clif_displaymessage(fd, "4223 Baby Kagerou     4224 Baby Oboro       4225 Baby Taekwon     4226 Baby Star Glad.");
-			clif_displaymessage(fd, "4227 Baby Soul Linker 4228 Baby Gunslinger  4229 Baby Rebellion");
+			clif_displaymessage(fd, "4227 Baby Soul Linker 4228 Baby Gunslinger  4229 Baby Rebellion   4241 Baby Star Emperor");
+			clif_displaymessage(fd, "4242 Baby Soul Reaper");
 			return -1;
 		}
 	}
@@ -1461,7 +1466,7 @@ ACMD_FUNC(jobchange)
 		job == JOB_BABY_CRUSADER2 || job == JOB_STAR_GLADIATOR2 || 
 		(job >= JOB_RUNE_KNIGHT2 && job <= JOB_RUNE_KNIGHT_T6) || 
 		(job >= JOB_BABY_RUNE2 && job <= JOB_BABY_MECHANIC2) || 
-		job == JOB_BABY_STAR_GLADIATOR2)
+		job == JOB_BABY_STAR_GLADIATOR2 || job == JOB_STAR_EMPEROR2 || job == JOB_BABY_STAR_EMPEROR2)
 	{// Deny direct transformation into dummy jobs
 		clif_displaymessage(fd, "You can not change into this job by command.");
 		return 0;
@@ -1507,7 +1512,7 @@ ACMD_FUNC(jobchange)
 		clif_displaymessage(fd, "  23 Super Novice       24 Gunslinger         25 Ninja            4046 Taekwon");
 		clif_displaymessage(fd, "4047 Star Gladiator   4049 Soul Linker      4050 Gangsi           4051 Death Knight");
 		clif_displaymessage(fd, "4052 Dark Collector   4190 Ex. Super Novice 4211 Kagerou          4212 Oboro");
-		clif_displaymessage(fd, "4215 Rebellion        4218 Summoner");
+		clif_displaymessage(fd, "4215 Rebellion        4218 Summoner         4239 Star Emperor     4240 Soul Reaper");
 		clif_displaymessage(fd, "----- Baby Novice And Baby 1st Class -----");
 		clif_displaymessage(fd, "4023 Baby Novice      4024 Baby Swordman    4025 Baby Magician    4026 Baby Archer");
 		clif_displaymessage(fd, "4027 Baby Acolyte     4028 Baby Merchant    4029 Baby Thief");
@@ -1524,7 +1529,8 @@ ACMD_FUNC(jobchange)
 		clif_displaymessage(fd, "----- Expanded Baby Class -----");
 		clif_displaymessage(fd, "4045 Super Baby       4191 Ex. Super Baby   4220 Baby Summoner    4222 Baby Ninja");
 		clif_displaymessage(fd, "4223 Baby Kagerou     4224 Baby Oboro       4225 Baby Taekwon     4226 Baby Star Glad.");
-		clif_displaymessage(fd, "4227 Baby Soul Linker 4228 Baby Gunslinger  4229 Baby Rebellion");
+		clif_displaymessage(fd, "4227 Baby Soul Linker 4228 Baby Gunslinger  4229 Baby Rebellion   4241 Baby Star Emperor");
+		clif_displaymessage(fd, "4242 Baby Soul Reaper");
 		return -1;
 	}
 
