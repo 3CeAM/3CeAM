@@ -18,7 +18,7 @@
 // If set like this, the cast time for level 1 will be 1 second, level 2 will be 3 seconds, and level 3 will be 8 seconds.
 // You can set them to whatever you want.
 //
-// All skills in the 2000 - 5065 ID range will use the renewal cast time system. Anything else outside the range will use the regular cast time system.
+// All skills in the 2000 - 5073 ID range will use the renewal cast time system. Anything else outside the range will use the regular cast time system.
 // Mutated Homunculus skills will also use the renewal system. Their ID's are in the 8017 - 8043 range.
 //==========================================
 
@@ -633,8 +633,14 @@
 2572,0,0,0,0,0,0,0
 //-- RL_B_FLICKER_ATK
 2573,0,0,0,0,0,0,0
-//-- RL_GLITTERING_GREED_ATK
-2574,0,0,0,0,0,0,0
+//==========================================
+
+//===== Star Emperor =======================
+//
+//==========================================
+
+//===== Soul Reaper ========================
+//
 //==========================================
 
 //===== Kagerou / Oboro ====================
@@ -712,7 +718,7 @@
 3035,0,3000,0,300000,0,0,0
 //==========================================
 
-//===== 3rd Job Level Expansion Skills ======
+//===== 3rd Job Level Expansion Skills =====
 //-- GC_DARKCROW
 5001,0,0,0,60000,0,5000,0
 //-- RA_UNLIMIT
@@ -835,6 +841,10 @@
 5064,3000,0,0,0,0,0,0
 //-- WE_CHEERUP
 5065,3000,0,0,0,0,60000,0
+//==========================================
+
+//===== New Arch Bishop Skills =============
+//
 //==========================================
 
 //===== Mutated Homunculus =================

@@ -3078,7 +3078,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	i = status_base_amotion_pc(sd,status);
 
 	// Config for setting seprate ASPD cap for 3rd jobs and other jobs released in renewal.
-	if ( sd && ((sd->class_&MAPID_THIRDMASK) >= MAPID_SUPER_NOVICE_E && (sd->class_&MAPID_THIRDMASK) <= MAPID_SHADOW_CHASER ||
+	if ( sd && ((sd->class_&MAPID_THIRDMASK) >= MAPID_SUPER_NOVICE_E && (sd->class_&MAPID_THIRDMASK) <= MAPID_SOUL_REAPER ||
 		(sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION || (sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER))
 		status->amotion = cap_value(i,battle_config.max_aspd_renewal_jobs,2000);
 	else
@@ -3960,7 +3960,7 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 				amotion = amotion*status->aspd_rate/1000;
 
 			// Config for setting seprate ASPD cap for 3rd jobs and other jobs released in renewal.
-			if ( sd && ((sd->class_&MAPID_THIRDMASK) >= MAPID_SUPER_NOVICE_E && (sd->class_&MAPID_THIRDMASK) <= MAPID_SHADOW_CHASER ||
+			if ( sd && ((sd->class_&MAPID_THIRDMASK) >= MAPID_SUPER_NOVICE_E && (sd->class_&MAPID_THIRDMASK) <= MAPID_SOUL_REAPER ||
 				(sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION || (sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER))
 				status->amotion = cap_value(amotion,battle_config.max_aspd_renewal_jobs,2000);
 			else
@@ -7854,7 +7854,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val3 = 0;
 			val4 = 0;
 			if ( sd && battle_config.marionette_renewal_jobs == 1 &&
-				((sd->class_&MAPID_THIRDMASK) >= MAPID_SUPER_NOVICE_E && (sd->class_&MAPID_THIRDMASK) <= MAPID_SHADOW_CHASER ||
+				((sd->class_&MAPID_THIRDMASK) >= MAPID_SUPER_NOVICE_E && (sd->class_&MAPID_THIRDMASK) <= MAPID_SOUL_REAPER ||
 				(sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION || (sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER))
 				max_stat = battle_config.max_parameter_renewal_jobs;//Custom cap for renewal jobs.
 			else
