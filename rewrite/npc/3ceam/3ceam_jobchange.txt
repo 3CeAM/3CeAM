@@ -3,14 +3,15 @@
 //===== By: ================================================== 
 //= Rytech
 //===== Current Version: ===================================== 
-//= 1.1
+//= 1.2
 //===== Compatible With: ===================================== 
 //= 3CeAM
 //===== Description: ========================================= 
 //= Allows changing into jobs introduced in the RE era.
 //===== Additional Comments: ================================= 
 //= 1.0 Release Version.
-//= 1.1 Added support for baby versions of Kagerou/Oboro/Rebellion
+//= 1.1 Added support for baby versions of all expanded jobs.
+//= 1.2 Added support for Star Emperor, Soul Reaper, and their baby versions.
 //============================================================
 prontera,158,184,4	script	Special Job Changer	485,{
 
@@ -26,7 +27,7 @@ Xready:
 	set @reqjoblvtrans2rd,70;// Required job level to change to trans 3rd job.
 	set @reqjoblvsn,99;// Required job level to change to Expanded Super Novice/Expanded Super Baby
 	set @reqjoblvgsnj,70;// Required job level to change to Kagerou/Oboro/Rebellion
-	set @reqjoblvsgsl,50;// Required job level to change to ????/????
+	set @reqjoblvsgsl,50;// Required job level to change to Star Emperor/Soul Reaper
 	set @reqjoblv,0;// Variable used to display required job level.
 
 	if (@reg2ndto3rd == 1 && (Class >= Job_Knight && Class <= Job_Assassin || Class >= Job_Crusader && Class <= Job_Dancer))
@@ -208,13 +209,13 @@ Xextendedsgsl:
 	if (BaseLevel >= @reqbaselv && JobLevel >= @reqjoblvsgsl)
 	{
 		//if (Class == Job_Star_Gladiator)
-		//	jobchange ????;
+		//	jobchange Job_Star_Emperor;
 		//else if (Class == Job_Soul_Linker)
-		//	jobchange ????;
+		//	jobchange Job_Soul_Reaper;
 		//if (Class == Job_Baby_Star_Gladiator)
-		//	jobchange ????;
+		//	jobchange Job_Baby_Star_Emperor;
 		//else if (Class == Job_Baby_Soul_Linker)
-		//	jobchange ????;
+		//	jobchange Job_Baby_Soul_Reaper;
 
 		//goto Xcomplete;
 
