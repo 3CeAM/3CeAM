@@ -29,7 +29,7 @@ struct party_booking_ad_info;
 #include <stdarg.h>
 // packet DB
 #define MAX_PACKET_DB		0xf00
-#define MAX_PACKET_VER		36
+#define MAX_PACKET_VER		37
 #define	MAX_PACKET_POS		20
 
 struct s_packet_db {
@@ -786,6 +786,7 @@ void clif_monster_hp_bar( struct mob_data* md, int fd );
 void clif_fast_movement(struct block_list *bl, short x, short y);
 int clif_millenniumshield(struct map_session_data *sd, short shield_count);
 int clif_spiritball_attribute(struct map_session_data *sd);
+int clif_soulball(struct map_session_data *sd);
 void clif_map_type2(struct block_list *bl,enum send_target target);
 int clif_crimson_marker_xy(struct map_session_data *sd);
 int clif_crimson_marker_xy_single(int fd, struct map_session_data *sd);

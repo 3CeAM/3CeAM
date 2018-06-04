@@ -584,6 +584,8 @@ void initChangeTables(void)
 	set_sc( RL_SLUGSHOT     , SC_SLUGSHOT     , SI_SLUGSHOT     , SCB_NONE );
 	add_sc( RL_HAMMER_OF_GOD, SC_STUN );
 
+	set_sc( SP_SOULCOLLECT     , SC_SOULCOLLECT     , SI_SOULCOLLECT     , SCB_NONE );
+
 	add_sc( KO_YAMIKUMO          , SC_HIDING );
 	set_sc( KO_JYUMONJIKIRI      , SC_JYUMONJIKIRI    , SI_KO_JYUMONJIKIRI , SCB_NONE );
 	set_sc( KO_MEIKYOUSISUI      , SC_MEIKYOUSISUI    , SI_MEIKYOUSISUI    , SCB_NONE );
@@ -8723,6 +8725,10 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_ANTI_M_BLAST:
 			val2 = 10 * val1;// Player Damage Resistance Reduction.
 			break;
+		case SC_SOULCOLLECT:
+			val2 = 5 + 3 * val2;// Max Soul Sphere's.
+			val3 = tick>0?tick:60000;
+			break;
 		case SC_MEIKYOUSISUI:
 			if (sd) {
 				pc_setsit(sd);
@@ -11038,6 +11044,11 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 			return 0;
 		}
 		break;
+
+	case SC_SOULCOLLECT:
+		pc_addsoulball(sd, skill_get_time2(SP_SOULCOLLECT, sce->val1), sce->val2);
+		sc_timer_next(sce->val3+tick, status_change_timer, bl->id, data);
+		return 0;
 
 	case SC_MEIKYOUSISUI:
 		if( --(sce->val4) >= 0 )

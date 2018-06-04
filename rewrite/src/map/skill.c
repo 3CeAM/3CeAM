@@ -1455,6 +1455,9 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 				// Rebellion - Need Confirm
 				case SC_B_TRAP:			case SC_C_MARKER:		case SC_H_MINE:
 				case SC_ANTI_M_BLAST:	case SC_FALLEN_ANGEL:
+				// Star Emperor
+				// Soul Reaper
+				case SC_SOULCOLLECT:
 				// 3rd Job Level Expansion
 				case SC_FRIGG_SONG:		case SC_OFFERTORIUM:	case SC_TELEKINESIS_INTENSE:
 				case SC_KINGS_GRACE:
@@ -6633,6 +6636,24 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		clif_skill_nodamage(src,bl,skillid,skilllv,sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
 		break;
+
+	case SP_SOULCOLLECT:
+		{
+			int soul_gen_timer = skill_get_time(skillid,skilllv);
+
+			if ( soul_gen_timer < 1000 )
+				soul_gen_timer = 1000;
+
+			if( tsce )
+			{
+				clif_skill_nodamage(src,bl,skillid,skilllv,status_change_end(bl, type, INVALID_TIMER));
+				map_freeblock_unlock();
+				return 0;
+			}
+			clif_skill_nodamage(src,bl,skillid,skilllv,sc_start2(bl,type,100,skilllv,pc_checkskill(sd,SP_SOULENERGY),soul_gen_timer));
+		}
+		break;
+
 	case SL_KAITE:
 	case SL_KAAHI:
 	case SL_KAIZEL:
@@ -7350,6 +7371,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				// Rebellion - Need Confirm
 				case SC_B_TRAP:			case SC_C_MARKER:		case SC_H_MINE:
 				case SC_ANTI_M_BLAST:	case SC_FALLEN_ANGEL:
+				// Star Emperor
+				// Soul Reaper
+				case SC_SOULCOLLECT:
 				// 3rd Job Level Expansion
 				case SC_FRIGG_SONG:		case SC_OFFERTORIUM:	case SC_TELEKINESIS_INTENSE:
 				case SC_KINGS_GRACE:
@@ -8307,6 +8331,19 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 
+	case SJ_DOCUMENT:
+		if (sd)
+		{
+			if ( skilllv == 1 || skilllv == 3 )
+				pc_resetfeel(sd);
+
+			if ( skilllv == 2 || skilllv == 3 )
+				pc_resethate(sd);
+
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		}
+		break;
+
 	case GS_GLITTERING:
 		if(sd) {
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
@@ -9045,6 +9082,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				// Rebellion - Need Confirm
 				case SC_B_TRAP:			case SC_C_MARKER:		case SC_H_MINE:
 				case SC_ANTI_M_BLAST:	case SC_FALLEN_ANGEL:
+				// Star Emperor
+				// Soul Reaper
+				case SC_SOULCOLLECT:
 				// 3rd Job Level Expansion
 				case SC_FRIGG_SONG:		case SC_OFFERTORIUM:	case SC_TELEKINESIS_INTENSE:
 				case SC_KINGS_GRACE:
@@ -14142,6 +14182,7 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		sd->spiritball_old = sd->spiritball; //Need to do Spiritball check.
 		sd->rageball_old = sd->rageball;// Needed for Rageball check.
 		sd->charmball_old = sd->charmball;// Needed for Charmball check.
+		sd->soulball_old = sd->soulball; //Need to do Soulball check.
 		return 1;
 	}
 
@@ -14220,7 +14261,8 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 	case BS_MAXIMIZE:		case NV_TRICKDEAD:	case TF_HIDING:			case AS_CLOAKING:		case CR_AUTOGUARD:
 	case ML_AUTOGUARD:		case CR_DEFENDER:	case ML_DEFENDER:		case ST_CHASEWALK:		case PA_GOSPEL:
 	case CR_SHRINK:			case TK_RUN:		case GS_GATLINGFEVER:	case TK_READYCOUNTER:	case TK_READYDOWN:
-	case TK_READYSTORM:		case TK_READYTURN:	case SG_FUSION:			case KO_YAMIKUMO:		case SU_HIDE:
+	case TK_READYSTORM:		case TK_READYTURN:	case SG_FUSION:			case SP_SOULCOLLECT:	case KO_YAMIKUMO:
+	case SU_HIDE:
 		if( sc && sc->data[status_skill2sc(skill)] )
 			return 1;
 	}
@@ -14937,7 +14979,16 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 	if( require.spiritball > 0 )
 	{// Only 1 skill here for now but will add more later as needed.
 		switch (skill)
-		{// Skills that require rage spheres.
+		{// Skills that require soul spheres.
+			case SP_SPA:
+				if ( sd->soulball < require.spiritball )
+				{
+					clif_skill_fail(sd,skill,0,0,0);
+					return 0;
+				}
+				break;
+
+			// Skills that require rage spheres.
 			case LG_RAGEBURST:
 				if ( sd->rageball < require.spiritball )
 				{
@@ -14987,6 +15038,7 @@ int skill_check_condition_castend(struct map_session_data* sd, short skill, shor
 		sd->spiritball_old = sd->spiritball; //Need to do Spiritball check.
 		sd->rageball_old = sd->rageball;// Needed for Rageball check.
 		sd->charmball_old = sd->charmball;// Needed for Charmball check.
+		sd->soulball_old = sd->soulball; //Need to do Soulball check.
 		return 1;
 	}
 
@@ -15220,7 +15272,12 @@ int skill_consume_requirement( struct map_session_data *sd, short skill, short l
 		if(req.spiritball > 0)
 		{// Only 1 skill here for now but will add more later as needed.
 			switch (skill)
-			{// Skills that require rage spheres.
+			{// Skills that require soul spheres.
+				case SP_SPA:
+					pc_delsoulball(sd,req.spiritball,0);
+					break;
+
+				// Skills that require rage spheres.
 				case LG_RAGEBURST:
 					pc_delrageball(sd,req.spiritball,0);
 					break;
@@ -15296,7 +15353,8 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 	case BS_MAXIMIZE:		case NV_TRICKDEAD:	case TF_HIDING:			case AS_CLOAKING:		case CR_AUTOGUARD:
 	case ML_AUTOGUARD:		case CR_DEFENDER:	case ML_DEFENDER:		case ST_CHASEWALK:		case PA_GOSPEL:
 	case CR_SHRINK:			case TK_RUN:		case GS_GATLINGFEVER:	case TK_READYCOUNTER:	case TK_READYDOWN:
-	case TK_READYSTORM:		case TK_READYTURN:	case SG_FUSION:			case KO_YAMIKUMO:		case SU_HIDE:
+	case TK_READYSTORM:		case TK_READYTURN:	case SG_FUSION:			case SP_SOULCOLLECT:	case KO_YAMIKUMO:
+	case SU_HIDE:
 		if( sc && sc->data[status_skill2sc(skill)] )
 			return req;
 	}

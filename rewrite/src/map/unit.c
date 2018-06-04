@@ -2317,6 +2317,7 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 			pc_delshieldball(sd,sd->shieldball,1);
 			pc_delrageball(sd,sd->rageball,1);
 			pc_delcharmball(sd,sd->charmball,3);
+			pc_delsoulball(sd,sd->soulball,1);
 			skill_blockpc_clear(sd);
 
 			if( sd->reg )

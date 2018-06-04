@@ -4104,6 +4104,29 @@ ACMD_FUNC(charmball)
 	return 0;
 }
 
+ACMD_FUNC(soulball)
+{
+	int max_soulballs = min(ARRAYLENGTH(sd->soul_timer), 0x7FFF);
+	int number;
+	nullpo_retr(-1, sd);
+
+	if( !message || !*message || (number = atoi(message)) < 0 || number > max_soulballs )
+	{
+		char msg[CHAT_SIZE_MAX];
+		safesnprintf(msg, sizeof(msg), "Usage: @soulball <number: 0-%d>", max_soulballs);
+		clif_displaymessage(fd, msg);
+		return -1;
+	}
+
+	if( sd->soulball > 0 )
+		pc_delsoulball(sd, sd->soulball, 1);
+	sd->soulball = number;
+	clif_soulball(sd);
+	// no message, player can look the difference
+
+	return 0;
+}
+
 /*==========================================
  *
  *------------------------------------------*/
@@ -8841,6 +8864,17 @@ ACMD_FUNC(feelreset)
 }
 
 /*==========================================
+ * Hate (SG save monster/player) Reset
+ *------------------------------------------*/
+ACMD_FUNC(hatereset)
+{
+	pc_resethate(sd);
+	clif_displaymessage(fd, "Reset 'Hated' monsters/players.");
+
+	return 0;
+}
+
+/*==========================================
  * AUCTION SYSTEM
  *------------------------------------------*/
 ACMD_FUNC(auction)
@@ -9611,6 +9645,7 @@ AtCommandInfo atcommand_info[] = {
 	{ "homshuffle",        60,60,     atcommand_homshuffle },
 	{ "showmobs",          10,10,     atcommand_showmobs },
 	{ "feelreset",         10,10,     atcommand_feelreset },
+	{ "hatereset",         10,10,     atcommand_hatereset },
 	{ "auction",            1,1,      atcommand_auction },
 	{ "mail",               1,1,      atcommand_mail },
 	{ "noks",               1,1,      atcommand_ksprotection },
@@ -9639,6 +9674,7 @@ AtCommandInfo atcommand_info[] = {
 	{ "shieldball",        40,40,     atcommand_shieldball },
 	{ "rageball",          40,40,     atcommand_rageball },
 	{ "charmball",         40,40,     atcommand_charmball },
+	{ "soulball",          40,40,     atcommand_soulball },
 	//Mutated Homunculus Commands
 	{ "hommutate",         60,60,     atcommand_hommutation },
 	{ "hommutation",       60,60,     atcommand_hommutation },

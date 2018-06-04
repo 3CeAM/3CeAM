@@ -558,6 +558,106 @@ int pc_delcharmball(struct map_session_data *sd,int count,int type)
 	return 0;
 }
 
+static int pc_soulball_timer(int tid, unsigned int tick, int id, intptr data)
+{
+	struct map_session_data *sd;
+	int i;
+
+	if( (sd=(struct map_session_data *)map_id2sd(id)) == NULL || sd->bl.type!=BL_PC )
+		return 1;
+
+	if( sd->soulball <= 0 )
+	{
+		ShowError("pc_soulball_timer: %d soulball's available. (aid=%d cid=%d tid=%d)\n", sd->soulball, sd->status.account_id, sd->status.char_id, tid);
+		sd->soulball = 0;
+		return 0;
+	}
+
+	ARR_FIND(0, sd->soulball, i, sd->soul_timer[i] == tid);
+	if( i == sd->soulball )
+	{
+		ShowError("pc_soulball_timer: timer not found (aid=%d cid=%d tid=%d)\n", sd->status.account_id, sd->status.char_id, tid);
+		return 0;
+	}
+
+	sd->soulball--;
+	if( i != sd->soulball )
+		memmove(sd->soul_timer+i, sd->soul_timer+i+1, (sd->soulball-i)*sizeof(int));
+	sd->soul_timer[sd->soulball] = INVALID_TIMER;
+
+	clif_soulball(sd);
+
+	return 0;
+}
+
+int pc_addsoulball(struct map_session_data *sd,int interval,int max)
+{
+	int tid, i;
+
+	nullpo_ret(sd);
+
+	if(max > MAX_SKILL_LEVEL)
+		max = MAX_SKILL_LEVEL;
+	if(sd->soulball < 0)
+		sd->soulball = 0;
+
+	if( sd->soulball && sd->soulball >= max )
+	{
+		if(sd->soul_timer[0] != INVALID_TIMER)
+			delete_timer(sd->soul_timer[0],pc_soulball_timer);
+		sd->soulball--;
+		if( sd->soulball != 0 )
+			memmove(sd->soul_timer+0, sd->soul_timer+1, (sd->soulball)*sizeof(int));
+		sd->soul_timer[sd->soulball] = INVALID_TIMER;
+	}
+
+	tid = add_timer(gettick()+interval, pc_soulball_timer, sd->bl.id, 0);
+	ARR_FIND(0, sd->soulball, i, sd->soul_timer[i] == INVALID_TIMER || DIFF_TICK(get_timer(tid)->tick, get_timer(sd->soul_timer[i])->tick) < 0);
+	if( i != sd->soulball )
+		memmove(sd->soul_timer+i+1, sd->soul_timer+i, (sd->soulball-i)*sizeof(int));
+	sd->soul_timer[i] = tid;
+	sd->soulball++;
+	clif_soulball(sd);
+
+	return 0;
+}
+
+int pc_delsoulball(struct map_session_data *sd,int count,int type)
+{
+	int i;
+
+	nullpo_ret(sd);
+
+	if(sd->soulball <= 0) {
+		sd->soulball = 0;
+		return 0;
+	}
+
+	if(count <= 0)
+		return 0;
+	if(count > sd->soulball)
+		count = sd->soulball;
+	sd->soulball -= count;
+	if(count > MAX_SKILL_LEVEL)
+		count = MAX_SKILL_LEVEL;
+
+	for(i=0;i<count;i++) {
+		if(sd->soul_timer[i] != INVALID_TIMER) {
+			delete_timer(sd->soul_timer[i],pc_soulball_timer);
+			sd->soul_timer[i] = INVALID_TIMER;
+		}
+	}
+	for(i=count;i<MAX_SKILL_LEVEL;i++) {
+		sd->soul_timer[i-count] = sd->soul_timer[i];
+		sd->soul_timer[i] = INVALID_TIMER;
+	}
+
+	if(!type)
+		clif_soulball(sd);
+
+	return 0;
+}
+
 int pc_overheat(struct map_session_data *sd, int val)
 {
 	int heat = val, skill,
@@ -1271,6 +1371,8 @@ bool pc_authok(struct map_session_data *sd, int login_id2, time_t expiration_tim
 		sd->rage_timer[i] = INVALID_TIMER;
 	for(i = 0; i < MAX_SKILL_LEVEL; i++)
 		sd->charm_timer[i] = INVALID_TIMER;
+	for(i = 0; i < MAX_SKILL_LEVEL; i++)
+		sd->soul_timer[i] = INVALID_TIMER;
 	for(i = 0; i < ARRAYLENGTH(sd->autobonus); i++)
 		sd->autobonus[i].active = INVALID_TIMER;
 	for(i = 0; i < ARRAYLENGTH(sd->autobonus2); i++)
@@ -6556,7 +6658,7 @@ int pc_resethate(struct map_session_data* sd)
 	int i;
 	nullpo_ret(sd);
 
-	for (i=0; i<3; i++)
+	for (i=0; i<MAX_PC_FEELHATE; i++)
 	{
 		sd->hate_mob[i] = -1;
 		pc_setglobalreg(sd,sg_info[i].hate_var,0);
@@ -6769,6 +6871,8 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 		pc_delrageball(sd,sd->rageball,0);
 	if ( sd && sd->charmball )
 		pc_delcharmball(sd,sd->charmball,0);
+	if ( sd && sd->soulball )
+		pc_delsoulball(sd,sd->soulball,0);
 
 	if (src)
 	switch (src->type) {
