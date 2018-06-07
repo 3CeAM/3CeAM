@@ -2185,20 +2185,40 @@ ACMD_FUNC(gvgon)
 ACMD_FUNC(model)
 {
 	int hair_style = 0, hair_color = 0, cloth_color = 0;
+	int min_hair_style, max_hair_style, min_hair_color, max_hair_color, min_cloth_color, max_cloth_color;
 	nullpo_retr(-1, sd);
+
+	if ((sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER)
+	{// Doram
+		min_hair_style = MIN_DORAM_HAIR_STYLE;
+		max_hair_style = MAX_DORAM_HAIR_STYLE;
+		min_hair_color = MIN_DORAM_HAIR_COLOR;
+		max_hair_color = MAX_DORAM_HAIR_COLOR;
+		min_cloth_color = MIN_DORAM_CLOTH_COLOR;
+		max_cloth_color = MAX_DORAM_CLOTH_COLOR;
+	}
+	else
+	{// Human
+		min_hair_style = MIN_HAIR_STYLE;
+		max_hair_style = MAX_HAIR_STYLE;
+		min_hair_color = MIN_HAIR_COLOR;
+		max_hair_color = MAX_HAIR_COLOR;
+		min_cloth_color = MIN_CLOTH_COLOR;
+		max_cloth_color = MAX_CLOTH_COLOR;
+	}
 
 	memset(atcmd_output, '\0', sizeof(atcmd_output));
 
 	if (!message || !*message || sscanf(message, "%d %d %d", &hair_style, &hair_color, &cloth_color) < 1) {
 		sprintf(atcmd_output, "Please, enter at least a value (usage: @model <hair ID: %d-%d> <hair color: %d-%d> <clothes color: %d-%d>).",
-		        MIN_HAIR_STYLE, MAX_HAIR_STYLE, MIN_HAIR_COLOR, MAX_HAIR_COLOR, MIN_CLOTH_COLOR, MAX_CLOTH_COLOR);
+		        min_hair_style, max_hair_style, min_hair_color, max_hair_color, min_cloth_color, max_cloth_color);
 		clif_displaymessage(fd, atcmd_output);
 		return -1;
 	}
 
-	if (hair_style >= MIN_HAIR_STYLE && hair_style <= MAX_HAIR_STYLE &&
-		hair_color >= MIN_HAIR_COLOR && hair_color <= MAX_HAIR_COLOR &&
-		cloth_color >= MIN_CLOTH_COLOR && cloth_color <= MAX_CLOTH_COLOR) {
+	if (hair_style >= min_hair_style && hair_style <= max_hair_style &&
+		hair_color >= min_hair_color && hair_color <= max_hair_color &&
+		cloth_color >= min_cloth_color && cloth_color <= max_cloth_color) {
 			pc_changelook(sd, LOOK_HAIR, hair_style);
 			pc_changelook(sd, LOOK_HAIR_COLOR, hair_color);
 			pc_changelook(sd, LOOK_CLOTHES_COLOR, cloth_color);
@@ -2221,7 +2241,7 @@ ACMD_FUNC(body_style)
 
 	memset(atcmd_output, '\0', sizeof(atcmd_output));
 
-	// Limit body styles to certain jobs since not all of them are released yet.
+	// Only certain job's have access to a 2nd body style.
 	if (!(// Allow only certain jobs to have the option to change body styles to prevent errors.
 		(sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT || 
 		(sd->class_&MAPID_THIRDMASK) == MAPID_WARLOCK || 
@@ -2264,17 +2284,29 @@ ACMD_FUNC(body_style)
 ACMD_FUNC(dye)
 {
 	int cloth_color = 0;
+	int min_cloth_color, max_cloth_color;
 	nullpo_retr(-1, sd);
+
+	if ((sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER)
+	{// Doram
+		min_cloth_color = MIN_DORAM_CLOTH_COLOR;
+		max_cloth_color = MAX_DORAM_CLOTH_COLOR;
+	}
+	else
+	{// Human
+		min_cloth_color = MIN_CLOTH_COLOR;
+		max_cloth_color = MAX_CLOTH_COLOR;
+	}
 
 	memset(atcmd_output, '\0', sizeof(atcmd_output));
 
 	if (!message || !*message || sscanf(message, "%d", &cloth_color) < 1) {
-		sprintf(atcmd_output, "Please, enter a clothes color (usage: @dye/@ccolor <clothes color: %d-%d>).", MIN_CLOTH_COLOR, MAX_CLOTH_COLOR);
+		sprintf(atcmd_output, "Please, enter a clothes color (usage: @dye/@ccolor <clothes color: %d-%d>).", min_cloth_color, max_cloth_color);
 		clif_displaymessage(fd, atcmd_output);
 		return -1;
 	}
 
-	if (cloth_color >= MIN_CLOTH_COLOR && cloth_color <= MAX_CLOTH_COLOR) {
+	if (cloth_color >= min_cloth_color && cloth_color <= max_cloth_color) {
 		pc_changelook(sd, LOOK_CLOTHES_COLOR, cloth_color);
 		clif_displaymessage(fd, msg_txt(36)); // Appearence changed.
 	} else {
@@ -2291,17 +2323,29 @@ ACMD_FUNC(dye)
 ACMD_FUNC(hair_style)
 {
 	int hair_style = 0;
+	int min_hair_style, max_hair_style;
 	nullpo_retr(-1, sd);
+
+	if ((sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER)
+	{// Doram
+		min_hair_style = MIN_DORAM_HAIR_STYLE;
+		max_hair_style = MAX_DORAM_HAIR_STYLE;
+	}
+	else
+	{// Human
+		min_hair_style = MIN_HAIR_STYLE;
+		max_hair_style = MAX_HAIR_STYLE;
+	}
 
 	memset(atcmd_output, '\0', sizeof(atcmd_output));
 
 	if (!message || !*message || sscanf(message, "%d", &hair_style) < 1) {
-		sprintf(atcmd_output, "Please, enter a hair style (usage: @hairstyle/@hstyle <hair ID: %d-%d>).", MIN_HAIR_STYLE, MAX_HAIR_STYLE);
+		sprintf(atcmd_output, "Please, enter a hair style (usage: @hairstyle/@hstyle <hair ID: %d-%d>).", min_hair_style, max_hair_style);
 		clif_displaymessage(fd, atcmd_output);
 		return -1;
 	}
 
-	if (hair_style >= MIN_HAIR_STYLE && hair_style <= MAX_HAIR_STYLE) {
+	if (hair_style >= min_hair_style && hair_style <= max_hair_style) {
 			pc_changelook(sd, LOOK_HAIR, hair_style);
 			clif_displaymessage(fd, msg_txt(36)); // Appearence changed.
 	} else {
@@ -2318,17 +2362,29 @@ ACMD_FUNC(hair_style)
 ACMD_FUNC(hair_color)
 {
 	int hair_color = 0;
+	int min_hair_color, max_hair_color;
 	nullpo_retr(-1, sd);
+
+	if ((sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER)
+	{// Doram
+		min_hair_color = MIN_DORAM_HAIR_COLOR;
+		max_hair_color = MAX_DORAM_HAIR_COLOR;
+	}
+	else
+	{// Human
+		min_hair_color = MIN_HAIR_COLOR;
+		max_hair_color = MAX_HAIR_COLOR;
+	}
 
 	memset(atcmd_output, '\0', sizeof(atcmd_output));
 
 	if (!message || !*message || sscanf(message, "%d", &hair_color) < 1) {
-		sprintf(atcmd_output, "Please, enter a hair color (usage: @haircolor/@hcolor <hair color: %d-%d>).", MIN_HAIR_COLOR, MAX_HAIR_COLOR);
+		sprintf(atcmd_output, "Please, enter a hair color (usage: @haircolor/@hcolor <hair color: %d-%d>).", min_hair_color, max_hair_color);
 		clif_displaymessage(fd, atcmd_output);
 		return -1;
 	}
 
-	if (hair_color >= MIN_HAIR_COLOR && hair_color <= MAX_HAIR_COLOR) {
+	if (hair_color >= min_hair_color && hair_color <= max_hair_color) {
 			pc_changelook(sd, LOOK_HAIR_COLOR, hair_color);
 			clif_displaymessage(fd, msg_txt(36)); // Appearence changed.
 	} else {

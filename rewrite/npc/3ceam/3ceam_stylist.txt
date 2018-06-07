@@ -3,7 +3,7 @@
 //===== By: ==================================================
 //= Rytech
 //===== Current Version: =====================================
-//= 1.0
+//= 1.1
 //===== Compatible With: =====================================
 //= 3CeAM r791+
 //===== Description: =========================================
@@ -13,6 +13,7 @@
 //= and also auto adjusts maxes between jobs as needed.
 //===== Additional Comments: =================================
 //= 1.0 First release. [Rytech]
+//= 1.1 Updated to check for set style and dye maxes for Doram's. [Rytech]
 //============================================================
 prontera,162,184,4	script	Super Stylist	509,{
 Lintro:
@@ -23,33 +24,39 @@ Lintro:
 	menu "Sure.",Laccessroom,"No Thanks.",Lbye,"Super Stylist???",Lwhoareyou;
 
 Laccessroom:
-	// Open the dressing room and sets the dye/style max's depending on the job.
+	// Open the dressing room.
 	opendressroom(0);
-	set @hairdyemax,MaxHairDye;
-	set @bodydyemax,MaxBodyDye;
 
-	// Summoner's only have 6 hair styles.
-	if (BaseClass != Job_Summoner)
-		set @hairstylemax,MaxHairStyle;
+	// Set the style/dye maxes depending on the player's job.
+	if (BaseClass == Job_Summoner)
+	{// Doram
+		set @hairstylemax,MaxDoramHairStyle;
+		set @hairdyemax,MaxDoramHairDye;
+		set @bodydyemax,MaxDoramBodyDye;
+	}
 	else
-		set @hairstylemax,6;
+	{// Human
+		set @hairstylemax,MaxHairStyle;
+		set @hairdyemax,MaxHairDye;
+		set @bodydyemax,MaxBodyDye;
+	}
 
-	// Only 3rd job's have access to a 2nd body style.
-	// Note: Not all of the new body styles are out. Best to limit only to jobs that do have them.
+	// Only certain job's have access to a 2nd body style.
+	// Best to limit only to jobs that do have them.
 	if (
-	BaseThird == Job_Rune_Knight || 
-	BaseThird == Job_Warlock || 
-	BaseThird == Job_Ranger || 
-	BaseThird == Job_Arch_Bishop || 
-	BaseThird == Job_Mechanic || 
-	BaseThird == Job_Guillotine_Cross || 
-	BaseThird == Job_Royal_Guard || 
-	BaseThird == Job_Sorcerer || 
-	BaseThird == Job_Minstrel || 
-	BaseThird == Job_Wanderer || 
-	BaseThird == Job_Sura || 
-	BaseThird == Job_Genetic || 
-	BaseThird == Job_Shadow_Chaser
+		BaseThird == Job_Rune_Knight || 
+		BaseThird == Job_Warlock || 
+		BaseThird == Job_Ranger || 
+		BaseThird == Job_Arch_Bishop || 
+		BaseThird == Job_Mechanic || 
+		BaseThird == Job_Guillotine_Cross || 
+		BaseThird == Job_Royal_Guard || 
+		BaseThird == Job_Sorcerer || 
+		BaseThird == Job_Minstrel || 
+		BaseThird == Job_Wanderer || 
+		BaseThird == Job_Sura || 
+		BaseThird == Job_Genetic || 
+		BaseThird == Job_Shadow_Chaser
 	)
 		set @bodystylemax,MaxBodyStyle;
 	else

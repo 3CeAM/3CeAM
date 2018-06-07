@@ -468,6 +468,9 @@ MaxHairDye	2104	1
 MaxHairStyle	2105	1
 MaxBodyDye	2106	1
 MaxBodyStyle	2107	1
+MaxDoramHairDye	2108	1
+MaxDoramHairStyle	2109	1
+MaxDoramBodyDye	2110	1
 
 bMaxHP	6
 bMaxSP	8

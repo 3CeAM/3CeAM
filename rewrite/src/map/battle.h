@@ -98,6 +98,7 @@ bool battle_check_range(struct block_list *src,struct block_list *bl,int range);
 void battle_consume_ammo(struct map_session_data* sd, int skill, int lv);
 // ê›íË
 
+// Human Styles and Colors
 #define MIN_HAIR_STYLE battle_config.min_hair_style
 #define MAX_HAIR_STYLE battle_config.max_hair_style
 #define MIN_HAIR_COLOR battle_config.min_hair_color
@@ -106,6 +107,14 @@ void battle_consume_ammo(struct map_session_data* sd, int skill, int lv);
 #define MAX_CLOTH_COLOR battle_config.max_cloth_color
 #define MIN_BODY_STYLE battle_config.min_body_style
 #define MAX_BODY_STYLE battle_config.max_body_style
+
+// Doram Styles and Colors
+#define MIN_DORAM_HAIR_STYLE battle_config.min_doram_hair_style
+#define MAX_DORAM_HAIR_STYLE battle_config.max_doram_hair_style
+#define MIN_DORAM_HAIR_COLOR battle_config.min_doram_hair_color
+#define MAX_DORAM_HAIR_COLOR battle_config.max_doram_hair_color
+#define MIN_DORAM_CLOTH_COLOR battle_config.min_doram_cloth_color
+#define MAX_DORAM_CLOTH_COLOR battle_config.max_doram_cloth_color
 
 extern struct Battle_Config
 {
@@ -527,9 +536,6 @@ extern struct Battle_Config
 	int marionette_renewal_jobs;
 	int banana_bomb_sit_duration;
 	int monster_hp_info;
-	int min_body_style;
-	int max_body_style;
-	int save_body_style;
 	int costume_refine_def;
 	int shadow_refine_def;
 	int cashshop_price_rate;
@@ -548,6 +554,15 @@ extern struct Battle_Config
 	int mass_spiral_max_def;
 	int rebel_base_lv_skill_effect;
 	int hesperuslit_bonus_stack;
+	int min_body_style;
+	int max_body_style;
+	int save_body_style;
+	int min_doram_hair_style;
+	int max_doram_hair_style;
+	int min_doram_hair_color;
+	int max_doram_hair_color;
+	int min_doram_cloth_color;
+	int max_doram_cloth_color;
 
 	// Costume Outfits
 	int hanbok_ignorepalette;

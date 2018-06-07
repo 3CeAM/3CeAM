@@ -1,0 +1,206 @@
+// Forbidden Jobs Database
+//
+// Structure of Database:
+// JobID,Flag
+//
+// Legend for 'Flag' field (bitmask):
+//  1 = DO NOT USE!!!!
+//  2 = Not allowed in PvP maps (use this instead of 1 for PK-mode servers)
+//  4 = Not allowed in GvG maps
+//  8 = Not allowed in Battleground maps
+//  16 = Unavailable. Dont use it.
+//  Restricted zones - they're configured by 'restricted <number>' mapflag
+//  32 = Not allowed in zone 1 maps
+//  64 = Not allowed in zone 2 maps
+//  128 = Not allowed in zone 3 maps
+//  256 = Not allowed in zone 4 maps
+//  512 = Not allowed in zone 5 maps
+//  1024 = Not allowed in zone 6 maps
+//  2048 = DO NOT USE!!!
+//  4096 = Not allowed in zone 8 maps
+//  8192 = Not allowed in zone 9 maps
+//  16384 = Not allowed in zone 10 maps
+//  32768 = Not allowed in zone 11 maps
+//
+// Example:
+// 4218,6 = Summoner job is not allowed in PvP and GvG maps (2+4)
+//
+// Note: Players who log on in a map as a job thats banned on that map will
+// spawn in the prontera graveyard. (prontera, 273, 354).
+//
+// Warning: Do not use 1 (Normal) or 2048 (Town).
+// This can cause a player to not beable to get past the character select.
+// If normal maps or towns are marked to ban certain jobs, this can prevent
+// a player from being sent to the prontera graveyard and cause a disconnect.
+
+//Flag 1 - Normal
+//DO NOT USE THIS FLAG!!!!
+
+
+
+//Flag 2 - PVP
+// Doram Jobs
+//4218,2// Summoner
+//4220,2// Baby Summoner
+
+
+
+//Flag 4 - GVG
+// Doram Jobs
+//4218,4// Summoner
+//4220,4// Baby Summoner
+
+
+
+//Flag 8 - BATTLEGROUND
+// Doram Jobs
+//4218,8// Summoner
+//4220,8// Baby Summoner
+
+
+
+//Flag 16 - Not used
+//This doesn't mean its free to use. So avoid using it.
+
+
+
+//Zone 1 - Aldebaran Turbo Track
+
+
+
+//Zone 2 - Jail
+
+
+
+//Zone 3 - Izlude Battle Arena
+
+
+
+//Zone 4 - WoE:SE
+// Doram Jobs
+//4218,256// Summoner
+//4220,256// Baby Summoner
+
+
+
+//Zone 5 - Sealed Shrine
+// Doram Jobs
+//4218,512// Summoner
+//4220,512// Baby Summoner
+
+
+
+//Zone 6 - Endless Tower, Orc's Memory, Nidhoggur's Nest
+// Doram Jobs
+//4218,1024// Summoner
+//4220,1024// Baby Summoner
+
+
+
+//Zone 7 - Towns
+//DO NOT USE THIS FLAG!!!!
+
+
+
+//Zone 8 - WoE:TE
+//Not yet supported but putting a place holder here for future support.
+// 3rd Jobs (Regular)
+4054,4096// Rune Knight (Regular)
+4055,4096// Warlock (Regular)
+4056,4096// Ranger (Regular)
+4057,4096// Arch Bishop (Regular)
+4058,4096// Mechanic (Regular)
+4059,4096// Guillotine Cross (Regular)
+4066,4096// Royal Guard (Regular)
+4067,4096// Sorcerer (Regular)
+4068,4096// Minstrel (Regular)
+4069,4096// Wanderer (Regular)
+4070,4096// Sura (Regular)
+4071,4096// Genetic (Regular)
+4072,4096// Shadow Chaser (Regular)
+4080,4096// Rune Knight (Dragon) (Regular)
+4082,4096// Royal Guard (Gryphon) (Regular)
+4084,4096// Ranger (Warg) (Regular)
+4086,4096// Mechanic (Mado) (Regular)
+4088,4096// Rune Knight (Dragon) (Regular)
+4090,4096// Rune Knight (Dragon) (Regular)
+4092,4096// Rune Knight (Dragon) (Regular)
+4094,4096// Rune Knight (Dragon) (Regular)
+
+// 3rd Jobs (Trans)
+4060,4096// Rune Knight (Trans)
+4061,4096// Warlock (Trans)
+4062,4096// Ranger (Trans)
+4063,4096// Arch Bishop (Trans)
+4064,4096// Mechanic (Trans)
+4065,4096// Guillotine Cross (Trans)
+4073,4096// Royal Guard (Trans)
+4074,4096// Sorcerer (Trans)
+4075,4096// Minstrel (Trans)
+4076,4096// Wanderer (Trans)
+4077,4096// Sura (Trans)
+4078,4096// Genetic (Trans)
+4079,4096// Shadow Chaster (Trans)
+4081,4096// Rune Knight (Dragon) (Trans)
+4083,4096// Royal Guard (Gryphon) (Trans)
+4085,4096// Ranger (Warg) (Trans)
+4087,4096// Mechanic (Mado) (Trans)
+4089,4096// Rune Knight (Dragon) (Trans)
+4091,4096// Rune Knight (Dragon) (Trans)
+4093,4096// Rune Knight (Dragon) (Trans)
+4095,4096// Rune Knight (Dragon) (Trans)
+
+// 3rd Jobs (Baby)
+4096,4096// Baby Rune Knight
+4097,4096// Baby Warlock
+4098,4096// Baby Ranger
+4099,4096// Baby Arch Bishop
+4100,4096// Baby Mechanic
+4101,4096// Baby Guillotine Cross
+4102,4096// Baby Royal Guard
+4103,4096// Baby Sorcerer
+4104,4096// Baby Minstrel
+4105,4096// Baby Wanderer
+4106,4096// Baby Sura
+4107,4096// Baby Genetic
+4108,4096// Baby Shadow Chaser
+4109,4096// Baby Rune Knight (Dragon)
+4110,4096// Baby Royal Guard (Gryphon)
+4111,4096// Baby Ranger (Warg)
+4112,4096// Baby Mechanic (Mado)
+
+// Expanded Jobs
+4190,4096// Super Novice (Expanded)
+4211,4096// Kagerou
+4212,4096// Oboro
+4215,4096// Rebellion
+4239,4096// Star Emperor
+4240,4096// Soul Reaper
+4243,4096// Star Emperor (Flying)
+
+// Expanded Jobs (Baby)
+4191,4096// Baby Super Novice (Expanded)
+4223,4096// Baby Kagerou
+4224,4096// Baby Oboro
+4229,4096// Baby Rebellion
+4241,4096// Baby Star Emperor
+4242,4096// Baby Soul Reaper
+4244,4096// Baby Star Emperor (Flying)
+
+// Doram Jobs
+4218,4096// Summoner
+4220,4096// Baby Summoner
+
+
+
+//Zone 9 - Custom 1
+
+
+
+//Zone 10 - Custom 2
+
+
+
+//Zone 11 - Custom 3
+
+
