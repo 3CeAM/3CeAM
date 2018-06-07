@@ -2791,6 +2791,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					{
 						short target_def = tstatus->def;
 
+						if ( target_def < 0 )
+							target_def = 0;
+
 						// Damage increase from target's DEF is capped.
 						// By default its 500 in renewal. Setting of 0 disables the limit.
 						if ( battle_config.mass_spiral_max_def != 0 && target_def > battle_config.mass_spiral_max_def)
@@ -6145,9 +6148,9 @@ static const struct _battle_data {
 	{ "who_display_aid",                    &battle_config.who_display_aid,                 40,     0,      100,            },
 	{ "packet_ver_flag",                    &battle_config.packet_ver_flag,                 0xFFFFFF,0x0000,INT_MAX,        },
 	{ "min_hair_style",                     &battle_config.min_hair_style,                  0,      0,      INT_MAX,        },
-	{ "max_hair_style",                     &battle_config.max_hair_style,                  23,     0,      INT_MAX,        },
+	{ "max_hair_style",                     &battle_config.max_hair_style,                  29,     0,      INT_MAX,        },
 	{ "min_hair_color",                     &battle_config.min_hair_color,                  0,      0,      INT_MAX,        },
-	{ "max_hair_color",                     &battle_config.max_hair_color,                  9,      0,      INT_MAX,        },
+	{ "max_hair_color",                     &battle_config.max_hair_color,                  8,      0,      INT_MAX,        },
 	{ "min_cloth_color",                    &battle_config.min_cloth_color,                 0,      0,      INT_MAX,        },
 	{ "max_cloth_color",                    &battle_config.max_cloth_color,                 4,      0,      INT_MAX,        },
 	{ "pet_hair_style",                     &battle_config.pet_hair_style,                  100,    0,      INT_MAX,        },
@@ -6293,9 +6296,6 @@ static const struct _battle_data {
 	{ "marionette_renewal_jobs",            &battle_config.marionette_renewal_jobs,         0,      0,      1,              },
 	{ "banana_bomb_sit_duration",           &battle_config.banana_bomb_sit_duration,        1,      0,      1,              },
 	{ "monster_hp_info",                    &battle_config.monster_hp_info,                 1,      0,      1,              },
-	{ "min_body_style",                     &battle_config.min_body_style,                  0,      0,      SHRT_MAX,       },
-	{ "max_body_style",                     &battle_config.max_body_style,                  4,      0,      SHRT_MAX,       },
-	{ "save_body_style",                    &battle_config.save_body_style,                 0,      0,      1,              },
 	{ "costume_refine_def",                 &battle_config.costume_refine_def,              0,      0,      1,              },
 	{ "shadow_refine_def",                  &battle_config.shadow_refine_def,               0,      0,      1,              },
 	{ "cashshop_price_rate",                &battle_config.cashshop_price_rate,             100,    0,      INT_MAX,        },
@@ -6314,6 +6314,15 @@ static const struct _battle_data {
 	{ "mass_spiral_max_def",                &battle_config.mass_spiral_max_def,             50,     0,      SHRT_MAX,       },
 	{ "rebel_base_lv_skill_effect",         &battle_config.rebel_base_lv_skill_effect,      1,      0,      1,              },
 	{ "hesperuslit_bonus_stack",            &battle_config.hesperuslit_bonus_stack,         0,      0,      1,              },
+	{ "min_body_style",                     &battle_config.min_body_style,                  0,      0,      SHRT_MAX,       },
+	{ "max_body_style",                     &battle_config.max_body_style,                  4,      0,      SHRT_MAX,       },
+	{ "save_body_style",                    &battle_config.save_body_style,                 0,      0,      1,              },
+	{ "min_doram_hair_style",               &battle_config.min_doram_hair_style,            0,      0,      SHRT_MAX,       },
+	{ "max_doram_hair_style",               &battle_config.max_doram_hair_style,            6,      0,      SHRT_MAX,       },
+	{ "min_doram_hair_color",               &battle_config.min_doram_hair_color,            0,      0,      SHRT_MAX,       },
+	{ "max_doram_hair_color",               &battle_config.max_doram_hair_color,            8,      0,      SHRT_MAX,       },
+	{ "min_doram_cloth_color",              &battle_config.min_doram_cloth_color,           0,      0,      SHRT_MAX,       },
+	{ "max_doram_cloth_color",              &battle_config.max_doram_cloth_color,           0,      0,      SHRT_MAX,       },
 	{ "hanbok_ignorepalette",               &battle_config.hanbok_ignorepalette,            0,      0,      1,              },
 	{ "oktoberfest_ignorepalette",          &battle_config.oktoberfest_ignorepalette,       0,      0,      1,              },
 	{ "summer2_ignorepalette",              &battle_config.summer2_ignorepalette,           0,      0,      1,              },

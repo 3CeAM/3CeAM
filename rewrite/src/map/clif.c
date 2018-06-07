@@ -1285,11 +1285,11 @@ int clif_class_change(struct block_list *bl,int class_,int type)
 /// 01e1 <id>.L <amount>.W (ZC_SPIRITS2)
 static void clif_spiritball_single(int fd, struct map_session_data *sd)
 {
-	WFIFOHEAD(fd, packet_len(0x1e1));
-	WFIFOW(fd,0)=0x1e1;
+	WFIFOHEAD(fd, packet_len(0x1d0));
+	WFIFOW(fd,0)=0x1d0;
 	WFIFOL(fd,2)=sd->bl.id;
 	WFIFOW(fd,6)=sd->spiritball;
-	WFIFOSET(fd, packet_len(0x1e1));
+	WFIFOSET(fd, packet_len(0x1d0));
 }
 
 /*==========================================
@@ -1352,11 +1352,11 @@ static void clif_spiritball_attribute_single(int fd, struct map_session_data *sd
 /// 01e1 <id>.L <amount>.W (ZC_SPIRITS2)
 static void clif_soulball_single(int fd, struct map_session_data *sd)
 {
-	WFIFOHEAD(fd, packet_len(0x1e1));
-	WFIFOW(fd,0)=0x1e1;
+	WFIFOHEAD(fd, packet_len(0x1d0));
+	WFIFOW(fd,0)=0x1d0;
 	WFIFOL(fd,2)=sd->bl.id;
 	WFIFOW(fd,6)=sd->soulball;
-	WFIFOSET(fd, packet_len(0x1e1));
+	WFIFOSET(fd, packet_len(0x1d0));
 }
 
 /*==========================================

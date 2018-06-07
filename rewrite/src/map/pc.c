@@ -47,6 +47,7 @@
 #define PVP_CALCRANK_INTERVAL 1000	// PVP順位計算の間隔
 static unsigned int exp_table[CLASS_COUNT][2][MAX_LEVEL];
 static unsigned int max_level[CLASS_COUNT][2];
+static int jobnotallowed [CLASS_COUNT];
 unsigned int statp[MAX_LEVEL+1];
 
 // h-files are for declarations, not for implementations... [Shinomori]
@@ -1331,18 +1332,37 @@ bool pc_authok(struct map_session_data *sd, int login_id2, time_t expiration_tim
 	// Checks and fixes to character status data, that are required
 	// in case of configuration change or stuff, which cannot be
 	// checked on char-server.
-	if( sd->status.hair < MIN_HAIR_STYLE || sd->status.hair > MAX_HAIR_STYLE )
-	{
-		sd->status.hair = MIN_HAIR_STYLE;
+	if ((sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER)
+	{// Doram
+		if( sd->status.hair < MIN_DORAM_HAIR_STYLE || sd->status.hair > MAX_DORAM_HAIR_STYLE )
+		{
+			sd->status.hair = MIN_DORAM_HAIR_STYLE;
+		}
+		if( sd->status.hair_color < MIN_DORAM_HAIR_COLOR || sd->status.hair_color > MAX_DORAM_HAIR_COLOR )
+		{
+			sd->status.hair_color = MIN_DORAM_HAIR_COLOR;
+		}
+		if( sd->status.clothes_color < MIN_DORAM_CLOTH_COLOR || sd->status.clothes_color > MAX_DORAM_CLOTH_COLOR )
+		{
+			sd->status.clothes_color = MIN_DORAM_CLOTH_COLOR;
+		}
 	}
-	if( sd->status.hair_color < MIN_HAIR_COLOR || sd->status.hair_color > MAX_HAIR_COLOR )
-	{
-		sd->status.hair_color = MIN_HAIR_COLOR;
+	else
+	{// Human
+		if( sd->status.hair < MIN_HAIR_STYLE || sd->status.hair > MAX_HAIR_STYLE )
+		{
+			sd->status.hair = MIN_HAIR_STYLE;
+		}
+		if( sd->status.hair_color < MIN_HAIR_COLOR || sd->status.hair_color > MAX_HAIR_COLOR )
+		{
+			sd->status.hair_color = MIN_HAIR_COLOR;
+		}
+		if( sd->status.clothes_color < MIN_CLOTH_COLOR || sd->status.clothes_color > MAX_CLOTH_COLOR )
+		{
+			sd->status.clothes_color = MIN_CLOTH_COLOR;
+		}
 	}
-	if( sd->status.clothes_color < MIN_CLOTH_COLOR || sd->status.clothes_color > MAX_CLOTH_COLOR )
-	{
-		sd->status.clothes_color = MIN_CLOTH_COLOR;
-	}
+
 	if( sd->status.body < MIN_BODY_STYLE || sd->status.body > MAX_BODY_STYLE )
 	{
 		sd->status.body = MIN_BODY_STYLE;
@@ -4769,7 +4789,7 @@ int pc_steal_coin(struct map_session_data *sd,struct block_list *target)
 int pc_setpos(struct map_session_data* sd, unsigned short mapindex, int x, int y, clr_type clrtype)
 {
 	struct party_data *p;
-	int m;
+	int m, player_job;
 
 	nullpo_ret(sd);
 
@@ -4786,6 +4806,16 @@ int pc_setpos(struct map_session_data* sd, unsigned short mapindex, int x, int y
 	}
 
 	m = map_mapindex2mapid(mapindex);
+	player_job = jobnotallowed[pc_class2idx(sd->status.class_)];
+
+	// Check to see if player's job is banned from a map group or zone number.
+	if (( !map_flag_vs(m) && player_job&1 ) ||
+		( map[m].flag.pvp && player_job&2 ) ||
+		( map_flag_gvg(m) && player_job&4 ) ||
+		( map[m].flag.battleground && player_job&8 ) ||
+		( map[m].flag.restricted && map[m].zone && player_job&(8*map[m].zone) ))
+		return 1;
+
 	if( map[m].flag.src4instance && sd->status.party_id && (p = party_search(sd->status.party_id)) != NULL && p->instance_id )
 	{
 		// Request the mapid of this src map into the instance of the party
@@ -7182,6 +7212,10 @@ int pc_readparam(struct map_session_data* sd,int type)
 	case SP_MAX_HAIR_STYLE: val = MAX_HAIR_STYLE; break;
 	case SP_MAX_BODY_DYE:   val = MAX_CLOTH_COLOR; break;
 	case SP_MAX_BODY_STYLE: val = MAX_BODY_STYLE; break;
+	case SP_MAX_DORAM_HAIR_DYE:   val = MAX_DORAM_HAIR_COLOR; break;
+	case SP_MAX_DORAM_HAIR_STYLE: val = MAX_DORAM_HAIR_STYLE; break;
+	case SP_MAX_DORAM_BODY_DYE:   val = MAX_DORAM_CLOTH_COLOR; break;
+
 	}
 
 	return val;
@@ -7650,7 +7684,10 @@ int pc_changelook(struct map_session_data *sd,int type,int val)
 
 	switch(type){
 	case LOOK_HAIR:	//Use the battle_config limits! [Skotlex]
-		val = cap_value(val, MIN_HAIR_STYLE, MAX_HAIR_STYLE);
+		if ((sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER)
+			val = cap_value(val, MIN_DORAM_HAIR_STYLE, MAX_DORAM_HAIR_STYLE);
+		else
+			val = cap_value(val, MIN_HAIR_STYLE, MAX_HAIR_STYLE);
 
 		if (sd->status.hair != val)
 		{
@@ -7673,7 +7710,10 @@ int pc_changelook(struct map_session_data *sd,int type,int val)
 		sd->status.head_mid=val;
 		break;
 	case LOOK_HAIR_COLOR:	//Use the battle_config limits! [Skotlex]
-		val = cap_value(val, MIN_HAIR_COLOR, MAX_HAIR_COLOR);
+		if ((sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER)
+			val = cap_value(val, MIN_DORAM_HAIR_COLOR, MAX_DORAM_HAIR_COLOR);
+		else
+			val = cap_value(val, MIN_HAIR_COLOR, MAX_HAIR_COLOR);
 
 		if (sd->status.hair_color != val)
 		{
@@ -7684,7 +7724,10 @@ int pc_changelook(struct map_session_data *sd,int type,int val)
 		}
 		break;
 	case LOOK_CLOTHES_COLOR:	//Use the battle_config limits! [Skotlex]
-		val = cap_value(val, MIN_CLOTH_COLOR, MAX_CLOTH_COLOR);
+		if ((sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER)
+			val = cap_value(val, MIN_DORAM_CLOTH_COLOR, MAX_DORAM_CLOTH_COLOR);
+		else
+			val = cap_value(val, MIN_CLOTH_COLOR, MAX_CLOTH_COLOR);
 
 		sd->status.clothes_color=val;
 		break;
@@ -9554,6 +9597,24 @@ static bool pc_readdb_skilltree(char* fields[], int columns, int current)
 	return true;
 }
 
+static bool pc_readdb_noallow(char* fields[], int columns, int current)
+{
+	int idx, class_;
+
+	class_ = atoi(fields[0]);
+
+	if(!pcdb_checkid(class_))
+	{
+		ShowWarning("pc_readdb_noallow: Invalid job class %d specified.\n", class_);
+		return false;
+	}
+	idx = pc_class2idx(class_);
+
+	jobnotallowed[idx] |= atoi(fields[1]);
+
+	return true;
+}
+
 int pc_readdb(void)
 {
 	int i,j,k;
@@ -9652,6 +9713,7 @@ int pc_readdb(void)
 	// スキルツリ?
 	memset(skill_tree,0,sizeof(skill_tree));
 	sv_readdb(db_path, "skill_tree.txt", ',', 3+MAX_PC_SKILL_REQUIRE*2, 4+MAX_PC_SKILL_REQUIRE*2, -1, &pc_readdb_skilltree);
+	sv_readdb(db_path, "job_notallowed.txt", ',', 2, 2, -1, &pc_readdb_noallow);
 
 	// ?性修正テ?ブル
 	for(i=0;i<4;i++)
@@ -9826,6 +9888,7 @@ int do_init_pc(void)
 	add_timer_func_list(pc_shieldball_timer, "pc_shieldball_timer");
 	add_timer_func_list(pc_rageball_timer, "pc_rageball_timer");
 	add_timer_func_list(pc_charmball_timer, "pc_charmball_timer");
+	add_timer_func_list(pc_soulball_timer, "pc_soulball_timer");
 	add_timer_func_list(pc_follow_timer, "pc_follow_timer");
 	add_timer_func_list(pc_endautobonus, "pc_endautobonus");
 
