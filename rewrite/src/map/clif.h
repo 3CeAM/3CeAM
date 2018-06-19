@@ -775,9 +775,6 @@ void clif_search_store_info_click_ack(struct map_session_data* sd, short x, shor
 
 void clif_equip_damaged(struct map_session_data *sd, int equip_index);
 
-// Displays 3rd job and other newer status's.
-void clif_status_change_single(struct block_list *dst, struct block_list *bl, int type, int flag, unsigned int tick, int val1, int val2, int val3);
-
 // Elementals
 void clif_elemental_info(struct map_session_data *sd);
 void clif_elemental_updatestatus(struct map_session_data *sd, int type);
@@ -792,6 +789,7 @@ int clif_crimson_marker_xy(struct map_session_data *sd);
 int clif_crimson_marker_xy_single(int fd, struct map_session_data *sd);
 int clif_crimson_marker_xy_remove(struct map_session_data *sd);
 int clif_crimson_marker_xy_all(struct map_session_data *sd, struct block_list *bl, short mark);
+int clif_status_entrance(struct block_list *bl, int type, unsigned int tick, int val1, int val2, int val3);
 
 // V5 Item Packets
 void clif_inventorylist_v5(struct map_session_data *sd);

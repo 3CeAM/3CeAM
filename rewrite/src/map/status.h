@@ -2136,6 +2136,7 @@ struct status_change {
 // for looking up associated data
 sc_type status_skill2sc(int skill);
 int status_sc2skill(sc_type sc);
+int status_sc2icon(sc_type sc);
 
 int status_damage(struct block_list *src,struct block_list *target,int hp,int sp, int walkdelay, int flag);
 //Define for standard HP damage attacks.

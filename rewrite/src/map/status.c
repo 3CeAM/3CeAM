@@ -89,6 +89,16 @@ int status_sc2skill(sc_type sc)
 	return StatusSkillChangeTable[sc];
 }
 
+int status_sc2icon(sc_type sc)
+{
+	if( sc < 0 || sc >= SC_MAX ) {
+		ShowError("status_sc2icon: Unsupported status change id %d\n", sc);
+		return 0;
+	}
+
+	return StatusIconChangeTable[sc];
+}
+
 #define add_sc(skill,sc) set_sc(skill,sc,SI_BLANK,SCB_NONE)
 
 static void set_sc(int skill, sc_type sc, int icon, unsigned int flag)
