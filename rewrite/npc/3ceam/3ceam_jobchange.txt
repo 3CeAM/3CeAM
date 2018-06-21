@@ -208,20 +208,16 @@ Xextendedgsnj:
 Xextendedsgsl:
 	if (BaseLevel >= @reqbaselv && JobLevel >= @reqjoblvsgsl)
 	{
-		//if (Class == Job_Star_Gladiator)
-		//	jobchange Job_Star_Emperor;
-		//else if (Class == Job_Soul_Linker)
-		//	jobchange Job_Soul_Reaper;
-		//if (Class == Job_Baby_Star_Gladiator)
-		//	jobchange Job_Baby_Star_Emperor;
-		//else if (Class == Job_Baby_Soul_Linker)
-		//	jobchange Job_Baby_Soul_Reaper;
+		if (Class == Job_Star_Gladiator)
+			jobchange Job_Star_Emperor;
+		else if (Class == Job_Soul_Linker)
+			jobchange Job_Soul_Reaper;
+		if (Class == Job_Baby_Star_Gladiator)
+			jobchange Job_Baby_Star_Emperor;
+		else if (Class == Job_Baby_Soul_Linker)
+			jobchange Job_Baby_Soul_Reaper;
 
-		//goto Xcomplete;
-
-		mes "[Super Job Changer]";
-		mes "Sorry but there's no higher job you can change to....yet.";
-		close;
+		goto Xcomplete;
 	}
 	else
 	{
