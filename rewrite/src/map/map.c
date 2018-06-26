@@ -1830,6 +1830,10 @@ int map_quit(struct map_session_data *sd)
 			status_change_end(&sd->bl, SC_SPIRIT, INVALID_TIMER);
 			status_change_end(&sd->bl, SC__REPRODUCE, INVALID_TIMER);
 			status_change_end(&sd->bl, SC__INVISIBILITY, INVALID_TIMER);
+			status_change_end(&sd->bl, SC_SOULGOLEM, INVALID_TIMER);
+			status_change_end(&sd->bl, SC_SOULSHADOW, INVALID_TIMER);
+			status_change_end(&sd->bl, SC_SOULFALCON, INVALID_TIMER);
+			status_change_end(&sd->bl, SC_SOULFAIRY, INVALID_TIMER);
 		}
 	}
 	

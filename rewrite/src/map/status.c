@@ -594,7 +594,14 @@ void initChangeTables(void)
 	set_sc( RL_SLUGSHOT     , SC_SLUGSHOT     , SI_SLUGSHOT     , SCB_NONE );
 	add_sc( RL_HAMMER_OF_GOD, SC_STUN );
 
-	set_sc( SP_SOULCOLLECT     , SC_SOULCOLLECT     , SI_SOULCOLLECT     , SCB_NONE );
+	set_sc( SP_SOULGOLEM  , SC_SOULGOLEM  , SI_SOULGOLEM  , SCB_DEF|SCB_MDEF );
+	set_sc( SP_SOULSHADOW , SC_SOULSHADOW , SI_SOULSHADOW , SCB_ASPD|SCB_CRI );
+	set_sc( SP_SOULFALCON , SC_SOULFALCON , SI_SOULFALCON , SCB_WATK|SCB_HIT );
+	set_sc( SP_SOULFAIRY  , SC_SOULFAIRY  , SI_SOULFAIRY  , SCB_MATK );
+	add_sc( SP_SOULCURSE  , SC_CURSE );
+	set_sc( SP_SHA        , SC_SP_SHA     , SI_SP_SHA     , SCB_SPEED );
+	set_sc( SP_SOULREAPER , SC_SOULREAPER , SI_SOULREAPER , SCB_NONE );
+	set_sc( SP_SOULCOLLECT, SC_SOULCOLLECT, SI_SOULCOLLECT, SCB_NONE );
 
 	add_sc( KO_YAMIKUMO          , SC_HIDING );
 	set_sc( KO_JYUMONJIKIRI      , SC_JYUMONJIKIRI    , SI_KO_JYUMONJIKIRI , SCB_NONE );
@@ -856,6 +863,9 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_DROCERA_HERB_STEAMED] = SI_DROCERA_HERB_STEAMED;
 	StatusIconChangeTable[SC_PUTTI_TAILS_NOODLES] = SI_PUTTI_TAILS_NOODLES;
 	StatusIconChangeTable[SC_BANANA_BOMB] = SI_BANANA_BOMB;
+
+	StatusIconChangeTable[SC_USE_SKILL_SP_SPA] = SI_USE_SKILL_SP_SPA;
+	StatusIconChangeTable[SC_USE_SKILL_SP_SHA] = SI_USE_SKILL_SP_SHA;
 
 	StatusIconChangeTable[SC_SPRITEMABLE] = SI_SPRITEMABLE;
 	StatusIconChangeTable[SC_SOULATTACK] = SI_SOULATTACK;
@@ -3099,7 +3109,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	// Relative modifiers from passive skills
 	if((skill=pc_checkskill(sd,SA_ADVANCEDBOOK))>0 && sd->status.weapon == W_BOOK)
 		status->aspd_rate -= 5*skill;
-	if((skill = pc_checkskill(sd,SG_DEVIL)) > 0 && !pc_nextjobexp(sd))
+	if((skill = pc_checkskill(sd,SG_DEVIL)) > 0 && !pc_nextjobexp(sd))// FIX ME. I should work for Star Emperor no matter the job level.
 		status->aspd_rate -= 30*skill;
 	if((skill=pc_checkskill(sd,GS_SINGLEACTION))>0 && (sd->status.weapon >= W_REVOLVER && sd->status.weapon <= W_GRENADE))
 		status->aspd_rate -= ((skill+1)/2) * 10;
@@ -4628,6 +4638,8 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += 40 + 30 * sc->data[SC_ODINS_POWER]->val1;
 	if(sc->data[SC_P_ALTER])
 		watk += sc->data[SC_P_ALTER]->val2;
+	if(sc->data[SC_SOULFALCON])
+		watk += sc->data[SC_SOULFALCON]->val2;
 	if(sc->data[SC_ZENKAI])
 		watk += sc->data[SC_ZENKAI]->val2;
 	if(sc->data[SC_ZANGETSU] && sc->data[SC_ZANGETSU]->val3 == 1)
@@ -4719,6 +4731,8 @@ static unsigned short status_calc_matk(struct block_list *bl, struct status_chan
 		matk += 50;
 	if(sc->data[SC_ODINS_POWER])
 		matk += 40 + 30 * sc->data[SC_ODINS_POWER]->val1;
+	if(sc->data[SC_SOULFAIRY])
+		matk += sc->data[SC_SOULFAIRY]->val2;
 	if(sc->data[SC_IZAYOI])
 		matk += sc->data[SC_IZAYOI]->val2;
 	if(sc->data[SC_ZANGETSU] && sc->data[SC_ZANGETSU]->val4 == 1)
@@ -4765,6 +4779,8 @@ static signed short status_calc_critical(struct block_list *bl, struct status_ch
 		critical += critical;
 	if(sc->data[SC_BEYONDOFWARCRY])// Recheck. May be incorrect.
 		critical += 10 * sc->data[SC_BEYONDOFWARCRY]->val3;
+	if(sc->data[SC_SOULSHADOW])
+		critical += 10 * sc->data[SC_SOULSHADOW]->val3;
 	if(sc->data[SC_CAMOUFLAGE])
 		critical += critical * ( 10 * sc->data[SC_CAMOUFLAGE]->val2 ) / 100;
 	if(sc->data[SC__INVISIBILITY])
@@ -4799,6 +4815,8 @@ static signed short status_calc_hit(struct block_list *bl, struct status_change 
 		hit += sc->data[SC_MERC_HITUP]->val2;
 	if(sc->data[SC_INSPIRATION])//Unable to add job level check at this time with current coding. Will add later. [Rytech]
 		hit += 5 * sc->data[SC_INSPIRATION]->val1 + 25;
+	if(sc->data[SC_SOULFALCON])
+		hit += sc->data[SC_SOULFALCON]->val3;
 	if(sc->data[SC_INCHITRATE])
 		hit += hit * sc->data[SC_INCHITRATE]->val1/100;
 	if(sc->data[SC_ADJUSTMENT])
@@ -4956,12 +4974,14 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 		def += sc->data[SC_STONEHARDSKIN]->val2;
 	if( sc->data[SC_SHIELDSPELL_REF] && sc->data[SC_SHIELDSPELL_REF]->val1 == 2 )
 		def += sc->data[SC_SHIELDSPELL_REF]->val2;
-	if( sc->data[SC_PRESTIGE] )
+	if( sc->data[SC_PRESTIGE] )// FIX ME I CAN'T RESTART BECAUSE OF HOW VAL1 IS USED HERE!!!! [Rytech]
 		def += sc->data[SC_PRESTIGE]->val1;
 	if( sc->data[SC_BANDING] && sc->data[SC_BANDING]->val2 > 1 )//DEF formula divided by 10 to balance it for us on pre_renewal mechanics. [Rytech]
 		def += (5 + sc->data[SC_BANDING]->val1) * sc->data[SC_BANDING]->val2 / 10;
 	if(sc->data[SC_EARTH_INSIGNIA] && sc->data[SC_EARTH_INSIGNIA]->val1 == 2)
 		def += 5;
+	if( sc->data[SC_SOULGOLEM] )
+		def += sc->data[SC_SOULGOLEM]->val2;
 	if(sc->data[SC_INCDEFRATE])
 		def += def * sc->data[SC_INCDEFRATE]->val1/100;
 	if( sc->data[SC_NEUTRALBARRIER] )
@@ -5094,6 +5114,8 @@ static signed char status_calc_mdef(struct block_list *bl, struct status_change 
 		mdef += sc->data[SC_STONEHARDSKIN]->val2;
 	if(sc->data[SC_EARTH_INSIGNIA] && sc->data[SC_EARTH_INSIGNIA]->val1 == 3)
 		mdef += 5;
+	if( sc->data[SC_SOULGOLEM] )
+		mdef += sc->data[SC_SOULGOLEM]->val3;
 	if(sc->data[SC_STONE] && sc->opt1 == OPT1_STONE)
 		mdef += 25*mdef/100;
 	if(sc->data[SC_FREEZE])
@@ -5244,6 +5266,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 					val = max( val, 50 );
 				if( sc->data[SC_B_TRAP] )
 					val = max( val, 90 );
+				if( sc->data[SC_SP_SHA] )
+					val = max( val, 50 );
 				//Not bothering to organize these until I rework the elemental spirits. [Rytech]
 				if( sc->data[SC_ROCK_CRUSHER_ATK] )
 					val = max( val, sc->data[SC_ROCK_CRUSHER_ATK]->val2 );
@@ -5348,6 +5372,8 @@ static short status_calc_aspd_amount(struct block_list *bl, struct status_change
 		aspd_amount += 4 * sc->data[SC_FIGHTINGSPIRIT]->val2;
 	if( sc->data[SC_HEAT_BARREL] )
 		aspd_amount += 10 * sc->data[SC_HEAT_BARREL]->val1;
+	if( sc->data[SC_SOULSHADOW] )
+		aspd_amount += 10 * sc->data[SC_SOULSHADOW]->val2;
 
 	return (short)cap_value(aspd_amount,0,SHRT_MAX);
 }
@@ -7108,6 +7134,19 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	case SC_FUSION:
 		status_change_end(bl, SC_SPIRIT, INVALID_TIMER);
 		break;
+	case SC_SPIRIT:
+	case SC_SOULGOLEM:
+	case SC_SOULSHADOW:
+	case SC_SOULFALCON:
+	case SC_SOULFAIRY:
+		if ( sc->data[type] )
+			break;
+		status_change_end(bl, SC_SPIRIT, INVALID_TIMER);
+		status_change_end(bl, SC_SOULGOLEM, INVALID_TIMER);
+		status_change_end(bl, SC_SOULSHADOW, INVALID_TIMER);
+		status_change_end(bl, SC_SOULFALCON, INVALID_TIMER);
+		status_change_end(bl, SC_SOULFAIRY, INVALID_TIMER);
+		break;
 	case SC_ADJUSTMENT:
 		status_change_end(bl, SC_MADNESSCANCEL, INVALID_TIMER);
 		break;
@@ -8734,6 +8773,37 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			break;
 		case SC_ANTI_M_BLAST:
 			val2 = 10 * val1;// Player Damage Resistance Reduction.
+			break;
+		case SC_SOULGOLEM:
+			val2 = 60 * val1 / 10;// DEF Increase
+			val3 = 15 + 5 * val1;// MDEF Increase
+			break;
+		case SC_SOULSHADOW:
+			val2 = (1 + val1) / 2;// ASPD Increase
+			val3 = 10 + 2 * val1;// CRIT Increase
+			break;
+		case SC_SOULFALCON:
+			val2 = 10 * val1;// WATK Increase
+			val3 = 10;// HIT Increase
+			if ( val1 >= 3 )
+				val3 += 3;
+			if ( val1 >= 5 )
+				val3 += 2;
+			if ( val1 >= 6 )// In case someone uses a level higher then 5.
+				val3 += val1-5;
+			break;
+		case SC_SOULFAIRY:
+			val2 = 10 * val1;// MATK Increase
+			val3 = 5;// Variable Cast Time Reduction
+			if ( val1 >= 3 )
+				val3 += 2;
+			if ( val1 >= 5 )
+				val3 += 3;
+			if ( val1 >= 6 )// In case someone uses a level higher then 5.
+				val3 += 4*(val1-5);
+			break;
+		case SC_SOULREAPER:
+			val2 = 10 + 5 * val1;// Chance of Getting A Soul Sphere.
 			break;
 		case SC_SOULCOLLECT:
 			val2 = 5 + 3 * val2;// Max Soul Sphere's.
