@@ -594,14 +594,21 @@ void initChangeTables(void)
 	set_sc( RL_SLUGSHOT     , SC_SLUGSHOT     , SI_SLUGSHOT     , SCB_NONE );
 	add_sc( RL_HAMMER_OF_GOD, SC_STUN );
 
-	set_sc( SP_SOULGOLEM  , SC_SOULGOLEM  , SI_SOULGOLEM  , SCB_DEF|SCB_MDEF );
-	set_sc( SP_SOULSHADOW , SC_SOULSHADOW , SI_SOULSHADOW , SCB_ASPD|SCB_CRI );
-	set_sc( SP_SOULFALCON , SC_SOULFALCON , SI_SOULFALCON , SCB_WATK|SCB_HIT );
-	set_sc( SP_SOULFAIRY  , SC_SOULFAIRY  , SI_SOULFAIRY  , SCB_MATK );
-	add_sc( SP_SOULCURSE  , SC_CURSE );
-	set_sc( SP_SHA        , SC_SP_SHA     , SI_SP_SHA     , SCB_SPEED );
-	set_sc( SP_SOULREAPER , SC_SOULREAPER , SI_SOULREAPER , SCB_NONE );
-	set_sc( SP_SOULCOLLECT, SC_SOULCOLLECT, SI_SOULCOLLECT, SCB_NONE );
+	set_sc( SJ_LUNARSTANCE   , SC_LUNARSTANCE   , SI_LUNARSTANCE   , SCB_MAXHP );
+	set_sc( SJ_STARSTANCE    , SC_STARSTANCE    , SI_STARSTANCE    , SCB_ASPD );
+	set_sc( SJ_UNIVERSESTANCE, SC_UNIVERSESTANCE, SI_UNIVERSESTANCE, SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK );
+	set_sc( SJ_SUNSTANCE     , SC_SUNSTANCE     , SI_SUNSTANCE     , SCB_BATK|SCB_WATK );
+
+	set_sc( SP_SOULGOLEM   , SC_SOULGOLEM   , SI_SOULGOLEM   , SCB_DEF|SCB_MDEF );
+	set_sc( SP_SOULSHADOW  , SC_SOULSHADOW  , SI_SOULSHADOW  , SCB_ASPD|SCB_CRI );
+	set_sc( SP_SOULFALCON  , SC_SOULFALCON  , SI_SOULFALCON  , SCB_WATK|SCB_HIT );
+	set_sc( SP_SOULFAIRY   , SC_SOULFAIRY   , SI_SOULFAIRY   , SCB_MATK );
+	add_sc( SP_SOULCURSE   , SC_CURSE );
+	set_sc( SP_SHA         , SC_SP_SHA      , SI_SP_SHA      , SCB_SPEED );
+	set_sc( SP_SOULUNITY   , SC_SOULUNITY   , SI_SOULUNITY   , SCB_NONE );
+	set_sc( SP_SOULDIVISION, SC_SOULDIVISION, SI_SOULDIVISION, SCB_NONE );
+	set_sc( SP_SOULREAPER  , SC_SOULREAPER  , SI_SOULREAPER  , SCB_NONE );
+	set_sc( SP_SOULCOLLECT , SC_SOULCOLLECT , SI_SOULCOLLECT , SCB_NONE );
 
 	add_sc( KO_YAMIKUMO          , SC_HIDING );
 	set_sc( KO_JYUMONJIKIRI      , SC_JYUMONJIKIRI    , SI_KO_JYUMONJIKIRI , SCB_NONE );
@@ -3109,7 +3116,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	// Relative modifiers from passive skills
 	if((skill=pc_checkskill(sd,SA_ADVANCEDBOOK))>0 && sd->status.weapon == W_BOOK)
 		status->aspd_rate -= 5*skill;
-	if((skill = pc_checkskill(sd,SG_DEVIL)) > 0 && !pc_nextjobexp(sd))// FIX ME. I should work for Star Emperor no matter the job level.
+	if((skill = pc_checkskill(sd,SG_DEVIL)) > 0 && ((sd->class_&MAPID_THIRDMASK) == MAPID_STAR_EMPEROR || sd->status.job_level >= 50))
 		status->aspd_rate -= 30*skill;
 	if((skill=pc_checkskill(sd,GS_SINGLEACTION))>0 && (sd->status.weapon >= W_REVOLVER && sd->status.weapon <= W_GRENADE))
 		status->aspd_rate -= ((skill+1)/2) * 10;
@@ -4249,6 +4256,8 @@ static unsigned short status_calc_str(struct block_list *bl, struct status_chang
 		str += sc->data[SC_SAVAGE_STEAK]->val1;
 	if(sc->data[SC_INSPIRATION])
 		str += sc->data[SC_INSPIRATION]->val3;
+	if(sc->data[SC_UNIVERSESTANCE])
+		str += sc->data[SC_UNIVERSESTANCE]->val2;
 	if(sc->data[SC_CHEERUP])
 		str += 3;
 	if(sc->data[SC_STOMACHACHE])
@@ -4296,6 +4305,8 @@ static unsigned short status_calc_agi(struct block_list *bl, struct status_chang
 		agi += sc->data[SC_DROCERA_HERB_STEAMED]->val1;
 	if(sc->data[SC_INSPIRATION])
 		agi += sc->data[SC_INSPIRATION]->val3;
+	if(sc->data[SC_UNIVERSESTANCE])
+		agi += sc->data[SC_UNIVERSESTANCE]->val2;
 	if(sc->data[SC_ARCLOUSEDASH])
 		agi += sc->data[SC_ARCLOUSEDASH]->val2;
 	if(sc->data[SC_CHEERUP])
@@ -4353,6 +4364,8 @@ static unsigned short status_calc_vit(struct block_list *bl, struct status_chang
 		vit += sc->data[SC_MINOR_BBQ]->val1;
 	if(sc->data[SC_INSPIRATION])
 		vit += sc->data[SC_INSPIRATION]->val3;
+	if(sc->data[SC_UNIVERSESTANCE])
+		vit += sc->data[SC_UNIVERSESTANCE]->val2;
 	if(sc->data[SC_CHEERUP])
 		vit += 3;
 	if(sc->data[SC_STRIPARMOR])
@@ -4403,6 +4416,8 @@ static unsigned short status_calc_int(struct block_list *bl, struct status_chang
 		int_ += sc->data[SC_NEN]->val1;
 	if(sc->data[SC_INSPIRATION])
 		int_ += sc->data[SC_INSPIRATION]->val3;
+	if(sc->data[SC_UNIVERSESTANCE])
+		int_ += sc->data[SC_UNIVERSESTANCE]->val2;
 	if(sc->data[SC_CHEERUP])
 		int_ += 3;
 	if(sc->data[SC_HARMONIZE])
@@ -4469,6 +4484,8 @@ static unsigned short status_calc_dex(struct block_list *bl, struct status_chang
 		dex += sc->data[SC_SIROMA_ICE_TEA]->val1;
 	if(sc->data[SC_INSPIRATION])
 		dex += sc->data[SC_INSPIRATION]->val3;
+	if(sc->data[SC_UNIVERSESTANCE])
+		dex += sc->data[SC_UNIVERSESTANCE]->val2;
 	if(sc->data[SC_CHEERUP])
 		dex += 3;
 	if(sc->data[SC_MARSHOFABYSS])
@@ -4521,6 +4538,8 @@ static unsigned short status_calc_luk(struct block_list *bl, struct status_chang
 		luk += sc->data[SC_PUTTI_TAILS_NOODLES]->val1;
 	if(sc->data[SC_INSPIRATION])
 		luk += sc->data[SC_INSPIRATION]->val3;
+	if(sc->data[SC_UNIVERSESTANCE])
+		luk += sc->data[SC_UNIVERSESTANCE]->val2;
 	if(sc->data[SC_CHEERUP])
 		luk += 3;
 	if(sc->data[SC__STRIPACCESSORY])
@@ -4573,6 +4592,8 @@ static unsigned short status_calc_batk(struct block_list *bl, struct status_chan
 		(sc->data[SC_WIND_INSIGNIA] && sc->data[SC_WIND_INSIGNIA]->val1 == 2) ||
 		(sc->data[SC_EARTH_INSIGNIA] && sc->data[SC_EARTH_INSIGNIA]->val1 == 2))
 		batk += batk * 10 / 100;
+	if(sc->data[SC_SUNSTANCE])
+		batk += batk * sc->data[SC_SUNSTANCE]->val2/100;
 	if(sc->data[SC_SHRIMP])
 		batk += batk * 10 / 100;
 	if(sc->data[SC_JOINTBEAT] && sc->data[SC_JOINTBEAT]->val2&BREAK_WAIST)
@@ -4681,6 +4702,8 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		(sc->data[SC_WIND_INSIGNIA] && sc->data[SC_WIND_INSIGNIA]->val1 == 2) ||
 		(sc->data[SC_EARTH_INSIGNIA] && sc->data[SC_EARTH_INSIGNIA]->val1 == 2))
 		watk += watk * 10 / 100;
+	if(sc->data[SC_SUNSTANCE])
+		watk += watk * sc->data[SC_SUNSTANCE]->val2/100;
 	if ( sd && sd->charmball > 0 && sd->charmball_type == CHARM_EARTH )
 		watk += watk * (10 * sd->charmball) / 100;
 	if(sc->data[SC_SHRIMP])
@@ -5468,6 +5491,8 @@ static short status_calc_aspd_rate(struct block_list *bl, struct status_change *
 		aspd_rate -= 10 * sc->data[SC_BOOST500]->val1;
 	if(sc->data[SC_EXTRACT_SALAMINE_JUICE])
 		aspd_rate -= 10 * sc->data[SC_EXTRACT_SALAMINE_JUICE]->val1;
+	if(sc->data[SC_STARSTANCE])
+		aspd_rate -= 10 * sc->data[SC_STARSTANCE]->val2;
 	if( sc->data[SC_DONTFORGETME] )
 		aspd_rate += 10 * sc->data[SC_DONTFORGETME]->val2;
 	if( sc->data[SC_LONGING] )
@@ -5557,6 +5582,8 @@ static unsigned int status_calc_maxhp(struct block_list *bl, struct status_chang
 		maxhp += maxhp * (2 + sc->data[SC_RAISINGDRAGON]->val1) / 100;
 	if(sc->data[SC_GT_REVITALIZE])
 		maxhp += maxhp * (2 * sc->data[SC_GT_REVITALIZE]->val1) / 100;
+	if(sc->data[SC_LUNARSTANCE])
+		maxhp += maxhp * sc->data[SC_LUNARSTANCE]->val2 / 100;
 	if(sc->data[SC_FRIGG_SONG])
 		maxhp += maxhp * sc->data[SC_FRIGG_SONG]->val2 / 100;
 	if(sc->data[SC_MUSTLE_M])
@@ -7036,6 +7063,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC_BANDING_DEFENCE:
 			case SC_SV_ROOTTWIST:
 			case SC_BITESCAR:
+			case SC_SP_SHA:
 				return 0;
 		}
 
@@ -8774,6 +8802,22 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_ANTI_M_BLAST:
 			val2 = 10 * val1;// Player Damage Resistance Reduction.
 			break;
+		case SC_LUNARSTANCE:
+			val2 = 2+val1;// MaxHP Increase
+			tick = -1;
+			break;
+		case SC_UNIVERSESTANCE:
+			val2 = 2+val1;// All Stats Increase
+			tick = -1;
+			break;
+		case SC_SUNSTANCE:
+			val2 = 2+val1;// ATK Increase
+			tick = -1;
+			break;
+		case SC_STARSTANCE:
+			val2 = 4+2*val1;// ASPD Increase
+			tick = -1;
+			break;
 		case SC_SOULGOLEM:
 			val2 = 60 * val1 / 10;// DEF Increase
 			val3 = 15 + 5 * val1;// MDEF Increase
@@ -8801,6 +8845,14 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 				val3 += 3;
 			if ( val1 >= 6 )// In case someone uses a level higher then 5.
 				val3 += 4*(val1-5);
+			break;
+		case SC_SOULUNITY:
+			val2 = 150 * val1;// Heal Amount
+			val4 = tick / 3000;
+			tick = 3000;
+			break;
+		case SC_SOULDIVISION:
+			val2 = 10 * val1;// Skill Aftercast Increase
 			break;
 		case SC_SOULREAPER:
 			val2 = 10 + 5 * val1;// Chance of Getting A Soul Sphere.
@@ -9534,6 +9586,10 @@ int status_change_clear(struct block_list* bl, int type)
 		case SC_SUMMER2:
 		case SC_SPRITEMABLE:
 		case SC_SOULATTACK:
+		//case SC_LUNARSTANCE:// Need confirm please.
+		//case SC_UNIVERSESTANCE:
+		//case SC_SUNSTANCE:
+		//case SC_STARSTANCE:
 			continue;
 		}
 
@@ -11121,6 +11177,15 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 			else if (status->def_ele == ELE_WIND)
 				status_zap(bl, status->max_hp / 100, 0);
 			sc_timer_next(5000+tick, status_change_timer,bl->id, data);
+			return 0;
+		}
+		break;
+
+	case SC_SOULUNITY:
+		if( --(sce->val4) >= 0 )
+		{
+			status_heal(bl, sce->val2, 0, 2);
+			sc_timer_next(3000 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}
 		break;

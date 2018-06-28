@@ -411,7 +411,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 	if( sc && sc->data[SC_INVINCIBLE] && !sc->data[SC_INVINCIBLEOFF] )
 		return 1;
 
-	if (skill_num == PA_PRESSURE)
+	if (skill_num == PA_PRESSURE || skill_num == SP_SOULEXPLOSION)
 		return damage; //This skill bypass everything else.
 
 	if( sc && sc->count )
@@ -939,6 +939,7 @@ int battle_calc_bg_damage(struct block_list *src, struct block_list *bl, int dam
 		case NJ_ZENYNAGE:
 		//case RK_DRAGONBREATH:
 		//case GN_HELLS_PLANT_ATK:
+		case SP_SOULEXPLOSION:
 		case KO_MUCHANAGE:
 			break;
 		default:
@@ -1003,6 +1004,7 @@ int battle_calc_gvg_damage(struct block_list *src,struct block_list *bl,int dama
 	case NJ_ZENYNAGE:
 	//case RK_DRAGONBREATH:
 	//case GN_HELLS_PLANT_ATK:
+	case SP_SOULEXPLOSION:
 	case KO_MUCHANAGE:
 		break;
 	default:
@@ -4750,6 +4752,9 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		break;
 	case GN_HELLS_PLANT_ATK:
 		md.damage = 10 * skill_lv * status_get_base_lv_effect(target) + 7 * sstatus->int_ / 2 * ( status_get_job_lv_effect(src) / 4 + 18 ) * 5 / ( 10 - (sd?pc_checkskill(sd,AM_CANNIBALIZE):5) );
+		break;
+	case SP_SOULEXPLOSION:
+		md.damage = tstatus->hp * (20 + 10 * skill_lv) / 100;
 		break;
 	case KO_MUCHANAGE:
 		md.damage = skill_get_zeny(skill_num ,skill_lv);
