@@ -5931,8 +5931,8 @@ int pc_checkjoblevelup(struct map_session_data *sd)
 	clif_updatestatus(sd,SP_SKILLPOINT);
 	status_calc_pc(sd,0);
 	clif_misceffect(&sd->bl,1);
-	if (pc_checkskill(sd, SG_DEVIL) && !pc_nextjobexp(sd))
-		clif_status_change(&sd->bl,SI_DEVIL, 1, 0, 0, 0, 0); //Permanent blind effect from SG_DEVIL.
+	if (pc_checkskill(sd, SG_DEVIL) && sd->status.job_level >= 50)
+		clif_status_load(&sd->bl,SI_DEVIL, 1); //Permanent blind effect from SG_DEVIL.
 
 	npc_script_event(sd, NPCE_JOBLVUP);
 	return 1;
@@ -6346,6 +6346,8 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 		clif_updatestatus(sd,SP_SKILLPOINT);
 		if( skill_num == GN_REMODELING_CART )
 			clif_updatestatus(sd,SP_CARTINFO);
+		if( pc_checkskill(sd, SG_DEVIL) && ((sd->class_&MAPID_THIRDMASK) == MAPID_STAR_EMPEROR || sd->status.job_level >= 50) )
+			clif_status_load(&sd->bl, SI_DEVIL, 1);
 		//FIXME: The server have to send clif_skillup() with all skills
 		//available to the current job tab instead clif_skillinfoblock. [pakpil]
 		clif_skillinfoblock(sd);
@@ -6571,7 +6573,7 @@ int pc_resetskill(struct map_session_data* sd, int flag)
 
 	if( !(flag&2) )
 	{ //Remove stuff lost when resetting skills.
-		if( pc_checkskill(sd, SG_DEVIL) &&  !pc_nextjobexp(sd) )
+		if( pc_checkskill(sd, SG_DEVIL) )
 			clif_status_load(&sd->bl, SI_DEVIL, 0); //Remove perma blindness due to skill-reset. [Skotlex]
 		i = sd->sc.option;
 		if( i&OPTION_RIDING && pc_checkskill(sd, KN_RIDING) )

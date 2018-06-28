@@ -6371,11 +6371,15 @@ int clif_status_change(struct block_list *bl, int type, int flag, unsigned int t
 		type == SI_TENSIONRELAX || type == SI_LANDENDOW || type == SI_AUTOBERSERK ||
 		type == SI_BUMP || type == SI_READYSTORM || type == SI_READYDOWN ||
 		type == SI_READYTURN || type == SI_READYCOUNTER || type == SI_DODGE ||
-		type == SI_DEVIL || type == SI_NIGHT || type == SI_INTRAVISION || type == SI_REPRODUCE ||
-		type == SI_BLOODYLUST || type == SI_FORCEOFVANGUARD || type == SI_NEUTRALBARRIER ||
-		type == SI_OVERHEAT || type == SI_BANDING || type == SI_SUHIDE || type == SI_SPRITEMABLE || 
-		type == SI_SOULCOLLECT)
+		type == SI_DEVIL || type == SI_NIGHT || type == SI_INTRAVISION ||
+		type == SI_OVERHEAT || type == SI_NEUTRALBARRIER ||type == SI_REPRODUCE ||
+		type == SI_FORCEOFVANGUARD || type == SI_BANDING || type == SI_BLOODYLUST ||
+		type == SI_SUHIDE || type == SI_SPRITEMABLE || type == SI_SOULCOLLECT)
 		tick=0;
+
+	// Status's with a infinite duration, but still needs a duration sent to display properly.
+	if (type == SI_LUNARSTANCE || type == SI_UNIVERSESTANCE || type == SI_SUNSTANCE || type == SI_STARSTANCE)
+		tick=200;
 
 #if PACKETVER >= 20090121
 	if( battle_config.display_status_timers && tick > 0 )
@@ -10827,7 +10831,7 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 	if( map[sd->bl.m].flag.loadevent ) // Lance
 		npc_script_event(sd, NPCE_LOADMAP);
 
-	if( pc_checkskill(sd, SG_DEVIL) && !pc_nextjobexp(sd) )
+	if( pc_checkskill(sd, SG_DEVIL) && ((sd->class_&MAPID_THIRDMASK) == MAPID_STAR_EMPEROR || sd->status.job_level >= 50) )
 		clif_status_load(&sd->bl, SI_DEVIL, 1);  //blindness [Komurka]
 
 	if( sd->sc.opt2 ) //Client loses these on warp.
