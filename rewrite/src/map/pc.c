@@ -6827,6 +6827,22 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 		sd->howl_mine[k] = 0;
 	}
 
+	for(k = 0; k < MAX_STELLAR_MARKS; k++)
+	if (sd->stellar_mark[k]){
+		struct map_session_data *smarksd = map_id2sd(sd->stellar_mark[k]);
+		if (smarksd)
+			status_change_end(&smarksd->bl, SC_FLASHKICK, INVALID_TIMER);
+		sd->stellar_mark[k] = 0;
+	}
+
+	for(k = 0; k < MAX_UNITED_SOULS; k++)
+	if (sd->united_soul[k]){
+		struct map_session_data *usoulsd = map_id2sd(sd->united_soul[k]);
+		if (usoulsd)
+			status_change_end(&usoulsd->bl, SC_SOULUNITY, INVALID_TIMER);
+		sd->united_soul[k] = 0;
+	}
+
 	if( sd->shadowform_id )
 	{
 		struct block_list *s_bl = map_id2bl(sd->shadowform_id);

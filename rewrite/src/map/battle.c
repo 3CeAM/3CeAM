@@ -1624,7 +1624,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 		}
 		// If the generated value is higher then Fear Breeze's success chance range, but not higher then the player's double attack success chance,
 		// then allow a double attack to happen.
-		else if ( generate < dachance )
+		else if ( generate-1 < dachance )
 			hitnumber = 2;
 
 		// Allow use of Quick Draw Shot if Chain Action or Eternal Chain triggered the double attack.
@@ -2885,6 +2885,34 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case RL_R_TRIP_PLUSATK:// Need to confirm if level 5 is really 2700% and not a typo. [Rytech]
 					skillratio = 500 + 100 * skill_lv;
+					break;
+				case SJ_FULLMOONKICK:
+					skillratio = 1100 + 100 * skill_lv;
+					if( level_effect_bonus == 1 )
+							skillratio = skillratio * status_get_base_lv_effect(src) / 100;
+					if ( sc && sc->data[SC_LIGHTOFMOON] )
+						skillratio += skillratio * sc->data[SC_LIGHTOFMOON]->val2 / 100;
+					break;
+				case SJ_NEWMOONKICK:
+					skillratio = 700 + 100 * skill_lv;
+					break;
+				case SJ_SOLARBURST:
+					skillratio = 900 + 100 * skill_lv;
+					if( level_effect_bonus == 1 )
+							skillratio = skillratio * status_get_base_lv_effect(src) / 100;
+					if ( sc && sc->data[SC_LIGHTOFSUN] )
+						skillratio += skillratio * sc->data[SC_LIGHTOFSUN]->val2 / 100;
+					break;
+				case SJ_PROMINENCEKICK:
+					skillratio = 150 + 50 * skill_lv;
+					break;
+				case SJ_FALLINGSTAR_ATK:
+				case SJ_FALLINGSTAR_ATK2:
+					skillratio = 100 + 100 * skill_lv;
+					if( level_effect_bonus == 1 )
+							skillratio = skillratio * status_get_base_lv_effect(src) / 100;
+					if ( sc && sc->data[SC_LIGHTOFSTAR] )
+						skillratio += skillratio * sc->data[SC_LIGHTOFSTAR]->val2 / 100;
 					break;
 				case KO_JYUMONJIKIRI:
 					skillratio = 150 * skill_lv;
@@ -5443,6 +5471,17 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 				}
 			}
 		}
+		if (sd) sd->state.autocast = 0;
+	}
+
+	if( wd.flag&BF_WEAPON && sc && sc->data[SC_FALLINGSTAR] && rand()%100 < sc->data[SC_FALLINGSTAR]->val2 )
+	{
+		short skillid = SJ_FALLINGSTAR_ATK;
+		short skilllv = sc->data[SC_FALLINGSTAR]->val1;
+
+		if (sd) sd->state.autocast = 1;
+		if (status_charge(src, 0, skill_get_sp(skillid,skilllv)))
+			skill_castend_nodamage_id(src, src, skillid, skilllv, tick, flag);
 		if (sd) sd->state.autocast = 0;
 	}
 

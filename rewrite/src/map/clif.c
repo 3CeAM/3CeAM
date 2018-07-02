@@ -8155,10 +8155,8 @@ int clif_autospell(struct map_session_data *sd,int skilllv)
 	return 0;
 }
 
-/*==========================================
- * Devotion's visual effect
- * S 01cf <devoter id>.L { <devotee id>.L }[5] <max distance>.W
- *------------------------------------------*/
+/// Devotion's visual effect (ZC_DEVOTIONLIST).
+/// 01cf <devoter id>.L { <devotee id>.L }*5 <max distance>.W
 void clif_devotion(struct block_list *src, struct map_session_data *tsd)
 {
 	unsigned char buf[56];

@@ -594,9 +594,14 @@ void initChangeTables(void)
 	set_sc( RL_SLUGSHOT     , SC_SLUGSHOT     , SI_SLUGSHOT     , SCB_NONE );
 	add_sc( RL_HAMMER_OF_GOD, SC_STUN );
 
+	set_sc( SJ_LIGHTOFMOON   , SC_LIGHTOFMOON   , SI_LIGHTOFMOON   , SCB_NONE );
 	set_sc( SJ_LUNARSTANCE   , SC_LUNARSTANCE   , SI_LUNARSTANCE   , SCB_MAXHP );
+	set_sc( SJ_LIGHTOFSTAR   , SC_LIGHTOFSTAR   , SI_LIGHTOFSTAR   , SCB_NONE );
 	set_sc( SJ_STARSTANCE    , SC_STARSTANCE    , SI_STARSTANCE    , SCB_ASPD );
+	set_sc( SJ_FLASHKICK     , SC_FLASHKICK     , SI_FLASHKICK     , SCB_NONE );
 	set_sc( SJ_UNIVERSESTANCE, SC_UNIVERSESTANCE, SI_UNIVERSESTANCE, SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK );
+	set_sc( SJ_FALLINGSTAR   , SC_FALLINGSTAR   , SI_FALLINGSTAR   , SCB_NONE );
+	set_sc( SJ_LIGHTOFSUN    , SC_LIGHTOFSUN    , SI_LIGHTOFSUN    , SCB_NONE );
 	set_sc( SJ_SUNSTANCE     , SC_SUNSTANCE     , SI_SUNSTANCE     , SCB_BATK|SCB_WATK );
 
 	set_sc( SP_SOULGOLEM   , SC_SOULGOLEM   , SI_SOULGOLEM   , SCB_DEF|SCB_MDEF );
@@ -7162,19 +7167,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 	case SC_FUSION:
 		status_change_end(bl, SC_SPIRIT, INVALID_TIMER);
 		break;
-	case SC_SPIRIT:
-	case SC_SOULGOLEM:
-	case SC_SOULSHADOW:
-	case SC_SOULFALCON:
-	case SC_SOULFAIRY:
-		if ( sc->data[type] )
-			break;
-		status_change_end(bl, SC_SPIRIT, INVALID_TIMER);
-		status_change_end(bl, SC_SOULGOLEM, INVALID_TIMER);
-		status_change_end(bl, SC_SOULSHADOW, INVALID_TIMER);
-		status_change_end(bl, SC_SOULFALCON, INVALID_TIMER);
-		status_change_end(bl, SC_SOULFAIRY, INVALID_TIMER);
-		break;
 	case SC_ADJUSTMENT:
 		status_change_end(bl, SC_MADNESSCANCEL, INVALID_TIMER);
 		break;
@@ -7302,6 +7294,30 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		status_change_end(bl, SC_GT_CHANGE, INVALID_TIMER);
 		status_change_end(bl, SC_GT_REVITALIZE, INVALID_TIMER);
 		break;
+	case SC_SUNSTANCE:
+	case SC_LUNARSTANCE:
+	case SC_STARSTANCE:
+	case SC_UNIVERSESTANCE:
+		if ( sc->data[type] )
+			break;
+		status_change_end(bl, SC_SUNSTANCE, INVALID_TIMER);
+		status_change_end(bl, SC_LUNARSTANCE, INVALID_TIMER);
+		status_change_end(bl, SC_STARSTANCE, INVALID_TIMER);
+		status_change_end(bl, SC_UNIVERSESTANCE, INVALID_TIMER);
+		break;
+	case SC_SPIRIT:
+	case SC_SOULGOLEM:
+	case SC_SOULSHADOW:
+	case SC_SOULFALCON:
+	case SC_SOULFAIRY:
+		if ( sc->data[type] )
+			break;
+		status_change_end(bl, SC_SPIRIT, INVALID_TIMER);
+		status_change_end(bl, SC_SOULGOLEM, INVALID_TIMER);
+		status_change_end(bl, SC_SOULSHADOW, INVALID_TIMER);
+		status_change_end(bl, SC_SOULFALCON, INVALID_TIMER);
+		status_change_end(bl, SC_SOULFAIRY, INVALID_TIMER);
+		break;
 	case SC_OFFERTORIUM:
 	case SC_MAGNIFICAT:
 		if ( sc->data[type] )
@@ -7411,6 +7427,8 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC_ARMOR_RESIST:
 			case SC_C_MARKER:
 			case SC_H_MINE:
+			case SC_FLASHKICK:
+			case SC_SOULUNITY:
 				break;
 			case SC_GOSPEL:
 				 //Must not override a casting gospel char.
@@ -8802,21 +8820,31 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_ANTI_M_BLAST:
 			val2 = 10 * val1;// Player Damage Resistance Reduction.
 			break;
+		case SC_SUNSTANCE:
+			val2 = 2+val1;// ATK Increase
+			tick = -1;
+			break;
 		case SC_LUNARSTANCE:
 			val2 = 2+val1;// MaxHP Increase
+			tick = -1;
+			break;
+		case SC_STARSTANCE:
+			val2 = 4+2*val1;// ASPD Increase
 			tick = -1;
 			break;
 		case SC_UNIVERSESTANCE:
 			val2 = 2+val1;// All Stats Increase
 			tick = -1;
 			break;
-		case SC_SUNSTANCE:
-			val2 = 2+val1;// ATK Increase
-			tick = -1;
+		case SC_FALLINGSTAR:
+			val2 = 8 + 2 * (1 + val1) / 2;// Autocast Chance
+			if ( val1 >= 7 )
+				val2 += 1;// Make it 15% at level 7.
 			break;
-		case SC_STARSTANCE:
-			val2 = 4+2*val1;// ASPD Increase
-			tick = -1;
+		case SC_LIGHTOFSUN:
+		case SC_LIGHTOFMOON:
+		case SC_LIGHTOFSTAR:
+			val2 = 5 * val1;// Skill Damage Increase.
 			break;
 		case SC_SOULGOLEM:
 			val2 = 60 * val1 / 10;// DEF Increase
@@ -8847,7 +8875,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 				val3 += 4*(val1-5);
 			break;
 		case SC_SOULUNITY:
-			val2 = 150 * val1;// Heal Amount
 			val4 = tick / 3000;
 			tick = 3000;
 			break;
@@ -9787,6 +9814,28 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 				{
 					if( d_bl->type == BL_PC )
 						((TBL_PC*)d_bl)->howl_mine[sce->val2] = 0;
+				}
+			}
+			break;
+
+		case SC_FLASHKICK:
+			{
+				struct block_list *d_bl = map_id2bl(sce->val1);
+				if( d_bl )
+				{
+					if( d_bl->type == BL_PC )
+						((TBL_PC*)d_bl)->stellar_mark[sce->val2] = 0;
+				}
+			}
+			break;
+
+		case SC_SOULUNITY:
+			{
+				struct block_list *d_bl = map_id2bl(sce->val1);
+				if( d_bl )
+				{
+					if( d_bl->type == BL_PC )
+						((TBL_PC*)d_bl)->united_soul[sce->val2] = 0;
 				}
 			}
 			break;
@@ -11183,9 +11232,16 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 
 	case SC_SOULUNITY:
 		if( --(sce->val4) >= 0 )
-		{
-			status_heal(bl, sce->val2, 0, 2);
-			sc_timer_next(3000 + tick, status_change_timer, bl->id, data);
+		{// Needed to check the caster's location for the range check.
+			struct block_list *unity_src;
+			unity_src = map_id2bl(sce->val1);
+
+			// End the status if out of range.
+			if ( !check_distance_bl(bl, unity_src, 11) )
+				break;
+
+			status_heal(bl, 150*sce->val3, 0, 2);
+			sc_timer_next(3000+tick, status_change_timer, bl->id, data);
 			return 0;
 		}
 		break;

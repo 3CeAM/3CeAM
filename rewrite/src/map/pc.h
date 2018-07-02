@@ -359,6 +359,8 @@ struct map_session_data {
 	int devotion[5]; //Stores the account IDs of chars devoted to.
 	int crimson_mark[MAX_CRIMSON_MARKS];// Stores the account ID's of character's with a crimson mark.
 	int howl_mine[MAX_HOWL_MINES];// Stores the account ID's of character's with a howl mine.
+	int stellar_mark[MAX_STELLAR_MARKS];// Stores the account ID's of character's with a stellar mark.
+	int united_soul[MAX_UNITED_SOULS];// Stores the account ID's of character's who's soul is united.
 	int reg_num; //Number of registries (type numeric)
 	int regstr_num; //Number of registries (type string)
 
