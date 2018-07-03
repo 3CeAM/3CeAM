@@ -525,7 +525,7 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 			return 0;
 		}
 
-		if( flag&BF_MAGIC && (sce=sc->data[SC_PRESTIGE]) && rand()%100 < sce->val2)
+		if( flag&BF_MAGIC && (sce=sc->data[SC_PRESTIGE]) && rand()%100 < sce->val3)
 		{
 			clif_specialeffect(bl, 462, AREA); // Still need confirm it.
 			return 0;
@@ -2611,7 +2611,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					{
 						struct status_change *tsc = status_get_sc(target);//Should check for Shadow Chaser's Invisiable skill right? [Rytech]
 						if( tsc && (tsc->data[SC_HIDING] || tsc->data[SC_CLOAKING] || tsc->data[SC_CHASEWALK] || 
-							tsc->data[SC_CLOAKINGEXCEED] || tsc->data[SC_CAMOUFLAGE] || tsc->data[SC_INVISIBILITY]) )
+							tsc->data[SC_CLOAKINGEXCEED] || tsc->data[SC_CAMOUFLAGE] || tsc->data[SC__INVISIBILITY] || 
+							tsc->data[SC_NEWMOON]) )
 						{
 							skillratio = 150 * skill_lv;
 							if( level_effect_bonus == 1 )
@@ -5194,6 +5195,9 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 
 	if (sc && sc->data[SC_CAMOUFLAGE] && !(sc->data[SC_CAMOUFLAGE]->val3&2))
 		status_change_end(src,SC_CAMOUFLAGE,-1);
+
+	if ( sc && sc->data[SC_NEWMOON] && (--sc->data[SC_NEWMOON]->val2) <= 0)
+			status_change_end(src, SC_NEWMOON, INVALID_TIMER);
 
 	if( tsc && tsc->data[SC_AUTOCOUNTER] && status_check_skilluse(target, src, KN_AUTOCOUNTER, tsc->data[SC_AUTOCOUNTER]->val1, 1) )
 	{
