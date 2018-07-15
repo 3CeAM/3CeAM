@@ -414,10 +414,15 @@ int battle_calc_damage(struct block_list *src,struct block_list *bl,struct Damag
 	if (skill_num == PA_PRESSURE || skill_num == SP_SOULEXPLOSION)
 		return damage; //This skill bypass everything else.
 
+	// Nothing can reduce the damage, but Safety Wall and Millennium Shield can block it completely.
+	// So can defense sphere's but what the heck is that??? [Rytech]
+	if ( skill_num == SJ_NOVAEXPLOSING && !(sc && (sc->data[SC_SAFETYWALL] || sc->data[SC_MILLENNIUMSHIELD])) )
+		return damage;
+
 	if( sc && sc->count )
 	{
 		//First, sc_*'s that reduce damage to 0.
-		if( sc->data[SC_BASILICA] && !(status_get_mode(src)&MD_BOSS) && skill_num != PA_PRESSURE )
+		if( sc->data[SC_BASILICA] && !(status_get_mode(src)&MD_BOSS) && skill_num != PA_PRESSURE && skill_num != SP_SOULEXPLOSION )
 		{
 			d->dmg_lv = ATK_BLOCK;
 			return 0;
@@ -939,6 +944,7 @@ int battle_calc_bg_damage(struct block_list *src, struct block_list *bl, int dam
 		case NJ_ZENYNAGE:
 		//case RK_DRAGONBREATH:
 		//case GN_HELLS_PLANT_ATK:
+		case SJ_NOVAEXPLOSING:
 		case SP_SOULEXPLOSION:
 		case KO_MUCHANAGE:
 			break;
@@ -1004,6 +1010,7 @@ int battle_calc_gvg_damage(struct block_list *src,struct block_list *bl,int dama
 	case NJ_ZENYNAGE:
 	//case RK_DRAGONBREATH:
 	//case GN_HELLS_PLANT_ATK:
+	case SJ_NOVAEXPLOSING:
 	case SP_SOULEXPLOSION:
 	case KO_MUCHANAGE:
 		break;
@@ -2749,7 +2756,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case GN_CART_TORNADO:
 					{
 						int strbonus = sstatus->str;//Supposed to take only base STR, but current code wont allow that. So well just take STR for now. [Rytech]
-						if ( strbonus > 130 )//Max base stat limit on official is 130. So well allow no higher then 120 STR here. This limit prevents
+						if ( strbonus > 130 )//Max base stat limit on official is 130. So well allow no higher then 130 STR here. This limit prevents
 							strbonus = 130;//the division from going any lower then 20 so the server wont divide by 0 if someone has 150 STR.
 						skillratio = 50 * skill_lv + (sd?sd->cart_weight/10:105000) / (150 - strbonus) + 50 * (sd?pc_checkskill(sd, GN_REMODELING_CART):5);
 					}
@@ -2896,6 +2903,12 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case SJ_NEWMOONKICK:
 					skillratio = 700 + 100 * skill_lv;
+					break;
+				case SJ_STAREMPEROR:
+					skillratio = 800 + 200 * skill_lv;
+					break;
+				case SJ_NOVAEXPLOSING:
+					skillratio = 200 + 100 * skill_lv;
 					break;
 				case SJ_SOLARBURST:
 					skillratio = 900 + 100 * skill_lv;
@@ -3136,6 +3149,14 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case GN_CARTCANNON:
 					if( sc && sc->data[SC_GN_CARTBOOST] )
 					ATK_ADD( 10 * sc->data[SC_GN_CARTBOOST]->val1 );
+					break;
+				case SJ_NOVAEXPLOSING:
+					{
+						short hp_skilllv = skill_lv;
+						if ( hp_skilllv > 5 )
+							hp_skilllv = 5;// Prevents dividing the MaxHP by 0 on levels higher then 5.
+						ATK_ADD(sstatus->max_hp / (6 - hp_skilllv) + status_get_max_sp(src) * (2 * skill_lv));
+					}
 					break;
 			}
 		}

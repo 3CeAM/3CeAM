@@ -601,8 +601,11 @@ void initChangeTables(void)
 	set_sc( SJ_STARSTANCE    , SC_STARSTANCE    , SI_STARSTANCE    , SCB_ASPD );
 	set_sc( SJ_NEWMOONKICK   , SC_NEWMOON       , SI_NEWMOON       , SCB_NONE );
 	set_sc( SJ_FLASHKICK     , SC_FLASHKICK     , SI_FLASHKICK     , SCB_NONE );
+	add_sc( SJ_STAREMPEROR   , SC_SILENCE );
 	set_sc( SJ_UNIVERSESTANCE, SC_UNIVERSESTANCE, SI_UNIVERSESTANCE, SCB_STR|SCB_AGI|SCB_VIT|SCB_INT|SCB_DEX|SCB_LUK );
 	set_sc( SJ_FALLINGSTAR   , SC_FALLINGSTAR   , SI_FALLINGSTAR   , SCB_NONE );
+	set_sc( SJ_BOOKOFDIMENSION, SC_DIMENSION    , SI_DIMENSION     , SCB_NONE );
+	set_sc( SJ_BOOKOFCREATINGSTAR, SC_CREATINGSTAR, SI_CREATINGSTAR, SCB_SPEED );
 	set_sc( SJ_LIGHTOFSUN    , SC_LIGHTOFSUN    , SI_LIGHTOFSUN    , SCB_NONE );
 	set_sc( SJ_SUNSTANCE     , SC_SUNSTANCE     , SI_SUNSTANCE     , SCB_BATK|SCB_WATK );
 
@@ -5297,6 +5300,8 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				if( sc->data[SC_GLOOMYDAY] && sc->data[SC_GLOOMYDAY]->val1 == 2 )
 					val = max( val, 50 );
 				if( sc->data[SC_B_TRAP] )
+					val = max( val, 90 );
+				if( sc->data[SC_CREATINGSTAR] )
 					val = max( val, 90 );
 				if( sc->data[SC_SP_SHA] )
 					val = max( val, 50 );

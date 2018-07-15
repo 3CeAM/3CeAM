@@ -1531,6 +1531,9 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 	case SJ_FULLMOONKICK:
 		sc_start(bl,SC_BLIND,15+5*skilllv,skilllv,skill_get_time(skillid,skilllv));
 		break;
+	case SJ_STAREMPEROR:
+		sc_start(bl,SC_SILENCE,50+10*skilllv,skilllv,skill_get_time(skillid,skilllv));
+		break;
 	case SP_CURSEEXPLOSION:
 		status_change_end(bl, SC_CURSE, INVALID_TIMER);
 		break;
@@ -2671,6 +2674,7 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 		dmg.dmotion = clif_skill_damage(dsrc,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,skillid,65534,6);
 		break;
 	case RL_QD_SHOT:
+	case SJ_NOVAEXPLOSING:
 		dmg.dmotion = clif_skill_damage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, 6);
 		break;
 	case RL_H_MINE:
@@ -3005,7 +3009,7 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 	if (dmg.amotion)
 		battle_delay_damage(tick, dmg.amotion,src,bl,dmg.flag,skillid,skilllv,damage,dmg.dmg_lv,dmg.dmotion);
 
-	if( sc && sc->data[SC_DEVOTION] && (skillid != PA_PRESSURE || skillid != SP_SOULEXPLOSION) )
+	if( sc && sc->data[SC_DEVOTION] && (skillid != PA_PRESSURE || skillid != SJ_NOVAEXPLOSING || skillid != SP_SOULEXPLOSION) )
 	{
 		struct status_change_entry *sce = sc->data[SC_DEVOTION];
 		struct block_list *d_bl = map_id2bl(sce->val1);
@@ -4076,6 +4080,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case GN_CRAZYWEED_ATK:
 	case GN_SLINGITEM_RANGEMELEEATK:
 	case RL_R_TRIP_PLUSATK:
+	case SJ_NOVAEXPLOSING:
 	case KO_SETSUDAN:
 	case KO_BAKURETSU:
 	case KO_HUUMARANKA:
@@ -4486,6 +4491,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case GN_ILLUSIONDOPING:
 	case SJ_FULLMOONKICK:
 	case SJ_NEWMOONKICK:
+	case SJ_STAREMPEROR:
 	case SJ_SOLARBURST:
 	case SJ_PROMINENCEKICK:
 	case SJ_FALLINGSTAR_ATK2:
@@ -6135,6 +6141,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SJ_LIGHTOFMOON:
 	case SJ_LIGHTOFSTAR:
 	case SJ_FALLINGSTAR:
+	case SJ_BOOKOFDIMENSION:
 	case SJ_LIGHTOFSUN:
 	case SP_SOULREAPER:
 	case KO_IZAYOI:
@@ -6685,6 +6692,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case RL_D_TAIL:
 	case SJ_FULLMOONKICK:
 	case SJ_NEWMOONKICK:
+	case SJ_STAREMPEROR:
 	case SJ_SOLARBURST:
 	case SJ_FALLINGSTAR_ATK:
 	case KO_HAPPOKUNAI:
@@ -11677,6 +11685,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	case SO_EARTH_INSIGNIA:
 	case RL_B_TRAP:
 	case RL_HAMMER_OF_GOD:
+	case SJ_BOOKOFCREATINGSTAR:
 	case LG_KINGS_GRACE:
 	case KO_ZENKAI:
 	case MH_POISON_MIST:
@@ -13962,6 +13971,10 @@ int skill_unit_onplace_timer (struct skill_unit *src, struct block_list *bl, uns
 			sc_start(bl, SC_B_TRAP, 100, sg->skill_lv, skill_get_time2(sg->skill_id,sg->skill_lv));
 			break;
 
+		case UNT_CREATINGSTAR:
+			skill_attack(skill_get_type(sg->skill_id),ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
+			break;
+
 		case UNT_MAKIBISHI:
 			skill_attack(BF_WEAPON,ss,&src->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
 			break;
@@ -15147,6 +15160,16 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 	case SJ_FULLMOONKICK:
 		if(!(sc && sc->data[SC_NEWMOON]))
 		{
+			clif_skill_fail(sd,skill,0,0,0);
+			return 0;
+		}
+		break;
+	case SJ_STAREMPEROR:
+	case SJ_NOVAEXPLOSING:
+	case SJ_GRAVITYCONTROL:
+	case SJ_BOOKOFDIMENSION:
+	case SJ_BOOKOFCREATINGSTAR:
+		if (!map_flag_vs(sd->bl.m)) {
 			clif_skill_fail(sd,skill,0,0,0);
 			return 0;
 		}
@@ -16471,7 +16494,7 @@ void skill_identify (struct map_session_data *sd, int idx)
  * Weapon Refine [Celest]
  *------------------------------------------*/
 void skill_weaponrefine (struct map_session_data *sd, int idx)
-{
+{	short joblv_bonus = (sd->status.job_level-50)/2;
 	int i = 0, ep = 0, per;
 	int material[5] = { 0, 1010, 1011, 984, 984 };
 	struct item *item;
@@ -16495,7 +16518,12 @@ void skill_weaponrefine (struct map_session_data *sd, int idx)
 			}
 
 			per = percentrefinery [ditem->wlv][(int)item->refine];
-			per += (((signed int)sd->status.job_level)-50)/2; //Updated per the new kro descriptions. [Skotlex]
+
+			// Mechanic's get the full 10% bonus no matter the job level.
+			if ( (sd->class_&MAPID_THIRDMASK) == MAPID_MECHANIC )
+				per += 10;
+			else if ( joblv_bonus > 0 )// JobLV only has effect when above 50.
+				per += joblv_bonus;
 
 			pc_delitem(sd, i, 1, 0, 0);
 			if (per > rand() % 100) {
@@ -18235,7 +18263,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 			{
 				if( temp_qty > MAX_RUNE - sd->status.inventory[i].amount )
 				{
-					clif_msgtable(sd->fd,SKMSG_RUNESTONE_OVERCOUNT);
+					clif_msgtable(sd->fd,MSG_RUNESTONE_MAKEERROR_OVERCOUNT);
 					return 0;
 				}
 			}
@@ -18599,7 +18627,7 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 					break;
 				case GN_MAKEBOMB:
 				case GN_MIX_COOKING:
-					clif_skill_msg(sd,skill_id,SKMSG_SUCCESS);
+					clif_msg_skill(sd,skill_id,MSG_SKILL_SUCCESS);
 					break;
 				case GN_S_PHARMACY:
 					break;	// No effects here.
@@ -18677,13 +18705,13 @@ int skill_produce_mix(struct map_session_data *sd, int skill_id, int nameid, int
 						clif_additem(sd,0,0,flag);
 						map_addflooritem(&tmp_item,tmp_item.amount,sd->bl.m,sd->bl.x,sd->bl.y,0,0,0,0);
 					}
-					clif_skill_msg(sd,skill_id,SKMSG_FAIL_MATERIAL_DESTROY);
+					clif_msg_skill(sd,skill_id,MSG_SKILL_FAIL_MATERIAL_DESTROY);
 				}
 				break;
 			case GN_S_PHARMACY:
 				break;	// No effects here.
 			case GN_MAKEBOMB:
-				clif_skill_msg(sd,skill_id,SKMSG_FAIL_MATERIAL_DESTROY);
+				clif_msg_skill(sd,skill_id,MSG_SKILL_FAIL_MATERIAL_DESTROY);
 				break;
 			default:
 				if( skill_produce_db[idx].itemlv > 10 && skill_produce_db[idx].itemlv <= 20 )

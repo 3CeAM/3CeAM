@@ -1653,19 +1653,15 @@ int pc_calc_skillpoint(struct map_session_data* sd)
 
 	nullpo_ret(sd);
 
-	for( i = 1; i < MAX_SKILL; i++ )
-	{
-		if( (skill = pc_checkskill(sd,i)) > 0 )
-		{
+	for(i=1;i<MAX_SKILL;i++){
+		if( (skill = pc_checkskill(sd,i)) > 0) {
 			inf2 = skill_get_inf2(i);
-			if( (!(inf2&INF2_QUEST_SKILL) || battle_config.quest_skill_learn) &&
+			if((!(inf2&INF2_QUEST_SKILL) || battle_config.quest_skill_learn) &&
 				!(inf2&(INF2_WEDDING_SKILL|INF2_SPIRIT_SKILL)) //Do not count wedding/link skills. [Skotlex]
-				)
-			{
-				if( !sd->status.skill[i].flag )
+				) {
+				if(!sd->status.skill[i].flag)
 					skill_point += skill;
-				else if( sd->status.skill[i].flag > 2 && sd->status.skill[i].flag != 13 )
-				{
+				else if(sd->status.skill[i].flag > 2 && sd->status.skill[i].flag != 13) {
 					skill_point += (sd->status.skill[i].flag - 2);
 				}
 			}
@@ -1685,12 +1681,13 @@ int pc_calc_skilltree(struct map_session_data *sd)
 	int c=0;
 
 	nullpo_ret(sd);
+	//i = pc_calc_skilltree_normalize_job(sd);
 	c = pc_mapid2jobid(sd->class_, sd->status.sex);
-	if( c == -1 )
-	{ //Unable to normalize job??
-		ShowError("pc_calc_skilltree: Unable to normalize job %d for character %s (%d:%d)\n", sd->class_, sd->status.name, sd->status.account_id, sd->status.char_id);
-		return 1;
-	}
+	//if( c == -1 )
+	//{ //Unable to normalize job??
+	//	ShowError("pc_calc_skilltree: Unable to normalize job %d for character %s (%d:%d)\n", i, sd->status.name, sd->status.account_id, sd->status.char_id);
+	//	return 1;
+	//}
 	c = pc_class2idx(c);
 
 	for( i = 0; i < MAX_SKILL; i++ )
@@ -1733,7 +1730,6 @@ int pc_calc_skilltree(struct map_session_data *sd)
 		for( i = 0; i < MAX_SKILL; i++ )
 		{
 			if( skill_get_inf2(i)&(INF2_NPC_SKILL|INF2_GUILD_SKILL|INF2_SUB_SKILL) ||
-				i==SM_SELFPROVOKE ||
 				i==SL_DEATHKNIGHT ||
 				i==SL_COLLECTOR ||
 				i==SL_NINJA ||
@@ -1844,12 +1840,12 @@ static void pc_check_skilltree(struct map_session_data *sd, int skill)
 	if(battle_config.skillfree)
 		return; //Function serves no purpose if this is set
 	
-	i = pc_calc_skilltree_normalize_job(sd);
-	c = pc_mapid2jobid(i, sd->status.sex);
-	if (c == -1) { //Unable to normalize job??
-		ShowError("pc_check_skilltree: Unable to normalize job %d for character %s (%d:%d)\n", i, sd->status.name, sd->status.account_id, sd->status.char_id);
-		return;
-	}
+	//i = pc_calc_skilltree_normalize_job(sd);
+	c = pc_mapid2jobid(sd->class_, sd->status.sex);
+	//if (c == -1) { //Unable to normalize job??
+	//	ShowError("pc_check_skilltree: Unable to normalize job %d for character %s (%d:%d)\n", i, sd->status.name, sd->status.account_id, sd->status.char_id);
+	//	return;
+	//}
 	c = pc_class2idx(c);
 	do {
 		flag = 0;
@@ -1919,47 +1915,71 @@ int pc_clean_skilltree(struct map_session_data *sd)
 	return 0;
 }
 
-int pc_calc_skilltree_normalize_job(struct map_session_data *sd)
+// Sends back the number of skill points that should be invested into a skill tree during job normalization.
+// The number sent depends on the job the player is since max job levels varrys between jobs.
+int pc_normalize_job_max_skillpoint(struct map_session_data *sd, unsigned char job_pos_check)
 {
-	int skill_point;
-	int c = sd->class_;
-	
-	if( !battle_config.skillup_limit )
-		return c;
-	
-	skill_point = pc_calc_skillpoint(sd); // Current Used Points
-
-	if( pc_checkskill(sd, NV_BASIC) < 9 && (sd->class_&MAPID_BASEMASK) != MAPID_SUMMONER )
-		c = MAPID_NOVICE; // Consider Novice Tree when you don't have NV_BASIC maxed.
-
-	//Do not send S. Novices to first class (Novice)
-	else if( (sd->class_&JOBL_2) && (sd->class_&MAPID_UPPERMASK) != MAPID_SUPER_NOVICE )
-	{
-		if( sd->change_level[0] <= 0 )
-		{
-			ShowWarning("pc_calc_skilltree_normalize_job: User %s (aid %d | cid %d) don't have job change level record for second class.\n", sd->status.name, sd->status.account_id, sd->status.char_id);
-			sd->change_level[0] = 50; // Asume 50
-		}
-
-		if( skill_point < sd->change_level[0] + 8 )
-			c &= MAPID_BASEMASK; // Convert class to First Class
-		else if( sd->class_&JOBL_THIRD )
-		{
-			if( sd->change_level[1] <= 0 )
-			{
-				ShowWarning("pc_calc_skilltree_normalize_job: User %s (aid %d | cid %d) don't have job change level record for third class.\n", sd->status.name, sd->status.account_id, sd->status.char_id);
-				sd->change_level[1] = (sd->class_&JOBL_UPPER) ? 70 : 50;
-			}
-
-			if( skill_point < (sd->change_level[0] + sd->change_level[1] + 7) )
-				c &= ~JOBL_THIRD; // Convert it to Previous Class (Second or Trans)
-		}
+	if ( job_pos_check == 1 )// Check for 1st job default max skill points.
+	{// Add default max JobLV of Novice + 1st job, then stract 1 for each job.
+	//  In the case of Super Novice jobs, its Novice (1st job) + Super Novice (2nd job) since this job isn't sent back to 1st.
+		if ( (sd->class_&MAPID_BASEMASK) == MAPID_GUNSLINGER || (sd->class_&MAPID_BASEMASK) == MAPID_NINJA )
+			return 10+70-2;// Gunslinger / Ninja default max JobLV is 70.
+		else if ( (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE )
+			return 10+99-2;// Super Novice default max JobLV is 99.
+		else
+			return 10+50-2;// Everything else max JobLV is 50.
+	}
+	else if ( job_pos_check == 2 )// Check for 2nd job default max skill points.
+	{// Add default max JobLV of Novice + 1st job + 2nd job, then stract 1 for each job.
+	//  In the case of Super Novice jobs, its Novice (1st job) + Super Novice (2nd job).
+		if ( sd->class_&JOBL_UPPER )
+			return 10+50+70-3;// All 2nd job rebirth's default max JobLV is 70
+		else if ( (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE )
+			return 10+99-2;// Super Novice default max JobLV is 99.
+		else
+			return 10+50+50-3;// Everything else max JobLV is 50.
 	}
 
-	if( sd->class_&JOBL_UPPER )
-		c |= JOBL_UPPER; // Convert to Upper
-	else if( sd->class_&JOBL_BABY )
-		c |= JOBL_BABY; // Convert to Baby
+	return 1;// In case no answer is given.
+}
+
+int pc_calc_skilltree_normalize_job(struct map_session_data *sd)
+{
+	unsigned char joblv_1st = sd->change_level[0];
+	unsigned char joblv_2nd = sd->change_level[1];
+	int skill_point;
+	int c = sd->class_;
+
+	// Novice is the 1st job of Super Novice type jobs and shouldn't be counted.
+	if ( (sd->class_&MAPID_THIRDMASK) == MAPID_SUPER_NOVICE_E )
+		joblv_1st = 1;// Set to 1 make up for 1 less job counted.
+
+	if (!battle_config.skillup_limit)
+		return c;
+	
+	skill_point = pc_calc_skillpoint(sd);
+	if(pc_checkskill(sd, NV_BASIC) < 9) //Consider Novice Tree when you don't have NV_BASIC maxed.
+		c = MAPID_NOVICE;
+	else
+	// Ignore Super Novice type jobs since regular Super Novice is a 2nd job of the Novice.
+	if ((sd->class_&JOBL_2) && (sd->class_&MAPID_UPPERMASK) != MAPID_SUPER_NOVICE &&
+		sd->status.skill_point >= sd->status.job_level &&
+		((joblv_1st > 0 && skill_point < joblv_1st+8) || skill_point < pc_normalize_job_max_skillpoint(sd, 1))) {
+		//Send it to first class.
+		c &= MAPID_BASEMASK;
+	}
+
+	if ((sd->class_&JOBL_THIRD) &&
+		sd->status.skill_point >= sd->status.job_level &&
+		((joblv_2nd > 0 && skill_point < joblv_2nd+joblv_1st+7) || skill_point < pc_normalize_job_max_skillpoint(sd, 2))) {
+		//Send it to second class.
+		c &= MAPID_UPPERMASK;
+	}
+
+	if (sd->class_&JOBL_UPPER) //Convert to Upper
+		c |= JOBL_UPPER;
+	else if (sd->class_&JOBL_BABY) //Convert to Baby
+		c |= JOBL_BABY;
 
 	return c;
 }
@@ -4520,7 +4540,7 @@ int pc_cart_additem(struct map_session_data *sd,struct item *item_data,int amoun
 		return 1;
 	}
 
-	if( (w = data->weight*amount) + sd->cart_weight > battle_config.max_cart_weight + pc_checkskill(sd, GN_REMODELING_CART)*5000 )
+	if( (w = data->weight*amount) + sd->cart_weight > battle_config.max_cart_weight + 5000 * pc_checkskill(sd, GN_REMODELING_CART) )
 		return 1;
 
 	i = MAX_CART;
@@ -6247,36 +6267,39 @@ int pc_statusup2(struct map_session_data* sd, int type, int val)
 	return 0;
 }
 
-/*===================================================
- * Returns if a certain skill belongs to a specific
- * job skill tree.
- ---------------------------------------------------*/
-bool pc_isSkillFromJob( int job_id, int skill_num )
+// Checks to see if a skill exist's on a job's skill tree.
+bool pc_search_job_skilltree(int b_class, int id)
 {
-	int i, c;
+	int i;
+	b_class = pc_class2idx(b_class);
 
-	if( !pcdb_checkid( job_id ) ) {
-			ShowError("pc_isSkillFromJob: Invalid job ID %d.\n", job_id);
-		return false;
-	}
-
-	c = pc_class2idx(job_id);
-
-	ARR_FIND( 0, MAX_SKILL_TREE, i, skill_tree[c][i].id == 0 || skill_tree[c][i].id == skill_num );
-	if( i == MAX_SKILL_TREE || skill_tree[c][i].id == 0 )
-		return false;
-
-	return true;
+	ARR_FIND( 0, MAX_SKILL_TREE, i, skill_tree[b_class][i].id == 0 || skill_tree[b_class][i].id == id );
+	if( i < MAX_SKILL_TREE && skill_tree[b_class][i].id == id )
+		return 1;
+	else
+		return 0;
 }
-
 
 /*==========================================
  * スキルポイント割り振り
  *------------------------------------------*/
 int pc_skillup(struct map_session_data *sd,int skill_num)
 {
-	int skill_point, i, c;
+	short check_1st_job, check_2nd_job;
+	short used_skill_points;
+	int i;
+	int c=0;
+
 	nullpo_ret(sd);
+
+	i = pc_calc_skilltree_normalize_job(sd);
+	c = pc_mapid2jobid(i, sd->status.sex);
+	if( c == -1 )
+	{ //Unable to normalize job??
+		ShowError("pc_skillup: Unable to normalize job %d for character %s (%d:%d)\n", i, sd->status.name, sd->status.account_id, sd->status.char_id);
+		return 1;
+	}
+	c = pc_class2idx(c);
 
 	if( skill_num >= GD_SKILLBASE && skill_num < GD_SKILLBASE+MAX_GUILDSKILL )
 	{
@@ -6292,38 +6315,32 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 
 	if( skill_num < 0 || skill_num >= MAX_SKILL )
 		return 0;
-	
-	skill_point = pc_calc_skillpoint(sd);
-	
-	i = pc_calc_skilltree_normalize_job(sd);
-	c = pc_mapid2jobid(i, sd->status.sex);
 
-	if( c == -1 )
-	{ //Unable to normalize job??
-		ShowError("pc_skillup: Unable to normalize job %d for character %s (%d:%d)\n", i, sd->status.name, sd->status.account_id, sd->status.char_id);
-		return 0;
-	}
-	// Code under avaluation
-	/*
-	if( skill_num != NV_BASIC && skill_point < 9 )
+	if ( !pc_search_job_skilltree(c, skill_num) )
 	{
-		clif_displaymessage(sd->fd, "You have to use up all your Novice skill points");
-		return 0;
-	}*/
+		used_skill_points = pc_calc_skillpoint(sd);
 
-	if( !pc_isSkillFromJob(c, skill_num) && (sd->class_&JOBL_2) )
-	{
-		if( sd->status.skill_point >= sd->status.job_level && (sd->change_level[0] > 0 ? ( skill_point < sd->change_level[0] + 8 ) : (skill_point < 58)) )
-		{	// 1st job skills are not used.	
-			i = (sd->change_level[0] > 0 ? sd->change_level[0] + 8 : 58) - skill_point;
-			clif_msgtable_num(sd->fd,MSG_UPGRADESKER_FIRSTJOB,i);
+		if ( (sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE )
+		{// Super Novice is the 2nd job of the Novice, but well treat it
+		//  as 1st for the upcoming check and message.
+			check_1st_job = sd->change_level[1]+8;
+			check_2nd_job = 0;
+		}
+		else
+		{
+			check_1st_job = sd->change_level[0]+8;
+			check_2nd_job = sd->change_level[1]+sd->change_level[0]+7;
+		}
+
+		if ( used_skill_points < check_1st_job )
+		{
+			clif_msg_value(sd, MSG_UPGRADESKILLERROR_MORE_FIRSTJOBSKILL, check_1st_job-used_skill_points);
 			return 0;
-		}//May need to update in the future to include new 3rd job skills from the 5000 range. [Rytech]
-		if( sd->class_&JOBL_THIRD && (skill_num >= RK_ENCHANTBLADE && skill_num <= LG_OVERBRAND_PLUSATK || skill_num >= GC_DARKCROW && skill_num <= NC_MAGMA_ERUPTION_DOTDAMAGE) &&
-			skill_point < (sd->change_level[1] > 0 ? sd->change_level[0] + sd->change_level[1] + 7 : (sd->class_&JOBL_UPPER) ? 127 : 107) )
-		{	// 2nd job skill not used.
-			i = (sd->change_level[1] > 0 ? sd->change_level[0] + sd->change_level[1] + 7 : (sd->class_&JOBL_UPPER) ? 127 : 107) - skill_point;
-			clif_msgtable_num(sd->fd,MSG_UPGRADESKER_SECONDJOB, i);
+		}
+
+		if ( used_skill_points < check_2nd_job )
+		{
+			clif_msg_value(sd, MSG_UPGRADESKILLERROR_MORE_SECONDJOBSKILL, check_2nd_job-used_skill_points);
 			return 0;
 		}
 	}
@@ -6340,7 +6357,7 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 		else if( sd->status.skill_point == 0 && (sd->class_&MAPID_UPPERMASK) == MAPID_TAEKWON && sd->status.base_level >= 90 && pc_famerank(sd->status.char_id, MAPID_TAEKWON) )
 			pc_calc_skilltree(sd); // Required to grant all TK Ranger skills.
 		else
-			pc_check_skilltree(sd, 0); // Check if a new skill can Lvlup
+			pc_check_skilltree(sd, skill_num); // Check if a new skill can Lvlup
 
 		clif_skillup(sd,skill_num);
 		clif_updatestatus(sd,SP_SKILLPOINT);
@@ -6348,8 +6365,6 @@ int pc_skillup(struct map_session_data *sd,int skill_num)
 			clif_updatestatus(sd,SP_CARTINFO);
 		if( pc_checkskill(sd, SG_DEVIL) && ((sd->class_&MAPID_THIRDMASK) == MAPID_STAR_EMPEROR || sd->status.job_level >= 50) )
 			clif_status_load(&sd->bl, SI_DEVIL, 1);
-		//FIXME: The server have to send clif_skillup() with all skills
-		//available to the current job tab instead clif_skillinfoblock. [pakpil]
 		clif_skillinfoblock(sd);
 	}
 
@@ -7519,13 +7534,10 @@ int pc_jobchange(struct map_session_data *sd,int job, int upper)
 		return 1;
 	switch (upper) {
 		case 1:
-			b_class|= JOBL_UPPER; 
+			b_class|= JOBL_UPPER;
 			break;
 		case 2:
 			b_class|= JOBL_BABY;
-			break;
-		case 3:
-			b_class|= JOBL_THIRD;
 			break;
 	}
 	//This will automatically adjust bard/dancer classes to the correct gender
@@ -7536,14 +7548,14 @@ int pc_jobchange(struct map_session_data *sd,int job, int upper)
 	
 	if ((unsigned short)b_class == sd->class_)
 		return 1; //Nothing to change.
-	// check if we are changing from 1st to 2nd job
+	// Changing from 2nd to 3rd job.
 	if (b_class&JOBL_THIRD) {
 		if (!(sd->class_&JOBL_THIRD) )
 			sd->change_level[1] = sd->status.job_level;
 		else if (!sd->change_level[1])
 			sd->change_level[1] = (b_class&JOBL_UPPER)?70:50; // Assume 50 to Base 3rd jobs and 70 to Trans 3rd jobs
 		pc_setglobalreg(sd, "jobchange_level2", sd->change_level[1]);
-	}
+	}// Changing from 1st to 2nd job.
 	else if (b_class&JOBL_2) {
 		if (!(sd->class_&JOBL_2))
 			sd->change_level[0] = sd->status.job_level;
