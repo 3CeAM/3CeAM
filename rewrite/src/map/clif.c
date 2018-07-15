@@ -194,19 +194,6 @@ void clif_msgtable(int fd, int line)
 	WFIFOSET(fd, packet_len(0x291));
 }
 
-// msgstringtable.txt
-// 0x7e2 <line>.W <value>.L
-void clif_msgtable_num(int fd, int line, int num)
-{
-#if PACKETVER >= 20090805
-	WFIFOHEAD(fd, packet_len(0x7e2));
-	WFIFOW(fd, 0) = 0x7e2;
-	WFIFOW(fd, 2) = line;
-	WFIFOL(fd, 4) = num;
-	WFIFOSET(fd, packet_len(0x7e2));
-#endif
-}
-
 /*==========================================
  * clif_send‚ÅAREA*Žw’èŽž—p
  *------------------------------------------*/
@@ -3400,7 +3387,7 @@ int clif_updatestatus(struct map_session_data *sd,int type)
 		WFIFOW(fd,2)=sd->cart_num;
 		WFIFOW(fd,4)=MAX_CART;
 		WFIFOL(fd,6)=sd->cart_weight;
-		WFIFOL(fd,10)=battle_config.max_cart_weight + (pc_checkskill(sd,GN_REMODELING_CART)*5000);
+		WFIFOL(fd,10)=battle_config.max_cart_weight + 5000 * pc_checkskill(sd,GN_REMODELING_CART);
 		len=14;
 		break;
 
@@ -6251,22 +6238,6 @@ int clif_skill_produce_mix_list(struct map_session_data *sd, int skill_num, int 
 	return 0;
 }
 
-void clif_skill_msg(struct map_session_data *sd, int skill_id, int msg)
-{
-#if PACKETVER >= 20090922
-	int fd;
-
-	nullpo_retv(sd);
-
-	fd = sd->fd;
-	WFIFOHEAD(fd,packet_len(0x7e6));
-	WFIFOW(fd,0) = 0x7e6;
-	WFIFOW(fd,2) = skill_id;
-	WFIFOL(fd,4) = msg;
-	WFIFOSET(fd, packet_len(0x7e6));
-#endif
-}
-
 /*==========================================
  *
  *------------------------------------------*/
@@ -6320,7 +6291,7 @@ void clif_cooking_list(struct map_session_data *sd, int trigger, int skill_id, i
 		if( skill_id != AM_PHARMACY ) // AM_PHARMACY is used to Cooking.
 		{	// It fails.
 #if PACKETVER >= 20090922
-			clif_skill_msg(sd,skill_id,SKMSG_MATERIAL_FAIL);
+			clif_msg_skill(sd,skill_id,MSG_SKILL_MATERIAL_FAIL);
 #else
 			WFIFOW(fd,2) = 6 + 2 * c;
 			WFIFOSET(fd,WFIFOW(fd,2));
@@ -10257,8 +10228,8 @@ void clif_viewequip_ack_v5(struct map_session_data* sd, struct map_session_data*
 	WFIFOSET(fd, WFIFOW(fd, 2));
 }
 
-/// Display msgstringtable.txt string (ZC_MSG)
-/// R 0291 <message>.W
+/// Display msgstringtable.txt string (ZC_MSG).
+/// 0291 <message>.W
 void clif_msg(struct map_session_data* sd, unsigned short id)
 {
 	int fd;
@@ -10269,6 +10240,48 @@ void clif_msg(struct map_session_data* sd, unsigned short id)
 	WFIFOW(fd, 0) = 0x291;
 	WFIFOW(fd, 2) = id;  // zero-based msgstringtable.txt index
 	WFIFOSET(fd, packet_len(0x291));
+}
+
+/// Display msgstringtable.txt string and fill in a valid for %d format (ZC_MSG_VALUE).
+/// 0x7e2 <message>.W <value>.L
+void clif_msg_value(struct map_session_data* sd, unsigned short id, int value)
+{
+	int fd = sd->fd;
+
+	WFIFOHEAD(fd, packet_len(0x7e2));
+	WFIFOW(fd,0) = 0x7e2;
+	WFIFOW(fd,2) = id;
+	WFIFOL(fd,4) = value;
+	WFIFOSET(fd, packet_len(0x7e2));
+}
+
+/// Displays msgstringtable.txt string, prefixed with a skill name. (ZC_MSG_SKILL).
+/// 07e6 <skill id>.W <msg id>.L
+///
+/// NOTE: Message has following format and is printed in color 0xCDCDFF (purple):
+///       "[SkillName] Message"
+void clif_msg_skill(struct map_session_data* sd, unsigned short skill_id, int msg_id)
+{
+	int fd = sd->fd;
+
+	WFIFOHEAD(fd, packet_len(0x7e6));
+	WFIFOW(fd,0) = 0x7e6;
+	WFIFOW(fd,2) = skill_id;
+	WFIFOL(fd,4) = msg_id;
+	WFIFOSET(fd, packet_len(0x7e6));
+}
+
+/// Display msgstringtable.txt string with a set color. (ZC_MSG_COLOR).
+/// 0x9cd <message>.W <color>.L
+void clif_msg_color(struct map_session_data* sd, unsigned short id, unsigned int color)
+{
+	int fd = sd->fd;
+
+	WFIFOHEAD(fd, packet_len(0x9cd));
+	WFIFOW(fd,0) = 0x9cd;
+	WFIFOW(fd,2) = id;
+	WFIFOL(fd,4) = color;
+	WFIFOSET(fd, packet_len(0x9cd));
 }
 
 /// View player equip request denied
@@ -17776,7 +17789,7 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0, 14,  0,  0,  0,  0,  0,  0,  0,  0,
 	//#0x09C0
-	    0, 10,  0,  0,  0,  0,  0,  0,  0,  0, 23, 17,  0,  0,102,  0,
+	    0, 10,  0,  0,  0,  0,  0,  0,  0,  0, 23, 17,  0,  8,102,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, -1, -1, -1,  0,  7,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0, 75, -1,  0,  0,  0,  0, -1, -1, -1,

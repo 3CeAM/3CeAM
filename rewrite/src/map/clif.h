@@ -482,7 +482,6 @@ void clif_skill_memomessage(struct map_session_data* sd, int type);
 void clif_skill_teleportmessage(struct map_session_data* sd, int type);
 int clif_skill_produce_mix_list(struct map_session_data *sd, int skill_num, int trigger);
 void clif_cooking_list(struct map_session_data *sd, int trigger, int skill_id, int qty, int list_type);
-void clif_skill_msg(struct map_session_data *sd, int skill_id, int msg);
 
 int clif_produceeffect(struct map_session_data* sd,int flag,int nameid);
 
@@ -682,6 +681,9 @@ void clif_viewequip_fail(struct map_session_data* sd);
 void clif_equipcheckbox(struct map_session_data* sd);
 
 void clif_msg(struct map_session_data* sd, unsigned short id);
+void clif_msg_value(struct map_session_data* sd, unsigned short id, int value);
+void clif_msg_skill(struct map_session_data* sd, unsigned short skill_id, int msg_id);
+void clif_msg_color(struct map_session_data* sd, unsigned short id, unsigned int color);
 
 //quest system [Kevin] [Inkfish]
 void clif_quest_send_list(struct map_session_data * sd);  
@@ -693,9 +695,8 @@ void clif_quest_update_objective(struct map_session_data * sd, struct quest * qd
 void clif_quest_show_event(struct map_session_data *sd, struct block_list *bl, short state, short color);
 void clif_displayexp(struct map_session_data *sd, unsigned int exp, char type, bool quest);
 
-
 void clif_msgtable(int fd, int line);
-void clif_msgtable_num(int fd, int line, int num);
+
 int clif_send(const uint8* buf, int len, struct block_list* bl, enum send_target type);
 int do_final_clif(void);
 int do_init_clif(void);

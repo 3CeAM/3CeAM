@@ -3987,8 +3987,8 @@ ACMD_FUNC(kickall)
 ACMD_FUNC(allskill)
 {
 	nullpo_retr(-1, sd);
-	pc_allskillup(sd); // all skills
 	sd->status.skill_point = 0; // 0 skill points
+	pc_allskillup(sd); // all skills
 	clif_updatestatus(sd, SP_SKILLPOINT); // update
 	clif_displaymessage(fd, msg_txt(76)); // All skills have been added to your skill tree.
 
@@ -5141,7 +5141,7 @@ ACMD_FUNC(cart)
 		{
 			if (!pc_checkskill(sd, MC_PUSHCART))
 			{
-				clif_displaymessage(fd, msg_txt(723));// You must learn the Push Cart skill to have a falcon.
+				clif_displaymessage(fd, msg_txt(723));// You must learn the Push Cart skill to have a cart.
 				return -1;
 			}
 
