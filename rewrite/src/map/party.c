@@ -1029,7 +1029,7 @@ int party_sub_count(struct block_list *bl, va_list ap)
 int party_sub_count_banding(struct block_list *bl, va_list ap)
 {
 	struct map_session_data *sd = (TBL_PC *)bl;
-	unsigned char check_type = va_arg(ap,unsigned char);// 0 = Banding Count, 1 = HP Check, 2 = Max Rage Spheres On All
+	int check_type = va_arg(ap,int);// 0 = Banding Count, 1 = HP Check, 2 = Max Rage Spheres On All
 
 	if (sd->state.autotrade)
 		return 0;

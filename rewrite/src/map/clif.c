@@ -4975,7 +4975,7 @@ static int clif_calc_walkdelay(struct block_list *bl,int delay, int type, int da
 /// Sends a 'damage' packet (src performs action on dst)
 /// 008a <src ID>.L <dst ID>.L <server tick>.L <src speed>.L <dst speed>.L <damage>.W <div>.W <type>.B <damage2>.W (ZC_NOTIFY_ACT)
 /// 02e1 <src ID>.L <dst ID>.L <server tick>.L <src speed>.L <dst speed>.L <damage>.L <div>.W <type>.B <damage2>.L (ZC_NOTIFY_ACT2)
-/// 08c8 <src ID>.L <dst ID>.L <server tick>.L <src speed>.L <dst speed>.L <damage>.L <IsSPDamage>.B <div>.W <type>.B <damage2>.L (ZC_NOTIFY_ACT3) (Not Coded In - Rytech)
+/// 08c8 <src ID>.L <dst ID>.L <server tick>.L <src speed>.L <dst speed>.L <damage>.L <IsSPDamage>.B <div>.W <type>.B <damage2>.L (ZC_NOTIFY_ACT3)
 ///	Types:
 ///     0 = ATTACK - damage [ damage: total damage, div: amount of hits, damage2: assassin dual-wield damage ]
 ///     1 = ITEMPICKUP - pick up item
@@ -4992,14 +4992,12 @@ static int clif_calc_walkdelay(struct block_list *bl,int delay, int type, int da
 ///    12 = TOUCHSKILL - (touch skill?)
 int clif_damage(struct block_list* src, struct block_list* dst, unsigned int tick, int sdelay, int ddelay, int damage, int div, int type, int damage2)
 {
-	unsigned char buf[34];
+	unsigned char buf[33];
 	struct status_change *sc;
 #if PACKETVER < 20071113
 	const int cmd = 0x8a;
-#elif PACKETVER < 20131223
-	const int cmd = 0x2e1;
 #else
-	const int cmd = 0x8c8;
+	const int cmd = 0x2e1;
 #endif
 
 	nullpo_ret(src);
@@ -5035,7 +5033,7 @@ int clif_damage(struct block_list* src, struct block_list* dst, unsigned int tic
 	}
 	WBUFW(buf,24)=div;
 	WBUFB(buf,26)=type;
-#elif PACKETVER < 20131223
+#else
 	if (battle_config.hide_woe_damage && map_flag_gvg(src->m))
 	{
 		WBUFL(buf,22)=damage?div:0;
@@ -5048,20 +5046,6 @@ int clif_damage(struct block_list* src, struct block_list* dst, unsigned int tic
 	}
 	WBUFW(buf,26)=div;
 	WBUFB(buf,28)=type;
-#else
-	if (battle_config.hide_woe_damage && map_flag_gvg(src->m))
-	{
-		WBUFL(buf,22)=damage?div:0;
-		WBUFL(buf,30)=damage2?div:0;
-	}
-	else
-	{
-		WBUFL(buf,22)=damage;
-		WBUFL(buf,30)=damage2;
-	}
-	WBUFB(buf,26)=0;// IsSPDamage - Displays blue digits. Need a way to handle this. [Rytech]
-	WBUFW(buf,27)=div;
-	WBUFB(buf,29)=type;
 #endif
 	if(disguised(dst))
 	{
@@ -5080,14 +5064,69 @@ int clif_damage(struct block_list* src, struct block_list* dst, unsigned int tic
 #if PACKETVER < 20071113
 		if(damage > 0) WBUFW(buf,22) = -1;
 		if(damage2 > 0) WBUFW(buf,27) = -1;
-#elif PACKETVER < 20131223
-		if(damage > 0) WBUFL(buf,22) = -1;
-		if(damage2 > 0) WBUFL(buf,29) = -1;
 #else
 		if(damage > 0) WBUFL(buf,22) = -1;
-		if(damage2 > 0) WBUFL(buf,30) = -1;
+		if(damage2 > 0) WBUFL(buf,29) = -1;
 #endif
 		clif_send(buf,packet_len(cmd),src,SELF);
+	}
+	//Return adjusted can't walk delay for further processing.
+	return clif_calc_walkdelay(dst,ddelay,type,damage+damage2,div);
+}
+
+/// Sends a 'damage' packet for sp damage (src performs action on dst)
+/// 08c8 <src ID>.L <dst ID>.L <server tick>.L <src speed>.L <dst speed>.L <damage>.L <IsSPDamage>.B <div>.W <type>.B <damage2>.L (ZC_NOTIFY_ACT3)
+///	Types:
+///     0 = ATTACK - damage [ damage: total damage, div: amount of hits, damage2: assassin dual-wield damage ]
+///     7 = ATTACK_REPEAT - (repeat damage?)
+///     8 = ATTACK_MULTIPLE - multi-hit damage
+///    10 = ATTACK_CRITICAL - critical hit
+int clif_spdamage(struct block_list* src, struct block_list* dst, unsigned int tick, int sdelay, int ddelay, int damage, int div, int type, int damage2)
+{
+	unsigned char buf[34];
+
+	nullpo_ret(src);
+	nullpo_ret(dst);
+
+	type = clif_calc_delay(type,div,damage+damage2,ddelay);
+
+	WBUFW(buf,0)=0x8c8;
+	WBUFL(buf,2)=src->id;
+	WBUFL(buf,6)=dst->id;
+	WBUFL(buf,10)=tick;
+	WBUFL(buf,14)=sdelay;
+	WBUFL(buf,18)=ddelay;
+	if (battle_config.hide_woe_damage && map_flag_gvg(src->m))
+	{
+		WBUFL(buf,22)=damage?div:0;
+		WBUFL(buf,30)=damage2?div:0;
+	}
+	else
+	{
+		WBUFL(buf,22)=damage;
+		WBUFL(buf,30)=damage2;
+	}
+	WBUFB(buf,26)=1;
+	WBUFW(buf,27)=div;
+	WBUFB(buf,29)=type;
+
+	if(disguised(dst))
+	{
+		clif_send(buf,packet_len(0x8c8),dst,AREA_WOS);
+		WBUFL(buf,6) = -dst->id;
+		clif_send(buf,packet_len(0x8c8),dst,SELF);
+	}
+	else
+		clif_send(buf,packet_len(0x8c8),dst,AREA);
+
+	if(disguised(src))
+	{
+		WBUFL(buf,2) = -src->id;
+		if (disguised(dst))
+			WBUFL(buf,6) = dst->id;
+		if(damage > 0) WBUFL(buf,22) = -1;
+		if(damage2 > 0) WBUFL(buf,30) = -1;
+		clif_send(buf,packet_len(0x8c8),src,SELF);
 	}
 	//Return adjusted can't walk delay for further processing.
 	return clif_calc_walkdelay(dst,ddelay,type,damage+damage2,div);
@@ -11232,6 +11271,7 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 		sd->sc.data[SC_FALLENEMPIRE] || 
 		sd->sc.data[SC_CURSEDCIRCLE_ATKER] ||
 		sd->sc.data[SC_CURSEDCIRCLE_TARGET] ||
+		sd->sc.data[SC_GRAVITYCONTROL] ||
 		sd->sc.data[SC_SUHIDE]
 	))
 		return;
@@ -11568,6 +11608,7 @@ void clif_parse_TakeItem(int fd, struct map_session_data *sd)
 			(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOITEM) ||
 			sd->sc.data[SC_CURSEDCIRCLE_TARGET] ||
 			sd->sc.data[SC_NEWMOON] ||
+			sd->sc.data[SC_GRAVITYCONTROL] ||
 			sd->sc.data[SC_SUHIDE])
 		)
 			break;
