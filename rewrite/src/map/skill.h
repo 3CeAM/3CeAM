@@ -321,6 +321,7 @@ int skill_unit_ondamaged(struct skill_unit *src,struct block_list *bl,int damage
 
 int skill_castfix( struct block_list *bl, int skill_id, int skill_lv);
 int skill_delayfix( struct block_list *bl, int skill_id, int skill_lv);
+int skill_cooldownfix (struct block_list *bl, int skill_id, int skill_lv);
 
 // Skill conditions check and remove [Inkfish]
 int skill_check_condition_castbegin(struct map_session_data *sd, short skill, short lv);

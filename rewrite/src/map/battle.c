@@ -1559,7 +1559,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				break;
 
 		case RL_H_MINE:
-			if ( wflag&8 )// Explosion damage deals fire damage according to description.
+		case SJ_PROMINENCEKICK:
+			if ( wflag&8 )// Explosion damage for howling mine deals fire damage according to description.
 				s_ele = s_ele_ = ELE_FIRE;
 			break;
 
@@ -2907,9 +2908,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case SJ_STAREMPEROR:
 					skillratio = 800 + 200 * skill_lv;
 					break;
-				case SJ_NOVAEXPLOSING:
-					skillratio = 200 + 100 * skill_lv;
-					break;
 				case SJ_SOLARBURST:
 					skillratio = 900 + 100 * skill_lv;
 					if( level_effect_bonus == 1 )
@@ -2918,7 +2916,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						skillratio += skillratio * sc->data[SC_LIGHTOFSUN]->val2 / 100;
 					break;
 				case SJ_PROMINENCEKICK:
-					skillratio = 150 + 50 * skill_lv;
+					if ( !(wflag&8) )// Ratio for main hit. The fire hit is just 100%.
+						skillratio = 150 + 50 * skill_lv;
 					break;
 				case SJ_FALLINGSTAR_ATK:
 				case SJ_FALLINGSTAR_ATK2:
@@ -3149,14 +3148,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case GN_CARTCANNON:
 					if( sc && sc->data[SC_GN_CARTBOOST] )
 					ATK_ADD( 10 * sc->data[SC_GN_CARTBOOST]->val1 );
-					break;
-				case SJ_NOVAEXPLOSING:
-					{
-						short hp_skilllv = skill_lv;
-						if ( hp_skilllv > 5 )
-							hp_skilllv = 5;// Prevents dividing the MaxHP by 0 on levels higher then 5.
-						ATK_ADD(sstatus->max_hp / (6 - hp_skilllv) + status_get_max_sp(src) * (2 * skill_lv));
-					}
 					break;
 			}
 		}
@@ -4253,6 +4244,8 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						skillratio = 120 * skill_lv + 60 * (sd?pc_checkskill(sd, WM_LESSON):10);
 						if( level_effect_bonus == 1 )
 							skillratio = skillratio * status_get_base_lv_effect(src) / 100;
+						if ( tsc && (tsc->data[SC_SLEEP] || tsc->data[SC_DEEPSLEEP]) )
+							skillratio += skillratio * 50 / 100;
 						break;
 					case WM_REVERBERATION_MAGIC:
 						skillratio += 100 * skill_lv;
@@ -4802,6 +4795,20 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		break;
 	case GN_HELLS_PLANT_ATK:
 		md.damage = 10 * skill_lv * status_get_base_lv_effect(target) + 7 * sstatus->int_ / 2 * ( status_get_job_lv_effect(src) / 4 + 18 ) * 5 / ( 10 - (sd?pc_checkskill(sd,AM_CANNIBALIZE):5) );
+		break;
+	case SJ_NOVAEXPLOSING:
+		{
+			short hp_skilllv = skill_lv;
+
+			if ( hp_skilllv > 5 )
+				hp_skilllv = 5;// Prevents dividing the MaxHP by 0 on levels higher then 5.
+
+			// (Base ATK + Weapon ATK) * Ratio
+			md.damage = (sstatus->batk + sstatus->rhw.atk) * (200 + 100 * skill_lv) / 100;
+
+			// Additional Damage
+			md.damage += sstatus->max_hp / (6 - hp_skilllv) + status_get_max_sp(src) * (2 * skill_lv);
+		}
 		break;
 	case SP_SOULEXPLOSION:
 		md.damage = tstatus->hp * (20 + 10 * skill_lv) / 100;
@@ -6391,6 +6398,9 @@ static const struct _battle_data {
 	{ "renewal_casting_square_debug",       &battle_config.renewal_casting_square_debug,    0,      0,      1,              },
 	{ "renewal_level_effect_skills",        &battle_config.renewal_level_effect_skills,     1,      0,      1,              },
 	{ "castrate_dex_scale_renewal_jobs",    &battle_config.castrate_dex_scale_renewal_jobs, 150,    1,      INT_MAX,        },
+	{ "cooldown_rate",                      &battle_config.cooldown_rate,                   100,    0,      INT_MAX,        },
+	{ "min_skill_cooldown_limit",           &battle_config.min_skill_cooldown_limit,        0,      0,      INT_MAX,        },
+	{ "no_skill_cooldown",                  &battle_config.no_skill_cooldown,               BL_MOB, BL_NUL, BL_ALL,         },
 	{ "max_parameter_renewal_jobs",         &battle_config.max_parameter_renewal_jobs,      130,    10,     10000,          },
 	{ "max_baby_parameter_renewal_jobs",    &battle_config.max_baby_parameter_renewal_jobs, 117,    10,     10000,          },
 	{ "renewal_stats_handling",             &battle_config.renewal_stats_handling,          1,      0,      1,              },

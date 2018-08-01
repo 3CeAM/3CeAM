@@ -1318,10 +1318,10 @@
 2579,0,6,4,-1,0x2,3,7,1,yes,0,0,0,weapon,0,	SJ_NEWMOONKICK,New Moon Kick
 2580,1,6,1,-1,0,0,7,1,yes,0,0,0,weapon,0,	SJ_FLASHKICK,Flash Kick
 2581,0,6,4,-1,0x2,3,5,1,yes,0,0,0,weapon,0,	SJ_STAREMPEROR,Star Emperor
-2582,3,6,1,0,0xA8,0,5,1,yes,0,0,0,weapon,0,	SJ_NOVAEXPLOSING,Nova Explosing
+2582,3,6,1,0,0xD0,0,5,1,yes,0,0,0,misc,0,	SJ_NOVAEXPLOSING,Nova Explosing
 2583,0,6,4,0,0x1,0,3,1,yes,0,0,0,none,0,	SJ_UNIVERSESTANCE,Universe Stance
 2584,0,6,4,0,0x1,0,7,1,yes,0,0,0,none,0,	SJ_FALLINGSTAR,Falling Star
-2585,9,6,1,0,0,0,1,1,yes,0,0,0,none,0,		SJ_GRAVITYCONTROL,Gravity Control
+2585,9,6,1,0,0x1,0,1,1,yes,0,0,0,none,0,	SJ_GRAVITYCONTROL,Gravity Control
 2586,0,6,4,0,0x1,0,5,1,yes,0,0,0,none,0,	SJ_BOOKOFDIMENSION,Book of Dimension
 2587,7,6,2,-1,0,0,5,1,yes,0,0,0,weapon,0,	SJ_BOOKOFCREATINGSTAR,Book of Creating Star
 2588,0,6,4,0,0x1,0,3,1,yes,0,0,0,none,0,	SJ_DOCUMENT,Document
