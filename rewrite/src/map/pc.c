@@ -2783,6 +2783,10 @@ int pc_bonus(struct map_session_data *sd,int type,int val)
 		if(sd->state.lr_flag != 2)
 			sd->special_state.no_gemstone = 1;
 		break;
+	case SP_NO_MADOFUEL:
+		if(sd->state.lr_flag != 2)
+			sd->special_state.no_madofuel = 1;
+		break;
 	case SP_INTRAVISION: // Maya Purple Card effect allowing to see Hiding/Cloaking people [DracoRPG]
 		if(sd->state.lr_flag != 2) {
 			sd->special_state.intravision = 1;
@@ -2891,6 +2895,10 @@ int pc_bonus(struct map_session_data *sd,int type,int val)
 	case SP_DELAYRATE:
 		if(sd->state.lr_flag != 2)
 			sd->delayrate+=val;
+		break;
+	case SP_COOLDOWNRATE:
+		if(sd->state.lr_flag != 2)
+			sd->cooldownrate+=val;
 		break;
 	case SP_CRIT_ATK_RATE:
 		if(sd->state.lr_flag != 2)

@@ -2083,7 +2083,7 @@ packet_ver: 36
 0x0acb,12
 0x0acc,18
 
-//2018-06-20eRagexeRE
+//2018-06-20eRagexeRE/2018-06-21aRagexeRE
 packet_ver: 37
 0x0437,7,actionrequest,2:6
 0x0438,10,useskilltoid,2:4:6
