@@ -463,14 +463,14 @@ BaseJob	119	1
 BaseClass	120	1
 killerrid	121 1
 killedrid	122 1
-BaseThird	2103	1
-MaxHairDye	2104	1
-MaxHairStyle	2105	1
-MaxBodyDye	2106	1
-MaxBodyStyle	2107	1
-MaxDoramHairDye	2108	1
-MaxDoramHairStyle	2109	1
-MaxDoramBodyDye	2110	1
+BaseThird	2104	1
+MaxHairDye	2105	1
+MaxHairStyle	2106	1
+MaxBodyDye	2107	1
+MaxBodyStyle	2108	1
+MaxDoramHairDye	2109	1
+MaxDoramHairStyle	2110	1
+MaxDoramBodyDye	2111	1
 
 bMaxHP	6
 bMaxSP	8
@@ -636,7 +636,9 @@ bMagicHPGainValue	2044
 bAddClassDropItem	2045
 
 bFixedCastRate	2101
-bAddMatk	2102
+bCooldownRate	2102
+bAddMatk	2103
+bNoMadoFuel	2112
 
 EQI_HEAD_TOP	1
 EQI_ARMOR	2

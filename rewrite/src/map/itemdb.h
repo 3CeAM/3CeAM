@@ -37,6 +37,8 @@ enum item_itemid {
 	ITEMID_PAINT_BRUSH,
 	ITEMID_SURFACE_PAINT,
 
+	ITEMID_MAGIC_GEAR_FUEL = 6146,
+
 	// Warlock's Magic Spellbooks
 	ITEMID_MAGICBOOK_FIREBOLT = 6189,
 	ITEMID_MAGICBOOK_COLDBOLT,
@@ -159,6 +161,7 @@ enum item_itemid {
 #define itemid_is_element_point(id) ( (id) >= ITEMID_SCARLETT_POINT && (id) <= ITEMID_LIME_GREEN_POINT )
 #define itemid_is_eclage_cures(id) ( (id) >= ITEMID_SNOW_FLIP && (id) <= ITEMID_YGGDRASIL_DUST )
 #define itemid_is_holy_bullet(id) ( (id) == ITEMID_SILVER_BULLET || (id) == ITEMID_PURIFICATION_BULLET )
+#define itemid_is_mado_fuel(id) ( (id) == ITEMID_MAGIC_GEAR_FUEL )
 
 //The only item group required by the code to be known. See const.txt for the full list.
 #define IG_FINDINGORE 6

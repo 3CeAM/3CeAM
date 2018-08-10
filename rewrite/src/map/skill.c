@@ -1075,11 +1075,11 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 			status_change_end(bl, SC_ASPDPOTION2, INVALID_TIMER);
 			// New soul links confirmed to not dispell with this skill
 			// but thats likely a bug since soul links can't stack and
-			// soul cutter skill works on them. So ill add this here for now. [Rytech]
-			status_change_end(bl, SC_SOULGOLEM, INVALID_TIMER);
-			status_change_end(bl, SC_SOULSHADOW, INVALID_TIMER);
-			status_change_end(bl, SC_SOULFALCON, INVALID_TIMER);
-			status_change_end(bl, SC_SOULFAIRY, INVALID_TIMER);
+			// soul cutter skill works on them. Leave here in case that changes. [Rytech]
+			//status_change_end(bl, SC_SOULGOLEM, INVALID_TIMER);
+			//status_change_end(bl, SC_SOULSHADOW, INVALID_TIMER);
+			//status_change_end(bl, SC_SOULFALCON, INVALID_TIMER);
+			//status_change_end(bl, SC_SOULFAIRY, INVALID_TIMER);
 		}
 		break;
 	case TK_TURNKICK:
@@ -1463,13 +1463,10 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 				case SC_B_TRAP:			case SC_C_MARKER:		case SC_H_MINE:
 				case SC_ANTI_M_BLAST:	case SC_FALLEN_ANGEL:
 				// Star Emperor
-				case SC_LUNARSTANCE:	case SC_UNIVERSESTANCE:	case SC_SUNSTANCE:
-				case SC_STARSTANCE:		case SC_FLASHKICK:		case SC_FALLINGSTAR:
-				case SC_NOVAEXPLOSING:	case SC_DIMENSION:		case SC_GRAVITYCONTROL:
+				case SC_NEWMOON:		case SC_FLASHKICK:		case SC_NOVAEXPLOSING:
 				// Soul Reaper
-				case SC_SOULCOLLECT:	case SC_SOULREAPER:		case SC_SOULUNITY:
-				case SC_SOULSHADOW:		case SC_SOULFAIRY:		case SC_SOULFALCON:
-				case SC_SOULGOLEM:		case SC_SOULDIVISION:	case SC_USE_SKILL_SP_SPA:
+				case SC_SOULUNITY:		case SC_SOULSHADOW:		case SC_SOULFAIRY:
+				case SC_SOULFALCON:		case SC_SOULGOLEM:		case SC_USE_SKILL_SP_SPA:
 				case SC_USE_SKILL_SP_SHA:	case SC_SP_SHA:
 				// 3rd Job Level Expansion
 				case SC_FRIGG_SONG:		case SC_OFFERTORIUM:	case SC_TELEKINESIS_INTENSE:
@@ -7679,13 +7676,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_B_TRAP:			case SC_C_MARKER:		case SC_H_MINE:
 				case SC_ANTI_M_BLAST:	case SC_FALLEN_ANGEL:
 				// Star Emperor
-				case SC_LUNARSTANCE:	case SC_UNIVERSESTANCE:	case SC_SUNSTANCE:
-				case SC_STARSTANCE:		case SC_FLASHKICK:		case SC_FALLINGSTAR:
-				case SC_NOVAEXPLOSING:	case SC_DIMENSION:		case SC_GRAVITYCONTROL:
+				case SC_NEWMOON:		case SC_FLASHKICK:		case SC_NOVAEXPLOSING:
 				// Soul Reaper
-				case SC_SOULCOLLECT:	case SC_SOULREAPER:		case SC_SOULUNITY:
-				case SC_SOULSHADOW:		case SC_SOULFAIRY:		case SC_SOULFALCON:
-				case SC_SOULGOLEM:		case SC_SOULDIVISION:	case SC_USE_SKILL_SP_SPA:
+				case SC_SOULUNITY:		case SC_SOULSHADOW:		case SC_SOULFAIRY:
+				case SC_SOULFALCON:		case SC_SOULGOLEM:		case SC_USE_SKILL_SP_SPA:
 				case SC_USE_SKILL_SP_SHA:	case SC_SP_SHA:
 				// 3rd Job Level Expansion
 				case SC_FRIGG_SONG:		case SC_OFFERTORIUM:	case SC_TELEKINESIS_INTENSE:
@@ -9339,7 +9333,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		if (flag&1 || (i = skill_get_splash(skillid, skilllv)) < 1)
 		{
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
-			if((dstsd && (dstsd->class_&MAPID_UPPERMASK) == MAPID_SOUL_LINKER) || rand()%100 >= 60 + 8 * skilllv)//Are Soul Linkers immune to this? [Rytech]
+			if(rand()%100 >= 60 + 8 * skilllv)
 			{
 				if (sd)
 					clif_skill_fail(sd,skillid,0,0,0);
@@ -9446,14 +9440,12 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_B_TRAP:			case SC_C_MARKER:		case SC_H_MINE:
 				case SC_ANTI_M_BLAST:	case SC_FALLEN_ANGEL:
 				// Star Emperor
-				case SC_LUNARSTANCE:	case SC_UNIVERSESTANCE:	case SC_SUNSTANCE:
-				case SC_STARSTANCE:		case SC_FLASHKICK:		case SC_FALLINGSTAR:
-				case SC_NOVAEXPLOSING:	case SC_DIMENSION:		case SC_GRAVITYCONTROL:
+				case SC_NEWMOON:		case SC_FLASHKICK:		case SC_DIMENSION:
+				case SC_NOVAEXPLOSING:
 				// Soul Reaper
-				case SC_SOULCOLLECT:	case SC_SOULREAPER:		case SC_SOULUNITY:
-				case SC_SOULSHADOW:		case SC_SOULFAIRY:		case SC_SOULFALCON:
-				case SC_SOULGOLEM:		case SC_USE_SKILL_SP_SPA:	case SC_USE_SKILL_SP_SHA:
-				case SC_SP_SHA:
+				case SC_SOULUNITY:		case SC_SOULSHADOW:		case SC_SOULFAIRY:
+				case SC_SOULFALCON:		case SC_SOULGOLEM:		case SC_USE_SKILL_SP_SPA:
+				case SC_USE_SKILL_SP_SHA:	case SC_SP_SHA:
 				// 3rd Job Level Expansion
 				case SC_FRIGG_SONG:		case SC_OFFERTORIUM:	case SC_TELEKINESIS_INTENSE:
 				case SC_KINGS_GRACE:
@@ -15374,19 +15366,19 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		}
 		break;
 	case ST_SUNSTANCE:
-		if(!(sc && sc->data[SC_SUNSTANCE])) {
+		if(!(sc && (sc->data[SC_SUNSTANCE] || sc->data[SC_UNIVERSESTANCE]))) {
 			clif_skill_fail(sd,skill,0,0,0);
 			return 0;
 		}
 		break;
 	case ST_MOONSTANCE:
-		if(!(sc && sc->data[SC_LUNARSTANCE])) {
+		if(!(sc && (sc->data[SC_LUNARSTANCE] || sc->data[SC_UNIVERSESTANCE]))) {
 			clif_skill_fail(sd,skill,0,0,0);
 			return 0;
 		}
 		break;
 	case ST_STARSTANCE:
-		if(!(sc && sc->data[SC_STARSTANCE])) {
+		if(!(sc && (sc->data[SC_STARSTANCE] || sc->data[SC_UNIVERSESTANCE]))) {
 			clif_skill_fail(sd,skill,0,0,0);
 			return 0;
 		}
@@ -15963,6 +15955,9 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 			}
 		}
 
+		if( itemid_is_mado_fuel(req.itemid[i]) && sd->special_state.no_madofuel )
+			req.amount[i] = req.itemid[i] = 0;
+
 		if( sc && (((skill == SA_FLAMELAUNCHER || skill == SA_VOLCANO) && sc->data[SC_TROPIC_OPTION]) ||
 			((skill == SA_FROSTWEAPON || skill == SA_DELUGE) && sc->data[SC_CHILLY_AIR_OPTION]) ||
 			((skill == SA_LIGHTNINGLOADER || skill == SA_VIOLENTGALE) && sc->data[SC_WILD_STORM_OPTION]) ||
@@ -16108,9 +16103,9 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 			time = time + fixed_time;
 			if ( sd && ((sd->class_&MAPID_THIRDMASK) >= MAPID_SUPER_NOVICE_E && (sd->class_&MAPID_THIRDMASK) <= MAPID_SOUL_REAPER || 
 				(sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION || (sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER))
-			rate = battle_config.castrate_dex_scale_renewal_jobs;
+				rate = battle_config.castrate_dex_scale_renewal_jobs;
 			else
-			rate = battle_config.castrate_dex_scale;
+				rate = battle_config.castrate_dex_scale;
 			scale = rate - status_get_dex(bl);
 			if( scale > 0 )	// Not instant cast
 				time = time * scale / rate;
@@ -16158,8 +16153,6 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 			time -= time * sc->data[SC_TELEKINESIS_INTENSE]->val3 / 100;
 		if (sc->data[SC_SLOWCAST])
 			time += time * sc->data[SC_SLOWCAST]->val2 / 100;
-		if (sc->data[SC_FROST])
-			time += time * 50 / 100;
 	}
 
 	//These status's adjust the fixed cast time by a fixed amount. Fixed adjustments stack and can increase or decrease the time.
@@ -16176,20 +16169,26 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 	//worn card, skill, or status will be used.
 	if (sd && fixed_time > 0)
 	{
+		short fixed_cast_skill_rate = 0;
 		int i;
 		if( sd->fixedcastrate != 100 )//Fixed cast reduction on all skills.
 			fixed_cast_rate = 100 - sd->fixedcastrate;
 		for( i = 0; i < ARRAYLENGTH(sd->fixedskillcast) && sd->fixedskillcast[i].id; i++ )
 		{
 			if( sd->fixedskillcast[i].id == skill_id )
-			{	//Fixed cast reduction for a set skill.
-				fixed_cast_rate -= sd->fixedskillcast[i].val;
+			{
+				fixed_cast_skill_rate = 100 - (100 + sd->fixedskillcast[i].val);
+
+				// Only take the fixed cast rate reduction for a certain
+				// skill if bonus2 is giving a higher rate then bonus1.
+				if ( fixed_cast_skill_rate > fixed_cast_rate )
+					fixed_cast_rate = fixed_cast_skill_rate;
 				break;
 			}
 		}
 	}
 
-	//Fixed cast time percentage reduction from radius if learned. 
+	//Fixed cast time percentage reduction from radius if learned.
 	if( sd && pc_checkskill(sd, WL_RADIUS) > 0 && skill_id >= WL_WHITEIMPRISON && skill_id <= WL_FREEZE_SP && fixed_time > 0 )
 	{
 		int radiusbonus = 5 + 5 * pc_checkskill(sd, WL_RADIUS);
@@ -16208,10 +16207,14 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 			fixed_cast_rate = sc->data[SC_HEAT_BARREL]->val2;
 		if (sc->data[SC_IZAYOI])
 			fixed_cast_rate = 100;
+
+		// Reductions.
+		if (sc->data[SC_FROST])
+			fixed_cast_rate -= 50;
 	}
 
-	//Finally after checking through many different checks, we finalize how much of a percentage the fixed cast time will be reduced.
-	if ( fixed_time > 0 && fixed_cast_rate > 0 )
+	//Finally after checking through many different checks, we finalize how much of a percentage the fixed cast time will be increased or reduced.
+	if ( fixed_time > 0 && fixed_cast_rate != 0 )
 		fixed_time -= fixed_time * fixed_cast_rate / 100;
 
 	//Check prevents variable and fixed times from going below to a negeative value.
@@ -16224,9 +16227,9 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 	//Only add variable and fixed times when renewal casting for renewal skills are on. Without this check,
 	//it will add the 2 together during the above phase and then readd the fixed time.
 	if (battle_config.renewal_casting_renewal_skills == 1 && (skill_id >= RK_ENCHANTBLADE && skill_id <= AB_CONVENIO || skill_id >= MH_SUMMON_LEGION && skill_id <= MH_VOLCANIC_ASH))
-	final_time = time + fixed_time;
+		final_time = time + fixed_time;
 	else
-	final_time = time;
+		final_time = time;
 
 	//Entire cast time is increased if caster has the Laziness status.
 	if (sc && sc->data[SC__LAZINESS])
@@ -16345,7 +16348,6 @@ int skill_delayfix (struct block_list *bl, int skill_id, int skill_lv)
 
 int skill_cooldownfix (struct block_list *bl, int skill_id, int skill_lv)
 {
-	//int delaynodex = skill_get_delaynodex(skill_id, skill_lv);
 	int time = skill_get_cooldown(skill_id, skill_lv);
 	struct map_session_data *sd;
 	struct status_change *sc = status_get_sc(bl);
@@ -16353,84 +16355,17 @@ int skill_cooldownfix (struct block_list *bl, int skill_id, int skill_lv)
 	nullpo_ret(bl);
 	sd = BL_CAST(BL_PC, bl);
 
-	//if (skill_id == SA_ABRACADABRA)
-	//	return 0; //Will use picked skill's delay.
-
 	if (bl->type&battle_config.no_skill_cooldown)
 		return battle_config.min_skill_cooldown_limit;
-
-	//if (time < 0)
-	//	time = -time + status_get_amotion(bl);	// If set to <0, add to attack motion.
-
-	// Delay reductions
-	/*switch (skill_id)
-  	{	//Monk combo skills have their delay reduced by agi/dex.
-	case MO_TRIPLEATTACK:
-	case MO_CHAINCOMBO:
-	case MO_COMBOFINISH:
-	case CH_TIGERFIST:
-	case CH_CHAINCRUSH:
-		time -= 4*status_get_agi(bl) - 2*status_get_dex(bl);
-		break;
-	case HP_BASILICA:
-		if( sc && !sc->data[SC_BASILICA] )
-			time = 0; // There is no Delay on Basilica creation, only on cancel
-		break;
-	default:
-		if (battle_config.delay_dependon_dex && !(delaynodex&1))
-		{	// if skill delay is allowed to be reduced by dex
-			int scale = battle_config.castrate_dex_scale - status_get_dex(bl);
-			if (scale > 0)
-				time = time * scale / battle_config.castrate_dex_scale;
-			else //To be capped later to minimum.
-				time = 0;
-		}
-		if (battle_config.delay_dependon_agi && !(delaynodex&1))
-		{	// if skill delay is allowed to be reduced by agi
-			int scale = battle_config.castrate_dex_scale - status_get_agi(bl);
-			if (scale > 0)
-				time = time * scale / battle_config.castrate_dex_scale;
-			else //To be capped later to minimum.
-				time = 0;
-		}
-	}*/
-
-	/*if ( sc && sc->data[SC_SPIRIT] )
-	{
-		switch (skill_id) {
-			case CR_SHIELDBOOMERANG:
-				if (sc->data[SC_SPIRIT]->val2 == SL_CRUSADER)
-					time /= 2;
-				break;
-			case AS_SONICBLOW:
-				if (!map_flag_gvg(bl->m) && !map[bl->m].flag.battleground && sc->data[SC_SPIRIT]->val2 == SL_ASSASIN)
-					time /= 2;
-				break;
-		}
-	}*/
 
 	if ( skill_id == SJ_NOVAEXPLOSING && sc && sc->data[SC_DIMENSION] )
 		time = 0;// Dimension removes Nova Explosion's cooldown.
 
-
-
-	//if (!(delaynodex&2))
-	//{
-	//	if (sc && sc->count) {
-	//		if (sc->data[SC_POEMBRAGI])
-	//			time -= time * sc->data[SC_POEMBRAGI]->val3 / 100;
-	//	}
-	//}
-
-	// Keep this. Will be needed in future update to support cooldown reductions through equips.
-	//if( !(delaynodex&4) && sd && sd->delayrate != 100 )
-	//	time = time * sd->delayrate / 100;
+	if( sd && sd->cooldownrate != 100 )
+		time = time * sd->cooldownrate / 100;
 
 	if (battle_config.cooldown_rate != 100)
 		time = time * battle_config.cooldown_rate / 100;
-
-	//if (time < status_get_amotion(bl))
-	//	time = status_get_amotion(bl); // Delay can never be below amotion [Playtester]
 
 	return max(time, battle_config.min_skill_cooldown_limit);
 }

@@ -540,6 +540,8 @@
 // Summoner Weapons And Equips
 1681,Short_Foxtail_Staff,Short Foxtail Staff,4,0,,0,30,,1,0,0x04000000,7,2,2,1,1,1,10,{},{},{}
 
+//28380,Fresh_Grass_Necklace,Fresh Grass Necklace,5,30000,,100,,0,,1,0x000FDF80,8,2,136,,0,0,0,{},{},{}
+
 // Summoner Item Required Items
 //515,Carrot,Carrot,0,15,,20,,,,,0xFFFFFFFF,7,2,,,,,,{ itemheal rand(18,20),0; },{},{}
 //567,Prawn,Shrimp,0,500,,40,,,,,0xFFFFFFFF,7,2,,,,,,{ itemheal rand(117,192),0; },{},{}
@@ -549,6 +551,8 @@
 //18971
 
 //18984
+
+6959,Costume_Change_Ticket,Costume Change Ticket,3,0,,10,,,,,,,,,,,,,{},{},{}
 
 // Updated Wedding Rings - Supports New 2016 Wedding Skills
 2634,Bridegroom_Ring,Wedding Ring,5,0,,0,,0,,0,0xFFFFFFFF,7,1,136,,0,0,0,{ skill "WE_MALE",1; skill "WE_FEMALE",1; skill "WE_CALLPARTNER",1; skill "WE_CALLALLFAMILY",1; skill "WE_ONEFOREVER",1; },{},{}
