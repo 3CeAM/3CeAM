@@ -559,7 +559,7 @@ int clif_party_hp(struct map_session_data *sd);
 void clif_hpmeter_single(int fd, int id, unsigned int hp, unsigned int maxhp);
 int clif_hpmeter(struct map_session_data *sd);
 int clif_hpmeter_sub(struct block_list *bl, va_list ap);
-int clif_party_job_and_level(struct map_session_data *sd);
+//int clif_party_job_and_level(struct map_session_data *sd);
 
 // guild
 int clif_guild_created(struct map_session_data *sd,int flag);

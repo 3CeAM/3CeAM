@@ -35,7 +35,7 @@
 static const int packet_len_table[]={
 	-1,-1,27,-1, -1, 0,37, 0,  0, 0, 0, 0,  0, 0,  0, 0, //0x3800-0x380f
 	 0, 0, 0, 0,  0, 0, 0, 0, -1,11, 0, 0,  0, 0,  0, 0, //0x3810
-	39,-1,15,15, 14,19, 7,-1,  0, 0, 0, 0,  0, 0,  0, 0, //0x3820
+	39,-1,15,15, 14,21, 7,-1,  0, 0, 0, 0,  0, 0,  0, 0, //0x3820
 	10,-1,15, 0, 79,23, 7,-1,  0,-1,-1,-1, 14,67,186,-1, //0x3830
 	 9, 9,-1,14,  0, 0, 0, 0, -1,74,-1,11, 11,-1,  0, 0, //0x3840
 	-1,-1, 7, 7,  7,11, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0, //0x3850  Auctions [Zephyrus]
@@ -447,7 +447,7 @@ int intif_party_changemap(struct map_session_data *sd,int online)
 	else
 		mapindex = sd->mapindex;
 
-	WFIFOHEAD(inter_fd,19);
+	WFIFOHEAD(inter_fd,21);
 	WFIFOW(inter_fd,0)=0x3025;
 	WFIFOL(inter_fd,2)=sd->status.party_id;
 	WFIFOL(inter_fd,6)=sd->status.account_id;
@@ -455,7 +455,8 @@ int intif_party_changemap(struct map_session_data *sd,int online)
 	WFIFOW(inter_fd,14)=mapindex;
 	WFIFOB(inter_fd,16)=online;
 	WFIFOW(inter_fd,17)=sd->status.base_level;
-	WFIFOSET(inter_fd,19);
+	WFIFOW(inter_fd,19)=sd->status.class_;
+	WFIFOSET(inter_fd,21);
 	return 1;
 }
 // パーティー解散要求
@@ -1050,7 +1051,7 @@ int intif_parse_PartyBroken(int fd)
 // パーティ移動通知
 int intif_parse_PartyMove(int fd)
 {
-	party_recv_movemap(RFIFOL(fd,2),RFIFOL(fd,6),RFIFOL(fd,10),RFIFOW(fd,14),RFIFOB(fd,16),RFIFOW(fd,17));
+	party_recv_movemap(RFIFOL(fd,2),RFIFOL(fd,6),RFIFOL(fd,10),RFIFOW(fd,14),RFIFOB(fd,16),RFIFOW(fd,17),RFIFOW(fd,19));
 	return 0;
 }
 // パーティメッセージ

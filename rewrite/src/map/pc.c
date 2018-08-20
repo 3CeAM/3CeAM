@@ -7687,6 +7687,9 @@ int pc_jobchange(struct map_session_data *sd,int job, int upper)
 		}
 	}
 
+	if(sd->status.party_id)
+		party_send_jobchange(sd);
+
 	return 0;
 }
 

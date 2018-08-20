@@ -378,7 +378,7 @@ int mapif_party_withdraw(int party_id,int account_id, int char_id) {
 
 // パ?ティマップ更新通知
 int mapif_party_membermoved(struct party *p, int idx) {
-	unsigned char buf[20];
+	unsigned char buf[21];
 
 	WBUFW(buf,0) = 0x3825;
 	WBUFL(buf,2) = p->party_id;
@@ -387,7 +387,8 @@ int mapif_party_membermoved(struct party *p, int idx) {
 	WBUFW(buf,14) = p->member[idx].map;
 	WBUFB(buf,16) = p->member[idx].online;
 	WBUFW(buf,17) = p->member[idx].lv;
-	mapif_sendall(buf, 19);
+	WBUFW(buf,19) = p->member[idx].class_;
+	mapif_sendall(buf, 21);
 	return 0;
 }
 
@@ -581,7 +582,7 @@ int mapif_parse_PartyLeave(int fd, int party_id, int account_id, int char_id)
 	return 0;
 }
 
-int mapif_parse_PartyChangeMap(int fd, int party_id, int account_id, int char_id, unsigned short map, int online, unsigned int lv)
+int mapif_parse_PartyChangeMap(int fd, int party_id, int account_id, int char_id, unsigned short map, int online, unsigned int lv, unsigned short class_)
 {
 	struct party_data *p;
 	int i;
@@ -617,6 +618,12 @@ int mapif_parse_PartyChangeMap(int fd, int party_id, int account_id, int char_id
 		//Send online/offline update.
 		mapif_party_membermoved(&p->party, i);
 	}
+
+	if (p->party.member[i].class_ != class_) {
+		p->party.member[i].class_ = class_;
+		mapif_party_membermoved(&p->party, i);
+	}
+
 	if (p->party.member[i].lv != lv) {
 		if(p->party.member[i].lv == p->min_lv ||
 			p->party.member[i].lv == p->max_lv)
@@ -625,8 +632,7 @@ int mapif_parse_PartyChangeMap(int fd, int party_id, int account_id, int char_id
 			int_party_check_lv(p);
 		} else
 			p->party.member[i].lv = lv;
-		//There is no need to send level update to map servers
-		//since they do nothing with it.
+		mapif_party_membermoved(&p->party, i);
 	}
 	if (p->party.member[i].map != map) {
 		p->party.member[i].map = map;
@@ -683,7 +689,7 @@ int inter_party_parse_frommap(int fd) {
 	case 0x3022: mapif_parse_PartyAddMember(fd, RFIFOL(fd,4), (struct party_member*)RFIFOP(fd,8)); break;
 	case 0x3023: mapif_parse_PartyChangeOption(fd, RFIFOL(fd,2), RFIFOL(fd,6), RFIFOW(fd,10), RFIFOW(fd,12)); break;
 	case 0x3024: mapif_parse_PartyLeave(fd, RFIFOL(fd,2), RFIFOL(fd,6), RFIFOL(fd,10)); break;
-	case 0x3025: mapif_parse_PartyChangeMap(fd, RFIFOL(fd,2), RFIFOL(fd,6), RFIFOL(fd,10), RFIFOW(fd,14), RFIFOB(fd,16), RFIFOW(fd,17)); break;
+	case 0x3025: mapif_parse_PartyChangeMap(fd, RFIFOL(fd,2), RFIFOL(fd,6), RFIFOL(fd,10), RFIFOW(fd,14), RFIFOB(fd,16), RFIFOW(fd,17), RFIFOW(fd,19)); break;
 	case 0x3026: mapif_parse_BreakParty(fd, RFIFOL(fd,2)); break;
 	case 0x3027: mapif_parse_PartyMessage(fd, RFIFOL(fd,4), RFIFOL(fd,8), (char*)RFIFOP(fd,12), RFIFOW(fd,2)-12); break;
 	case 0x3029: mapif_parse_PartyLeaderChange(fd, RFIFOL(fd,2), RFIFOL(fd,6), RFIFOL(fd,10)); break;
