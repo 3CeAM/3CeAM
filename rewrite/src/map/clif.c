@@ -7854,7 +7854,9 @@ int clif_hpmeter(struct map_session_data *sd)
 
 /// Updates job and level info of a party member.
 /// 0abd <account id>.L <job>.W <level>.W (ZC_)
-int clif_party_job_and_level(struct map_session_data *sd)
+/// Note: This packet is not needed since the char and map server's
+/// send info on job id and base level between each other.
+/*int clif_party_job_and_level(struct map_session_data *sd)
 {
 	unsigned char buf[10];
 
@@ -7864,9 +7866,10 @@ int clif_party_job_and_level(struct map_session_data *sd)
 	WBUFL(buf,2)=sd->status.account_id;
 	WBUFW(buf,6)=sd->status.class_;
 	WBUFW(buf,8)=sd->status.base_level;
-	clif_send(buf,packet_len(0xabd),&sd->bl,PARTY_AREA_WOS);
+	clif_send(buf,packet_len(0xabd),&sd->bl,PARTY);
+
 	return 0;
-}
+}*/
 
 /*==========================================
  * パーティ場所移動（未使用）
