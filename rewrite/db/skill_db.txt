@@ -1406,6 +1406,7 @@
 //3042,0,6,4,0,0x1,0,2,1,no,0,0,0,none,0,	ALL_PRONTERA_RECALL, Return To Prontera//Info shows its max level is 2. Why 2 levels for a recall skill?
 //3043,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,	ALL_GLASTHEIM_RECALL,Return To Glastheim
 //3044,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,	ALL_THANATOS_RECALL,Return To Thanatos
+//3045,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,	ALL_LIGHTHALZEN_RECALL,Return To Lighthalzen
 
 // EP 14.3 Part 2 3rd Job Skills
 5001,1,8,1,-1,0,0,5,-3,yes,0,0,0,weapon,0,	GC_DARKCROW,Dark Claw
@@ -1469,6 +1470,9 @@
 5063,0,6,4,0,0x1,0,1,1,yes,0,0x4,0,none,0,	WE_CALLALLFAMILY,Call All Family
 5064,3,6,16,0,0x1,0,1,1,yes,0,0x4,0,none,0,	WE_ONEFOREVER,One Forever
 5065,0,6,4,0,0x3,3,1,1,yes,0,0x4,0,none,0,	WE_CHEERUP,Cheer Up
+
+// Full Throttle jRO Version
+5071,0,6,4,0,0x1,0,1,1,yes,0,0x1,0,none,0,	EVT_FULL_THROTTLE,Event Full Throttle// Be sure to restrict WoE and PVP use.
 
 // New Arch Bishop Skills
 5072,11,6,1,0,0x3,1:1:1:2:2,5,1,yes,0,0,0,none,0,	AB_VITUPERATUM,Vituperatum

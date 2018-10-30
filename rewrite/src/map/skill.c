@@ -2628,9 +2628,11 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 		else // the central target doesn't display an animation
 			dmg.dmotion = clif_skill_damage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, damage, dmg.div_, skillid, -2, 5); // needs -2(!) as skill level
 		break;
+#if PACKETVER < 20180620
 	case RK_IGNITIONBREAK:
 		dmg.dmotion = clif_skill_damage(dsrc,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,NV_BASIC,-1,5);
 		break;
+#endif
 	case WL_HELLINFERNO:
 		if ( flag&4 )// Show animation for fire damage part.
 			dmg.dmotion = clif_skill_damage(dsrc,bl,tick,dmg.amotion,dmg.dmotion,damage,dmg.div_,skillid,skilllv,type);
@@ -3007,7 +3009,7 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 	if (dmg.amotion)
 		battle_delay_damage(tick, dmg.amotion,src,bl,dmg.flag,skillid,skilllv,damage,dmg.dmg_lv,dmg.dmotion);
 
-	if( sc && sc->data[SC_DEVOTION] && (skillid != PA_PRESSURE || skillid != SJ_NOVAEXPLOSING || skillid != SP_SOULEXPLOSION) )
+	if( sc && sc->data[SC_DEVOTION] && (skillid != PA_PRESSURE && skillid != SJ_NOVAEXPLOSING && skillid != SP_SOULEXPLOSION) )
 	{
 		struct status_change_entry *sce = sc->data[SC_DEVOTION];
 		struct block_list *d_bl = map_id2bl(sce->val1);
@@ -6711,6 +6713,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 	case ASC_METEORASSAULT:
 	case GS_SPREADATTACK:
+#if PACKETVER >= 20180620
+	case RK_IGNITIONBREAK:
+#endif
 	case RK_STORMBLAST:
 	case WL_FROSTMISTY:
 	case WL_JACKFROST:
@@ -6747,12 +6752,14 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 
+#if PACKETVER < 20180620
 	case RK_IGNITIONBREAK:
 		skill_area_temp[1] = 0;
 		clif_skill_damage(src, bl, tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
 		map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), splash_target(src), 
 			src, skillid, skilllv, tick, flag|BCT_ENEMY|SD_SPLASH|1, skill_castend_damage_id);
 		break;
+#endif
 
 	case NC_EMERGENCYCOOL:
 		clif_skill_nodamage(src,bl,skillid,skilllv,1);
