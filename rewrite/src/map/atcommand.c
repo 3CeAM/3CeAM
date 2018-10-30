@@ -6366,18 +6366,23 @@ ACMD_FUNC(displayskill)
 	unsigned int tick;
 	int skillnum;
 	int skilllv = 1;
+	int type = 0;
 	nullpo_retr(-1, sd);
 
-	if (!message || !*message || sscanf(message, "%d %d", &skillnum, &skilllv) < 1)
+	if (!message || !*message || sscanf(message, "%d %d %d", &skillnum, &skilllv, &type) < 1)
 	{
-		clif_displaymessage(fd, "Usage: @displayskill <skillnum> {<skillv>}>");
+		clif_displaymessage(fd, "Usage: @displayskill <skillnum> {<skillv>} {<type>}>");
+		clif_displaymessage(fd, "Effect Types: 0: All, 1: Damage, 2: No Damage, 3: Ground");
 		return -1;
 	}
 	status = status_get_status_data(&sd->bl);
 	tick = gettick();
-	clif_skill_damage(&sd->bl,&sd->bl, tick, status->amotion, status->dmotion, 1, 1, skillnum, skilllv, 5);
-	clif_skill_nodamage(&sd->bl, &sd->bl, skillnum, skilllv, 1);
-	clif_skill_poseffect(&sd->bl, skillnum, skilllv, sd->bl.x, sd->bl.y, tick);
+	if ( type == 0 || type == 1 )
+		clif_skill_damage(&sd->bl,&sd->bl, tick, status->amotion, status->dmotion, 1, 1, skillnum, skilllv, 5);
+	if ( type == 0 || type == 2 )
+		clif_skill_nodamage(&sd->bl, &sd->bl, skillnum, skilllv, 1);
+	if ( type == 0 || type == 3 )
+		clif_skill_poseffect(&sd->bl, skillnum, skilllv, sd->bl.x, sd->bl.y, tick);
 	return 0;
 }
 

@@ -919,6 +919,12 @@
 5065,3000,0,0,0,0,60000,0
 //==========================================
 
+//===== Full Throttle jRO Version ==========
+//-- EVT_FULL_THROTTLE -- Duration 1 is for Full Throttle. Duration 2 is for Rebound.
+//Note: Whats the official cooldown for this version? Doing 30 minutes for now.
+5071,0,0,500,3000000,0,40000,10000
+//==========================================
+
 //===== New Arch Bishop Skills =============
 //-- AB_VITUPERATUM
 5072,1000,3000:2500:2000:1500:1000,1000,5000,0,0,0
