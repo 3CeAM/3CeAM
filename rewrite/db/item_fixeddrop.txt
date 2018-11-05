@@ -1,0 +1,8 @@
+// Fixed Item Drop Database
+//
+// Items added here will be forced to ignore the drop rates set
+// in the drops.conf battle file and instead only go by whats
+// set in the monster database.
+
+//969	// Gold
+//7444	// Treasure_Box

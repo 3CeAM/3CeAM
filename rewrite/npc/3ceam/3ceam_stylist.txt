@@ -3,7 +3,7 @@
 //===== By: ==================================================
 //= Rytech
 //===== Current Version: =====================================
-//= 1.1
+//= 1.1.1
 //===== Compatible With: =====================================
 //= 3CeAM r791+
 //===== Description: =========================================
@@ -14,6 +14,8 @@
 //===== Additional Comments: =================================
 //= 1.0 First release. [Rytech]
 //= 1.1 Updated to check for set style and dye maxes for Doram's. [Rytech]
+//= 1.1.1 Hair style of 0 now defaults to 1. Body dye of 1 will now default to 0.
+//= This is due to how certain style and dye values are not usable officially. [Rytech]
 //============================================================
 prontera,162,184,4	script	Super Stylist	509,{
 Lintro:
@@ -78,9 +80,9 @@ Lalldyestyle:
 	input @hairdye;
 	if (@hairdye < 0 || @hairdye > @hairdyemax) set @hairdye,0;
 	input @hairstyle;
-	if (@hairstyle < 0 || @hairstyle > @hairstylemax) set @hairstyle,0;
+	if (@hairstyle < 1 || @hairstyle > @hairstylemax) set @hairstyle,1;
 	input @bodydye;
-	if (@bodydye < 0 || @bodydye > @bodydyemax) set @bodydye,0;
+	if (@bodydye < 0 || @bodydye == 1 || @bodydye > @bodydyemax) set @bodydye,0;
 	input @bodystyle;
 	if (@bodystyle < 0 || @bodystyle > @bodystylemax) set @bodystyle,0;
 	setlook 6,@hairdye;
@@ -105,7 +107,7 @@ Lhairstyle:
 	mes "Enter the style you want.";
 	mes "Max Hair Styles = "+@hairstylemax+"";
 	input @hairstyle;
-	if (@hairstyle < 0 || @hairstyle > @hairstylemax) set @hairstyle,0;
+	if (@hairstyle < 1 || @hairstyle > @hairstylemax) set @hairstyle,1;
 	setlook 1,@hairstyle;
 	next;
 	goto Lmain;
@@ -115,7 +117,7 @@ Lbodydye:
 	mes "Enter the dye you want.";
 	mes "Max Body Dyes = "+@bodydyemax+"";
 	input @bodydye;
-	if (@bodydye < 0 || @bodydye > @bodydyemax) set @bodydye,0;
+	if (@bodydye < 0 || @bodydye == 1 || @bodydye > @bodydyemax) set @bodydye,0;
 	setlook 7,@bodydye;
 	next;
 	goto Lmain;

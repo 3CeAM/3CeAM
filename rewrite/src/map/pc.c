@@ -1368,6 +1368,15 @@ bool pc_authok(struct map_session_data *sd, int login_id2, time_t expiration_tim
 		sd->status.body = MIN_BODY_STYLE;
 	}
 
+	// Hair style 0 and body dye 1 arn't allowed on official servers.
+	// Adjust them to hair style 1 and body dye 0 which are the same things but officially used.
+	// This prevents visual glitches on the character select and equip window.
+	// Example: Warlock on body dye 1 will show color glitch on the crystal shards on the outfit.
+	if( sd->status.hair == 0 )
+		sd->status.hair = 1;
+	if( sd->status.clothes_color == 1 )
+		sd->status.clothes_color = 0;
+
 	//Initializations to null/0 unneeded since map_session_data was filled with 0 upon allocation.
 	if(!sd->status.hp) pc_setdead(sd);
 	sd->state.connect_new = 1;

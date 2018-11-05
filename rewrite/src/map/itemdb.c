@@ -813,6 +813,25 @@ static bool itemdb_read_buyingstore(char* fields[], int columns, int current)
 	return true;
 }
 
+/// Reads items not allowed to be affected by drop rate adjustments
+static bool itemdb_read_fixeddrop(char* fields[], int columns, int current)
+{// <nameid>
+	int nameid;
+	struct item_data* id;
+
+	nameid = atoi(fields[0]);
+
+	if( ( id = itemdb_exists(nameid) ) == NULL )
+	{
+		ShowWarning("itemdb_read_norateadjust: Invalid item id %d.\n", nameid);
+		return false;
+	}
+
+	id->flag.fixed_drop = true;
+
+	return true;
+}
+
 
 /*======================================
  * Applies gender restrictions according to settings. [Skotlex]
@@ -1131,6 +1150,7 @@ static void itemdb_read(void)
 	sv_readdb(db_path, "item_trade.txt",   ',', 3, 3, -1,             &itemdb_read_itemtrade);
 	sv_readdb(db_path, "item_delay.txt",   ',', 2, 2, MAX_ITEMDELAYS, &itemdb_read_itemdelay);
 	sv_readdb(db_path, "item_buyingstore.txt", ',', 1, 1, -1,         &itemdb_read_buyingstore);
+	sv_readdb(db_path, "item_fixeddrop.txt", ',', 1, 1, -1,           &itemdb_read_fixeddrop);
 }
 
 /*==========================================

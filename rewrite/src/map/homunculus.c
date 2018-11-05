@@ -556,7 +556,7 @@ int merc_hom_gainexp(struct homun_data *hd,int exp)
 	{
 		merc_hom_levelup(hd) ;
 	}
-	while( !hd->homunculus.level == hd->homunculusDB->maxlevel && hd->homunculus.exp > hd->exp_next && hd->exp_next != 0 );
+	while( hd->homunculus.level < hd->homunculusDB->maxlevel && hd->homunculus.exp > hd->exp_next && hd->exp_next != 0 );
 
 	if( hd->homunculus.level == hd->homunculusDB->maxlevel || hd->exp_next == 0 )
 		hd->homunculus.exp = 0 ;
