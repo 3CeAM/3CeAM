@@ -218,6 +218,7 @@ struct item_data {
 		unsigned trade_restriction : 7;	//Item restrictions mask [Skotlex]
 		unsigned autoequip: 1;
 		unsigned buyingstore : 1;
+		unsigned fixed_drop : 1;
 	} flag;
 	short gm_lv_trade_override;	//GM-level to override trade_restriction
 };

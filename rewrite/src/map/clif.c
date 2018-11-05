@@ -7663,8 +7663,8 @@ int clif_party_withdraw(struct party_data* p, struct map_session_data* sd, int a
 	if(!sd && (flag&0xf0)==0)
 	{
 		for(i=0;i<MAX_PARTY && !p->data[i].sd;i++);
-			if (i < MAX_PARTY)
-				sd = p->data[i].sd;
+		if (i < MAX_PARTY)
+			sd = p->data[i].sd;
 	}
 
 	if(!sd) return 0;

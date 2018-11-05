@@ -5314,7 +5314,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		}
 		else
 			map_foreachinrange(skill_area_sub, bl, skill_get_splash(skillid, skilllv), splash_target(src), src, skillid, skilllv, tick, flag|BCT_ENEMY|SD_SPLASH|1, skill_castend_damage_id);
-			clif_skill_damage(src, src, tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
+		clif_skill_damage(src, src, tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
 		break;
 
 	case SR_TIGERCANNON:
@@ -10797,8 +10797,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case ECLAGE_RECALL:
 		if( sd )
 		{
-			short x, y;// Destiny position.
-			unsigned short mapindex;
+			short x = 0, y = 0;// Destiny position.
+			unsigned short mapindex = 0;
+
 			if( skillid == RETURN_TO_ELDICASTES)
 			{
 				x = 198;
@@ -10817,13 +10818,15 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				y = 31;
 				mapindex  = mapindex_name2id("ecl_in01");
 			}
+
 			if(!mapindex)
 			{// If the map is not found, fail the skill to prevent warping the player to a non existing map.
 				clif_skill_fail(sd,skillid,0,0,0);
 				map_freeblock_unlock();
 				return 0;
 			}
-			pc_setpos(sd, mapindex, x, y, CLR_TELEPORT);
+			else
+				pc_setpos(sd, mapindex, x, y, CLR_TELEPORT);
 		}
 		break;
 

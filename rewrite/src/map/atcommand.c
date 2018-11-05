@@ -2445,6 +2445,8 @@ ACMD_FUNC(go)
 		{ MAP_MALANGDO,    140, 114 }, // 33=Malangdo Island
 		{ MAP_MALAYA,      242, 211 }, // 34=Malaya Port
 		{ MAP_ECLAGE,      110,  39 }, // 35=Eclage
+		{ MAP_LASAGNA,     169, 160 }, // 36=Lasagna
+		{ MAP_ROCKRIDGE,   200, 211 }, // 37=Rock Ridge
 	};
  
 	nullpo_retr(-1, sd);
@@ -2474,8 +2476,9 @@ ACMD_FUNC(go)
 		clif_displaymessage(fd, "21 Einbech          22 Hugel            23 Rachel");
 		clif_displaymessage(fd, "24 Veins            25 Moscovia         26 Midgard Camp");
 		clif_displaymessage(fd, "27 Manuk            28 Splendide        29 Brasilis");
-		clif_displaymessage(fd, "30 El Dicastes      31 Mora             32 Dewata   ");
-		clif_displaymessage(fd, "33 Malangdo Island  34 Malaya Port      35 Eclage    ");
+		clif_displaymessage(fd, "30 El Dicastes      31 Mora             32 Dewata");
+		clif_displaymessage(fd, "33 Malangdo Island  34 Malaya Port      35 Eclage");
+		clif_displaymessage(fd, "36 Lasagna          37 Rock Ridge");
 		return -1;
 	}
 
@@ -2567,6 +2570,10 @@ ACMD_FUNC(go)
 		town = 34;
 	} else if (strncmp(map_name, "eclage", 3) == 0) {
 		town = 35;
+	} else if (strncmp(map_name, "lasagna", 3) == 0) {
+		town = 36;
+	} else if (strncmp(map_name, "rockridge", 3) == 0) {
+		town = 37;
 	}
 
 	if (town >= 0 && town < ARRAYLENGTH(data))
@@ -6247,7 +6254,7 @@ ACMD_FUNC(dropall)
 	if (sd->status.inventory[i].amount) {
 		if(sd->status.inventory[i].equip != 0)
 			pc_unequipitem(sd, i, 3);
-			pc_dropitem(sd,  i, sd->status.inventory[i].amount);
+		pc_dropitem(sd,  i, sd->status.inventory[i].amount);
 		}
 	}
 	return 0;
@@ -8174,7 +8181,7 @@ ACMD_FUNC(iteminfo)
 			sprintf(atcmd_output, "Equip Lv: %d",
 				item_data->elv
 			);
-			clif_displaymessage(fd, atcmd_output);
+		clif_displaymessage(fd, atcmd_output);
 
 		// Line 4 - Buy/Sell Price And Weight
 		sprintf(atcmd_output, "NPC Buy:%dz, Sell:%dz | Weight: %.1f ", item_data->value_buy, item_data->value_sell, item_data->weight/10. );
