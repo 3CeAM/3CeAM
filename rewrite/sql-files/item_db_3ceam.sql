@@ -256,7 +256,7 @@ REPLACE INTO `item_db_3ceam` VALUES (18002,'Dark_Cannon_Ball','Dark Cannon Ball'
 REPLACE INTO `item_db_3ceam` VALUES (18003,'Soul_Cannon_Ball','Soul Cannon Ball',10,200,NULL,10,120,NULL,NULL,NULL,0x00040400,8,2,32768,NULL,99,NULL,8,' bonus bAtkEle,Ele_Ghost; ',NULL,NULL);
 REPLACE INTO `item_db_3ceam` VALUES (18004,'Iron_Cannon_Ball','Iron Cannon Ball',10,500,NULL,10,250,NULL,NULL,NULL,0x00040400,8,2,32768,NULL,99,NULL,8,NULL,NULL,NULL);
 #  New Rune Knight Rune Stone
-REPLACE INTO `item_db_3ceam` VALUES (22540,'Runstone_Luxanima','Lux Anima Rune',11,2,NULL,100,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' itemskill "RK_LUXANIMA",1; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (22540,'Runstone_Lux','Lux Anima Rune',11,2,NULL,100,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' itemskill "RK_LUXANIMA",1; ',NULL,NULL);
 #  New Weapons In Work And Testing
 REPLACE INTO `item_db_3ceam` VALUES (1196,'Chrome_Metal_Two-Hand_Sword','Chrome Metal Two-Hand Sword',4,20,10,400,280,NULL,1,0,0x00044582,8,2,34,3,110,1,3,' bonus bAgi,3; bonus bMaxHPrate,-10; bonus bUnbreakableWeapon,0; ',NULL,NULL);
 REPLACE INTO `item_db_3ceam` VALUES (1433,'Imperial_Spear','Imperial Spear',4,20,10,1800,180,NULL,3,1,0x00004000,8,2,2,3,102,1,4,' bonus bAddMatk,40; bonus2 bSkillAtk,"LG_CANNONSPEAR",20+getrefine()*3/2; bonus2 bSkillAtk,"LG_BANISHINGPOINT",20+getrefine()*3/2; if(isequipped(2153)) { bonus2 bSkillAtk,"CR_GRANDCROSS",10; bonus2 bSkillAtk,"LG_RAYOFGENESIS",10; } ',NULL,NULL);
@@ -324,6 +324,8 @@ REPLACE INTO `item_db_3ceam` VALUES (2784,'Oh_Holy_Night','Christmas Musicbox',5
 REPLACE INTO `item_db_3ceam` VALUES (2833,'Odin\'s_Recall','Odin\'s Recall',5,0,NULL,0,NULL,0,NULL,0,0xFFFFFFFF,7,2,136,NULL,1,0,0,' bonus bAllStats,1; skill "ALL_ODINS_RECALL",1; ',NULL,NULL);
 # REPLACE INTO `item_db_3ceam` VALUES (12310,'Spray_Of_Flowers','Spray Of Flowers',2,0,NULL,0,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' itemskill ALL_PARTYFLEE,5; ',NULL,NULL);
 # REPLACE INTO `item_db_3ceam` VALUES (12347,'Acorn_Jelly','Acorn Jelly',2,11,NULL,0,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' itemskill "ALL_REVERSEORCISH",1; ',NULL,NULL);
+#  Whats the status ID for this? Its said to stack with regular battle manuals and bubble gums. So it can't be the same ID.
+# REPLACE INTO `item_db_3ceam` VALUES (14799,'Battle_Manual_Bubble_Gum','Battle Manual & Bubble Gum',2,10000,NULL,10,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' sc_start SC_EXPBOOST,1800000,100; ',NULL,NULL);
 #  Arch Bishop Promise Bible's
 REPLACE INTO `item_db_3ceam` VALUES (2156,'Bible_Of_Promise1','Bible Of Promise Vol1',5,20,NULL,500,NULL,1,NULL,1,0x00000100,8,2,32,NULL,110,1,5,' bonus bMdef,2; skill "ALL_ODINS_POWER",1; ',NULL,NULL);
 REPLACE INTO `item_db_3ceam` VALUES (2162,'Bible_Of_Promise2','Bible Of Promise Vol2',5,56000,NULL,500,NULL,2,NULL,1,0x00000100,8,2,32,NULL,140,1,5,' bonus bMdef,5; bonus bHealPower,5; skill "ALL_ODINS_POWER",2; ',NULL,NULL);
@@ -334,7 +336,7 @@ REPLACE INTO `item_db_3ceam` VALUES (2162,'Bible_Of_Promise2','Bible Of Promise 
 REPLACE INTO `item_db_3ceam` VALUES (12622,'Boarding_Halter','Boarding Halter',2,20,NULL,0,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' sc_start SC_ALL_RIDING,-1,1; ',NULL,NULL);
 REPLACE INTO `item_db_3ceam` VALUES (16682,'Boarding_Halter_Box','Boarding Halter Box',18,20,NULL,10,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' rentitem 12622,604800; ',NULL,NULL);
 #  Hanbok Outfit
-REPLACE INTO `item_db_3ceam` VALUES (22538,'Hanbok_Pocket','Hanbok Pocket',2,0,NULL,10,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' sc_start SC_HANBOK,600000,0; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (22538,'Hanbok_Bag','Hanbok Bag',2,0,NULL,10,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' sc_start SC_HANBOK,600000,0; ',NULL,NULL);
 #  Oktoberfest Outfit - Enable Only If You Have The Sprite For The Outfit In Your Client
 # REPLACE INTO `item_db_3ceam` VALUES (22625,'Oktoberfest_Bag','Oktoberfest Bag',2,0,NULL,10,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' sc_start SC_OKTOBERFEST,600000,0; ',NULL,NULL);
 #  Kagerou/Oboro Exclusive Equips
@@ -367,7 +369,7 @@ REPLACE INTO `item_db_3ceam` VALUES (13311,'Huuma_Shadow','Shadow Huuma Shuriken
 REPLACE INTO `item_db_3ceam` VALUES (13313,'Huuma_Swirling_Petal','Swirling Petal Huuma Shuriken',4,100000,NULL,1500,150,NULL,1,2,0x02000000,7,2,34,3,110,1,22,' bonus bAddMatk,50; bonus2 bSkillAtk,"KO_HUUMARANKA",20; ',NULL,NULL);
 REPLACE INTO `item_db_3ceam` VALUES (13314,'Huuma_Fluttering_Snow','Fluttering Snow Huuma Shuriken',4,100000,NULL,1500,200,NULL,1,0,0x02000000,7,2,34,4,110,1,22,' bonus bAddMatk,50; bonus bAtkEle,Ele_Water; bonus3 bAutoSpell,"NJ_HYOUSYOURAKU",(getskilllv("NJ_HYOUSYOURAKU")?getskilllv("NJ_HYOUSYOURAKU"):1),100; ',NULL,NULL);
 REPLACE INTO `item_db_3ceam` VALUES (13315,'Huuma_Thunderstorm','Thunderstorm Huuma Shuriken',4,100000,NULL,1500,200,NULL,1,0,0x02000000,7,2,34,4,110,1,22,' bonus bAddMatk,50; bonus bAtkEle,Ele_Wind; bonus3 bAutoSpell,"NJ_RAIGEKISAI",(getskilllv("NJ_RAIGEKISAI")?getskilllv("NJ_RAIGEKISAI"):1),100; ',NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (13316,'Upg_Huuma_Shuriken','Upgraded Huuma Shuriken',4,20,NULL,1500,55,NULL,1,1,0x02000000,7,2,34,3,1,1,22,' bonus bUnbreakableWeapon,0; bonus bBaseAtk,10*getrefine(); bonus bMatk,5*getrefine(); bonus bLongAtkRate,getrefine(); if(BaseLevel>=70) {bonus bBaseAtk,5*((BaseLevel-60)/10);} ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13316,'Upg_Huuma_Shuriken','Upgraded Huuma Shuriken',4,20,NULL,1500,55,NULL,1,1,0x02000000,7,2,34,3,1,1,22,' bonus bUnbreakableWeapon,0; bonus bBaseAtk,10*getrefine(); bonus bAddMatk,5*getrefine(); bonus bLongAtkRate,getrefine(); if(BaseLevel>=70) {bonus bBaseAtk,5*((BaseLevel-60)/10);} ',NULL,NULL);
 #  Armors
 REPLACE INTO `item_db_3ceam` VALUES (15053,'Special_Ninja_Suit','Special Ninja Suit',5,10000,NULL,1200,NULL,10,NULL,0,0x02000000,7,2,16,NULL,100,1,0,' bonus bAgi,1+(getrefine()/3); if(isequipped(2171)) bonus bAgi,2; ',NULL,NULL);
 REPLACE INTO `item_db_3ceam` VALUES (15054,'Ninja_Scale_Armor','Ninja Scale Armor',5,10000,NULL,1800,NULL,13,NULL,1,0x02000000,7,2,16,NULL,100,1,0,' bonus bMaxHPRate,15; bonus bMaxSPRate,-30; if(isequipped(2172)) {bonus bAtkRate,10; bonus bStr,2;} ',NULL,NULL);
@@ -393,67 +395,88 @@ REPLACE INTO `item_db_3ceam` VALUES (2199,'Ahura_Mazda','Ahura Mazdah',5,1,NULL,
 #  New GM Equip? It gives access to a hand full of skills.
 REPLACE INTO `item_db_3ceam` VALUES (2904,'Naqsh','Naqsh',5,20,NULL,0,NULL,0,NULL,0,0xFFFFFFFF,7,2,136,NULL,1,0,0,' Skill "BS_MAXIMIZE",5; Skill "BS_WEAPONPERFECT",5; Skill "WL_RECOGNIZEDSPELL",5; Skill "ECL_SNOWFLIP",1; Skill "ECL_PEONYMAMY",1; Skill "ECL_SADAGUI",1; Skill "ECL_SEQUOIADUST",1; ',NULL,NULL);
 #  Rebellion Weapons
-#  Handgun
-REPLACE INTO `item_db_3ceam` VALUES (13120,'Heavens_Feather_And_Hells_Fire','Heavens Feather & Hells Fire',4,1200000,NULL,800,150,NULL,7,1,0x01000000,7,2,34,3,99,1,17,NULL,NULL,NULL);
+#  Revolver - 13120 = Need official burning chance
+REPLACE INTO `item_db_3ceam` VALUES (13120,'Heavens_Feather_And_Hells_Fire','Heavens Feather & Hells Fire',4,1200000,NULL,800,150,NULL,7,1,0x01000000,7,2,34,3,99,1,17,' bonus2 bSkillAtk,"GS_DESPERADO",20; bonus2 bAddEff,Eff_Burning,500; ',NULL,NULL);
 # 13121
-REPLACE INTO `item_db_3ceam` VALUES (13122,'Altair_And_Ares','Altair & Ares',4,1450000,NULL,1000,200,NULL,7,0,0x01000000,7,2,34,3,140,1,17,NULL,NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13122,'Altair_And_Ares','Altair & Ares',4,1450000,NULL,1000,200,NULL,7,0,0x01000000,7,2,34,3,140,1,17,' bonus bHit,5; bonus bAspdRate,10; bonus bLongAtkRate,30; ',NULL,NULL);
 # 13123
-REPLACE INTO `item_db_3ceam` VALUES (13124,'Altair_And_Ares_','Altair & Ares',4,10,NULL,1000,200,NULL,7,1,0x01000000,7,2,34,3,140,1,17,NULL,NULL,NULL);
-#  Rifle
-REPLACE INTO `item_db_3ceam` VALUES (13189,'Color_Scope','Color Scope',4,1350000,NULL,1200,240,NULL,9,2,0x01000000,7,2,34,3,105,1,18,NULL,NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (13190,'RAG203','RAG203',4,10,NULL,1300,260,NULL,9,1,0x01000000,7,2,34,3,140,1,18,NULL,NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13124,'Altair_And_Ares_','Altair & Ares',4,10,NULL,1000,200,NULL,7,1,0x01000000,7,2,34,3,140,1,17,' bonus bHit,5; bonus bAspdRate,10; bonus bLongAtkRate,30; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13138,'Dark_Rose','Dark Rose',4,20,NULL,1800,150,NULL,7,2,0x01000000,7,2,34,3,120,1,17,' bonus bAspdRate,10; if(getrefine() >= 7) bonus bLongAtkRate,15; if(getrefine() >= 9) bonus bAspd,1; ',NULL,NULL);
+#  Rifle - 13190/13195 = Need official autocast chance.
+REPLACE INTO `item_db_3ceam` VALUES (13189,'Color_Scope','Color Scope',4,1350000,NULL,1200,240,NULL,9,2,0x01000000,7,2,34,3,105,1,18,' bonus bHit,20; bonus bCriticalRate,30; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13190,'RAG203','RAG203',4,10,NULL,1300,260,NULL,9,1,0x01000000,7,2,34,3,140,1,18,' bonus bHit,10; bonus bCriticalRate,15; bonus3 bAutoSpell,"AL_DECAGI",1,50; ',NULL,NULL);
 # 13191,
-REPLACE INTO `item_db_3ceam` VALUES (13195,'RAG203_','RAG203',4,1800000,NULL,1300,260,NULL,9,0,0x01000000,7,2,34,3,140,1,18,NULL,NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13195,'RAG203_','RAG203',4,1800000,NULL,1300,260,NULL,9,0,0x01000000,7,2,34,3,140,1,18,' bonus bHit,10; bonus bCriticalRate,15; bonus3 bAutoSpell,"AL_DECAGI",1,50; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (28223,'Just_Finish','Just Finish',4,20,NULL,2000,200,NULL,9,2,0x01000000,7,2,34,3,120,1,18,' bonus bLongAtkRate,15; if(getrefine() >= 7) { bonus2 bSkillAtk,"RL_MASS_SPIRAL",30; bonus2 bSkillAtk,"RL_AM_BLAST",30; } /*if(getrefine() >= 9) bonus2 bSkillCooldown,"RL_AM_BLAST",1000*/ ',NULL,NULL);
 #  Gatling
 REPLACE INTO `item_db_3ceam` VALUES (13197,'Mini_Mei','Mini Mei',4,1600000,NULL,2500,220,NULL,9,2,0x01000000,7,2,34,2,106,1,19,NULL,NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (13198,'Tempest','Tempest',4,2200000,NULL,2500,250,NULL,9,0,0x01000000,7,2,34,4,140,1,19,NULL,NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (13199,'Tempest_','Tempest',4,10,NULL,2500,250,NULL,9,1,0x01000000,7,2,34,4,140,1,19,NULL,NULL,NULL);
-#  Shotgun
-REPLACE INTO `item_db_3ceam` VALUES (13192,'Death_Fire','Death Fire',4,1250000,NULL,2000,400,NULL,5,1,0x01000000,7,2,34,3,108,1,20,NULL,NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (13193,'Rolling_Thunder','Rolling Thunder',4,1350000,NULL,1800,280,NULL,9,1,0x01000000,7,2,34,3,120,1,20,NULL,NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (13194,'Peace_Breaker','Peace Breaker',4,1950000,NULL,1400,250,NULL,9,0,0x01000000,7,2,34,3,140,1,20,NULL,NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13198,'Tempest','Tempest',4,2200000,NULL,2500,250,NULL,9,0,0x01000000,7,2,34,4,140,1,19,' bonus bHit,-25; bonus bCritical,10; bonus bLongAtkRate,20; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13199,'Tempest_','Tempest',4,10,NULL,2500,250,NULL,9,1,0x01000000,7,2,34,4,140,1,19,' bonus bHit,-25; bonus bCritical,10; bonus bLongAtkRate,20; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (28225,'Burning_Rose','Burning Rose',4,20,NULL,2500,200,NULL,9,2,0x01000000,7,2,34,3,120,1,19,' bonus bLongAtkRate,15; if(getrefine() >= 7) bonus2 bSkillAtk,"RL_FIRE_RAIN",30; /*if(getrefine() >= 9) bonus2 bSkillCooldown,"RL_FIRE_RAIN",1000*/ ',NULL,NULL);
+#  Shotgun - 28224 = Need success chance to blind.
+REPLACE INTO `item_db_3ceam` VALUES (13192,'Death_Fire','Death Fire',4,1250000,NULL,2000,400,NULL,5,1,0x01000000,7,2,34,3,108,1,20,' bonus bSplashRange,1; bonus bHit,-50; bonus bAspdRate,-10; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13193,'Rolling_Thunder','Rolling Thunder',4,1350000,NULL,1800,280,NULL,9,1,0x01000000,7,2,34,3,120,1,20,' bonus bSplashRange,1; bonus bHit,-10; bonus bAspdRate,-10; bonus3 bAutoSpell,"MG_THUNDERSTORM",5,50; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13194,'Peace_Breaker','Peace Breaker',4,1950000,NULL,1400,250,NULL,9,0,0x01000000,7,2,34,3,140,1,20,' bonus bSplashRange,1; bonus bHit,-25; bonus bAspdRate,25; ',NULL,NULL);
 # 
-REPLACE INTO `item_db_3ceam` VALUES (13196,'Peace_Breaker_','Peace Breaker',4,10,NULL,1400,250,NULL,9,1,0x01000000,7,2,34,3,140,1,20,NULL,NULL,NULL);
-#  Grenade
-REPLACE INTO `item_db_3ceam` VALUES (28200,'End_Of_Horizon','End of Horizon',4,2700000,NULL,2400,410,NULL,9,1,0x01000000,7,2,34,3,110,1,21,NULL,NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (28201,'Southern_Cross','Southern Cross',4,2800000,NULL,2000,480,NULL,9,0,0x01000000,7,2,34,3,141,1,21,NULL,NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (28202,'Southern_Cross_','Southern Cross',4,10,NULL,2000,480,NULL,9,1,0x01000000,7,2,34,3,141,1,21,NULL,NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13196,'Peace_Breaker_','Peace Breaker',4,10,NULL,1400,250,NULL,9,1,0x01000000,7,2,34,3,140,1,20,' bonus bSplashRange,1; bonus bHit,-25; bonus bAspdRate,25; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (28224,'Dust_Fire','Dust Fire',4,20,NULL,1300,300,NULL,5,2,0x01000000,7,2,34,3,120,1,20,' bonus bSplashRange,1; bonus2 bAddEffWhenHit,Eff_Blind,200; if(isequipped(13215)) bonus bLongAtkRate,30; if(getrefine() >= 7) bonus2 bSkillAtk,"RL_S_STORM",15; if(getrefine() >= 9) bonus2 bSkillAtk,"RL_BANISHING_BUSTER",15; ',NULL,NULL);
+#  Grenade - Need official success chance for giving status's.
+REPLACE INTO `item_db_3ceam` VALUES (28200,'End_Of_Horizon','End of Horizon',4,2700000,NULL,2400,410,NULL,9,1,0x01000000,7,2,34,3,110,1,21,' bonus2 bAddEff,Eff_Stun,500; bonus2 bAddEff,Eff_Blind,500; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (28201,'Southern_Cross','Southern Cross',4,2800000,NULL,2000,480,NULL,9,0,0x01000000,7,2,34,3,141,1,21,' bonus3 bAutoSpell,"KO_JYUMONJIKIRI",1,50; bonus2 bAddEff,Eff_Curse,200; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (28202,'Southern_Cross_','Southern Cross',4,10,NULL,2000,480,NULL,9,1,0x01000000,7,2,34,3,141,1,21,' bonus3 bAutoSpell,"KO_JYUMONJIKIRI",1,50; bonus2 bAddEff,Eff_Curse,200; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (28226,'Revenge','Revenge',4,20,NULL,180,350,NULL,9,2,0x01000000,7,2,34,3,120,1,21,' bonus bLongAtkRate,20; if(getrefine() >= 7) bonus2 bSkillAtk,"RL_D_TAIL",15; /*if(getrefine() >= 9) bonus2 bSkillCooldown,"RL_H_MINE",1000*/ ',NULL,NULL);
 #  Rebellion Skill Required Items
 REPLACE INTO `item_db_3ceam` VALUES (7663,'Full_Metal_Jacket','Full Metal Jacket',3,200,NULL,2,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 REPLACE INTO `item_db_3ceam` VALUES (7664,'Throwing_Mine','Throwing Mine',3,450,NULL,3,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 REPLACE INTO `item_db_3ceam` VALUES (7665,'Dragon_Tail_Missile','Dragon Tail Missile',3,1500,NULL,100,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-#  Rebellion Slug Ammo
-REPLACE INTO `item_db_3ceam` VALUES (13210,'Slug_Ammo_L','Slug Ammo L',10,250,NULL,250,30,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,99,NULL,3,NULL,NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (13211,'Slug_Ammo_M','Slug Ammo M',10,500,NULL,500,30,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,99,NULL,3,NULL,NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (13212,'Slug_Ammo_H','Slug Ammo H',10,750,NULL,750,30,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,99,NULL,3,NULL,NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (13213,'Slug_Ammo_SH','Slug Ammo SH',10,1000,NULL,1000,30,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,99,NULL,3,NULL,NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (13214,'Slug_Ammo_XH','Slug Ammo XH',10,1200,NULL,1200,30,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,99,NULL,3,NULL,NULL,NULL);
+#  Slug Bullet
+#  Note: This replace all the past existing slug ammo and now just acts as a misc item.
+REPLACE INTO `item_db_3ceam` VALUES (25187,'Slug_Bullet','Slug Bullet',3,1200,NULL,1200,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+#  Rebellion Slug Ammo - No Longer Used
+REPLACE INTO `item_db_3ceam` VALUES (13210,'Slug_Bullet_1','Slug Ammo L',10,250,NULL,250,30,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,99,NULL,3,NULL,NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13211,'Slug_Bullet_2','Slug Ammo M',10,500,NULL,500,30,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,99,NULL,3,NULL,NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13212,'Slug_Bullet_3','Slug Ammo H',10,750,NULL,750,30,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,99,NULL,3,NULL,NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13213,'Slug_Bullet_4','Slug Ammo SH',10,1000,NULL,1000,30,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,99,NULL,3,NULL,NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13214,'Slug_Bullet_5','Slug Ammo XH',10,1200,NULL,1200,30,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,99,NULL,3,NULL,NULL,NULL);
 #  Rebellion Ammo
+REPLACE INTO `item_db_3ceam` VALUES (13215,'AP_Ammo','Armor-Piercing Bullet',10,50,NULL,2,50,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,100,NULL,3,NULL,NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13216,'Blaze_Bullet','Blaze Bullet',10,40,NULL,2,40,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,100,NULL,3,' bonus bAtkEle,Ele_Fire; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13217,'Freezing_Bullet','Freezing Bullet',10,40,NULL,2,40,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,100,NULL,3,' bonus bAtkEle,Ele_Water; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13218,'Electric_Shock_Bullet','Electric Shock Bullet',10,40,NULL,2,40,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,100,NULL,3,' bonus bAtkEle,Ele_Wind; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13219,'Magical_Stone_Bullet','Magical Stone Bullet',10,40,NULL,2,40,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,100,NULL,3,' bonus bAtkEle,Ele_Earth; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13220,'Sanctified_Bullet','Sanctified Bullet',10,40,NULL,2,40,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,100,NULL,3,' bonus bAtkEle,Ele_Holy; ',NULL,NULL);
 # Note: 13221 - 13227 are copys of the gunslinger bullets and spheres. Why?
 # The copied bullets were made since prices for bullets were reduced, but didn't want to change them
 # directly on the old bullet ID's to prevent accidently changing bullet prices on other servers outside kRO.
-REPLACE INTO `item_db_3ceam` VALUES (13215,'Armor-Piercing_Bullet','Armor-Piercing Bullet',10,50,NULL,2,50,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,100,NULL,3,NULL,NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (13216,'Scorching_Bullet','Scorching Bullet',10,40,NULL,2,40,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,100,NULL,3,' bonus bAtkEle,Ele_Fire; ',NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (13217,'Freezing_Bullet','Freezing Bullet',10,40,NULL,2,40,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,100,NULL,3,' bonus bAtkEle,Ele_Water; ',NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (13218,'Lightning_Bullet','Lightning Bullet',10,40,NULL,2,40,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,100,NULL,3,' bonus bAtkEle,Ele_Wind; ',NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (13219,'Manastone_Bullet','Manastone Bullet',10,40,NULL,2,40,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,100,NULL,3,' bonus bAtkEle,Ele_Earth; ',NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (13220,'Purification_Bullet','Purification Bullet',10,40,NULL,2,40,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,100,NULL,3,' bonus bAtkEle,Ele_Holy; ',NULL,NULL);
+#  Universal Bullets - Usable with all guns, including grenade launchers.
+#  These replaced the sphere's ammo in official kRO.
+REPLACE INTO `item_db_3ceam` VALUES (13228,'Flare_Bullet','Flare Bullet',10,80,NULL,2,20,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,1,NULL,3,' bonus bAtkEle,Ele_Fire; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13229,'Lighting_Bullet','Lighting Bullet',10,80,NULL,2,20,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,1,NULL,3,' bonus bAtkEle,Ele_Wind; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13230,'Ice_Bullet','Ice Bullet',10,80,NULL,2,20,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,1,NULL,3,' bonus bAtkEle,Ele_Water; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13231,'Poison_Bullet','Poison Bullet',10,80,NULL,2,20,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,1,NULL,3,' bonus bAtkEle,Ele_Poison; bonus2 bAddEff,Eff_Poison,500; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (13232,'Blind_Bullet','Blind Bullet',10,80,NULL,2,20,NULL,NULL,NULL,0x01000000,7,2,32768,NULL,1,NULL,3,' bonus bAtkEle,Ele_Dark; bonus2 bAddEff,Eff_Blind,500; ',NULL,NULL);
 #  Rebellion Bullet Cases
 # Note: 22737 - 22743 are copys of the gunslingers bullet and sphere cases. Why?
 # The copied bullet cases were made since prices for bullets were reduced, but didn't want to change them
 # directly on the old bullet case ID's to prevent accidently changing case prices on other servers outside kRO.
-REPLACE INTO `item_db_3ceam` VALUES (22744,'Bullet_Case_Armor-Piercing','Armor-Piercing Cartridge',2,25000,NULL,250,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' getitem 13215,500; ',NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (22745,'Bullet_Case_Scorching','Scorching Cartridge',2,20000,NULL,250,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' getitem 13216,500; ',NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (22746,'Bullet_Case_Freezing','Freezing Cartridge',2,20000,NULL,250,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' getitem 13217,500; ',NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (22747,'Bullet_Case_Lightning','Lightning Cartridge',2,20000,NULL,250,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' getitem 13218,500; ',NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (22748,'Bullet_Case_Manastone','Manastone Cartridge',2,20000,NULL,250,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' getitem 13219,500; ',NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (22749,'Bullet_Case_Purification','Purification Cartridge',2,20000,NULL,250,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' getitem 13220,500; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (22744,'Bullet_Case_AP','Armor-Piercing Cartridge',2,25000,NULL,250,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' getitem 13215,500; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (22745,'Bullet_Case_Blaze','Blaze Cartridge',2,20000,NULL,250,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' getitem 13216,500; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (22746,'Bullet_Case_Fleeze','Freezing Cartridge',2,20000,NULL,250,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' getitem 13217,500; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (22747,'Bullet_Case_Electric','Electric Cartridge',2,20000,NULL,250,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' getitem 13218,500; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (22748,'Bullet_Case_Stone','Stone Cartridge',2,20000,NULL,250,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' getitem 13219,500; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (22749,'Sanctified_Bullet_Case','Sanctified Cartridge',2,20000,NULL,250,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' getitem 13220,500; ',NULL,NULL);
+#  Universal Bullet Cases
+REPLACE INTO `item_db_3ceam` VALUES (23123,'Bullet_Case_Flare','Flare Bullet Cartridge',2,40000,NULL,250,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' getitem 13228,500; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (23124,'Bullet_Case_Lightning','Lightning Bullet Cartridge',2,40000,NULL,250,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' getitem 13229,500; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (23125,'Bullet_Case_Ice','Ice Bullet Cartridge',2,40000,NULL,250,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' getitem 13230,500; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (23126,'Bullet_Case_Poison','Poison Bullet Cartridge',2,40000,NULL,250,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' getitem 13231,500; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (23127,'Bullet_Case_Blind','Blind Bullet Cartridge',2,40000,NULL,250,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' getitem 13232,500; ',NULL,NULL);
 #  New Mechanic Pile Bunkers
-REPLACE INTO `item_db_3ceam` VALUES (16030,'Pilebuncker_S','Pile Bunker S',4,250000,NULL,3000,400,NULL,1,1,0x00000400,8,2,2,4,130,1,8,' bonus bAspdRate,getrefine()/2; ',NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (16031,'Pilebuncker_P','Pile Bunker P',4,250000,NULL,4000,450,NULL,1,0,0x00000400,8,2,2,4,130,1,8,' bonus bBaseAtk,getrefine()*5; ',NULL,NULL);
-REPLACE INTO `item_db_3ceam` VALUES (16032,'Pilebuncker_T','Pile Bunker T',4,250000,NULL,3500,400,NULL,1,1,0x00000400,8,2,2,4,130,1,8,' bonus bUseSPrate,getrefine()*1; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (16030,'Pilebuncker_S','Pile Bunker S',4,30000,NULL,3000,400,NULL,1,1,0x00000400,8,2,2,4,130,1,8,' bonus bAspdRate,getrefine()/2; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (16031,'Pilebuncker_P','Pile Bunker P',4,30000,NULL,4000,450,NULL,1,0,0x00000400,8,2,2,4,130,1,8,' bonus bBaseAtk,getrefine()*5; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (16032,'Pilebuncker_T','Pile Bunker T',4,30000,NULL,3500,400,NULL,1,1,0x00000400,8,2,2,4,130,1,8,' bonus bUseSPrate,getrefine()*1; ',NULL,NULL);
 #  Hunter's Falcon Flute
-REPLACE INTO `item_db_3ceam` VALUES (12848,'Falcon_Flute','Falcon Flute',11,10000,NULL,0,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' setfalcon 1; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (12848,'Falcon_Flute','Falcon Flute',11,10000,NULL,0,NULL,NULL,NULL,NULL,0x00000800,7,2,NULL,NULL,NULL,NULL,NULL,' setfalcon 1; ',NULL,NULL);
 #  Shadow Equips - Promotion Set
 REPLACE INTO `item_db_3ceam` VALUES (24012,'S_Promotion_Weapon','Promotion Shadow Weapon',5,20,NULL,0,NULL,0,NULL,0,0xFFFFFFFF,7,2,131072,NULL,1,1,0,' bonus bDex,1; bonus bAtk,getrefine(); bonus bAddMatk,getrefine(); ',NULL,NULL);
 REPLACE INTO `item_db_3ceam` VALUES (24013,'S_Promotion_Armor','Promotion Shadow Armor',5,20,NULL,0,NULL,0,NULL,0,0xFFFFFFFF,7,2,65536,NULL,1,1,0,' bonus bLuk,1; bonus bMaxHP,10*getrefine(); ',NULL,NULL);
@@ -463,9 +486,20 @@ REPLACE INTO `item_db_3ceam` VALUES (24016,'S_Promotion_Earring','Promotion Shad
 REPLACE INTO `item_db_3ceam` VALUES (24017,'S_Promotion_Pendant','Promotion Shadow Pendant',5,20,NULL,0,NULL,0,NULL,0,0xFFFFFFFF,7,2,2097152,NULL,1,1,0,' bonus bStr,1; bonus bMaxHP,10*getrefine(); ',NULL,NULL);
 #  Coupon For Styling Shop
 REPLACE INTO `item_db_3ceam` VALUES (6707,'Cash_Hair_Coupon','Cash Hairstyle Coupon',3,0,NULL,10,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+#  Emergency Magic Gear Box - From 2017 Mado Gear Update
+REPLACE INTO `item_db_3ceam` VALUES (23277,'Mado_Box','Emergency Magic Gear',2,10000,NULL,3000,NULL,NULL,NULL,NULL,0x00000400,8,2,NULL,NULL,100,NULL,NULL,' setmadogear 1; ',NULL,NULL);
 #  Summoner Weapons And Equips
-REPLACE INTO `item_db_3ceam` VALUES (1681,'Short_Foxtail_Staff','Short Foxtail Staff',4,20,NULL,0,30,NULL,1,0,0x04000000,7,2,2,1,1,1,10,NULL,NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (1681,'Short_Foxtail_Staff','Short Foxtail Staff',4,0,NULL,0,30,NULL,1,0,0x04000000,7,2,2,1,1,1,10,NULL,NULL,NULL);
+# REPLACE INTO `item_db_3ceam` VALUES (28380,'Fresh_Grass_Necklace','Fresh Grass Necklace',5,30000,NULL,100,NULL,0,NULL,1,0x000FDF80,8,2,136,NULL,0,0,0,NULL,NULL,NULL);
+#  Summoner Item Required Items
+# REPLACE INTO `item_db_3ceam` VALUES (515,'Carrot','Carrot',0,15,NULL,20,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' itemheal rand(18,20),0; ',NULL,NULL);
+# REPLACE INTO `item_db_3ceam` VALUES (567,'Prawn','Shrimp',0,500,NULL,40,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' itemheal rand(117,192),0; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (11602,'Catnip_Fruit','Catnip Fruit',0,15,NULL,1,NULL,NULL,NULL,NULL,0xFFFFFFFF,7,2,NULL,NULL,NULL,NULL,NULL,' itemheal rand(36,40),0; ',NULL,NULL);
 #  New 3rd job headgears
 # 18971
 # 18984
+REPLACE INTO `item_db_3ceam` VALUES (6959,'Costume_Change_Ticket','Costume Change Ticket',3,0,NULL,10,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+#  Updated Wedding Rings - Supports New 2016 Wedding Skills
+REPLACE INTO `item_db_3ceam` VALUES (2634,'Bridegroom_Ring','Wedding Ring',5,0,NULL,0,NULL,0,NULL,0,0xFFFFFFFF,7,1,136,NULL,0,0,0,' skill "WE_MALE",1; skill "WE_FEMALE",1; skill "WE_CALLPARTNER",1; skill "WE_CALLALLFAMILY",1; skill "WE_ONEFOREVER",1; ',NULL,NULL);
+REPLACE INTO `item_db_3ceam` VALUES (2635,'Bride_Ring','Wedding Ring',5,0,NULL,0,NULL,0,NULL,0,0xFFFFFFFF,7,0,136,NULL,0,0,0,' skill "WE_MALE",1; skill "WE_FEMALE",1; skill "WE_CALLPARTNER",1; skill "WE_CALLALLFAMILY",1; skill "WE_ONEFOREVER",1; ',NULL,NULL);
 
