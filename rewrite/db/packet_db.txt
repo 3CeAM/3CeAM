@@ -1800,6 +1800,7 @@ packet_ver: 30
 0x08a4,36,storagepassword,0
 
 // New Packets
+0x082d,-1//HC_ACCEPT_ENTER2
 0x08c8,34//ZC_NOTIFY_ACT3
 0x08ff,24 // ZC_EFST_SET_ENTER
 0x097c,4,ranking,2//CZ_REQ_RANKING
@@ -2114,6 +2115,11 @@ packet_ver: 37
 0x0202,26,friendslistadd,2
 0x022D,5,hommenu,4
 0x023B,36,storagepassword,0
+
+0x099d,-1//HC_ACK_CHARINFO_PER_PAGE
+0x09a0,6//HC_CHARLIST_NOTIFY
+0x09a1,2//CH_CHARLIST_REQ
+
 
 0x0AF4,11,useskilltopos,2:4:6:8:10
 
