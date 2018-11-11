@@ -82,20 +82,9 @@
 #define MAX_INVENTORY 100
 
 //Max number of characters per account. Note that changing this setting alone is not enough if the client is not hexed to support more characters as well.
-//Note: clients from 2010-04-14aRagexeRE don't need be hexed and the char slot amount is fixed server side.
-#define MAX_CHARS_SLOTS 9	// Max slots, should be multiple of 3. Is the old MAX_CHARS.
-
-/* You can set here how many character slot you set as available.
- * Character slots bitween MAX_CHARS and MAX_CHARS_SLOTS will be non-available
- * and cannot be used as usually */
-// TODO: Release this feature.
-#define MAX_CHARS MAX_CHARS_SLOTS // Max available slot to be used. Don't need be multiple of 3.
-
-// MAX_CHARS cannot be higher than MAX_CHARS_SLOTS
-#if MAX_CHARS > MAX_CHARS_SLOTS
-#undef MAX_CHARS
-#define MAX_CHARS MAX_CHARS_SLOTS
-#endif
+//April 2010 and newer clients don't need to be haxed. Setting server side is enough.
+//Keep this setting at a multiple of 3.
+#define MAX_CHARS 12
 
 // Allow players to create more then just human characters?
 // Current Races Supported: Human / Doram.

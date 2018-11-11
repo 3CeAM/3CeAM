@@ -1946,7 +1946,7 @@ int count_users(void)
 }
 
 // Writes char data to the buffer in the format used by the client.
-// Used in packets 0x6b (chars info) and 0x6d (new char info)
+// Used in packets 0x6b (chars info), 0x6d (new char info), and 0x99d (charinfo per page).
 // Returns the size
 #define MAX_CHAR_BUF 155 //Max size (for WFIFOHEAD calls)
 int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p)
@@ -2064,9 +2064,9 @@ int mmo_char_send006b(int fd, struct char_session_data* sd)
 	WFIFOHEAD(fd,j + found_num*MAX_CHAR_BUF);
 	WFIFOW(fd,0) = 0x6b;
 #if PACKETVER >= 20100413
-	WFIFOB(fd,4) = MAX_CHARS_SLOTS;	// Max available slots.
-	WFIFOB(fd,5) = MAX_CHARS;	// Available slots.
-	WFIFOB(fd,6) = MAX_CHARS;	// Premium slots.
+	WFIFOB(fd,4) = MAX_CHARS; // Max slots.
+	WFIFOB(fd,5) = MAX_CHARS; // Available slots.
+	WFIFOB(fd,6) = MAX_CHARS; // Premium slots.
 #endif
 	memset(WFIFOP(fd,4 + offset), 0, 20); // unknown bytes
 	for(i = 0; i < found_num; i++)
@@ -2077,57 +2077,53 @@ int mmo_char_send006b(int fd, struct char_session_data* sd)
 	return 0;
 }
 
-//----------------------------------------
-// Updated function for sending characters data to a player.
-// For 2013 clients and higher. (HC_ACCEPT_ENTER2)
-// Note: I assume this is a official way of coding this,
-// but for some reason it won't display your characters
-// on the character selection screen. Its as if the client
-// is expecting additional info from another packet. [Rytech]
-//----------------------------------------
-/*int mmo_char_send082d(int fd, struct char_session_data* sd)
+// 0x9a0 - HC_CHARLIST_NOTIFY - Tells the client its ready to send character list???
+// Note: The TotalCnt value seems to affect how many times the client will send the
+// HC_ACK_CHARINFO_PER_PAGE packet. So a value of 12 would make it spam it 12 times.
+// Not sure why this is a thing when a value of 1 works just as good. Maybe its to split
+// the character list into seprate chunks to prevent 1 big packet. [Rytech]
+void mmo_charlist_notify(int fd, struct char_session_data* sd)
 {
-	int i, j, found_num = 0;
-	found_num = char_find_characters(sd);
+	WFIFOHEAD(fd,6);
+	WFIFOW(fd,0) = 0x9a0;
+	WFIFOL(fd,2) = 1;// TotalCnt
+	WFIFOSET(fd,6);
+}
 
-	j = 29;
-	WFIFOHEAD(fd,j + found_num*MAX_CHAR_BUF);
-	WFIFOW(fd,0) = 0x82d;
-	WFIFOB(fd,4) = MAX_CHARS;	//NormalSlotNum - Number of slots open for normal service.
-	WFIFOB(fd,5) = 0;			//PremiumSlotNum - Number of slots open for premium service.
-	WFIFOB(fd,6) = 0;			//BillingSlotNum - Number of slots open for billing service.
-	WFIFOB(fd,7) = MAX_CHARS;	//ProducibleSlotNum - Number of ValidSlotNum slots available.
-	WFIFOB(fd,8) = MAX_CHARS;	//ValidSlotNum - Total number of slots.
-	memset(WFIFOP(fd,9), 0, 20);//m_extension - Unused bytes.
-	for(i = 0; i < found_num; i++)
-		j += mmo_char_tobuf(WFIFOP(fd,j), &char_dat[sd->found_char[i]].status);
-	WFIFOW(fd,2) = j;	//PacketLength
-	WFIFOSET(fd,j);
-
-	return 0;
-}*/
-
-//----------------------------------------
-// Updated function to send characters to a player.
-// For 2013 clients and higher. (HC_ACCEPT_ENTER2)
-// Note: This is a hacked that allows logging in without
-// any known issues by sending the 82d packet, and then
-// sending the 6b packet. This isnt official and will be
-// reworked to a more official setup in the future. [Rytech]
-//----------------------------------------
+// 0x82d HC_ACCEPT_ENTER2 - Sends slots information in character select.
 void mmo_char_send082d(int fd, struct char_session_data* sd)
 {
 	WFIFOHEAD(fd,29);
 	WFIFOW(fd,0) = 0x82d;
 	WFIFOW(fd,2) = 29;	//PacketLength
-	WFIFOB(fd,4) = MAX_CHARS;	//NormalSlotNum - Number of slots open for normal service.
-	WFIFOB(fd,5) = 0;			//PremiumSlotNum - Number of slots open for premium service.
-	WFIFOB(fd,6) = 0;			//BillingSlotNum - Number of slots open for billing service.
-	WFIFOB(fd,7) = MAX_CHARS;	//ProducibleSlotNum - Number of ValidSlotNum slots available.
-	WFIFOB(fd,8) = MAX_CHARS;	//ValidSlotNum - Total number of slots.
-	memset(WFIFOP(fd,9), 0, 20);//m_extension - Unused bytes.
+	WFIFOB(fd,4) = MAX_CHARS;	//NormalSlotNum
+	WFIFOB(fd,5) = 0;			//PremiumSlotNum
+	WFIFOB(fd,6) = 0;			//BillingSlotNum
+	WFIFOB(fd,7) = MAX_CHARS;	//ProducibleSlotNum
+	WFIFOB(fd,8) = MAX_CHARS;	//ValidSlotNum
+	memset(WFIFOP(fd,9), 0, 20);//m_extension
 	WFIFOSET(fd,29);
+#if PACKETVER >= 20180620
+	mmo_charlist_notify(fd, sd);
+#else
 	mmo_char_send006b(fd, sd);
+#endif
+}
+
+// 0x99d HC_ACK_CHARINFO_PER_PAGE - Sends list of all characters for character select.
+void mmo_charinfo_per_page(int fd, struct char_session_data* sd)
+{
+	int i, j, found_num;
+
+	j = 4;
+	found_num = char_find_characters(sd);
+
+	WFIFOHEAD(fd,j + found_num*MAX_CHAR_BUF);
+	WFIFOW(fd,0) = 0x99d;
+	for(i = 0; i < found_num; i++)
+		j += mmo_char_tobuf(WFIFOP(fd,j), &char_dat[sd->found_char[i]].status);
+	WFIFOW(fd,2) = j;// Packet Length
+	WFIFOSET(fd,j);
 }
 
 // ó£ç•(charçÌèúéûÇ…égóp)
@@ -4209,6 +4205,13 @@ int parse_char(int fd)
 			FIFOSD_CHECK(6);
 			char_delete2_cancel(fd, sd);
 			RFIFOSKIP(fd,6);
+		break;
+
+		// Request from client to send character list.
+		case 0x9a1:
+			FIFOSD_CHECK(2);
+			mmo_charinfo_per_page(fd, sd);
+			RFIFOSKIP(fd,2);
 		break;
 
 		// login as map-server
