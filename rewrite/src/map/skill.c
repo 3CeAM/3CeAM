@@ -9897,6 +9897,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case LG_SHIELDSPELL:
 		if (sd)
 		{
+			signed char refinebonus = 0;
 			short effect_number = rand()%3 + 1;// Effect Number. Each level has 3 unique effects thats randomly picked from.
 			short shield_bonus = 0;// Shield Stats. DEF/MDEF/Refine is taken from shield and ran through a formula.
 			short splash_range = 0;// Splash AoE. Used for splash AoE ATK/MATK and Lex Divina.
@@ -9909,6 +9910,12 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				clif_skill_fail(sd, skillid, 0, 0, 0);
 				break;
 			}
+
+			// Set how the bonus from the shield's refine will be handled.
+			if ( MAX_REFINE > 10 )// +20 Refine Limit
+				refinebonus = shield->refine;
+			else// +10 Refine Limit
+				refinebonus = 2 * shield->refine;
 
 			switch( skilllv )
 			{
@@ -9985,16 +9992,16 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 						switch( effect_number )
 						{
 							case 1://Status Resistance Increase. This is for common status's.
-								shield_bonus = 2 * shield->refine + sstatus->luk / 10;
-								sc_start2(bl,SC_SHIELDSPELL_REF,100,effect_number,shield_bonus,shield->refine * 30000);
+								shield_bonus = 2 * refinebonus + sstatus->luk / 10;
+								sc_start2(bl,SC_SHIELDSPELL_REF,100,effect_number,shield_bonus,refinebonus * 30000);
 								break;
 							case 2://DEF Increase / Using Converted DEF Increase Formula For Pre-renewal Mechanics.
-								shield_bonus = shield->refine;
-								sc_start2(bl,SC_SHIELDSPELL_REF,100,effect_number,shield_bonus,shield->refine * 20000);
+								shield_bonus = refinebonus / 2;// Half the increase amount.
+								sc_start2(bl,SC_SHIELDSPELL_REF,100,effect_number,shield_bonus,refinebonus * 20000);
 								break;
 							case 3://HP Recovery
 								sc_start(bl,SC_SHIELDSPELL_REF,100,effect_number,-1);
-								shield_bonus = sstatus->max_hp * (status_get_base_lv_effect(src) / 10 + shield->refine) / 100;
+								shield_bonus = sstatus->max_hp * (status_get_base_lv_effect(src) / 10 + refinebonus) / 100;
 								status_heal(bl, shield_bonus, 0, 2);
 								status_change_end(bl,SC_SHIELDSPELL_REF,-1);
 							break;
@@ -10614,7 +10621,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		{
 			struct mob_data *md;
 
-			md = mob_once_spawn_sub(src, src->m, src->x, src->y, status_get_name(src), MOBID_KO_ZANZOU, "");
+			md = mob_once_spawn_sub(src, src->m, src->x, src->y, status_get_name(src), MOBID_KO_KAGE, "");
 			if( md )
 			{
 				md->master_id = src->id;

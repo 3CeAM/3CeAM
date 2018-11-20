@@ -1,0 +1,20 @@
+// Database for upgrading items. (+20 version for 3CeAM)
+// Stats per level for safe upgrade, Stats per level after safe limit, Safe level limit, Lv.1 %, Lv 2 %, Lv.3%, ect...
+// Armor defense is done in percentage (ie 70 = .7 def)
+// Weapons are whole numbers (ie 3 = 3 atk)
+//
+// 3CeAM Extended Refine System Info
+// When enabled, the system will increase the max refine level to 20.
+// The system will give bonus DEF on armor equips for refine levels 1 to 10, but
+// will not give any additional DEF on refine levels 11 to 20 for balance reasons.
+// Weapons will get bonus ATK on all refine levels.
+// Item scripts affected by refine level will be affected by all levels.
+//
+// Note: To load this file, go into the src/map/status.h file and change the MAX_REFINE setting to 20 and recompile.
+// The system will switch to loading this file instead of the refine_db.txt one automatically.
+
+ 70, 4,4, 100,100,100,100, 60, 40, 40, 20, 20, 10,  8,  8,  8,  8,  7,  7,  7,  7,  5,  5,	// Armor
+  2, 3,7, 100,100,100,100,100,100,100, 60, 40, 20, 18, 18, 18, 18, 18, 17, 17, 17, 15, 15,	// Lv.1 Weapons
+  3, 5,6, 100,100,100,100,100,100, 60, 40, 20, 20, 18, 18, 18, 18, 18, 17, 17, 17, 15, 15,	// Lv.2 Weapons
+  5, 8,5, 100,100,100,100,100, 60, 50, 20, 20, 20, 18, 18, 18, 18, 18, 17, 17, 17, 15, 15,	// Lv.3 Weapons
+  7,13,4, 100,100,100,100, 60, 40, 40, 20, 20, 10,  8,  8,  8,  8,  7,  7,  7,  7,  5,  5,	// Lv.4 Weapons

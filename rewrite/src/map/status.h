@@ -11,6 +11,10 @@ struct homun_data;
 struct status_change;
 
 //Use this to refer the max refinery level [Skotlex]
+//
+// 3CeAM Extended Refine System
+// Setting of 10 or 20 allowed for MAX_REFINE. 10 is the default for pre-re era behavior.
+// Check the refine_db_extended.txt file in the database folder for more info on what this does. [Rytech]
 #define MAX_REFINE 10
 #define MAX_REFINE_BONUS 5
 
