@@ -45,25 +45,31 @@ struct item_data;
 #define MAX_IGNORE_LIST 20 // official is 14
 #define MAX_VENDING 12
 #define MAX_MAP_SIZE 512*512 // Wasn't there something like this already? Can't find it.. [Shinryo]
-#define MOBID_EMPERIUM 1288
-// Added definitions for WoESE objects. [L0ne_W0lf]
-#define MOBID_BARRICADE1 1905
-#define MOBID_BARRICADE2 1906
-#define MOBID_GUARIDAN_STONE1 1907
-#define MOBID_GUARIDAN_STONE2 1908
 
 enum monster_mobid {
+	// WoE Emperium
+	MOBID_EMPERIUM = 1288,
+
+	// WoE Second Edition
+	MOBID_BARRICADE1 = 1905,
+	MOBID_BARRICADE2,
+	MOBID_GUARIDAN_STONE1,
+	MOBID_GUARIDAN_STONE2,
+
+	// Mechanic FAW's
 	MOBID_SILVERSNIPER = 2042,
 	MOBID_MAGICDECOY_FIRE,
 	MOBID_MAGICDECOY_WATER,
 	MOBID_MAGICDECOY_EARTH,
 	MOBID_MAGICDECOY_WIND,
 
+	// Sera's Summon Legion
 	MOBID_S_HORNET = 2158,
 	MOBID_S_GIANT_HORNET,
 	MOBID_S_LUCIOLA_VESPA,
 
-	MOBID_KO_ZANZOU = 2308,
+	// Kagerou/Oboro Zanzou
+	MOBID_KO_KAGE = 2308,
 };
 
 //The following system marks a different job ID system used by the map server,

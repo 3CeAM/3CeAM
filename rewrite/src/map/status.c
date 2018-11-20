@@ -2666,7 +2666,12 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		{
 			if (!((battle_config.costume_refine_def != 1 && i >= EQI_COSTUME_HEAD_LOW && i <= EQI_COSTUME_FLOOR) ||
 				(battle_config.shadow_refine_def != 1 && i >= EQI_SHADOW_ARMOR && i <= EQI_SHADOW_ACC_L)))
-				refinedef += sd->status.inventory[index].refine * refinebonus[0][0];
+			{// Don't allow DEF bonus's from refine levels 11 to 20 for balance reasons since this is pre-re.
+				if ( sd->status.inventory[index].refine > 10 )
+					refinedef += 10 * refinebonus[0][0];
+				else
+					refinedef += sd->status.inventory[index].refine * refinebonus[0][0];
+			}
 			if( sd->inventory_data[index]->script )
 			{
 				if( i == EQI_HAND_L ) //Shield
@@ -12068,7 +12073,11 @@ int status_readdb(void)
 	sv_readdb(db_path, "job_db1.txt",   ',', 5+MAX_WEAPON_TYPE, 5+MAX_WEAPON_TYPE, -1,                            &status_readdb_job1);
 	sv_readdb(db_path, "job_db2.txt",   ',', 1,                 1+MAX_LEVEL,       -1,                            &status_readdb_job2);
 	sv_readdb(db_path, "size_fix.txt",  ',', MAX_WEAPON_TYPE,   MAX_WEAPON_TYPE,    ARRAYLENGTH(atkmods),         &status_readdb_sizefix);
+#if MAX_REFINE > 10
+	sv_readdb(db_path, "refine_db_extended.txt", ',', 3+MAX_REFINE+1,    3+MAX_REFINE+1,     ARRAYLENGTH(percentrefinery), &status_readdb_refine);
+#else
 	sv_readdb(db_path, "refine_db.txt", ',', 3+MAX_REFINE+1,    3+MAX_REFINE+1,     ARRAYLENGTH(percentrefinery), &status_readdb_refine);
+#endif
 
 	return 0;
 }

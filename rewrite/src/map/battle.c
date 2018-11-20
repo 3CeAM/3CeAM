@@ -2353,9 +2353,17 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case RK_CRUSHSTRIKE:
 					if( sd )
 					{
+						signed char refinebonus = 0;
 						short index = sd->equip_index[EQI_HAND_R];
 						if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_WEAPON )
-							skillratio = sd->inventory_data[index]->wlv * (sd->status.inventory[index].refine + 6) * 100 + sd->inventory_data[index]->atk - 100 + sd->inventory_data[index]->weight / 10;
+						{
+							if ( MAX_REFINE > 10 )// +20 Refine Limit
+								refinebonus = sd->status.inventory[index].refine;
+							else// +10 Refine Limit
+								refinebonus = 2 * sd->status.inventory[index].refine;
+
+							skillratio = sd->inventory_data[index]->wlv * (refinebonus + 6) * 100 + sd->inventory_data[index]->atk - 100 + sd->inventory_data[index]->weight / 10;
+						}
 					}
 					break;
 				case RK_STORMBLAST:
@@ -3113,9 +3121,17 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 				case LG_SHIELDPRESS:
 					if( sd )
 					{
+						signed char refinebonus = 0;
 						short index = sd->equip_index[EQI_HAND_L];
 						if( index >= 0 && sd->inventory_data[index] && sd->inventory_data[index]->type == IT_ARMOR )
-							ATK_ADD(sstatus->vit * sd->status.inventory[index].refine);
+						{
+							if ( MAX_REFINE > 10 )// +20 Refine Limit
+								refinebonus = sd->status.inventory[index].refine;
+							else// +10 Refine Limit
+								refinebonus = 2 * sd->status.inventory[index].refine;
+
+							ATK_ADD(sstatus->vit * refinebonus);
+						}
 					}
 					break;
 				//case LG_RAYOFGENESIS:

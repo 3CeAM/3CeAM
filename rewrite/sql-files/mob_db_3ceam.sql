@@ -105,5 +105,5 @@ REPLACE INTO `mob_db_3ceam` VALUES (2158,'S_HORNET','Hornet','Hornet',95,5000,0,
 REPLACE INTO `mob_db_3ceam` VALUES (2159,'S_GIANT_HORNET','Giant Hornet','Giant Hornet',110,11960,0,0,0,1,123,456,15,27,117,65,67,72,77,34,10,12,0,4,24,0x3795,155,1292,792,340,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
 REPLACE INTO `mob_db_3ceam` VALUES (2160,'S_LUCIOLA_VESPA','Luciola Vespa','Luciola Vespa',130,16466,0,0,0,1,154,677,11,31,88,89,55,32,119,59,10,12,1,4,24,0x7795,110,1000,864,432,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
 #  Kagerou/Oboro Zanzou - Settings Are Not Official.
-REPLACE INTO `mob_db_3ceam` VALUES (2308,'KO_ZANZOU','Shadow Clone','Shadow Clone',100,18000,0,0,0,1,0,0,0,0,1,1,1,1,1,1,10,12,1,0,27,0x0,150,1003,1152,336,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+REPLACE INTO `mob_db_3ceam` VALUES (2308,'KO_KAGE','Shadow Clone','Shadow Clone',100,18000,0,0,0,1,0,0,0,0,1,1,1,1,1,1,10,12,1,0,27,0x0,150,1003,1152,336,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
 
