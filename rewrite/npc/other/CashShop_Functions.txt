@@ -80,7 +80,7 @@ function	script	F_CashPartyCall2	{
 function	script	F_CashReset	{
 	if (Class != Job_Novice) {
 		if (Weight < 1) { 
-			if (checkriding() || checkfalcon() || checkcart()) return;
+			if (checkriding() || checkfalcon() || checkcart() || checkdragon() || checkwug() || checkwugrider() || checkmadogear()) return;
 			else {
 				resetskill;
 				sc_end SC_ALL;

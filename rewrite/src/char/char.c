@@ -2077,11 +2077,53 @@ int mmo_char_send006b(int fd, struct char_session_data* sd)
 	return 0;
 }
 
+// 0x99d HC_ACK_CHARINFO_PER_PAGE - Sends character data to the client for character select.
+void mmo_charinfo_per_page(int fd, struct char_session_data* sd)
+{
+	signed char num_left, send_cnt = 0, page_num = 0;
+	int i, j;
+
+	// Number of character's found on the account.
+	num_left = char_find_characters(sd);
+
+	// Divide the character data between pages.
+	// Up to 3 character's is sent per page.
+	for ( ; num_left > 0; )
+	{
+		j = 4;
+
+		if ( num_left > 3 )
+			send_cnt = 3;
+		else
+			send_cnt = num_left;
+
+		WFIFOHEAD(fd,j + send_cnt*MAX_CHAR_BUF);
+		WFIFOW(fd,0) = 0x99d;
+		for(i = (page_num*3); i < (page_num*3+send_cnt); i++)
+			j += mmo_char_tobuf(WFIFOP(fd,j), &char_dat[sd->found_char[i]].status);
+		WFIFOW(fd,2) = j;// Packet Length
+		WFIFOSET(fd,j);
+
+		num_left -= 3;
+		page_num++;
+	}
+
+	// If there's no characters to send or if the last page sent has 3 character's,
+	// send a extra page with no character data so the client will know there's
+	// no more character data to receive.
+	if ( send_cnt == 0 || send_cnt == 3 )
+	{
+		WFIFOHEAD(fd,4);
+		WFIFOW(fd,0) = 0x99d;
+		WFIFOW(fd,2) = 4;// Packet Length
+		WFIFOSET(fd,4);
+	}
+}
+
 // 0x9a0 - HC_CHARLIST_NOTIFY - Tells the client its ready to send character list???
 // Note: The TotalCnt value seems to affect how many times the client will send the
-// HC_ACK_CHARINFO_PER_PAGE packet. So a value of 12 would make it spam it 12 times.
-// Not sure why this is a thing when a value of 1 works just as good. Maybe its to split
-// the character list into seprate chunks to prevent 1 big packet. [Rytech]
+// HC_ACK_CHARINFO_PER_PAGE packet. So a value of 4 would make it spam it 4 times.
+// Not sure why this is a thing when a value of 1 works just as good. [Rytech]
 void mmo_charlist_notify(int fd, struct char_session_data* sd)
 {
 	WFIFOHEAD(fd,6);
@@ -2108,22 +2150,6 @@ void mmo_char_send082d(int fd, struct char_session_data* sd)
 #else
 	mmo_char_send006b(fd, sd);
 #endif
-}
-
-// 0x99d HC_ACK_CHARINFO_PER_PAGE - Sends list of all characters for character select.
-void mmo_charinfo_per_page(int fd, struct char_session_data* sd)
-{
-	int i, j, found_num;
-
-	j = 4;
-	found_num = char_find_characters(sd);
-
-	WFIFOHEAD(fd,j + found_num*MAX_CHAR_BUF);
-	WFIFOW(fd,0) = 0x99d;
-	for(i = 0; i < found_num; i++)
-		j += mmo_char_tobuf(WFIFOP(fd,j), &char_dat[sd->found_char[i]].status);
-	WFIFOW(fd,2) = j;// Packet Length
-	WFIFOSET(fd,j);
 }
 
 // ó£ç•(charçÌèúéûÇ…égóp)
