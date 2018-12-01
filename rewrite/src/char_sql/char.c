@@ -911,6 +911,127 @@ int mmo_chars_fromsql(struct char_session_data* sd, uint8* buf)
 	return j;
 }
 
+// 0x99d HC_ACK_CHARINFO_PER_PAGE
+// Loads the basic character rooster for the given account and then
+// sends it to the client for character select.
+int mmo_chars_fromsql_per_page(int fd, struct char_session_data* sd)
+{
+	SqlStmt* stmt;
+	struct mmo_charstatus p;
+	signed char num_left, send_cnt = 0, page_num = 0;
+	short char_data_size = 155;// Set this to the same as MAX_CHAR_BUF.
+	int j = 0, i = 0;
+	char last_map[MAP_NAME_LENGTH_EXT];
+
+	stmt = SqlStmt_Malloc(sql_handle);
+	if( stmt == NULL )
+	{
+		SqlStmt_ShowDebug(stmt);
+		return 0;
+	}
+	memset(&p, 0, sizeof(p));
+
+	// read char data
+	if( SQL_ERROR == SqlStmt_Prepare(stmt, "SELECT "
+		"`char_id`,`char_num`,`name`,`class`,`base_level`,`job_level`,`base_exp`,`job_exp`,`zeny`,"
+		"`str`,`agi`,`vit`,`int`,`dex`,`luk`,`max_hp`,`hp`,`max_sp`,`sp`,"
+		"`status_point`,`skill_point`,`option`,`karma`,`manner`,`hair`,`hair_color`,"
+		"`clothes_color`,`weapon`,`shield`,`head_top`,`head_mid`,`head_bottom`,`last_map`,`rename`,`delete_date`,`robe`,`body`"
+		" FROM `%s` WHERE `account_id`='%d' AND `char_num` < '%d'", char_db, sd->account_id, MAX_CHARS)
+	||	SQL_ERROR == SqlStmt_Execute(stmt)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 0,  SQLDT_INT,    &p.char_id, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 1,  SQLDT_UCHAR,  &p.slot, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 2,  SQLDT_STRING, &p.name, sizeof(p.name), NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 3,  SQLDT_SHORT,  &p.class_, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 4,  SQLDT_UINT,   &p.base_level, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 5,  SQLDT_UINT,   &p.job_level, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 6,  SQLDT_UINT,   &p.base_exp, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 7,  SQLDT_UINT,   &p.job_exp, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 8,  SQLDT_INT,    &p.zeny, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 9,  SQLDT_SHORT,  &p.str, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 10, SQLDT_SHORT,  &p.agi, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 11, SQLDT_SHORT,  &p.vit, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 12, SQLDT_SHORT,  &p.int_, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 13, SQLDT_SHORT,  &p.dex, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 14, SQLDT_SHORT,  &p.luk, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 15, SQLDT_INT,    &p.max_hp, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 16, SQLDT_INT,    &p.hp, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 17, SQLDT_INT,    &p.max_sp, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 18, SQLDT_INT,    &p.sp, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 19, SQLDT_UINT,   &p.status_point, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 20, SQLDT_UINT,   &p.skill_point, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 21, SQLDT_UINT,   &p.option, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 22, SQLDT_UCHAR,  &p.karma, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 23, SQLDT_SHORT,  &p.manner, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 24, SQLDT_SHORT,  &p.hair, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 25, SQLDT_SHORT,  &p.hair_color, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 26, SQLDT_SHORT,  &p.clothes_color, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 27, SQLDT_SHORT,  &p.weapon, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 28, SQLDT_SHORT,  &p.shield, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 29, SQLDT_SHORT,  &p.head_top, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 30, SQLDT_SHORT,  &p.head_mid, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 31, SQLDT_SHORT,  &p.head_bottom, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 32, SQLDT_STRING, &last_map, sizeof(last_map), NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 33, SQLDT_SHORT,	&p.rename, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 34, SQLDT_UINT32, &p.delete_date, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 35, SQLDT_SHORT,  &p.robe, 0, NULL, NULL)
+	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 36, SQLDT_SHORT,  &p.body, 0, NULL, NULL)
+	)
+	{
+		SqlStmt_ShowDebug(stmt);
+		SqlStmt_Free(stmt);
+		return 0;
+	}
+
+	// Number of character's found on the account.
+	num_left = (signed char)SqlStmt_NumRows(stmt);
+
+	// Divide the character data between pages.
+	// Up to 3 character's is sent per page.
+	for ( ; num_left > 0; )
+	{
+		j = 4;
+
+		if ( num_left > 3 )
+			send_cnt = 3;
+		else
+			send_cnt = num_left;
+
+		WFIFOHEAD(fd,j + send_cnt*char_data_size);
+		WFIFOW(fd,0) = 0x99d;
+		for( i = (page_num*3); i < (page_num*3+send_cnt) && SQL_SUCCESS == SqlStmt_NextRow(stmt); i++ )
+		{
+			p.last_point.map = mapindex_name2id(last_map);
+			sd->found_char[i] = p.char_id;
+			j += mmo_char_tobuf(WFIFOP(fd, j), &p);
+		}
+		WFIFOW(fd,2) = j;// Packet Length
+		WFIFOSET(fd,j);
+
+		num_left -= 3;
+		page_num++;
+	}
+
+	// If there's no characters to send or if the last page sent has 3 character's,
+	// send a extra page with no character data so the client will know there's
+	// no more character data to receive.
+	if ( send_cnt == 0 || send_cnt == 3 )
+	{
+		WFIFOHEAD(fd,4);
+		WFIFOW(fd,0) = 0x99d;
+		WFIFOW(fd,2) = 4;// Packet Length
+		WFIFOSET(fd,4);
+	}
+
+	for( ; i < MAX_CHARS; i++ )
+		sd->found_char[i] = -1;
+
+	memset(sd->new_name,0,sizeof(sd->new_name));
+
+	SqlStmt_Free(stmt);
+	return 0;
+}
+
 //=====================================================================================================
 int mmo_char_fromsql(int char_id, struct mmo_charstatus* p, bool load_everything)
 {
@@ -1648,7 +1769,8 @@ int count_users(void)
 
 // Writes char data to the buffer in the format used by the client.
 // Used in packets 0x6b (chars info), 0x6d (new char info), and 0x99d (charinfo per page).
-// Returns the size
+// Returns the size.
+// Note: Be sure to set "char_data_size" in mmo_chars_fromsql_per_page to the same as MAX_CHAR_BUF.
 #define MAX_CHAR_BUF 155 //Max size (for WFIFOHEAD calls)
 int mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p)
 {
@@ -1780,9 +1902,8 @@ int mmo_char_send006b(int fd, struct char_session_data* sd)
 
 // 0x9a0 - HC_CHARLIST_NOTIFY - Tells the client its ready to send character list???
 // Note: The TotalCnt value seems to affect how many times the client will send the
-// HC_ACK_CHARINFO_PER_PAGE packet. So a value of 12 would make it spam it 12 times.
-// Not sure why this is a thing when a value of 1 works just as good. Maybe its to split
-// the character list into seprate chunks to prevent 1 big packet. [Rytech]
+// HC_ACK_CHARINFO_PER_PAGE packet. So a value of 4 would make it spam it 4 times.
+// Not sure why this is a thing when a value of 1 works just as good. [Rytech]
 void mmo_charlist_notify(int fd, struct char_session_data* sd)
 {
 	WFIFOHEAD(fd,6);
@@ -1809,21 +1930,6 @@ void mmo_char_send082d(int fd, struct char_session_data* sd)
 #else
 	mmo_char_send006b(fd, sd);
 #endif
-}
-
-// 0x99d HC_ACK_CHARINFO_PER_PAGE - Sends list of all characters for character select.
-void mmo_charinfo_per_page(int fd, struct char_session_data* sd)
-{
-	int j = 4;
-
-	if (save_log)
-		ShowInfo("Loading Char Data ("CL_BOLD"%d"CL_RESET")\n",sd->account_id);
-
-	WFIFOHEAD(fd,j + MAX_CHARS*MAX_CHAR_BUF);
-	WFIFOW(fd,0) = 0x99d;
-	j+=mmo_chars_fromsql(sd, WFIFOP(fd,j));
-	WFIFOW(fd,2) = j;// Packet Length
-	WFIFOSET(fd,j);
 }
 
 int char_married(int pl1, int pl2)
@@ -3971,7 +4077,7 @@ int parse_char(int fd)
 		// Request from client to send character list.
 		case 0x9a1:
 			FIFOSD_CHECK(2);
-			mmo_charinfo_per_page(fd, sd);
+			mmo_chars_fromsql_per_page(fd, sd);
 			RFIFOSKIP(fd,2);
 		break;
 
