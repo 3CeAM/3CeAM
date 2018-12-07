@@ -5025,8 +5025,10 @@ ACMD_FUNC(mount)
 /*==========================================
  * Dragon mounting command for Rune Knight
  * that allows selecting a dragon color. [Rytech]
+ * Note: Disabled due to conflicts with the body
+ * style system which can cause client errors.
  *------------------------------------------*/
-ACMD_FUNC(dragon)
+/*ACMD_FUNC(dragon)
 {
 	int color = 0;
 	nullpo_retr(-1, sd);
@@ -5093,7 +5095,7 @@ ACMD_FUNC(dragon)
 		clif_displaymessage(fd, msg_txt(701));// You can't mount with your current job.
 
 	return 0;
-}
+}*/
 
 /*==========================================
  * Falcon command for all jobs that can
@@ -9732,7 +9734,7 @@ AtCommandInfo atcommand_info[] = {
 	{ "charcommands",       1,1,      atcommand_commands },
 	{ "font",               1,1,      atcommand_font },
 	//3CeAM Commands
-	{ "dragon",            20,20,     atcommand_dragon },
+	//{ "dragon",            20,20,     atcommand_dragon },
 	{ "falcon",            20,20,     atcommand_falcon },
 	{ "cart",              20,20,     atcommand_cart },
 	{ "bodystyle",         40,40,     atcommand_body_style },
