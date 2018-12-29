@@ -921,6 +921,7 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_REBOUND] = SI_REBOUND;
 	StatusIconChangeTable[SC_H_MINE_SPLASH] = SI_H_MINE_SPLASH;
 	StatusIconChangeTable[SC_HEAT_BARREL_AFTER] = SI_HEAT_BARREL_AFTER;
+	StatusIconChangeTable[SC_HEAD_EQUIPMENT_EFFECT] = SI_HEAD_EQUIPMENT_EFFECT;
 
 	//Other SC which are not necessarily associated to skills.
 	StatusChangeFlagTable[SC_ASPDPOTION0] = SCB_ASPD;
@@ -9642,6 +9643,7 @@ int status_change_clear(struct block_list* bl, int type)
 		case SC_SUMMER2:
 		case SC_SPRITEMABLE:
 		case SC_SOULATTACK:
+		case SC_HEAD_EQUIPMENT_EFFECT:
 			continue;
 		}
 
@@ -11625,6 +11627,7 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC_ON_PUSH_CART:
 			case SC_SPRITEMABLE:
 			case SC_SOULATTACK:
+			case SC_HEAD_EQUIPMENT_EFFECT:
 				continue;
 
 			//Debuffs that can be removed.

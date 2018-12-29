@@ -745,6 +745,9 @@ typedef enum sc_type {
 	SC_USE_SKILL_SP_SHA,
 	SC_SP_SHA,
 
+	// Hat Effect Animations
+	SC_HEAD_EQUIPMENT_EFFECT,
+
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
 
@@ -1646,7 +1649,7 @@ enum si_type {
 //	SI_CHERRY_BLOSSOM_CAKE = 892,
 	SI_SU_STOOP = 893,
 	SI_CATNIPPOWDER = 894,
-//	SI_HEAD_EQUIPMENT_EFFECT = 895,
+	SI_HEAD_EQUIPMENT_EFFECT = 895,
 	SI_SV_ROOTTWIST = 896,
 //	SI_ATTACK_PROPERTY_NOTHING = 897,
 //	SI_ATTACK_PROPERTY_WATER = 898,

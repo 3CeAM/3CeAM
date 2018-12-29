@@ -1475,7 +1475,7 @@ int skill_additional_effect (struct block_list* src, struct block_list *bl, int 
 				case SC_SPRITEMABLE:	case SC_BITESCAR:		case SC_SOULATTACK:
 				// Misc Status's
 				case SC_ALL_RIDING:		case SC_MONSTER_TRANSFORM:	case SC_ON_PUSH_CART:
-				case SC_FULL_THROTTLE:	case SC_REBOUND:
+				case SC_FULL_THROTTLE:	case SC_REBOUND:		case SC_HEAD_EQUIPMENT_EFFECT:
 				// Only removeable by Clearance
 				case SC_CRUSHSTRIKE:	case SC_REFRESH:		case SC_GIANTGROWTH:
 				case SC_STONEHARDSKIN:	case SC_VITALITYACTIVATION:	case SC_FIGHTINGSPIRIT:
@@ -7695,7 +7695,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_SPRITEMABLE:	case SC_BITESCAR:		case SC_SOULATTACK:
 				// Misc Status's
 				case SC_ALL_RIDING:		case SC_MONSTER_TRANSFORM:	case SC_ON_PUSH_CART:
-				case SC_FULL_THROTTLE:	case SC_REBOUND:
+				case SC_FULL_THROTTLE:	case SC_REBOUND:		case SC_HEAD_EQUIPMENT_EFFECT:
 				// Only removeable by Clearance
 				case SC_CRUSHSTRIKE:	case SC_REFRESH:		case SC_GIANTGROWTH:
 				case SC_STONEHARDSKIN:	case SC_VITALITYACTIVATION:	case SC_FIGHTINGSPIRIT:
@@ -9460,7 +9460,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 				case SC_SPRITEMABLE:	case SC_SOULATTACK:
 				// Misc Status's
 				case SC_ALL_RIDING:		case SC_MONSTER_TRANSFORM:	case SC_ON_PUSH_CART:
-				case SC_FULL_THROTTLE:	case SC_REBOUND:
+				case SC_FULL_THROTTLE:	case SC_REBOUND:		case SC_HEAD_EQUIPMENT_EFFECT:
 				// Only removeable by Dispell
 				case SC_SPHERE_1:		case SC_SPHERE_2:		case SC_SPHERE_3:		
 				case SC_SPHERE_4:		case SC_SPHERE_5:		case SC_SPELLBOOK1:		
@@ -20454,6 +20454,7 @@ static void skill_readdb(void)
 	memset(skill_produce_db,0,sizeof(skill_produce_db));
 	memset(skill_arrow_db,0,sizeof(skill_arrow_db));
 	memset(skill_abra_db,0,sizeof(skill_abra_db));
+	memset(skill_spellbook_db,0,sizeof(skill_spellbook_db));
 	memset(skill_improvise_db,0,sizeof(skill_improvise_db));
 	memset(skill_magicmushroom_db,0,sizeof(skill_magicmushroom_db));
 

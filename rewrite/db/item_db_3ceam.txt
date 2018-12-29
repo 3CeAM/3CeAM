@@ -533,6 +533,8 @@
 
 // Coupon For Styling Shop
 6707,Cash_Hair_Coupon,Cash Hairstyle Coupon,3,0,,10,,,,,,,,,,,,,{},{},{}
+6959,Costume_Change_Ticket,Costume Change Ticket,3,0,,10,,,,,,,,,,,,,{},{},{}
+25736,Cash_Hair_Coupon2,Cash Hairstyle Coupon 2,3,0,,10,,,,,,,,,,,,,{},{},{}
 
 // Emergency Magic Gear Box - From 2017 Mado Gear Update
 23277,Mado_Box,Emergency Magic Gear,2,10000,,3000,,,,,0x00000400,8,2,,,100,,,{ setmadogear 1; },{},{}
@@ -552,8 +554,9 @@
 
 //18984
 
-6959,Costume_Change_Ticket,Costume Change Ticket,3,0,,10,,,,,,,,,,,,,{},{},{}
-
 // Updated Wedding Rings - Supports New 2016 Wedding Skills
 2634,Bridegroom_Ring,Wedding Ring,5,0,,0,,0,,0,0xFFFFFFFF,7,1,136,,0,0,0,{ skill "WE_MALE",1; skill "WE_FEMALE",1; skill "WE_CALLPARTNER",1; skill "WE_CALLALLFAMILY",1; skill "WE_ONEFOREVER",1; },{},{}
 2635,Bride_Ring,Wedding Ring,5,0,,0,,0,,0,0xFFFFFFFF,7,0,136,,0,0,0,{ skill "WE_MALE",1; skill "WE_FEMALE",1; skill "WE_CALLPARTNER",1; skill "WE_CALLALLFAMILY",1; skill "WE_ONEFOREVER",1; },{},{}
+
+// Equips With Special Effect Animations
+20515,Magic_Circle,Magic Circle,5,20,,0,,0,,0,0xFFFFFFFF,7,2,8192,,1,0,0,{},{ sc_start SC_HEAD_EQUIPMENT_EFFECT,-1,56; },{ sc_end SC_HEAD_EQUIPMENT_EFFECT; }

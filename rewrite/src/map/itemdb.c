@@ -862,6 +862,7 @@ static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scr
 		| id | name_english | name_japanese | type | price_buy | price_sell | weight | attack | defence | range | slots | equip_jobs | equip_upper | equip_genders | equip_locations | weapon_level | equip_level | refineable | view | script | equip_script | unequip_script |
 		+----+--------------+---------------+------+-----------+------------+--------+--------+---------+-------+-------+------------+-------------+---------------+-----------------+--------------+-------------+------------+------+--------+--------------+----------------+
 	*/
+	short item_type;
 	int nameid;
 	struct item_data* id;
 	
@@ -877,7 +878,15 @@ static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scr
 	safestrncpy(id->name, str[1], sizeof(id->name));
 	safestrncpy(id->jname, str[2], sizeof(id->jname));
 
-	id->type = atoi(str[3]);
+	item_type = atoi(str[3]);
+
+	// Switches weapon and armor types to fix switched type issue.
+	if ( item_type == 4 )
+		id->type = 5;
+	else if ( item_type == 5 )
+		id->type = 4;
+	else
+		id->type = item_type;
 
 	if( id->type < 0 || id->type == IT_UNKNOWN || id->type == IT_UNKNOWN2 || ( id->type > IT_DELAYCONSUME && id->type < IT_CASH ) || id->type >= IT_MAX )
 	{// catch invalid item types
