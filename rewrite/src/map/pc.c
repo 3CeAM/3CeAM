@@ -52,6 +52,7 @@ unsigned int statp[MAX_LEVEL+1];
 
 // h-files are for declarations, not for implementations... [Shinomori]
 struct skill_tree_entry skill_tree[CLASS_COUNT][MAX_SKILL_TREE];
+struct s_pc_styling_db pc_styling_db[MAX_PC_STYLING_DB];
 // timer for night.day implementation
 int day_timer_tid;
 int night_timer_tid;
@@ -9666,6 +9667,73 @@ static bool pc_readdb_noallow(char* fields[], int columns, int current)
 	return true;
 }
 
+static bool pc_readdb_stylingshop(char* fields[], int columns, int current)
+{// Database Format: StyleID,StyleType,StyleNum,PayType,PayNum
+
+	int i = atoi(fields[0]), stylenum = atoi(fields[2]), paynum = atoi(fields[4]);
+	struct item_data *item_data;
+
+	// StyleID - ID management used to hold all the settings in.
+	// Note: Was going to be used to assign ID ranges for custom dye/style/headgear entrys
+	// but due to some limitations of the styling shop window its now just used for keeping
+	// track of official entry's and error messages.
+	pc_styling_db[current].styleid = i;
+
+	// StyleType - Type of style. Used to set if were changing a dye, style, or giving a item.
+	if ( strcmpi(fields[1],"hairdye")==0 ) pc_styling_db[current].styletype = STYLETYPE_HAIRDYE;
+	else if ( strcmpi(fields[1],"hairstyle")==0 ) pc_styling_db[current].styletype = STYLETYPE_HAIRSTYLE;
+	else if ( strcmpi(fields[1],"bodydye")==0 ) pc_styling_db[current].styletype = STYLETYPE_BODYDYE;
+	else if ( strcmpi(fields[1],"bodystyle")==0 ) pc_styling_db[current].styletype = STYLETYPE_BODYSTYLE;
+	else if ( strcmpi(fields[1],"headtop")==0 ) pc_styling_db[current].styletype = STYLETYPE_HEADTOP;
+	else if ( strcmpi(fields[1],"headmid")==0 ) pc_styling_db[current].styletype = STYLETYPE_HEADMID;
+	else if ( strcmpi(fields[1],"headlow")==0 ) pc_styling_db[current].styletype = STYLETYPE_HEADLOW;
+	else
+	{
+		ShowError("stylistshop_db: Invalid StyleType for StyleID %d\n", i);
+		pc_styling_db[current].styletype = 0;
+	}
+
+	// StyleNum - Value for the style. Sets the value of the dye/style or the item ID of the headgear to give.
+	if ( pc_styling_db[current].styletype >= STYLETYPE_HEADTOP && pc_styling_db[current].styletype <= STYLETYPE_HEADLOW )
+	{
+		if ( (item_data = itemdb_exists(stylenum)) == NULL )
+		{
+			ShowError("stylistshop_db: Invalid item ID set to StyleNum for StyleID %d. Using dummy data.\n", i);
+			pc_styling_db[current].stylenum = 500;// Dummy item.
+		}
+		else
+			pc_styling_db[current].stylenum = item_data->nameid;
+	}
+	else
+		pc_styling_db[current].stylenum = stylenum;
+
+	// PayType. Sets if the payment required is zeny or a item.
+	if ( strcmpi(fields[3],"zeny")==0 ) pc_styling_db[current].paytype = PAYTYPE_ZENY;
+	else if ( strcmpi(fields[3],"item")==0 ) pc_styling_db[current].paytype = PAYTYPE_ITEM;
+	else
+	{
+		ShowError("stylistshop_db: Invalid PayType for StyleID %d\n", i);
+		pc_styling_db[current].paytype = 0;
+	}
+
+	// PayNum - Sets the value of the required payment. Amount of zeny if PayType is zeny or item ID if its a item.
+	if ( pc_styling_db[current].paytype == PAYTYPE_ITEM )
+	{
+		if ( (item_data = itemdb_exists(paynum)) == NULL )
+		{
+			ShowError("stylistshop_db: Invalid item ID set to PayNum for StyleID %d. Using dummy data.\n", i);
+			pc_styling_db[current].paynum = 500;
+			// Note: Add warning about if buy price is less then sell price.
+		}
+		else
+			pc_styling_db[current].paynum = item_data->nameid;
+	}
+	else
+		pc_styling_db[current].paynum = paynum;
+
+	return true;
+}
+
 int pc_readdb(void)
 {
 	int i,j,k;
@@ -9763,8 +9831,11 @@ int pc_readdb(void)
 
 	// スキルツリ?
 	memset(skill_tree,0,sizeof(skill_tree));
-	sv_readdb(db_path, "skill_tree.txt", ',', 3+MAX_PC_SKILL_REQUIRE*2, 4+MAX_PC_SKILL_REQUIRE*2, -1, &pc_readdb_skilltree);
+	memset(jobnotallowed,0,sizeof(jobnotallowed));
+	memset(pc_styling_db,0,sizeof(pc_styling_db));
+	sv_readdb(db_path, "skill_tree.txt"    , ',', 3+MAX_PC_SKILL_REQUIRE*2, 4+MAX_PC_SKILL_REQUIRE*2, -1, &pc_readdb_skilltree);
 	sv_readdb(db_path, "job_notallowed.txt", ',', 2, 2, -1, &pc_readdb_noallow);
+	sv_readdb(db_path, "stylingshop_db.txt", ',', 5, 5, MAX_PC_STYLING_DB, &pc_readdb_stylingshop);
 
 	// ?性修正テ?ブル
 	for(i=0;i<4;i++)

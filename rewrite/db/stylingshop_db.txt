@@ -1,0 +1,107 @@
+// Styling Shop Database (Currently not in use)
+//
+// Structure of Database:
+// StyleID,StyleType,StyleNum,PayType,PayNum
+//
+// 01. StyleID		ID of the style entry that all the other settings are saved to.
+//
+// 02. StyleType	Type of style.
+//	hairdye ----> Hair Dye
+//	hairstyle --> Hair Style
+//	bodydye ----> Body/Cloth Dye
+//	bodystyle --> Body/Cloth Style
+//	headtop ----> Headgear Upper
+//	headmid ----> Headgear Middle
+//	headlow ----> Headgear Lower
+//
+// 03. StyleNum		Value for the style.
+//	If StyleType is hairdye/hairstyle/bodydye/bodystyle, sets the dye/style number.
+//	If StyleType is headtop/headmid/headlow, sets the ID of the headgear item being sold.
+//
+// 04. PayType		Type of payment required. Can be set to zeny or item
+//
+// 05. PayNum		Value for the required payment.
+//	If PayType is zeny, PayNum sets the amount of zeny required to purchase.
+//	If PayType is item, PayNum sets the ID for the item required to purchase.
+//
+// NOTE: Do not use StyleNum 0 for hairstyle or StyleNum 1 for bodydye.
+// This can lead to glitches and possible error's with certain setups.
+// Plus they are not normally accessable on official server's for certain reasons.
+//
+// Note 2: The system is limited in some ways on the client side when it comes trying to add
+// custom dyes and styles. Because of this its best to only use the styling shop system for
+// the purchase of official dyes, styles, and headgears. Custom stuff should be handled by
+// custom stylists like the super stylist.
+
+// Default hair dye.
+// Not in official shop but being used as dummy data.
+0,hairdye,0,zeny,100000
+
+// Hair Dye's
+1,hairdye,1,zeny,100000
+2,hairdye,2,zeny,100000
+3,hairdye,3,zeny,100000
+4,hairdye,4,zeny,100000
+5,hairdye,5,zeny,100000
+6,hairdye,6,zeny,100000
+7,hairdye,7,zeny,100000
+8,hairdye,8,zeny,100000
+
+// Hair Style's
+9,hairstyle,1,zeny,100000
+10,hairstyle,2,zeny,100000
+11,hairstyle,3,zeny,100000
+12,hairstyle,4,zeny,100000
+13,hairstyle,5,zeny,100000
+14,hairstyle,6,zeny,100000
+15,hairstyle,7,zeny,100000
+16,hairstyle,8,zeny,100000
+17,hairstyle,9,zeny,100000
+18,hairstyle,10,zeny,100000
+19,hairstyle,11,zeny,100000
+20,hairstyle,12,zeny,100000
+21,hairstyle,13,zeny,100000
+22,hairstyle,14,zeny,100000
+23,hairstyle,15,zeny,100000
+24,hairstyle,16,zeny,100000
+25,hairstyle,17,zeny,100000
+26,hairstyle,18,zeny,100000
+27,hairstyle,19,zeny,100000
+28,hairstyle,20,zeny,100000
+29,hairstyle,21,zeny,100000
+30,hairstyle,22,zeny,100000
+31,hairstyle,23,zeny,100000
+32,hairstyle,24,item,7622
+33,hairstyle,25,item,7622
+34,hairstyle,26,item,7622
+35,hairstyle,27,item,7622
+36,hairstyle,28,item,6707
+37,hairstyle,29,item,6707
+38,hairstyle,30,item,25736
+39,hairstyle,31,item,25736
+
+// Body Dye's
+40,bodydye,0,item,6047
+41,bodydye,2,item,6046
+42,bodydye,3,item,6046
+
+// Body Style's
+43,bodystyle,0,item,6959
+44,bodystyle,1,item,6959
+
+// Headgear Upper
+45,headtop,2220,zeny,1000
+46,headtop,2208,zeny,800
+47,headtop,2211,zeny,400
+
+// Headgear Middle
+48,headmid,2239,zeny,10000
+49,headmid,2201,zeny,5000
+50,headmid,2242,zeny,24000
+51,headmid,2243,zeny,20000
+52,headmid,2205,zeny,3500
+53,headmid,2203,zeny,4000
+54,headmid,2212,zeny,1000
+
+// Headgear Upper
+55,headlow,2241,zeny,5000

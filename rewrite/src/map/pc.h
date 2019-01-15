@@ -25,6 +25,26 @@
 #define MAX_RUNE 60
 #define MAX_SPELLBOOK 7
 
+// Styling Shop
+// Sets array size for the styling database.
+#define MAX_PC_STYLING_DB 56
+// Sets where in the array each styling type starts.
+#define STYLING_START_HAIRDYE 1
+#define STYLING_START_HAIRSTYLE 9
+#define STYLING_START_BODYDYE 40
+#define STYLING_START_BODYSTYLE 43
+#define STYLING_START_HEADTOP 45
+#define STYLING_START_HEADMID 48
+#define STYLING_START_HEADLOW 55
+// Sets the max entries for each styling type.
+#define STYLING_MAX_HAIRDYE 8
+#define STYLING_MAX_HAIRSTYLE 31
+#define STYLING_MAX_BODYDYE 3
+#define STYLING_MAX_BODYSTYLE 2
+#define STYLING_MAX_HEADTOP 3
+#define STYLING_MAX_HEADMID 7
+#define STYLING_MAX_HEADLOW 1
+
 struct weapon_data {
 	int atkmods[3];
 	// all the variables except atkmods get zero'ed in each call of status_calc_pc
@@ -857,6 +877,12 @@ struct skill_tree_entry {
 }; // Celest
 extern struct skill_tree_entry skill_tree[CLASS_COUNT][MAX_SKILL_TREE];
 
+struct s_pc_styling_db {
+	short styleid, styletype, stylenum, paytype;
+	int paynum;
+};
+extern struct s_pc_styling_db pc_styling_db[MAX_PC_STYLING_DB];
+
 struct sg_data {
 	short anger_id;
 	short bless_id;
@@ -896,6 +922,21 @@ int do_init_pc(void);
 void do_final_pc(void);
 
 enum {ADDITEM_EXIST,ADDITEM_NEW,ADDITEM_OVERAMOUNT};
+
+enum styling_styletype {
+	STYLETYPE_HAIRDYE = 1,
+	STYLETYPE_HAIRSTYLE,
+	STYLETYPE_BODYDYE,
+	STYLETYPE_BODYSTYLE,
+	STYLETYPE_HEADTOP,
+	STYLETYPE_HEADMID,
+	STYLETYPE_HEADLOW
+};
+
+enum styling_paytype {
+	PAYTYPE_ZENY = 1,
+	PAYTYPE_ITEM
+};
 
 // timer for night.day
 extern int day_timer_tid;

@@ -1968,9 +1968,11 @@ packet_ver: 33
 0x0873,36,storagepassword,0
 
 0x0a38,3//
-0x0a46,14//
+0xa46,14,stylingshoppurchase,2:4:6:8:10:12
 0x0a47,3//
 0x0a48,2//
+// Like 0xAFC but with body style support.
+//0xafc,16,stylingshoppurchase,2:4:6:8:10:12:14
 
 //2016-12-28aRagexeRE
 packet_ver: 34

@@ -17377,6 +17377,83 @@ void clif_fast_movement(struct block_list *bl, short x, short y)
     clif_send(buf,packet_len(0x8d2),bl,AREA);
 }
 
+//void clif_parse_stylingshoppurchase_sub(int payment)
+//{
+//
+//}
+
+/// Request to purchase style changes in styling shop.
+/// 0a46 <hair color>.W <hair_style>.W <cloth_color>.W <headgear top>.W <headgear mid>.W <headgear low>.W (CZ_STYLINGSHOP_PURCHASE)
+/// 0afc <hair color>.W <hair_style>.W <cloth_color>.W <headgear top>.W <headgear mid>.W <headgear low>.W <body style>.W (CZ_STYLINGSHOP_PURCHASE2)
+static void clif_parse_stylingshoppurchase(int fd, struct map_session_data* sd)
+{
+	signed char flag;
+	short hair_color, hair_style, cloth_color, head_top, head_mid, head_low;
+#if PACKETVER >= 20180718
+	short body_style;
+#endif
+	int payment = 0;
+	struct item item_tmp;
+
+	hair_color	= RFIFOW(fd,2);
+	hair_style	= RFIFOW(fd,4);
+	cloth_color	= RFIFOW(fd,6);
+	head_top	= RFIFOW(fd,8);
+	head_mid	= RFIFOW(fd,10);
+	head_low	= RFIFOW(fd,12);
+#if PACKETVER >= 20180718
+	body_style	= RFIFOW(fd,14);
+#endif
+
+	//sd->status.zeny;
+
+
+
+
+
+
+	if ( hair_color > 0  && hair_color <= STYLING_MAX_HAIRDYE )
+		pc_changelook(sd, LOOK_HAIR_COLOR, pc_styling_db[STYLING_START_HAIRDYE+hair_color-1].stylenum);
+
+	if ( hair_style > 0 && hair_style <= STYLING_MAX_HAIRSTYLE )
+		pc_changelook(sd, LOOK_HAIR, pc_styling_db[STYLING_START_HAIRSTYLE+hair_style-1].stylenum);
+
+	if ( cloth_color > 0 && cloth_color <= STYLING_MAX_BODYDYE )
+		pc_changelook(sd, LOOK_CLOTHES_COLOR, pc_styling_db[STYLING_START_BODYDYE+cloth_color-1].stylenum);
+
+#if PACKETVER >= 20180718
+	if ( body_style > 0 && bodystyle <= STYLING_MAX_BODYSTYLE )
+		pc_changelook(sd, LOOK_BODY2, pc_styling_db[STYLING_START_BODYSTYLE+body_style-1].stylenum);
+#endif
+
+	if ( head_top > 0 && head_top <= STYLING_MAX_HEADTOP )
+	{
+		memset(&item_tmp, 0, sizeof(item_tmp));
+		item_tmp.nameid = pc_styling_db[STYLING_START_HEADTOP+head_top-1].stylenum;
+		item_tmp.identify = 1;
+		if ((flag = pc_additem(sd, &item_tmp, 1)))
+			clif_additem(sd, 0, 0, flag);
+	}
+
+	if ( head_mid > 0 && head_mid <= STYLING_MAX_HEADMID )
+	{
+		memset(&item_tmp, 0, sizeof(item_tmp));
+		item_tmp.nameid = pc_styling_db[STYLING_START_HEADMID+head_mid-1].stylenum;
+		item_tmp.identify = 1;
+		if ((flag = pc_additem(sd, &item_tmp, 1)))
+			clif_additem(sd, 0, 0, flag);
+	}
+
+	if ( head_low > 0 && head_low <= STYLING_MAX_HEADLOW )
+	{
+		memset(&item_tmp, 0, sizeof(item_tmp));
+		item_tmp.nameid = pc_styling_db[STYLING_START_HEADLOW+head_low-1].stylenum;
+		item_tmp.identify = 1;
+		if ((flag = pc_additem(sd, &item_tmp, 1)))
+			clif_additem(sd, 0, 0, flag);
+	}
+}
+
 /// Parse function for packet debugging
 void clif_parse_debug(int fd,struct map_session_data *sd)
 {
@@ -17856,7 +17933,7 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0, 12, 18,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0, 11,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0, 11,  0,  0,  0,  0,  0,  0,  0, 16,  0,  0,  0,
 	};
 	struct {
 		void (*func)(int, struct map_session_data *);
@@ -18066,6 +18143,7 @@ static int packetdb_readdb(void)
 		{clif_parse_SearchStoreInfoListItemClick,"searchstoreinfolistitemclick"},
 		//{ clif_parse_MoveItem , "moveitem" },
 		{clif_parse_ranking,"ranking"},
+		{clif_parse_stylingshoppurchase,"stylingshoppurchase"},
 		{NULL,NULL}
 	};
 
