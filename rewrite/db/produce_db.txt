@@ -399,7 +399,8 @@
 //===== Ancilla And Runes === ItemLV=24 ========
 //---- Ancilla ---------------------------------
 //-- Ancilla <-- AB_ANCILLA & 1 Blue Gemstone
-12333,24,2039,1,717,1
+//-- Note: Gemstone is consumed on skill cast but crafting code requires a material.
+12333,24,2039,1,717,0
 
 //---- Rune Stones -----------------------------
 //-- Runstone Nosiege <-- RK_RUNEMASTERY Lv8, 1 Broken Armor Piece, 1 Old Magic Circle, 1 Light Granule, 1 Elder Branch

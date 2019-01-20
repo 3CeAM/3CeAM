@@ -9129,6 +9129,8 @@ ACMD_FUNC(itemlist)
 				strcat(equipstr, "Mid/Lower Head, ");
 			if( (it->equip & EQP_HELM) == EQP_HELM )
 				strcat(equipstr, "Top/Mid/Lower Head, ");
+			if( it->equip & EQP_AMMO )
+				strcat(equipstr, "Ammo, ");
 			if( (it->equip & EQP_COSTUME_HELM) == EQP_COSTUME_HEAD_LOW )
 				strcat(equipstr, "Lower Costume Head, ");
 			if( (it->equip & EQP_COSTUME_HELM) == EQP_COSTUME_HEAD_TOP )

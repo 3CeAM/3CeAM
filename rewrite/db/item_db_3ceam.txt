@@ -151,8 +151,8 @@
 // Minstrel And Wanderer Cough Drop
 11513,Protect_Neck_Candy,Cough Drop,0,200,,1,,,,,0xFFFFFFFF,7,2,,,,,,{ itemheal rand(5,25),0; },{},{}
 
-// Arch Bishop Ancilla - Ansila
-12333,Ancilla,Ancilla,0,0,,10,,,,,0x00000100,8,2,,,,,,{ percentheal 0,15; },{},{}
+// Arch Bishop Ancilla
+12333,Ancilla,Ancilla,0,0,,10,,,,,0x00000100,8,2,,,,,,{ sc_start SC_ANCILLA,60000,1; },{},{}
 
 // Ranger Special Alloy Trap Box
 12341,Special_Alloy_Trap_Box,Special Alloy Trap Box,2,20000,,100,,,,,0xFFFFFFFF,7,2,,,,,,{ getitem 7940,100; },{},{}

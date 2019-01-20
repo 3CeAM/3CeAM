@@ -325,7 +325,7 @@ int battle_attr_fix(struct block_list *src, struct block_list *target, int damag
 		if(tsc->data[SC_VENOMIMPRESS] && atk_elem == ELE_POISON)
 			ratio += tsc->data[SC_VENOMIMPRESS]->val2;
 		if(tsc->data[SC_ORATIO] && atk_elem == ELE_HOLY )
-			ratio += tsc->data[SC_ORATIO]->val1 * 2;
+			ratio += tsc->data[SC_ORATIO]->val2;
 		if ((tsc->data[SC_FIRE_INSIGNIA] && atk_elem == ELE_WATER) ||
 			(tsc->data[SC_WATER_INSIGNIA] && atk_elem == ELE_WIND) ||
 			(tsc->data[SC_WIND_INSIGNIA] && atk_elem == ELE_EARTH) ||
@@ -1977,8 +1977,18 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					if( sd->atk_rate )
 						ATK_ADDRATE(sd->atk_rate);
 
-					if(flag.cri && sd->crit_atk_rate)
-						ATK_ADDRATE(sd->crit_atk_rate);
+					if (flag.cri)
+					{
+						short crit_damage_rate = 0;
+
+						if (sd->crit_atk_rate)
+							crit_damage_rate += sd->crit_atk_rate;
+
+						if (sc && sc->data[SC_LAUDARAMUS])
+							crit_damage_rate += sc->data[SC_LAUDARAMUS]->val2;
+
+						ATK_ADDRATE(crit_damage_rate);
+					}
 
 					if( sd->status.party_id && (skill=pc_checkskill(sd,TK_POWER)) > 0 )
 					{
@@ -2404,7 +2414,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						skillratio += sc->data[SC_ROLLINGCUTTER]->val1 * sstatus->agi;
 					break;
 				case AB_DUPLELIGHT_MELEE:
-					skillratio += 10 * skill_lv;
+					skillratio += 50 + 15 * skill_lv;
 					break;
 				case RA_ARROWSTORM:
 					skillratio += 900 + 80 * skill_lv;
@@ -3311,12 +3321,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 			signed char def1 = status_get_def(target); //Don't use tstatus->def1 due to skill timer reductions.
 			short def2 = (short)tstatus->def2;
 
-			if( sc && sc->data[SC_EXPIATIO] )
-			{ // Deffense bypass 5 * skilllv
-				def1 -= def1 * 5 * sc->data[SC_EXPIATIO]->val1 / 100;
-				def2 -= def2 * 5 * sc->data[SC_EXPIATIO]->val1 / 100;
-			}
-
 			if( sd )
 			{
 				i = sd->ignore_def[is_boss(target)?RC_BOSS:RC_NONBOSS];
@@ -3327,6 +3331,12 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					def1 -= def1 * i / 100;
 					def2 -= def2 * i / 100;
 				}
+			}
+
+			if( sc && sc->data[SC_EXPIATIO] )
+			{// Defense bypass
+				def1 -= def1 * sc->data[SC_EXPIATIO]->val2 / 100;
+				def2 -= def2 * sc->data[SC_EXPIATIO]->val2 / 100;
 			}
 
 			if( battle_config.vit_penalty_type && battle_config.vit_penalty_target&target->type )
@@ -3958,13 +3968,6 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 			case PF_SOULBURN:
 				ad.damage = tstatus->sp * 2;
 				break;
-			/* Enable this if kRO fix the current skill. Currently no damage to undead or demons. [Jobbie]
-			case AB_EPICLESIS:
-				ad.damage = ??;
-				break;*/
-			case AB_RENOVATIO://Changed to a official formula, but this damage will later be applied differently through a duration. [Rytech]
-				ad.damage = 10 * status_get_base_lv_effect(src) + sstatus->int_;
-				break;
 			default:
 			{
 				if( skill_num == RK_ENCHANTBLADE )
@@ -4153,17 +4156,17 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						skillratio += 100 + 100*skill_lv + 100*(skill_lv/2);
 						break;
 					case AB_JUDEX:
-						skillratio = 300 + 20 * skill_lv;
+						skillratio = 300 + 40 * skill_lv;
 						if( level_effect_bonus == 1 )
 							skillratio = skillratio * status_get_base_lv_effect(src) / 100;
 						break;
 					case AB_ADORAMUS:
-						skillratio += 400 + 100 * skill_lv;
+						skillratio = 330 + 70 * skill_lv;
 						if( level_effect_bonus == 1 )
 							skillratio = skillratio * status_get_base_lv_effect(src) / 100;
 						break;
 					case AB_DUPLELIGHT_MAGIC:
-						skillratio += 100 + 20 * skill_lv;
+						skillratio = 400 + 40 * skill_lv;
 						break;
 					case WL_SOULEXPANSION:
 						skillratio += 300 + 100 * skill_lv + sstatus->int_;
@@ -4506,7 +4509,9 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 		if(!flag.imdef){
 			short mdef = tstatus->mdef;
 			int mdef2= tstatus->mdef2;
-			if(sd) {
+
+			if(sd)
+			{
 				i = sd->ignore_mdef[is_boss(target)?RC_BOSS:RC_NONBOSS];
 				i+= sd->ignore_mdef[tstatus->race];
 				if (i)
@@ -4516,6 +4521,12 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					//mdef2-= mdef2* i/100;
 				}
 			}
+
+			if ( sc && sc->data[SC_EXPIATIO] )
+			{
+				mdef -= mdef * sc->data[SC_EXPIATIO]->val2 / 100;
+			}
+
 			if(battle_config.magic_defense_type)
 				ad.damage = ad.damage - mdef*battle_config.magic_defense_type - mdef2;
 			else
@@ -5363,15 +5374,13 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 	damage = wd.damage + wd.damage2;
 	if( damage > 0 && src != target )
 	{
-		
-		if( sc && sc->data[SC_DUPLELIGHT] && (wd.flag&BF_SHORT) && rand()%100 <= 10+2*sc->data[SC_DUPLELIGHT]->val1 )
-		{	// Activates it only from melee damage
-			int skillid;
-			if( rand()%2 == 1 )
-				skillid = AB_DUPLELIGHT_MELEE;
-			else
-				skillid = AB_DUPLELIGHT_MAGIC;
-			skill_attack(skill_get_type(skillid), src, src, target, skillid, sc->data[SC_DUPLELIGHT]->val1, tick, SD_LEVEL);
+		if( sc && sc->data[SC_DUPLELIGHT] && (wd.flag&BF_SHORT) )
+		{// Activates only from regular melee damage. Success chance is seperate for both duple light attacks.
+			if ( rand()%100 <= sc->data[SC_DUPLELIGHT]->val2 )
+				skill_attack(skill_get_type(AB_DUPLELIGHT_MELEE), src, src, target, AB_DUPLELIGHT_MELEE, sc->data[SC_DUPLELIGHT]->val1, tick, SD_LEVEL);
+
+			if ( rand()%100 <= sc->data[SC_DUPLELIGHT]->val2 )
+				skill_attack(skill_get_type(AB_DUPLELIGHT_MAGIC), src, src, target, AB_DUPLELIGHT_MAGIC, sc->data[SC_DUPLELIGHT]->val1, tick, SD_LEVEL);
 		}
 
 		rdamage = battle_calc_return_damage(src, target, &damage, wd.flag);

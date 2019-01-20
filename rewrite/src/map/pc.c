@@ -7470,6 +7470,9 @@ int pc_itemheal(struct map_session_data *sd,int itemid, int hp,int sp)
 	if( sd->sc.data[SC_VITATA_500] )
 		sp += sp * sd->sc.data[SC_VITATA_500]->val1 / 100;// 20% Increase on SP recovery
 
+	if( sd->sc.data[SC_ANCILLA] )
+		sp += sp * sd->sc.data[SC_ANCILLA]->val3 / 100;// 30% Increase on SP recovery
+
 	if( sd->sc.data[SC_VITALITYACTIVATION] )
 	{
 		hp += hp * 50 / 100;// 50% Increase on HP recovery
