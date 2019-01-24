@@ -989,9 +989,10 @@ int guild_change_position(int guild_id,int idx,
 	struct guild_position p;
 
 	exp_mode = cap_value(exp_mode, 0, battle_config.guild_exp_limit);
-	//Mode 0x01 <- Invite
-	//Mode 0x10 <- Expel.
-	p.mode=mode&0x11;
+	//Mode 0x001 <- Invite
+	//Mode 0x010 <- Expel.
+	//Mode 0x100 <- Storage Access
+	p.mode=mode&0x111;
 	p.exp_mode=exp_mode;
 	safestrncpy(p.name,name,NAME_LENGTH);
 	return intif_guild_position(guild_id,idx,&p);

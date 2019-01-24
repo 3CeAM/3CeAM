@@ -997,7 +997,7 @@ int mapif_parse_CreateGuild(int fd, int account_id, char *name, struct guild_mem
 	memcpy(g->master, master->name, NAME_LENGTH);
 	memcpy(&g->member[0], master, sizeof(struct guild_member));
 
-	g->position[0].mode = 0x11;
+	g->position[0].mode = 0x111;
 	strcpy(g->position[                  0].name, "GuildMaster");
 	strcpy(g->position[MAX_GUILDPOSITION-1].name, "Newbie");
 	for(i = 1; i < MAX_GUILDPOSITION-1; i++)

@@ -16,7 +16,8 @@
 #include <string.h>
 
 // 32k array entries (the rest goes to the db)
-#define MAX_ITEMDB 0x8000
+// Increased to a 65k array to allow for future items and customs. [Rytech]
+#define MAX_ITEMDB 0xffff
 
 
 
