@@ -4896,7 +4896,8 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		{// Requires target to have a soul link and more then 10% of MaxHP.
 			// With this skill requiring a soul link, and the target to have more then 10% if MaxHP, I wonder
 			// if the cooldown still happens after it fails. Need a confirm. [Rytech] 
-			clif_skill_fail(sd,skillid,0,0,0);
+			if ( sd )
+				clif_skill_fail(sd,skillid,0,0,0);
 			break;
 		}
 
@@ -10660,7 +10661,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			if ( (!map_flag_gvg(src->m) && !map[src->m].flag.battleground) || bl->type != BL_PC ||
 				(tsc && (tsc->data[SC_KYOUGAKU] || tsc->data[SC_MONSTER_TRANSFORM])) )
 			{
-				clif_skill_fail(sd,skillid,0,0,0);
+				if ( sd )
+					clif_skill_fail(sd,skillid,0,0,0);
 				break;
 			}
 
@@ -10676,7 +10678,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 
 		if ( bl->type != BL_PC )
 		{
-			clif_skill_fail(sd,skillid,0,0,0);
+			if ( sd )
+				clif_skill_fail(sd,skillid,0,0,0);
 			break;
 		}
 
@@ -10756,7 +10759,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		{// Usable only on other players.
 			if ( bl->type != BL_PC )
 			{
-				clif_skill_fail(sd,skillid,0,0,0);
+				if ( sd )
+					clif_skill_fail(sd,skillid,0,0,0);
 				break;
 			}
 		}
@@ -11101,9 +11105,7 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 						ud->skilly = target->y;
 					}
 					else
-					{// Strike a random spot in a 9x9 area around the target if it doesn't have a crimson mark.
-						// Need a confirm on the size of the random strike zone.
-						// Using the same size as Crazy Weed for now. [Rytech]
+					{// Strike a random spot in a 15x15 area around the target if it doesn't have a crimson mark.
 						ud->skillx = target->x - drop_zone + rand()%(drop_zone * 2 + 1);
 						ud->skilly = target->y - drop_zone + rand()%(drop_zone * 2 + 1);
 					}

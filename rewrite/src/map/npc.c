@@ -3617,6 +3617,7 @@ int do_init_npc(void)
 
 	//Stock view data for normal npcs.
 	memset(&npc_viewdb, 0, sizeof(npc_viewdb));
+	memset(&npc_viewdb_2, 0, sizeof(npc_viewdb_2));
 	npc_viewdb[0].class_ = INVISIBLE_CLASS; //Invisible class is stored here.
 	for( i = 1; i < MAX_NPC_CLASS; i++ ) 
 		npc_viewdb[i].class_ = i;

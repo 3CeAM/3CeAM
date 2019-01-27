@@ -14,9 +14,9 @@
 #define MAX_RANDOMMONSTER 4
 
 // Change this to increase the table size in your mob_db to accomodate a larger mob database.
-// Be sure to note that IDs 4001 to 4244 are reserved for advanced/baby/expanded classes.
-// Notice that the last 200 entries are used for player clones, so always set this to desired value +200
-#define MAX_MOB_DB 4000
+// Be sure to note that IDs 4001 to 5000 are reserved for advanced/baby/expanded classes.
+// Notice that the last 1000 entries are used for player clones, so always set this to desired value +1000
+#define MAX_MOB_DB 24000
 
 //The number of drops all mobs have and the max drop-slot that the steal skill will attempt to steal from.
 #define MAX_MOB_DROP 10
@@ -31,7 +31,7 @@
 #define MOB_SLAVEDISTANCE 2
 
 // These define the range of available IDs for clones. [Valaris]
-#define MOB_CLONE_START (MAX_MOB_DB-199)
+#define MOB_CLONE_START (MAX_MOB_DB-999)
 #define MOB_CLONE_END MAX_MOB_DB
 
 //Used to determine default enemy type of mobs (for use in eachinrange calls)

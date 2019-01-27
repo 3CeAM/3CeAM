@@ -2906,9 +2906,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					else
 						skillratio = 2800 + 1400 * skill_lv;
 					if ( tsc && tsc->data[SC_C_MARKER] )
-						skillratio += 100 * sd->spiritball_old;
+						skillratio += 100 * (sd?sd->spiritball_old:10);
 					else
-						skillratio += 10 * sd->spiritball_old;
+						skillratio += 10 * (sd?sd->spiritball_old:10);
 					break;
 				case RL_R_TRIP_PLUSATK:// Need to confirm if level 5 is really 2700% and not a typo. [Rytech]
 					skillratio = 500 + 100 * skill_lv;

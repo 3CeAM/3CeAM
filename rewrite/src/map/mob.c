@@ -3472,8 +3472,8 @@ static bool mob_parse_dbrow(char** str)
 	
 	class_ = atoi(str[0]);
 	
-	if (class_ <= 1000 || class_ > MAX_MOB_DB) {
-		ShowWarning("Mob with ID: %d not loaded. ID must be in range [%d-%d]\n", class_, 1000, MAX_MOB_DB);
+	if (class_ <= 1000 || class_ >= 4000 && class_ < 20020 || class_ > MAX_MOB_DB) {
+		ShowWarning("Mob with ID: %d not loaded. ID must be in range [%d-%d] or [%d-%d]\n", class_, 1000, 4000, 20020, MAX_MOB_DB);
 		return false;
 	}
 	if (pcdb_checkid(class_)) {
