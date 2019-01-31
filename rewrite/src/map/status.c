@@ -653,6 +653,7 @@ void initChangeTables(void)
 	add_sc( SU_SCRATCH            , SC_BLEEDING );
 	set_sc( SU_STOOP              , SC_SU_STOOP           , SI_SU_STOOP           , SCB_NONE );
 	add_sc( SU_SV_STEMSPEAR       , SC_BLEEDING );
+	set_sc( SU_SV_ROOTTWIST       , SC_SV_ROOTTWIST       , SI_SV_ROOTTWIST       , SCB_NONE );
 	set_sc( SU_CN_POWDERING       , SC_CATNIPPOWDER       , SI_CATNIPPOWDER       , SCB_BATK|SCB_WATK|SCB_MATK|SCB_REGEN );
 	set_sc( SU_SCAROFTAROU        , SC_BITESCAR           , SI_BITESCAR           , SCB_NONE );
 	set_sc( SU_ARCLOUSEDASH       , SC_ARCLOUSEDASH       , SI_ARCLOUSEDASH       , SCB_AGI|SCB_SPEED );
@@ -6377,11 +6378,6 @@ void status_set_viewdata(struct block_list *bl, int class_)
 		|| (vd->class_==JOB_SUMMER2 && battle_config.summer2_ignorepalette)
 	))
 		vd->cloth_color = 0;
-	if (vd && vd->body_style && (
-		vd->class_==JOB_WEDDING || vd->class_==JOB_XMAS ||
-		vd->class_==JOB_SUMMER || vd->class_==JOB_HANBOK ||
-		vd->class_==JOB_OKTOBERFEST || vd->class_==JOB_SUMMER2))
-		vd->body_style = 0;
 }
 
 /// Returns the status_change data of bl or NULL if it doesn't exist.
@@ -7436,6 +7432,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC__MANHOLE:
 			case SC_CHAOS:
 			case SC_B_TRAP:
+			case SC_SV_ROOTTWIST:
 				return 0;
 			case SC_COMBO: 
 			case SC_DANCING:
@@ -7725,7 +7722,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			clif_changelook(bl,LOOK_SHIELD,0);
 			clif_changelook(bl,LOOK_BASE,type==SC_WEDDING?JOB_WEDDING:type==SC_XMAS?JOB_XMAS:type==SC_SUMMER?JOB_SUMMER:type==SC_HANBOK?JOB_HANBOK:type==SC_OKTOBERFEST?JOB_OKTOBERFEST:JOB_SUMMER2);
 			clif_changelook(bl,LOOK_CLOTHES_COLOR,vd->cloth_color);
-			clif_changelook(bl,LOOK_BODY2,0);
 			break;
 		case SC_NOCHAT:
 			tick = 60000;
@@ -9031,6 +9027,10 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_ARCLOUSEDASH:
 			val2 = 15 + 5 * val1;// AGI Increase.
 			break;
+		case SC_SV_ROOTTWIST:
+			val3 = tick/1000;
+			tick = 1000;
+			break;
 		case SC_TUNAPARTY:
 			val2 = val2 * (10 * val1) / 100;// Tuna's HP
 			break;
@@ -9315,6 +9315,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_VACUUM_EXTREME:
 		case SC_THORNSTRAP:
 		case SC_KAGEHUMI:
+		case SC_SV_ROOTTWIST:
 		case SC_NEEDLE_OF_PARALYZE:
 		case SC_TINDER_BREAKER:
 			unit_stop_walking(bl,1);
@@ -9779,7 +9780,6 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 			clif_changelook(bl,LOOK_CLOTHES_COLOR,vd->cloth_color);
 			clif_changelook(bl,LOOK_WEAPON,vd->weapon);
 			clif_changelook(bl,LOOK_SHIELD,vd->shield);
-			clif_changelook(bl,LOOK_BODY2,vd->body_style);
 			if(sd) clif_skillinfoblock(sd);
 		break;
 		case SC_RUN:
@@ -11394,7 +11394,20 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 			return 0;
 		}
 		break;
-
+	case SC_SV_ROOTTWIST:
+		if (--(sce->val3) > 0)
+		{
+			bool flag;
+			struct block_list* src = map_id2bl(sce->val2);
+			map_freeblock_lock();
+			skill_attack(BF_MISC,src,src,bl,SU_SV_ROOTTWIST_ATK,sce->val1,tick,SD_LEVEL|SD_ANIMATION);
+			flag = !sc->data[type];
+			map_freeblock_unlock();
+			if (flag) return 0;
+			sc_timer_next(1000 + tick, status_change_timer, bl->id, data );
+			return 0;
+		}
+		break;
 	case SC_FRESHSHRIMP:
 		if( --(sce->val3) >= 0 )
 		{

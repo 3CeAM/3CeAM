@@ -1779,7 +1779,7 @@ packet_ver: 30
 0x07ec,8,movetokafra,2:4
 0x0364,8,movefromkafra,2:4
 0x0438,10,useskilltopos,2:4:6:8
-0x0366,90,useskilltoposmoreinfo,2:4:6:8:10
+0x0366,90,useskilltoposinfo,2:4:6:8:10
 0x096a,6,getcharnamerequest,2
 0x0368,6,solvecharname,2
 0x0838,12,searchstoreinfolistitemclick,2:6:10
@@ -1854,7 +1854,7 @@ packet_ver: 31
 0x0879,8,movetokafra,2:4
 0x0864,8,movefromkafra,2:4
 0x0438,10,useskilltopos,2:4:6:8
-0x0366,90,useskilltoposmoreinfo,2:4:6:8:10
+0x0366,90,useskilltoposinfo,2:4:6:8:10
 0x096a,6,getcharnamerequest,2
 0x0368,6,solvecharname,2
 0x0838,12,searchstoreinfolistitemclick,2:6:10
@@ -1915,7 +1915,7 @@ packet_ver: 32
 0x07ec,8,movetokafra,2:4
 0x0364,8,movefromkafra,2:4
 0x0438,10,useskilltopos,2:4:6:8
-0x0366,90,useskilltoposmoreinfo,2:4:6:8:10
+0x0366,90,useskilltoposinfo,2:4:6:8:10
 0x096a,6,getcharnamerequest,2
 0x0368,6,solvecharname,2
 0x0838,12,searchstoreinfolistitemclick,2:6:10
@@ -1947,7 +1947,7 @@ packet_ver: 33
 0x095D,8,movetokafra,2:4
 0x0954,8,movefromkafra,2:4
 0x0438,10,useskilltopos,2:4:6:8
-0x0366,90,useskilltoposmoreinfo,2:4:6:8:10
+0x0366,90,useskilltoposinfo,2:4:6:8:10
 0x096A,6,getcharnamerequest,2
 0x0368,6,solvecharname,2
 0x0838,12,searchstoreinfolistitemclick,2:6:10
@@ -1986,7 +1986,7 @@ packet_ver: 34
 0x089F,8,movetokafra,2:4
 0x08AB,8,movefromkafra,2:4
 0x0929,10,useskilltopos,2:4:6:8
-0x0865,90,useskilltoposmoreinfo,2:4:6:8:10
+0x0865,90,useskilltoposinfo,2:4:6:8:10
 0x085A,6,getcharnamerequest,2
 0x08AC,6,solvecharname,2
 0x087F,12,searchstoreinfolistitemclick,2:6:10
@@ -2022,7 +2022,7 @@ packet_ver: 35
 0x0879,8,movetokafra,2:4
 0x023B,8,movefromkafra,2:4
 0x0838,10,useskilltopos,2:4:6:8
-0x0889,90,useskilltoposmoreinfo,2:4:6:8:10
+0x0889,90,useskilltoposinfo,2:4:6:8:10
 0x0936,6,getcharnamerequest,2
 0x087D,6,solvecharname,2
 0x0963,12,searchstoreinfolistitemclick,2:6:10
@@ -2059,7 +2059,7 @@ packet_ver: 36
 0x087B,8,movetokafra,2:4
 0x08A2,8,movefromkafra,2:4
 0x0438,10,useskilltopos,2:4:6:8
-0x02C4,90,useskilltoposmoreinfo,2:4:6:8:10
+0x02C4,90,useskilltoposinfo,2:4:6:8:10
 0x096A,6,getcharnamerequest,2
 0x0368,6,solvecharname,2
 0x0838,12,searchstoreinfolistitemclick,2:6:10
@@ -2098,7 +2098,7 @@ packet_ver: 37
 0x0364,8,movetokafra,2:4
 0x0365,8,movefromkafra,2:4
 //0x0366,10,useskilltopos,2:4:6:8
-0x0367,90,useskilltoposmoreinfo,2:4:6:8:10
+0x0367,90,useskilltoposinfo,2:4:6:8:10
 0x0368,6,getcharnamerequest,2
 0x0369,6,solvecharname,2
 0x083C,12,searchstoreinfolistitemclick,2:6:10
@@ -2122,8 +2122,8 @@ packet_ver: 37
 0x09a0,6//HC_CHARLIST_NOTIFY
 0x09a1,2//CH_CHARLIST_REQ
 
-
-0x0AF4,11,useskilltopos,2:4:6:8:10
+0x0ae8,2,changedress,0
+0x0af4,11,useskilltopos,2:4:6:8:10//CZ_USE_SKILL_TOGROUND2
 
 //Add new packets here.
 //packet_ver: 38

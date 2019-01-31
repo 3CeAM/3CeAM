@@ -678,7 +678,9 @@ typedef enum sc_type {
 	SC_CHAOS = 594,
 	// ID's 595 - 598 is open.
 
-	//More Status
+	//Summer 2 Outfit
+	//Should be DRESS_UP and not
+	//handled by a OPTION setting.
 	SC_SUMMER2 = 599,
 
 	//Summoner

@@ -3476,11 +3476,6 @@ void clif_changelook(struct block_list *bl,int type,int val)
 				(vd->class_ == JOB_SUMMER2 && battle_config.summer2_ignorepalette)
 			))
 				clif_changelook(bl,LOOK_CLOTHES_COLOR,0);
-			if (vd->body_style && (
-				vd->class_ == JOB_WEDDING || vd->class_ == JOB_XMAS ||
-				vd->class_ == JOB_SUMMER || vd->class_ == JOB_HANBOK ||
-				vd->class_ == JOB_OKTOBERFEST || vd->class_ == JOB_SUMMER2))
-				clif_changelook(bl,LOOK_BODY2,0);
 		break;
 		case LOOK_HAIR:
 			vd->hair_style = val;
@@ -3528,11 +3523,6 @@ void clif_changelook(struct block_list *bl,int type,int val)
 			vd->robe = val;
 		break;
 		case LOOK_BODY2:
-			if (val && (
-				vd->class_ == JOB_WEDDING || vd->class_ == JOB_XMAS ||
-				vd->class_ == JOB_SUMMER || vd->class_ == JOB_HANBOK ||
-				vd->class_ == JOB_OKTOBERFEST || vd->class_ == JOB_SUMMER2))
-				val = 0;
 			vd->body_style = val;
 		break;
 	}
@@ -12078,6 +12068,18 @@ void clif_parse_RemoveOption(int fd,struct map_session_data *sd)
 		pc_setcart(sd,0);
 }
 
+void clif_parse_changedress(int fd,struct map_session_data *sd)
+{
+	// Removes body costumes.
+	// Wedding / Santa / Summer / Hanbok / Oktoberfest / Summer 2
+	status_change_end(&sd->bl, SC_WEDDING, INVALID_TIMER);
+	status_change_end(&sd->bl, SC_XMAS, INVALID_TIMER);
+	status_change_end(&sd->bl, SC_SUMMER, INVALID_TIMER);
+	status_change_end(&sd->bl, SC_HANBOK, INVALID_TIMER);
+	status_change_end(&sd->bl, SC_OKTOBERFEST, INVALID_TIMER);
+	status_change_end(&sd->bl, SC_SUMMER2, INVALID_TIMER);
+}
+
 /*==========================================
  * チェンジカート
  *------------------------------------------*/
@@ -17932,7 +17934,7 @@ static int packetdb_readdb(void)
 	//#0x0AC0
 	    0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0, 12, 18,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  2,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0, 11,  0,  0,  0,  0,  0,  0,  0, 16,  0,  0,  0,
 	};
 	struct {
@@ -18144,6 +18146,7 @@ static int packetdb_readdb(void)
 		//{ clif_parse_MoveItem , "moveitem" },
 		{clif_parse_ranking,"ranking"},
 		{clif_parse_stylingshoppurchase,"stylingshoppurchase"},
+		{clif_parse_changedress,"changedress"},
 		{NULL,NULL}
 	};
 

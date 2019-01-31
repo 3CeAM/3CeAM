@@ -529,6 +529,7 @@ int skillnotok(int skillid, struct map_session_data *sd)
 		case SC_DIMENSIONDOOR:
 		case ALL_ODINS_RECALL:
 		case WE_CALLALLFAMILY:
+		case AB_CONVENIO:
 			if( map[m].flag.noteleport )
 			{
 				clif_skill_teleportmessage(sd,0);
@@ -3902,16 +3903,25 @@ static int skill_destroy_trap( struct block_list *bl, va_list ap )
 	{
 		switch( sg->unit_id )
 		{
+			case UNT_SKIDTRAP:
 			case UNT_LANDMINE:
-			case UNT_CLAYMORETRAP:
-			case UNT_BLASTMINE:
+			case UNT_ANKLESNARE:
 			case UNT_SHOCKWAVE:
 			case UNT_SANDMAN:
 			case UNT_FLASHER:
 			case UNT_FREEZINGTRAP:
+			case UNT_BLASTMINE:
+			case UNT_CLAYMORETRAP:
+			case UNT_TALKIEBOX:
+			case UNT_ELECTRICSHOCKER:
 			case UNT_CLUSTERBOMB:
+			case UNT_MAGENTATRAP:
+			case UNT_COBALTTRAP:
+			case UNT_MAIZETRAP:
+			case UNT_VERDURETRAP:
 			case UNT_FIRINGTRAP:
 			case UNT_ICEBOUNDTRAP:
+			case UNT_THORNS_TRAP:
 				map_foreachinrange(skill_trap_splash,&su->bl, skill_get_splash(sg->skill_id, sg->skill_lv), sg->bl_flag, &su->bl,tick);
 				break;
 		}
@@ -4877,6 +4887,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 	case GN_THORNS_TRAP:
 	case GN_BLOOD_SUCKER:
 	case GN_HELLS_PLANT_ATK:
+	case SU_SV_ROOTTWIST_ATK:
 		skill_attack(BF_MISC,src,src,bl,skillid,skilllv,tick,flag);
 		break;
 
@@ -6173,6 +6184,11 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SU_FRESHSHRIMP:
 		clif_skill_nodamage(src,bl,skillid,skilllv,
 			sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
+		break;
+
+	case SU_SV_ROOTTWIST:
+		clif_skill_nodamage(src,bl,skillid,skilllv,1);
+		sc_start2(bl,type,100,skilllv,src->id,skill_get_time(skillid,skilllv));
 		break;
 
 	case SJ_GRAVITYCONTROL:
@@ -8683,6 +8699,58 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 
+	case AB_CONVENIO:
+		{
+			int dx[9]={-1, 1, 0, 0,-1, 1,-1, 1, 0};
+			int dy[9]={ 0, 0, 1,-1, 1,-1,-1, 1, 0};
+			int j = 0;
+			int mi;
+			struct party_data *p;
+
+			// Only allow players to cast this.
+			// Party check also needed incase GM casts it.
+			if (!sd || !sd->status.party_id) break;
+
+			// Fail on maps that don't allow teleporting.
+			if (map[src->m].flag.noteleport)
+			{
+				clif_skill_teleportmessage(sd,0);
+				break;
+			}
+
+			// Set party data.
+			if ((p = party_search(sd->status.party_id)) == NULL)
+				break;
+
+			// Find the caster's position in the party to do a leader check.
+			ARR_FIND( 0, MAX_PARTY, mi, p->data[mi].sd == sd );
+			if (mi == MAX_PARTY)
+				break;
+
+			// Caster must be the leader of the party or else it fails.
+			if (!p->party.member[mi].leader)
+			{// Need to be a party leader.
+				clif_displaymessage(sd->fd, "You need to be the party leader to use this skill.");
+				break;
+			}
+
+			// Everything passes? Good lets start teleporting other party members.
+			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+			for(i = 0; i < MAX_PARTY; i++, j++)
+			{
+				if (j>8) j=0;
+				if ((dstsd = p->data[i].sd) != NULL && sd != dstsd && !dstsd->state.autotrade)
+				{// Must be in the same map as the caster.
+					if (sd->mapindex != dstsd->mapindex)
+						continue;
+					if(map_getcell(src->m,src->x+dx[j],src->y+dy[j],CELL_CHKNOREACH))
+						dx[j] = dy[j] = 0;
+					pc_setpos(dstsd, map_id2index(src->m), src->x+dx[j], src->y+dy[j], CLR_TELEPORT);
+				}
+			}
+		}
+		break;
+
 	case SG_FEEL:
 		//AuronX reported you CAN memorize the same map as all three. [Skotlex]
 		if (sd) {
@@ -9752,7 +9820,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case NC_MAGNETICFIELD:
 		if( (i = sc_start2(bl,type,100,skilllv,src->id,skill_get_time(skillid,skilllv))) )
 		{
-			map_foreachinrange(skill_area_sub,src,skill_get_splash(skillid,skilllv),splash_target(src),src,skillid,skilllv,tick,flag|BCT_ENEMY|SD_SPLASH|1,skill_castend_damage_id);;
+			map_foreachinrange(skill_area_sub,src,skill_get_splash(skillid,skilllv),splash_target(src),src,skillid,skilllv,tick,flag|BCT_ENEMY|SD_SPLASH|1,skill_castend_damage_id);
 			clif_skill_damage(src,src,tick,status_get_amotion(src),0,-30000,1,skillid,skilllv,6);
 			pc_overheat(sd,1);
 		}
@@ -9888,9 +9956,15 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		break;
 
 	case LG_TRAMPLE:
-		//if (rand()%100 < 25+25*skilllv)// Enable when confirmed on test server if animation happens reguardless.
 		clif_skill_damage(src,bl,tick, status_get_amotion(src), 0, -30000, 1, skillid, skilllv, 6);
-		map_foreachinrange(skill_destroy_trap,bl,skill_get_splash(skillid,skilllv),BL_SKILL,tick);
+		if ( rand()%100 < 25 + 25 * skilllv )
+		{
+			map_foreachinrange(skill_destroy_trap,bl,skill_get_splash(skillid,skilllv),BL_SKILL,tick);
+			// Chance of dogging damage from trap that deals damage. Add behavior in later. [Rytech]
+			//if ( rand()%100 < 5 * skilllv + (sstatus->agi + sstatus->dex) / 4 )
+			status_change_end(src, SC_THORNSTRAP, INVALID_TIMER);
+			status_change_end(src, SC_SV_ROOTTWIST, INVALID_TIMER);
+		}
 		break;
 
 	case LG_REFLECTDAMAGE:
@@ -13181,8 +13255,8 @@ static int skill_unit_onplace (struct skill_unit *src, struct block_list *bl, un
 	sc = status_get_sc(bl);
 	ssc = status_get_sc(ss);
 
-	if (sc && sc->option&OPTION_HIDE && sg->skill_id != WZ_HEAVENDRIVE && sg->skill_id != WL_EARTHSTRAIN)
-		return 0; //Hidden characters are immune to AoE skills except Heaven's Drive and Earth Strain. [Skotlex]
+	if (sc && sc->option&OPTION_HIDE && sg->skill_id != WZ_HEAVENDRIVE && sg->skill_id != WL_EARTHSTRAIN && sg->skill_id != SO_EARTHGRAVE)
+		return 0; //Hidden characters are immune to AoE skills except Heaven's Drive, Earth Strain, and Earth Grave. [Skotlex]
 	
 	type = status_skill2sc(sg->skill_id);
 	sce = (sc && type != -1)?sc->data[type]:NULL;
@@ -14585,7 +14659,7 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		sd->spiritball_old = sd->spiritball; //Need to do Spiritball check.
 		sd->rageball_old = sd->rageball;// Needed for Rageball check.
 		sd->charmball_old = sd->charmball;// Needed for Charmball check.
-		sd->soulball_old = sd->soulball; //Need to do Soulball check.
+		sd->soulball_old = sd->soulball; //Need for Soulball check.
 		return 1;
 	}
 
@@ -14953,6 +15027,16 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 		// other checks were already done in skillnotok()
 		if (!sd->status.guild_id || !sd->state.gmaster_flag)
 			return 0;
+		break;
+
+	case AB_CONVENIO:
+		{// Only castable if in a party. Leader check is done later.
+			if (!sd->status.party_id)
+			{
+				clif_skill_fail(sd,skill,0,0,0);
+				return 0;
+			}
+		}
 		break;
 
 	case GS_GLITTERING:
@@ -15512,7 +15596,7 @@ int skill_check_condition_castend(struct map_session_data* sd, short skill, shor
 		sd->spiritball_old = sd->spiritball; //Need to do Spiritball check.
 		sd->rageball_old = sd->rageball;// Needed for Rageball check.
 		sd->charmball_old = sd->charmball;// Needed for Charmball check.
-		sd->soulball_old = sd->soulball; //Need to do Soulball check.
+		sd->soulball_old = sd->soulball; //Need for Soulball check.
 		return 1;
 	}
 

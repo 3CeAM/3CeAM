@@ -4852,6 +4852,9 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 	case NC_MAGMA_ERUPTION_DOTDAMAGE:
 		md.damage = 800 + 200 * skill_lv;
 		break;
+	case SU_SV_ROOTTWIST_ATK:
+		md.damage = 100;
+		break;
 	case MH_EQC:
 		md.damage = tstatus->hp - sstatus->hp;
 		// Officially, if damage comes out <= 0,

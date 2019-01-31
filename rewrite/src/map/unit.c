@@ -926,6 +926,7 @@ int unit_can_move(struct block_list *bl)
 			|| sc->data[SC_KAGEHUMI]
 			|| sc->data[SC_KINGS_GRACE]
 			|| sc->data[SC_SUHIDE]
+			|| sc->data[SC_SV_ROOTTWIST]
 			|| sc->data[SC_NEEDLE_OF_PARALYZE]
 			|| sc->data[SC_TINDER_BREAKER]
 		))
@@ -2096,6 +2097,7 @@ int unit_remove_map_(struct block_list *bl, clr_type clrtype, const char* file, 
 		status_change_end(bl, SC_SOULUNITY, INVALID_TIMER);
 		status_change_end(bl, SC_KINGS_GRACE, INVALID_TIMER);
 		status_change_end(bl, SC_SUHIDE, INVALID_TIMER);
+		status_change_end(bl, SC_SV_ROOTTWIST, INVALID_TIMER);
 		status_change_end(bl, SC_TINDER_BREAKER, INVALID_TIMER);
 	}
 
