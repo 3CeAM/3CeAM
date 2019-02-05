@@ -11598,12 +11598,13 @@ void clif_parse_TakeItem(int fd, struct map_session_data *sd)
 			sd->sc.data[SC_TRICKDEAD] ||
 			sd->sc.data[SC_BLADESTOP] ||
 			sd->sc.data[SC_CLOAKINGEXCEED] ||
-			(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOITEM) ||
+			sd->sc.data[SC_CURSEDCIRCLE_ATKER] ||
 			sd->sc.data[SC_CURSEDCIRCLE_TARGET] ||
 			sd->sc.data[SC_NEWMOON] ||
 			sd->sc.data[SC_GRAVITYCONTROL] ||
-			sd->sc.data[SC_SUHIDE])
-		)
+			sd->sc.data[SC_SUHIDE] ||
+			(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOITEM)
+		))
 			break;
 
 		if (!pc_takeitem(sd, fitem))
@@ -11634,8 +11635,9 @@ void clif_parse_DropItem(int fd, struct map_session_data *sd)
 			sd->sc.data[SC_AUTOCOUNTER] ||
 			sd->sc.data[SC_DEATHBOUND] ||
 			sd->sc.data[SC_BLADESTOP] ||
-			(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOITEM) ||
-			sd->sc.data[SC_CURSEDCIRCLE_TARGET]
+			sd->sc.data[SC_CURSEDCIRCLE_ATKER] ||
+			sd->sc.data[SC_CURSEDCIRCLE_TARGET] ||
+			(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOITEM)
 		))
 			break;
 

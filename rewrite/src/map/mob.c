@@ -1326,8 +1326,7 @@ static bool mob_ai_sub_hard(struct mob_data *md, unsigned int tick)
 		md->sc.data[SC_DEEPSLEEP] ||
 		md->sc.data[SC_CRYSTALIZE] ||
 		md->sc.data[SC__MANHOLE] ||
-		md->sc.data[SC_FALLENEMPIRE] ||
-		md->sc.data[SC_CURSEDCIRCLE_TARGET] )
+		md->sc.data[SC_FALLENEMPIRE] )
   	{	//Should reset targets.
 		md->target_id = md->attacked_id = 0;
 		return false;

@@ -1368,6 +1368,13 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 		status_change_end(src,SC__MANHOLE,-1);
 		if (!src->prev) return 0; //Warped away!
 	}
+
+	if( sc && sc->data[SC_CURSEDCIRCLE_ATKER] )
+	{
+		status_change_end(src, SC_CURSEDCIRCLE_ATKER, INVALID_TIMER);
+		if (!src->prev) return 0; //Warped away!
+	}
+
 	if( casttime > 0 )
 	{
 		ud->skilltimer = add_timer( tick+casttime, skill_castend_id, src->id, 0 );
@@ -1499,6 +1506,12 @@ int unit_skilluse_pos2( struct block_list *src, short skill_x, short skill_y, sh
 	if( sc && sc->data[SC__MANHOLE] )
 	{
 		status_change_end(src,SC__MANHOLE,-1);
+		if (!src->prev) return 0; //Warped away!
+	}
+
+	if (sc && sc->data[SC_CURSEDCIRCLE_ATKER])
+	{
+		status_change_end(src, SC_CURSEDCIRCLE_ATKER, INVALID_TIMER);
 		if (!src->prev) return 0; //Warped away!
 	}
 
@@ -2087,9 +2100,11 @@ int unit_remove_map_(struct block_list *bl, clr_type clrtype, const char* file, 
 		status_change_end(bl, SC_BANDING, INVALID_TIMER);
 		status_change_end(bl, SC__SHADOWFORM, INVALID_TIMER);
 		status_change_end(bl, SC__MANHOLE, INVALID_TIMER);
+		status_change_end(bl, SC_CURSEDCIRCLE_ATKER, INVALID_TIMER);
 		status_change_end(bl, SC_CURSEDCIRCLE_TARGET, INVALID_TIMER);
 		status_change_end(bl, SC_NETHERWORLD, INVALID_TIMER);
 		status_change_end(bl, SC_VACUUM_EXTREME, INVALID_TIMER);
+		status_change_end(bl, SC_BLOOD_SUCKER, INVALID_TIMER);
 		status_change_end(bl, SC_C_MARKER, INVALID_TIMER);
 		status_change_end(bl, SC_H_MINE, INVALID_TIMER);
 		status_change_end(bl, SC_NEWMOON, INVALID_TIMER);

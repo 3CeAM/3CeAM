@@ -378,6 +378,8 @@ struct map_session_data {
 	short mission_mobid; //Stores the target mob_id for TK_MISSION
 	int die_counter; //Total number of times you've died
 	int devotion[5]; //Stores the account IDs of chars devoted to.
+	int cursed_circle[MAX_CURSED_CIRCLES];// Stores the account ID's of character's in cursed circle.
+	int blood_sucker[MAX_BLOOD_SUCKERS];// Stores the account ID's of character's with a blood sucker.
 	int crimson_mark[MAX_CRIMSON_MARKS];// Stores the account ID's of character's with a crimson mark.
 	int howl_mine[MAX_HOWL_MINES];// Stores the account ID's of character's with a howl mine.
 	int stellar_mark[MAX_STELLAR_MARKS];// Stores the account ID's of character's with a stellar mark.

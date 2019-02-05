@@ -4899,8 +4899,6 @@ int pc_setpos(struct map_session_data* sd, unsigned short mapindex, int x, int y
 					s_sd->shadowform_id = 0;					
 				status_change_end(&sd->bl,SC__SHADOWFORM,-1);
 			}
-			if (sd->sc.data[SC_CURSEDCIRCLE_ATKER])
-				status_change_end(&sd->bl,SC_CURSEDCIRCLE_ATKER,-1);
 		}
 		if( sd->shadowform_id )
 		{
@@ -6844,27 +6842,58 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 		sd->devotion[k] = 0;
 	}
 
+	for(k = 0; k < MAX_CURSED_CIRCLES; k++)
+	if (sd->cursed_circle[k]){
+		struct map_session_data *ccirclesd = map_id2sd(sd->cursed_circle[k]);
+		struct mob_data *ccirclemd = map_id2md(sd->cursed_circle[k]);
+		if (ccirclesd)
+			status_change_end(&ccirclesd->bl, SC_CURSEDCIRCLE_TARGET, INVALID_TIMER);
+		if (ccirclemd)
+			status_change_end(&ccirclemd->bl, SC_CURSEDCIRCLE_TARGET, INVALID_TIMER);
+		sd->cursed_circle[k] = 0;
+	}
+
+	for(k = 0; k < MAX_BLOOD_SUCKERS; k++)
+	if (sd->blood_sucker[k]){
+		struct map_session_data *bsuckersd = map_id2sd(sd->blood_sucker[k]);
+		struct mob_data *bsuckermd = map_id2md(sd->blood_sucker[k]);
+		if (bsuckersd)
+			status_change_end(&bsuckersd->bl, SC_BLOOD_SUCKER, INVALID_TIMER);
+		if (bsuckermd)
+			status_change_end(&bsuckermd->bl, SC_BLOOD_SUCKER, INVALID_TIMER);
+		sd->blood_sucker[k] = 0;
+	}
+
 	for(k = 0; k < MAX_CRIMSON_MARKS; k++)
 	if (sd->crimson_mark[k]){
 		struct map_session_data *cmarksd = map_id2sd(sd->crimson_mark[k]);
+		struct mob_data *cmarkmd = map_id2md(sd->crimson_mark[k]);
 		if (cmarksd)
 			status_change_end(&cmarksd->bl, SC_C_MARKER, INVALID_TIMER);
+		if (cmarkmd)
+			status_change_end(&cmarkmd->bl, SC_C_MARKER, INVALID_TIMER);
 		sd->crimson_mark[k] = 0;
 	}
 
 	for(k = 0; k < MAX_HOWL_MINES; k++)
 	if (sd->howl_mine[k]){
 		struct map_session_data *hminesd = map_id2sd(sd->howl_mine[k]);
+		struct mob_data *hminemd = map_id2md(sd->howl_mine[k]);
 		if (hminesd)
 			status_change_end(&hminesd->bl, SC_H_MINE, INVALID_TIMER);
+		if (hminemd)
+			status_change_end(&hminemd->bl, SC_H_MINE, INVALID_TIMER);
 		sd->howl_mine[k] = 0;
 	}
 
 	for(k = 0; k < MAX_STELLAR_MARKS; k++)
 	if (sd->stellar_mark[k]){
 		struct map_session_data *smarksd = map_id2sd(sd->stellar_mark[k]);
+		struct mob_data *smarkmd = map_id2md(sd->stellar_mark[k]);
 		if (smarksd)
 			status_change_end(&smarksd->bl, SC_FLASHKICK, INVALID_TIMER);
+		if (smarkmd)
+			status_change_end(&smarkmd->bl, SC_FLASHKICK, INVALID_TIMER);
 		sd->stellar_mark[k] = 0;
 	}
 

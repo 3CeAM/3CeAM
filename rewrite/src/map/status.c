@@ -569,8 +569,8 @@ void initChangeTables(void)
 
 	set_sc( GN_CARTBOOST                  , SC_GN_CARTBOOST   , SI_GN_CARTBOOST               , SCB_SPEED );
 	set_sc( GN_THORNS_TRAP                , SC_THORNSTRAP     , SI_THORNS_TRAP                , SCB_NONE );
-	set_sc( GN_BLOOD_SUCKER               , SC_BLOODSUCKER    , SI_BLOOD_SUCKER               , SCB_NONE );
-	set_sc( GN_SPORE_EXPLOSION            , SC_SPORE_EXPLOSION, SI_SPORE_EXPLOSION, SCB_NONE  );
+	set_sc( GN_BLOOD_SUCKER               , SC_BLOOD_SUCKER   , SI_BLOOD_SUCKER               , SCB_NONE );
+	set_sc( GN_SPORE_EXPLOSION            , SC_SPORE_EXPLOSION, SI_SPORE_EXPLOSION, SCB_NONE );
 	set_sc( GN_WALLOFTHORN                , SC_STOP           , SI_BLANK                      , SCB_NONE );
 	set_sc( GN_FIRE_EXPANSION_SMOKE_POWDER, SC_SMOKEPOWDER    , SI_FIRE_EXPANSION_SMOKE_POWDER, SCB_FLEE );
 	set_sc( GN_FIRE_EXPANSION_TEAR_GAS    , SC_TEARGAS        , SI_FIRE_EXPANSION_TEAR_GAS    , SCB_HIT|SCB_FLEE );
@@ -1844,8 +1844,6 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 			if( tsc->data[SC_CAMOUFLAGE] && !(status->mode&(MD_BOSS|MD_DETECTOR)) && !skill_num )
 			//Enable the line below once all the missing information for this skill is added. Leaving it enabled will caused overpowering issues. [Rytech]
 			//if( tsc->data[SC_CAMOUFLAGE] && !(status->mode&(MD_BOSS|MD_DETECTOR)) )
-				return 0;
-			if( sc && sc->data[SC_CURSEDCIRCLE_TARGET] )
 				return 0;
 		}
 		break;
@@ -6453,7 +6451,6 @@ int status_get_sc_def(struct block_list *bl, enum sc_type type, int rate, int ti
 	case SC_WATER_INSIGNIA:
 	case SC_WIND_INSIGNIA:
 	case SC_EARTH_INSIGNIA:
-	case SC_BLOODSUCKER:
 		return 0;
 	}
 	
@@ -7082,6 +7079,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC__WEAKNESS:
 			case SC__MANHOLE:
 			//case SC_VACUUM_EXTREME:// Same as SC_BITE with rude attack.
+			case SC_CURSEDCIRCLE_TARGET:
 			case SC_SILENT_BREEZE:
 			case SC_NETHERWORLD:
 			case SC_BANDING_DEFENCE:
@@ -7446,6 +7444,8 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			case SC_ENCHANTARMS:
 			case SC_ARMOR_ELEMENT:
 			case SC_ARMOR_RESIST:
+			case SC_CURSEDCIRCLE_TARGET:
+			case SC_BLOOD_SUCKER:
 			case SC_C_MARKER:
 			case SC_H_MINE:
 			case SC_FLASHKICK:
@@ -8650,7 +8650,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val4 = tick / 1000;
 			tick = 1000;
 			break;
-		case SC_BLOODSUCKER:
+		case SC_BLOOD_SUCKER:
 			val4 = tick / 1000;
 			tick = 1000;
 			break;
@@ -8797,7 +8797,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			status_change_clear_buffs(bl,3);// Remove Buffs/Debuffs
 			break;
 		case SC_SPELLFIST:
-		case SC_CURSEDCIRCLE_ATKER:
 			val_flag |= 1|2|4;
 			break;
 		case SC_CRESCENTELBOW:
@@ -8916,6 +8915,10 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 				val3 += 3;
 			if ( val1 >= 6 )// In case someone uses a level higher then 5.
 				val3 += 4*(val1-5);
+			break;
+		case SC_CURSEDCIRCLE_TARGET:
+			val4 = tick / 1000;
+			tick = 1000;
 			break;
 		case SC_SOULUNITY:
 			val4 = tick / 3000;
@@ -9847,6 +9850,28 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 			}
 			break;
 
+		case SC_CURSEDCIRCLE_TARGET:
+			{
+				struct block_list *d_bl = map_id2bl(sce->val1);
+				if( d_bl )
+				{
+					if( d_bl->type == BL_PC )
+						((TBL_PC*)d_bl)->cursed_circle[sce->val2] = 0;
+				}
+			}
+			break;
+
+		case SC_BLOOD_SUCKER:
+			{
+				struct block_list *d_bl = map_id2bl(sce->val1);
+				if( d_bl )
+				{
+					if( d_bl->type == BL_PC )
+						((TBL_PC*)d_bl)->blood_sucker[sce->val2] = 0;
+				}
+			}
+			break;
+
 		case SC_C_MARKER:
 			{
 				struct block_list *d_bl = map_id2bl(sce->val1);
@@ -10135,8 +10160,19 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 			}
 			break;
 		case SC_CURSEDCIRCLE_ATKER:
-			if( sce->val3 )
-				map_foreachinrange(status_change_timer_sub, bl, skill_get_splash(SR_CURSEDCIRCLE, sce->val1),BL_CHAR, bl, sce, SC_CURSEDCIRCLE_TARGET, gettick());
+			{
+				short k = 0;
+				for(k = 0; k < MAX_CURSED_CIRCLES; k++)
+				if (sd->cursed_circle[k]){
+					struct map_session_data *ccirclesd = map_id2sd(sd->cursed_circle[k]);
+					struct mob_data *ccirclemd = map_id2md(sd->cursed_circle[k]);
+					if (ccirclesd)
+						status_change_end(&ccirclesd->bl, SC_CURSEDCIRCLE_TARGET, INVALID_TIMER);
+					if (ccirclemd)
+						status_change_end(&ccirclemd->bl, SC_CURSEDCIRCLE_TARGET, INVALID_TIMER);
+					sd->cursed_circle[k] = 0;
+				}
+			}
 			break;
 		case SC_RAISINGDRAGON:
 			if( sd && sce->val2 && !pc_isdead(sd) )
@@ -11089,25 +11125,6 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		}
 		break;
 
-	case SC_BLOODSUCKER:
-		if( --(sce->val4) >= 0 )
-		{
-			struct block_list *src = map_id2bl(sce->val2);
-			int damage;
-			bool flag;
-			if( !src || (src && (status_isdead(src) || src->m != bl->m || distance_bl(src, bl) >= 12)) )
-				break;
-			map_freeblock_lock();
-			damage = skill_attack(skill_get_type(GN_BLOOD_SUCKER), src, src, bl, GN_BLOOD_SUCKER, sce->val1, tick, 0);
-			flag = !sc->data[type];
-			map_freeblock_unlock();
-			status_heal(src, damage * (5 + 5 * sce->val1) / 100, 0, 0);
-			clif_skill_nodamage(src, bl, GN_BLOOD_SUCKER, 0, 1);
-			if (!flag) sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
-			return 0;
-		}
-		break;
-
 	case SC_VOICEOFSIREN:
 		if( --(sce->val4) >= 0 )
 		{
@@ -11315,6 +11332,42 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 
 			// Must be placed after sc_timer_next to prevent null errors.
 			skill_attack(BF_WEAPON,star_caster,&star_aoe->bl,bl,SJ_BOOKOFCREATINGSTAR,sce->val1,tick,0);
+			return 0;
+		}
+		break;
+
+	case SC_CURSEDCIRCLE_TARGET:
+		if( --(sce->val4) >= 0 )
+		{// Needed to check the caster's location for the range check.
+			struct block_list *circle_src = map_id2bl(sce->val1);
+
+			// End the status if out of range.
+			if ( !check_distance_bl(bl, circle_src, (1+sce->val3)/2) )
+				break;
+
+			sc_timer_next(1000+tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
+
+	case SC_BLOOD_SUCKER:
+		if( --(sce->val4) >= 0 )
+		{
+			bool flag;
+			short healing = 0;
+			struct block_list *sucker_src = map_id2bl(sce->val1);
+
+			// End the status if out of range.
+			if ( !check_distance_bl(bl, sucker_src, 12) )
+				break;
+
+			map_freeblock_lock();
+			healing = skill_attack(BF_MISC, sucker_src, sucker_src, bl, GN_BLOOD_SUCKER, sce->val3, tick, SD_LEVEL|SD_ANIMATION);
+			status_heal(sucker_src, healing*(5+5*sce->val3)/100, 0, 0);
+			flag = !sc->data[type];
+			map_freeblock_unlock();
+			if (flag) return 0;
+			sc_timer_next(1000+tick, status_change_timer, bl->id, data);
 			return 0;
 		}
 		break;
@@ -11564,13 +11617,6 @@ int status_change_timer_sub(struct block_list* bl, va_list ap)
 			status_change_end(bl, SC_CLOSECONFINE2, INVALID_TIMER);
 		}
 		break;
-	case SC_CURSEDCIRCLE_TARGET:
-		if( tsc && tsc->data[SC_CURSEDCIRCLE_TARGET] && tsc->data[SC_CURSEDCIRCLE_TARGET]->val2 == src->id )
-		{
-			status_change_end(bl, type, -1);			
-			clif_bladestop(src, bl->id, 0);
-		}
-		break;
 	}
 	return 0;
 }
@@ -11656,8 +11702,6 @@ int status_change_clear_buffs (struct block_list* bl, int type)
 			case SC_SIROMA_ICE_TEA:
 			case SC_DROCERA_HERB_STEAMED:
 			case SC_PUTTI_TAILS_NOODLES:
-			case SC_CURSEDCIRCLE_ATKER:
-			case SC_CURSEDCIRCLE_TARGET:
 			case SC_ALL_RIDING:
 			case SC_ON_PUSH_CART:
 			case SC_SPRITEMABLE:

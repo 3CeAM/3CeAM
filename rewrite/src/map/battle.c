@@ -4198,9 +4198,10 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							skillratio = skillratio * status_get_base_lv_effect(src) / 100;
 						break;
 					case WL_CRIMSONROCK:
-						skillratio += 1200 + 300 * skill_lv;//2011 document says the 1300+ is applied after the base level bonus. Must confirm. [Rytech]
+						skillratio = 300 * skill_lv;
 						if( level_effect_bonus == 1 )
 							skillratio = skillratio * status_get_base_lv_effect(src) / 100;
+						skillratio += 1300;
 						break;
 					case WL_HELLINFERNO:
 						if ( s_ele == ELE_DARK )
@@ -4632,14 +4633,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 	damage_div_fix(ad.damage, ad.div_);
 	
 	if (flag.infdef && ad.damage)
-	{
 		ad.damage = ad.damage>0?1:-1;
-		if( skill_num == WL_JACKFROST || skill_num == WL_FROSTMISTY )
-		{
-			ad.damage = 0;
-			ad.dmg_lv = ATK_MISS;
-		}
-	}
 
 	ad.damage = battle_calc_damage(src,target,&ad,ad.damage,skill_num,skill_lv,s_ele);
 	if( map_flag_gvg2(target->m) )
