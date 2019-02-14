@@ -14330,12 +14330,17 @@ void clif_parse_NoviceExplosionSpirits(int fd, struct map_session_data *sd)
 	}
 }
 
+/// Friends List
+///
 
-/*==========================================
- * Friends List
- *------------------------------------------*/
+/// Toggles a single friend online/offline [Skotlex] (ZC_FRIENDS_STATE).
+/// 0206 <account id>.L <char id>.L <state>.B
+/// 0206 <account id>.L <char id>.L <state>.B <name>.24B
+/// state:
+///     0 = online
+///     1 = offline
 void clif_friendslist_toggle(struct map_session_data *sd,int account_id, int char_id, int online)
-{	//Toggles a single friend online/offline [Skotlex]
+{
 	int i, fd = sd->fd;
 
 	//Seek friend.
@@ -14350,6 +14355,9 @@ void clif_friendslist_toggle(struct map_session_data *sd,int account_id, int cha
 	WFIFOL(fd, 2) = sd->status.friends[i].account_id;
 	WFIFOL(fd, 6) = sd->status.friends[i].char_id;
 	WFIFOB(fd,10) = !online; //Yeah, a 1 here means "logged off", go figure... 
+#if PACKETVER >= 20180221
+	memcpy(WFIFOP(fd, 11), &sd->status.friends[i].name, NAME_LENGTH);
+#endif
 	WFIFOSET(fd, packet_len(0x206));
 }
 
@@ -14364,23 +14372,33 @@ int clif_friendslist_toggle_sub(struct map_session_data *sd,va_list ap)
 	return 0;
 }
 
-//For sending the whole friends list.
+/// Sends the whole friends list (ZC_FRIENDS_LIST).
+/// 0201 <packet len>.W { <account id>.L <char id>.L <name>.24B }*
+/// 0201 <packet len>.W { <account id>.L <char id>.L }*
 void clif_friendslist_send(struct map_session_data *sd)
 {
+
+#if PACKETVER < 20180221
+	short offset = 32;
+#else
+	short offset = 8;
+#endif
 	int i = 0, n, fd = sd->fd;
 	
 	// Send friends list
-	WFIFOHEAD(fd, MAX_FRIENDS * 32 + 4);
+	WFIFOHEAD(fd, MAX_FRIENDS * offset + 4);
 	WFIFOW(fd, 0) = 0x201;
 	for(i = 0; i < MAX_FRIENDS && sd->status.friends[i].char_id; i++)
 	{
-		WFIFOL(fd, 4 + 32 * i + 0) = sd->status.friends[i].account_id;
-		WFIFOL(fd, 4 + 32 * i + 4) = sd->status.friends[i].char_id;
-		memcpy(WFIFOP(fd, 4 + 32 * i + 8), &sd->status.friends[i].name, NAME_LENGTH);
+		WFIFOL(fd, 4 + offset * i + 0) = sd->status.friends[i].account_id;
+		WFIFOL(fd, 4 + offset * i + 4) = sd->status.friends[i].char_id;
+#if PACKETVER < 20180221
+		memcpy(WFIFOP(fd, 4 + offset * i + 8), &sd->status.friends[i].name, NAME_LENGTH);
+#endif
 	}
 
 	if (i) {
-		WFIFOW(fd,2) = 4 + 32 * i;
+		WFIFOW(fd,2) = 4 + offset * i;
 		WFIFOSET(fd, WFIFOW(fd,2));
 	}
 	
@@ -14391,11 +14409,13 @@ void clif_friendslist_send(struct map_session_data *sd)
 	}
 }
 
-/// Reply for add friend request: (success => type 0)
-/// type=0 : MsgStringTable[821]="You have become friends with (%s)."
-/// type=1 : MsgStringTable[822]="(%s) does not want to be friends with you."
-/// type=2 : MsgStringTable[819]="Your Friend List is full."
-/// type=3 : MsgStringTable[820]="(%s)'s Friend List is full."
+/// Notification about the result of a friend add request (ZC_ADD_FRIENDS_LIST).
+/// 0209 <result>.W <account id>.L <char id>.L <name>.24B
+/// result:
+///     0 = MsgStringTable[821]="You have become friends with (%s)."
+///     1 = MsgStringTable[822]="(%s) does not want to be friends with you."
+///     2 = MsgStringTable[819]="Your Friend List is full."
+///     3 = MsgStringTable[820]="(%s)'s Friend List is full."
 void clif_friendslist_reqack(struct map_session_data *sd, struct map_session_data *f_sd, int type)
 {
 	int fd;
@@ -14414,6 +14434,8 @@ void clif_friendslist_reqack(struct map_session_data *sd, struct map_session_dat
 	WFIFOSET(fd, packet_len(0x209));
 }
 
+/// Request to add a player as friend (CZ_ADD_FRIENDS).
+/// 0202 <name>.24B
 void clif_parse_FriendsListAdd(int fd, struct map_session_data *sd)
 {
 	struct map_session_data *f_sd;
@@ -14458,6 +14480,12 @@ void clif_parse_FriendsListAdd(int fd, struct map_session_data *sd)
 	return;
 }
 
+/// Answer to a friend add request (CZ_ACK_REQ_ADD_FRIENDS).
+/// 0208 <inviter account id>.L <inviter char id>.L <result>.B
+/// 0208 <inviter account id>.L <inviter char id>.L <result>.L (PACKETVER >= 6)
+/// result:
+///     0 = rejected
+///     1 = accepted
 void clif_parse_FriendsListReply(int fd, struct map_session_data *sd)
 {
 	//<W: id> <L: Player 1 chara ID> <L: Player 1 AID> <B: Response>
@@ -14514,6 +14542,8 @@ void clif_parse_FriendsListReply(int fd, struct map_session_data *sd)
 	return;
 }
 
+/// Request to delete a friend (CZ_DELETE_FRIENDS).
+/// 0203 <account id>.L <char id>.L
 void clif_parse_FriendsListRemove(int fd, struct map_session_data *sd)
 {
 	// 0x203 </o> <ID to be removed W 4B>
@@ -17737,7 +17767,11 @@ static int packetdb_readdb(void)
 	   30,  8, 34, 14,  2,  6, 26,  2, 28, 81,  6, 10, 26,  2, -1, -1,
 	   -1, -1, 20, 10, 32,  9, 34, 14,  2,  6, 48, 56, -1,  4,  5, 10,
 	//#0x0200
+#if PACKETVER < 20180221
 	   26, -1, 26, 10, 18, 26, 11, 34, 14, 36, 10,  0,  0, -1, 32, 10, // 0x20c change to 0 (was 19)
+#else
+	   26, -1, 26, 10, 18, 26, 35, 34, 14, 36, 10,  0,  0, -1, 32, 10,
+#endif
 	   22,  0, 26, 26, 42,  6,  6,  2,  2,282,282, 10, 10, -1, -1, 66,
 #if PACKETVER < 20071106
 	   10, -1, -1,  8, 10,  2,282, 18, 18, 15, 58, 57, 64,  5, 71,  5,
