@@ -748,8 +748,16 @@ typedef enum sc_type {
 	SC_SP_SHA,
 
 	// Hat Effect Animations
+	// And More Skill Related Stuff
 	SC_HEAD_EQUIPMENT_EFFECT,
 	SC_ANCILLA,
+	SC_SOULCURSE,
+
+	// Why do both of the expanded super novice's passive skills have status tags/ID's for them???
+	// It might be for animation purposes but won't know until I can test with a newer client. [Rytech]
+	SC_NV_BREAKTHROUGH,
+	SC_NV_TRANSCENDENCE,
+	SC_HELPANGEL,
 
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 } sc_type;
@@ -1845,8 +1853,8 @@ enum si_type {
 //	SI_ = 1085,
 //	SI_ = 1086,
 //	SI_ = 1087,
-//	SI_ = 1088,
-//	SI_ = 1089,
+//	SI_ENSEMBLEFATIGUE = 1088,
+//	SI_ADAPTATION = 1089,
 //	SI_ = 1090,
 //	SI_ = 1091,
 //	SI_ = 1092,
@@ -1858,6 +1866,39 @@ enum si_type {
 //	SI_ = 1098,
 //	SI_ = 1099,
 //	SI_ = 1100,
+//	SI_ = 1101,
+//	SI_ = 1102,
+//	SI_ = 1103,
+//	SI_ = 1104,
+//	SI_ = 1105,
+//	SI_ = 1106,
+//	SI_WEAPONBLOCK_ON = 1107,
+//	SI_ = 1108,
+//	SI_ = 1109,
+//	SI_ = 1110,
+//	SI_ = 1111,
+//	SI_ = 1112,
+//	SI_ = 1113,
+//	SI_ = 1114,
+//	SI_ = 1115,
+//	SI_ = 1116,
+//	SI_ = 1117,
+//	SI_ = 1118,
+//	SI_ = 1119,
+//	SI_ = 1120,
+//	SI_ASSUMPTIO_BUFF = 1121,
+//	SI_BASILICA_BUFF = 1122,
+//	SI_OVERLAPEXPUP2 = 1123,
+//	SI_ = 1124,
+	SI_SOULCURSE = 1125,
+//	SI_ = 1126,
+//	SI_ = 1127,
+//	SI_ = 1128,
+	SI_NV_BREAKTHROUGH = 1129,
+	SI_HELPANGEL = 1130,
+	SI_NV_TRANSCENDENCE = 1131,
+//	SI_SWEETSFAIR_ATK = 1132,
+//	SI_SWEETSFAIR_MATK = 1133,
 };
 
 enum wl_spheres {

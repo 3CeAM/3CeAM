@@ -99,7 +99,7 @@
 #define MAX_ZENY 1000000000
 #define MAX_FAME 1000000000
 #define MAX_CART 100
-#define MAX_SKILL 5074
+#define MAX_SKILL 5078
 #define GLOBAL_REG_NUM 256
 #define ACCOUNT_REG_NUM 64
 #define ACCOUNT_REG2_NUM 16
@@ -115,7 +115,7 @@
 #define MAX_GUILDPOSITION 20	// increased max guild positions to accomodate for all members [Valaris] (removed) [PoW]
 #define MAX_GUILDEXPULSION 32
 #define MAX_GUILDALLIANCE 16
-#define MAX_GUILDSKILL	17 // increased max guild skills because of new skills [Sara-chan]
+#define MAX_GUILDSKILL	20 // increased max guild skills because of new skills [Sara-chan]
 #define MAX_GUILDCASTLE 34	// Updated to include new entries for WoE:SE. [L0ne_W0lf]
 #define MAX_GUILDLEVEL 50
 #define MAX_GUARDIANS 8	//Local max per castle. [Skotlex]
@@ -162,7 +162,7 @@
 //Base Homun skill.
 #define HM_SKILLBASE 8001
 #define MAX_HOMUNSKILL 43
-#define MAX_HOMUNCULUS_CLASS	16	//[orn]
+#define MAX_HOMUNCULUS_CLASS 16	//[orn]
 #define HM_CLASS_BASE 6001
 #define HM_CLASS_MAX (HM_CLASS_BASE+MAX_HOMUNCULUS_CLASS-1)
 
@@ -606,6 +606,9 @@ enum {
 	GD_DEVELOPMENT=10014,
 	GD_ITEMEMERGENCYCALL=10015,
 	GD_GUILD_STORAGE=10016,
+	GD_CHARGESHOUT_FLAG=10017,
+	GD_CHARGESHOUT_BEATING=10018,
+	GD_EMERGENCY_MOVE=10019,
 };
 
 

@@ -18,7 +18,7 @@
 // If set like this, the cast time for level 1 will be 1 second, level 2 will be 3 seconds, and level 3 will be 8 seconds.
 // You can set them to whatever you want.
 //
-// All skills in the 2000 - 5073 ID range will use the renewal cast time system. Anything else outside the range will use the regular cast time system.
+// All skills in the 2000 - 5077 ID range will use the renewal cast time system. Anything else outside the range will use the regular cast time system.
 // Mutated Homunculus skills will also use the renewal system. Their ID's are in the 8017 - 8043 range.
 //==========================================
 
@@ -919,6 +919,16 @@
 5065,3000,0,0,0,0,60000,0
 //==========================================
 
+//===== Swap Equip =========================
+// Note: Cast time is 200ms * number of equips to swap.
+// So swapping all 10 equip slots would give a 2 second cast time.
+// Also the variable/fixed cast part is unknown but I was able to
+// reduce the cast time. Is there also a aftercast delay???
+// I believe there was a cooldown. 5 seconds was it???
+//-- SWAP_EQUIPITEM
+5067,200,0,500,5000,0,0,0
+//==========================================
+
 //===== Full Throttle jRO Version ==========
 //-- EVT_FULL_THROTTLE -- Duration 1 is for Full Throttle. Duration 2 is for Rebound.
 //Note: Whats the official cooldown for this version? Doing 30 minutes for now.
@@ -930,6 +940,11 @@
 5072,1000,3000:2500:2000:1500:1000,1000,5000,0,600000,0
 //-- AB_CONVENIO
 5073,2000,2000,1000,5000,0,0,0
+//==========================================
+
+//===== Expanded Super Novice ==============
+//-- NV_HELPANGEL - Variable/Fixed/Aftercast not confirmed.
+5076,0,0,500,300000,0,20000,0
 //==========================================
 
 //===== Mutated Homunculus =================
@@ -1048,4 +1063,15 @@
 8440,0,0,0,0,0,15000,0
 //-- EL_ROCK_CRUSHER_ATK
 8441,0,0,0,0,0,15000,0
+//==========================================
+
+//===== Guild ==============================
+// Note: Timer settings set based on gif's
+// and skill info out there. Need official ones.
+//-- GD_CHARGESHOUT_FLAG
+10017,0,1000,0,300000,0,300000,0
+//-- GD_CHARGESHOUT_BEATING
+10018,0,1000,0,0,0,0,0
+//-- GD_EMERGENCY_MOVE
+10019,0,0,0,60000,0,10000,0
 //==========================================

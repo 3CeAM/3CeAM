@@ -486,8 +486,8 @@ struct map_session_data {
 	int shadowform_id;
 };
 
-//Update this max as necessary. Raised from 84 to 85 as the Expanded Super Baby needs it. [Rytech]
-#define MAX_SKILL_TREE 85
+//Update this max as necessary. Raised from 85 to 105 for Expanded Super Novice/Baby rework. [Rytech]
+#define MAX_SKILL_TREE 105
 //Total number of classes (for data storage)
 #define CLASS_COUNT (JOB_MAX - JOB_NOVICE_HIGH + JOB_MAX_BASIC)
 

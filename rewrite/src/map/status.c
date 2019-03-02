@@ -668,6 +668,8 @@ void initChangeTables(void)
 
 	add_sc( AB_VITUPERATUM        , SC_AETERNA            );
 
+	set_sc( NV_HELPANGEL          , SC_HELPANGEL          , SI_HELPANGEL          , SCB_NONE );
+
 	set_sc( HLIF_AVOID           , SC_AVOID           , SI_BLANK           , SCB_SPEED );
 	set_sc( HLIF_CHANGE          , SC_CHANGE          , SI_BLANK           , SCB_VIT|SCB_INT );
 	set_sc( HFLI_FLEET           , SC_FLEET           , SI_BLANK           , SCB_ASPD|SCB_BATK|SCB_WATK );
@@ -2391,6 +2393,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	int b_weight, b_max_weight; // previous weight
 	int i,index;
 	int skill, refinedef = 0;
+	short passive_add_matk = 0;
 	short passive_matk_rate = 0;
 
 	if( ++calculating > 10 ) //Too many recursive calls!
@@ -2885,6 +2888,13 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 	// Absolute modifiers from passive skills
 	if( (skill = pc_checkskill(sd,BS_HILTBINDING)) > 0 )
 		status->batk += 4;
+	if( (skill = pc_checkskill(sd,NV_BREAKTHROUGH)) > 0 )
+	{
+		status->batk += 15 * skill;
+
+		if ( skill >= 5 )
+			status->batk += 25;
+	}
 
 // ----- HP MAX CALCULATION -----
 
@@ -2897,7 +2907,7 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 
 	// Absolute modifiers from passive skills
 	if( (skill = pc_checkskill(sd,CR_TRUST)) > 0 )
-		status->max_hp += skill * 200;
+		status->max_hp += 200 * skill;
 	if( pc_checkskill(sd,SU_SPRITEMABLE) > 0 )
 		status->max_hp += 1000;
 	if( pc_checkskill(sd,SU_POWEROFSEA) > 0 )
@@ -2906,6 +2916,20 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 
 		if ( skill_summoner_power(sd, POWER_OF_SEA) == 1 )
 			status->max_hp += 3000;
+	}
+	if( (skill = pc_checkskill(sd,NV_BREAKTHROUGH)) > 0 )
+	{
+		status->max_hp += 350 * skill;
+
+		if ( skill >= 5 )
+			status->max_hp += 250;
+	}
+	if( (skill = pc_checkskill(sd,NV_TRANSCENDENCE)) > 0 )
+	{
+		status->max_hp += 350 * skill;
+
+		if ( skill >= 5 )
+			status->max_hp += 250;
 	}
 
 	// Apply relative modifiers from equipment
@@ -2949,6 +2973,20 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 		if ( skill_summoner_power(sd, POWER_OF_SEA) == 1 )
 			status->max_sp += 300;
 	}
+	if( (skill = pc_checkskill(sd,NV_BREAKTHROUGH)) > 0 )
+	{
+		status->max_sp += 30 * skill;
+
+		if ( skill >= 5 )
+			status->max_sp += 50;
+	}
+	if( (skill = pc_checkskill(sd,NV_TRANSCENDENCE)) > 0 )
+	{
+		status->max_sp += 30 * skill;
+
+		if ( skill >= 5 )
+			status->max_sp += 50;
+	}
 
 	// Apply relative modifiers from equipment
 	if( sd->sprate < 0 )
@@ -2986,11 +3024,20 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 // ----- MISC CALCULATION -----
 	status_calc_misc(&sd->bl, status, sd->status.base_level);
 
+	// Passive skills that increase matk.
+	if( (skill = pc_checkskill(sd,NV_TRANSCENDENCE)) > 0 )
+	{
+		passive_add_matk += 15 * skill;
+
+		if ( skill >= 5 )
+			passive_add_matk += 25;
+	}
+
 	//Equipment modifiers for misc settings
-	if ( sd->add_matk > 0 )
+	if ( sd->add_matk+passive_add_matk > 0 )
 	{	//Increases MATK by a fixed amount. [Rytech]
-		status->matk_min += sd->add_matk;
-		status->matk_max += sd->add_matk;
+		status->matk_min += sd->add_matk+passive_add_matk;
+		status->matk_max += sd->add_matk+passive_add_matk;
 	}
 
 	if( sd->matk_rate < 0 )
@@ -3967,12 +4014,23 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 
 		if( bl->type&BL_PC )
 		{
+			short skill = 0;
+			short passive_add_matk = 0;
 			short passive_matk_rate = 0;
 
-			if ( sd->add_matk > 0 )
+			// Passive skills that increase matk.
+			if( (skill = pc_checkskill(sd,NV_TRANSCENDENCE)) > 0 )
+			{
+				passive_add_matk += 15 * skill;
+
+				if ( skill >= 5 )
+					passive_add_matk += 25;
+			}
+
+			if ( sd->add_matk+passive_add_matk > 0 )
 			{	//Increases MATK by a fixed amount. [Rytech]
-				status->matk_min += sd->add_matk;
-				status->matk_max += sd->add_matk;
+				status->matk_min += sd->add_matk+passive_add_matk;
+				status->matk_max += sd->add_matk+passive_add_matk;
 			}
 
 			if ( skill_summoner_power(sd, POWER_OF_LAND) == 1 )
@@ -9056,6 +9114,10 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_SPIRITOFLAND_PERFECTDODGE:
 			val2 = 10 * status_get_base_lv_effect(bl) / 12;// Perfect Dodge Increase. 10 = 1.
 			break;
+		case SC_HELPANGEL:
+			val4 = tick / 1000;
+			tick = 1000;
+			break;
 		case SC_NEEDLE_OF_PARALYZE:
 			val2 = 5 * val1;// DEF/MDEF  Reduction
 			// Need a confirm on if it increases cast time by variable cast, fixed cast, or overall cast and by how much. [Rytech]
@@ -11466,6 +11528,15 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 		{
 			status_heal(bl, status->max_hp * 4 / 100, 0, 2);
 			sc_timer_next(sce->val2 + tick, status_change_timer, bl->id, data);
+			return 0;
+		}
+		break;
+
+	case SC_HELPANGEL:
+		if( --(sce->val4) >= 0 )
+		{
+			status_heal(bl, 1000, 350, 2);
+			sc_timer_next(1000 + tick, status_change_timer, bl->id, data);
 			return 0;
 		}
 		break;

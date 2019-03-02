@@ -44,3 +44,6 @@
 
 // Kagerou/Oboro Zanzou - Settings Are Not Official.
 2308,KO_KAGE,Shadow Clone,Shadow Clone,100,18000,0,0,0,1,0,0,0,0,1,1,1,1,1,1,10,12,1,0,27,0x0,150,1003,1152,336,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+// Charge Shout Flag - Temp Values Until We Know The Official Ones
+20269,GUILD_SKILL_FLAG,Guild Skill Flag,Guild Skill Flag,98,120000,0,0,0,1,0,0,0,0,1,17,1,80,126,20,10,12,2,0,20,0x120,300,1288,288,384,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

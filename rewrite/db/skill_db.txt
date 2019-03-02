@@ -924,6 +924,19 @@
 //753,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_DAMAGE_HEAL,Damage Heal
 //754,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_IMMUNE_PROPERTY,Immune Property
 //755,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_MOVE_COORDINATE,Move Coordinate
+//756,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_WIDEBLEEDING2,Wide Bleeding 2
+//757,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_WIDESILENCE2,Wide Silence 2
+//758,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_WIDESTUN2,Wide Stun 2
+//759,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_WIDESTONE2,Wide Stone 2
+//760,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_WIDESLEEP2,Wide Sleep 2
+//761,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_WIDECURSE2,Wide Curse 2
+//762,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_WIDECONFUSE2,Wide Confuse 2
+//763,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_WIDEFREEZE2,Wide Freezing 2
+//764,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_BLEEDING2,Bleeding 2
+//765,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_ICEBREATH2,Ice Breath 2
+//766,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_ACIDBREATH2,Acid Breath 2
+//767,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_EVILLAND2,Evil Land 2
+//768,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_HELLJUDGEMENT2,Hell Judgement 2
 
 // 2nd Job Quest Skills
 1001,9,6,1,-1,0,0,1,1,no,0,0x1,0,weapon,0,	KN_CHARGEATK,Charge Attack
@@ -1471,12 +1484,26 @@
 5064,3,6,16,0,0x1,0,1,1,yes,0,0x4,0,none,0,	WE_ONEFOREVER,One Forever
 5065,0,6,4,0,0x3,3,1,1,yes,0,0x4,0,none,0,	WE_CHEERUP,Cheer Up
 
+// Equip Swap
+5067,0,6,4,0,0x1,0,1,1,yes,0,0x4000,0,none,0,	SWAP_EQUIPITEM,Swap Equip Item
+
+// ????
+5068,0,6,4,0,0x1,0,1,1,no,0,0,0,none,0,		CG_SPECIALSINGER,Special Singer
+
 // Full Throttle jRO Version
 5071,0,6,4,0,0x1,0,1,1,yes,0,0x1,0,none,0,	EVT_FULL_THROTTLE,Event Full Throttle// Be sure to restrict WoE and PVP use.
 
 // New Arch Bishop Skills
 5072,11,6,1,0,0x3,1:1:1:2:2,5,1,yes,0,0,0,magic,0,	AB_VITUPERATUM,Vituperatum
 5073,0,6,4,0,0x1,0,1,1,yes,0,0,0,magic,0,	AB_CONVENIO,Convenio
+
+// ????
+//5074,0,0,0,0,0,0,1,0,no,0,0,0,none,0,		ALL_LIGHTNING_STORM,Lightning Storm
+
+// Expanded Super Novice
+5075,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		NV_BREAKTHROUGH,Break Through
+5076,0,6,4,0,0x3,7,1,1,yes,0,0,0,none,0,	NV_HELPANGEL,Help Angel
+5077,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		NV_TRANSCENDENCE,Transcendence
 
 // Homunculus
 8001,9,6,4,0,0x1,0,5,1,no,0,0,0,magic,0,	HLIF_HEAL,Healing Touch
@@ -1630,3 +1657,6 @@
 10014,0,0,0,0,0,0,1,0,no,0,0x10,0,none,0,	GD_DEVELOPMENT,Permanent Development
 10015,0,0,4,0,0x3,0,3,0,yes,0,0x10,0,none,0,	GD_ITEMEMERGENCYCALL,Item Emergency Call
 10016,0,0,0,0,0,0,5,0,no,0,0x10,0,none,0,	GD_GUILD_STORAGE,Guild Storage
+10017,0,0,4,0,0,0,1,0,yes,0,0x10,0,none,0,	GD_CHARGESHOUT_FLAG,Charge Shout - Flag
+10018,0,0,4,0,0,0,1,0,yes,0,0x10,0,none,0,	GD_CHARGESHOUT_BEATING,Charge Shout - Beating
+10019,0,0,4,0,0x3,15,1,0,yes,0,0x10,0,none,0,	GD_EMERGENCY_MOVE,Emergency Move

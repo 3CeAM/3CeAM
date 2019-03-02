@@ -371,16 +371,27 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, int skill
 			else
 				hp = hp * ( 4 + skill_lv * 8 );
 
-			if( sd && ((skill = pc_checkskill(sd, HP_MEDITATIO)) > 0) )
-				hp += hp * skill * 2 / 100;
-			else if( sd && (pc_checkskill(sd, SU_POWEROFSEA) > 0) )
+			// Passive skills that increases healing by a percentage.
+			if ( sd )
 			{
-				unsigned char sea_heal = 10;
+				if( (skill = pc_checkskill(sd, HP_MEDITATIO)) > 0 )
+					hp += hp * skill * 2 / 100;
 
-				if ( skill_summoner_power(sd, POWER_OF_SEA) == 1 )
-					sea_heal += 20;
+				if( (pc_checkskill(sd, SU_POWEROFSEA) > 0) )
+				{
+					unsigned char sea_heal = 10;
 
-				hp += hp * sea_heal / 100;
+					if ( skill_summoner_power(sd, POWER_OF_SEA) == 1 )
+						sea_heal += 20;
+
+					hp += hp * sea_heal / 100;
+				}
+
+				if( (skill = pc_checkskill(sd, NV_BREAKTHROUGH)) > 0 )
+					hp += hp * skill * 2 / 100;
+
+				if( (skill = pc_checkskill(sd, NV_TRANSCENDENCE)) > 0 )
+					hp += hp * skill * 3 / 100;
 			}
 			else if( src->type == BL_HOM && (skill = merc_hom_checkskill(((TBL_HOM*)src), HLIF_BRAIN)) > 0 )
 				hp += hp * skill * 2 / 100;
@@ -6972,6 +6983,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case CASH_ASSUMPTIO:
 	case AB_RENOVATIO:
 	case SU_BUNCHOFSHRIMP:
+	case NV_HELPANGEL:
 		if( sd == NULL || sd->status.party_id == 0 || (flag & 1) )
 			clif_skill_nodamage(bl, bl, skillid, skilllv, sc_start(bl,type,100,skilllv,skill_get_time(skillid,skilllv)));
 		else if( sd )
@@ -16209,7 +16221,7 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 	// Calculates regular and variable cast time.
 	if( !(skill_get_castnodex(skill_id, skill_lv)&1) )
 	{	//If renewal casting is enabled, all renewal skills will follow the renewal cast formula.
-		if (battle_config.renewal_casting_renewal_skills == 1 && (skill_id >= RK_ENCHANTBLADE && skill_id <= AB_CONVENIO || skill_id >= MH_SUMMON_LEGION && skill_id <= MH_VOLCANIC_ASH))
+		if (battle_config.renewal_casting_renewal_skills == 1 && (skill_id >= RK_ENCHANTBLADE && skill_id <= MAX_SKILL || skill_id >= MH_SUMMON_LEGION && skill_id <= MH_VOLCANIC_ASH))
 		{
 			if ( battle_config.renewal_casting_square_debug == 1 )
 			{
@@ -16359,7 +16371,7 @@ int skill_castfix (struct block_list *bl, int skill_id, int skill_lv)
 
 	//Only add variable and fixed times when renewal casting for renewal skills are on. Without this check,
 	//it will add the 2 together during the above phase and then readd the fixed time.
-	if (battle_config.renewal_casting_renewal_skills == 1 && (skill_id >= RK_ENCHANTBLADE && skill_id <= AB_CONVENIO || skill_id >= MH_SUMMON_LEGION && skill_id <= MH_VOLCANIC_ASH))
+	if (battle_config.renewal_casting_renewal_skills == 1 && (skill_id >= RK_ENCHANTBLADE && skill_id <= MAX_SKILL || skill_id >= MH_SUMMON_LEGION && skill_id <= MH_VOLCANIC_ASH))
 		final_time = time + fixed_time;
 	else
 		final_time = time;
