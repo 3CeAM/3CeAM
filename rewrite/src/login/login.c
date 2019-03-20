@@ -1144,6 +1144,9 @@ void login_auth_ok(struct login_session_data* sd)
 	WFIFOL(fd,16) = 0;// LastLoginIP
 	memset(WFIFOP(fd,20), 0, 26);// LastLoginTime
 	WFIFOB(fd,46) = sex_str2num(sd->sex);// Sex
+#if PACKETVER >= 20170301
+	memset(WFIFOP(fd,47), 0, 17);// Unknown Data
+#endif
 	for( i = 0, n = 0; i < MAX_SERVERS; ++i )
 	{
 		if( !session_isValid(server[i].fd) )
@@ -1156,6 +1159,9 @@ void login_auth_ok(struct login_session_data* sd)
 		WFIFOW(fd,Part1+n*Part2+26) = server[i].users;// UserCount
 		WFIFOW(fd,Part1+n*Part2+28) = server[i].type;// State
 		WFIFOW(fd,Part1+n*Part2+30) = server[i].new_;// Property
+#if PACKETVER >= 20170301
+		memset(WFIFOP(fd,Part1+n*Part2+32), 0, 128);// Unknown Data
+#endif
 		n++;
 	}
 	WFIFOSET(fd,Part1+Part2*server_num);

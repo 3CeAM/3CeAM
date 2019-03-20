@@ -22,3 +22,4 @@ ALTER TABLE `storage` MODIFY `card0` int(11) NOT NULL default '0';
 ALTER TABLE `storage` MODIFY `card1` int(11) NOT NULL default '0';
 ALTER TABLE `storage` MODIFY `card2` int(11) NOT NULL default '0';
 ALTER TABLE `storage` MODIFY `card3` int(11) NOT NULL default '0';
+ALTER TABLE `guild_position` MODIFY `mode` smallint(11) unsigned NOT NULL default '0';

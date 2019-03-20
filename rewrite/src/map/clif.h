@@ -687,12 +687,13 @@ void clif_msg_skill(struct map_session_data* sd, unsigned short skill_id, int ms
 void clif_msg_color(struct map_session_data* sd, unsigned short id, unsigned int color);
 
 //quest system [Kevin] [Inkfish]
-void clif_quest_send_list(struct map_session_data * sd);  
-void clif_quest_send_mission(struct map_session_data * sd);  
-void clif_quest_add(struct map_session_data * sd, struct quest * qd, int index);  
-void clif_quest_delete(struct map_session_data * sd, int quest_id);  
-void clif_quest_update_status(struct map_session_data * sd, int quest_id, bool active); 
-void clif_quest_update_objective(struct map_session_data * sd, struct quest * qd, int index); 
+void clif_quest_send_list(struct map_session_data * sd);
+void clif_quest_send_list_v3(struct map_session_data * sd);
+void clif_quest_send_mission(struct map_session_data * sd);
+void clif_quest_add(struct map_session_data * sd, struct quest * qd, int index);
+void clif_quest_delete(struct map_session_data * sd, int quest_id);
+void clif_quest_update_status(struct map_session_data * sd, int quest_id, bool active);
+void clif_quest_update_objective(struct map_session_data * sd, struct quest * qd, int index);
 void clif_quest_show_event(struct map_session_data *sd, struct block_list *bl, short state, short color);
 void clif_displayexp(struct map_session_data *sd, unsigned int exp, char type, bool quest);
 

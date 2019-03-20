@@ -54,8 +54,12 @@ int quest_pc_login(TBL_PC * sd)
 	if(sd->avail_quests == 0)
 		return 1;
 
+#if PACKETVER < 20150513
 	clif_quest_send_list(sd);
 	clif_quest_send_mission(sd);
+#else
+	clif_quest_send_list_v3(sd);
+#endif
 
 	return 0;
 }

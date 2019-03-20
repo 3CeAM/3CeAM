@@ -3815,14 +3815,24 @@ int parse_char(int fd)
 			}
 
 			//Send player to map
+#if PACKETVER < 20170301
 			WFIFOHEAD(fd,28);
 			WFIFOW(fd,0) = 0x71;
+#else
+			WFIFOHEAD(fd,156);
+			WFIFOW(fd,0) = 0xac5;
+#endif
 			WFIFOL(fd,2) = cd->char_id;
 			mapindex_getmapname_ext(mapindex_id2name(cd->last_point.map), (char*)WFIFOP(fd,6));
 			subnet_map_ip = lan_subnetcheck(ipl); // Advanced subnet check [LuzZza]
 			WFIFOL(fd,22) = htonl((subnet_map_ip) ? subnet_map_ip : server[i].ip);
 			WFIFOW(fd,26) = ntows(htons(server[i].port)); // [!] LE byte order here [!]
+#if PACKETVER < 20170301
 			WFIFOSET(fd,28);
+#else
+			memset(WFIFOP(fd,28), 0, 128);// Unknown Data
+			WFIFOSET(fd,156);
+#endif
 
 			// create temporary auth entry
 			CREATE(node, struct auth_node, 1);

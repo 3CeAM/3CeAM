@@ -8413,8 +8413,9 @@ int clif_guild_created(struct map_session_data *sd,int flag)
 /// Notifies the client that it is belonging to a guild (ZC_UPDATE_GDID).
 /// 016c <guild id>.L <emblem id>.L <mode>.L <ismaster>.B <inter sid>.L <guild name>.24B
 /// mode:
-///     &0x01 = allow invite
-///     &0x10 = allow expel
+///     &0x001 = allow invite
+///     &0x010 = allow expel
+///     &0x100 = allow guild storage access
 int clif_guild_belonginfo(struct map_session_data *sd, struct guild *g)
 {
 	int ps,fd;
@@ -8704,8 +8705,9 @@ int clif_guild_positionnamelist(struct map_session_data *sd)
 /// Guild position information (ZC_POSITION_INFO).
 /// 0160 <packet len>.W { <position id>.L <mode>.L <ranking>.L <pay rate>.L }*
 /// mode:
-///     &0x01 = allow invite
-///     &0x10 = allow expel
+///     &0x001 = allow invite
+///     &0x010 = allow expel
+///     &0x100 = allow guild storage access
 /// ranking:
 ///     TODO
 int clif_guild_positioninfolist(struct map_session_data *sd)
@@ -8735,8 +8737,9 @@ int clif_guild_positioninfolist(struct map_session_data *sd)
 /// Notifies clients in a guild about updated position information (ZC_ACK_CHANGE_GUILD_POSITIONINFO).
 /// 0174 <packet len>.W { <position id>.L <mode>.L <ranking>.L <pay rate>.L <position name>.24B }*
 /// mode:
-///     &0x01 = allow invite
-///     &0x10 = allow expel
+///     &0x001 = allow invite
+///     &0x010 = allow expel
+///     &0x100 = allow guild storage access
 /// ranking:
 ///     TODO
 int clif_guild_positionchanged(struct guild *g,int idx)
@@ -16031,37 +16034,64 @@ void clif_parse_EquipTick(int fd, struct map_session_data* sd)
 /// Questlog System [Kevin] [Inkfish]
 ///
 
-/// Sends list of all quest states.
-/// 02b1 <packet len>.W <num>.L { <quest id>.L <active>.B }*num (ZC_ALL_QUEST_LIST)
-/// 097a <packet len>.W <num>.L { <quest id>.L <active>.B <start time>.L <expire time>.L <mobs>.W }*num (ZC_ALL_QUEST_LIST2)
-/// 09f8 <packet len>.W <num>.L { <quest id>.L <active>.B <start time>.L <expire time>.L <mobs>.W }*num (ZC_ALL_QUEST_LIST3)
+/// Sends list of all quest states (ZC_ALL_QUEST_LIST).
+/// 02b1 <packet len>.W <num>.L { <quest id>.L <active>.B }*num
 void clif_quest_send_list(struct map_session_data * sd)
 {
 	int fd = sd->fd;
 	int i;
-#if PACKETVER < 20150513
-	short packet_num = 0x2b1;
-	short quest_info = 5;
-#else
-	short packet_num = 0x97a;
-	short quest_info = 15;
-#endif
-	int len = sd->avail_quests*quest_info+8;
+	int len = sd->avail_quests*5+8;
 
 	WFIFOHEAD(fd,len);
-	WFIFOW(fd, 0) = packet_num;
+	WFIFOW(fd, 0) = 0x2b1;
 	WFIFOW(fd, 2) = len;
 	WFIFOL(fd, 4) = sd->avail_quests;
 
 	for( i = 0; i < sd->avail_quests; i++ )
 	{
-		WFIFOL(fd, i*quest_info+8) = sd->quest_log[i].quest_id;
-		WFIFOB(fd, i*quest_info+12) = sd->quest_log[i].state;
-#if PACKETVER >= 20150513
-		WFIFOL(fd, i*quest_info+13) = sd->quest_log[i].time - quest_db[sd->quest_index[i]].time;
-		WFIFOL(fd, i*quest_info+17) = sd->quest_log[i].time;
-		WFIFOW(fd, i*quest_info+21) = quest_db[sd->quest_index[i]].num_objectives;
-#endif
+		WFIFOL(fd, i*5+8) = sd->quest_log[i].quest_id;
+		WFIFOB(fd, i*5+12) = sd->quest_log[i].state;
+	}
+
+	WFIFOSET(fd, len);
+}
+
+/// Sends list of all quest missions and states.
+/// Note: Packet 0x97a is being skipped since it wasn't used for long.
+/// 097a <packet length>.W <quest count>.L { <quest id>.L <active>.B <quest server time>.L <quest end time>.L <hunting count>.W { <mob id>.L <hunt count>.W <max count>.W <mob name>.24B }*3 }*quest count (ZC_ALL_QUEST_LIST2)
+/// 09f8 <packet length>.W <quest count>.L { <quest id>.L <active>.B <quest-server time>.L <quest-end time>.L <hunting count>.W { <hunt identity>.L <mob type>.L <mob id>.L <min level>.W <max level>.W <hunt count>.W <max count>.W <mob name>.24B }*hunting count }*quest count (ZC_ALL_QUEST_LIST3)
+void clif_quest_send_list_v3(struct map_session_data * sd)
+{
+	int fd = sd->fd;
+	int i, j;
+	int len = sd->avail_quests*147+8;
+	struct mob_db *mob;
+
+	WFIFOHEAD(fd, len);
+	WFIFOW(fd, 0) = 0x9f8;// PacketType
+	WFIFOW(fd, 2) = len;// PacketLength
+	WFIFOL(fd, 4) = sd->avail_quests;// QuestCount
+
+	for( i = 0; i < sd->avail_quests; i++ )
+	{
+		WFIFOL(fd, i*147+8) = sd->quest_log[i].quest_id;// questID
+		WFIFOB(fd, i*147+12) = sd->quest_log[i].state;// active
+		WFIFOL(fd, i*147+13) = sd->quest_log[i].time - quest_db[sd->quest_index[i]].time;// quest_svrTime
+		WFIFOL(fd, i*147+17) = sd->quest_log[i].time;// quest_endTime
+		WFIFOW(fd, i*147+21) = quest_db[sd->quest_index[i]].num_objectives;// hunting_count
+
+		for( j = 0 ; j < quest_db[sd->quest_index[i]].num_objectives; j++ )
+		{
+			WFIFOL(fd, i*147+23+j*44) = 0;// huntIdent
+			WFIFOL(fd, i*147+27+j*44) = 0;// mobType
+			WFIFOL(fd, i*147+31+j*44) = quest_db[sd->quest_index[i]].mob[j];// mobGID
+			WFIFOW(fd, i*147+35+j*44) = 0;// levelMin
+			WFIFOW(fd, i*147+37+j*44) = 0;// levelMax
+			WFIFOW(fd, i*147+39+j*44) = sd->quest_log[i].count[j];// huntCount
+			WFIFOW(fd, i*147+41+j*44) = 0;// maxCount
+			mob = mob_db(quest_db[sd->quest_index[i]].mob[j]);
+			memcpy(WFIFOP(fd, i*147+43+j*44), mob?mob->jname:"NULL", NAME_LENGTH);// mobName
+		}
 	}
 
 	WFIFOSET(fd, len);
@@ -16100,34 +16130,50 @@ void clif_quest_send_mission(struct map_session_data * sd)
 	WFIFOSET(fd, len);
 }
 
-
-/// Notification about a new quest (ZC_ADD_QUEST).
-/// 02b3 <quest id>.L <active>.B <start time>.L <expire time>.L <mobs>.W { <mob id>.L <mob count>.W <mob name>.24B }*3
+/// Notification about a new quest.
+/// Note: The structure names for 0x9f9 are the official ones. 0x2b3 is labeled with non official ones.
+/// 02b3 <quest id>.L <active>.B <start time>.L <expire time>.L <mobs>.W { <mob id>.L <mob count>.W <mob name>.24B }*3 (ZC_ADD_QUEST)
+/// 09f9 <quest id>.L <active>.B <quest-server time>.L <quest-end time>.L <count>.W { <hunt identity>.L <mob type>.L <mob id>.L <min level>.W <max level>.W <hunt count>.W <mob name>.24B }*3 (ZC_ADD_QUEST_EX)
 void clif_quest_add(struct map_session_data * sd, struct quest * qd, int index)
 {
 	int fd = sd->fd;
 	int i;
 	struct mob_db *mob;
+#if PACKETVER < 20150513
+	short packet_num = 0x2b3;
+#else
+	short packet_num = 0x9f9;
+#endif
 
-	WFIFOHEAD(fd, packet_len(0x2b3));
-	WFIFOW(fd, 0) = 0x2b3;
-	WFIFOL(fd, 2) = qd->quest_id;
-	WFIFOB(fd, 6) = qd->state;
-	WFIFOB(fd, 7) = qd->time - quest_db[index].time;
-	WFIFOL(fd, 11) = qd->time;
-	WFIFOW(fd, 15) = quest_db[index].num_objectives;
+	WFIFOHEAD(fd, packet_len(packet_num));
+	WFIFOW(fd, 0) = packet_num;// PacketType
+	WFIFOL(fd, 2) = qd->quest_id;// questID
+	WFIFOB(fd, 6) = qd->state;// active
+	WFIFOL(fd, 7) = qd->time - quest_db[index].time;// quest_svrTime
+	WFIFOL(fd, 11) = qd->time;// quest_endTime
+	WFIFOW(fd, 15) = quest_db[index].num_objectives;// count
 
 	for( i = 0; i < quest_db[index].num_objectives; i++ )
 	{
-		WFIFOL(fd, i*30+17) = quest_db[index].mob[i];
-		WFIFOW(fd, i*30+21) = qd->count[i];
+#if PACKETVER < 20150513
+		WFIFOL(fd, i*30+17) = quest_db[index].mob[i];// mobGID
+		WFIFOW(fd, i*30+21) = qd->count[i];// huntCount
 		mob = mob_db(quest_db[index].mob[i]);
-		memcpy(WFIFOP(fd, i*30+23), mob?mob->jname:"NULL", NAME_LENGTH);
+		memcpy(WFIFOP(fd, i*30+23), mob?mob->jname:"NULL", NAME_LENGTH);// mobName
+#else
+		WFIFOL(fd, i*42+17) = 0;// huntIdent
+		WFIFOL(fd, i*42+21) = 0;// mobType
+		WFIFOL(fd, i*42+25) = quest_db[index].mob[i];// mobGID
+		WFIFOW(fd, i*42+29) = 0;// levelMin
+		WFIFOW(fd, i*42+31) = 0;// levelMax
+		WFIFOW(fd, i*42+33) = qd->count[i];// huntCount
+		mob = mob_db(quest_db[index].mob[i]);
+		memcpy(WFIFOP(fd, i*42+35), mob?mob->jname:"NULL", NAME_LENGTH);// mobName
+#endif
 	}
 
-	WFIFOSET(fd, packet_len(0x2b3));
+	WFIFOSET(fd, packet_len(packet_num));
 }
-
 
 /// Notification about a quest being removed (ZC_DEL_QUEST).
 /// 02b4 <quest id>.L
@@ -16141,31 +16187,41 @@ void clif_quest_delete(struct map_session_data * sd, int quest_id)
 	WFIFOSET(fd, packet_len(0x2b4));
 }
 
-
-/// Notification of an update to the hunting mission counter (ZC_UPDATE_MISSION_HUNT).
-/// 02b5 <packet len>.W <mobs>.W { <quest id>.L <mob id>.L <total count>.W <current count>.W }*3
+/// Notification of an update to the hunting mission counter.
+/// Note: The structure names for 0x9fa are the official ones. 0x2b5 is labeled with non official ones.
+/// 02b5 <packet len>.W <mobs>.W { <quest id>.L <mob id>.L <total count>.W <current count>.W }*3 (ZC_UPDATE_MISSION_HUNT)
+/// 09fa <packet length>.W <count>.W { <quest id>.L <hunt identity>.L <max count>.W <count>.W }*3 (ZC_UPDATE_MISSION_HUNT_EX)
 void clif_quest_update_objective(struct map_session_data * sd, struct quest * qd, int index)
 {
 	int fd = sd->fd;
 	int i;
 	int len = quest_db[index].num_objectives*12+6;
 
+#if PACKETVER < 20150513
+	short packet_num = 0x2b5;
+#else
+	short packet_num = 0x9fa;
+#endif
+
 	WFIFOHEAD(fd, len);
-	WFIFOW(fd, 0) = 0x2b5;
-	WFIFOW(fd, 2) = len;
-	WFIFOW(fd, 4) = quest_db[index].num_objectives;
+	WFIFOW(fd, 0) = packet_num;// PacketType
+	WFIFOW(fd, 2) = len;// PacketLength
+	WFIFOW(fd, 4) = quest_db[index].num_objectives;// count
 
 	for( i = 0; i < quest_db[index].num_objectives; i++ )
 	{
-		WFIFOL(fd, i*12+6) = qd->quest_id;
-		WFIFOL(fd, i*12+10) = quest_db[index].mob[i];
-		WFIFOW(fd, i*12+14) = quest_db[index].count[i];
-		WFIFOW(fd, i*12+16) = qd->count[i];
+		WFIFOL(fd, i*12+6) = qd->quest_id;// questID
+#if PACKETVER < 20150513
+		WFIFOL(fd, i*12+10) = quest_db[index].mob[i];// mobGID
+#else
+		WFIFOL(fd, i*12+10) = 0;// huntIdent
+#endif
+		WFIFOW(fd, i*12+14) = quest_db[index].count[i];// maxCount
+		WFIFOW(fd, i*12+16) = qd->count[i];// count
 	}
 
 	WFIFOSET(fd, len);
 }
-
 
 /// Request to change the state of a quest (CZ_ACTIVE_QUEST).
 /// 02b6 <quest id>.L <active>.B
@@ -16173,7 +16229,6 @@ void clif_parse_questStateAck(int fd, struct map_session_data * sd)
 {
 	quest_update_status(sd, RFIFOL(fd,2), RFIFOB(fd,6)?Q_ACTIVE:Q_INACTIVE);
 }
-
 
 /// Notification about the change of a quest state (ZC_ACTIVE_QUEST).
 /// 02b7 <quest id>.L <active>.B
@@ -16187,7 +16242,6 @@ void clif_quest_update_status(struct map_session_data * sd, int quest_id, bool a
 	WFIFOB(fd, 6) = active;
 	WFIFOSET(fd, packet_len(0x2b7));
 }
-
 
 /// Notification about an NPC's quest state (ZC_QUEST_NOTIFY_EFFECT).
 /// 0446 <npc id>.L <x>.W <y>.W <effect>.W <type>.W
@@ -17951,7 +18005,7 @@ static int packetdb_readdb(void)
 	    0, 10,  0,  0,  0,  0,  0,  0,  0,  0, 23, 17,  0,  8,102,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, -1, -1, -1,  0,  7,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0, 75, -1,  0,  0,  0,  0, -1, -1, -1,
+	    0,  0,  0,  0,  0,  0,  0, 75, -1,143, -1,  0,  0, -1, -1, -1,
 	//#0x0A00
 	    0,  0,  4,  0,  0,  0,  0,  0,  0, 45, 47, 47, 56, -1,  0, -1,
 	   -1,  0,  0,  0,  0,  0,  0,  0, 14,  0,  0,  0,  0,  0,  0,  0,
@@ -17968,8 +18022,8 @@ static int packetdb_readdb(void)
 	    0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 10,  0,  0,
 	//#0x0AC0
-	    0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0, 12, 18,  0,  0,  0,
-	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	    0,  0,  0,  0, -1,156,  0,  0,  0,  0,  0, 12, 18,  0,  0,  0,
+	    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  6,  0,
 	    0,  0,  0,  0,  0,  0,  0,  0,  2,  0,  0,  0,  0,  0,  0,  0,
 	    0,  0,  0,  0, 11,  0,  0,  0,  0,  0,  0,  0, 16,  0,  0,  0,
 	};
