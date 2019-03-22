@@ -16064,8 +16064,19 @@ void clif_quest_send_list_v3(struct map_session_data * sd)
 {
 	int fd = sd->fd;
 	int i, j;
-	int len = sd->avail_quests*147+8;
+	short len = 8;
+	short offset = 0;
 	struct mob_db *mob;
+
+	// Determine what the length of the packet will be.
+	for( i = 0; i < sd->avail_quests; i++ )
+	{
+		for( j = 0 ; j < quest_db[sd->quest_index[i]].num_objectives; j++ )
+		{
+			len += 44;
+		}
+		len += 15;
+	}
 
 	WFIFOHEAD(fd, len);
 	WFIFOW(fd, 0) = 0x9f8;// PacketType
@@ -16074,24 +16085,26 @@ void clif_quest_send_list_v3(struct map_session_data * sd)
 
 	for( i = 0; i < sd->avail_quests; i++ )
 	{
-		WFIFOL(fd, i*147+8) = sd->quest_log[i].quest_id;// questID
-		WFIFOB(fd, i*147+12) = sd->quest_log[i].state;// active
-		WFIFOL(fd, i*147+13) = sd->quest_log[i].time - quest_db[sd->quest_index[i]].time;// quest_svrTime
-		WFIFOL(fd, i*147+17) = sd->quest_log[i].time;// quest_endTime
-		WFIFOW(fd, i*147+21) = quest_db[sd->quest_index[i]].num_objectives;// hunting_count
+		WFIFOL(fd, 8+offset) = sd->quest_log[i].quest_id;// questID
+		WFIFOB(fd, 12+offset) = sd->quest_log[i].state;// active
+		WFIFOL(fd, 13+offset) = sd->quest_log[i].time - quest_db[sd->quest_index[i]].time;// quest_svrTime
+		WFIFOL(fd, 17+offset) = sd->quest_log[i].time;// quest_endTime
+		WFIFOW(fd, 21+offset) = quest_db[sd->quest_index[i]].num_objectives;// hunting_count
 
 		for( j = 0 ; j < quest_db[sd->quest_index[i]].num_objectives; j++ )
 		{
-			WFIFOL(fd, i*147+23+j*44) = 0;// huntIdent
-			WFIFOL(fd, i*147+27+j*44) = 0;// mobType
-			WFIFOL(fd, i*147+31+j*44) = quest_db[sd->quest_index[i]].mob[j];// mobGID
-			WFIFOW(fd, i*147+35+j*44) = 0;// levelMin
-			WFIFOW(fd, i*147+37+j*44) = 0;// levelMax
-			WFIFOW(fd, i*147+39+j*44) = sd->quest_log[i].count[j];// huntCount
-			WFIFOW(fd, i*147+41+j*44) = 0;// maxCount
+			WFIFOL(fd, 23+offset) = sd->quest_log[i].quest_id * 1000 + j;// huntIdent
+			WFIFOL(fd, 27+offset) = 0;// mobType
+			WFIFOL(fd, 31+offset) = quest_db[sd->quest_index[i]].mob[j];// mobGID
+			WFIFOW(fd, 35+offset) = 0;// levelMin
+			WFIFOW(fd, 37+offset) = 0;// levelMax
+			WFIFOW(fd, 39+offset) = sd->quest_log[i].count[j];// huntCount
+			WFIFOW(fd, 41+offset) = 0;// maxCount
 			mob = mob_db(quest_db[sd->quest_index[i]].mob[j]);
-			memcpy(WFIFOP(fd, i*147+43+j*44), mob?mob->jname:"NULL", NAME_LENGTH);// mobName
+			memcpy(WFIFOP(fd, 43+offset), mob?mob->jname:"NULL", NAME_LENGTH);// mobName
+			offset += 44;
 		}
+		offset += 15;
 	}
 
 	WFIFOSET(fd, len);
@@ -16161,7 +16174,7 @@ void clif_quest_add(struct map_session_data * sd, struct quest * qd, int index)
 		mob = mob_db(quest_db[index].mob[i]);
 		memcpy(WFIFOP(fd, i*30+23), mob?mob->jname:"NULL", NAME_LENGTH);// mobName
 #else
-		WFIFOL(fd, i*42+17) = 0;// huntIdent
+		WFIFOL(fd, i*42+17) = qd->quest_id * 1000 + i;// huntIdent
 		WFIFOL(fd, i*42+21) = 0;// mobType
 		WFIFOL(fd, i*42+25) = quest_db[index].mob[i];// mobGID
 		WFIFOW(fd, i*42+29) = 0;// levelMin
@@ -16214,7 +16227,7 @@ void clif_quest_update_objective(struct map_session_data * sd, struct quest * qd
 #if PACKETVER < 20150513
 		WFIFOL(fd, i*12+10) = quest_db[index].mob[i];// mobGID
 #else
-		WFIFOL(fd, i*12+10) = 0;// huntIdent
+		WFIFOL(fd, i*12+10) = qd->quest_id * 1000 + i;// huntIdent
 #endif
 		WFIFOW(fd, i*12+14) = quest_db[index].count[i];// maxCount
 		WFIFOW(fd, i*12+16) = qd->count[i];// count
