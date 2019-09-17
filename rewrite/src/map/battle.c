@@ -1081,6 +1081,9 @@ int battle_addmastery(struct map_session_data *sd,struct block_list *target,int 
 			damage += sd->status.str;
 	}
 
+	if (sd->sc.data[SC_GN_CARTBOOST])
+		damage += sd->sc.data[SC_GN_CARTBOOST]->val3;
+
 	if( (skill = pc_checkskill(sd, RA_RANGERMAIN)) > 0 && (status->race == RC_BRUTE || status->race == RC_PLANT || status->race == RC_FISH) )
 		damage += (skill * 5);
 
@@ -2661,9 +2664,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					break;
 				case SR_TIGERCANNON:
 					if( sc && sc->data[SC_COMBO] )
-						skillratio = (sstatus->max_hp * ( 10 + 2 * skill_lv ) / 100 + sstatus->max_sp * ( 5 + 1 * skill_lv ) / 100) / 2;
+						skillratio = (sstatus->max_hp * ( 10 + 2 * skill_lv ) / 100 + sstatus->max_sp * ( 5 + skill_lv ) / 100) / 2;
 					else
-						skillratio = (sstatus->max_hp * ( 10 + 2 * skill_lv ) / 100 + sstatus->max_sp * ( 5 + 1 * skill_lv ) / 100) / 4;
+						skillratio = (sstatus->max_hp * ( 10 + 2 * skill_lv ) / 100 + sstatus->max_sp * ( 5 + skill_lv ) / 100) / 4;
 					if( level_effect_bonus == 1 )
 						skillratio = skillratio * status_get_base_lv_effect(src) / 100;
 					break;
@@ -2689,7 +2692,7 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 						skillratio = 5000;//Ratio is officially capped at 5000%.
 					break;
 				case SR_KNUCKLEARROW:
-					if( wflag&4 )//Bonus damage if knocked back into a wall.
+					if( wflag&1 )//Bonus damage if knocked back into a wall.
 					{
 						if ( tsd )//Players have weight. Monster's dont.
 							skillratio = 150 * skill_lv + 1000 * (tsd->weight / 10) / (tsd->max_weight / 10);
@@ -3168,12 +3171,6 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					{ATK_ADD((sstatus->max_hp - sstatus->hp) + sstatus->max_sp * ( 5 + skill_lv ) / 5 + 40 * status_get_base_lv_effect(src));}
 					else
 					{ATK_ADD((sstatus->max_hp - sstatus->hp) + sstatus->sp * ( 5 + skill_lv ) / 5 + 10 * status_get_base_lv_effect(src));}
-					break;
-				case MC_CARTREVOLUTION:
-				case GN_CART_TORNADO:
-				case GN_CARTCANNON:
-					if( sc && sc->data[SC_GN_CARTBOOST] )
-					ATK_ADD( 10 * sc->data[SC_GN_CARTBOOST]->val1 );
 					break;
 			}
 		}
@@ -4243,7 +4240,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					case WL_SUMMON_ATK_GROUND:
 						skillratio = (1 + skill_lv) / 2 * (status_get_base_lv_effect(src) + status_get_job_lv_effect(src));
 						if( level_effect_bonus == 1 )
-							skillratio += skillratio * (status_get_base_lv_effect(src) - 100) / 200;
+							skillratio = skillratio * (200 + status_get_base_lv_effect(src) - 100) / 200;
 						break;
 					case LG_SHIELDSPELL:
 						if ( sd && skill_lv == 2 )
@@ -5245,9 +5242,6 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 	if (sc && sc->data[SC_CLOAKINGEXCEED] && !(sc->data[SC_CLOAKINGEXCEED]->val4&2))
 		status_change_end(src,SC_CLOAKINGEXCEED,-1);
 
-	if (sc && sc->data[SC_CAMOUFLAGE] && !(sc->data[SC_CAMOUFLAGE]->val3&2))
-		status_change_end(src,SC_CAMOUFLAGE,-1);
-
 	if ( sc && sc->data[SC_NEWMOON] && (--sc->data[SC_NEWMOON]->val2) <= 0)
 			status_change_end(src, SC_NEWMOON, INVALID_TIMER);
 
@@ -5615,6 +5609,10 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			battle_drain(tsd, src, rdamage, rdamage, sstatus->race, is_boss(src));
 		battle_delay_damage(tick, wd.amotion, target, src, 0, 0, 0, rdamage, ATK_DEF, rdelay);
 	}
+
+	// Allow the ATK and CRIT bonus to be applied to the next regular attack before ending the status.
+	if (sc && sc->data[SC_CAMOUFLAGE] && !(sc->data[SC_CAMOUFLAGE]->val3&2))
+		status_change_end(src,SC_CAMOUFLAGE,-1);
 
 	if (tsc)
 	{

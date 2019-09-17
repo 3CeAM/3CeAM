@@ -2952,15 +2952,33 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 				break;
 		}
 
-		if( skillid == SR_KNUCKLEARROW )
-		{// Fix me. I need a recode.
-			if( skill_blown(dsrc,bl,dmg.blewcount,direction,0) && !(flag&4) )
+		if ( skillid == SR_KNUCKLEARROW )
+		{
+			struct mob_data* tmd = BL_CAST(BL_MOB, bl);
+			static int dx[] = { 0, 1, 0, -1, -1,  1, 1, -1};
+			static int dy[] = {-1, 0, 1,  0, -1, -1, 1,  1};
+			bool wall_damage = true;
+			int i = 0;
+
+			// Main attack has no flag set which allows the knockback code to be processed.
+			// If a flag is detected, then it means the knockback code was already ran.
+			if ( !flag )
 			{
-				short dir_x, dir_y;
-				dir_x = dirx[(direction+4)%8];
-				dir_y = diry[(direction+4)%8];
-				if( map_getcell(bl->m, bl->x+dir_x, bl->y+dir_y, CELL_CHKNOPASS) != 0 )
-					skill_addtimerskill(src, tick + 300 * ((flag&2) ? 1 : 2), bl->id, 0, 0, skillid, skilllv, BF_WEAPON, flag|4);	
+				// Knock back the target first if possible before we do a wall check.
+				skill_blown(dsrc,bl,dmg.blewcount,direction,0);
+
+				// Check if the target will receive wall damage.
+				// Targets that can be knocked back will receive wall damage if pushed next to a wall.
+				// Player's with anti-knockback and boss monsters will always receive wall damage.
+				if ( !((tsd && tsd->special_state.no_knockback) || (tmd && is_boss(bl))) )
+				{// Is there a wall next to the target?
+					ARR_FIND( 0, 8, i, map_getcell(bl->m, bl->x+dx[i], bl->y+dy[i], CELL_CHKNOPASS) != 0 );
+					if( i == 8 )// No wall detected.
+						wall_damage = false;
+				}
+
+				if ( wall_damage == true )// Deal wall damage if the above check detected a wall or the target has anti-knockback.
+					skill_addtimerskill(src, tick + status_get_amotion(src), bl->id, 0, 0, SR_KNUCKLEARROW, skilllv, BF_WEAPON, flag|1 );
 			}
 		}
 		else if( skillid == LG_OVERBRAND_BRANDISH )
@@ -3035,6 +3053,14 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 	if ( skillid == WM_METALICSOUND && damage > 0 )
 	{
 		int sp_damage = damage / 10 / (11 - (sd?pc_checkskill(sd,WM_LESSON):10)) * battle_config.metallicsound_spburn_rate / 100;
+
+		clif_spdamage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, sp_damage, 1, 0, 0);
+		status_zap(bl, 0, sp_damage);
+	}
+
+	if ( skillid == SR_TIGERCANNON && damage > 0 )
+	{
+		int sp_damage = damage * 10 / 100;
 
 		clif_spdamage(dsrc,bl,tick, dmg.amotion, dmg.dmotion, sp_damage, 1, 0, 0);
 		status_zap(bl, 0, sp_damage);
@@ -5296,18 +5322,13 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		break;
 
 	case SR_KNUCKLEARROW:
-		{// Fix me. I need a recode. [Rytech]
-			if( !map_flag_gvg(src->m) && !map[src->m].flag.battleground && unit_movepos(src, bl->x, bl->y, 1, 1) )
-			{
-				clif_slide(src,bl->x,bl->y);
-				clif_fixpos(src); // Aegis send this packet too.
-			}
-
-			if( flag&1 )
-				skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv, tick, flag|SD_LEVEL);
-			else
-				skill_addtimerskill(src, tick + 300, bl->id, 0, 0, skillid, skilllv, BF_WEAPON, flag|SD_LEVEL|2);
-		}
+		// teleport to target (if not on WoE grounds)
+		if( !map_flag_gvg(src->m) && !map[src->m].flag.battleground && unit_movepos(src, bl->x, bl->y, 0, 1) )
+			// Self knock back 1 cell to make it appear you warped
+			// next to the enemy you targeted from the direction
+			// you attacked from.
+			skill_blown(bl,src,1,unit_getdir(src),0);
+			skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv, tick, flag);
 		break;
 
 	case SR_EARTHSHAKER:
@@ -5325,14 +5346,14 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, int 
 		if ( flag&1 )
 		{
 			skill_attack(BF_WEAPON, src, src, bl, skillid, skilllv, tick, flag);
-			status_zap(bl, 0, status_get_max_sp(bl) * 10 / 100);
 		}
 		else if ( sd )
 		{
 			int hpcost, spcost;
 			hpcost = 10 + 2 * skilllv;
-			spcost = 5 + 1 * skilllv;
-			if (!status_charge(src, status_get_max_hp(src) * hpcost / 100, status_get_max_sp(src) * spcost / 100)) {
+			spcost = 5 + skilllv;
+			if (!status_charge(src, status_get_max_hp(src) * hpcost / 100, status_get_max_sp(src) * spcost / 100))
+			{
 				if (sd) clif_skill_fail(sd,skillid,0,0,0);
 				break;
 			}
@@ -11401,11 +11422,10 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 		map_freeblock_lock();
 
 		sc = status_get_sc(src);
-		if( sc )
-		{ //Status end during cast end.
-			if( sc->data[SC_CAMOUFLAGE] )
-				status_change_end(src,SC_CAMOUFLAGE,-1);
-		}
+
+		// Cancel status after skill cast timer ends but before skill behavior starts.
+		if( sc && sc->data[SC_CAMOUFLAGE] )
+			status_change_end(src,SC_CAMOUFLAGE,-1);
 
 		if( skill_get_casttype(ud->skillid) == CAST_NODAMAGE )
 			skill_castend_nodamage_id(src,target,ud->skillid,ud->skilllv,tick,flag);
@@ -11677,11 +11697,9 @@ int skill_castend_pos2(struct block_list* src, int x, int y, int skillid, int sk
 	type = status_skill2sc(skillid);
 	sce = (sc && type != -1)?sc->data[type]:NULL;
 
-	if( sc )
-	{ //Status end during cast end.
-		if( sc->data[SC_CAMOUFLAGE] )
-			status_change_end(src,SC_CAMOUFLAGE,-1);
-	}
+	// Cancel status after skill cast timer ends but before skill behavior starts.
+	if( sc && sc->data[SC_CAMOUFLAGE] )
+		status_change_end(src,SC_CAMOUFLAGE,-1);
 
 	switch (skillid) { //Skill effect.
 		// Skills listed here will not display their animation.

@@ -8935,7 +8935,7 @@ int pc_unequipitem(struct map_session_data *sd,int n,int flag)
 
 	if( sd->status.inventory[n].equip & EQP_COSTUME_GARMENT)
 	{
-		sd->status.robe = 0;
+		sd->status.robe = ( pc_checkequip(sd,EQP_GARMENT) >= 0 ) ? sd->inventory_data[pc_checkequip(sd,EQP_GARMENT)]->look : 0;
 		clif_changelook(&sd->bl,LOOK_ROBE,sd->status.robe);
 	}
 

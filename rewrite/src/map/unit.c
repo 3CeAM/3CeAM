@@ -912,7 +912,7 @@ int unit_can_move(struct block_list *bl)
 			|| sc->data[SC_CRYSTALIZE]
 			|| sc->data[SC_ELECTRICSHOCKER]
 			|| sc->data[SC_BITE]
-			|| (sc->data[SC_CAMOUFLAGE] && //Must be against a wall on level 1. Cant move on level 1 and 2.
+			|| (sc->data[SC_CAMOUFLAGE] && //Must be against a wall on level 1 and 2. Cant move on level 1 and 2.
 				sc->data[SC_CAMOUFLAGE]->val1 < 3 && !(sc->data[SC_CAMOUFLAGE]->val3&1))
 			|| sc->data[SC_MAGNETICFIELD]
 			|| sc->data[SC__MANHOLE]
