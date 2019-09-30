@@ -947,6 +947,12 @@
 5076,0,0,500,300000,0,20000,0
 //==========================================
 
+//===== Warlock - Reading Spellbook 2019 ===
+// Note: Im guessing the timers are the same. Just triggering this through spell books.
+//-- WL_READING_SB_READING //CHECK Is duration 1 how long the spell will be stored for?
+5078,5000,1000,500,0,0,30000,0
+//==========================================
+
 //===== Mutated Homunculus =================
 //-- MH_SUMMON_LEGION
 8018,1600:1400:1200:1000:800,400:600:800:1000:1200,0,0,0,20000:30000:40000:50000:60000,0
@@ -1069,7 +1075,7 @@
 // Note: Timer settings set based on gif's
 // and skill info out there. Need official ones.
 //-- GD_CHARGESHOUT_FLAG
-10017,0,1000,0,300000,0,300000,0
+10017,0,1000,0,900000,0,300000,0
 //-- GD_CHARGESHOUT_BEATING
 10018,0,1000,0,0,0,0,0
 //-- GD_EMERGENCY_MOVE

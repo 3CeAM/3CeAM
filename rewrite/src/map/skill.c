@@ -6785,6 +6785,36 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		}
 		break;
 
+	case SR_CRESCENTELBOW_AUTOSPELL:
+		{
+			struct mob_data* tmd = BL_CAST(BL_MOB, bl);
+			static int dx[] = { 0, 1, 0, -1, -1,  1, 1, -1};
+			static int dy[] = {-1, 0, 1,  0, -1, -1, 1,  1};
+			bool wall_damage = true;
+			//int i = 0;
+
+			// Knock back the target first if possible before we do a wall check.
+			clif_skill_nodamage(src, bl, skillid, skilllv, 1);
+			skill_blown(src,bl,skill_get_blewcount(skillid,skilllv),-1,0);
+
+			// Main damage and knockback is complete. End the status to prevent anymore triggers.
+			status_change_end(src, SC_CRESCENTELBOW, INVALID_TIMER);
+
+			// Check if the target will receive wall damage.
+			// Targets that can be knocked back will receive wall damage if pushed next to a wall.
+			// Player's with anti-knockback and boss monsters will always receive wall damage.
+			if ( !((dstsd && dstsd->special_state.no_knockback) || (tmd && is_boss(bl))) )
+			{// Is there a wall next to the target?
+				ARR_FIND( 0, 8, i, map_getcell(bl->m, bl->x+dx[i], bl->y+dy[i], CELL_CHKNOPASS) != 0 );
+				if( i == 8 )// No wall detected.
+					wall_damage = false;
+			}
+
+			if ( wall_damage == true )// Deal wall damage if the above check detected a wall or the target has anti-knockback.
+				skill_addtimerskill(src, tick + status_get_amotion(src), bl->id, 0, 0, SR_CRESCENTELBOW_AUTOSPELL, skilllv, BF_WEAPON, 1);
+		}
+		break;
+
 	case MO_ABSORBSPIRITS:
 		i = 0;
 		if (dstsd && dstsd->spiritball && (sd == dstsd || map_flag_vs(src->m)) && (dstsd->class_&MAPID_BASEMASK)!=MAPID_GUNSLINGER)

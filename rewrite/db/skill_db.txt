@@ -937,6 +937,8 @@
 //766,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_ACIDBREATH2,Acid Breath 2
 //767,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_EVILLAND2,Evil Land 2
 //768,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_HELLJUDGEMENT2,Hell Judgement 2
+//769,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_RAINOFMETEOR,Rain of Meteor
+//770,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_GROUNDDRIVE,Ground Drive
 
 // 2nd Job Quest Skills
 1001,9,6,1,-1,0,0,1,1,no,0,0x1,0,weapon,0,	KN_CHARGEATK,Charge Attack
@@ -1163,7 +1165,7 @@
 2330,1,6,1,-1,0x42,1:1:1:1:1:2:2:2:2:2,10,1,yes,0,0,0,weapon,0,	SR_TIGERCANNON,Tiger Cannon
 2331,0,0,0,0,0,0,10,0,no,0,0x4000,0,none,0,	SR_HELLGATE,Hell Gate//Even after the 2011 updates we still dont know what this does.
 2332,0,6,4,-1,0x102,3,5,1,no,0,0,0,weapon,0,	SR_RAMPAGEBLASTER,Rampage Blaster
-2333,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		SR_CRESCENTELBOW,Crescent Elbow //CHECK Check the autospell ID.
+2333,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		SR_CRESCENTELBOW,Crescent Elbow
 2334,0,6,4,0,0x3,1:1:2:2:3,5,1,no,0,0,0,none,0,	SR_CURSEDCIRCLE,Cursed Circle
 2335,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,		SR_LIGHTNINGWALK,Lightning Walk
 2336,7:8:9:10:11,6,1,-1,0,0,5,1,no,0,0,0,weapon,2:3:4:5:6,	SR_KNUCKLEARROW,Knuckle Arrow
@@ -1172,7 +1174,7 @@
 2339,0,0,0,0,0,0,5,1,no,0,0x4000,0,none,0,	SR_GENTLETOUCH,Gentle Touch//We also still dont know what this does, even after 2011 updates.
 2340,0,6,4,0,0x3,2,1,1,no,0,0,0,none,0,		SR_ASSIMILATEPOWER,Assimilate Power
 2341,3,6,16,0,0x1,0,1,1,yes,0,0x200,0,none,0,	SR_POWERVELOCITY,Power Velocity
-2342,1,6,1,-1,0x20,0,5,1,no,0,0x4000,0,weapon,3,SR_CRESCENTELBOW_AUTOSPELL,Crescent Elbow Autospell //CHECK Does this ignore defense?
+2342,1,6,1,0,0x40,0,5,1,no,0,0x4000,0,weapon,7,SR_CRESCENTELBOW_AUTOSPELL,Crescent Elbow Autospell// Is this affected by the caster's weapon element?
 2343,1:2:3:3:4:4:5:5:6:7,8,1,0,0,0,10,-7,yes,0,0,0,weapon,0,	SR_GATEOFHELL,Gate of Hell//Rumored to ignore flee. May also not be cast interruptable. Need to test.
 2344,2,6,1,-1,0,0,5,1,no,0,0,0,weapon,0,	SR_GENTLETOUCH_QUIET,Gentle Touch - Quiet
 2345,2,6,16,0,0x1,0,5,1,no,0,0,0,none,0,	SR_GENTLETOUCH_CURE,Gentle Touch - Cure
@@ -1504,6 +1506,9 @@
 5075,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		NV_BREAKTHROUGH,Break Through
 5076,0,6,4,0,0x3,7,1,1,yes,0,0,0,none,0,	NV_HELPANGEL,Help Angel
 5077,0,0,0,0,0,0,5,0,no,0,0,0,none,0,		NV_TRANSCENDENCE,Transcendence
+
+// Warlock - New reading spellbook handling for 2019 update???
+5078,0,6,4,0,0x1,0,10,1,yes,0,0x4000,0,magic,0,	WL_READING_SB_READING,Reading Spellbook Reading
 
 // Homunculus
 8001,9,6,4,0,0x1,0,5,1,no,0,0,0,magic,0,	HLIF_HEAL,Healing Touch

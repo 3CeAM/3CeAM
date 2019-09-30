@@ -4980,6 +4980,7 @@ static int clif_calc_walkdelay(struct block_list *bl,int delay, int type, int da
 ///    10 = ATTACK_CRITICAL - critical hit
 ///    11 = ATTACK_LUCKY - lucky dodge
 ///    12 = TOUCHSKILL - (touch skill?)
+///    13 = ATTACK_MULTIPLE_CRITICAL - multi-hit critical damage
 int clif_damage(struct block_list* src, struct block_list* dst, unsigned int tick, int sdelay, int ddelay, int damage, int div, int type, int damage2)
 {
 	unsigned char buf[33];

@@ -1198,6 +1198,9 @@
 // Expanded Super Novice - Need official SP Requirement
 5076,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//NV_HELPANGEL##
 
+// Warlock - New reading spellbook handling for 2019 update???
+5078,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//WL_READING_SB_READING##
+
 // Homunculus
 8001,0,0,13:16:19:22:25,0,0,0,99,0,0,none,0,545,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//HLIF_HEAL
 8002,0,0,20:25:30:35:40,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//HLIF_AVOID
