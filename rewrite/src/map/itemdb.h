@@ -9,7 +9,7 @@
 #define MAX_RANDITEM	11000
 
 // The maximum number of item delays
-#define MAX_ITEMDELAYS	10
+#define MAX_ITEMDELAYS	20
 
 #define MAX_SEARCH	5  //Designed for search functions, species max number of matches to display.
 
@@ -143,6 +143,9 @@ enum item_itemid {
 	ITEMID_PILE_BUNKER_T,
 	ITEMID_PILE_BUNKER_P,
 
+	// Mechanic's Engine Pile Bunker
+	ITEMID_ENGINE_PILE_BUNKER = 16092,
+
 	// Rune Knight Lux Anima Rune
 	ITEMID_LUX_ANIMA_RUNE = 22540,
 };
@@ -153,7 +156,7 @@ enum item_itemid {
 //3CeAM
 #define itemid_is_rune(id) ( (id) >= ITEMID_NAUTHIZ_RUNE && (id) <= ITEMID_HAGALAZ_RUNE || (id) == ITEMID_LUX_ANIMA_RUNE )
 #define itemid_is_spell_book(id) ( (id) >= ITEMID_MAGICBOOK_FIREBOLT && (id) <= ITEMID_MAGICBOOK_DRAINLIFE )
-#define itemid_is_pile_bunker(id) ( (id) == ITEMID_PILE_BUNKER || (id) >= ITEMID_PILE_BUNKER_S && (id) <= ITEMID_PILE_BUNKER_P )
+#define itemid_is_pile_bunker(id) ( (id) == ITEMID_PILE_BUNKER || (id) >= ITEMID_PILE_BUNKER_S && (id) <= ITEMID_PILE_BUNKER_P || (id) == ITEMID_ENGINE_PILE_BUNKER )
 #define itemid_is_cooling_system(id) ( (id) == ITEMID_COOLING_DEVICE || (id) == ITEMID_HIGH_QUALITY_COOLER || (id) == ITEMID_SPECIAL_COOLER )
 #define itemid_is_guillotine_poison(id) ( (id) >= ITEMID_PARALYSIS_POISON && (id) <= ITEMID_FATIGUE_POISON )
 #define itemid_is_sling_atk(id) ( (id) >= ITEMID_APPLE_BOMB && (id) <= ITEMID_VERY_HARD_DARK_LUMP )

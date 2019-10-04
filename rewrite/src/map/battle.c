@@ -5611,31 +5611,31 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		if (sd) sd->state.autocast = 0;
 	}
 
-	if( sc && (sc->data[SC_TROPIC_OPTION] || sc->data[SC_CHILLY_AIR_OPTION] || sc->data[SC_WILD_STORM_OPTION] || sc->data[SC_UPHEAVAL_OPTION]) && rand()%100 < 25 )
+	if( sc && (sc->data[SC_TROPIC_OPTION] || sc->data[SC_CHILLY_AIR_OPTION] || sc->data[SC_WILD_STORM_OPTION] || sc->data[SC_UPHEAVAL_OPTION]) && rand()%100 < (status_get_job_lv_effect(src) / 2) )
 	{// Autocast one Bolt depending on status change.
 		struct unit_data *ud;
 		short skillid = 0;
+		short skilllv = status_get_job_lv_effect(src) / 10;
 		int delay;
 
 		if( sc->data[SC_TROPIC_OPTION] )
-			skillid = sc->data[SC_TROPIC_OPTION]->val3;
+			skillid = MG_FIREBOLT;
 		else if( sc->data[SC_CHILLY_AIR_OPTION] )
-			skillid = sc->data[SC_CHILLY_AIR_OPTION]->val3;
+			skillid = MG_COLDBOLT;
 		else if( sc->data[SC_WILD_STORM_OPTION] )
-			skillid = sc->data[SC_WILD_STORM_OPTION]->val2;
+			skillid = MG_LIGHTNINGBOLT;
 		else if( sc->data[SC_UPHEAVAL_OPTION] )
-			skillid = sc->data[SC_UPHEAVAL_OPTION]->val2;
+			skillid = WZ_EARTHSPIKE;
 
-		// Chance should be JobLV / 2 and level casted be JobLV / 10;
 		if (sd) sd->state.autocast = 1;
-		if (status_charge(src, 0, skill_get_sp(skillid,5)))
+		if (status_charge(src, 0, skill_get_sp(skillid,skilllv)))
 		{
-			skill_castend_damage_id(src, target, skillid, 5, tick, flag);
+			skill_castend_damage_id(src, target, skillid, skilllv, tick, flag);
 
 			ud = unit_bl2ud(src);
 			if (ud)
 			{
-				delay = skill_delayfix(src, skillid, 5);
+				delay = skill_delayfix(src, skillid, skilllv);
 				if( DIFF_TICK(ud->canact_tick, tick + delay) < 0 )
 				{
 					ud->canact_tick = tick+delay;
@@ -6477,6 +6477,7 @@ static const struct _battle_data {
 	{ "renewal_stats_handling",             &battle_config.renewal_stats_handling,          1,      0,      1,              },
 	{ "max_aspd_renewal_jobs",              &battle_config.max_aspd_renewal_jobs,           193,    100,    199,            },
 	{ "all_riding_speed",                   &battle_config.all_riding_speed,                25,     0,      100,            },
+	{ "item_auto_identify",                 &battle_config.item_auto_identify,              0,      0,      1,              },
 	{ "rune_produce_rate",                  &battle_config.rune_produce_rate,               100,    0,      INT_MAX,        },
 	{ "player_camouflage_check_type",       &battle_config.pc_camouflage_check_type,        1,      0,      1|2|4,          },
 	{ "falcon_and_wug",                     &battle_config.falcon_and_wug,                  0,      0,      1,              },

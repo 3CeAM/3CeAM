@@ -747,10 +747,10 @@ void initChangeTables(void)
 	set_sc( EL_CHILLY_AIR      , SC_CHILLY_AIR_OPTION    , SI_CHILLY_AIR_OPTION    , SCB_MATK );
 	set_sc( EL_GUST            , SC_GUST_OPTION          , SI_GUST_OPTION          , SCB_NONE );
 	set_sc( EL_BLAST           , SC_BLAST_OPTION         , SI_BLAST_OPTION         , SCB_NONE );
-	set_sc( EL_WILD_STORM      , SC_WILD_STORM_OPTION    , SI_WILD_STORM_OPTION    , SCB_NONE );
+	set_sc( EL_WILD_STORM      , SC_WILD_STORM_OPTION    , SI_WILD_STORM_OPTION    , SCB_ASPD );
 	set_sc( EL_PETROLOGY       , SC_PETROLOGY_OPTION     , SI_PETROLOGY_OPTION     , SCB_NONE );
 	set_sc( EL_CURSED_SOIL     , SC_CURSED_SOIL_OPTION   , SI_CURSED_SOIL_OPTION   , SCB_NONE );
-	set_sc( EL_UPHEAVAL        , SC_UPHEAVAL_OPTION      , SI_UPHEAVAL_OPTION      , SCB_NONE );
+	set_sc( EL_UPHEAVAL        , SC_UPHEAVAL_OPTION      , SI_UPHEAVAL_OPTION      , SCB_MAXHP );
 	set_sc( EL_TIDAL_WEAPON    , SC_TIDAL_WEAPON_OPTION  , SI_TIDAL_WEAPON_OPTION  , SCB_ALL );
 	set_sc( EL_ROCK_CRUSHER    , SC_ROCK_CRUSHER         , SI_ROCK_CRUSHER         , SCB_DEF );
 	set_sc( EL_ROCK_CRUSHER_ATK, SC_ROCK_CRUSHER_ATK     , SI_ROCK_CRUSHER_ATK     , SCB_SPEED );
@@ -4753,6 +4753,8 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += 50 + 20 * sc->data[SC_ANGRIFFS_MODUS]->val1;
 	if(sc->data[SC_PYROCLASTIC])
 		watk += sc->data[SC_PYROCLASTIC]->val2;
+	if( sc->data[SC_TROPIC_OPTION] )
+		watk += sc->data[SC_TROPIC_OPTION]->val2;
 	if(sc->data[SC_FULL_SWING_K])
 		watk += sc->data[SC_FULL_SWING_K]->val1;
 	if(sc->data[SC_INCATKRATE])
@@ -4805,8 +4807,6 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 	if(sc->data[SC_VOLCANIC_ASH] && bl->type == BL_MOB && status_get_element(bl) == ELE_WATER)
 		watk -= watk * 50 / 100;
 	//Not bothering to organize these until I rework the elemental spirits. [Rytech]
-	if( sc->data[SC_TROPIC_OPTION] )
-		watk += sc->data[SC_TROPIC_OPTION]->val2;
 	if( sc->data[SC_HEATER_OPTION] )
 		watk += sc->data[SC_HEATER_OPTION]->val2;
 	if( sc->data[SC_WATER_BARRIER] )
@@ -4844,6 +4844,8 @@ static unsigned short status_calc_matk(struct block_list *bl, struct status_chan
 		matk += 20 * sc->data[SC_ZANGETSU]->val1 + sc->data[SC_ZANGETSU]->val2;
 	if(sc->data[SC_SPIRITOFLAND_MATK])
 		matk += sc->data[SC_SPIRITOFLAND_MATK]->val2;
+	if(sc->data[SC_CHILLY_AIR_OPTION])
+		matk += sc->data[SC_CHILLY_AIR_OPTION]->val2;
 	if(sc->data[SC_MAGICPOWER])
 		matk += matk * sc->data[SC_MAGICPOWER]->val3/100;
 	if(sc->data[SC_MINDBREAKER])
@@ -4859,8 +4861,6 @@ static unsigned short status_calc_matk(struct block_list *bl, struct status_chan
 	//Not bothering to organize these until I rework the elemental spirits. [Rytech]
 	if(sc->data[SC_AQUAPLAY_OPTION])
 		matk += sc->data[SC_AQUAPLAY_OPTION]->val2;
-	if(sc->data[SC_CHILLY_AIR_OPTION])
-		matk += sc->data[SC_CHILLY_AIR_OPTION]->val2;
 	if(sc->data[SC_WATER_BARRIER])
 		matk -= sc->data[SC_WATER_BARRIER]->val3;
 
@@ -5481,6 +5481,8 @@ static short status_calc_aspd_amount(struct block_list *bl, struct status_change
 		aspd_amount += 10 * sc->data[SC_HEAT_BARREL]->val1;
 	if( sc->data[SC_SOULSHADOW] )
 		aspd_amount += 10 * sc->data[SC_SOULSHADOW]->val2;
+	if( sc->data[SC_WILD_STORM_OPTION] )
+		aspd_amount += sc->data[SC_WILD_STORM_OPTION]->val2;
 
 	return (short)cap_value(aspd_amount,0,SHRT_MAX);
 }
@@ -5674,6 +5676,8 @@ static unsigned int status_calc_maxhp(struct block_list *bl, struct status_chang
 		maxhp += maxhp * sc->data[SC_FRIGG_SONG]->val2 / 100;
 	if(sc->data[SC_MUSTLE_M])
 		maxhp += maxhp * sc->data[SC_MUSTLE_M]->val1 / 100;
+	if(sc->data[SC_UPHEAVAL_OPTION])
+		maxhp += maxhp * sc->data[SC_UPHEAVAL_OPTION]->val2 / 100;
 	if(sc->data[SC_ANGRIFFS_MODUS])
 		maxhp += maxhp * (5 * sc->data[SC_ANGRIFFS_MODUS]->val1) / 100;
 	if(sc->data[SC_INSPIRATION])//Snce it gives a percentage and fixed amount, should be last on percentage calculations list. [Rytech]
@@ -9198,8 +9202,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val_flag |= 1|2|4;
 			break;
 		case SC_TROPIC_OPTION:
-			val2 = 180; // Watk. TODO: Renewal (Atk2)
-			val3 = MG_FIREBOLT;
+			val2 = 180;// WATK Increase
 			break;
 		case SC_AQUAPLAY_OPTION:
 			val2 = 40; // Matk. TODO: Renewal (Matk1)
@@ -9213,9 +9216,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val_flag |= 1|2|4;
 			break;
 		case SC_CHILLY_AIR_OPTION:
-			val2 = 120; // Matk. TODO: Renewal (Matk1)
-			val3 = MG_COLDBOLT;
-			val_flag |= 1|2;
+			val2 = 120;// MATK Increase
 			break;
 		case SC_GUST_OPTION:
 			val2 = 33;
@@ -9230,8 +9231,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val_flag |= 1|2|4;
 			break;
 		case SC_WILD_STORM_OPTION:
-			val2 = MG_LIGHTNINGBOLT;
-			val_flag |= 1|2;
+			val2 = 5;// ASPD Increase
 			break;
 		case SC_PETROLOGY_OPTION:
 			val2 = 5;
@@ -9245,8 +9245,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			val_flag |= 1|2|4;
 			break;
 		case SC_UPHEAVAL_OPTION:
-			val2 = WZ_EARTHSPIKE;
-			val_flag |= 1|2;
+			val2 = 15;// MaxHP Increase
 			break;
 		case SC_CIRCLE_OF_FIRE_OPTION:
 			val2 = 300;

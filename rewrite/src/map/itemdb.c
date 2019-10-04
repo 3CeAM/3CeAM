@@ -587,7 +587,10 @@ int itemdb_isidentified(int nameid)
 		case IT_WEAPON:
 		case IT_ARMOR:
 		case IT_PETARMOR:
-			return 0;
+			if ( battle_config.item_auto_identify == 1 )
+				return 1;
+			else
+				return 0;
 		default:
 			return 1;
 	}

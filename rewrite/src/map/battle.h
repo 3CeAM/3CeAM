@@ -529,6 +529,7 @@ extern struct Battle_Config
 	int renewal_stats_handling;
 	int max_aspd_renewal_jobs;
 	int all_riding_speed;
+	int item_auto_identify;
 	int rune_produce_rate;
 	int pc_camouflage_check_type;
 	int falcon_and_wug;

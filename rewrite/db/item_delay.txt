@@ -15,6 +15,16 @@
 14538,300000	//Glass_Of_Illusion
 14586,180000	//Spark_Candy
 
-//3CeAM
+// 3CeAM
 12622,3000	//Boarding_Halter
 23277,180000	//Mado_Box
+
+// Official RE era ygg delay. Enable if wanted.
+//607,5000	//Yggdrasil Berry
+//608,3000	//Yggdrasil Seed
+
+// New HP/SP Syrups (Potions)
+11621,1000	//Red Syrup
+11622,1000	//Yellow Syrup
+11623,1000	//White Syrup
+11624,10000	//Blue Syrup

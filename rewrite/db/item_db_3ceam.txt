@@ -10,7 +10,7 @@
 1191,Alcabringer,Alcabringer,4,20,,3400,280,,1,0,0x00004080,8,2,34,3,100,1,3,{ bonus bAspd,getrefine()/2; },{},{}
 1287,Dulga,Dulga,4,20,,1200,190,,1,1,0x00001000,8,2,34,3,100,1,16,{},{},{}
 1649,Lapine_Staff,Lapine Staff,4,20,,500,30,,1,0,0x00018300,8,2,2,3,100,1,10,{ bonus bMatkRate,30; bonus bFixedCastRate,-getrefine(); },{},{}
-1746,Elven_Bow,Elven Bow,4,20,,1500,160,,5,1,0x00080800,8,2,34,3,100,1,11,{ bonus bDex,2; },{},{}
+1746,Elven_Bow,Elven Bow,4,20,,1500,160,,5,1,0x00080800,8,2,34,3,100,1,11,{ bonus bDex,2; if(isequipped(1773)) { bonus bLongAtkRate,50; } },{},{}
 16003,Kalga_Mace,Kalga Mace,4,20,,1500,175,,1,2,0x0004C580,8,2,2,3,100,1,8,{},{},{}
 
 // Mechanic Mado Weapons
@@ -349,7 +349,8 @@
 
 // Rental Mounts
 12622,Boarding_Halter,Boarding Halter,2,20,,0,,,,,0xFFFFFFFF,7,2,,,,,,{ sc_start SC_ALL_RIDING,-1,1; },{},{}
-16682,Boarding_Halter_Box,Boarding Halter Box,18,20,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ rentitem 12622,604800; },{},{}
+16682,Boarding_Halter_Box,Boarding Halter Box 7 Days,18,20,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ rentitem 12622,604800; },{},{}
+16683,B_Halter_Box_30Days,Boarding Halter Box 30 Days,18,20,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ rentitem 12622,2592000; },{},{}
 
 // Hanbok Outfit
 22538,Hanbok_Bag,Hanbok Bag,2,0,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ sc_start SC_HANBOK,600000,0; },{},{}
@@ -560,3 +561,12 @@
 
 // Equips With Special Effect Animations
 20515,Magic_Circle,Magic Circle,5,20,,0,,0,,0,0xFFFFFFFF,7,2,8192,,1,0,0,{},{ sc_start SC_HEAD_EQUIPMENT_EFFECT,-1,56; },{ sc_end SC_HEAD_EQUIPMENT_EFFECT; }
+
+// New HP/SP Syrups (Potions)
+11621,Red_Syrup,Red Syrup,0,800,,70,,,,,0xFFFFFFFF,7,2,,,60,,,{ itemheal 325,0; },{},{}
+11622,Yellow_Syrup,Yellow Syrup,0,1200,,100,,,,,0xFFFFFFFF,7,2,,,60,,,{ itemheal 900,0; },{},{}
+11623,White_Syrup,White Syrup,0,1500,,140,,,,,0xFFFFFFFF,7,2,,,60,,,{ itemheal 1800,0; },{},{}
+11624,Blue_Syrup,Blue Syrup,0,7000,,100,,,,,0xFFFFFFFF,7,2,,,60,,,{ itemheal 0,180; },{},{}
+
+// Green Apple Ring - Job Permissions Correct???
+2795,Green_Apple_Ring,Green_Apple_Ring,5,100000,,0,,0,,0,0xFFFFFFFF,7,2,136,,99,0,0,{ if(JobLevel<30) { bonus bAllStats,6-(JobLevel/5); } },{},{}

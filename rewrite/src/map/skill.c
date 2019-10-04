@@ -15774,7 +15774,8 @@ int skill_check_condition_castend(struct map_session_data* sd, short skill, shor
 		break;
 	case NC_PILEBUNKER:// As of April 2016 there's only 4 pile bunkers in existance.
 		if ( !((pc_search_inventory(sd,ITEMID_PILE_BUNKER) + pc_search_inventory(sd,ITEMID_PILE_BUNKER_S) + 
-			pc_search_inventory(sd,ITEMID_PILE_BUNKER_T) + pc_search_inventory(sd,ITEMID_PILE_BUNKER_P)) >= 1) )
+			pc_search_inventory(sd,ITEMID_PILE_BUNKER_T) + pc_search_inventory(sd,ITEMID_PILE_BUNKER_P) + 
+			pc_search_inventory(sd,ITEMID_ENGINE_PILE_BUNKER)) >= 1) )
 		{
 			clif_skill_fail(sd,skill,USESKILL_FAIL_NEED_ITEM,0,ITEMID_PILE_BUNKER);
 			return 0;
@@ -16151,12 +16152,13 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, short 
 		if( itemid_is_mado_fuel(req.itemid[i]) && sd->special_state.no_madofuel )
 			req.amount[i] = req.itemid[i] = 0;
 
-		if( sc && (((skill == SA_FLAMELAUNCHER || skill == SA_VOLCANO) && sc->data[SC_TROPIC_OPTION]) ||
-			((skill == SA_FROSTWEAPON || skill == SA_DELUGE) && sc->data[SC_CHILLY_AIR_OPTION]) ||
-			((skill == SA_LIGHTNINGLOADER || skill == SA_VIOLENTGALE) && sc->data[SC_WILD_STORM_OPTION]) ||
-			(skill == SA_SEISMICWEAPON && sc->data[SC_UPHEAVAL_OPTION])) &&
-			rand()%100 < 50
-		)	// Not consume it
+		if( sc && (
+			( sc->data[SC_TROPIC_OPTION] && (skill == SA_FLAMELAUNCHER || skill == SA_VOLCANO) ) ||
+			( sc->data[SC_CHILLY_AIR_OPTION] && (skill == SA_FROSTWEAPON || skill == SA_DELUGE) ) ||
+			( sc->data[SC_WILD_STORM_OPTION] && (skill == SA_LIGHTNINGLOADER || skill == SA_VIOLENTGALE) ) ||
+			( sc->data[SC_UPHEAVAL_OPTION] && skill == SA_SEISMICWEAPON )
+			) && rand()%100 < 50 )
+			// Item is not consumed on cast.
 			req.itemid[i] = req.amount[i] = 0;
 	}
 

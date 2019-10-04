@@ -3,7 +3,7 @@
 //===== By: ================================================== 
 //= Rytech
 //===== Current Version: ===================================== 
-//= 1.2
+//= 1.3
 //===== Compatible With: ===================================== 
 //= 3CeAM
 //===== Description: ========================================= 
@@ -12,6 +12,7 @@
 //= 1.0 Release Version.
 //= 1.1 Added support for baby versions of all expanded jobs.
 //= 1.2 Added support for Star Emperor, Soul Reaper, and their baby versions.
+//= 1.3 Added checks for mounts, falcons, wargs, and carts.
 //============================================================
 prontera,158,184,4	script	Special Job Changer	485,{
 
@@ -29,6 +30,9 @@ Xready:
 	set @reqjoblvgsnj,70;// Required job level to change to Kagerou/Oboro/Rebellion
 	set @reqjoblvsgsl,50;// Required job level to change to Star Emperor/Soul Reaper
 	set @reqjoblv,0;// Variable used to display required job level.
+
+	if(checkcart() || checkfalcon() || checkriding() || checkdragon() || checkwug() || checkwugrider() || checkmadogear())
+		goto Xremove;
 
 	if (@reg2ndto3rd == 1 && (Class >= Job_Knight && Class <= Job_Assassin || Class >= Job_Crusader && Class <= Job_Dancer))
 		goto Xthirdreg;
@@ -224,6 +228,11 @@ Xextendedsgsl:
 		set @reqjoblv,@reqjoblvsgsl;
 		goto Xlowlevel;
 	}
+
+Xremove:
+	mes "[Special Job Changer]";
+	mes "You must remove your mount, falcon, warg, and cart before you can change.";
+	close;
 
 Xnotready:
 	mes "[Special Job Changer]";

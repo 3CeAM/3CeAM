@@ -939,6 +939,11 @@
 //768,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_HELLJUDGEMENT2,Hell Judgement 2
 //769,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_RAINOFMETEOR,Rain of Meteor
 //770,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_GROUNDDRIVE,Ground Drive
+//771,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_RELIEVE_ON,Relieve On
+//772,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_RELIEVE_OFF,Relieve Off
+//773,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_LOCKON_LASER,Lockon Laser
+//774,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_LOCKON_LASER_ATK,Lockon Laser Attack
+//775,0,0,0,0,0,0,??,0,no,0,0,0,none,0,		NPC_SEEDTRAP,Seed Trap
 
 // 2nd Job Quest Skills
 1001,9,6,1,-1,0,0,1,1,no,0,0x1,0,weapon,0,	KN_CHARGEATK,Charge Attack
