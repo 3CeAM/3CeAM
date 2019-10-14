@@ -1859,7 +1859,7 @@ int status_check_skilluse(struct block_list *src, struct block_list *target, int
 	case BL_ELEM:
 		if( target->type == BL_HOM && skill_num && battle_config.hom_setting&0x1 && skill_get_inf(skill_num)&INF_SUPPORT_SKILL && battle_get_master(target) != src )
 			return 0; // Can't use support skills on Homunculus (only Master/Self)
-		if( target->type == BL_MER && (skill_num == PR_ASPERSIO || (skill_num >= SA_FLAMELAUNCHER && skill_num <= SA_SEISMICWEAPON)) && battle_get_master(target) != src )
+		if( (target->type == BL_MER || target->type == BL_ELEM) && (skill_num == PR_ASPERSIO || (skill_num >= SA_FLAMELAUNCHER && skill_num <= SA_SEISMICWEAPON)) && battle_get_master(target) != src )
 			return 0; // Can't use Weapon endow skills on Mercenary (only Master)
 		if( (target->type == BL_MER || target->type == BL_ELEM) && skill_num == AM_POTIONPITCHER )
 			return 0; // Can't use Potion Pitcher on Mercenaries
@@ -3479,7 +3479,7 @@ int status_calc_homunculus_(struct homun_data *hd, bool first)
 }
 
 int status_calc_elemental_(struct elemental_data *ed, bool first)
-{
+{// This needs a overhaul. (FIX ME!!!) [Rytech]
 	struct status_data *status = &ed->base_status;
 	struct s_elemental *ele = &ed->elemental;
 	struct map_session_data *sd = ed->master;
@@ -3651,7 +3651,7 @@ void status_calc_regen(struct block_list *bl, struct status_data *status, struct
 		regen->sp = cap_value(val, 1, SHRT_MAX);
 	}
 	else if( bl->type == BL_ELEM )
-	{
+	{// This can't be the correct formula's for elemental's regen. (FIX ME!!!) [Rytech]
 		val = (status->max_hp * status->vit / 10000 + 1) * 6;
 		regen->hp = cap_value(val, 1, SHRT_MAX);
 
@@ -3787,7 +3787,7 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 	if(flag&SCB_VIT) {
 		status->vit = status_calc_vit(bl, sc, b_status->vit);
 		flag|=SCB_DEF2|SCB_MDEF2;
-		if( bl->type&(BL_PC|BL_HOM|BL_MER|BL_ELEM) )
+		if( bl->type&(BL_PC|BL_HOM|BL_MER) )
 			flag |= SCB_MAXHP;
 		if( bl->type&BL_HOM )
 			flag |= SCB_DEF;
@@ -3796,7 +3796,7 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 	if(flag&SCB_INT) {
 		status->int_ = status_calc_int(bl, sc, b_status->int_);
 		flag|=SCB_MATK|SCB_MDEF2;
-		if( bl->type&(BL_PC|BL_HOM|BL_MER|BL_ELEM) )
+		if( bl->type&(BL_PC|BL_HOM|BL_MER) )
 			flag |= SCB_MAXSP;
 		if( bl->type&BL_HOM )
 			flag |= SCB_MDEF;
@@ -4099,7 +4099,7 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 
 			status->adelay = status->amotion;
 		}
-		else // mercenary, elemental and mobs
+		else // mercenary, elemental, and mobs
 		{
 			amotion = b_status->amotion;
 			status->aspd_amount = status_calc_aspd_amount(bl, sc, b_status->aspd_amount);
@@ -4141,7 +4141,7 @@ void status_calc_bl_main(struct block_list *bl, enum scb_flag flag)
 			status->dmotion = cap_value(dmotion, 400, 800);
 			status->dmotion = status_calc_dmotion(bl, sc, b_status->dmotion);
 		}
-		else // mercenary, elemental and mobs
+		else // mercenary, elemental, and mobs
 		{
 			status->dmotion = status_calc_dmotion(bl, sc, b_status->dmotion);
 		}
@@ -4282,7 +4282,8 @@ void status_calc_bl_(struct block_list* bl, enum scb_flag flag, bool first)
 		if( b_status.sp != status->sp )
 			clif_mercenary_updatestatus(md->master, SP_SP);
 	}
-	else if( bl->type == BL_ELEM )
+	else
+	if( bl->type == BL_ELEM )
 	{
 		TBL_ELEM* ed = BL_CAST(BL_ELEM, bl);
 		if( b_status.max_hp != status->max_hp )
@@ -4292,7 +4293,7 @@ void status_calc_bl_(struct block_list* bl, enum scb_flag flag, bool first)
 		if( b_status.hp != status->hp )
 			clif_elemental_updatestatus(ed->master, SP_HP);
 		if( b_status.sp != status->sp )
-			clif_mercenary_updatestatus(ed->master, SP_SP);
+			clif_elemental_updatestatus(ed->master, SP_SP);
 	}
 }
 
@@ -5482,7 +5483,7 @@ static short status_calc_aspd_amount(struct block_list *bl, struct status_change
 	if( sc->data[SC_SOULSHADOW] )
 		aspd_amount += 10 * sc->data[SC_SOULSHADOW]->val2;
 	if( sc->data[SC_WILD_STORM_OPTION] )
-		aspd_amount += sc->data[SC_WILD_STORM_OPTION]->val2;
+		aspd_amount += 10 * sc->data[SC_WILD_STORM_OPTION]->val2;
 
 	return (short)cap_value(aspd_amount,0,SHRT_MAX);
 }
@@ -6205,7 +6206,7 @@ void status_set_viewdata(struct block_list *bl, int class_)
 		vd = merc_get_hom_viewdata(class_);
 	else if (merc_class(class_))
 		vd = merc_get_viewdata(class_);
-	else if (elemental_class(class_))
+	else if (elemental_class(class_))// Updating soon. (FIX ME!!!) [Rytech]
 		vd = elemental_get_viewdata(class_);
 	else
 		vd = NULL;
@@ -9598,6 +9599,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		calc_flag&=~SCB_BODY;
 	}*/
 
+	// Elemental needed here too??? (FIX ME!!!) [Rytech]
 	if( (vd && (pcdb_checkid(vd->class_))) || bl->type == BL_MER || bl->type == BL_MOB )
 		clif_status_change(bl,StatusIconChangeTable[type],1,duration,(val1>0)?val1:1,(val2>0)?val2:0,(val3>0)?val3:0);
 	else if( sd ) //Send packet to self otherwise (disguised player?)
@@ -10498,6 +10500,7 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 	}*/
 
 	//On Aegis, when turning off a status change, first goes the sc packet, then the option packet.
+	// Elemental needed here too??? (FIX ME!!!) [Rytech]
 	if( vd && (pcdb_checkid(vd->class_) || bl->type == BL_MER || bl->type == BL_MOB) )
 		clif_status_change(bl,StatusIconChangeTable[type],0,0,0,0,0);
 	else if (sd)

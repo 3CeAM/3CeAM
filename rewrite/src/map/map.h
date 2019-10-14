@@ -763,7 +763,7 @@ typedef struct skill_unit       TBL_SKILL;
 typedef struct pet_data         TBL_PET;
 typedef struct homun_data       TBL_HOM;
 typedef struct mercenary_data   TBL_MER;
-typedef struct elemental_data	TBL_ELEM;
+typedef struct elemental_data   TBL_ELEM;
 
 #define BL_CAST(type_, bl) \
 	( ((bl) == (struct block_list*)NULL || (bl)->type != (type_)) ? (T ## type_ *)NULL : (T ## type_ *)(bl) )

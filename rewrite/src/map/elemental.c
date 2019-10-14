@@ -830,7 +830,7 @@ int read_elemental_skilldb(void)
 		}
 		
 		skillid = atoi(str[1]);
-		if( skillid < EL_SKILLBASE || skillid >= EL_SKILLBASE + MAX_ELEMENTALSKILL )
+		if( skillid < EL_SKILLBASE || skillid >= EL_SKILLBASE + MAX_ELEMSKILL )
 		{
 			ShowError("read_elemental_skilldb : Skill out of range, line %d.\n", k);
 			continue;

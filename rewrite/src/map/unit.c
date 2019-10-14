@@ -1105,6 +1105,12 @@ int unit_skilluse_id2(struct block_list *src, int target_id, short skill_num, sh
 			break;
 	}
 
+	//if (src->type==BL_ELEM)
+	//switch(skill_num)
+	//{// Elemental Auto-Target Skills (FIX ME!!!) [Rytech]
+	//
+	//}
+
 	if( !target ) // choose default target
 		target = map_id2bl(target_id);
 
@@ -2266,7 +2272,7 @@ int unit_remove_map_(struct block_list *bl, clr_type clrtype, const char* file, 
 		{
 			clif_clearunit_area(bl,clrtype);
 			map_delblock(bl);
-			unit_free(bl,0);
+			unit_free(bl,CLR_OUTSIGHT);
 			map_freeblock_unlock();
 			return 0;
 		}
@@ -2526,20 +2532,18 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 		{
 			struct elemental_data *ed = (TBL_ELEM*)bl;
 			struct map_session_data *sd = ed->master;
-			if( clrtype >= 0 )
+			if( elemental_get_lifetime(ed) > 0 )
+				elemental_save(ed);
+			else
 			{
-				if( elemental_get_lifetime(ed) > 0 )
-					elemental_save(ed);
-				else
-				{
-					intif_elemental_delete(ed->elemental.elemental_id);
-					if( sd )
-						sd->status.ele_id = 0;
-				}
+				intif_elemental_delete(ed->elemental.elemental_id);
+				if( sd )
+					sd->status.ele_id = 0;
 			}
 			if( sd )
 				sd->ed = NULL;
 
+			//elem_contract_stop(ed);
 			elemental_summon_stop(ed);
 			break;
 		}

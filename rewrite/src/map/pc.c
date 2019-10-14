@@ -7017,6 +7017,9 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 	case BL_MER:
 		src = &((TBL_MER*)src)->master->bl;
 	break;
+	case BL_ELEM:
+		src = &((TBL_ELEM*)src)->master->bl;
+	break;
 	}
 
 	if (src && src->type == BL_PC)

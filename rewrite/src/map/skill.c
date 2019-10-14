@@ -60,7 +60,7 @@
 #define MC_SKILLRANGEMIN 1301
 #define MC_SKILLRANGEMAX (MC_SKILLRANGEMIN+MAX_MERCSKILL)
 #define EL_SKILLRANGEMIN 1501
-#define EL_SKILLRANGEMAX (EL_SKILLRANGEMIN+MAX_ELEMENTALSKILL)
+#define EL_SKILLRANGEMAX (EL_SKILLRANGEMIN+MAX_ELEMSKILL)
 #define GD_SKILLRANGEMIN 1701
 #define GD_SKILLRANGEMAX (GD_SKILLRANGEMIN+MAX_GUILDSKILL)
 
@@ -107,11 +107,11 @@ int skill_name2id(const char* name)
 /// Returns the skill's array index, or 0 (Unknown Skill).
 int skill_get_index( int id )
 {
-	// avoid ranges reserved for mapping guild/homun/mercenary skills
-	if( (id >= EL_SKILLRANGEMIN && id <= EL_SKILLRANGEMAX)
-	||	(id >= GD_SKILLRANGEMIN && id <= GD_SKILLRANGEMAX)
-	||  (id >= HM_SKILLRANGEMIN && id <= HM_SKILLRANGEMAX)
-	||  (id >= MC_SKILLRANGEMIN && id <= MC_SKILLRANGEMAX) )
+	// avoid ranges reserved for mapping guild/homun/mercenary/elemental skills
+	if( (id >= HM_SKILLRANGEMIN && id <= HM_SKILLRANGEMAX)
+	||	(id >= MC_SKILLRANGEMIN && id <= MC_SKILLRANGEMAX)
+	||  (id >= EL_SKILLRANGEMIN && id <= EL_SKILLRANGEMAX)
+	||  (id >= GD_SKILLRANGEMIN && id <= GD_SKILLRANGEMAX) )
 		return 0;
 
 	// map skill id to skill db index
@@ -3394,6 +3394,7 @@ static int skill_check_condition_mercenary(struct block_list *bl, int skill, int
 	{
 		case BL_HOM: sd = ((TBL_HOM*)bl)->master; break;
 		case BL_MER: sd = ((TBL_MER*)bl)->master; break;
+		case BL_ELEM: sd = ((TBL_ELEM*)bl)->master; break;
 	}
 
 	status = status_get_status_data(bl);
@@ -5551,7 +5552,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	struct mob_data *md, *dstmd;
 	struct homun_data *hd;
 	struct mercenary_data *mer;
-	struct elemental_data *ele;
+	struct elemental_data *ed;
 	struct status_data *sstatus, *tstatus;
 	struct status_change *sc, *tsc;
 	struct status_change_entry *tsce;
@@ -5572,7 +5573,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	hd = BL_CAST(BL_HOM, src);
 	md = BL_CAST(BL_MOB, src);
 	mer = BL_CAST(BL_MER, src);
-	ele = BL_CAST(BL_ELEM, src);
+	ed = BL_CAST(BL_ELEM, src);
 
 	dstsd = BL_CAST(BL_PC, bl);
 	dstmd = BL_CAST(BL_MOB, bl);
@@ -11097,14 +11098,14 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 		case EL_SOLID_SKIN:
 		case EL_STONE_SHIELD:
 		case EL_WIND_STEP:
-			if( ele )
+			if( ed )
 			{
 				sc_type type2 = type-1;
-				struct status_change *sc = status_get_sc(&ele->bl);
+				struct status_change *sc = status_get_sc(&ed->bl);
 
 				if( (sc && sc->data[type2]) || (tsc && tsc->data[type]) )
 				{
-					elemental_clean_single_effect(ele, skillid);
+					elemental_clean_single_effect(ed, skillid);
 				}
 				else
 				{
@@ -11128,15 +11129,15 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			break;
 
 		case EL_WATER_SCREEN:
-			if( ele )
+			if( ed )
 			{
-				struct status_change *sc = status_get_sc(&ele->bl);
+				struct status_change *sc = status_get_sc(&ed->bl);
 				sc_type type2 = type-1;
 
 				clif_skill_nodamage(src,src,skillid,skilllv,1);
 				if( (sc && sc->data[type2]) || (tsc && tsc->data[type]) )
 				{
-					elemental_clean_single_effect(ele, skillid);
+					elemental_clean_single_effect(ed, skillid);
 				}
 				else
 				{
@@ -11405,7 +11406,7 @@ int skill_castend_id(int tid, unsigned int tick, int id, intptr data)
 				skill_consume_requirement(sd,ud->skillid,ud->skilllv,1);
 		}
 
-		if( (src->type == BL_MER || src->type == BL_HOM) && !skill_check_condition_mercenary(src, ud->skillid, ud->skilllv, 1) )
+		if( (src->type == BL_HOM || src->type == BL_MER || src->type == BL_ELEM) && !skill_check_condition_mercenary(src, ud->skillid, ud->skilllv, 1) )
 			break;
 
 		if (ud->state.running && ud->skillid == TK_JUMPKICK)
@@ -11639,7 +11640,7 @@ int skill_castend_pos(int tid, unsigned int tick, int id, intptr data)
 				skill_consume_requirement(sd,ud->skillid,ud->skilllv,1);
 		}
 
-		if( (src->type == BL_MER || src->type == BL_HOM) && !skill_check_condition_mercenary(src, ud->skillid, ud->skilllv, 1) )
+		if( (src->type == BL_HOM || src->type == BL_MER || src->type == BL_ELEM) && !skill_check_condition_mercenary(src, ud->skillid, ud->skilllv, 1) )
 			break;
 
 		if(md) {
@@ -20256,12 +20257,12 @@ static bool skill_parse_row_skilldb(char* split[], int columns, int current)
 {// id,range,hit,inf,element,nk,splash,max,list_num,castcancel,cast_defence_rate,inf2,maxcount,skill_type,blow_count,name,description
 	int id = atoi(split[0]);
 	int i;
-	if( (id >= EL_SKILLRANGEMIN && id <= EL_SKILLRANGEMAX)
-	||	(id >= GD_SKILLRANGEMIN && id <= GD_SKILLRANGEMAX)
-	||  (id >= HM_SKILLRANGEMIN && id <= HM_SKILLRANGEMAX)
-	||  (id >= MC_SKILLRANGEMIN && id <= MC_SKILLRANGEMAX) )
+	if( (id >= HM_SKILLRANGEMIN && id <= HM_SKILLRANGEMAX)
+	||	(id >= MC_SKILLRANGEMIN && id <= MC_SKILLRANGEMAX)
+	||  (id >= EL_SKILLRANGEMIN && id <= EL_SKILLRANGEMAX)
+	||  (id >= GD_SKILLRANGEMIN && id <= GD_SKILLRANGEMAX) )
 	{
-		ShowWarning("skill_parse_row_skilldb: Skill id %d is forbidden (interferes with guild/homun/mercenary skill mapping)!\n", id);
+		ShowWarning("skill_parse_row_skilldb: Skill id %d is forbidden (interferes with homun/merc/elem/guild skill mapping)!\n", id);
 		return false;
 	}
 

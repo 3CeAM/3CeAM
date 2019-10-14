@@ -3558,7 +3558,7 @@ int do_final_npc(void)
 		if ((bl = map_id2bl(i))){
 			if (bl->type == BL_NPC)
 				npc_unload((struct npc_data *)bl);
-			else if (bl->type&(BL_MOB|BL_PET|BL_HOM|BL_MER))
+			else if (bl->type&(BL_MOB|BL_PET|BL_HOM|BL_MER|BL_ELEM))
 				unit_free(bl, CLR_OUTSIGHT);
 		}
 	}

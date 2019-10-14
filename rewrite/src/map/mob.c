@@ -1864,6 +1864,15 @@ void mob_log_damage(struct mob_data *md, struct block_list *src, int damage)
 				md->attacked_id = src->id;
 			break;
 		}
+		case BL_ELEM:
+		{
+			struct elemental_data *ed = (TBL_ELEM*)src;
+			if( ed->master )
+				char_id = ed->master->status.char_id;
+			if( damage )
+				md->attacked_id = src->id;
+			break;
+		}
 		case BL_PET:
 		{
 			struct pet_data *pd = (TBL_PET*)src;
@@ -1891,15 +1900,6 @@ void mob_log_damage(struct mob_data *md, struct block_list *src, int damage)
 			if( md2->master_id && battle_config.retaliate_to_master )
 				md->attacked_id = md2->master_id;
 			else
-				md->attacked_id = src->id;
-			break;
-		}
-		case BL_ELEM:
-		{
-			struct elemental_data *ele = (TBL_ELEM*)src;
-			if( ele->master )
-				char_id = ele->master->status.char_id;
-			if( damage )
 				md->attacked_id = src->id;
 			break;
 		}
@@ -2447,6 +2447,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 				case BL_PET: sd = ((TBL_PET*)src)->msd; break;
 				case BL_HOM: sd = ((TBL_HOM*)src)->master; break;
 				case BL_MER: sd = ((TBL_MER*)src)->master; break;
+				case BL_ELEM: sd = ((TBL_ELEM*)src)->master; break;
 			}
 
 		if( sd && sd->md && src && src->type != BL_HOM && mob_db(md->class_)->lv > sd->status.base_level/2 )

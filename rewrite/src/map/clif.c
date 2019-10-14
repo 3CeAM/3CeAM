@@ -169,17 +169,17 @@ uint16 clif_getport(void)
 #if PACKETVER >= 20071106
 static inline unsigned char clif_bl_type(struct block_list *bl) {
 	switch (bl->type) {
-	case BL_PC:    return disguised(bl)?0x1:0x0; //PC_TYPE
-	case BL_ITEM:  return 0x2; //ITEM_TYPE
-	case BL_SKILL: return 0x3; //SKILL_TYPE
-	case BL_CHAT:  return 0x4; //UNKNOWN_TYPE
-	case BL_MOB:   return pcdb_checkid(status_get_viewdata(bl)->class_)?0x0:0x5; //NPC_MOB_TYPE
-	case BL_NPC:   return 0x6; //NPC_EVT_TYPE
-	case BL_PET:   return pcdb_checkid(status_get_viewdata(bl)->class_)?0x0:0x7; //NPC_PET_TYPE
-	case BL_HOM:   return 0x8; //NPC_HOM_TYPE
-	case BL_MER:   return 0x9; //NPC_MERSOL_TYPE
-	case BL_ELEM:  return 0xa; //NPC_ELEMENTAL_TYPE
-	default:       return 0x1; //NPC_TYPE
+	case BL_PC:    return disguised(bl)?0x1:0x0;//PC_TYPE
+	case BL_ITEM:  return 0x2;//ITEM_TYPE
+	case BL_SKILL: return 0x3;//SKILL_TYPE
+	case BL_CHAT:  return 0x4;//UNKNOWN_TYPE
+	case BL_MOB:   return pcdb_checkid(status_get_viewdata(bl)->class_)?0x0:0x5;//NPC_MOB_TYPE
+	case BL_NPC:   return 0x6;//NPC_EVT_TYPE
+	case BL_PET:   return pcdb_checkid(status_get_viewdata(bl)->class_)?0x0:0x7;//NPC_PET_TYPE
+	case BL_HOM:   return 0x8;//NPC_HOM_TYPE
+	case BL_MER:   return 0x9;//NPC_MERSOL_TYPE
+	case BL_ELEM:  return 0xa;//NPC_ELEMENTAL_TYPE
+	default:       return 0x1;//NPC_TYPE
 	}
 }
 #endif
@@ -4934,6 +4934,10 @@ void clif_getareachar_unit(struct map_session_data* sd,struct block_list *bl)
 #endif
 		}
 		break;
+	//case BL_ELEM: // Water Screen's Effect. Its basicly devotion. (FIX ME!!!) [Rytech]
+	//	if( ((TBL_ELEM*)bl)->devotion_flag )
+	//		clif_devotion(bl, sd);
+	//	break;
 	}
 }
 
@@ -8179,6 +8183,14 @@ void clif_devotion(struct block_list *src, struct map_session_data *tsd)
 
 		WBUFW(buf,26) = skill_get_range2(src, ML_DEVOTION, mercenary_checkskill(md, ML_DEVOTION));
 	}
+	/*if( src->type == BL_ELEM )
+	{// Aqua's Water Screen. Works like devotion. (FIX ME!!!) [Rytech]
+		struct elemental_data *ed = BL_CAST(BL_ELEM,src);
+		if( ed && ed->master && ed->devotion_flag )
+			WBUFL(buf,6) = ed->master->bl.id;
+
+		WBUFW(buf,26) = skill_get_range2(src, EL_WATER_SCREEN, elemental_checkskill(ed, EL_WATER_SCREEN));
+	}*/
 	else
 	{
 		struct map_session_data *sd = BL_CAST(BL_PC,src);
@@ -10757,9 +10769,6 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 		map_addblock(&sd->ed->bl);
 		clif_spawn(&sd->ed->bl);
 		clif_elemental_info(sd);
-		clif_elemental_updatestatus(sd,SP_HP);
-		clif_hpmeter_single(sd->fd,sd->ed->bl.id,sd->ed->battle_status.hp,sd->ed->battle_status.matk_max);
-		clif_elemental_updatestatus(sd,SP_SP);
 	}
 
 	if( sd->state.connect_new )
@@ -12144,7 +12153,7 @@ void clif_parse_SkillUp(int fd,struct map_session_data *sd)
 {
 	pc_skillup(sd,RFIFOW(fd,2));
 }
-
+// Be sure to make one of these for ID and Pos for Elementals. (FIX ME!!!) [Rytech]
 static void clif_parse_UseSkillToId_homun(struct homun_data *hd, struct map_session_data *sd, unsigned int tick, short skillnum, short skilllv, int target_id)
 {
 	int lv;
@@ -12260,6 +12269,7 @@ void clif_parse_UseSkillToId(int fd, struct map_session_data *sd)
 	if (tmp&INF_GROUND_SKILL || !tmp)
 		return; //Using a ground/passive skill on a target? WRONG.
 
+	// Be sure to make one of these and Pos for elementals. (FIX ME!!!) [Rytech]
 	if( skillnum >= HM_SKILLBASE && skillnum < HM_SKILLBASE + MAX_HOMUNSKILL )
 	{
 		clif_parse_UseSkillToId_homun(sd->hd, sd, tick, skillnum, skilllv, target_id);
@@ -16287,6 +16297,8 @@ void clif_quest_show_event(struct map_session_data *sd, struct block_list *bl, s
 /*==========================================
  * Mercenary System
  *==========================================*/
+/// Notification about a mercenary status parameter change (ZC_MER_PAR_CHANGE).
+/// 02a2 <var id>.W <value>.L
 void clif_mercenary_updatestatus(struct map_session_data *sd, int type)
 {
 	struct mercenary_data *md;
@@ -16297,8 +16309,8 @@ void clif_mercenary_updatestatus(struct map_session_data *sd, int type)
 
 	fd = sd->fd;
 	status = &md->battle_status;
-	WFIFOHEAD(fd,8);
-	WFIFOW(fd,0) = 0x02a2;
+	WFIFOHEAD(fd,packet_len(0x2a2));
+	WFIFOW(fd,0) = 0x2a2;
 	WFIFOW(fd,2) = type;
 	switch( type )
 	{
@@ -16348,9 +16360,13 @@ void clif_mercenary_updatestatus(struct map_session_data *sd, int type)
 			WFIFOL(fd,4) = mercenary_get_faith(md);
 			break;
 	}
-	WFIFOSET(fd,8);
+	WFIFOSET(fd,packet_len(0x2a2));
 }
 
+/// Mercenary base status data (ZC_MER_INIT).
+/// 029b <id>.L <atk>.W <matk>.W <hit>.W <crit>.W <def>.W <mdef>.W <flee>.W <aspd>.W
+///     <name>.24B <level>.W <hp>.L <maxhp>.L <sp>.L <maxsp>.L <expire time>.L <faith>.W
+///     <calls>.L <kills>.L <atk range>.W
 void clif_mercenary_info(struct map_session_data *sd)
 {
 	int fd;
@@ -16364,8 +16380,8 @@ void clif_mercenary_info(struct map_session_data *sd)
 	fd = sd->fd;
 	status = &md->battle_status;
 
-	WFIFOHEAD(fd,80);
-	WFIFOW(fd,0) = 0x029b;
+	WFIFOHEAD(fd,packet_len(0x29b));
+	WFIFOW(fd,0) = 0x29b;
 	WFIFOL(fd,2) = md->bl.id;
 
 	// Mercenary shows ATK as a random value between ATK ~ ATK2
@@ -16389,9 +16405,11 @@ void clif_mercenary_info(struct map_session_data *sd)
 	WFIFOL(fd,70) = mercenary_get_calls(md);
 	WFIFOL(fd,74) = md->mercenary.kill_count;
 	WFIFOW(fd,78) = md->battle_status.rhw.range;
-	WFIFOSET(fd,80);
+	WFIFOSET(fd,packet_len(0x29b));
 }
 
+/// Mercenary skill tree (ZC_MER_SKILLINFO_LIST).
+/// 029d <packet len>.W { <skill id>.W <type>.L <level>.W <sp cost>.W <attack range>.W <skill name>.24B <upgradable>.B }*
 void clif_mercenary_skillblock(struct map_session_data *sd)
 {
 	struct mercenary_data *md;
@@ -16402,15 +16420,14 @@ void clif_mercenary_skillblock(struct map_session_data *sd)
 	
 	fd = sd->fd;
 	WFIFOHEAD(fd,4+37*MAX_MERCSKILL);
-	WFIFOW(fd,0) = 0x029d;
+	WFIFOW(fd,0) = 0x29d;
 	for( i = 0; i < MAX_MERCSKILL; i++ )
 	{
 		if( (id = md->db->skill[i].id) == 0 )
 			continue;
 		j = id - MC_SKILLBASE;
 		WFIFOW(fd,len) = id;
-		WFIFOW(fd,len+2) = skill_get_inf(id);
-		WFIFOW(fd,len+4) = 0;
+		WFIFOL(fd,len+2) = skill_get_inf(id);
 		WFIFOW(fd,len+6) = md->db->skill[j].lv;
 		WFIFOW(fd,len+8) = skill_get_sp(id, md->db->skill[j].lv);
 		WFIFOW(fd,len+10) = skill_get_range2(&md->bl, id, md->db->skill[j].lv);
@@ -16423,6 +16440,10 @@ void clif_mercenary_skillblock(struct map_session_data *sd)
 	WFIFOSET(fd,len);
 }
 
+/// Request to invoke a mercenary menu action (CZ_MER_COMMAND).
+/// 029f <command>.B
+///     1 = mercenary information
+///     2 = delete
 void clif_parse_mercenary_action(int fd, struct map_session_data* sd)
 {
 	int option = RFIFOB(fd,2);
@@ -16432,16 +16453,72 @@ void clif_parse_mercenary_action(int fd, struct map_session_data* sd)
 	if( option == 2 ) merc_delete(sd->md, 2);
 }
 
-/*------------------------------------------
- * Mercenary Message
- * 0 = Mercenary soldier's duty hour is over.
- * 1 = Your mercenary soldier has been killed.
- * 2 = Your mercenary soldier has been fired.
- * 3 = Your mercenary soldier has ran away.
- *------------------------------------------*/
+/// Mercenary Message
+/// message:
+///     0 = Mercenary soldier's duty hour is over.
+///     1 = Your mercenary soldier has been killed.
+///     2 = Your mercenary soldier has been fired.
+///     3 = Your mercenary soldier has ran away.
 void clif_mercenary_message(struct map_session_data* sd, int message)
 {
 	clif_msg(sd, MSG_MER_FINISH + message);
+}
+
+/// Notification about a elemental status parameter change (ZC_EL_PAR_CHANGE).
+/// 081e <var id>.W <value>.L
+void clif_elemental_updatestatus(struct map_session_data *sd, int type)
+{
+	struct elemental_data *ed;
+	struct status_data *status;
+	int fd;
+	if( sd == NULL || (ed = sd->ed) == NULL )
+		return;
+
+	fd = sd->fd;
+	status = &ed->battle_status;
+	WFIFOHEAD(fd,packet_len(0x81e));
+	WFIFOW(fd,0) = 0x81e;
+	WFIFOW(fd,2) = type;
+	switch( type )
+	{
+		case SP_HP:
+			WFIFOL(fd,4) = status->hp;
+			break;
+		case SP_MAXHP:
+			WFIFOL(fd,4) = status->max_hp;
+			break;
+		case SP_SP:
+			WFIFOL(fd,4) = status->sp;
+			break;
+		case SP_MAXSP:
+			WFIFOL(fd,4) = status->max_sp;
+			break;
+	}
+	WFIFOSET(fd,packet_len(0x81e));
+}
+
+/// Elemental base status data (ZC_EL_INIT).
+/// 081d <id>.L <hp>.L <maxhp>.L <sp>.L <maxsp>.L
+void clif_elemental_info(struct map_session_data *sd)
+{
+	int fd;
+	struct elemental_data *ed;
+	struct status_data *status;
+
+	if( sd == NULL || (ed = sd->ed) == NULL )
+		return;
+
+	fd = sd->fd;
+	status = &ed->battle_status;
+
+	WFIFOHEAD(fd,packet_len(0x81d));
+	WFIFOW(fd,0) = 0x81d;
+	WFIFOL(fd,2) = ed->bl.id;
+	WFIFOL(fd,6) = status->hp;
+	WFIFOL(fd,10) = status->max_hp;
+	WFIFOL(fd,14) = status->sp;
+	WFIFOL(fd,18) = status->max_sp;
+	WFIFOSET(fd,packet_len(0x81d));
 }
 
 /*------------------------------------------
@@ -16896,62 +16973,6 @@ void clif_parse_ItemListWindowSelected(int fd, struct map_session_data* sd)
 	sd->menuskill_id = sd->menuskill_val = sd->menuskill_itemused = 0;
 	
 	return;
-}
-
-/*==========================================
- * Elemental System
- *==========================================*/
-void clif_elemental_updatestatus(struct map_session_data *sd, int type)
-{
-	struct elemental_data *ed;
-	struct status_data *status;
-	int fd;
-	if( sd == NULL || (ed = sd->ed) == NULL )
-		return;
-
-	fd = sd->fd;
-	status = &ed->battle_status;
-	WFIFOHEAD(fd,8);
-	WFIFOW(fd,0) = 0x81e;
-	WFIFOW(fd,2) = type;
-	switch( type )
-	{
-		case SP_HP:
-			WFIFOL(fd,4) = status->hp;
-			break;
-		case SP_MAXHP:
-			WFIFOL(fd,4) = status->max_hp;
-			break;
-		case SP_SP:
-			WFIFOL(fd,4) = status->sp;
-			break;
-		case SP_MAXSP:
-			WFIFOL(fd,4) = status->max_sp;
-			break;
-	}
-	WFIFOSET(fd,8);
-}
-
-void clif_elemental_info(struct map_session_data *sd)
-{
-	int fd;
-	struct elemental_data *ed;
-	struct status_data *status;
-
-	if( sd == NULL || (ed = sd->ed) == NULL )
-		return;
-
-	fd = sd->fd;
-	status = &ed->battle_status;
-
-	WFIFOHEAD(fd,22);
-	WFIFOW(fd, 0) = 0x81d;
-	WFIFOL(fd, 2) = ed->bl.id;
-	WFIFOL(fd, 6) = status->hp;
-	WFIFOL(fd,10) = status->max_hp;
-	WFIFOL(fd,14) = status->sp;
-	WFIFOL(fd,18) = status->max_sp;
-	WFIFOSET(fd,22);
 }
 
 /*==========================================
@@ -17978,7 +17999,7 @@ static int packetdb_readdb(void)
 #else // for Party booking ( PACKETVER >= 20091229 )
 	   -1, -1, 18,  4,  8,  6,  2,  4, 14, 50, 18,  6,  2,  3, 14, 20,
 #endif
-	    3, -1,  8, -1,  86, 2,  6,  6, -1, -1,  4, 10, 10,  0,  0,  0,
+	    3, -1,  8, -1,  86, 2,  6,  6, -1, -1,  4, 10, 10, 22,  8,  0,
 	    0,  0,  0,  0,  6,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,
 	    0,  0,  0,  0,  0, -1, -1,  3,  2, 66,  5,  2, 12,  6,  0,  0,
 	//#0x0840

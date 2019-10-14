@@ -4551,7 +4551,7 @@ ACMD_FUNC(reloadmobdb)
 	mob_reload();
 	read_petdb();
 	merc_reload();
-	reload_elementaldb();
+	reload_elementaldb();// To replace soon. (FIX ME!!!) [Rytech]
 	clif_displaymessage(fd, msg_txt(98)); // Monster database has been reloaded.
 
 	return 0;
@@ -4565,7 +4565,7 @@ ACMD_FUNC(reloadskilldb)
 	nullpo_retr(-1, sd);
 	skill_reload();
 	merc_skill_reload();
-	reload_elemental_skilldb();
+	reload_elemental_skilldb();// To replace soon. (FIX ME!!!) [Rytech]
 	clif_displaymessage(fd, msg_txt(99)); // Skill database has been reloaded.
 
 	return 0;

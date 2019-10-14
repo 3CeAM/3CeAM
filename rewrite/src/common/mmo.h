@@ -178,12 +178,12 @@
 
 //Mercenary System
 #define MC_SKILLBASE 8201
-#define MAX_MERCSKILL 40
+#define MAX_MERCSKILL 41
 #define MAX_MERCENARY_CLASS 44
 
 //Elemental System
 #define EL_SKILLBASE 8401
-#define MAX_ELEMENTALSKILL 42
+#define MAX_ELEMSKILL 42
 #define MAX_ELEMENTAL_CLASS 12
 #define EL_CLASS_BASE 2114
 #define EL_CLASS_MAX (EL_CLASS_BASE+MAX_ELEMENTAL_CLASS-1)
@@ -331,9 +331,12 @@ struct s_elemental {
 	int elemental_id;
 	int char_id;
 	short class_;
-	int mode;
-	int hp, sp, max_hp, max_sp, str, agi, vit, int_, dex, luk;
-	int life_time;
+	int hp, max_hp, sp, max_sp;
+	unsigned short batk, matk, adelay;
+	short def, mdef, hit, flee;
+	short str, agi, vit, int_, dex, luk;
+	unsigned int mode;
+	unsigned int life_time;
 };
 
 struct s_friend {
