@@ -10602,23 +10602,19 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 	case SO_EL_CURE:
 		if( sd )
 		{
-			struct elemental_data *ed = sd->ed;
-			int s_hp = sd->battle_status.hp * 10 / 100, s_sp = sd->battle_status.sp * 10 / 100;
-			int e_hp, e_sp;
-			if( !ed )
+			int hp_amount = sstatus->max_hp * 10 / 100;
+			int sp_amount = sstatus->max_sp * 10 / 100;
+
+			if ( sd->ed && status_charge(src, hp_amount, sp_amount))
 			{
+				clif_skill_nodamage(src, bl, skillid, skilllv, 1);
+				status_heal(&sd->ed->bl,hp_amount,sp_amount,0);
+			}
+			else
+			{// Protection for GM's bypassing pre-cast requirements.
 				clif_skill_fail(sd,skillid,0,0,0);
 				break;
 			}
-			if( !status_charge(&sd->bl,s_hp,s_sp) )
-			{
-				clif_skill_fail(sd,skillid,0,0,0);
-				break;
-			}
-			e_hp = ed->battle_status.max_hp * 10 / 100;
-			e_sp = ed->battle_status.max_sp * 10 / 100;
-			status_heal(&ed->bl,e_hp,e_sp,3);
-			clif_skill_nodamage(src,&ed->bl,skillid,skilllv,1);
 		}
 		break;
 
@@ -15553,9 +15549,9 @@ int skill_check_condition_castbegin(struct map_session_data* sd, short skill, sh
 			return 0;
 		}
 		break;
-	case ST_ELEMENTALSPIRIT:
+	case ST_ELEMENTAL:
 		if(!sd->ed) {
-			clif_skill_fail(sd,skill,0x4f,0,0);
+			clif_skill_fail(sd,skill,USESKILL_FAIL_EL_SUMMON,0,0);
 			return 0;
 		}
 		break;
@@ -20220,16 +20216,16 @@ int skill_stasis_check(struct block_list *bl, int skillid)
 	return 0;//Any skills thats not the above will work.
 }
 
-int skill_get_elemental_type(int skill_id, int skill_lv )
+int skill_get_elemental_type(int skill_id, int skill_lv)
 {
-	int type = 0;
+	unsigned short type = 0;
 
 	switch( skill_id )
 	{
-		case SO_SUMMON_AGNI:	type = 2114; break;
-		case SO_SUMMON_AQUA:	type = 2117; break;
-		case SO_SUMMON_VENTUS:	type = 2120; break;
-		case SO_SUMMON_TERA:	type = 2123; break;
+		case SO_SUMMON_AGNI:	type = MOBID_EL_AGNI_S; break;
+		case SO_SUMMON_AQUA:	type = MOBID_EL_AQUA_S; break;
+		case SO_SUMMON_VENTUS:	type = MOBID_EL_VENTUS_S; break;
+		case SO_SUMMON_TERA:	type = MOBID_EL_TERA_S; break;
 	}
 
 	type += skill_lv - 1;
@@ -20373,7 +20369,7 @@ static bool skill_parse_row_requiredb(char* split[], int columns, int current)
 	else if( strcmpi(split[10],"warg")==0 ) skill_db[i].state = ST_WUG;
 	else if( strcmpi(split[10],"ridingwarg")==0 ) skill_db[i].state = ST_WUGRIDER;
 	else if( strcmpi(split[10],"mado")==0 ) skill_db[i].state = ST_MADOGEAR;
-	else if( strcmpi(split[10],"elementalspirit")==0 ) skill_db[i].state = ST_ELEMENTALSPIRIT;
+	else if( strcmpi(split[10],"elemental")==0 ) skill_db[i].state = ST_ELEMENTAL;
 	else if( strcmpi(split[10],"fighter")==0 ) skill_db[i].state = ST_FIGHTER;
 	else if( strcmpi(split[10],"grappler")==0 ) skill_db[i].state = ST_GRAPPLER;
 	else if( strcmpi(split[10],"sunstance")==0 ) skill_db[i].state = ST_SUNSTANCE;

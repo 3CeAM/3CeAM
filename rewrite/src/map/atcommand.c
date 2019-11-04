@@ -8010,6 +8010,50 @@ ACMD_FUNC(hominfo)
 	return 0;
 }
 
+ACMD_FUNC(eleminfo)
+{
+	struct elemental_data *ed;
+	struct s_elemental_db *db;
+	struct status_data *status;
+	nullpo_retr(-1, sd);
+
+	if ( !sd->ed ) {
+		clif_displaymessage(fd, "You do not have a elemental.");
+		return -1;
+	}
+
+	// Should I add the elemental's element, element lv, and size too?
+	ed = sd->ed;
+	db = ed->db;
+	status = status_get_status_data(&ed->bl);
+
+	snprintf(atcmd_output, sizeof(atcmd_output) ,"Elemental stats for: %s",
+		db->name);
+	clif_displaymessage(fd, atcmd_output);
+
+	snprintf(atcmd_output, sizeof(atcmd_output) ,"HP : %d/%d - SP : %d/%d",
+		status->hp, status->max_hp, status->sp, status->max_sp);
+	clif_displaymessage(fd, atcmd_output);
+
+	snprintf(atcmd_output, sizeof(atcmd_output) ,"ATK : %d - MATK : %d",
+		status->rhw.atk, status->matk_min);
+	clif_displaymessage(fd, atcmd_output);
+
+	snprintf(atcmd_output, sizeof(atcmd_output) ,"DEF : %d - MDEF : %d",
+		status->def, status->mdef);
+	clif_displaymessage(fd, atcmd_output);
+
+	snprintf(atcmd_output, sizeof(atcmd_output) ,"HIT : %d - FLEE : %d - ASPD : %d/%dms",
+		status->hit, status->flee, (200 - status->amotion / 10), status->adelay);
+	clif_displaymessage(fd, atcmd_output);
+
+	//snprintf(atcmd_output, sizeof(atcmd_output) ,"Summon Time: %d (Currently Broken)",
+	//	ed->summon_timer);
+	//clif_displaymessage(fd, atcmd_output);
+
+	return 0;
+}
+
 ACMD_FUNC(homstats)
 {
 	struct homun_data *hd;
@@ -8037,42 +8081,42 @@ ACMD_FUNC(homstats)
 	
 	evo = (hom->class_ == db->evo_class);
 	min = db->base.HP +lv*db->gmin.HP +(evo?db->emin.HP:0);
-	max = db->base.HP +lv*db->gmax.HP +(evo?db->emax.HP:0);;
+	max = db->base.HP +lv*db->gmax.HP +(evo?db->emax.HP:0);
 	snprintf(atcmd_output, sizeof(atcmd_output) ,"Max HP: %d (%d~%d)", hom->max_hp, min, max);
 	clif_displaymessage(fd, atcmd_output);
 
 	min = db->base.SP +lv*db->gmin.SP +(evo?db->emin.SP:0);
-	max = db->base.SP +lv*db->gmax.SP +(evo?db->emax.SP:0);;
+	max = db->base.SP +lv*db->gmax.SP +(evo?db->emax.SP:0);
 	snprintf(atcmd_output, sizeof(atcmd_output) ,"Max SP: %d (%d~%d)", hom->max_sp, min, max);
 	clif_displaymessage(fd, atcmd_output);
 
 	min = db->base.str +lv*(db->gmin.str/10) +(evo?db->emin.str:0);
-	max = db->base.str +lv*(db->gmax.str/10) +(evo?db->emax.str:0);;
+	max = db->base.str +lv*(db->gmax.str/10) +(evo?db->emax.str:0);
 	snprintf(atcmd_output, sizeof(atcmd_output) ,"Str: %d (%d~%d)", hom->str/10, min, max);
 	clif_displaymessage(fd, atcmd_output);
 
 	min = db->base.agi +lv*(db->gmin.agi/10) +(evo?db->emin.agi:0);
-	max = db->base.agi +lv*(db->gmax.agi/10) +(evo?db->emax.agi:0);;
+	max = db->base.agi +lv*(db->gmax.agi/10) +(evo?db->emax.agi:0);
 	snprintf(atcmd_output, sizeof(atcmd_output) ,"Agi: %d (%d~%d)", hom->agi/10, min, max);
 	clif_displaymessage(fd, atcmd_output);
 
 	min = db->base.vit +lv*(db->gmin.vit/10) +(evo?db->emin.vit:0);
-	max = db->base.vit +lv*(db->gmax.vit/10) +(evo?db->emax.vit:0);;
+	max = db->base.vit +lv*(db->gmax.vit/10) +(evo?db->emax.vit:0);
 	snprintf(atcmd_output, sizeof(atcmd_output) ,"Vit: %d (%d~%d)", hom->vit/10, min, max);
 	clif_displaymessage(fd, atcmd_output);
 
 	min = db->base.int_ +lv*(db->gmin.int_/10) +(evo?db->emin.int_:0);
-	max = db->base.int_ +lv*(db->gmax.int_/10) +(evo?db->emax.int_:0);;
+	max = db->base.int_ +lv*(db->gmax.int_/10) +(evo?db->emax.int_:0);
 	snprintf(atcmd_output, sizeof(atcmd_output) ,"Int: %d (%d~%d)", hom->int_/10, min, max);
 	clif_displaymessage(fd, atcmd_output);
 
 	min = db->base.dex +lv*(db->gmin.dex/10) +(evo?db->emin.dex:0);
-	max = db->base.dex +lv*(db->gmax.dex/10) +(evo?db->emax.dex:0);;
+	max = db->base.dex +lv*(db->gmax.dex/10) +(evo?db->emax.dex:0);
 	snprintf(atcmd_output, sizeof(atcmd_output) ,"Dex: %d (%d~%d)", hom->dex/10, min, max);
 	clif_displaymessage(fd, atcmd_output);
 
 	min = db->base.luk +lv*(db->gmin.luk/10) +(evo?db->emin.luk:0);
-	max = db->base.luk +lv*(db->gmax.luk/10) +(evo?db->emax.luk:0);;
+	max = db->base.luk +lv*(db->gmax.luk/10) +(evo?db->emax.luk:0);
 	snprintf(atcmd_output, sizeof(atcmd_output) ,"Luk: %d (%d~%d)", hom->luk/10, min, max);
 	clif_displaymessage(fd, atcmd_output);
 
@@ -9750,7 +9794,9 @@ AtCommandInfo atcommand_info[] = {
 	//Mutated Homunculus Commands
 	{ "hommutate",         60,60,     atcommand_hommutation },
 	{ "hommutation",       60,60,     atcommand_hommutation },
-	{ "hommax",            60,60,     atcommand_hommax }
+	{ "hommax",            60,60,     atcommand_hommax },
+	//Elemental Commands
+	{ "eleminfo",           1,1,      atcommand_eleminfo }
 };
 
 

@@ -10769,6 +10769,8 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 		map_addblock(&sd->ed->bl);
 		clif_spawn(&sd->ed->bl);
 		clif_elemental_info(sd);
+		if( battle_config.elemental_masters_walk_speed )
+			status_calc_bl(&sd->ed->bl, SCB_SPEED);
 	}
 
 	if( sd->state.connect_new )

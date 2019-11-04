@@ -332,7 +332,7 @@ struct s_elemental {
 	int char_id;
 	short class_;
 	int hp, max_hp, sp, max_sp;
-	unsigned short batk, matk, adelay;
+	unsigned short batk, matk, amotion;
 	short def, mdef, hit, flee;
 	short str, agi, vit, int_, dex, luk;
 	unsigned int mode;

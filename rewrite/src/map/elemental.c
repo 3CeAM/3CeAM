@@ -61,7 +61,7 @@ struct view_data * elemental_get_viewdata(int class_)
 
 int elemental_create(struct map_session_data *sd, int class_, unsigned int lifetime)
 {
-	struct s_elemental ele;
+	struct s_elemental elem;
 	struct s_elemental_db *db;
 	int i;
 
@@ -71,17 +71,19 @@ int elemental_create(struct map_session_data *sd, int class_, unsigned int lifet
 		return 0;
 
 	db = &elemental_db[i];
-	memset(&ele,0,sizeof(struct s_elemental));
+	memset(&elem,0,sizeof(struct s_elemental));
 
-	ele.char_id = sd->status.char_id;
-	ele.class_ = class_;
-	ele.mode = EL_MODE_PASSIVE; // Initial mode
-	ele.hp = db->status.max_hp;
-	ele.sp = db->status.max_sp;
-	ele.life_time = lifetime;
+	elem.char_id = sd->status.char_id;
+	elem.class_ = class_;
+	//elem.mode = EL_MODE_PASSIVE; // Initial mode
+	//elem.hp = db->status.max_hp;
+	//elem.sp = db->status.max_sp;
+	elem.hp = 1000000;// Small hack to max out HP/SP
+	elem.sp = 1000000;// to the elementals MaxHP/MaxSP.
+	elem.life_time = lifetime;
 
 	// Request Char Server to create this elemental
-	intif_elemental_create(&ele);
+	intif_elemental_create(&elem);
 
 	return 1;
 }
@@ -649,7 +651,7 @@ static int elemental_ai_sub_timer(struct elemental_data *ed, struct map_session_
 			return 1;
 		}
 		
-		if( battle_check_range(&ed->bl,target,ed->db->range2) && rand()%100 < 2 ) // 2% chance to cast attack skill.
+		if( battle_check_range(&ed->bl,target,ed->db->range2) && rand()%100 < 5 ) // 5% chance to cast attack skill.
 		{
 			if(	elemental_action(ed,target,tick) )
 				return 1;

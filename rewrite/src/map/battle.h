@@ -574,9 +574,19 @@ extern struct Battle_Config
 	int summer2_ignorepalette;
 
 	// Homunculus Limits
+	int natural_homun_healhp_interval;
+	int natural_homun_healsp_interval;
 	int max_homunculus_hp;
 	int max_homunculus_sp;
 	int max_homunculus_parameter;
+
+	// Elemental Settings
+	int elemental_masters_walk_speed;
+	int natural_elem_healhp_interval;
+	int natural_elem_healsp_interval;
+	int max_elemental_hp;
+	int max_elemental_sp;
+	int max_elemental_def_mdef;
 
 	// Renewal EDP Formula Config For Guillotine Cross Skills
 	int gc_skill_edp_boost_formula_a;

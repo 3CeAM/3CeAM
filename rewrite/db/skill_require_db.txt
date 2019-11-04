@@ -25,7 +25,7 @@
 //  mado = Requires to have an active mado
 //  poisonweapon = Requires to be under Poisoning Weapon.
 //  rollingcutter = Requires at least one Rotation Counter from Rolling Cutter.
-//  elementalspirit = Requires to have an Elemental Spirit summoned.
+//  elemental = Requires to have an Elemental summoned.
 //  fighter = Requires Style Change to be set to fighter style.
 //  grappler = Requires Style Change to be set to grappler style.
 //  sunstance = Requires caster to have Sun Stance status active.
@@ -931,15 +931,15 @@
 2453,0,0,34:42:50:58:66,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SO_VACUUM_EXTREME#Vacuum Extreme#
 2454,0,0,55:62:69:76:83,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SO_VARETYR_SPEAR#Varetyr Spear#
 2455,0,0,30:35:40:45:50,0,0,0,99,0,0,none,0,715,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SO_ARRULLO#Arrullo#
-2456,0,0,10,0,0,0,99,0,0,elementalspirit,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SO_EL_CONTROL#Spirit Control#
+2456,0,0,10,0,0,0,99,0,0,elemental,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SO_EL_CONTROL#Spirit Control#
 2457,0,0,100:150:200,0,0,0,99,0,0,none,0,990,3,990,6,994,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SO_SUMMON_AGNI#Summon Fire Spirit Agni#
 2458,0,0,100:150:200,0,0,0,99,0,0,none,0,991,3,991,6,995,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SO_SUMMON_AQUA#Summon Water Spirit Aqua#
 2459,0,0,100:150:200,0,0,0,99,0,0,none,0,992,3,992,6,996,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SO_SUMMON_VENTUS#Summon Wind Spirit Ventus#
 2460,0,0,100:150:200,0,0,0,99,0,0,none,0,993,3,993,6,997,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SO_SUMMON_TERA#Summon Wind Spirit Tera#
-2461,0,0,50,0,0,0,99,0,0,elementalspirit,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SO_EL_ACTION#Elemental Action#
+2461,0,0,50,0,0,0,99,0,0,elemental,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SO_EL_ACTION#Elemental Action#
 2462,0,0,10:20,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SO_EL_ANALYSIS#Four Spirit Analysis#
 
-2464,0,0,10,0,0,0,99,0,0,elementalspirit,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SO_EL_CURE#Spirit Recovery#
+2464,0,0,10,0,0,0,99,0,0,elemental,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SO_EL_CURE#Spirit Recovery#
 2465,0,0,22:30:38,0,0,0,99,0,0,none,0,6360,1,6360,2,6360,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SO_FIRE_INSIGNIA#Fire Insignia#
 2466,0,0,22:30:38,0,0,0,99,0,0,none,0,6361,1,6361,2,6361,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SO_WATER_INSIGNIA#Water Insignia#
 2467,0,0,22:30:38,0,0,0,99,0,0,none,0,6362,1,6362,2,6362,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SO_WIND_INSIGNIA#Wind Insignia#
@@ -1126,7 +1126,7 @@
 5005,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//RK_LUXANIMA#Lux Anima#
 5006,0,0,60:70:80:90:100,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//NC_MAGMA_ERUPTION#Magma Eruption#
 5007,0,0,200:230:260:290:320,0,0,0,99,0,0,none,0,6144,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//WM_FRIGG_SONG#Frigg's Song#
-5008,0,0,120,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SO_ELEMENTAL_SHIELD#Elemental Shield#
+5008,0,0,120,0,0,0,99,0,0,elemental,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SO_ELEMENTAL_SHIELD#Elemental Shield#
 5009,0,0,65,0,0,0,99,0,0,none,5:5:4:4:3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SR_FLASHCOMBO#Flash Combo#
 5010,0,0,30:26:22:18:14,0,0,0,99,0,0,none,0,1065,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//SC_ESCAPE#Emergency Escape#
 5011,0,0,30:60:90:120:150,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//AB_OFFERTORIUM#Offertorium#

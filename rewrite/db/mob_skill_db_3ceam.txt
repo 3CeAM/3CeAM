@@ -73,12 +73,26 @@
 //	hiding		condition of being in hidden state
 //	sight		condition of being in unhidden state
 
-// Mechanic Fixed Automatic Weapon Platforms
+// Mechanic's Fixed Automated Weapons
 2042,Silver Sniper@NPC_REVENGE,idle,333,1,10000,0,0,yes,target,masterattacked,,,,,,,,
 2043,Magic Decoy Fire@MG_FIREBOLT,attack,19,10,10000,500,5000,yes,target,always,0,,,,,,,
 2044,Magic Decoy Water@MG_COLDBOLT,attack,14,10,10000,500,5000,yes,target,always,0,,,,,,,
 2045,Magic Decoy Earth@WZ_EARTHSPIKE,attack,90,10,10000,500,5000,yes,target,always,0,,,,,,,
 2046,Magic Decoy Wind@MG_LIGHTNINGBOLT,attack,20,10,10000,500,5000,yes,target,always,0,,,,,,,
+
+// Sorcerer's Elementals - Code is unable to read these skill ID's. Disable for now.
+//2114,Agni@EL_FIRE_ARROW,attack,8425,1,500,1000,10000,no,target,always,0,,,,,,,
+//2115,Agni@EL_FIRE_BOMB,attack,8426,1,500,1000,10000,no,target,always,0,,,,,,,
+//2116,Agni@EL_FIRE_WAVE,attack,8428,1,500,1000,10000,no,target,always,0,,,,,,,
+//2117,Aqua@EL_ICE_NEEDLE,attack,8430,1,500,1000,10000,no,target,always,0,,,,,,,
+//2118,Aqua@EL_WATER_SCREW,attack,8431,1,500,1000,10000,no,target,always,0,,,,,,,
+//2119,Aqua@EL_TIDAL_WEAPON,attack,8433,1,500,1000,10000,no,target,always,0,,,,,,,
+//2120,Ventus@EL_WIND_SLASH,attack,8434,1,500,1000,10000,no,target,always,0,,,,,,,
+//2121,Ventus@EL_HURRICANE,attack,8435,1,500,1000,10000,no,target,always,0,,,,,,,
+//2122,Ventus@EL_TYPOON_MIS,attack,8437,1,500,1000,10000,no,target,always,0,,,,,,,
+//2123,Tera@EL_STONE_HAMMER,attack,8439,1,500,1000,10000,no,target,always,0,,,,,,,
+//2124,Tera@EL_ROCK_CRUSHER,attack,8440,1,500,1000,10000,no,target,always,0,,,,,,,
+//2125,Tera@EL_STONE_RAIN,attack,8442,1,500,1000,10000,no,target,always,0,,,,,,,
 
 // Sera's Legion Insects
 2158,Hornet@NPC_PIERCINGATT,attack,158,3,500,0,5000,yes,target,always,0,,,,,,6,
