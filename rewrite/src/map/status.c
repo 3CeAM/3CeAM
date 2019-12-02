@@ -531,7 +531,7 @@ void initChangeTables(void)
 	set_sc( SR_RAISINGDRAGON         , SC_RAISINGDRAGON      , SI_RAISINGDRAGON         , SCB_REGEN|SCB_MAXHP|SCB_MAXSP );
 	set_sc( SR_GENTLETOUCH_ENERGYGAIN, SC_GT_ENERGYGAIN      , SI_GENTLETOUCH_ENERGYGAIN, SCB_NONE );
 	set_sc( SR_GENTLETOUCH_CHANGE    , SC_GT_CHANGE          , SI_GENTLETOUCH_CHANGE    , SCB_WATK|SCB_MDEF|SCB_ASPD|SCB_MAXHP );
-	set_sc( SR_GENTLETOUCH_REVITALIZE, SC_GT_REVITALIZE      , SI_GENTLETOUCH_REVITALIZE, SCB_DEF2|SCB_MAXHP|SCB_REGEN );
+	set_sc( SR_GENTLETOUCH_REVITALIZE, SC_GT_REVITALIZE      , SI_GENTLETOUCH_REVITALIZE, SCB_MAXHP|SCB_DEF2|SCB_REGEN );
 	add_sc( SR_HOWLINGOFLION         , SC_FEAR              );
 
 	set_sc( WA_SWING_DANCE            , SC_SWINGDANCE           , SI_SWING                  , SCB_SPEED|SCB_ASPD );
@@ -562,10 +562,10 @@ void initChangeTables(void)
 	set_sc( SO_WARMER            , SC_WARMER          , SI_WARMER          , SCB_NONE );
 	set_sc( SO_VACUUM_EXTREME    , SC_VACUUM_EXTREME  , SI_VACUUM_EXTREME  , SCB_NONE );
 	add_sc( SO_ARRULLO           , SC_DEEPSLEEP       );
-	set_sc( SO_FIRE_INSIGNIA     , SC_FIRE_INSIGNIA   , SI_FIRE_INSIGNIA   , SCB_BATK|SCB_WATK|SCB_MATK|SCB_ATK_ELE );
-	set_sc( SO_WATER_INSIGNIA    , SC_WATER_INSIGNIA  , SI_WATER_INSIGNIA  , SCB_BATK|SCB_WATK|SCB_ATK_ELE );
-	set_sc( SO_WIND_INSIGNIA     , SC_WIND_INSIGNIA   , SI_WIND_INSIGNIA   , SCB_BATK|SCB_WATK|SCB_ASPD|SCB_ATK_ELE );
-	set_sc( SO_EARTH_INSIGNIA    , SC_EARTH_INSIGNIA  , SI_EARTH_INSIGNIA  , SCB_MAXHP|SCB_MAXSP|SCB_BATK|SCB_WATK|SCB_DEF|SCB_MDEF|SCB_ATK_ELE );
+	set_sc( SO_FIRE_INSIGNIA     , SC_FIRE_INSIGNIA   , SI_FIRE_INSIGNIA   , SCB_BATK|SCB_WATK|SCB_MATK|SCB_ATK_ELE|SCB_REGEN );
+	set_sc( SO_WATER_INSIGNIA    , SC_WATER_INSIGNIA  , SI_WATER_INSIGNIA  , SCB_BATK|SCB_WATK|SCB_ATK_ELE|SCB_REGEN );
+	set_sc( SO_WIND_INSIGNIA     , SC_WIND_INSIGNIA   , SI_WIND_INSIGNIA   , SCB_BATK|SCB_WATK|SCB_ASPD|SCB_ATK_ELE|SCB_REGEN );
+	set_sc( SO_EARTH_INSIGNIA    , SC_EARTH_INSIGNIA  , SI_EARTH_INSIGNIA  , SCB_MAXHP|SCB_MAXSP|SCB_BATK|SCB_WATK|SCB_DEF|SCB_MDEF|SCB_ATK_ELE|SCB_REGEN );
 
 	set_sc( GN_CARTBOOST                  , SC_GN_CARTBOOST   , SI_GN_CARTBOOST               , SCB_SPEED );
 	set_sc( GN_THORNS_TRAP                , SC_THORNSTRAP     , SI_THORNS_TRAP                , SCB_NONE );
@@ -1010,8 +1010,8 @@ void initChangeTables(void)
 	StatusChangeFlagTable[SC_MELON_BOMB] |= SCB_SPEED|SCB_ASPD;
 	StatusChangeFlagTable[SC_PROMOTE_HEALTH_RESERCH] |= SCB_MAXHP;
 	StatusChangeFlagTable[SC_ENERGY_DRINK_RESERCH] |= SCB_MAXSP;
-	//StatusChangeFlagTable[SC_EXTRACT_WHITE_POTION_Z] |= SCB_REGEN;
-	StatusChangeFlagTable[SC_VITATA_500] |= SCB_MAXSP;
+	StatusChangeFlagTable[SC_EXTRACT_WHITE_POTION_Z] |= SCB_REGEN;
+	StatusChangeFlagTable[SC_VITATA_500] |= SCB_MAXSP|SCB_REGEN;
 	StatusChangeFlagTable[SC_EXTRACT_SALAMINE_JUICE] |= SCB_ASPD;
 	StatusChangeFlagTable[SC_BOOST500] |= SCB_ASPD;
 	StatusChangeFlagTable[SC_FULL_SWING_K] |= SCB_WATK;
@@ -2114,29 +2114,22 @@ int status_calc_mob_(struct mob_data* md, bool first)
 			//}
 			else if ( ud->skillid == KO_ZANZOU )
 				status->max_hp = 3000 + 3000 * ud->skilllv + status_get_max_sp(mbl);
-			/*else if ( ud->skillid == MH_SUMMON_LEGION )// Disabled until I can confirm this stuff is really used.
+			else if ( ud->skillid == MH_SUMMON_LEGION )
 			{
-				short summon_def = 10 + 5 * ud->skilllv;
-				//short summon_aspd = 10 * (2 * (20 - ud->skilllv) - status_get_lv(mbl) / 10);
+				const int summon_def[10] = { 15, 20, 25, 30, 33, 37, 40, 42, 45, 47 };// DEF - Future proofed for 10 levels.
+				short summon_amotion = 10 * (2 * (20 - ud->skilllv) - status_get_lv(mbl) / 10);
 
 				status->max_hp = 10 * (100 * (2 + ud->skilllv) + status_get_lv(mbl));
-
 				status->rhw.atk2 = 100 * (ud->skilllv + 5) / 2;
+				status->def = summon_def[ud->skilllv-1];
 
-				// RE to Pre-RE conversion gives a DEF of 15/20/25/30/33.
-				if ( summon_def > 90 )
-					status->def = 90;// Avoid having a DEF over 90 if too high of a skill level is used for balance reasons.
-				else if ( ud->skilllv == 5 )
-					status->def = 33;// Lv 5 33 DEF.
-				else
-					status->def = (unsigned char)summon_def;
+				// ASPD formula is correct but feels OP. Need to see official in-game behavior. [Rytech]
+				if ( summon_amotion < 100 )
+					summon_amotion = 100;
 
-				// Currently OP. The formula is correct but clearly OP. Need to see official in-game behavior. [Rytech]
-				//if ( summon_aspd < 100 )
-				//	status->adelay = 100;
-				//else
-				//	status->adelay = 10 * (2 * (20 - ud->skilllv) - status_get_lv(mbl) / 10);
-			}*/
+				status->amotion = summon_amotion;
+				status->adelay = 2 * status->amotion;
+			}
 			status->hp = status->max_hp;
 		}
 	}
@@ -3487,6 +3480,23 @@ int status_calc_homunculus_(struct homun_data *hd, bool first)
 	return 1;
 }
 
+int status_check_elemental_type(struct block_list *bl)
+{
+	if ( bl->type != BL_ELEM )
+		return 0;
+
+	if ( status_get_class(bl) >= MOBID_EL_AGNI_S && status_get_class(bl) <= MOBID_EL_AGNI_L )
+		return ELEMTYPE_AGNI;
+	else if ( status_get_class(bl) >= MOBID_EL_AQUA_S && status_get_class(bl) <= MOBID_EL_AQUA_L )
+		return ELEMTYPE_AQUA;
+	else if ( status_get_class(bl) >= MOBID_EL_VENTUS_S && status_get_class(bl) <= MOBID_EL_VENTUS_L )
+		return ELEMTYPE_VENTUS;
+	else if ( status_get_class(bl) >= MOBID_EL_TERA_S && status_get_class(bl) <= MOBID_EL_TERA_L )
+		return ELEMTYPE_TERA;
+
+	return 0;
+}
+
 int status_calc_elemental_(struct elemental_data *ed, bool first)
 {
 	struct status_data *status = &ed->base_status;
@@ -3605,22 +3615,22 @@ int status_calc_elemental_(struct elemental_data *ed, bool first)
 
 	// Bonus sub-stats given depending on the elemental type and its summon level.
 	// Agni - Bonus ATK/HIT
-	if ( status_get_class(&ed->bl) >= MOBID_EL_AGNI_S && status_get_class(&ed->bl) <= MOBID_EL_AGNI_L )
+	if ( status_check_elemental_type(&ed->bl) == ELEMTYPE_AGNI )
 	{
 		status->rhw.atk = status->rhw.atk2 += 20 * elem_size;
 		status->hit += 10 * elem_size;
 	}// Aqua - Bonus MATK/MDEF
-	else if ( status_get_class(&ed->bl) >= MOBID_EL_AQUA_S && status_get_class(&ed->bl) <= MOBID_EL_AQUA_L )
+	else if ( status_check_elemental_type(&ed->bl) == ELEMTYPE_AQUA )
 	{
 		status->matk_min = status->matk_max += 20 * elem_size;
 		status->mdef += 10 * elem_size / 10;
 	}// Ventus - Bonus MATK/FLEE
-	else if ( status_get_class(&ed->bl) >= MOBID_EL_VENTUS_S && status_get_class(&ed->bl) <= MOBID_EL_VENTUS_L )
+	else if ( status_check_elemental_type(&ed->bl) == ELEMTYPE_VENTUS )
 	{
 		status->matk_min = status->matk_max += 10 * elem_size;
 		status->flee += 20 * elem_size;
 	}// Tera - Bonus ATK/DEF
-	else if ( status_get_class(&ed->bl) >= MOBID_EL_TERA_S && status_get_class(&ed->bl) <= MOBID_EL_TERA_L )
+	else if ( status_check_elemental_type(&ed->bl) == ELEMTYPE_TERA )
 	{
 		status->rhw.atk = status->rhw.atk2 += 5 * elem_size;
 		status->def += 25 * elem_size / 10;
@@ -3784,7 +3794,7 @@ void status_calc_regen_rate(struct block_list *bl, struct regen_data *regen, str
 
 		if (regen->sregen->sp)
 			regen->flag|=RGN_SSP;
-		regen->sregen->rate.hp = regen->sregen->rate.sp = 1;
+		regen->sregen->rate.hp = regen->sregen->rate.sp = 100;
 	}
 	if (regen->ssregen)
 	{
@@ -3793,9 +3803,9 @@ void status_calc_regen_rate(struct block_list *bl, struct regen_data *regen, str
 
 		if (regen->ssregen->sp)
 			regen->flag|=RGN_SSP;
-		regen->ssregen->rate.hp = regen->ssregen->rate.sp = 1;
+		regen->ssregen->rate.hp = regen->ssregen->rate.sp = 100;
 	}
-	regen->rate.hp = regen->rate.sp = 1;
+	regen->rate.hp = regen->rate.sp = 100;
 
 	if (!sc || !sc->count)
 		return;
@@ -3819,46 +3829,65 @@ void status_calc_regen_rate(struct block_list *bl, struct regen_data *regen, str
 		|| (
 			(((TBL_PC*)bl)->class_&MAPID_UPPERMASK) == MAPID_MONK &&
 			(sc->data[SC_EXTREMITYFIST] || (sc->data[SC_EXPLOSIONSPIRITS] && (!sc->data[SC_SPIRIT] || sc->data[SC_SPIRIT]->val2 != SL_MONK)))
-			) || sc->data[SC_OBLIVIONCURSE]
+			)
 		|| sc->data[SC_MAXIMIZEPOWER]
+		|| sc->data[SC_VITALITYACTIVATION]
+		|| sc->data[SC_OBLIVIONCURSE]
 	)	//No natural SP regen
 		regen->flag &=~RGN_SP;
 
 	if( sc->data[SC_TENSIONRELAX] )
 	{
-		regen->rate.hp += 2;
+		regen->rate.hp += 200;
 		if (regen->sregen)
-			regen->sregen->rate.hp += 3;
+			regen->sregen->rate.hp += 300;
 	}
 	if( sc->data[SC_MAGNIFICAT] )
 	{
-		regen->rate.hp += 1;
-		regen->rate.sp += 1;
+		regen->rate.hp += 100;
+		regen->rate.sp += 100;
 	}
 
 	if( sc->data[SC_CATNIPPOWDER] )
 	{// Rate increase is unknown. Also not sure if this stacks with other increases. [Rytech]
-		regen->rate.hp += 1;
-		regen->rate.sp += 1;
+		regen->rate.hp += 100;
+		regen->rate.sp += 100;
 	}
 
+	// iRO document says it increase HP recovery by 50% but I don't see that in aegis. Needs testing. [Rytech}
 	if( sc->data[SC_BANDING] )
-		regen->rate.hp += 1;// Should be 50% increase, not 100%. How do I do that??? [Rytech]
+		regen->rate.hp += 50;
+
+	if( sc->data[SC_GT_REVITALIZE] )// 50 + 30 * SkillLV
+		regen->rate.hp += sc->data[SC_GT_REVITALIZE]->val3;
+
+	if( bl->type == BL_ELEM && 
+		((sc->data[SC_FIRE_INSIGNIA] && sc->data[SC_FIRE_INSIGNIA]->val1 == 1 && status_check_elemental_type(bl) == ELEMTYPE_AGNI) || 
+		(sc->data[SC_WATER_INSIGNIA] && sc->data[SC_WATER_INSIGNIA]->val1 == 1 && status_check_elemental_type(bl) == ELEMTYPE_AQUA) || 
+		(sc->data[SC_WIND_INSIGNIA] && sc->data[SC_WIND_INSIGNIA]->val1 == 1 && status_check_elemental_type(bl) == ELEMTYPE_VENTUS) || 
+		(sc->data[SC_EARTH_INSIGNIA] && sc->data[SC_EARTH_INSIGNIA]->val1 == 1 && status_check_elemental_type(bl) == ELEMTYPE_TERA)) )
+	{
+		regen->rate.hp += 100;
+		regen->rate.sp += 100;
+	}
+
+	if( sc->data[SC_EXTRACT_WHITE_POTION_Z] )// 20
+		regen->rate.hp += sc->data[SC_EXTRACT_WHITE_POTION_Z]->val1;
+
+	if( sc->data[SC_VITATA_500] )// 20
+		regen->rate.sp += sc->data[SC_VITATA_500]->val1;
 
 	if( sc->data[SC_REGENERATION] )
 	{
 		const struct status_change_entry *sce = sc->data[SC_REGENERATION];
 		if( !sce->val4 )
 		{
-			regen->rate.hp += sce->val2;
-			regen->rate.sp += sce->val3;
+			regen->rate.hp += 100*sce->val2;
+			regen->rate.sp += 100*sce->val3;
 		}
 		else
 			regen->flag &=~ sce->val4; //Remove regen as specified by val4
 	}
-
-	if( sc->data[SC_VITALITYACTIVATION] )
-		regen->flag &=~RGN_SP;
 }
 
 /// Recalculates parts of an object's battle status according to the specified flags.
@@ -5026,7 +5055,13 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += watk * sc->data[SC_FLEET]->val3/100;
 	if(sc->data[SC__BLOODYLUST])
 		watk += watk * 32 / 100;
-	if((sc->data[SC_FIRE_INSIGNIA] && sc->data[SC_FIRE_INSIGNIA]->val1 == 2) ||
+	if( bl->type == BL_ELEM && 
+		((sc->data[SC_FIRE_INSIGNIA] && sc->data[SC_FIRE_INSIGNIA]->val1 == 1 && status_check_elemental_type(bl) == ELEMTYPE_AGNI) || 
+		(sc->data[SC_WATER_INSIGNIA] && sc->data[SC_WATER_INSIGNIA]->val1 == 1 && status_check_elemental_type(bl) == ELEMTYPE_AQUA) || 
+		(sc->data[SC_WIND_INSIGNIA] && sc->data[SC_WIND_INSIGNIA]->val1 == 1 && status_check_elemental_type(bl) == ELEMTYPE_VENTUS) || 
+		(sc->data[SC_EARTH_INSIGNIA] && sc->data[SC_EARTH_INSIGNIA]->val1 == 1 && status_check_elemental_type(bl) == ELEMTYPE_TERA)) )
+		watk += watk * 20 / 100;
+	else if( (sc->data[SC_FIRE_INSIGNIA] && sc->data[SC_FIRE_INSIGNIA]->val1 == 2) ||
 		(sc->data[SC_WATER_INSIGNIA] && sc->data[SC_WATER_INSIGNIA]->val1 == 2) ||
 		(sc->data[SC_WIND_INSIGNIA] && sc->data[SC_WIND_INSIGNIA]->val1 == 2) ||
 		(sc->data[SC_EARTH_INSIGNIA] && sc->data[SC_EARTH_INSIGNIA]->val1 == 2))
@@ -5411,7 +5446,7 @@ static signed short status_calc_def2(struct block_list *bl, struct status_change
 	if(sc->data[SC_SUN_COMFORT])
 		def2 += sc->data[SC_SUN_COMFORT]->val2;
 	if( sc->data[SC_GT_REVITALIZE] )
-		def2 += sc->data[SC_GT_REVITALIZE]->val2;
+		def2 += sc->data[SC_GT_REVITALIZE]->val4;
 	if(sc->data[SC_ANGELUS])
 		def2 += def2 * sc->data[SC_ANGELUS]->val2/100;
 	if(sc->data[SC_CONCENTRATION])
@@ -5914,7 +5949,7 @@ static unsigned int status_calc_maxhp(struct block_list *bl, struct status_chang
 	if(sc->data[SC_RAISINGDRAGON])
 		maxhp += maxhp * (2 + sc->data[SC_RAISINGDRAGON]->val1) / 100;
 	if(sc->data[SC_GT_REVITALIZE])
-		maxhp += maxhp * (2 * sc->data[SC_GT_REVITALIZE]->val1) / 100;
+		maxhp += maxhp * sc->data[SC_GT_REVITALIZE]->val2 / 100;
 	if(sc->data[SC_LUNARSTANCE])
 		maxhp += maxhp * sc->data[SC_LUNARSTANCE]->val2 / 100;
 	if(sc->data[SC_FRIGG_SONG])
@@ -9135,8 +9170,11 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 			}
 			break;
 		case SC_GT_REVITALIZE:
-			val2 = status->vit / 4 * val1;//VIT defense increase.
-			val3 = 50 + 30 * val1;//Natural HP recovery rate increase.
+			val2 = 2 * val1;//MaxHP Increase
+			val3 = 50 + 30 * val1;//HP recovery rate increase
+			val4 = status->vit / 4 * val1;//VIT defense increase.
+			if ( sd )
+				sd->regen.state.walk = 1;
 			break;
 		case SC_FIRE_INSIGNIA:
 		case SC_WATER_INSIGNIA:
@@ -10499,6 +10537,10 @@ int status_change_end(struct block_list* bl, enum sc_type type, int tid)
 					--i;
 				}
 			}
+			break;
+		case SC_GT_REVITALIZE:
+			if ( sd && pc_checkskill(sd,SM_MOVINGRECOVERY) < 1)
+				sd->regen.state.walk = 0;
 			break;
 		case SC_SATURDAYNIGHTFEVER:
 			sc_start(bl,SC_SITDOWN_FORCE,100,sce->val1,skill_get_time2(WM_SATURDAY_NIGHT_FEVER,sce->val1));
@@ -12201,7 +12243,7 @@ static int status_natural_heal(struct block_list* bl, va_list args)
 		sregen = regen->ssregen;
 		if(flag&(RGN_SHP))
 		{	//Sitting HP regen
-			val = natural_heal_diff_tick * sregen->rate.hp;
+			val = natural_heal_diff_tick * sregen->rate.hp / 100;
 			if (regen->state.overweight)
 				val>>=1; //Half as fast when overweight.
 			sregen->tick.hp += val;
@@ -12217,7 +12259,7 @@ static int status_natural_heal(struct block_list* bl, va_list args)
 		}
 		if(flag&(RGN_SSP))
 		{	//Sitting SP regen
-			val = natural_heal_diff_tick * sregen->rate.sp;
+			val = natural_heal_diff_tick * sregen->rate.sp / 100;
 			if (regen->state.overweight)
 				val>>=1; //Half as fast when overweight.
 			sregen->tick.sp += val;
@@ -12252,16 +12294,16 @@ static int status_natural_heal(struct block_list* bl, va_list args)
 	{
 		if(!vd) vd = status_get_viewdata(bl);
 		if(vd && vd->dead_sit == 2)
-			bonus++;
+			bonus += 100;
 		if(regen->state.gc)
-			bonus++;
+			bonus += 100;
 	}
 
 	//Natural Hp regen
 	if (flag&RGN_HP)
 	{
-		rate = natural_heal_diff_tick*(regen->rate.hp+bonus);
-		if (ud && ud->walktimer != INVALID_TIMER)
+		rate = natural_heal_diff_tick * (regen->rate.hp + bonus) / 100;
+		if ( !(sc && sc->data[SC_GT_REVITALIZE]) && ud && ud->walktimer != INVALID_TIMER)
 			rate/=2;
 
 		regen->tick.hp += rate;
@@ -12289,7 +12331,7 @@ static int status_natural_heal(struct block_list* bl, va_list args)
 	//Natural SP regen
 	if(flag&RGN_SP)
 	{
-		rate = natural_heal_diff_tick*(regen->rate.sp+bonus);
+		rate = natural_heal_diff_tick * (regen->rate.sp + bonus) / 100;
 
 		regen->tick.sp += rate;
 
@@ -12321,7 +12363,7 @@ static int status_natural_heal(struct block_list* bl, va_list args)
 
 	if(flag&RGN_SHP)
 	{	//Skill HP regen
-		sregen->tick.hp += natural_heal_diff_tick * sregen->rate.hp;
+		sregen->tick.hp += natural_heal_diff_tick * sregen->rate.hp / 100;
 		
 		while(sregen->tick.hp >= (unsigned int)battle_config.natural_heal_skill_interval)
 		{
@@ -12332,7 +12374,7 @@ static int status_natural_heal(struct block_list* bl, va_list args)
 	}
 	if(flag&RGN_SSP)
 	{	//Skill SP regen
-		sregen->tick.sp += natural_heal_diff_tick * sregen->rate.sp;
+		sregen->tick.sp += natural_heal_diff_tick * sregen->rate.sp / 100;
 		while(sregen->tick.sp >= (unsigned int)battle_config.natural_heal_skill_interval)
 		{
 			val = sregen->sp;

@@ -427,8 +427,6 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, int skill
 		{
 			if( sc->data[SC_INCHEALRATE] )// Only affects Heal, Sanctuary and PotionPitcher.(like bHealPower) [Inkfish]
 				hp += hp * sc->data[SC_INCHEALRATE]->val1 / 100;// Highness Heal too. [Rytech]
-			if( sc->data[SC_EXTRACT_WHITE_POTION_Z] )
-				hp += hp * sc->data[SC_EXTRACT_WHITE_POTION_Z]->val1 / 100;
 			if ( sc->data[SC_WATER_INSIGNIA] && sc->data[SC_WATER_INSIGNIA]->val1 == 2 )
 				hp += hp * 10 / 100;
 		}
@@ -10743,7 +10741,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 						sc_start2(bl, SC_VITATA_500, 100, 20, 5, 500000);
 						status_heal(bl, 0, 200, 0);
 						break;
-					case ITEMID_THROW_EXTRACT_SALAMINE_JUICE:// ASPD +10
+					case ITEMID_THROW_EXTRACT_SALAMINE_JUICE:// ASPD +10%
 						sc_start(bl, SC_EXTRACT_SALAMINE_JUICE, 100, 10, 500000);
 						break;
 					case ITEMID_THROW_SAVAGE_STEAK:// STR +20

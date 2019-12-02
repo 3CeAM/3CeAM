@@ -8047,6 +8047,10 @@ ACMD_FUNC(eleminfo)
 		status->hit, status->flee, (200 - status->amotion / 10), status->adelay);
 	clif_displaymessage(fd, atcmd_output);
 
+	snprintf(atcmd_output, sizeof(atcmd_output) ,"HP/SP Regen Rate : %d%%/%d%%",
+		ed->regen.rate.hp, ed->regen.rate.sp);
+	clif_displaymessage(fd, atcmd_output);
+
 	//snprintf(atcmd_output, sizeof(atcmd_output) ,"Summon Time: %d (Currently Broken)",
 	//	ed->summon_timer);
 	//clif_displaymessage(fd, atcmd_output);

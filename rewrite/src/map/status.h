@@ -2121,6 +2121,14 @@ enum scb_flag
 //Define to determine who has regen
 #define BL_REGEN (BL_PC|BL_HOM|BL_MER|BL_ELEM)
 
+// Temp placement for elemental type set until core elemental file is redone.
+enum {
+	ELEMTYPE_NONE = 0,
+	ELEMTYPE_AGNI,
+	ELEMTYPE_AQUA,
+	ELEMTYPE_VENTUS,
+	ELEMTYPE_TERA,
+};
 
 //Basic damage info of a weapon
 //Required because players have two of these, one in status_data
@@ -2167,9 +2175,9 @@ struct regen_data_sub {
 		unsigned int hp,sp;
 	} tick;
 	
-	//Regen rates (where every 1 means +100% regen)
+	//Regen rates
 	struct {
-		unsigned char hp,sp;
+		unsigned short hp,sp;
 	} rate;
 };
 
@@ -2184,9 +2192,9 @@ struct regen_data {
 		unsigned int hp,sp,shp,ssp;
 	} tick;
 	
-	//Regen rates (where every 1 means +100% regen)
+	//Regen rates
 	struct {
-		unsigned char
+		unsigned short
 		hp,sp,shp,ssp;
 	} rate;
 	
@@ -2351,6 +2359,9 @@ void status_calc_regen_rate(struct block_list *bl, struct regen_data *regen, str
 int status_getrefinebonus(int lv,int type);
 int status_check_skilluse(struct block_list *src, struct block_list *target, int skill_num, int skill_lv, int flag); // [Skotlex]
 int status_check_visibility(struct block_list *src, struct block_list *target); //[Skotlex]
+
+// 3CeAM - Elemental Type Check
+int status_check_elemental_type(struct block_list *bl);
 
 int status_readdb(void);
 int do_init_status(void);

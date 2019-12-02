@@ -2423,9 +2423,9 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 					if( level_effect_bonus == 1 )
 						skillratio = skillratio * status_get_base_lv_effect(src) / 120;
 					if( level_effect_bonus == 1 )
-					skillratio += sstatus->agi * 2 + status_get_job_lv_effect(src) * 4;
+						skillratio += 2 * sstatus->agi + 4 * status_get_job_lv_effect(src);
 					else
-					skillratio += sstatus->agi * 2 + 200;
+						skillratio += 2 * sstatus->agi + 200;
 					break;
 				case GC_PHANTOMMENACE:
 					skillratio += 200;
