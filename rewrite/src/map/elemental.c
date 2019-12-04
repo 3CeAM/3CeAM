@@ -243,7 +243,7 @@ int elemental_clean_single_effect(struct elemental_data *ed, int skill_num)
 
 	bl = battle_get_master(&ed->bl);
 	
-	if( type )
+	/*if( type )
 	{
 		switch( type )
 		{
@@ -276,7 +276,7 @@ int elemental_clean_single_effect(struct elemental_data *ed, int skill_num)
 				if( bl ) status_change_end(bl,type,-1);
 				break;
 		}
-	}
+	}*/
 	if( skill_get_unit_id(skill_num,0) )
 		skill_clear_unitgroup(&ed->bl);
 
@@ -290,7 +290,7 @@ int elemental_clean_effect(struct elemental_data *ed)
 	nullpo_ret(ed);
 
 	// Elemental side
-	status_change_end(&ed->bl, SC_TROPIC, INVALID_TIMER);
+	/*status_change_end(&ed->bl, SC_TROPIC, INVALID_TIMER);
 	status_change_end(&ed->bl, SC_HEATER, INVALID_TIMER);
 	status_change_end(&ed->bl, SC_AQUAPLAY, INVALID_TIMER);
 	status_change_end(&ed->bl, SC_COOLER, INVALID_TIMER);
@@ -310,7 +310,7 @@ int elemental_clean_effect(struct elemental_data *ed)
 	status_change_end(&ed->bl, SC_STONE_SHIELD, INVALID_TIMER);
 	status_change_end(&ed->bl, SC_UPHEAVAL, INVALID_TIMER);
 	status_change_end(&ed->bl, SC_CIRCLE_OF_FIRE, INVALID_TIMER);
-	status_change_end(&ed->bl, SC_TIDAL_WEAPON, INVALID_TIMER);
+	status_change_end(&ed->bl, SC_TIDAL_WEAPON, INVALID_TIMER);*/
 
 	skill_clear_unitgroup(&ed->bl);
 
@@ -318,7 +318,7 @@ int elemental_clean_effect(struct elemental_data *ed)
 		return 0;
 
 	// Master side
-	status_change_end(&sd->bl, SC_TROPIC_OPTION, INVALID_TIMER);
+	/*status_change_end(&sd->bl, SC_TROPIC_OPTION, INVALID_TIMER);
 	status_change_end(&sd->bl, SC_HEATER_OPTION, INVALID_TIMER);
 	status_change_end(&sd->bl, SC_AQUAPLAY_OPTION, INVALID_TIMER);
 	status_change_end(&sd->bl, SC_COOLER_OPTION, INVALID_TIMER);
@@ -341,7 +341,7 @@ int elemental_clean_effect(struct elemental_data *ed)
 	status_change_end(&sd->bl, SC_STONE_SHIELD_OPTION, INVALID_TIMER);
 	status_change_end(&sd->bl, SC_UPHEAVAL_OPTION, INVALID_TIMER);
 	status_change_end(&sd->bl, SC_CIRCLE_OF_FIRE_OPTION, INVALID_TIMER);
-	status_change_end(&sd->bl, SC_TIDAL_WEAPON_OPTION, INVALID_TIMER);
+	status_change_end(&sd->bl, SC_TIDAL_WEAPON_OPTION, INVALID_TIMER);*/
 
 	return 1;
 }

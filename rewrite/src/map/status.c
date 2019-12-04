@@ -727,34 +727,6 @@ void initChangeTables(void)
 	set_sc( MER_BLESSING         , SC_BLESSING        , SI_BLESSING        , SCB_STR|SCB_INT|SCB_DEX );
 	set_sc( MER_INCAGI           , SC_INCREASEAGI     , SI_INCREASEAGI     , SCB_AGI|SCB_SPEED );
 
-	// Elemental Spirit summoner's 'side' status changes.
-	set_sc( EL_CIRCLE_OF_FIRE  , SC_CIRCLE_OF_FIRE_OPTION, SI_CIRCLE_OF_FIRE_OPTION, SCB_NONE );
-	set_sc( EL_FIRE_CLOAK      , SC_FIRE_CLOAK_OPTION    , SI_FIRE_CLOAK_OPTION    , SCB_ALL );
-	set_sc( EL_WATER_SCREEN    , SC_WATER_SCREEN_OPTION  , SI_WATER_SCREEN_OPTION  , SCB_NONE );
-	set_sc( EL_WATER_DROP      , SC_WATER_DROP_OPTION    , SI_WATER_DROP_OPTION    , SCB_ALL );
-	set_sc( EL_WATER_BARRIER   , SC_WATER_BARRIER        , SI_WATER_BARRIER        , SCB_MDEF|SCB_WATK|SCB_MATK|SCB_FLEE );
-	set_sc( EL_WIND_STEP       , SC_WIND_STEP_OPTION     , SI_WIND_STEP_OPTION     , SCB_SPEED|SCB_FLEE );
-	set_sc( EL_WIND_CURTAIN    , SC_WIND_CURTAIN_OPTION  , SI_WIND_CURTAIN_OPTION  , SCB_ALL );
-	set_sc( EL_ZEPHYR          , SC_ZEPHYR               , SI_ZEPHYR               , SCB_FLEE );
-	set_sc( EL_SOLID_SKIN      , SC_SOLID_SKIN_OPTION    , SI_SOLID_SKIN_OPTION    , SCB_DEF|SCB_MAXHP );
-	set_sc( EL_STONE_SHIELD    , SC_STONE_SHIELD_OPTION  , SI_STONE_SHIELD_OPTION  , SCB_ALL );
-	set_sc( EL_POWER_OF_GAIA   , SC_POWER_OF_GAIA        , SI_POWER_OF_GAIA        , SCB_MAXHP|SCB_DEF|SCB_SPEED );
-	set_sc( EL_PYROTECHNIC     , SC_PYROTECHNIC_OPTION   , SI_PYROTECHNIC_OPTION   , SCB_WATK );
-	set_sc( EL_HEATER          , SC_HEATER_OPTION        , SI_HEATER_OPTION        , SCB_WATK );
-	set_sc( EL_TROPIC          , SC_TROPIC_OPTION        , SI_TROPIC_OPTION        , SCB_WATK );
-	set_sc( EL_AQUAPLAY        , SC_AQUAPLAY_OPTION      , SI_AQUAPLAY_OPTION      , SCB_MATK );
-	set_sc( EL_COOLER          , SC_COOLER_OPTION        , SI_COOLER_OPTION        , SCB_MATK );
-	set_sc( EL_CHILLY_AIR      , SC_CHILLY_AIR_OPTION    , SI_CHILLY_AIR_OPTION    , SCB_MATK );
-	set_sc( EL_GUST            , SC_GUST_OPTION          , SI_GUST_OPTION          , SCB_NONE );
-	set_sc( EL_BLAST           , SC_BLAST_OPTION         , SI_BLAST_OPTION         , SCB_NONE );
-	set_sc( EL_WILD_STORM      , SC_WILD_STORM_OPTION    , SI_WILD_STORM_OPTION    , SCB_ASPD );
-	set_sc( EL_PETROLOGY       , SC_PETROLOGY_OPTION     , SI_PETROLOGY_OPTION     , SCB_NONE );
-	set_sc( EL_CURSED_SOIL     , SC_CURSED_SOIL_OPTION   , SI_CURSED_SOIL_OPTION   , SCB_NONE );
-	set_sc( EL_UPHEAVAL        , SC_UPHEAVAL_OPTION      , SI_UPHEAVAL_OPTION      , SCB_MAXHP );
-	set_sc( EL_TIDAL_WEAPON    , SC_TIDAL_WEAPON_OPTION  , SI_TIDAL_WEAPON_OPTION  , SCB_ALL );
-	set_sc( EL_ROCK_CRUSHER    , SC_ROCK_CRUSHER         , SI_ROCK_CRUSHER         , SCB_DEF );
-	set_sc( EL_ROCK_CRUSHER_ATK, SC_ROCK_CRUSHER_ATK     , SI_ROCK_CRUSHER_ATK     , SCB_SPEED );
-
 	set_sc( GD_LEADERSHIP        , SC_GUILDAURA       , SI_BLANK           , SCB_STR|SCB_AGI|SCB_VIT|SCB_DEX );
 	set_sc( GD_BATTLEORDER       , SC_BATTLEORDERS    , SI_BLANK           , SCB_STR|SCB_INT|SCB_DEX );
 	set_sc( GD_REGENERATION      , SC_REGENERATION    , SI_BLANK           , SCB_REGEN );
@@ -898,28 +870,6 @@ void initChangeTables(void)
 	StatusIconChangeTable[SC_MIDNIGHT_FRENZY_POSTDELAY] = SI_MIDNIGHT_FRENZY_POSTDELAY;
 	StatusIconChangeTable[SC_TINDER_BREAKER_POSTDELAY] = SI_TINDER_BREAKER_POSTDELAY;
 	StatusIconChangeTable[SC_CBC_POSTDELAY] = SI_CBC_POSTDELAY;
-
-	// Elemental Spirit's 'side' status change icons.
-	StatusIconChangeTable[SC_CIRCLE_OF_FIRE] = SI_CIRCLE_OF_FIRE;
-	StatusIconChangeTable[SC_FIRE_CLOAK] = SI_FIRE_CLOAK;
-	StatusIconChangeTable[SC_WATER_SCREEN] = SI_WATER_SCREEN;
-	StatusIconChangeTable[SC_WATER_DROP] = SI_WATER_DROP;
-	StatusIconChangeTable[SC_WIND_STEP] = SI_WIND_STEP;
-	StatusIconChangeTable[SC_WIND_CURTAIN] = SI_WIND_CURTAIN;
-	StatusIconChangeTable[SC_SOLID_SKIN] = SI_SOLID_SKIN;
-	StatusIconChangeTable[SC_STONE_SHIELD] = SI_STONE_SHIELD;
-	StatusIconChangeTable[SC_PYROTECHNIC] = SI_PYROTECHNIC;
-	StatusIconChangeTable[SC_HEATER] = SI_HEATER;
-	StatusIconChangeTable[SC_TROPIC] = SI_TROPIC;
-	StatusIconChangeTable[SC_AQUAPLAY] = SI_AQUAPLAY;
-	StatusIconChangeTable[SC_COOLER] = SI_COOLER;
-	StatusIconChangeTable[SC_CHILLY_AIR] = SI_CHILLY_AIR;
-	StatusIconChangeTable[SC_GUST] = SI_GUST;
-	StatusIconChangeTable[SC_BLAST] = SI_BLAST;
-	StatusIconChangeTable[SC_WILD_STORM] = SI_WILD_STORM;
-	StatusIconChangeTable[SC_PETROLOGY] = SI_PETROLOGY;
-	StatusIconChangeTable[SC_CURSED_SOIL] = SI_CURSED_SOIL;
-	StatusIconChangeTable[SC_UPHEAVAL] = SI_UPHEAVAL;
 
 	StatusIconChangeTable[SC_ALL_RIDING] = SI_ALL_RIDING;
 	StatusIconChangeTable[SC_ON_PUSH_CART] = SI_ON_PUSH_CART;
@@ -3323,30 +3273,6 @@ int status_calc_pc_(struct map_session_data* sd, bool first)
 			sd->subele[ELE_FIRE] += sc->data[SC_ARMOR_RESIST]->val3;
 			sd->subele[ELE_WIND] += sc->data[SC_ARMOR_RESIST]->val4;
 		}
-		if( sc->data[SC_FIRE_CLOAK_OPTION] )
-		{
-			i = sc->data[SC_FIRE_CLOAK_OPTION]->val2;
-			sd->subele[ELE_FIRE] += i;
-			sd->subele[ELE_EARTH] -= i;
-		}
-		if( sc->data[SC_WATER_DROP_OPTION] )
-		{
-			i = sc->data[SC_WATER_DROP_OPTION]->val2;
-			sd->subele[ELE_WATER] += i;
-			sd->subele[ELE_WIND] -= i;
-		}
-		if( sc->data[SC_WIND_CURTAIN_OPTION] )
-		{
-			i = sc->data[SC_WIND_CURTAIN_OPTION]->val2;
-			sd->subele[ELE_WIND] += i;
-			sd->subele[ELE_WATER] -= i;
-		}
-		if( sc->data[SC_STONE_SHIELD_OPTION] )
-		{
-			i = sc->data[SC_STONE_SHIELD_OPTION]->val2;
-			sd->subele[ELE_EARTH] += i;
-			sd->subele[ELE_FIRE] -= i;
-		}
 	}
 
 	status_cpy(&sd->battle_status, status);
@@ -5027,8 +4953,6 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk += 50 + 20 * sc->data[SC_ANGRIFFS_MODUS]->val1;
 	if(sc->data[SC_PYROCLASTIC])
 		watk += sc->data[SC_PYROCLASTIC]->val2;
-	if( sc->data[SC_TROPIC_OPTION] )
-		watk += sc->data[SC_TROPIC_OPTION]->val2;
 	if(sc->data[SC_FULL_SWING_K])
 		watk += sc->data[SC_FULL_SWING_K]->val1;
 	if(sc->data[SC_INCATKRATE])
@@ -5086,15 +5010,6 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk -= watk * sc->data[SC_EQC]->val3 / 100;
 	if(sc->data[SC_VOLCANIC_ASH] && bl->type == BL_MOB && status_get_element(bl) == ELE_WATER)
 		watk -= watk * 50 / 100;
-	//Not bothering to organize these until I rework the elemental spirits. [Rytech]
-	if( sc->data[SC_HEATER_OPTION] )
-		watk += sc->data[SC_HEATER_OPTION]->val2;
-	if( sc->data[SC_WATER_BARRIER] )
-		watk -= sc->data[SC_WATER_BARRIER]->val3;
-	if( sc->data[SC_PYROTECHNIC_OPTION] )
-		watk += sc->data[SC_PYROTECHNIC_OPTION]->val2;	
-	if( sc && sc->data[SC_TIDAL_WEAPON] )
-		watk += watk * sc->data[SC_TIDAL_WEAPON]->val2 / 100;
 
 	return (unsigned short)cap_value(watk,0,USHRT_MAX);
 }
@@ -5124,8 +5039,6 @@ static unsigned short status_calc_matk(struct block_list *bl, struct status_chan
 		matk += 20 * sc->data[SC_ZANGETSU]->val1 + sc->data[SC_ZANGETSU]->val2;
 	if(sc->data[SC_SPIRITOFLAND_MATK])
 		matk += sc->data[SC_SPIRITOFLAND_MATK]->val2;
-	if(sc->data[SC_CHILLY_AIR_OPTION])
-		matk += sc->data[SC_CHILLY_AIR_OPTION]->val2;
 	if(sc->data[SC_MAGICPOWER])
 		matk += matk * sc->data[SC_MAGICPOWER]->val3/100;
 	if(sc->data[SC_MINDBREAKER])
@@ -5138,11 +5051,6 @@ static unsigned short status_calc_matk(struct block_list *bl, struct status_chan
 		matk -= 30 * sc->data[SC_ZANGETSU]->val1 + sc->data[SC_ZANGETSU]->val2;
 	if(sc->data[SC_CATNIPPOWDER])
 		matk -= matk * 50 / 100;
-	//Not bothering to organize these until I rework the elemental spirits. [Rytech]
-	if(sc->data[SC_AQUAPLAY_OPTION])
-		matk += sc->data[SC_AQUAPLAY_OPTION]->val2;
-	if(sc->data[SC_WATER_BARRIER])
-		matk -= sc->data[SC_WATER_BARRIER]->val3;
 
 	return (unsigned short)cap_value(matk,0,USHRT_MAX);
 }
@@ -5300,13 +5208,6 @@ static signed short status_calc_flee(struct block_list *bl, struct status_change
 		flee -= flee * 50 / 100;
 	if ( sc->data[SC_VOLCANIC_ASH] && bl->type == BL_MOB && status_get_element(bl) == ELE_WATER )
 		flee -= flee * 50 / 100;
-	//Not bothering to organize these until I rework the elemental spirits. [Rytech]
-	if( sc->data[SC_WATER_BARRIER] )
-		flee -= sc->data[SC_WATER_BARRIER]->val3;
-	if( sc->data[SC_WIND_STEP_OPTION] )
-		flee += flee * sc->data[SC_WIND_STEP_OPTION]->val2 / 100;
-	if( sc->data[SC_ZEPHYR] )
-		flee += flee * sc->data[SC_ZEPHYR]->val2 / 100;
 
 	return (short)cap_value(flee,1,SHRT_MAX);
 }
@@ -5423,11 +5324,6 @@ static signed char status_calc_def(struct block_list *bl, struct status_change *
 		def -= def * sc->data[SC_EQC]->val3 / 100;
 	if(sc->data[SC_VOLCANIC_ASH] && bl->type == BL_MOB && status_get_race(bl) == RC_PLANT)
 		def -= def * 50 / 100;
-	//Not bothering to organize these until I rework the elemental spirits. [Rytech]
-	if( sc->data[SC_ROCK_CRUSHER] )
-		def -= def * sc->data[SC_ROCK_CRUSHER]->val2 / 100;
-	if( sc->data[SC_POWER_OF_GAIA] )
-		def += def * sc->data[SC_POWER_OF_GAIA]->val2 / 100;
 
 	return (signed char)cap_value(def,CHAR_MIN,battle_config.max_def);
 }
@@ -5523,9 +5419,6 @@ static signed char status_calc_mdef(struct block_list *bl, struct status_change 
 		mdef -= mdef * 50 / 100;
 	if(sc->data[SC_NEEDLE_OF_PARALYZE])
 		mdef -= mdef * sc->data[SC_NEEDLE_OF_PARALYZE]->val2 / 100;
-	//Not bothering to organize these until I rework the elemental spirits. [Rytech]
-	if(sc->data[SC_WATER_BARRIER])
-		mdef += sc->data[SC_WATER_BARRIER]->val2;
 
 	return (signed char)cap_value(mdef,CHAR_MIN,battle_config.max_def);
 }
@@ -5655,11 +5548,6 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 					val = max( val, 90 );
 				if( sc->data[SC_SP_SHA] )
 					val = max( val, 50 );
-				//Not bothering to organize these until I rework the elemental spirits. [Rytech]
-				if( sc->data[SC_ROCK_CRUSHER_ATK] )
-					val = max( val, sc->data[SC_ROCK_CRUSHER_ATK]->val2 );
-				if( sc->data[SC_POWER_OF_GAIA] )
-					val = max( val, sc->data[SC_POWER_OF_GAIA]->val2 );
 				if( sc->data[SC_MELON_BOMB] )
 					val = max( val, sc->data[SC_MELON_BOMB]->val2 );
 				if( sc->data[SC_REBOUND] )
@@ -5711,9 +5599,6 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				val = max( val, 25 );
 			if( sc->data[SC_SPIRITOFLAND_SPEED] )
 				val = max( val, 60 );
-			//Not bothering to organize these until I rework the elemental spirits. [Rytech]
-			if( sc->data[SC_WIND_STEP_OPTION] )
-				val = max( val, sc->data[SC_WIND_STEP_OPTION]->val2 );
 
 			//FIXME: official items use a single bonus for this [ultramage]
 			if( sc->data[SC_SPEEDUP0] ) // temporary item-based speedup
@@ -5761,8 +5646,6 @@ static short status_calc_aspd_amount(struct block_list *bl, struct status_change
 		aspd_amount += 10 * sc->data[SC_HEAT_BARREL]->val1;
 	if( sc->data[SC_SOULSHADOW] )
 		aspd_amount += 10 * sc->data[SC_SOULSHADOW]->val2;
-	if( sc->data[SC_WILD_STORM_OPTION] )
-		aspd_amount += 10 * sc->data[SC_WILD_STORM_OPTION]->val2;
 
 	return (short)cap_value(aspd_amount,0,SHRT_MAX);
 }
@@ -5956,8 +5839,6 @@ static unsigned int status_calc_maxhp(struct block_list *bl, struct status_chang
 		maxhp += maxhp * sc->data[SC_FRIGG_SONG]->val2 / 100;
 	if(sc->data[SC_MUSTLE_M])
 		maxhp += maxhp * sc->data[SC_MUSTLE_M]->val1 / 100;
-	if(sc->data[SC_UPHEAVAL_OPTION])
-		maxhp += maxhp * sc->data[SC_UPHEAVAL_OPTION]->val2 / 100;
 	if(sc->data[SC_ANGRIFFS_MODUS])
 		maxhp += maxhp * (5 * sc->data[SC_ANGRIFFS_MODUS]->val1) / 100;
 	if(sc->data[SC_INSPIRATION])//Snce it gives a percentage and fixed amount, should be last on percentage calculations list. [Rytech]
@@ -5976,11 +5857,6 @@ static unsigned int status_calc_maxhp(struct block_list *bl, struct status_chang
 		maxhp -= maxhp * sc->data[SC_EQC]->val2 / 100;
 	if(sc->data[SC_MYSTERIOUS_POWDER])
 		maxhp -= maxhp * sc->data[SC_MYSTERIOUS_POWDER]->val1 / 100;
-	//Not bothering to organize these until I rework the elemental spirits. [Rytech]
-	if(sc->data[SC_SOLID_SKIN_OPTION])
-		maxhp += 2000;// Fix amount.
-	if(sc->data[SC_POWER_OF_GAIA])
-		maxhp += 3000;
 
 	return cap_value(maxhp,1,UINT_MAX);
 }
@@ -6074,8 +5950,6 @@ unsigned char status_calc_attack_element(struct block_list *bl, struct status_ch
 		return ELE_DARK;
 	if(sc->data[SC_GHOSTWEAPON] || sc->data[SC__INVISIBILITY])
 		return ELE_GHOST;
-	if(sc->data[SC_TIDAL_WEAPON_OPTION] || sc->data[SC_TIDAL_WEAPON] )
-		return ELE_WATER;
 	return (unsigned char)cap_value(element,0,UCHAR_MAX);
 }
 
@@ -7375,10 +7249,7 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		if(sc->data[SC_HOVERING])
 			return 0;
 	break;
-	case SC_BLEEDING:
-		if(sc->data[SC_POWER_OF_GAIA])
-			return 0;
-	break;
+
 	case SC_ALL_RIDING:
 		if ( !sd || pc_isriding(sd) || pc_isdragon(sd) || pc_iswugrider(sd) || pc_ismadogear(sd) )
 			return 0;//Do not get on a rental mount if your on a class mount.
@@ -9474,100 +9345,6 @@ int status_change_start(struct block_list* bl,enum sc_type type,int rate,int val
 		case SC_PYROCLASTIC:
 			val2 = 10 * val1 + val2;// Attack Increase - Val2 = Homunculus's Level.
 			val3 = 2 * val1;// Autocast Chance
-			break;
-		case SC_PYROTECHNIC_OPTION:
-			val2 = 60;	// Watk TODO: Renewal (Atk2)
-			val3 = 11;	// % Increase damage.
-			val_flag |= 1|2|4;
-			break;
-		case SC_HEATER_OPTION:
-			val2 = 120; // Watk. TODO: Renewal (Atk2)
-			val3 = 33;	// % Increase effects.
-			val4 = 3;	// Change into fire element.
-			val_flag |= 1|2|4;
-			break;
-		case SC_TROPIC_OPTION:
-			val2 = 180;// WATK Increase
-			break;
-		case SC_AQUAPLAY_OPTION:
-			val2 = 40; // Matk. TODO: Renewal (Matk1)
-			val3 = 33;	// % Increase effects.
-			val_flag |= 1|2|4;
-			break;
-		case SC_COOLER_OPTION:
-			val2 = 80;	// % Freezing chance
-			val3 = 33;	// % increased damage
-			val4 = 1;	// Change into water elemet
-			val_flag |= 1|2|4;
-			break;
-		case SC_CHILLY_AIR_OPTION:
-			val2 = 120;// MATK Increase
-			break;
-		case SC_GUST_OPTION:
-			val2 = 33;
-			val_flag |= 1|2;
-			break;
-		case SC_WIND_STEP_OPTION:
-			val2 = 50;	// % Increase speed and flee.
-			break;
-		case SC_BLAST_OPTION:
-			val2 = 33;
-			val3 = 4;
-			val_flag |= 1|2|4;
-			break;
-		case SC_WILD_STORM_OPTION:
-			val2 = 5;// ASPD Increase
-			break;
-		case SC_PETROLOGY_OPTION:
-			val2 = 5;
-			val3 = 33;
-			val_flag |= 1|2|4;
-			break;
-		case SC_CURSED_SOIL_OPTION:
-			val2 = 10;
-			val3 = 33;
-			val4 = 2;
-			val_flag |= 1|2|4;
-			break;
-		case SC_UPHEAVAL_OPTION:
-			val2 = 15;// MaxHP Increase
-			break;
-		case SC_CIRCLE_OF_FIRE_OPTION:
-			val2 = 300;
-			val_flag |= 1|2;
-			break;
-		case SC_FIRE_CLOAK_OPTION:
-		case SC_WATER_DROP_OPTION:
-		case SC_WIND_CURTAIN_OPTION:
-		case SC_STONE_SHIELD_OPTION:
-			val2 = 20;	// Elemental modifier. Not confirmed.
-			break;
-		case SC_CIRCLE_OF_FIRE:
-		case SC_FIRE_CLOAK:
-		case SC_WATER_DROP:
-		case SC_WATER_SCREEN:
-		case SC_WIND_CURTAIN:
-		case SC_WIND_STEP:
-		case SC_STONE_SHIELD:
-		case SC_SOLID_SKIN:
-			val2 = 10;
-			tick = 2000;
-			break;
-		case SC_WATER_BARRIER:
-			val2 = 40;	// Increasement. Mdef1 ??? 
-			val3 = 20;	// Reductions. Atk2, Flee1, Matk1 ????
-			val_flag |= 1|2|4;
-			break;
-		case SC_ZEPHYR:
-			val2 = 22;	// Flee.
-			break;
-		case SC_TIDAL_WEAPON:
-			val2 = 20; // Increase Elemental's attack.
-			break;
-		case SC_ROCK_CRUSHER:
-		case SC_ROCK_CRUSHER_ATK:
-		case SC_POWER_OF_GAIA:
-			val2 = 33;
 			break;
 		case SC_STOMACHACHE:
 			val2 = 8;	// SP consume.
@@ -11868,25 +11645,6 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr data)
 			return 0;
 		}
 		break;
-
-	case SC_CIRCLE_OF_FIRE:
-	case SC_FIRE_CLOAK:
-	case SC_WATER_DROP:
-	case SC_WATER_SCREEN:
-	case SC_WIND_CURTAIN:
-	case SC_WIND_STEP:
-	case SC_STONE_SHIELD:
-	case SC_SOLID_SKIN:
-		if( !status_charge(bl,0,sce->val2) )
-		{
-			struct block_list *s_bl = battle_get_master(bl);
-			if( s_bl )
-				status_change_end(s_bl,type+1,-1);
-			status_change_end(bl,type,-1);
-			break;
-		}
-		sc_timer_next(2000 + tick, status_change_timer, bl->id, data);
-		return 0;
 
 	case SC_STOMACHACHE:
 		if( --(sce->val4) > 0 )
