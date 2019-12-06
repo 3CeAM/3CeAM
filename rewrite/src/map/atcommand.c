@@ -4551,7 +4551,6 @@ ACMD_FUNC(reloadmobdb)
 	mob_reload();
 	read_petdb();
 	merc_reload();
-	reload_elementaldb();// To replace soon. (FIX ME!!!) [Rytech]
 	clif_displaymessage(fd, msg_txt(98)); // Monster database has been reloaded.
 
 	return 0;
@@ -4565,7 +4564,6 @@ ACMD_FUNC(reloadskilldb)
 	nullpo_retr(-1, sd);
 	skill_reload();
 	merc_skill_reload();
-	reload_elemental_skilldb();// To replace soon. (FIX ME!!!) [Rytech]
 	clif_displaymessage(fd, msg_txt(99)); // Skill database has been reloaded.
 
 	return 0;
@@ -8015,6 +8013,7 @@ ACMD_FUNC(eleminfo)
 	struct elemental_data *ed;
 	struct s_elemental_db *db;
 	struct status_data *status;
+	unsigned int minutes, seconds;
 	nullpo_retr(-1, sd);
 
 	if ( !sd->ed ) {
@@ -8027,8 +8026,13 @@ ACMD_FUNC(eleminfo)
 	db = ed->db;
 	status = status_get_status_data(&ed->bl);
 
-	snprintf(atcmd_output, sizeof(atcmd_output) ,"Elemental stats for: %s",
-		db->name);
+	// Calculate remaining summon time.
+	seconds = elemental_get_lifetime(ed)/1000;
+	minutes = seconds/60;
+	seconds -= (seconds/60>0)?(seconds/60)*60:0;
+
+	snprintf(atcmd_output, sizeof(atcmd_output) ,"Elemental stats for: %s (Lv %d)",
+		db->name, db->status.size+1);
 	clif_displaymessage(fd, atcmd_output);
 
 	snprintf(atcmd_output, sizeof(atcmd_output) ,"HP : %d/%d - SP : %d/%d",
@@ -8047,13 +8051,14 @@ ACMD_FUNC(eleminfo)
 		status->hit, status->flee, (200 - status->amotion / 10), status->adelay);
 	clif_displaymessage(fd, atcmd_output);
 
+	snprintf(atcmd_output, sizeof(atcmd_output) ,"Summon Time: %d minutes, %d seconds",
+		minutes, seconds);
+	clif_displaymessage(fd, atcmd_output);
+
+	// Temp code to help with seeing regen rates.
 	snprintf(atcmd_output, sizeof(atcmd_output) ,"HP/SP Regen Rate : %d%%/%d%%",
 		ed->regen.rate.hp, ed->regen.rate.sp);
 	clif_displaymessage(fd, atcmd_output);
-
-	//snprintf(atcmd_output, sizeof(atcmd_output) ,"Summon Time: %d (Currently Broken)",
-	//	ed->summon_timer);
-	//clif_displaymessage(fd, atcmd_output);
 
 	return 0;
 }

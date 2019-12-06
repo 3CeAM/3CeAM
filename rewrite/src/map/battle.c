@@ -5645,8 +5645,8 @@ int battle_check_target( struct block_list *src, struct block_list *target,int f
 		}
 			break;
 		//Valid targets with no special checks here.
-		case BL_MER:
 		case BL_HOM:
+		case BL_MER:
 		case BL_ELEM:
 			break;
 		//All else not specified is an invalid target.

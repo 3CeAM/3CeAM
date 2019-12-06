@@ -362,7 +362,7 @@ bool skill_check_camouflage(struct block_list *bl, struct status_change_entry *s
 // ステ?タス異常
 int skill_enchant_elemental_end(struct block_list *bl, int type);
 int skillnotok(int skillid, struct map_session_data *sd);
-int skillnotok_hom(int skillid, struct homun_data *hd);
+int skillnotok_homun(int skillid, struct homun_data *hd);
 int skillnotok_mercenary(int skillid, struct mercenary_data *md);
 
 int skill_blockpc_clear(struct map_session_data *sd);
@@ -387,7 +387,6 @@ int skill_akaitsuki_damage (struct block_list* src, struct block_list *bl, int d
 int skill_summoner_power (struct map_session_data *sd, unsigned char power_type);
 
 int skill_stasis_check(struct block_list *bl, int skillid);// Stasis skill usage check. [LimitLine]
-int skill_get_elemental_type(int skill_id, int skill_lv);
 
 // mobスキルのため
 int skill_castend_nodamage_id( struct block_list *src, struct block_list *bl,int skillid,int skilllv,unsigned int tick,int flag );

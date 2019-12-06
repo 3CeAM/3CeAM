@@ -2536,15 +2536,16 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 				elemental_save(ed);
 			else
 			{
+#ifndef TXT_ONLY
 				intif_elemental_delete(ed->elemental.elemental_id);
+#endif
 				if( sd )
 					sd->status.ele_id = 0;
 			}
 			if( sd )
 				sd->ed = NULL;
 
-			//elem_contract_stop(ed);
-			elemental_summon_stop(ed);
+			elem_summon_stop(ed);
 			break;
 		}
 	}

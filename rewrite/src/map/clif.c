@@ -12162,7 +12162,7 @@ static void clif_parse_UseSkillToId_homun(struct homun_data *hd, struct map_sess
 
 	if( !hd )
 		return;
-	if( skillnotok_hom(skillnum, hd) )
+	if( skillnotok_homun(skillnum, hd) )
 		return;
 	if( hd->bl.id != target_id && skill_get_inf(skillnum)&INF_SELF_SKILL )
 		target_id = hd->bl.id;
@@ -12185,7 +12185,7 @@ static void clif_parse_UseSkillToPos_homun(struct homun_data *hd, struct map_ses
 	int lv;
 	if( !hd )
 		return;
-	if( skillnotok_hom(skillnum, hd) )
+	if( skillnotok_homun(skillnum, hd) )
 		return;
 	if( hd->ud.skilltimer != INVALID_TIMER )
 		return;

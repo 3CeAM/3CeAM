@@ -6822,9 +6822,6 @@ void pc_damage(struct map_session_data *sd,struct block_list *src,unsigned int h
 
 	if( sd->status.pet_id > 0 && sd->pd && battle_config.pet_damage_support )
 		pet_target_check(sd,src,1);
-	
-	if( sd->status.ele_id > 0 )
-		elemental_set_target(sd,src);
 
 	sd->canlog_tick = gettick();
 }
@@ -6943,7 +6940,7 @@ int pc_dead(struct map_session_data *sd,struct block_list *src)
 		merc_delete(sd->md, 3); // Your mercenary soldier has ran away.
 
 	if( sd->ed )
-		elemental_delete(sd->ed, 0);
+		elem_delete(sd->ed, 0);
 
 	// Leave duel if you die [LuzZza]
 	if(battle_config.duel_autoleave_when_die) {

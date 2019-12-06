@@ -1299,11 +1299,11 @@ enum si_type {
 	SI_STONE_SHIELD = 531,
 	SI_STONE_SHIELD_OPTION = 532,
 	SI_POWER_OF_GAIA = 533,
-//	SI_EL_WAIT = 534,
-//	SI_EL_PASSIVE = 535,
-//	SI_EL_DEFENSIVE = 536,
-//	SI_EL_OFFENSIVE = 537,
-//	SI_EL_COST = 538,
+	SI_EL_WAIT = 534,
+	SI_EL_PASSIVE = 535,
+	SI_EL_DEFENSIVE = 536,
+	SI_EL_OFFENSIVE = 537,
+	SI_EL_COST = 538,
 	SI_PYROTECHNIC = 539,
 	SI_PYROTECHNIC_OPTION = 540,
 	SI_HEATER = 541,
@@ -2120,15 +2120,6 @@ enum scb_flag
 #define BL_CONSUME (BL_PC|BL_HOM|BL_MER|BL_ELEM)
 //Define to determine who has regen
 #define BL_REGEN (BL_PC|BL_HOM|BL_MER|BL_ELEM)
-
-// Temp placement for elemental type set until core elemental file is redone.
-enum {
-	ELEMTYPE_NONE = 0,
-	ELEMTYPE_AGNI,
-	ELEMTYPE_AQUA,
-	ELEMTYPE_VENTUS,
-	ELEMTYPE_TERA,
-};
 
 //Basic damage info of a weapon
 //Required because players have two of these, one in status_data

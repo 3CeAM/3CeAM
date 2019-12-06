@@ -44,25 +44,14 @@
 #define SKILLUNITTIMER_INTERVAL	100
 
 // ranges reserved for mapping skill ids to skilldb offsets
-//WARNING all this shouldn't be higher than 999!!!
-/*#define HM_SKILLRANGEMIN 700
-#define HM_SKILLRANGEMAX HM_SKILLRANGEMIN + MAX_HOMUNSKILL
-#define MC_SKILLRANGEMIN HM_SKILLRANGEMAX + 1
-#define MC_SKILLRANGEMAX MC_SKILLRANGEMIN + MAX_MERCSKILL
-#define EL_SKILLRANGEMIN MC_SKILLRANGEMAX + 1
-#define EL_SKILLRANGEMAX EL_SKILLRANGEMIN + MAX_ELEMENTALSKILL
-#define GD_SKILLRANGEMIN EL_SKILLRANGEMAX + 1
-#define GD_SKILLRANGEMAX GD_SKILLRANGEMIN + MAX_GUILDSKILL*/
-
-// ranges reserved for mapping skill ids to skilldb offsets
-#define HM_SKILLRANGEMIN 1101
-#define HM_SKILLRANGEMAX (HM_SKILLRANGEMIN+MAX_HOMUNSKILL)
-#define MC_SKILLRANGEMIN 1301
-#define MC_SKILLRANGEMAX (MC_SKILLRANGEMIN+MAX_MERCSKILL)
-#define EL_SKILLRANGEMIN 1501
-#define EL_SKILLRANGEMAX (EL_SKILLRANGEMIN+MAX_ELEMSKILL)
-#define GD_SKILLRANGEMIN 1701
-#define GD_SKILLRANGEMAX (GD_SKILLRANGEMIN+MAX_GUILDSKILL)
+#define HM_SKILLRANGEMIN 1201// 1201 - 1400
+#define HM_SKILLRANGEMAX HM_SKILLRANGEMIN+MAX_HOMUNSKILL
+#define MC_SKILLRANGEMIN 1401// 1401 - 1600
+#define MC_SKILLRANGEMAX MC_SKILLRANGEMIN+MAX_MERCSKILL
+#define EL_SKILLRANGEMIN 1601// 1601 - 1800
+#define EL_SKILLRANGEMAX EL_SKILLRANGEMIN+MAX_ELEMSKILL
+#define GD_SKILLRANGEMIN 1801// 1801 - 2000
+#define GD_SKILLRANGEMAX GD_SKILLRANGEMIN+MAX_GUILDSKILL
 
 static struct eri *skill_unit_ers = NULL; //For handling skill_unit's [Skotlex]
 static struct eri *skill_timer_ers = NULL; //For handling skill_timerskills [Skotlex]
@@ -109,7 +98,7 @@ int skill_get_index( int id )
 {
 	// avoid ranges reserved for mapping guild/homun/mercenary/elemental skills
 	if( (id >= HM_SKILLRANGEMIN && id <= HM_SKILLRANGEMAX)
-	||	(id >= MC_SKILLRANGEMIN && id <= MC_SKILLRANGEMAX)
+	||  (id >= MC_SKILLRANGEMIN && id <= MC_SKILLRANGEMAX)
 	||  (id >= EL_SKILLRANGEMIN && id <= EL_SKILLRANGEMAX)
 	||  (id >= GD_SKILLRANGEMIN && id <= GD_SKILLRANGEMAX) )
 		return 0;
@@ -589,7 +578,7 @@ int skillnotok(int skillid, struct map_session_data *sd)
 	return (map[m].flag.noskill);
 }
 
-int skillnotok_hom(int skillid, struct homun_data *hd)
+int skillnotok_homun(int skillid, struct homun_data *hd)
 {
 	int i = skill_get_index(skillid);
 	nullpo_retr(1,hd);
@@ -10400,34 +10389,55 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			clif_skill_nodamage(src, bl, skillid, skilllv, sc_start(bl, type, rate, skilllv, skill_get_time(skillid, skilllv)));
 		break;
 
+	case SO_EL_CONTROL:
+		if ( sd )
+		{
+			if ( skilllv == 4 && sd->ed )
+				elem_delete(sd->ed, 0);
+
+			clif_skill_nodamage(src, bl, skillid, skilllv, 1);
+		}
+		break;
+
 	case SO_SUMMON_AGNI:
 	case SO_SUMMON_AQUA:
 	case SO_SUMMON_VENTUS:
 	case SO_SUMMON_TERA:
-		if( sd )
+		if ( sd )
 		{
-			int elemental_class = skill_get_elemental_type(skillid,skilllv);
+			const short agni_id[3] = { MOBID_EL_AGNI_S, MOBID_EL_AGNI_M, MOBID_EL_AGNI_L };
+			const short aqua_id[3] = { MOBID_EL_AQUA_S, MOBID_EL_AQUA_M, MOBID_EL_AQUA_L };
+			const short ventus_id[3] = { MOBID_EL_VENTUS_S, MOBID_EL_VENTUS_M, MOBID_EL_VENTUS_L };
+			const short tera_id[3] = { MOBID_EL_TERA_S, MOBID_EL_TERA_M, MOBID_EL_TERA_L };
+			short summon_id = 0;
 
-			// Remove previous elemental fisrt.
-			if( sd->ed && elemental_delete(sd->ed,0) )
-			{
-				clif_skill_fail(sd,skillid,0,0,0);
+			if ( skilllv < 1 || skilllv > 3 )
+			{// Avoid summoning anything outside of the range.
+				clif_skill_fail(sd, skillid, 0, 0, 0);
 				break;
 			}
-			// Summoning the new one.
-			if( !elemental_create(sd,elemental_class,skill_get_time(skillid,skilllv)) )
-			{
-				clif_skill_fail(sd,skillid,0,0,0);
-				break;
+
+			// Remove current existing elemental if one exists.
+			if ( sd->ed )
+				elem_delete(sd->ed, 0);
+
+			switch ( skillid )
+			{// Which elemental is being summoned?
+				case SO_SUMMON_AGNI: summon_id = agni_id[skilllv-1]; break;
+				case SO_SUMMON_AQUA: summon_id = aqua_id[skilllv-1]; break;
+				case SO_SUMMON_VENTUS: summon_id = ventus_id[skilllv-1]; break;
+				case SO_SUMMON_TERA: summon_id = tera_id[skilllv-1]; break;
 			}
-			clif_skill_nodamage(src,bl,skillid,skilllv,1);
+
+			clif_skill_nodamage(src, bl, skillid, skilllv, 1);
+			elem_create(sd, summon_id, skill_get_time(skillid, skilllv));
 		}
 		break;
 
-	case SO_EL_CONTROL:
+	/*case SO_EL_CONTROL:
 		if( sd )
 		{
-			int mode = EL_MODE_PASSIVE;	// Standard mode.
+			int mode = ELEMMODE_PASSIVE;	// Standard mode.
 			if( !sd->ed )
 			{
 				clif_skill_fail(sd,skillid,0,0,0);
@@ -10435,31 +10445,31 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, in
 			}
 			if( skilllv == 4 )
 			{	// At level 4 delete elementals.
-				if( elemental_delete(sd->ed, 0) )
+				if( elem_delete(sd->ed, 0) )
 					clif_skill_fail(sd,skillid,0,0,0);
 				break;
 			}
 			switch( skilllv )
 			{	// Select mode bassed on skill level used.
-				case 1: mode = EL_MODE_PASSIVE; break;
-				case 2: mode = EL_MODE_ASSIST; break;
-				case 3: mode = EL_MODE_AGGRESSIVE; break;
+				case 1: mode = ELEMMODE_PASSIVE; break;
+				case 2: mode = ELEMMODE_DEFENSIVE; break;
+				case 3: mode = ELEMMODE_OFFENSIVE; break;
 			}
-			if( !elemental_change_mode(sd->ed,mode) )
-			{
-				clif_skill_fail(sd,skillid,0,0,0);
-				break;
-			}
+			//if( !elemental_change_mode(sd->ed,mode) )
+			//{
+			//	clif_skill_fail(sd,skillid,0,0,0);
+			//	break;
+			//}
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
-		break;
+		break;*/
 
 	case SO_EL_ACTION:
 		if( sd )
 		{
 			if( !sd->ed )
 				break;
-			elemental_action(sd->ed, bl, tick);
+			//elemental_action(sd->ed, bl, tick);
 			clif_skill_nodamage(src,bl,skillid,skilllv,1);
 		}
 		break;
@@ -19955,23 +19965,6 @@ int skill_stasis_check(struct block_list *bl, int skillid)
 	return 0;//Any skills thats not the above will work.
 }
 
-int skill_get_elemental_type(int skill_id, int skill_lv)
-{
-	unsigned short type = 0;
-
-	switch( skill_id )
-	{
-		case SO_SUMMON_AGNI:	type = MOBID_EL_AGNI_S; break;
-		case SO_SUMMON_AQUA:	type = MOBID_EL_AQUA_S; break;
-		case SO_SUMMON_VENTUS:	type = MOBID_EL_VENTUS_S; break;
-		case SO_SUMMON_TERA:	type = MOBID_EL_TERA_S; break;
-	}
-
-	type += skill_lv - 1;
-
-	return type;
-}
-
 /*==========================================
  * DB reading.
  * skill_db.txt
@@ -19993,7 +19986,7 @@ static bool skill_parse_row_skilldb(char* split[], int columns, int current)
 	int id = atoi(split[0]);
 	int i;
 	if( (id >= HM_SKILLRANGEMIN && id <= HM_SKILLRANGEMAX)
-	||	(id >= MC_SKILLRANGEMIN && id <= MC_SKILLRANGEMAX)
+	||  (id >= MC_SKILLRANGEMIN && id <= MC_SKILLRANGEMAX)
 	||  (id >= EL_SKILLRANGEMIN && id <= EL_SKILLRANGEMAX)
 	||  (id >= GD_SKILLRANGEMIN && id <= GD_SKILLRANGEMAX) )
 	{

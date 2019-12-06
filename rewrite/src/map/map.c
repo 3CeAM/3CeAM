@@ -1841,8 +1841,6 @@ int map_quit(struct map_session_data *sd)
 	// Return loot to owner
 	if( sd->pd ) pet_lootitem_drop(sd->pd, sd);
 	if( sd->state.storage_flag == 1 ) sd->state.storage_flag = 0; // No need to Double Save Storage on Quit.
-	
-	if( sd->ed ) elemental_clean_effect(sd->ed);// May need to redo. (FIX ME!!!!) [Rytech]
 
 	unit_remove_map_pc(sd,CLR_TELEPORT);
 	
@@ -3678,8 +3676,7 @@ void do_final(void)
 	do_final_status();
 	do_final_unit();
 	do_final_battleground();
-	do_final_elemental();
-	
+
 	map_db->destroy(map_db, map_db_final);
 	
 	for (i=0; i<map_num; i++) {
